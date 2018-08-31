@@ -1,0 +1,28 @@
+body{
+	background-color: #ccc;
+}
+
+.login{
+	text-align: center;
+	background-color: #eee;
+	border-radius: 25px;
+	padding: 30px;
+	margin: auto;
+	margin-top: 10%;
+	width: 40%;
+	height: 40%;
+}
+
+.input-group{
+	margin-bottom: 10px;
+	margin-top: 10px;
+	border-radius: 0px;
+}
+
+.input-group-text {
+	width: 40px;
+}
+
+button {
+	margin-top: 10px;
+}
