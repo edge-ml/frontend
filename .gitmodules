@@ -1,0 +1,3 @@
+[submodule "protocol"]
+	path = protocol
+	url = aura-development@vs-ssh.visualstudio.com:v3/aura-development/Aura/protocol

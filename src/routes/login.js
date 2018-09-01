@@ -11,8 +11,6 @@ import { PersonIcon, ShieldIcon } from 'react-octicons';
 
 import { store, view } from 'react-easy-state';
 
-//import Request from 'browser-request';
-
 import Request from 'request-promise';
 
 import update from 'immutability-helper';

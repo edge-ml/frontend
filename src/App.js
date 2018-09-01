@@ -11,9 +11,11 @@ import logo from './logo.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-import LoginPage from './routes/login.js';
+import LoginPage from './routes/login';
 
-import ListPage from './routes/list.js'
+import ListPage from './routes/list'
+
+import DatasetPage from './routes/dataset';
 
 class App extends Component {
 	render() {
@@ -22,6 +24,7 @@ class App extends Component {
 				<Container className="App">
 					<Route exact path="/login" component={LoginPage} />
 					<Route exact path="/list" component={ListPage} />
+					<Route path="/dataset/:id" component={DatasetPage} />
 				</Container>
 			</Router>
 		);
