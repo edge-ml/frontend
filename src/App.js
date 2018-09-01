@@ -67,7 +67,7 @@ class App extends Component {
 		if(window.localStorage.getItem('id_token')){
 			const options = {
 				method: 'GET',
-				url: 'http://localhost:3000/dataset/get',
+				url: 'https://edge.ng.aura.rest/dataset/get',
 				headers: {
 					Authorization: `Bearer ${window.localStorage.getItem('id_token')}`,
 				}
@@ -104,10 +104,10 @@ class App extends Component {
 								<NavbarBrand>AURA Explorer</NavbarBrand>
 								<Nav className="ml-auto" navbar>
 									<NavItem>
-										<NavLink href="" onClick={this.listHandler}>List Datasets</NavLink>
+										<NavLink href="#" onClick={this.listHandler}>List Datasets</NavLink>
 									</NavItem>
 									<NavItem>
-										<NavLink href="" onClick={this.logoutHandler}>Logout</NavLink>
+										<NavLink href="#" onClick={this.logoutHandler}>Logout</NavLink>
 									</NavItem>
 								</Nav>
 							</Navbar>
@@ -117,6 +117,7 @@ class App extends Component {
 					<Row>
 						<Col>
 							<Route exact path="/list" component={ListPage} />
+							<Route exact path="/" component={ListPage} />
 							<Route path="/dataset/:id" component={DatasetPage} />
 						</Col>
 					
