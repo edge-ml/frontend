@@ -74,25 +74,11 @@ class LoginPage extends Component {
 		Request(options).then((res) => {
 			const response = JSON.parse(res);
 			window.localStorage.setItem('id_token', response.id_token);
-			// window.localStorage.getItem('id_token');
-			//return Request()
-		}).then((res) => {
-			// test admin access
+			this.props.setAuth(true);
+		}).catch((err) => {
+			// print error
+			this.props.setAuth(false);
 		});
-
-		/*setTimeout(() => {
-			this.setState(update(this.state, {
-				$merge: {
-					button:{
-						disabled: true,
-						color: 'success',
-					}
-				}
-			}));
-
-			this.props.history.push('/list')
-
-		}, 500);*/
 	}
 
 	render(){
