@@ -67,7 +67,7 @@ class App extends Component {
 		if(window.localStorage.getItem('id_token')){
 			const options = {
 				method: 'GET',
-				url: 'https://edge.ng.aura.rest/dataset/get',
+				url: 'https://edge.aura.rest/dataset/get',
 				headers: {
 					Authorization: `Bearer ${window.localStorage.getItem('id_token')}`,
 				}

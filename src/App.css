@@ -27,6 +27,10 @@ tbody td{
 	cursor: pointer;
 }
 
+.dataset-plot {
+	height: 100%;
+}
+
 .loader{
 	display: block;
 	margin: 0 auto;

@@ -49,7 +49,7 @@ class DatasetPage extends Component {
 		const { id } = this.props.match.params;
 		const options = {
 			method: 'GET',
-			url: `https://edge.ng.aura.rest/dataset/get/${id}`,
+			url: `https://edge.aura.rest/dataset/get/${id}`,
 			headers: {
 				Authorization: `Bearer ${window.localStorage.getItem('id_token')}`
 			},
@@ -80,17 +80,15 @@ class DatasetPage extends Component {
 			}
 
 			this.setState(update(this.state, {
-				$merge: {
-					dataset: dataset,
-					chart: {
-						ready: true,
-						title: {
-							text: this.state.dataset.id,
-						},
-						series: [{
-							data: values,
-						}]
-					}
+				dataset: {$set: dataset},
+				chart: {
+					ready: {$set: true},
+					title: {
+						text: {$set: this.state.dataset.id},
+					},
+					series: [{
+						data: {$set: values},
+					}]
 				}
 			}));
 			console.log(this.state.chart);
@@ -106,8 +104,10 @@ class DatasetPage extends Component {
 					{this.state.chart.ready ? (
 						<Col>
 							<HighchartsReact
+								className="dataset-plot"
 								highcharts={Highcharts}
 								constructorType={'stockChart'}
+								height="100%"
 								options={this.state.chart}
 							/>
 						</Col>
