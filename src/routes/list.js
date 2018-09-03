@@ -57,7 +57,7 @@ class ListPage extends Component {
 	componentDidMount(){
 		const options = {
 			method: 'GET',
-			url: 'https://edge.aura.rest/dataset/list',
+			url: 'http://edge.aura.rest/dataset',
 			headers: {
 				Authorization: `Bearer ${window.localStorage.getItem('id_token')}`
 			},

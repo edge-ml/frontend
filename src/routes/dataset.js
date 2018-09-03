@@ -49,7 +49,7 @@ class DatasetPage extends Component {
 		const { id } = this.props.match.params;
 		const options = {
 			method: 'GET',
-			url: `https://edge.aura.rest/dataset/get/${id}`,
+			url: `https://edge.aura.rest/dataset/${id}`,
 			headers: {
 				Authorization: `Bearer ${window.localStorage.getItem('id_token')}`
 			},
