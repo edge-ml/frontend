@@ -34,6 +34,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "docker:build": "docker build . -t registry.aura.rest/explorer",
+    "docker:push": "docker push registry.aura.rest/explorer",
+    "docker:deploy" : "docker build . -t registry.aura.rest/explorer && docker push registry.aura.rest/explorer"
   }
 }
