@@ -1,6 +1,8 @@
 [submodule "protocol"]
 	path = protocol
-	url = aura-development@vs-ssh.visualstudio.com:v3/aura-development/Aura/protocol
+	url = https://aura-development.visualstudio.com/Aura/Team/_git/protocol
+	master = master
 [submodule "public/protocol"]
 	path = public/protocol
-	url = aura-development@vs-ssh.visualstudio.com:v3/aura-development/Aura/protocol
+	url = https://aura-development.visualstudio.com/Aura/Team/_git/protocol
+	master = master
