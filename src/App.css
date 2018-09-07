@@ -23,6 +23,15 @@ button {
 	margin-top: 10px;
 }
 
+.octicon-trashcan{
+	transition: fill 0.3s ease-in-out;
+}
+
+.octicon-trashcan:hover{
+	fill: red;
+	transition: fill 0.3s ease-in-out;
+}
+
 .dataset-plot {
 	height: 100%;
 }

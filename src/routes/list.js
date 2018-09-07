@@ -51,9 +51,15 @@ class ListPage extends Component {
 					text: 'Document ID',
 					formatter: (cell, row) => (
 						<div>
-							<a href="#" onClick={() => this.deleteHandler(row.id)}><TrashcanIcon /></a>
+							<a href="" onClick={(e) => {
+								this.deleteHandler(row.id)
+								e.preventDefault();
+							}}><TrashcanIcon /></a>
 							{'  '}
-							<a href="#" onClick={() => this.props.history.push(`dataset/${row.id}`)}>{cell}</a>
+							<a href="" onClick={(e) => {
+								this.props.history.push(`dataset/${row.id}`)
+								e.preventDefault();
+							}}>{cell}</a>
 						</div>
 					),
 				}
@@ -138,12 +144,12 @@ class ListPage extends Component {
 							<BootstrapTable
 								className="ListTable"
 								bootstrap4={true}
-								loading={this.state.loading}
+								loading={ this.state.loading }
 								keyField='key'
-								defaultSorted={this.state.defaultSorted}
+								defaultSorted={ this.state.defaultSorted }
 								data={ this.state.rows }
 								columns={ this.state.columns }
-								hover={true}
+								hover={ false }
 							/>
 							<Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
 								<ModalHeader toggle={this.toggleModal}>Modal title</ModalHeader>

@@ -49,7 +49,8 @@ class App extends Component {
 		}));
 	}
 
-	logoutHandler(){
+	logoutHandler(e){
+		e.preventDefault();
 		window.localStorage.clear();
 		this.setState(update(this.state, {
 			$merge: {
@@ -58,7 +59,8 @@ class App extends Component {
 		}));
 	}
 
-	listHandler(){
+	listHandler(e){
+		e.preventDefault();
 		this.props.history.push('/list');
 	}
 
@@ -104,10 +106,10 @@ class App extends Component {
 								<NavbarBrand>AURA Explorer</NavbarBrand>
 								<Nav className="ml-auto" navbar>
 									<NavItem>
-										<NavLink href="#" onClick={this.listHandler}>List Datasets</NavLink>
+										<NavLink href="" onClick={this.listHandler}>List Datasets</NavLink>
 									</NavItem>
 									<NavItem>
-										<NavLink href="#" onClick={this.logoutHandler}>Logout</NavLink>
+										<NavLink href="" onClick={this.logoutHandler}>Logout</NavLink>
 									</NavItem>
 								</Nav>
 							</Navbar>
