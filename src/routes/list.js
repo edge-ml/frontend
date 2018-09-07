@@ -152,9 +152,9 @@ class ListPage extends Component {
 								hover={ false }
 							/>
 							<Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
-								<ModalHeader toggle={this.toggleModal}>Modal title</ModalHeader>
+								<ModalHeader toggle={this.toggleModal}>O RLY?</ModalHeader>
 								<ModalBody>
-									O RLY delete {this.state.modalID}?
+									delete {this.state.modalID}?
 								</ModalBody>
 								<ModalFooter>
 									<Button color="danger" onClick={this.modalDeleteHandler}>Yes</Button>{' '}
