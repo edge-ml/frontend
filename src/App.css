@@ -23,10 +23,6 @@ button {
 	margin-top: 10px;
 }
 
-tbody td{
-	cursor: pointer;
-}
-
 .dataset-plot {
 	height: 100%;
 }

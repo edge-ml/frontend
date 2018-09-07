@@ -44,6 +44,9 @@ class ListPage extends Component {
 				{
 					dataField: 'id',
 					text: 'Document ID',
+					formatter: (cell, row) => (
+						<a href={`/dataset/${row.id}`}>{cell}</a>
+					),
 				}
 			],
 			defaultSorted: [{
@@ -94,9 +97,6 @@ class ListPage extends Component {
 								data={ this.state.rows }
 								columns={ this.state.columns }
 								hover={true}
-								rowEvents={{
-									onClick: (e, row, rowIndex) => this.props.history.push(`/dataset/${row.id}`)
-								}}
 							/>
 						</Col>
 					):(
