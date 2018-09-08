@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import {
-	Container, Col, Form,
-	FormGroup, Label, Input,
+	Container, Col,
+	Input,
 	InputGroup, InputGroupAddon, InputGroupText,
 	Button,
-	Alert,
 } from 'reactstrap';
 
 import { PersonIcon, ShieldIcon } from 'react-octicons';
-
-import { store, view } from 'react-easy-state';
 
 import Request from 'request-promise';
 
@@ -25,6 +22,7 @@ class LoginPage extends Component {
 				color: 'secondary',
 				disabled: false,
 			},
+			authed: false,
 		};
 		this.userChange = this.userChange.bind(this);
 		this.passChange = this.passChange.bind(this);
@@ -48,7 +46,6 @@ class LoginPage extends Component {
 	}
 
 	submit(event){
-		console.log(Request);
 		this.setState(update(this.state, {
 			$merge: {
 				button:{
@@ -74,56 +71,89 @@ class LoginPage extends Component {
 		Request(options).then((res) => {
 			const response = JSON.parse(res);
 			window.localStorage.setItem('id_token', response.id_token);
-			this.props.setAuth(true);
+			this.setState(update(this.state, {
+				authed: {$set: true},
+			}));
 		}).catch((err) => {
-			// print error
-			this.props.setAuth(false);
+			this.setState(update(this.state, {
+				authed: {$set: false},
+			}));
 		});
 	}
 
+	componentWillMount(){
+		// check if token exsists
+		if(window.localStorage.getItem('id_token')){
+			const options = {
+				method: 'GET',
+				url: 'https://edge.aura.rest/authed',
+				headers: {
+					Authorization: `Bearer ${window.localStorage.getItem('id_token')}`,
+				}
+			};
+
+			Request(options).then((res) => {
+				this.setState(update(this.state, {
+					authed: {$set: true},
+				}));
+			}).catch((err) => {
+				if(err.statusCode === 401){
+					this.setState(update(this.state, {
+						authed: {$set: false},
+					}));
+					window.localStorage.clear();
+				}
+			});
+		}
+	}
+
 	render(){
-		return (
-			<Container className="Page">
-				<div className="login">
-					<h2>Sign In</h2>
-					<Col>
-						<InputGroup>
-							<InputGroupAddon addonType="prepend">
-								<InputGroupText>
-									<PersonIcon />
-								</InputGroupText>
-							</InputGroupAddon>
-							<Input
-								type="username"
-								name="username"
-								id="username"
-								placeholder="username"
-								onChange={this.userChange}
-							/>
-						</InputGroup>
-					</Col>
-					<Col>
-						<InputGroup>
-							<InputGroupAddon addonType="prepend">
-								<InputGroupText>
-									<ShieldIcon />
-								</InputGroupText>
-							</InputGroupAddon>
-							<Input
-								type="password"
-								name="password"
-								id="password"
-								placeholder="password"
-								onChange={this.passChange}
-							/>
-						</InputGroup>
-					</Col>
-					<Col>
-						<Button id="login-button" onClick={this.submit} disabled={this.state.button.disabled} color={this.state.button.color}>Login</Button>
-					</Col>
-				</div>
-			</Container>
-		);
+		if(this.state.authed){
+			return this.props.children
+		}else{
+			return (
+				<Container className="Page">
+					<div className="login">
+						<h2>Sign In</h2>
+						<Col>
+							<InputGroup>
+								<InputGroupAddon addonType="prepend">
+									<InputGroupText>
+										<PersonIcon />
+									</InputGroupText>
+								</InputGroupAddon>
+								<Input
+									type="username"
+									name="username"
+									id="username"
+									placeholder="username"
+									onChange={this.userChange}
+								/>
+							</InputGroup>
+						</Col>
+						<Col>
+							<InputGroup>
+								<InputGroupAddon addonType="prepend">
+									<InputGroupText>
+										<ShieldIcon />
+									</InputGroupText>
+								</InputGroupAddon>
+								<Input
+									type="password"
+									name="password"
+									id="password"
+									placeholder="password"
+									onChange={this.passChange}
+								/>
+							</InputGroup>
+						</Col>
+						<Col>
+							<Button id="login-button" onClick={this.submit} disabled={this.state.button.disabled} color={this.state.button.color}>Login</Button>
+						</Col>
+					</div>
+				</Container>
+			);
+		}
 	}
 }
 

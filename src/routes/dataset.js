@@ -1,51 +1,106 @@
 import React, { Component } from 'react';
 import {
-	Container, Col, Row, Form,
-	FormGroup, Label, Input,
-	InputGroup, InputGroupAddon, InputGroupText,
-	Button,
-	Alert,
+	Col, Row,
 } from 'reactstrap';
-
 import Request from 'request-promise';
-
 import update from 'immutability-helper';
-
 import { load } from 'protobufjs';
-
-import { PacmanLoader as Loader } from 'react-spinners';
-
+import { view } from 'react-easy-state';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
+
+import State from '../state';
+import Loader from '../modules/loader';
+import DatasetToolbar from '../modules/datasetToolbar';
 
 class DatasetPage extends Component {
 	constructor(props){
 		super(props);
 		this.state = {
+			selectedBand: -1,
 			dataset: {},
 			chart: {
 				xAxis: {     
 					ordinal: false,
-					type: 'datetime',
 					type: "datetime",
 					dateTimeLabelFormats: {
 						day: '%a'
-					}
+					},
+					plotLines: [],
 				},
 				title: {
-					text: () => `${this.state.dataset.id}`,
+					text: '',
+				},
+				tooltip: {
+					// trigger click event even if cursor is far from plot Y point
+					snap: 100,
+					enabled: false,
 				},
 				series : [
 					{
 						text: 'VOC',
-						data : []
+						data : [],
+						events:{
+							click: this.labelingClickHandler,
+							drag: (e) => console.log(e),
+						}
 					}
 				]
 			}
 		};
+		this.labelingClickHandler = this.labelingClickHandler.bind(this);
+	}
+
+	labelingClickHandler(e){
+		function plotbandClickHandler(e) {
+			State.datasetPage.edit.selectedBand = this;
+			State.datasetPage.edit.enabled = true;
+		}
+
+		function plotbandHoverHandler(e){
+			console.log(this);
+		}
+
+		const pos = e.point.x;
+
+		if(this.firstclick === undefined){
+			State.datasetPage.chart = this;
+			this.firstclick = true;
+			this.bandid = 0;
+		}
+		if(this.firstclick){
+			this.firstPos = pos;
+			this.xAxis.addPlotLine({
+				color: 'yellow',
+				dashStyle: 'solid',
+				value: pos,
+				width: 2,
+				zIndex: 4,
+				className: 'datasetPlotLine',
+				id: 'startline',
+			});
+			this.firstclick = false;
+		}else{
+			this.xAxis.addPlotBand({
+				color: 'yellow',
+				borderWidth: 2,
+				from: this.firstPos,
+				to: pos,
+				zIndex: 3,
+				className: 'datasetPlotBand',
+				id: this.bandid,
+				events: {
+					click: plotbandClickHandler,
+				}
+			});
+			this.bandid++;
+			this.xAxis.removePlotLine('startline');
+			this.firstclick = true;
+		}
 	}
 
 	componentDidMount(){
+		State.datasetPage.self = this;
 		const { id } = this.props.match.params;
 		const options = {
 			method: 'GET',
@@ -91,41 +146,29 @@ class DatasetPage extends Component {
 					}]
 				}
 			}));
-			console.log(this.state.chart);
 		}).catch((err) => {
 			console.error(err);
 		});
 	}
 
 	render(){
-		return(
-			<Container className="Page">
+		return (
+			<Loader loading={!this.state.chart.ready}>
+				<DatasetToolbar/>
 				<Row>
-					{this.state.chart.ready ? (
-						<Col>
-							<HighchartsReact
-								className="dataset-plot"
-								highcharts={Highcharts}
-								constructorType={'stockChart'}
-								height="100%"
-								options={this.state.chart}
-							/>
-						</Col>
-					):(
-						<Col sm={{ size: 2, offset: 4 }}>
-							<Loader
-								className="loader"
-								sizeUnit={"px"}
-								size={50}
-								color={'rgba(0, 0, 255, 0.5)'}
-								loading={true}
-							/>
-						</Col>
-					)}
+					<Col>
+						<HighchartsReact
+							className="dataset-plot"
+							highcharts={Highcharts}
+							constructorType={'stockChart'}
+							height="100%"
+							options={this.state.chart}
+						/>
+					</Col>
 				</Row>
-			</Container>
+			</Loader>
 		)
 	}
 }
 
-export default DatasetPage;
+export default view(DatasetPage);

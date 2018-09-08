@@ -27,7 +27,7 @@ button {
 	transition: fill 0.3s ease-in-out;
 }
 
-.octicon-trashcan:hover{
+a .octicon-trashcan:hover{
 	fill: red;
 	transition: fill 0.3s ease-in-out;
 }
@@ -36,8 +36,16 @@ button {
 	height: 100%;
 }
 
+.datasetPlotBand {
+	opacity: 0.15;
+}
+
 .loader{
 	display: block;
 	margin: 0 auto;
 	border-color: red;
+}
+
+.svg-white {
+	fill: white;
 }

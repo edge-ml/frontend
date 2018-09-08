@@ -1,27 +1,15 @@
 import React, { Component } from 'react';
 import {
-	Container, Col, Row, Form,
-	FormGroup, Label, Input,
-	InputGroup, InputGroupAddon, InputGroupText,
+	Col, Row,
 	Button,
-	Alert,
-	Table, TableRow,
 	Modal, ModalHeader, ModalBody, ModalFooter,
 } from 'reactstrap';
-
-import { PersonIcon, ShieldIcon } from 'react-octicons';
-
-import { store, view } from 'react-easy-state';
-
 import Request from 'request-promise';
-
 import update from 'immutability-helper';
-
 import BootstrapTable from 'react-bootstrap-table-next';
-
-import { PacmanLoader as Loader } from 'react-spinners';
-
 import { TrashcanIcon } from 'react-octicons';
+
+import Loader from '../modules/loader';
 
 class ListPage extends Component {
 	constructor(props){
@@ -141,44 +129,32 @@ class ListPage extends Component {
 
 	render(){
 		return (
-			<Container className="Page">
-				<Row>
-					{this.state.ready ? (
-						<Col>
-							<BootstrapTable
-								className="ListTable"
-								bootstrap4={true}
-								loading={ this.state.loading }
-								keyField='key'
-								defaultSorted={ this.state.defaultSorted }
-								data={ this.state.rows }
-								columns={ this.state.columns }
-								hover={ false }
-							/>
-							<Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
-								<ModalHeader toggle={this.toggleModal}>O RLY?</ModalHeader>
-								<ModalBody>
-									delete {this.state.modalID}?
-								</ModalBody>
-								<ModalFooter>
-									<Button color="danger" onClick={this.modalDeleteHandler}>Yes</Button>{' '}
-									<Button color="secondary" onClick={this.toggleModal}>No</Button>
-								</ModalFooter>
-							</Modal>
-						</Col>
-					):(
-						<Col sm={{ size: 2, offset: 4 }}>
-							<Loader
-								className="loader"
-								sizeUnit={"px"}
-								size={50}
-								color={'rgba(0, 0, 255, 0.5)'}
-								loading={true}
-							/>
-						</Col>
-					)}
-				</Row>
-			</Container>
+			<Loader loading={!this.state.ready}>
+				<Col>
+					<Row>
+						<BootstrapTable
+							className="ListTable"
+							bootstrap4={true}
+							loading={ this.state.loading }
+							keyField='key'
+							defaultSorted={ this.state.defaultSorted }
+							data={ this.state.rows }
+							columns={ this.state.columns }
+							hover={ false }
+						/>
+						<Modal isOpen={this.state.modal} toggle={this.toggleModal} className={this.props.className}>
+							<ModalHeader toggle={this.toggleModal}>O RLY?</ModalHeader>
+							<ModalBody>
+								delete {this.state.modalID}?
+							</ModalBody>
+							<ModalFooter>
+								<Button color="danger" onClick={this.modalDeleteHandler}>Yes</Button>{' '}
+								<Button color="secondary" onClick={this.toggleModal}>No</Button>
+							</ModalFooter>
+						</Modal>
+					</Row>
+				</Col>
+			</Loader>
 		)
 	}
 }
