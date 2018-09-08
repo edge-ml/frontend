@@ -36,6 +36,10 @@ class ListPage extends Component {
 					dataField: 'startTime',
 					text: 'Start Time',
 					sort: true,
+					formatter: (cell, row) => {
+						const date = new Date(row.startTime);
+						return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+					}
 				},
 				{
 					dataField: 'user',
