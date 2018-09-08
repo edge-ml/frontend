@@ -21,7 +21,7 @@ class DatasetToolbar extends Component {
 	}
 
 	stateButtonHandler(id, e){
-		console.log(State.datasetPage.edit.selectedBand);
+		State.datasetPage.initialIndex = id;
 		State.datasetPage.edit.selectedBand.svgElem.attr({
 			fill: State.datasetPage.states[id].color,
 		});
@@ -29,8 +29,8 @@ class DatasetToolbar extends Component {
 
 	deleteButtonHandler(e){
 		State.datasetPage.chart.xAxis.removePlotBand(State.datasetPage.edit.selectedBand.id);
-		State.datasetPage.edit.enabled = false;
 		State.datasetPage.edit.selectedBand = -1;
+		State.datasetPage.reorder();
 	}
 
 	render(){
@@ -41,8 +41,8 @@ class DatasetToolbar extends Component {
 				</Col>
 				<Col>
 					<ButtonGroup className="float-right">
-						{State.datasetPage.states.map((state, id) => <Button disabled={!State.datasetPage.edit.enabled} key={id} color={state.buttonColor} onClick={(...props) => this.stateButtonHandler(id, ...props)}>{state.name}</Button>)}
-						<Button color="secondary" disabled={!State.datasetPage.edit.enabled} onClick={this.deleteButtonHandler}><TrashcanIcon className="svg-white"/></Button>
+						{State.datasetPage.states.map((state, id) => <Button disabled={State.datasetPage.edit.selectedBand === -1} key={id} color={state.buttonColor} onClick={(...props) => this.stateButtonHandler(id, ...props)}>{state.name}</Button>)}
+						<Button color="secondary" disabled={State.datasetPage.edit.selectedBand === -1} onClick={this.deleteButtonHandler}><TrashcanIcon className="svg-white"/></Button>
 					</ButtonGroup>
 				</Col>
 			</Row>

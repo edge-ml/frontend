@@ -54,20 +54,20 @@ class DatasetPage extends Component {
 	labelingClickHandler(e){
 		function plotbandClickHandler(e) {
 			State.datasetPage.edit.selectedBand = this;
-			State.datasetPage.edit.enabled = true;
+			State.datasetPage.updateHighlight();
 		}
 
 		function plotbandHoverHandler(e){
 			console.log(this);
 		}
 
-		const pos = e.point.x;
-
 		if(this.firstclick === undefined){
 			State.datasetPage.chart = this;
 			this.firstclick = true;
-			this.bandid = 0;
 		}
+
+		const pos = e.point.x;
+
 		if(this.firstclick){
 			this.firstPos = pos;
 			this.xAxis.addPlotLine({
@@ -81,20 +81,24 @@ class DatasetPage extends Component {
 			});
 			this.firstclick = false;
 		}else{
+			this.xAxis.removePlotLine('startline');
+			// reorder
+			State.datasetPage.reorder();
+			const bandId = this.xAxis.plotLinesAndBands.length;
 			this.xAxis.addPlotBand({
-				color: 'yellow',
+				color: State.datasetPage.states[State.datasetPage.initialIndex].color,
 				borderWidth: 2,
 				from: this.firstPos,
 				to: pos,
 				zIndex: 3,
 				className: 'datasetPlotBand',
-				id: this.bandid,
+				id: bandId,
 				events: {
 					click: plotbandClickHandler,
 				}
 			});
-			this.bandid++;
-			this.xAxis.removePlotLine('startline');
+			State.datasetPage.edit.selectedBand = State.datasetPage.chart.xAxis.plotLinesAndBands[bandId];
+			State.datasetPage.updateHighlight();
 			this.firstclick = true;
 		}
 	}

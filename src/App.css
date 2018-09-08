@@ -37,7 +37,19 @@ a .octicon-trashcan:hover{
 }
 
 .datasetPlotBand {
-	opacity: 0.15;
+	opacity: 0.8;
+	fill-opacity: 0.3;
+	stroke-dasharray: 50;
+	stroke-width: 3px;
+	animation: dash 2.5s linear forwards;
+	animation-iteration-count: infinite;
+
+}
+
+@keyframes dash {
+	to {
+		stroke-dashoffset: 100;
+	}
 }
 
 .loader{

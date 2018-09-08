@@ -8,6 +8,8 @@ const datastore = store({
 			enabled: false,
 			selectedBand: -1,
 		},
+		highlightColor: 'orange',
+		initialIndex: 0,
 		bands: [
 		],
 		states: [
@@ -32,6 +34,22 @@ const datastore = store({
 				color: 'red',
 			},
 		],
+		reorder: () => {
+			let i=0;
+			for(let band of datastore.datasetPage.chart.xAxis.plotLinesAndBands){
+				band.id = i++;
+			}
+		},
+		updateHighlight: () => {
+			for(let band of datastore.datasetPage.chart.xAxis.plotLinesAndBands){
+				band.svgElem.attr({
+					stroke: 'none',
+				});
+			}
+			datastore.datasetPage.edit.selectedBand.svgElem.attr({
+				stroke: datastore.datasetPage.highlightColor,
+			});
+		}
 	},
 });
 
