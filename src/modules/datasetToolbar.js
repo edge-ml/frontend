@@ -21,28 +21,71 @@ class DatasetToolbar extends Component {
 	}
 
 	stateButtonHandler(id, e){
+		const band = State.datasetPage.edit.selectedBand;
+		band.state = id;
+		for(let elem of[band, band.lines.start, band.lines.end]){
+			elem.svgElem.attr({
+				fill: State.datasetPage.states[id].color,
+				stroke: State.datasetPage.states[id].color,
+			});
+		}
+
+		// store selection
 		State.datasetPage.initialIndex = id;
-		State.datasetPage.edit.selectedBand.svgElem.attr({
-			fill: State.datasetPage.states[id].color,
-		});
 	}
 
 	deleteButtonHandler(e){
-		State.datasetPage.chart.xAxis.removePlotBand(State.datasetPage.edit.selectedBand.id);
+		const band = State.datasetPage.edit.selectedBand;
+
+		for(let item of [band.lines.start.id, band.lines.end.id, band.id]){
+			State.datasetPage.chart.xAxis.removePlotBand(item);
+		}
+
 		State.datasetPage.edit.selectedBand = -1;
-		State.datasetPage.reorder();
+		State.datasetPage.sort();
 	}
 
 	render(){
 		return(
 			<Row className="clearfix">
 				<Col>
-					<Button className="float-left" color="secondary" disabled={true}>Selected Band: {(State.datasetPage.edit.selectedBand === -1) ? (<QuestionIcon className="svg-white"/>) : State.datasetPage.edit.selectedBand.id}</Button>
+					<ButtonGroup className="float-left">
+						<Button
+							color="light"
+							disabled={true}
+						>
+							Selected Band: {
+								(State.datasetPage.edit.selectedBand === -1) ? (<QuestionIcon/>) : State.datasetPage.edit.selectedBand.id.split('_')[1]
+							}
+						</Button>
+					</ButtonGroup>
 				</Col>
 				<Col>
-					<ButtonGroup className="float-right">
-						{State.datasetPage.states.map((state, id) => <Button disabled={State.datasetPage.edit.selectedBand === -1} key={id} color={state.buttonColor} onClick={(...props) => this.stateButtonHandler(id, ...props)}>{state.name}</Button>)}
-						<Button color="secondary" disabled={State.datasetPage.edit.selectedBand === -1} onClick={this.deleteButtonHandler}><TrashcanIcon className="svg-white"/></Button>
+					<Button
+						outline
+						className="float-right button-toolbar button-toolbar-delete"
+						color="danger"
+						disabled={State.datasetPage.edit.selectedBand === -1}
+						onClick={this.deleteButtonHandler}
+					>
+						<TrashcanIcon className="svg-red"/> Delete
+					</Button>
+					<Button className="float-right button-invisible">
+					</Button>
+					<ButtonGroup className="button-toolbar float-right">
+						{State.datasetPage.states.map((state, id) =>
+							<Button
+								outline
+								disabled={State.datasetPage.edit.selectedBand === -1}
+								key={id}
+								color={state.buttonColor}
+								onClick={(...props) => this.stateButtonHandler(id, ...props)}
+								active={State.datasetPage.edit.selectedBand.state === id}
+								block={State.datasetPage.edit.selectedBand.state === id}
+							>
+								{state.name}
+							</Button>
+						)}
 					</ButtonGroup>
 				</Col>
 			</Row>

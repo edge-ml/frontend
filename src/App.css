@@ -24,12 +24,12 @@ button {
 }
 
 .octicon-trashcan{
-	transition: fill 0.3s ease-in-out;
+	transition: fill 0.15s ease-in-out;
 }
 
 a .octicon-trashcan:hover{
 	fill: red;
-	transition: fill 0.3s ease-in-out;
+	transition: fill 0.15s ease-in-out;
 }
 
 .dataset-plot {
@@ -43,7 +43,8 @@ a .octicon-trashcan:hover{
 	stroke-width: 3px;
 	animation: dash 2.5s linear forwards;
 	animation-iteration-count: infinite;
-
+	cursor: pointer;
+	transition: fill 0.15s ease-in-out;
 }
 
 @keyframes dash {
@@ -60,4 +61,53 @@ a .octicon-trashcan:hover{
 
 .svg-white {
 	fill: white;
+}
+
+.svg-red {
+	fill: red;
+}
+
+.button-toolbar {
+	outline: none;
+}
+
+.button-toolbar-delete:hover:enabled .svg-red {
+	fill: white;
+}
+
+.button-invisible {
+	opacity: 0;
+}
+
+.highcharts-credits {
+	display: none;
+}
+
+.dataset-tooblar-button-selected{
+	text-decoration: blink;
+}
+
+.dataset-tooblar-button{
+
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+	box-shadow: none;
+}
+
+button {
+	box-shadow: none;
+}
+
+.dataset-plotline {
+	transition: stroke 0.15s, opacity 0.15s, stroke-width 0.15s;
+	cursor: ew-resize;
+	opacity: 0.5;
+}
+
+.dataset-plotline-selected {
+	transition: stroke 0.15s, opacity 0.15s, stroke-width 0.15s;
+	cursor: ew-resize;
+	opacity: 1.0;
+	stroke-width: 3px;
 }

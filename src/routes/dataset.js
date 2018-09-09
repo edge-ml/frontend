@@ -17,9 +17,13 @@ class DatasetPage extends Component {
 	constructor(props){
 		super(props);
 		this.state = {
+			stateRef: State,
 			selectedBand: -1,
 			dataset: {},
 			chart: {
+				rangeSelector:{
+					enabled: false,
+				},
 				xAxis: {     
 					ordinal: false,
 					type: "datetime",
@@ -53,8 +57,20 @@ class DatasetPage extends Component {
 
 	labelingClickHandler(e){
 		function plotbandClickHandler(e) {
-			State.datasetPage.edit.selectedBand = this;
+			if((State.datasetPage.edit.selectedBand !== -1) && (this.id === State.datasetPage.edit.selectedBand.id)){
+				State.datasetPage.edit.selectedBand = -1;
+			}else{
+				State.datasetPage.edit.selectedBand = this;
+			}
 			State.datasetPage.updateHighlight();
+		}
+
+		function startLineClickHandler(e) {
+			console.log('startclick');
+		}
+
+		function endLineClickHandler(e) {
+			console.log('endclick');
 		}
 
 		function plotbandHoverHandler(e){
@@ -67,37 +83,71 @@ class DatasetPage extends Component {
 		}
 
 		const pos = e.point.x;
+		const bands = this.xAxis.plotLinesAndBands.filter(elem => elem.id.split('_')[0] === 'band');
+
+		const bandId = bands.length;
+
+		const initialColor = State.datasetPage.states[State.datasetPage.initialIndex].color;
+		const borderWidth = State.datasetPage.borderWidth;
 
 		if(this.firstclick){
 			this.firstPos = pos;
 			this.xAxis.addPlotLine({
-				color: 'yellow',
+				color: initialColor,
 				dashStyle: 'solid',
 				value: pos,
-				width: 2,
+				width: borderWidth,
 				zIndex: 4,
-				className: 'datasetPlotLine',
-				id: 'startline',
+				className: 'dataset-plotline',
+				id: `start_${bandId}`,
+				events: {
+					click: startLineClickHandler,
+				}
 			});
 			this.firstclick = false;
 		}else{
-			this.xAxis.removePlotLine('startline');
-			// reorder
-			State.datasetPage.reorder();
-			const bandId = this.xAxis.plotLinesAndBands.length;
+			this.xAxis.addPlotLine({
+				color: initialColor,
+				dashStyle: 'solid',
+				value: pos,
+				width: borderWidth,
+				zIndex: 4,
+				className: 'dataset-plotline',
+				id: `end_${bandId}`,
+				events: {
+					click: endLineClickHandler,
+				}
+			});
 			this.xAxis.addPlotBand({
-				color: State.datasetPage.states[State.datasetPage.initialIndex].color,
-				borderWidth: 2,
+				color: initialColor,
+				borderWidth: 0,
 				from: this.firstPos,
 				to: pos,
 				zIndex: 3,
 				className: 'datasetPlotBand',
-				id: bandId,
+				id: `band_${bandId}`,
 				events: {
 					click: plotbandClickHandler,
 				}
 			});
-			State.datasetPage.edit.selectedBand = State.datasetPage.chart.xAxis.plotLinesAndBands[bandId];
+
+			let elems  = State.datasetPage.chart.xAxis.plotLinesAndBands;
+			let band; // assign after creation, because js reference problems
+
+			band       = elems.filter(elem => elem.id === `band_${bandId}`)[0];
+			band.state = State.datasetPage.initialIndex;
+			band.lines = {
+				start: elems.filter(elem => elem.id === `start_${bandId}`)[0],
+				end:   elems.filter(elem => elem.id === `end_${bandId}`)[0],
+			};
+			State.datasetPage.edit.selectedBand = band;
+			State.datasetPage.sort();
+
+			// Trigger react render update...
+			const idd = band.id;
+			State.datasetPage.edit.selectedBand.id = 'plsupdate';
+			State.datasetPage.edit.selectedBand.id = idd;
+
 			State.datasetPage.updateHighlight();
 			this.firstclick = true;
 		}
