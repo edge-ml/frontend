@@ -34,14 +34,14 @@ class DatasetToolbar extends Component {
 		}
 
 		// store selection
-		State.datasetPage.initialIndex = state_id;
+		State.datasetPage.currentIndex = state_id;
 
 		State.datasetPage.updateHighlight();
 	}
 
 	deleteButtonHandler(e){
 		State.datasetPage.fixSelected();
-		
+
 		const band = State.datasetPage.edit.selectedBand;
 
 		for(let item of [band.lines.start.id, band.lines.end.id, band.id]){

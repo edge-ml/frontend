@@ -76,8 +76,7 @@ class DatasetPage extends Component {
 				return;
 			}
 			const line = band.lines[type];
-			switch(e.type){
-			case 'mousedown':
+			if(e.type === 'mousedown'){
 				this.moving = true;
 				
 				const {chartX} = Highcharts.charts[0].pointer.normalize(e);
@@ -89,12 +88,7 @@ class DatasetPage extends Component {
 				}
 
 				State.datasetPage.chart.panning = false;
-				break;
 			}
-		}
-
-		function plotbandHoverHandler(e){
-			console.log(this);
 		}
 
 		if(this.firstclick === undefined){
@@ -107,7 +101,7 @@ class DatasetPage extends Component {
 
 		const bandId = bands.length;
 
-		const initialColor = State.datasetPage.states[State.datasetPage.initialIndex].color;
+		const initialColor = State.datasetPage.states[State.datasetPage.currentIndex].color;
 		const borderWidth = State.datasetPage.borderWidth;
 
 		if(this.firstclick){
@@ -161,7 +155,7 @@ class DatasetPage extends Component {
 			let band; // assign after creation, because js reference problems
 
 			band       = elems.filter(elem => elem.id === `band_${bandId}`)[0];
-			band.state = State.datasetPage.initialIndex;
+			band.state = State.datasetPage.currentIndex;
 			band.lines = {
 				start: elems.filter(elem => elem.id === `start_${bandId}`)[0],
 				end:   elems.filter(elem => elem.id === `end_${bandId}`)[0],
@@ -181,7 +175,6 @@ class DatasetPage extends Component {
 	}
 
 	componentDidMount(){
-		State.datasetPage.self = this;
 		const { id } = this.props.match.params;
 		const options = {
 			method: 'GET',
@@ -214,6 +207,8 @@ class DatasetPage extends Component {
 					dataset.data.samples[i].voc.voc,
 				]);
 			}
+
+			console.log(Highcharts.charts[0]);
 
 			this.setState(update(this.state, {
 				dataset: {$set: dataset},
@@ -249,31 +244,31 @@ class DatasetPage extends Component {
 			const elems = State.datasetPage.chart.xAxis.plotLinesAndBands;
 			const band = elems.filter(elem => elem.id === `band_${id}`)[0];
 
-			switch(e.type){
-			case 'mousemove':
+			if(e.type === 'mousemove'){
 				const {chartX} = Highcharts.charts[0].pointer.normalize(e);
 				const delta = chartX - line.originX;
-				const newPos = line.svgElem.translate(delta, false);
-				const point_x = State.datasetPage.chart.xAxis.toValue(chartX, 0);
-
-				line.svgElem.attr({
-					stroke: State.datasetPage.states[band.state].color,
-					value: point_x,
-				});
+				const point_x = State.datasetPage.chart.xAxis.toValue(chartX, false);
 
 				line.options.value = point_x;
+
+				const oldLine = Object.assign({}, line);
+
+				State.datasetPage.chart.xAxis.removePlotLine(line.id);
+
+				State.datasetPage.chart.xAxis.addPlotLine(oldLine.options);
+
+				const newLine = elems.filter(elem => elem.id === `${type}_${id}`)[0];
+
+				newLine.moving = true;
 
 				const oldBand = Object.assign({}, band);
 
 				State.datasetPage.chart.xAxis.removePlotBand(band.id);
 
-				switch(type){
-				case 'start':
+				if(type === 'start'){
 					oldBand.options.from = point_x;
-					break;
-				case 'end':
+				}else{
 					oldBand.options.to = point_x;
-					break;
 				}
 
 				State.datasetPage.chart.xAxis.addPlotBand(oldBand.options);
@@ -290,8 +285,6 @@ class DatasetPage extends Component {
 					start: elems.filter(elem => elem.id === `start_${id}`)[0],
 					end:   elems.filter(elem => elem.id === `end_${id}`)[0],
 				};
-
-				break;
 			}
 		}
 
@@ -310,7 +303,7 @@ class DatasetPage extends Component {
 			return;
 		}
 
-		const [type, id] = line.id.split('_');
+		const id = line.id.split('_')[1];
 
 		const band = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id === `band_${id}`)[0];
 
@@ -321,6 +314,16 @@ class DatasetPage extends Component {
 			State.datasetPage.selectedBand = 0;
 			State.datasetPage.selectedBand = band;
 		}
+	}
+
+	componentWillUnmount(){
+		console.log('unmount');
+		State.datasetPage.chart = null;
+		State.datasetPage.edit = {
+			selectedBand: -1,
+			enabled: false,
+		};
+		State.datasetPage.currentIndex = State.datasetPage.initialIndex;
 	}
 
 	render(){

@@ -2,17 +2,14 @@ import { store } from 'react-easy-state';
 
 const datastore = store({
 	datasetPage: {
-		self: undefined,
 		chart: null,
-		handlers:{
-			move: null,
-		},
 		edit: {
 			enabled: false,
 			selectedBand: -1,
 		},
 		highlightColor: 'orange',
 		initialIndex: 0,
+		currentIndex: 0,
 		borderWidth: 2,
 		bands: [
 		],
@@ -71,7 +68,6 @@ const datastore = store({
 
 			let i=0;
 			for(let band of bands){
-				const id = band.id.split('_')[1];
 				band.id = `band_${i}`;
 				band.lines.start.id = `start_${i}`;
 				band.lines.end.id = `end_${i}`;
@@ -96,7 +92,7 @@ const datastore = store({
 		fixSelected: () => {
 			if((typeof datastore.datasetPage.edit.selectedBand.id) === 'undefined'){
 				// fix selected (WTF?)
-				const [type, id] = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.svgElem.element.className.baseVal.includes('selected'))[0].id.split('_');
+				const id = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.svgElem.element.className.baseVal.includes('selected'))[0].id.split('_')[1];
 				datastore.datasetPage.edit.selectedBand = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id === `band_${id}`)[0];
 			}
 		}
