@@ -74,24 +74,13 @@ class DatasetPage extends Component {
 		}
 
 		function lineMoveHandler(e){
-			const [type, id] = this.id.split('_');
+			const id = this.id.split('_')[1];
 			const band = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id === `band_${id}`)[0];
 			if(!band){
 				return;
 			}
-			const line = band.lines[type];
 			if(e.type === 'mousedown' && State.datasetPage.edit.unlocked){
 				this.moving = true;
-				
-				const {chartX} = Highcharts.charts[0].pointer.normalize(e);
-
-				if(line.svgElem.translateX === undefined){
-					this.originX = chartX;
-				}else{
-					this.originX = chartX - line.svgElem.translateX;
-				}
-
-				State.datasetPage.chart.panning = false;
 			}
 		}
 
@@ -212,8 +201,6 @@ class DatasetPage extends Component {
 				]);
 			}
 
-			console.log(Highcharts.charts[0]);
-
 			this.setState(update(this.state, {
 				dataset: {$set: dataset},
 				chart: {
@@ -250,7 +237,6 @@ class DatasetPage extends Component {
 
 			if(e.type === 'mousemove'){
 				const {chartX} = Highcharts.charts[0].pointer.normalize(e);
-				const delta = chartX - line.originX;
 				const point_x = State.datasetPage.chart.xAxis.toValue(chartX, false);
 
 				line.options.value = point_x;
@@ -331,6 +317,7 @@ class DatasetPage extends Component {
 			selectedBand: -1,
 			enabled: false,
 		};
+		State.datasetPage.edit.unlocked = false;
 		State.datasetPage.currentIndex = State.datasetPage.initialIndex;
 	}
 
