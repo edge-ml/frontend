@@ -94,10 +94,10 @@ const datastore = store({
 			}
 		},
 		fixSelected: () => {
-			if((typeof State.datasetPage.edit.selectedBand.id) === 'undefined'){
+			if((typeof datastore.datasetPage.edit.selectedBand.id) === 'undefined'){
 				// fix selected (WTF?)
-				const [type, id] = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.svgElem.element.className.baseVal.includes('selected'))[0].id.split('_');
-				State.datasetPage.edit.selectedBand = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id === `band_${id}`)[0];
+				const [type, id] = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.svgElem.element.className.baseVal.includes('selected'))[0].id.split('_');
+				datastore.datasetPage.edit.selectedBand = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id === `band_${id}`)[0];
 			}
 		}
 	},
