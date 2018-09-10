@@ -4,6 +4,7 @@ const datastore = store({
 	datasetPage: {
 		chart: null,
 		edit: {
+			unlocked: false,
 			enabled: false,
 			selectedBand: -1,
 		},

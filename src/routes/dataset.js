@@ -56,6 +56,10 @@ class DatasetPage extends Component {
 	}
 
 	labelingClickHandler(e){
+		if(!State.datasetPage.edit.unlocked){
+			return;
+		}
+
 		function plotbandClickHandler(e) {
 			const line = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.moving === true)[0];
 			if(line !== undefined){
@@ -76,7 +80,7 @@ class DatasetPage extends Component {
 				return;
 			}
 			const line = band.lines[type];
-			if(e.type === 'mousedown'){
+			if(e.type === 'mousedown' && State.datasetPage.edit.unlocked){
 				this.moving = true;
 				
 				const {chartX} = Highcharts.charts[0].pointer.normalize(e);
