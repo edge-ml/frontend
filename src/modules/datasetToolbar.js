@@ -29,8 +29,6 @@ class DatasetToolbar extends Component {
 
 		const band = State.datasetPage.edit.selectedBand;
 
-		console.log(band);
-
 		band.state = state_id;
 		for(let elem of[band, band.lines.start, band.lines.end]){
 			elem.svgElem.attr({

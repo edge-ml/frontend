@@ -46,7 +46,6 @@ class DatasetPage extends Component {
 						data : [],
 						events:{
 							click: this.labelingClickHandler,
-							drag: (e) => console.log(e),
 						}
 					}
 				]
@@ -322,8 +321,6 @@ class DatasetPage extends Component {
 			State.datasetPage.selectedBand = 0;
 			State.datasetPage.selectedBand = band;
 		}
-
-		console.log(State.datasetPage.selectedBand);
 	}
 
 	render(){
