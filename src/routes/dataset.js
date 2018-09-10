@@ -281,6 +281,10 @@ class DatasetPage extends Component {
 					fill: State.datasetPage.states[newBand.state].color,
 				});
 
+				newLine.svgElem.attr({
+					stroke: State.datasetPage.states[newBand.state].color,
+				});
+
 				newBand.lines = {
 					start: elems.filter(elem => elem.id === `start_${id}`)[0],
 					end:   elems.filter(elem => elem.id === `end_${id}`)[0],
