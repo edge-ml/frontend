@@ -16,17 +16,17 @@ const datastore = store({
 		],
 		states: [
 			{
-				name: 'apnea',
+				name: 'Apnea',
 				buttonColor: 'success',
 				color: '#28a745',
 			},
 			{
-				name: 'hypopnea',
+				name: 'Hypopnea',
 				buttonColor: 'info',
 				color: '#17a2b8',
 			},
 			{
-				name: 'noise',
+				name: 'Noise',
 				buttonColor: 'warning',
 				color: '#ffc107',
 			},
@@ -80,11 +80,14 @@ const datastore = store({
 			let elems   = datastore.datasetPage.chart.xAxis.plotLinesAndBands;
 
 			for(let band of elems.filter(elem => elem.id.split('_')[0] === 'band')){
+				band.svgElem.element.setAttribute('class', 'highcharts-plot-band dataset-plotband');
 				for(let line of [band.lines.start, band.lines.end]){
 					line.svgElem.element.setAttribute('class', 'highcharts-plot-line dataset-plotline');
 				}
 			}
 			if(datastore.datasetPage.edit.selectedBand !== -1){
+				selBand.svgElem.element.setAttribute('class', 'highcharts-plot-band dataset-plotband-selected');
+				console.log(selBand);
 				for(let line of [selBand.lines.start, selBand.lines.end]){
 					line.svgElem.element.setAttribute('class', 'highcharts-plot-line dataset-plotline-selected');
 				}

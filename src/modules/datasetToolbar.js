@@ -72,7 +72,7 @@ class DatasetToolbar extends Component {
 								color="light"
 								onClick={() => {State.datasetPage.edit.unlocked = true}}
 							>
-								<LockIcon/> edit
+								<LockIcon/> Edit
 							</Button>
 
 						)}

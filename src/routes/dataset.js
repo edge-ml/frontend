@@ -104,9 +104,9 @@ class DatasetPage extends Component {
 				dashStyle: 'solid',
 				value: pos,
 				width: borderWidth,
-				zIndex: 4,
 				className: 'dataset-plotline-selected',
 				id: `start_${bandId}`,
+				zIndex: 4,
 				events: {
 					mousedown: lineMoveHandler,
 					mousemove: lineMoveHandler,
@@ -121,9 +121,9 @@ class DatasetPage extends Component {
 				dashStyle: 'solid',
 				value: pos,
 				width: borderWidth,
-				zIndex: 4,
 				className: 'dataset-plotline-selected',
 				id: `end_${bandId}`,
+				zIndex: 4,
 				events: {
 					mousedown: lineMoveHandler,
 					mousemove: lineMoveHandler,
@@ -136,9 +136,9 @@ class DatasetPage extends Component {
 				borderWidth: 0,
 				from: this.firstPos,
 				to: pos,
-				zIndex: 3,
-				className: 'datasetPlotBand',
+				className: 'dataset-plotband-selected',
 				id: `band_${bandId}`,
+				zIndex: 3,
 				events: {
 					click: plotbandClickHandler,
 				}
