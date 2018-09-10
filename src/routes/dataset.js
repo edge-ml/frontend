@@ -236,8 +236,12 @@ class DatasetPage extends Component {
 			const band = elems.filter(elem => elem.id === `band_${id}`)[0];
 
 			if(e.type === 'mousemove'){
-				const {chartX} = Highcharts.charts[0].pointer.normalize(e);
-				const point_x = State.datasetPage.chart.xAxis.toValue(chartX, false);
+				e = this.normalize(e);
+
+				// use series of latest chart
+				const series = Highcharts.charts[Highcharts.charts.length -1].series;
+
+				const point_x = this.findNearestKDPoint(series, false, e).x;
 
 				line.options.value = point_x;
 
@@ -311,6 +315,7 @@ class DatasetPage extends Component {
 	}
 
 	componentWillUnmount(){
+		State.datasetPage.chart.destroy();
 		State.datasetPage.chart = null;
 		State.datasetPage.edit = {
 			selectedBand: -1,
