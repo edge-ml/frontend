@@ -87,7 +87,6 @@ const datastore = store({
 			}
 			if(datastore.datasetPage.edit.selectedBand !== -1){
 				selBand.svgElem.element.setAttribute('class', 'highcharts-plot-band dataset-plotband-selected');
-				console.log(selBand);
 				for(let line of [selBand.lines.start, selBand.lines.end]){
 					line.svgElem.element.setAttribute('class', 'highcharts-plot-line dataset-plotline-selected');
 				}

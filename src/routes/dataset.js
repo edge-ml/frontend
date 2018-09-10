@@ -315,8 +315,10 @@ class DatasetPage extends Component {
 	}
 
 	componentWillUnmount(){
-		State.datasetPage.chart.destroy();
-		State.datasetPage.chart = null;
+		if(typeof State.datasetPage.chart !== undefined && State.datasetPage.chart !== null){
+			State.datasetPage.chart.destroy();
+			State.datasetPage.chart = null;
+		}
 		State.datasetPage.edit = {
 			selectedBand: -1,
 			enabled: false,
