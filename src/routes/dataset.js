@@ -311,7 +311,6 @@ class DatasetPage extends Component {
 	}
 
 	componentWillUnmount(){
-		console.log('unmount');
 		State.datasetPage.chart = null;
 		State.datasetPage.edit = {
 			selectedBand: -1,
