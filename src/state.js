@@ -92,6 +92,13 @@ const datastore = store({
 					line.svgElem.element.setAttribute('class', 'highcharts-plot-line dataset-plotline-selected');
 				}
 			}
+		},
+		fixSelected: () => {
+			if((typeof State.datasetPage.edit.selectedBand.id) === 'undefined'){
+				// fix selected (WTF?)
+				const [type, id] = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.svgElem.element.className.baseVal.includes('selected'))[0].id.split('_');
+				State.datasetPage.edit.selectedBand = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id === `band_${id}`)[0];
+			}
 		}
 	},
 });

@@ -21,11 +21,7 @@ class DatasetToolbar extends Component {
 	}
 
 	stateButtonHandler(state_id, e){
-		if((typeof State.datasetPage.edit.selectedBand.id) === 'undefined'){
-			// fix selected (WTF?)
-			const [type, id] = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.svgElem.element.className.baseVal.includes('selected'))[0].id.split('_');
-			State.datasetPage.edit.selectedBand = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id === `band_${id}`)[0];
-		}
+		State.datasetPage.fixSelected();
 
 		const band = State.datasetPage.edit.selectedBand;
 
@@ -44,6 +40,8 @@ class DatasetToolbar extends Component {
 	}
 
 	deleteButtonHandler(e){
+		State.datasetPage.fixSelected();
+		
 		const band = State.datasetPage.edit.selectedBand;
 
 		for(let item of [band.lines.start.id, band.lines.end.id, band.id]){
