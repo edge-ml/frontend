@@ -4,6 +4,9 @@ const datastore = store({
 	datasetPage: {
 		self: undefined,
 		chart: null,
+		handlers:{
+			move: null,
+		},
 		edit: {
 			enabled: false,
 			selectedBand: -1,
@@ -71,7 +74,7 @@ const datastore = store({
 				const id = band.id.split('_')[1];
 				band.id = `band_${i}`;
 				band.lines.start.id = `start_${i}`;
-				band.lines.end.id = `start_${i}`;
+				band.lines.end.id = `end_${i}`;
 				i++;
 			}
 		},

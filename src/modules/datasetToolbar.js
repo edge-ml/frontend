@@ -20,18 +20,29 @@ class DatasetToolbar extends Component {
 	componentDidMount(){
 	}
 
-	stateButtonHandler(id, e){
+	stateButtonHandler(state_id, e){
+		if((typeof State.datasetPage.edit.selectedBand.id) === 'undefined'){
+			// fix selected (WTF?)
+			const [type, id] = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.svgElem.element.className.baseVal.includes('selected'))[0].id.split('_');
+			State.datasetPage.edit.selectedBand = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id === `band_${id}`)[0];
+		}
+
 		const band = State.datasetPage.edit.selectedBand;
-		band.state = id;
+
+		console.log(band);
+
+		band.state = state_id;
 		for(let elem of[band, band.lines.start, band.lines.end]){
 			elem.svgElem.attr({
-				fill: State.datasetPage.states[id].color,
-				stroke: State.datasetPage.states[id].color,
+				fill: State.datasetPage.states[state_id].color,
+				stroke: State.datasetPage.states[state_id].color,
 			});
 		}
 
 		// store selection
-		State.datasetPage.initialIndex = id;
+		State.datasetPage.initialIndex = state_id;
+
+		State.datasetPage.updateHighlight();
 	}
 
 	deleteButtonHandler(e){

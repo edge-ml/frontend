@@ -27,6 +27,7 @@
     "reactstrap": "^6.4.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
+    "sloc": "^0.2.0",
     "zingchart": "^2.8.0",
     "zingchart-react": "^1.0.6"
   },
@@ -37,6 +38,6 @@
     "eject": "react-scripts eject",
     "docker:build": "docker build . -t registry.aura.rest/explorer",
     "docker:push": "docker push registry.aura.rest/explorer",
-    "docker:deploy" : "docker build . -t registry.aura.rest/explorer && docker push registry.aura.rest/explorer"
+    "docker:deploy": "docker build . -t registry.aura.rest/explorer && docker push registry.aura.rest/explorer"
   }
 }
