@@ -173,8 +173,8 @@ class ListPage extends Component {
 								delete {this.state.modalID}?
 							</ModalBody>
 							<ModalFooter>
-								<Button color="danger" onClick={this.modalDeleteHandler}>Yes</Button>{' '}
-								<Button color="secondary" onClick={this.toggleModal}>No</Button>
+								<Button outline color="danger" onClick={this.modalDeleteHandler}>Yes</Button>{' '}
+								<Button outline color="secondary" onClick={this.toggleModal}>No</Button>
 							</ModalFooter>
 						</Modal>
 					</Row>
