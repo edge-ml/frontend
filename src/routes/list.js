@@ -46,7 +46,6 @@ class ListPage extends Component {
 						<ButtonGroup className="list-buttongroup">
 							<Button
 								outline
-								size="sm"
 								className="button-toolbar-delete"
 								color="danger"
 								onClick={(e) => {
@@ -58,7 +57,6 @@ class ListPage extends Component {
 							</Button>
 							<Button
 								outline
-								size="sm"
 								className="button-toolbar-delete"
 								color="info"
 								id={`button-view-${row.id}`}
@@ -70,9 +68,9 @@ class ListPage extends Component {
 								<BookIcon className="svg-teal"/> View
 							</Button>
 							<UncontrolledTooltip
-								delay={{show: 200, hide: 0}}
+								delay={{show: 200, hide: 200}}
 								className="list-tooltip"
-								placement="top"
+								placement="right"
 								autohide={false}
 								target={`button-view-${row.id}`}
 							>
