@@ -12,6 +12,7 @@ const datastore = store({
 		initialIndex: 0,
 		currentIndex: 0,
 		borderWidth: 2,
+		defaultRange: 120,
 		bands: [
 		],
 		states: [

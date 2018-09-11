@@ -24,7 +24,7 @@ class DatasetPage extends Component {
 				rangeSelector:{
 					enabled: false,
 				},
-				xAxis: {     
+				xAxis: {
 					ordinal: false,
 					type: "datetime",
 					dateTimeLabelFormats: {
@@ -204,6 +204,11 @@ class DatasetPage extends Component {
 				]);
 			}
 
+			const mindate = new Date(dataset.startTime);
+			const maxdate = new Date(dataset.startTime);
+
+			maxdate.setSeconds(maxdate.getSeconds() + State.datasetPage.defaultRange);
+
 			this.setState(update(this.state, {
 				dataset: {$set: dataset},
 				chart: {
@@ -211,11 +216,17 @@ class DatasetPage extends Component {
 					title: {
 						text: {$set: this.state.dataset.id},
 					},
+					xAxis: {
+						min: {$set: mindate.getTime()},
+						max: {$set: maxdate.getTime()},
+					},
 					series: [{
 						data: {$set: values},
 					}]
 				}
 			}));
+
+			//Highcharts.charts[Highcharts.charts.length -1].update();
 
 		}).catch((err) => {
 			console.error(err);
