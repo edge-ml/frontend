@@ -12,6 +12,7 @@ import HighchartsReact from 'highcharts-react-official';
 import State from '../state';
 import Loader from '../modules/loader';
 import DatasetToolbar from '../modules/datasetToolbar';
+import SaveToolbar from '../modules/datasetSave';
 
 class DatasetPage extends Component {
 	constructor(props){
@@ -83,6 +84,7 @@ class DatasetPage extends Component {
 				return;
 			}
 			if(e.type === 'mousedown' && State.datasetPage.edit.unlocked){
+				State.datasetPage.fixSelected();
 				this.moving = true;
 			}
 		}
@@ -241,6 +243,8 @@ class DatasetPage extends Component {
 			const line = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.moving === true)[0];
 
 			if(!line){
+				State.datasetPage.fixSelected();
+				State.datasetPage.updateHighlight();
 				original.apply(this, Array.prototype.slice.call(arguments, 1));
 				return;
 			}
@@ -248,6 +252,10 @@ class DatasetPage extends Component {
 			const [type, id] = line.id.split('_');
 			const elems = State.datasetPage.chart.xAxis.plotLinesAndBands;
 			const band = elems.filter(elem => elem.id === `band_${id}`)[0];
+
+			if(typeof band !== 'undefined'){
+				State.datasetPage.fixSelected();
+			}
 
 			if(e.type === 'mousemove'){
 				e = this.normalize(e);
@@ -358,6 +366,7 @@ class DatasetPage extends Component {
 						/>
 					</Col>
 				</Row>
+				<SaveToolbar/>
 			</Loader>
 		)
 	}

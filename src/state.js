@@ -8,6 +8,11 @@ const datastore = store({
 			enabled: false,
 			selectedBand: -1,
 		},
+		saveToolbar:{
+			disabled: false,
+			saved: false,
+			saving: false,
+		},
 		highlightColor: 'orange',
 		initialIndex: 0,
 		currentIndex: 0,
@@ -94,10 +99,23 @@ const datastore = store({
 			}
 		},
 		fixSelected: () => {
-			if((typeof datastore.datasetPage.edit.selectedBand.id) === 'undefined'){
+			const bands = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id.split('_')[0] === `band`);
+			if((typeof datastore.datasetPage.edit.selectedBand.id) === 'undefined' && bands.length > 0){
 				// fix selected (WTF?)
-				const id = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.svgElem.element.className.baseVal.includes('selected'))[0].id.split('_')[1];
-				datastore.datasetPage.edit.selectedBand = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id === `band_${id}`)[0];
+				try{
+					const id = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.svgElem.element.className.baseVal.includes('selected'))[0].id.split('_')[1];
+					datastore.datasetPage.edit.selectedBand = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id === `band_${id}`)[0];
+				}catch(e){
+					// do nothing
+				}
+			}
+		},
+		anyBands: () => {
+			try{
+				const bands = datastore.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id.split('_')[0] === `band`);
+				return (bands.length > 0);
+			}catch(e){
+				return false;
 			}
 		}
 	},

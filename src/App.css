@@ -31,6 +31,14 @@ button {
 	transition: fill 0.15s ease-in-out;
 }
 
+.octicon-clippy{
+	transition: fill 0.15s ease-in-out;
+}
+
+.octicon-check{
+	transition: fill 0.15s ease-in-out;
+}
+
 a .octicon-trashcan:hover{
 	fill: red;
 	transition: fill 0.15s ease-in-out;
@@ -76,8 +84,16 @@ a .octicon-trashcan:hover{
 	fill: red;
 }
 
+.svg-green {
+	fill: #28a745;
+}
+
 .svg-teal {
 	fill: #17a2b8;
+}
+
+.svg-mirrored {
+	transform: scale(-1,1);
 }
 
 .button-toolbar {
@@ -89,6 +105,10 @@ a .octicon-trashcan:hover{
 }
 
 .list-buttongroup button:hover:enabled .svg-teal {
+	fill: white;
+}
+
+.save-buttongroup button:hover:enabled .svg-green {
 	fill: white;
 }
 
@@ -126,8 +146,8 @@ button {
 	z-index: 10;
 	transition: stroke 0.15s, opacity 0.15s, stroke-width 0.15s;
 	cursor: ew-resize;
-	opacity: 1.0;
-	stroke-width: 3px;
+	opacity: 0.75;
+	stroke-width: 5px;
 }
 
 .list-buttongroup {
@@ -145,4 +165,8 @@ button {
 
 .tooltip-inner {
 	font-size: 12px;
+}
+
+.save-button {
+	transition: all 0.15s;
 }
