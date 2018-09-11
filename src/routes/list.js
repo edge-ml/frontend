@@ -8,7 +8,7 @@ import {
 import Request from 'request-promise';
 import update from 'immutability-helper';
 import BootstrapTable from 'react-bootstrap-table-next';
-import { TrashcanIcon } from 'react-octicons';
+import { TrashcanIcon, BookIcon } from 'react-octicons';
 
 import Loader from '../modules/loader';
 
@@ -41,23 +41,12 @@ class ListPage extends Component {
 				},
 				{
 					dataField: 'id',
-					text: 'Document ID',
+					text: 'Action',
 					formatter: (cell, row) => (
 						<ButtonGroup className="list-buttongroup">
 							<Button
 								outline
-								className="button-toolbar-delete"
-								color="info"
-								id={`button-view-${row.id}`}
-								onClick={(e) => {
-									this.props.history.push(`dataset/${row.id}`)
-									e.preventDefault();
-								}}
-							>
-								View
-							</Button>
-							<Button
-								outline
+								size="sm"
 								className="button-toolbar-delete"
 								color="danger"
 								onClick={(e) => {
@@ -67,10 +56,23 @@ class ListPage extends Component {
 							>
 								<TrashcanIcon className="svg-red"/> Delete
 							</Button>
+							<Button
+								outline
+								size="sm"
+								className="button-toolbar-delete"
+								color="info"
+								id={`button-view-${row.id}`}
+								onClick={(e) => {
+									this.props.history.push(`dataset/${row.id}`)
+									e.preventDefault();
+								}}
+							>
+								<BookIcon className="svg-teal"/> View
+							</Button>
 							<UncontrolledTooltip
-								delay={{show: 200, hide: 200}}
+								delay={{show: 200, hide: 0}}
 								className="list-tooltip"
-								placement="left"
+								placement="top"
 								autohide={false}
 								target={`button-view-${row.id}`}
 							>

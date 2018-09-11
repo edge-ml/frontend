@@ -27,6 +27,10 @@ button {
 	transition: fill 0.15s ease-in-out;
 }
 
+.octicon-book{
+	transition: fill 0.15s ease-in-out;
+}
+
 a .octicon-trashcan:hover{
 	fill: red;
 	transition: fill 0.15s ease-in-out;
@@ -72,11 +76,19 @@ a .octicon-trashcan:hover{
 	fill: red;
 }
 
+.svg-teal {
+	fill: #17a2b8;
+}
+
 .button-toolbar {
 	outline: none;
 }
 
 .button-toolbar-delete:hover:enabled .svg-red {
+	fill: white;
+}
+
+.list-buttongroup button:hover:enabled .svg-teal {
 	fill: white;
 }
 
@@ -120,12 +132,12 @@ button {
 }
 
 .list-buttongroup {
-	height: 22px;
+	height: 20px;
 }
 
 .list-buttongroup button {
-	margin-top: -7px;
-	margin-bottom: -7px;
+	margin-top: -6px;
+	margin-bottom: -6px;
 }
 
 .list-tooltip {
