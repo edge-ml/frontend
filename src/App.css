@@ -119,7 +119,6 @@ button {
 .dataset-plotline {
 	z-index: 9;
 	transition: stroke 0.15s, opacity 0.15s, stroke-width 0.15s;
-	cursor: ew-resize;
 	opacity: 0.5;
 }
 

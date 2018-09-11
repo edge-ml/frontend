@@ -79,6 +79,9 @@ class DatasetPage extends Component {
 			if(!band){
 				return;
 			}
+			if(!(band.id === State.datasetPage.edit.selectedBand.id)){
+				return;
+			}
 			if(e.type === 'mousedown' && State.datasetPage.edit.unlocked){
 				this.moving = true;
 			}
