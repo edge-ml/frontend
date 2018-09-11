@@ -118,3 +118,20 @@ button {
 	opacity: 1.0;
 	stroke-width: 3px;
 }
+
+.list-buttongroup {
+	height: 22px;
+}
+
+.list-buttongroup button {
+	margin-top: -7px;
+	margin-bottom: -7px;
+}
+
+.list-tooltip {
+	opacity: 0.5;
+}
+
+.tooltip-inner {
+	font-size: 12px;
+}

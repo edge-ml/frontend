@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {
 	Col, Row,
-	Button,
+	Button, ButtonGroup,
+	UncontrolledTooltip,
 	Modal, ModalHeader, ModalBody, ModalFooter,
 } from 'reactstrap';
 import Request from 'request-promise';
@@ -42,17 +43,40 @@ class ListPage extends Component {
 					dataField: 'id',
 					text: 'Document ID',
 					formatter: (cell, row) => (
-						<div>
-							<a href="" onClick={(e) => {
-								this.deleteHandler(row.id)
-								e.preventDefault();
-							}}><TrashcanIcon /></a>
-							{'  '}
-							<a href="" onClick={(e) => {
-								this.props.history.push(`dataset/${row.id}`)
-								e.preventDefault();
-							}}>{cell}</a>
-						</div>
+						<ButtonGroup className="list-buttongroup">
+							<Button
+								outline
+								className="button-toolbar-delete"
+								color="info"
+								id={`button-view-${row.id}`}
+								onClick={(e) => {
+									this.props.history.push(`dataset/${row.id}`)
+									e.preventDefault();
+								}}
+							>
+								View
+							</Button>
+							<Button
+								outline
+								className="button-toolbar-delete"
+								color="danger"
+								onClick={(e) => {
+									this.deleteHandler(row.id)
+									e.preventDefault();
+								}}
+							>
+								<TrashcanIcon className="svg-red"/> Delete
+							</Button>
+							<UncontrolledTooltip
+								delay={{show: 200, hide: 200}}
+								className="list-tooltip"
+								placement="left"
+								autohide={false}
+								target={`button-view-${row.id}`}
+							>
+								{cell}
+							</UncontrolledTooltip>
+						</ButtonGroup>
 					),
 				}
 			],
@@ -131,6 +155,7 @@ class ListPage extends Component {
 		return (
 			<Loader loading={!this.state.ready}>
 				<Col>
+					<br/>
 					<Row>
 						<BootstrapTable
 							className="ListTable"
