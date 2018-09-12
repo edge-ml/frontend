@@ -366,7 +366,7 @@ class DatasetPage extends Component {
 						/>
 					</Col>
 				</Row>
-				<SaveToolbar/>
+				<SaveToolbar datasetID={this.props.match.params.id}/>
 			</Loader>
 		)
 	}

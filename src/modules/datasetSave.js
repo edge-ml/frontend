@@ -5,6 +5,7 @@ import {
 } from 'reactstrap';
 import { view } from 'react-easy-state';
 import { ClippyIcon, CheckIcon } from 'react-octicons';
+import Request from 'request-promise';
 
 import State from '../state';
 
@@ -15,8 +16,6 @@ class DatasetSaver extends Component {
 	}
 
 	saveHandler(e){
-		State.datasetPage.saveToolbar.saving = true;
-
 		// serialize
 		const bands = State.datasetPage.chart.xAxis.plotLinesAndBands.filter(elem => elem.id.split('_')[0] === `band`);
 
@@ -24,12 +23,12 @@ class DatasetSaver extends Component {
 			return;
 		}
 
+		State.datasetPage.saveToolbar.saving = true;
+		State.datasetPage.saveToolbar.disabled = true;
+
 		const res = [];
 
 		for(let band of bands){
-
-			State.datasetPage.saveToolbar.disabled = true;
-
 			const elem = {
 				from: band.options.from,
 				to: band.options.to,
@@ -44,19 +43,29 @@ class DatasetSaver extends Component {
 			res.push(elem);
 		}
 
-		//console.log(JSON.stringify(res));
+		const options = {
+			method: 'POST',
+			url: `${State.edge}/dataset/${this.props.datasetID}/annotate`,
+			headers: {
+				Authorization: `Bearer ${window.localStorage.getItem('id_token')}`,
+			},
+			body: res,
+			json: true,
+		};
 
-		State.datasetPage.saveToolbar.saved = true;
+		Request(options).then(() => {
+			State.datasetPage.saveToolbar.saved = true;
 
-		setTimeout(() => {
-			State.datasetPage.saveToolbar = {
-				saving: false,
-				saved: false,
-				disabled: false,
-			};
-		}, 2500);
-
-		// TODO: Submit
+			setTimeout(() => {
+				State.datasetPage.saveToolbar = {
+					saving: false,
+					saved: false,
+					disabled: false,
+				};
+			}, 2500);
+		}).catch((e) => {
+			console.error(e);
+		});
 	}
 
 	componentDidMount(){
