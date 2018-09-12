@@ -1,6 +1,8 @@
 import { store } from 'react-easy-state';
 
 const datastore = store({
+	edge: 'https://edge.aura.rest',
+	auth0: 'https://aura-sleep-analysis.eu.auth0.com',
 	datasetPage: {
 		chart: null,
 		edit: {

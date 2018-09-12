@@ -5,12 +5,12 @@ import {
 	InputGroup, InputGroupAddon, InputGroupText,
 	Button,
 } from 'reactstrap';
-
 import { PersonIcon, ShieldIcon } from 'react-octicons';
-
+import { view } from 'react-easy-state';
 import Request from 'request-promise';
-
 import update from 'immutability-helper';
+
+import State from '../state';
 
 class LoginPage extends Component {
 	constructor(props){
@@ -58,7 +58,7 @@ class LoginPage extends Component {
 		
 		const options = {
 			method: 'POST',
-			url: 'https://aura-sleep-analysis.eu.auth0.com/oauth/token',
+			url: `${State.auth0}/oauth/token`,
 			form: {
 				grant_type: 'password',
 				client_id: '4uE1DwK5BtnyInN14LO0Lb42NXtr5MHC',
@@ -81,12 +81,12 @@ class LoginPage extends Component {
 		});
 	}
 
-	componentWillMount(){
+	componentDidMount(){
 		// check if token exsists
 		if(window.localStorage.getItem('id_token')){
 			const options = {
 				method: 'GET',
-				url: 'https://edge.aura.rest/authed',
+				url: `${State.edge}/authed`,
 				headers: {
 					Authorization: `Bearer ${window.localStorage.getItem('id_token')}`,
 				}
@@ -157,4 +157,4 @@ class LoginPage extends Component {
 	}
 }
 
-export default LoginPage;
+export default view(LoginPage);

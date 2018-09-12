@@ -9,6 +9,9 @@ import Request from 'request-promise';
 import update from 'immutability-helper';
 import BootstrapTable from 'react-bootstrap-table-next';
 import { TrashcanIcon, BookIcon } from 'react-octicons';
+import { view } from 'react-easy-state';
+
+import State from '../state';
 
 import Loader from '../modules/loader';
 
@@ -106,7 +109,7 @@ class ListPage extends Component {
 
 		const options = {
 			method: 'DELETE',
-			url: `https://edge.aura.rest/dataset/${this.state.modalID}`,
+			url: `${State.edge}/dataset/${this.state.modalID}`,
 			headers: {
 				Authorization: `Bearer ${window.localStorage.getItem('id_token')}`
 			},
@@ -131,7 +134,7 @@ class ListPage extends Component {
 	componentDidMount(){
 		const options = {
 			method: 'GET',
-			url: 'https://edge.aura.rest/dataset',
+			url: `${State.edge}/dataset`,
 			headers: {
 				Authorization: `Bearer ${window.localStorage.getItem('id_token')}`
 			},
@@ -184,4 +187,4 @@ class ListPage extends Component {
 	}
 }
 
-export default ListPage;
+export default view(ListPage);
