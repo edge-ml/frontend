@@ -146,7 +146,10 @@ class DatasetPage extends Component {
 				zIndex: 3,
 				events: {
 					click: plotbandClickHandler,
-				}
+				},
+				label: {
+					text: bandId,
+				},
 			});
 
 			let elems  = State.datasetPage.chart.xAxis.plotLinesAndBands;
@@ -194,7 +197,11 @@ class DatasetPage extends Component {
 			const dataset = proto.DatasetGetResponse.decode(res);
 			dataset.data = proto.SensorDataset_t.decode(dataset.data);
 
+			console.log(dataset);
+
 			const values = [];
+
+			const val2 = [];
 
 			let DeltaCounter = 0;
 
@@ -204,6 +211,8 @@ class DatasetPage extends Component {
 					dataset.startTime + DeltaCounter,
 					dataset.data.samples[i].voc.voc,
 				]);
+
+				val2.push(dataset.data.samples[i].voc.voc);
 			}
 
 			const mindate = new Date(dataset.startTime);
@@ -227,6 +236,16 @@ class DatasetPage extends Component {
 					}]
 				}
 			}));
+
+			const json_out = JSON.stringify({
+				interval: 144,
+				samples: dataset.data.samples.length,
+				source: 'edge.aura.rest',
+				dataset_id: id,
+				data: val2,
+			});
+
+			// maybe add douwnload capability
 
 			//Highcharts.charts[Highcharts.charts.length -1].update();
 
