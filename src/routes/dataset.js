@@ -245,6 +245,8 @@ class DatasetPage extends Component {
 				data: val2,
 			});
 
+			console.log(json_out);
+
 			// maybe add douwnload capability
 
 			//Highcharts.charts[Highcharts.charts.length -1].update();
