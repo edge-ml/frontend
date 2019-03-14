@@ -78,8 +78,11 @@ const datastore = store({
 			let i=0;
 			for(let band of bands){
 				band.id = `band_${i}`;
+				console.log(band);
+				band.label.textStr = i;
 				band.lines.start.id = `start_${i}`;
 				band.lines.end.id = `end_${i}`;
+				band.render();
 				i++;
 			}
 		},

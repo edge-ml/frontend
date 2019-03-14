@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-	Col, Row,
+	Col, Row, Button,
 } from 'reactstrap';
 import Request from 'request-promise';
 import update from 'immutability-helper';
@@ -8,6 +8,8 @@ import { load } from 'protobufjs';
 import { view } from 'react-easy-state';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
+
+import { CloudDownloadIcon } from 'react-octicons';
 
 import State from '../state';
 import Loader from '../modules/loader';
@@ -54,6 +56,49 @@ class DatasetPage extends Component {
 		};
 		this.labelingClickHandler = this.labelingClickHandler.bind(this);
 		this.mouseUpHandler = this.mouseUpHandler.bind(this);
+		this.gencsv = this.gencsv.bind(this);
+	}
+
+	gencsv(){
+		/*const json_out = JSON.stringify({
+			interval: 144,
+			samples: dataset.data.samples.length,
+			source: 'edge.aura.rest',
+			dataset_id: id,
+			data: val2,
+		});
+
+		console.log(json_out);*/
+
+		const dataset = this.state.dataset;
+
+		const values = [];
+
+		let DeltaCounter = 0;
+
+		for(let i=0; i < dataset.data.samples.length; i++){
+			DeltaCounter += dataset.data.samples[i].delta;
+			values.push([
+				dataset.startTime + DeltaCounter,
+				dataset.data.samples[i].voc.voc,
+			]);
+		}
+
+		let csv_out = "timestamp, data";
+		csv_out += "\r\n";
+
+		for(const value of values){
+			csv_out += `${value[0]}, ${value[1]}\r\n`;
+		}
+
+		const { id } = this.props.match.params;
+
+		const element = document.createElement("a");
+		const file = new Blob([csv_out], {type: 'text/plain'});
+		element.href = URL.createObjectURL(file);
+		element.download = `AURA_${id}.csv`;
+		document.body.appendChild(element);
+		element.click();
 	}
 
 	labelingClickHandler(e){
@@ -237,18 +282,6 @@ class DatasetPage extends Component {
 				}
 			}));
 
-			const json_out = JSON.stringify({
-				interval: 144,
-				samples: dataset.data.samples.length,
-				source: 'edge.aura.rest',
-				dataset_id: id,
-				data: val2,
-			});
-
-			console.log(json_out);
-
-			// maybe add douwnload capability
-
 			//Highcharts.charts[Highcharts.charts.length -1].update();
 
 		}).catch((err) => {
@@ -388,6 +421,13 @@ class DatasetPage extends Component {
 					</Col>
 				</Row>
 				<SaveToolbar datasetID={this.props.match.params.id}/>
+				<Button
+					outline
+					color="success"
+					onClick={this.gencsv}
+				>
+					<a><CloudDownloadIcon className="svg-green"/> Download CSV</a>
+				</Button>
 			</Loader>
 		)
 	}
