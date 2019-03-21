@@ -1,173 +1,176 @@
-.login{
-	text-align: center;
-	background-color: #eee;
-	border-radius: 25px;
-	padding: 30px;
-	margin: auto;
-	margin-top: 10%;
-	width: 40%;
-	height: 40%;
+.login {
+  text-align: center;
+  background-color: #eee;
+  border-radius: 25px;
+  padding: 30px;
+  margin: auto;
+  margin-top: 10%;
+  width: 40%;
+  height: 40%;
 }
 
-.input-group{
-	margin-bottom: 10px;
-	margin-top: 10px;
-	border-radius: 0px;
-}
-
-.input-group-text {
-	width: 40px;
+.input-group {
+  margin-bottom: 10px;
+  margin-top: 10px;
+  border-radius: 0px;
 }
 
 button {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
-.octicon-trashcan{
-	transition: fill 0.15s ease-in-out;
+.octicon-trashcan {
+  transition: fill 0.15s ease-in-out;
 }
 
-.octicon-book{
-	transition: fill 0.15s ease-in-out;
+.octicon-book {
+  transition: fill 0.15s ease-in-out;
 }
 
-.octicon-clippy{
-	transition: fill 0.15s ease-in-out;
+.octicon-clippy {
+  transition: fill 0.15s ease-in-out;
 }
 
-.octicon-check{
-	transition: fill 0.15s ease-in-out;
+.octicon-check {
+  transition: fill 0.15s ease-in-out;
 }
 
-a .octicon-trashcan:hover{
-	fill: red;
-	transition: fill 0.15s ease-in-out;
+a .octicon-trashcan:hover {
+  fill: red;
+  transition: fill 0.15s ease-in-out;
 }
 
 .dataset-plot {
-	height: 100%;
+  height: 100%;
 }
 
 .dataset-plotband {
-	z-index: 9;
-	opacity: 0.8;
-	fill-opacity: 0.3;
-	cursor: pointer;
-	transition: fill 0.15s, opacity 0.15s;
+  z-index: 9;
+  opacity: 0.8;
+  fill-opacity: 0.3;
+  cursor: pointer;
+  transition: fill 0.15s, opacity 0.15s;
 }
 
 .dataset-plotband-selected {
-	z-index: 10;
-	opacity: 0.8;
-	fill-opacity: 0.4;
-	cursor: pointer;
-	transition: fill 0.15s, opacity 0.15s;
+  z-index: 10;
+  opacity: 0.8;
+  fill-opacity: 0.4;
+  cursor: pointer;
+  transition: fill 0.15s, opacity 0.15s;
 }
 
 @keyframes dash {
-	to {
-		stroke-dashoffset: 100;
-	}
+  to {
+    stroke-dashoffset: 100;
+  }
 }
 
-.loader{
-	display: block;
-	margin: 0 auto;
-	border-color: red;
+.loader {
+  display: block;
+  margin: 0 auto;
+  border-color: red;
 }
 
 .svg-white {
-	fill: white;
+  fill: white;
 }
 
 .svg-red {
-	fill: red;
+  fill: red;
 }
 
 .svg-green {
-	fill: #28a745;
+  fill: #28a745;
 }
 
 .svg-teal {
-	fill: #17a2b8;
+  fill: #17a2b8;
 }
 
 .svg-mirrored {
-	transform: scale(-1,1);
+  transform: scale(-1, 1);
 }
 
 .button-toolbar {
-	outline: none;
+  outline: none;
 }
 
 .button-toolbar-delete:hover:enabled .svg-red {
-	fill: white;
+  fill: white;
 }
 
 .list-buttongroup button:hover:enabled .svg-teal {
-	fill: white;
+  fill: white;
 }
 
 .save-buttongroup button:hover:enabled .svg-green {
-	fill: white;
+  fill: white;
 }
 
 .button-invisible {
-	opacity: 0;
+  opacity: 0;
 }
 
 .highcharts-credits {
-	display: none;
+  display: none;
 }
 
-.dataset-tooblar-button-selected{
-	text-decoration: blink;
+.dataset-tooblar-button-selected {
+  text-decoration: blink;
 }
 
-.dataset-tooblar-button{
-
+.dataset-tooblar-button {
 }
 
-.btn:focus, .btn:active:focus, .btn.active:focus {
-	box-shadow: none;
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus {
+  box-shadow: none;
 }
 
 button {
-	box-shadow: none;
+  box-shadow: none;
 }
 
 .dataset-plotline {
-	z-index: 9;
-	transition: stroke 0.15s, opacity 0.15s, stroke-width 0.15s;
-	opacity: 0.5;
+  z-index: 9;
+  transition: stroke 0.15s, opacity 0.15s, stroke-width 0.15s;
+  opacity: 0.5;
 }
 
 .dataset-plotline-selected {
-	z-index: 10;
-	transition: stroke 0.15s, opacity 0.15s, stroke-width 0.15s;
-	cursor: ew-resize;
-	opacity: 0.75;
-	stroke-width: 5px;
+  z-index: 10;
+  transition: stroke 0.15s, opacity 0.15s, stroke-width 0.15s;
+  cursor: ew-resize;
+  opacity: 0.75;
+  stroke-width: 5px;
 }
 
 .list-buttongroup {
-	height: 24px;
-	display: flex;
+  height: 24px;
+  display: flex;
 }
 
 .list-buttongroup button {
-	margin-top: -7px;
-	margin-bottom: -7px;
+  margin-top: -7px;
+  margin-bottom: -7px;
 }
 
 .list-tooltip {
-	opacity: 0.5;
+  opacity: 0.5;
 }
 
 .tooltip-inner {
-	font-size: 12px;
+  font-size: 12px;
 }
 
 .save-button {
-	transition: all 0.15s;
+  transition: all 0.15s;
+}
+
+div.card {
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+  text-align: center;
+  padding: 15px;
 }
