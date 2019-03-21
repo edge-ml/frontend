@@ -152,6 +152,7 @@ button {
 
 .list-buttongroup {
 	height: 24px;
+	display: flex;
 }
 
 .list-buttongroup button {

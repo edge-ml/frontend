@@ -12,7 +12,6 @@ import { TrashcanIcon, BookIcon } from 'react-octicons';
 import { view } from 'react-easy-state';
 
 import State from '../state';
-
 import Loader from '../modules/loader';
 
 class ListPage extends Component {
