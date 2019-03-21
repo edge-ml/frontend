@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row, Button } from 'reactstrap';
+import { Col, Row, Button, Fade } from 'reactstrap';
 import Request from 'request-promise';
 import update from 'immutability-helper';
 import { load } from 'protobufjs';
@@ -16,6 +16,8 @@ import SaveToolbar from '../modules/datasetSave';
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
 import TagsPanel from '../components/TagsPanel/TagsPanel';
 import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
+import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
+import InteractionControlPanel from '../components/InteractionControlPanel/InteractionControlPanel';
 
 class DatasetPage extends Component {
   constructor(props) {
@@ -452,18 +454,27 @@ class DatasetPage extends Component {
             />
           </Col>
           <Col xs={3}>
-            <div />
-            <LabelingPanel
-              from={1}
-              to={2}
-              labelTypes={['Apnea', 'Hypopnea', 'Noise']}
-            />
-            <div className="mt-3">
-              <TagsPanel tags={['Alcohol', 'Medication']} />
-            </div>
-            <div className="mt-3">
-              <ManagementPanel />
-            </div>
+            <Fade in={this.state.fadeIn}>
+              <div>
+                <InteractionControlPanel />
+              </div>
+              <div className="mt-3">
+                <LabelingPanel
+                  from={1}
+                  to={2}
+                  labelTypes={['Apnea', 'Hypopnea', 'Noise']}
+                />
+              </div>
+              <div className="mt-3">
+                <TagsPanel tags={['Alcohol', 'Medication']} />
+              </div>
+              <div className="mt-3">
+                <MetadataPanel />
+              </div>
+              <div className="mt-3">
+                <ManagementPanel />
+              </div>
+            </Fade>
           </Col>
         </Row>
         <SaveToolbar datasetID={this.props.match.params.id} />

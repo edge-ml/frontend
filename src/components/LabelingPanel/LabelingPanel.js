@@ -29,7 +29,7 @@ class LabelingPanel extends Component {
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText className="timeInputGroupText">
-                  Id:
+                  Id
                 </InputGroupText>
               </InputGroupAddon>
               <Input />
@@ -39,7 +39,7 @@ class LabelingPanel extends Component {
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText className="timeInputGroupText">
-                  From:
+                  From
                 </InputGroupText>
               </InputGroupAddon>
               <Input
@@ -66,7 +66,7 @@ class LabelingPanel extends Component {
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText className="timeInputGroupText">
-                  To:
+                  To
                 </InputGroupText>
               </InputGroupAddon>
               <Input
@@ -92,18 +92,13 @@ class LabelingPanel extends Component {
           <hr />
           <div>
             {this.state.labelTypes.map(i => (
-              <Button
-                className="typeSelectionButton"
-                outline
-                block
-                color="success"
-              >
+              <Button className="typeSelectionButton btn-light" block>
                 {i}
               </Button>
             ))}
           </div>
           <hr />
-          <Button block color="danger">
+          <Button block outline color="danger">
             Delete
           </Button>
         </div>
