@@ -13,7 +13,9 @@ import State from '../state';
 import Loader from '../modules/loader';
 import DatasetToolbar from '../modules/datasetToolbar';
 import SaveToolbar from '../modules/datasetSave';
-import SelectionPanel from '../components/SelectionPanel/SelectionPanel';
+import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
+import TagsPanel from '../components/TagsPanel/TagsPanel';
+import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
 
 class DatasetPage extends Component {
   constructor(props) {
@@ -449,12 +451,19 @@ class DatasetPage extends Component {
               options={this.state.chart}
             />
           </Col>
-          <Col xs={4}>
-            <SelectionPanel
+          <Col xs={3}>
+            <div />
+            <LabelingPanel
               from={1}
               to={2}
               labelTypes={['Apnea', 'Hypopnea', 'Noise']}
             />
+            <div className="mt-3">
+              <TagsPanel tags={['Alcohol', 'Medication']} />
+            </div>
+            <div className="mt-3">
+              <ManagementPanel />
+            </div>
           </Col>
         </Row>
         <SaveToolbar datasetID={this.props.match.params.id} />
