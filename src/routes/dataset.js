@@ -26,9 +26,10 @@ class DatasetPage extends Component {
     const dataset = {
       id: '0x1234',
       userId: '0x9321',
+      email: 'test@test.de',
       start: Date.now(),
       end: Date.now(),
-      tags: ['Alcohol', 'Medication'],
+      tags: ['Alcohol', 'Medication', 'Test', 'ABC'],
       isPublished: false,
       timeSeries: [],
       labels: []
@@ -61,22 +62,22 @@ class DatasetPage extends Component {
         name: 'Sleep Stages',
         types: [
           {
-            id: '0x1482',
+            id: '0x14812',
             name: 'Awake',
             color: '#FFEB3B'
           },
           {
-            id: '0x1483',
+            id: '0x1483123',
             name: 'Light',
             color: '#4CAF50'
           },
           {
-            id: '0x1485',
+            id: '0x148571235',
             name: 'Deep',
             color: '#00BCD4'
           },
           {
-            id: '0x1485',
+            id: '0x17865485',
             name: 'REM',
             color: '#AB61CD'
           }
@@ -89,7 +90,8 @@ class DatasetPage extends Component {
       dataset: dataset, //props.dataset
       labelings: labelings,
       controlStates: {
-        selectedLabelingId: undefined,
+        selectedLabelId: undefined,
+        selectedLabelingId: labelings[0].id,
         selectedLabelTypeId: undefined
       }
     };
@@ -114,12 +116,17 @@ class DatasetPage extends Component {
   onSelectedLabelTypeIdChanged(selectedLabelTypeId) {
     this.setState({
       controlStates: {
+        selectedLabelingId: this.state.controlStates.selectedLabelingId,
         selectedLabelTypeId: selectedLabelTypeId
       }
     });
   }
 
   render() {
+    var selectedLabeling = this.state.labelings.filter(
+      labeling => labeling.id === this.state.controlStates.selectedLabelingId
+    )[0];
+
     return (
       <div>
         <Row className="pt-3">
@@ -139,17 +146,28 @@ class DatasetPage extends Component {
               </div>
               <div className="mt-3">
                 <LabelingPanel
-                  id={'0x123'}
+                  id={this.state.controlStates.selectedLabelId}
                   from={Date.now()}
                   to={2}
-                  labelings={this.state.labelings[0].types}
+                  labelTypes={selectedLabeling.types}
+                  selectedLabelTypeId={
+                    this.state.controlStates.selectedLabelTypeId
+                  }
+                  onSelectedLabelTypeIdChanged={
+                    this.onSelectedLabelTypeIdChanged
+                  }
                 />
               </div>
               <div className="mt-3">
-                <TagsPanel tags={['Alcohol', 'Medication']} />
+                <TagsPanel tags={this.state.dataset.tags} />
               </div>
               <div className="mt-3">
-                <MetadataPanel />
+                <MetadataPanel
+                  id={this.state.dataset.id}
+                  start={this.state.dataset.start}
+                  end={this.state.dataset.end}
+                  email={this.state.dataset.email}
+                />
               </div>
               <div className="mt-3">
                 <ManagementPanel />

@@ -10,6 +10,12 @@ class TagsPanel extends Component {
     };
   }
 
+  componentWillReceiveProps(props) {
+    this.setState(state => ({
+      tags: props.tags
+    }));
+  }
+
   render() {
     return (
       <Card>

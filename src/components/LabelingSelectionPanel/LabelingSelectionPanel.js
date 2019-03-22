@@ -7,16 +7,22 @@ class LabelingSelectionPanel extends Component {
     super(props);
     this.state = {
       labelings: props.labelings,
-      selectedLabelingId: props.selectedLabelingId
+      selectedLabelingId: props.selectedLabelingId,
+      onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged
     };
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState(state => ({
+      labelings: props.labelings,
+      selectedLabelingId: props.selectedLabelingId,
+      onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged
+    }));
   }
 
   handleLabelingClicked(e, id) {
     e.preventDefault();
-    this.setState(state => ({
-      selectedLabelingId: id
-    }));
-    this.props.onSelectedLabelingIdChanged(id);
+    this.state.onSelectedLabelingIdChanged(id);
   }
 
   render() {

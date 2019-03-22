@@ -16,16 +16,26 @@ class LabelingPanel extends Component {
       id: props.id,
       from: props.from,
       to: props.to,
-      labeling: props.labelings,
-      selectedLabelTypeId: '0x1483' // Test
+      labelTypes: props.labelTypes,
+      selectedLabelTypeId: props.selectedLabelTypeId,
+      onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged
     };
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState(state => ({
+      id: props.id,
+      from: props.from,
+      to: props.to,
+      labelTypes: props.labelTypes,
+      selectedLabelTypeId: props.selectedLabelTypeId,
+      onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged
+    }));
   }
 
   handleLabelTypeClicked(e, id) {
     e.preventDefault();
-    this.setState(state => ({
-      selectedLabelId: id
-    }));
+    this.state.onSelectedLabelTypeIdChanged(id);
   }
 
   render() {
@@ -33,7 +43,6 @@ class LabelingPanel extends Component {
       <Card>
         <div className="selection-panel">
           <h5>Selected Label</h5>
-
           <div>
             <InputGroup>
               <InputGroupAddon addonType="prepend">
@@ -106,11 +115,11 @@ class LabelingPanel extends Component {
           </div>
           <hr />
           <div>
-            {this.state.labeling.map(label => (
+            {this.state.labelTypes.map(label => (
               <Button
                 className={'btn-light'}
                 style={
-                  label.id === this.state.selectedLabelId
+                  label.id === this.state.selectedLabelTypeId
                     ? { backgroundColor: label.color }
                     : {}
                 }
