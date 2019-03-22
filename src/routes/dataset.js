@@ -55,14 +55,68 @@ class DatasetPage extends Component {
             color: '#00BCD4'
           }
         ]
+      },
+      {
+        id: '0x924',
+        name: 'Sleep Stages',
+        types: [
+          {
+            id: '0x1482',
+            name: 'Awake',
+            color: '#FFEB3B'
+          },
+          {
+            id: '0x1483',
+            name: 'Light',
+            color: '#4CAF50'
+          },
+          {
+            id: '0x1485',
+            name: 'Deep',
+            color: '#00BCD4'
+          },
+          {
+            id: '0x1485',
+            name: 'REM',
+            color: '#AB61CD'
+          }
+        ]
       }
     ];
 
     super(props);
     this.state = {
       dataset: dataset, //props.dataset
-      labelings: labelings //props.labelins
+      labelings: labelings,
+      controlStates: {
+        selectedLabelingId: undefined,
+        selectedLabelTypeId: undefined
+      }
     };
+
+    this.onSelectedLabelingIdChanged = this.onSelectedLabelingIdChanged.bind(
+      this
+    );
+    this.onSelectedLabelTypeIdChanged = this.onSelectedLabelTypeIdChanged.bind(
+      this
+    );
+  }
+
+  onSelectedLabelingIdChanged(selectedLabelingId) {
+    this.setState({
+      controlStates: {
+        selectedLabelingId: selectedLabelingId,
+        selectedLabelTypeId: undefined
+      }
+    });
+  }
+
+  onSelectedLabelTypeIdChanged(selectedLabelTypeId) {
+    this.setState({
+      controlStates: {
+        selectedLabelTypeId: selectedLabelTypeId
+      }
+    });
   }
 
   render() {
@@ -71,7 +125,11 @@ class DatasetPage extends Component {
         <Row className="pt-3">
           <Col onMouseUp={this.mouseUpHandler} className="mr-0 pr-0">
             <div className="mb-3">
-              <LabelingSelectionPanel />
+              <LabelingSelectionPanel
+                labelings={this.state.labelings}
+                selectedLabelingId={this.state.controlStates.selectedLabelingId}
+                onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
+              />
             </div>
           </Col>
           <Col xs={3}>
@@ -84,7 +142,7 @@ class DatasetPage extends Component {
                   id={'0x123'}
                   from={Date.now()}
                   to={2}
-                  labelings={this.state.labelings[0]}
+                  labelings={this.state.labelings[0].types}
                 />
               </div>
               <div className="mt-3">

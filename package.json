@@ -11,6 +11,7 @@
     "browser-request": "^0.3.3",
     "chart.js": "^2.7.2",
     "chartjs": "^0.3.24",
+    "classnames": "^2.2.6",
     "highcharts": "^6.1.1",
     "highcharts-react-official": "^1.4.0",
     "history": "^4.7.2",

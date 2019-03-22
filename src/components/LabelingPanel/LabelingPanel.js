@@ -17,8 +17,15 @@ class LabelingPanel extends Component {
       from: props.from,
       to: props.to,
       labeling: props.labelings,
-      selectedLabelId: '0x1483' // Test
+      selectedLabelTypeId: '0x1483' // Test
     };
+  }
+
+  handleLabelTypeClicked(e, id) {
+    e.preventDefault();
+    this.setState(state => ({
+      selectedLabelId: id
+    }));
   }
 
   render() {
@@ -99,9 +106,8 @@ class LabelingPanel extends Component {
           </div>
           <hr />
           <div>
-            {this.state.labeling.types.map(label => (
+            {this.state.labeling.map(label => (
               <Button
-                id={label.id}
                 className={'btn-light'}
                 style={
                   label.id === this.state.selectedLabelId
@@ -109,6 +115,7 @@ class LabelingPanel extends Component {
                     : {}
                 }
                 block
+                onClick={e => this.handleLabelTypeClicked(e, label.id)}
               >
                 {label.name}
               </Button>
