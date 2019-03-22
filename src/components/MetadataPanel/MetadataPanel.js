@@ -18,6 +18,16 @@ class MetadataPanel extends Component {
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText className="timeInputGroupText">
+                  Id
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input />
+            </InputGroup>
+          </div>
+          <div>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText className="timeInputGroupText">
                   Start
                 </InputGroupText>
               </InputGroupAddon>

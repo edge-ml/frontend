@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { Container, Navbar, NavbarBrand, Nav, NavItem } from 'reactstrap';
+import {
+  Container,
+  Navbar,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  Button,
+  Form
+} from 'reactstrap';
 import { Route, Link } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -30,14 +38,26 @@ class App extends Component {
           <Nav className="ml-auto" navbar>
             <NavItem>
               <Link className="nav-link" to="/list">
-                List Datasets
+                Datasets
               </Link>
             </NavItem>
             <NavItem>
-              <Link className="nav-link" to="/" onClick={this.logoutHandler}>
-                Logout
+              <Link className="nav-link" to="/">
+                Labelings
               </Link>
             </NavItem>
+            <Form className="form-inline my-2 my-lg-0">
+              <Link
+                className="nav-link m-0 p-0 ml-3"
+                to="/"
+                onClick={this.logoutHandler}
+              >
+                <Button className="m-0 my-2 my-sm-0" outline>
+                  Logout
+                </Button>
+              </Link>
+            </Form>
+            <NavItem />
           </Nav>
         </Navbar>
         <Container>

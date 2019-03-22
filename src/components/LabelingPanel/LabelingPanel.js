@@ -13,9 +13,11 @@ class LabelingPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: props.id,
       from: props.from,
       to: props.to,
-      labelTypes: props.labelTypes
+      labeling: props.labelings,
+      selectedLabelId: '0x1483' // Test
     };
   }
 
@@ -32,7 +34,7 @@ class LabelingPanel extends Component {
                   Id
                 </InputGroupText>
               </InputGroupAddon>
-              <Input />
+              <Input value={this.state.id} readOnly />
             </InputGroup>
           </div>
           <div>
@@ -47,18 +49,21 @@ class LabelingPanel extends Component {
                 placeholder="hh"
                 type="number"
                 step="1"
+                value={this.state.from}
               />
               <Input
                 className="text-center"
                 placeholder="mm"
                 type="number"
                 step="1"
+                value={this.state.from}
               />
               <Input
                 className="text-center"
                 placeholder="ss"
                 type="number"
                 step="1"
+                value={this.state.from}
               />
             </InputGroup>
           </div>
@@ -74,28 +79,43 @@ class LabelingPanel extends Component {
                 placeholder="hh"
                 type="number"
                 step="1"
+                value={this.state.to}
               />
               <Input
                 className="text-center"
                 placeholder="mm"
                 type="number"
                 step="1"
+                value={this.state.to}
               />
               <Input
                 className="text-center"
                 placeholder="ss"
                 type="number"
                 step="1"
+                value={this.state.to}
               />
             </InputGroup>
           </div>
           <hr />
           <div>
-            {this.state.labelTypes.map(i => (
-              <Button className="typeSelectionButton btn-light" block>
-                {i}
+            {this.state.labeling.types.map(label => (
+              <Button
+                id={label.id}
+                className={'btn-light'}
+                style={
+                  label.id === this.state.selectedLabelId
+                    ? { backgroundColor: label.color }
+                    : {}
+                }
+                block
+              >
+                {label.name}
               </Button>
             ))}
+            <Button block color="secondary">
+              + Add
+            </Button>
           </div>
           <hr />
           <Button block outline color="danger">
