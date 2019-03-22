@@ -1,0 +1,7 @@
+.XAxisPanel {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  height: 80px;
+  width: calc(75% - 15px);
+}
