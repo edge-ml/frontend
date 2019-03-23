@@ -23,7 +23,7 @@ class InteractionControlPanel extends Component {
           <Button block outline color="primary" className="m-0">
             Save
           </Button>
-          {this.state.isPublished ? (
+          {!this.state.isPublished ? (
             <Button block outline color="success" className="mt-2 mb-0 hidden">
               Publish
             </Button>

@@ -6,7 +6,7 @@ class LabelingSelectionPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      labelings: props.labelings,
+      labelingsDefinition: props.labelingsDefinition,
       selectedLabelingId: props.selectedLabelingId,
       onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged
     };
@@ -14,7 +14,7 @@ class LabelingSelectionPanel extends Component {
 
   componentWillReceiveProps(props) {
     this.setState(state => ({
-      labelings: props.labelings,
+      labelingsDefinition: props.labelingsDefinition,
       selectedLabelingId: props.selectedLabelingId,
       onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged
     }));
@@ -31,7 +31,7 @@ class LabelingSelectionPanel extends Component {
     return (
       <Card className="LabelingSelectionPanel">
         <div className="text-left">
-          {this.state.labelings.map(labeling => (
+          {this.state.labelingsDefinition.map(labeling => (
             <Button
               className={classNames(
                 'm-1',

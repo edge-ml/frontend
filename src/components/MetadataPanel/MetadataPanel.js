@@ -40,7 +40,7 @@ class MetadataPanel extends Component {
                   Id
                 </InputGroupText>
               </InputGroupAddon>
-              <Input value={this.state.id} readOnly />
+              <Input className="text-right" value={this.state.id} readOnly />
             </InputGroup>
           </div>
           <div>
@@ -50,7 +50,15 @@ class MetadataPanel extends Component {
                   Start
                 </InputGroupText>
               </InputGroupAddon>
-              <Input value={this.state.start} readOnly />
+              <Input
+                className="text-right"
+                value={
+                  this.state.start
+                    ? new Date(this.state.start).toTimeString().split(' ')[0]
+                    : ''
+                }
+                readOnly
+              />
             </InputGroup>
           </div>
           <div>
@@ -60,7 +68,15 @@ class MetadataPanel extends Component {
                   End
                 </InputGroupText>
               </InputGroupAddon>
-              <Input value={this.state.end} readOnly />
+              <Input
+                className="text-right"
+                value={
+                  this.state.end
+                    ? new Date(this.state.end).toTimeString().split(' ')[0]
+                    : ''
+                }
+                readOnly
+              />
             </InputGroup>
           </div>
           <div>
@@ -70,7 +86,7 @@ class MetadataPanel extends Component {
                   User
                 </InputGroupText>
               </InputGroupAddon>
-              <Input value={this.state.email} readOnly />
+              <Input className="text-right" value={this.state.email} readOnly />
             </InputGroup>
           </div>
         </div>

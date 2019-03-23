@@ -50,7 +50,11 @@ class LabelingPanel extends Component {
                   Id
                 </InputGroupText>
               </InputGroupAddon>
-              <Input value={this.state.id} readOnly />
+              <Input
+                value={this.state.id ? this.state.id : ''}
+                readOnly
+                className="text-right"
+              />
             </InputGroup>
           </div>
           <div>
@@ -61,25 +65,13 @@ class LabelingPanel extends Component {
                 </InputGroupText>
               </InputGroupAddon>
               <Input
-                className="text-center"
-                placeholder="hh"
-                type="number"
-                step="1"
-                value={this.state.from}
-              />
-              <Input
-                className="text-center"
-                placeholder="mm"
-                type="number"
-                step="1"
-                value={this.state.from}
-              />
-              <Input
-                className="text-center"
-                placeholder="ss"
-                type="number"
-                step="1"
-                value={this.state.from}
+                readOnly
+                className="text-right"
+                value={
+                  this.state.from
+                    ? new Date(this.state.from).toTimeString().split(' ')[0]
+                    : ''
+                }
               />
             </InputGroup>
           </div>
@@ -91,25 +83,13 @@ class LabelingPanel extends Component {
                 </InputGroupText>
               </InputGroupAddon>
               <Input
-                className="text-center"
-                placeholder="hh"
-                type="number"
-                step="1"
-                value={this.state.to}
-              />
-              <Input
-                className="text-center"
-                placeholder="mm"
-                type="number"
-                step="1"
-                value={this.state.to}
-              />
-              <Input
-                className="text-center"
-                placeholder="ss"
-                type="number"
-                step="1"
-                value={this.state.to}
+                className="text-right"
+                readOnly
+                value={
+                  this.state.to
+                    ? new Date(this.state.to).toTimeString().split(' ')[0]
+                    : ''
+                }
               />
             </InputGroup>
           </div>
@@ -121,7 +101,7 @@ class LabelingPanel extends Component {
                 style={
                   label.id === this.state.selectedLabelTypeId
                     ? { backgroundColor: label.color }
-                    : {}
+                    : null
                 }
                 block
                 onClick={e => this.handleLabelTypeClicked(e, label.id)}
