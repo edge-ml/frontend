@@ -40,7 +40,7 @@ class DatasetPage extends Component {
             [now - 400000, 40],
             [now - 300000, 60],
             [now - 200000, 10],
-            [now - 100000, 15],
+            [now - 140000, 15],
             [now - 100000, 30]
           ]
         },
@@ -305,7 +305,12 @@ class DatasetPage extends Component {
     return (
       <div>
         <Row className="pt-3">
-          <Col onMouseUp={this.mouseUpHandler} className="mr-0 pr-0">
+          <Col
+            onMouseUp={this.mouseUpHandler}
+            xs={12}
+            lg={9}
+            className="pr-lg-0"
+          >
             <div className="mb-3">
               <LabelingSelectionPanel
                 labelingsDefinition={this.state.labelingsDefinition}
@@ -324,7 +329,7 @@ class DatasetPage extends Component {
               />
             </div>
           </Col>
-          <Col xs={2}>
+          <Col xs={12} lg={3}>
             <Fade in={this.state.fadeIn}>
               <div>
                 <InteractionControlPanel
@@ -347,9 +352,7 @@ class DatasetPage extends Component {
               </div>
             </Fade>
           </Col>
-        </Row>
-        <Row>
-          <Col xs={9}>
+          <Col xs={12}>
             <LabelingPanel
               id={this.state.controlStates.selectedLabelId}
               from={label ? label.from : null}
@@ -360,7 +363,7 @@ class DatasetPage extends Component {
               onDeleteSelectedLabel={this.onDeleteSelectedLabel}
             />
           </Col>
-          <Col xs={3} />
+          <Col />
         </Row>
       </div>
     );

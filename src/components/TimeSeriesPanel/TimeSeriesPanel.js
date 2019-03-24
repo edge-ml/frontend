@@ -84,7 +84,12 @@ class TimeSeriesPanel extends Component {
           min: props.start,
           max: props.end,
           startOnTick: false,
-          endOnTick: false
+          endOnTick: false,
+          events: {
+            setExtremes: e => {
+              console.log(e);
+            }
+          }
         },
         yAxis: {
           title: {

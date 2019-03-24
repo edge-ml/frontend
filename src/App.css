@@ -180,6 +180,10 @@ div.card {
   padding: 15px;
 }
 
+.labelings-column {
+  vertical-align: middle !important;
+}
+
 @media (min-width: 1200px) {
   .container {
     max-width: 100%;

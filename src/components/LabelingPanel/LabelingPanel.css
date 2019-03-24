@@ -2,7 +2,7 @@
   position: fixed;
   bottom: 15px;
   left: 15px;
-  width: calc(83.3333% - 15px);
+  width: calc(75% - 15px);
 }
 
 .LabelingPanel > .informationBox {
