@@ -64,6 +64,7 @@ class TimeSeriesPanel extends Component {
         ],
         xAxis: {
           type: 'datetime',
+          ordinal: false,
           plotBands: this.labelingsToPlotBands(
             props.labeling,
             props.labelTypes,
@@ -82,7 +83,8 @@ class TimeSeriesPanel extends Component {
           ),
           min: props.start,
           max: props.end,
-          alignTicks: false
+          startOnTick: false,
+          endOnTick: false
         },
         yAxis: {
           title: {
@@ -103,6 +105,9 @@ class TimeSeriesPanel extends Component {
           enabled: true
         },
         tooltip: {
+          enabled: false
+        },
+        scrollbar: {
           enabled: false
         }
       },

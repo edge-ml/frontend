@@ -21,12 +21,13 @@ import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/T
 
 class DatasetPage extends Component {
   constructor(props) {
+    var now = Date.now();
     const dataset = {
       id: '0x1234',
       userId: '0x9321',
       email: 'test@test.de',
-      start: Date.now() - 600000,
-      end: Date.now() + 10000,
+      start: now - 600000,
+      end: now + 100000,
       tags: ['Alcohol', 'Medication', 'Test', 'ABC'],
       isPublished: false,
       timeSeries: [
@@ -35,13 +36,12 @@ class DatasetPage extends Component {
           name: 'VOC',
           unit: 'kOhm',
           data: [
-            [Date.now() - 500000, 20],
-            [Date.now() - 400000, 40],
-            [Date.now() - 300000, 60],
-            [Date.now() - 200000, 10],
-            [Date.now() - 100000, 15],
-            [Date.now() - 100000, 30],
-            [Date.now(), 5]
+            [now - 500000, 20],
+            [now - 400000, 40],
+            [now - 300000, 60],
+            [now - 200000, 10],
+            [now - 100000, 15],
+            [now - 100000, 30]
           ]
         },
         {
@@ -49,13 +49,12 @@ class DatasetPage extends Component {
           name: 'SPO2',
           unit: '%',
           data: [
-            [Date.now() - 500000, 50],
-            [Date.now() - 450000, 12],
-            [Date.now() - 400000, 40],
-            [Date.now() - 300000, 30],
-            [Date.now() - 200000, 18],
-            [Date.now() - 100000, 34],
-            [Date.now(), 80]
+            [now - 300000, 20],
+            [now - 200000, 40],
+            [now - 180000, 60],
+            [now - 140000, 10],
+            [now - 110000, 15],
+            [now - 80000, 30]
           ]
         }
       ],
@@ -67,14 +66,14 @@ class DatasetPage extends Component {
             {
               id: '1',
               typeId: '0x1482',
-              from: Date.now() - 450000,
-              to: Date.now() - 400000
+              from: now - 450000,
+              to: now - 400000
             },
             {
               id: '2',
               typeId: '0x1483',
-              from: Date.now() - 300000,
-              to: Date.now() - 200000
+              from: now - 300000,
+              to: now - 200000
             }
           ]
         }
