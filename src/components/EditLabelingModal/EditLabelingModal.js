@@ -16,8 +16,12 @@ class EditLabelingModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      labeling: props.labeling,
-      isOpen: props.isOpen
+      name: props.name,
+      types: props.types,
+      id: props.id,
+      isOpen: props.isOpen,
+      onCloseModal: props.onCloseModal,
+      onSave: props.onSave
     };
 
     this.onAddType = this.onAddType.bind(this);
@@ -27,46 +31,88 @@ class EditLabelingModal extends Component {
     this.hexToRgb = this.hexToRgb.bind(this);
     this.hexToForegroundColor = this.hexToForegroundColor.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
+    this.onSave = this.onSave.bind(this);
+    this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
   }
 
   componentWillReceiveProps(props) {
     this.setState(state => ({
-      labeling: props.labeling,
-      isOpen: props.isOpen
+      name: props.name,
+      types: props.types,
+      id: props.id,
+      isOpen: props.isOpen,
+      onCloseModal: props.onCloseModal,
+      onSave: props.onSave,
+      onDeleteLabeling: props.onDeleteLabeling
     }));
   }
 
   onAddType() {
-    if (!this.state.labeling) return;
-
-    this.state.labeling.types.push({
+    let newLabel = {
       id: this.uuidv4(),
       name: '',
       color: this.generateRandomColor()
-    });
+    };
 
     this.setState(state => ({
-      labeling: this.state.labeling,
-      isOpen: this.state.isOpen
+      name: this.state.name,
+      types: [...this.state.types, newLabel],
+      id: this.state.id,
+      isOpen: this.state.isOpen,
+      onCloseModal: this.state.onCloseModal,
+      onSave: this.state.onSave,
+      onDeleteLabeling: this.state.onDeleteLabeling
     }));
   }
 
   onDeleteType(id) {
-    if (!this.state.labeling) return;
-
     this.setState(state => ({
-      labeling: {
-        id: this.state.labeling.id,
-        name: this.state.labeling.name,
-        types: this.state.labeling.types.filter(type => type.id !== id)
-      },
-      isOpen: this.state.isOpen
+      id: this.state.id,
+      name: this.state.name,
+      types: this.state.types.filter(type => type.id !== id),
+      isOpen: this.state.isOpen,
+      onCloseModal: this.state.onCloseModal,
+      onSave: this.state.onSave,
+      onDeleteLabeling: this.state.onDeleteLabeling
     }));
   }
 
-  onCloseModal() {
+  onDeleteLabeling() {
+    this.state.onDeleteLabeling(this.state.id);
     this.setState({
-      isOpen: false
+      isOpen: false,
+      name: '',
+      types: [],
+      id: '',
+      onCloseModal: undefined,
+      onSave: undefined,
+      onDeleteLabeling: undefined
+    });
+  }
+
+  onCloseModal() {
+    this.state.onCloseModal();
+    this.setState({
+      isOpen: false,
+      name: '',
+      types: [],
+      id: '',
+      onCloseModal: undefined,
+      onSave: undefined,
+      onDeleteLabeling: undefined
+    });
+  }
+
+  onSave() {
+    this.state.onSave(this.state.id, this.state.name, this.state.types);
+    this.setState({
+      isOpen: false,
+      name: '',
+      types: [],
+      id: '',
+      onCloseModal: undefined,
+      onSave: undefined,
+      onDeleteLabeling: undefined
     });
   }
 
@@ -110,21 +156,17 @@ class EditLabelingModal extends Component {
   render() {
     return (
       <Modal isOpen={this.state.isOpen}>
-        <ModalHeader>
-          {this.state.labeling ? this.state.labeling.id : null}
-        </ModalHeader>
+        <ModalHeader>{this.state.id ? this.state.id : ''}</ModalHeader>
         <ModalBody>
           <InputGroup>
             <InputGroupAddon addonType="prepend">
               <InputGroupText>Name</InputGroupText>
             </InputGroupAddon>
-            <Input
-              value={this.state.labeling ? this.state.labeling.name : null}
-            />
+            <Input value={this.state.name ? this.state.name : ''} />
           </InputGroup>
           <hr />
-          {this.state.labeling && this.state.labeling.types
-            ? this.state.labeling.types.map(type => (
+          {this.state.types
+            ? this.state.types.map(type => (
                 <InputGroup>
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>Label</InputGroupText>
@@ -157,12 +199,28 @@ class EditLabelingModal extends Component {
                 </InputGroup>
               ))
             : null}
-          <Button className="btn-light m-0" block onClick={this.onAddType}>
+          <Button
+            className="m-0"
+            color="secondary"
+            outline
+            block
+            onClick={this.onAddType}
+          >
             + Add
+          </Button>
+          <hr />
+          <Button
+            color="danger"
+            block
+            className="m-0"
+            outline
+            onClick={this.onDeleteLabeling}
+          >
+            Delete
           </Button>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" className="m-1 mr-auto">
+          <Button color="primary" className="m-1 mr-auto" onClick={this.onSave}>
             Save
           </Button>{' '}
           <Button color="secondary" className="m-1" onClick={this.onCloseModal}>

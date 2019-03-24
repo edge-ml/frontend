@@ -127,14 +127,78 @@ class LabelingsPage extends Component {
     };
 
     this.toggleModal = this.toggleModal.bind(this);
+    this.onAddLabeling = this.onAddLabeling.bind(this);
+    this.uuidv4 = this.uuidv4.bind(this);
+    this.onCloseModal = this.onCloseModal.bind(this);
+    this.onSave = this.onSave.bind(this);
+    this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
   }
 
   toggleModal(labeling) {
     this.setState({
       modal: {
-        labeling: this.state.modal.isOpened ? undefined : labeling,
-        isOpen: !this.state.isOpened
+        labeling: this.state.modal.isOpen ? undefined : labeling,
+        isOpen: !this.state.modal.isOpen
       }
+    });
+  }
+
+  onAddLabeling() {
+    this.toggleModal({
+      id: this.uuidv4(),
+      name: '',
+      types: []
+    });
+  }
+
+  onCloseModal() {
+    this.setState({
+      modal: {
+        labeling: undefined,
+        isOpen: false
+      }
+    });
+  }
+
+  onDeleteLabeling(labelingId) {
+    this.setState({
+      labelingsDefinition: this.state.labelingsDefinition.filter(
+        labeling => labeling.id !== labelingId
+      ),
+      modal: {
+        isOpen: false,
+        labeling: undefined
+      }
+    });
+  }
+
+  onSave(labelingId, name, types) {
+    this.setState({
+      labelingsDefinition:
+        this.state.labelingsDefinition.filter(
+          labeling => labeling.id === labelingId
+        )[0] !== undefined
+          ? this.state.labelingsDefinition.map(labeling =>
+              labeling.id === labelingId
+                ? Object.assign({}, labeling, { types: types, name: name })
+                : labeling
+            )
+          : [
+              ...this.state.labelingsDefinition,
+              { id: labelingId, name: name, types: types }
+            ],
+      modal: {
+        labeling: undefined,
+        isOpen: false
+      }
+    });
+  }
+
+  uuidv4() {
+    return 'xxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = (Math.random() * 16) | 0,
+        v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
     });
   }
 
@@ -144,13 +208,13 @@ class LabelingsPage extends Component {
         <Container>
           <Row className="mt-3">
             <Col>
-              <Table>
+              <Table responsive>
                 <thead>
                   <tr className={'bg-light'}>
                     <th>Id</th>
                     <th>Name</th>
                     <th>Types</th>
-                    <th>Actions</th>
+                    <th />
                   </tr>
                 </thead>
                 <tbody>
@@ -159,16 +223,28 @@ class LabelingsPage extends Component {
                       <th className="labelings-column" scope="row">
                         {labeling.id}
                       </th>
-                      <td className="labelings-column">{labeling.name}</td>
+                      <td
+                        className={
+                          labeling.name !== ''
+                            ? 'labelings-column'
+                            : 'labelings-column font-italic'
+                        }
+                      >
+                        {labeling.name !== '' ? labeling.name : 'Untitled'}
+                      </td>
                       <td className="labelings-column">
                         {labeling.types.map(type => (
                           <Badge
-                            className={'m-1'}
+                            className={
+                              type.name === ''
+                                ? 'm-1 font-italic font-weight-normal'
+                                : 'm-1'
+                            }
                             style={{
                               backgroundColor: type.color
                             }}
                           >
-                            {type.name}
+                            {type.name !== '' ? type.name : 'Untitled'}
                           </Badge>
                         ))}
                       </td>
@@ -187,15 +263,28 @@ class LabelingsPage extends Component {
                   ))}
                 </tbody>
               </Table>
-              <Button block className="btn-light">
+              <Button
+                block
+                className="mb-5"
+                color="secondary"
+                outline
+                onClick={this.onAddLabeling}
+              >
                 + Add
               </Button>
             </Col>
           </Row>
         </Container>
         <EditLabelingModal
-          labeling={this.state.modal.labeling}
+          name={this.state.modal.labeling ? this.state.modal.labeling.name : ''}
+          types={
+            this.state.modal.labeling ? this.state.modal.labeling.types : []
+          }
+          id={this.state.modal.labeling ? this.state.modal.labeling.id : ''}
           isOpen={this.state.modal.isOpen}
+          onCloseModal={this.onCloseModal}
+          onDeleteLabeling={this.onDeleteLabeling}
+          onSave={this.onSave}
         />
       </Loader>
     );
