@@ -18,7 +18,8 @@ class LabelingPanel extends Component {
       to: props.to,
       labelTypes: props.labelTypes,
       selectedLabelTypeId: props.selectedLabelTypeId,
-      onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged
+      onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
+      onDeleteSelectedLabel: props.onDeleteSelectedLabel
     };
   }
 
@@ -29,7 +30,8 @@ class LabelingPanel extends Component {
       to: props.to,
       labelTypes: props.labelTypes,
       selectedLabelTypeId: props.selectedLabelTypeId,
-      onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged
+      onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
+      onDeleteSelectedLabel: props.onDeleteSelectedLabel
     }));
   }
 
@@ -38,79 +40,92 @@ class LabelingPanel extends Component {
     this.state.onSelectedLabelTypeIdChanged(id);
   }
 
+  handleDeleteClicked(e) {
+    e.preventDefault();
+    this.state.onDeleteSelectedLabel();
+  }
+
   render() {
     return (
       <Card className="LabelingPanel">
-        <div className="selection-panel">
-          <div className="input">
-            <InputGroup className="input m-1">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  Id
-                </InputGroupText>
+        <div>
+          <div className="informationBox">
+            <InputGroup className="inputGroup m-1">
+              <InputGroupAddon addonType="prepend" className="inputGroupAddon">
+                <InputGroupText className="inputLabel">Id</InputGroupText>
               </InputGroupAddon>
               <Input
                 value={this.state.id ? this.state.id : ''}
                 readOnly
-                className="text-right"
+                className="idInput text-center"
               />
             </InputGroup>
-            <InputGroup className="input">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  From
-                </InputGroupText>
+            <InputGroup className="inputGroup m-1">
+              <InputGroupAddon addonType="prepend" className="inputGroupAddon">
+                <InputGroupText className="inputLabel">From</InputGroupText>
               </InputGroupAddon>
               <Input
-                readOnly
-                className="text-right timeInput"
                 value={
                   this.state.from
-                    ? new Date(this.state.from).toTimeString().split(' ')[0]
+                    ? new Date(this.state.from).toUTCString().split(' ')[4]
                     : ''
                 }
+                readOnly
+                className="timeInput text-center"
               />
             </InputGroup>
-
-            <InputGroup className="input">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  To
-                </InputGroupText>
+            <InputGroup className="inputGroup m-1">
+              <InputGroupAddon addonType="prepend" className="inputGroupAddon">
+                <InputGroupText className="inputLabel">To</InputGroupText>
               </InputGroupAddon>
               <Input
-                className="text-right timeInput"
-                readOnly
                 value={
                   this.state.to
-                    ? new Date(this.state.to).toTimeString().split(' ')[0]
+                    ? new Date(this.state.to).toUTCString().split(' ')[4]
                     : ''
                 }
+                readOnly
+                className="timeInput text-center"
               />
             </InputGroup>
+            <Button
+              disabled={this.state.selectedLabelTypeId === undefined}
+              className="deleteButton m-1"
+              outline
+              color="danger"
+              onClick={e => this.state.onDeleteSelectedLabel()}
+            >
+              Delete
+            </Button>
           </div>
-          <Button className="deleteButton m-1" outline color="danger">
-            Delete
-          </Button>
-          <span className="labelingBox">
+
+          <div className="labelingBox">
+            <Button className="labelingButton m-1" color="secondary">
+              + Add
+            </Button>
             {this.state.labelTypes.map(label => (
               <Button
-                className="btn-light m-1"
-                style={
-                  label.id === this.state.selectedLabelTypeId
-                    ? { backgroundColor: label.color }
-                    : null
-                }
+                className="btn-light m-1 labelingButton"
+                style={{
+                  backgroundColor:
+                    label.id === this.state.selectedLabelTypeId
+                      ? label.color
+                      : null,
+                  borderColor:
+                    label.id === this.state.selectedLabelTypeId
+                      ? null
+                      : label.color,
+                  color:
+                    label.id === this.state.selectedLabelTypeId
+                      ? null
+                      : label.color
+                }}
                 onClick={e => this.handleLabelTypeClicked(e, label.id)}
               >
                 {label.name}
               </Button>
             ))}
-            <Button className="m-1" color="secondary">
-              + Add
-            </Button>
-          </span>
-          <hr />
+          </div>
         </div>
       </Card>
     );

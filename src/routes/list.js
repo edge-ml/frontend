@@ -68,7 +68,7 @@ class ListPage extends Component {
                 color="info"
                 id={`button-view-${row.id}`}
                 onClick={e => {
-                  this.props.history.push(`dataset/${row.id}`);
+                  this.props.history.push(`datasets/${row.id}`);
                   e.preventDefault();
                 }}
               >

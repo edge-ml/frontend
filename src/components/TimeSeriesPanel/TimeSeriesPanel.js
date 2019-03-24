@@ -99,7 +99,8 @@ class TimeSeriesPanel extends Component {
           verticalAlign: 'center',
           layout: 'vertical',
           x: 0,
-          y: 0
+          y: 0,
+          enabled: true
         },
         tooltip: {
           enabled: false
@@ -109,7 +110,12 @@ class TimeSeriesPanel extends Component {
       labelTypes: props.labelTypes,
       selectedLabelId: props.selectedLabelId,
       onLabelClicked: props.onLabelClicked,
-      onLabelChanged: props.onLabelChanged
+      onLabelChanged: props.onLabelChanged,
+      controlStates: {
+        activePlotLineId: !this.state
+          ? undefined
+          : this.state.controlStates.activePlotLineId
+      }
     };
   }
 
@@ -157,7 +163,9 @@ class TimeSeriesPanel extends Component {
       width: selectedLabelId === label.id ? 5 : 2,
       color: labelTypes.filter(labelType => labelType.id === label.typeId)[0]
         .color,
-      isActive: false,
+      isActive: !this.state
+        ? false
+        : this.state.controlStates.activePlotLineId === 'left_' + label.id,
       isSelected: selectedLabelId === label.id,
       isPlotline: true,
       isLeftPlotline: true,
@@ -177,6 +185,11 @@ class TimeSeriesPanel extends Component {
     plotLine.options.isActive = true;
     plotLine.svgElem.translate(0, 0);
     plotLine.options.clickX = e.pageX - plotLine.svgElem.translateX;
+    this.setState({
+      controlStates: {
+        activePlotLineId: id
+      }
+    });
   }
 
   onPlotBandMouseDown(e, id, labelId) {
@@ -212,8 +225,6 @@ class TimeSeriesPanel extends Component {
       ? plotbandOptions.to
       : plotbandOptions.from; // TODO
 
-    console.log(plotbandOptions.from, plotbandOptions.to);
-
     this.chart.current.chart.xAxis[0].addPlotBand({
       from: plotLine.options.isLeftPlotline ? draggedPosition : fixedPosition,
       to: plotLine.options.isLeftPlotline ? fixedPosition : draggedPosition,
@@ -225,11 +236,30 @@ class TimeSeriesPanel extends Component {
       zIndex: plotbandOptions.zIndex,
       isSelected: plotbandOptions.isSelected
     });
+
+    let newValue = this.chart.current.chart.xAxis[0].toValue(
+      e.pageX - this.chart.current.chart.plotBox.x / 2
+    );
+    let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(
+      plotLine.options.id,
+      plotLine.options.labelId
+    ).options.value;
+    this.state.onLabelChanged(
+      plotLine.options.labelId,
+      newValue,
+      remainingValue
+    );
   }
 
   onMouseUp(e, id) {
     var plotLine = this.getActivePlotLine();
     if (!plotLine) return;
+
+    this.setState({
+      controlStates: {
+        activePlotLineId: undefined
+      }
+    });
 
     plotLine.options.isActive = false;
     let newValue = this.chart.current.chart.xAxis[0].toValue(
@@ -259,7 +289,9 @@ class TimeSeriesPanel extends Component {
       width: selectedLabelId === label.id ? 5 : 2,
       color: labelTypes.filter(labelType => labelType.id === label.typeId)[0]
         .color,
-      isActive: false,
+      isActive: !this.state
+        ? false
+        : this.state.controlStates.activePlotLineId === 'right_' + label.id,
       isSelected: selectedLabelId === label.id,
       isPlotline: true,
       isLeftPlotline: false,
@@ -270,7 +302,7 @@ class TimeSeriesPanel extends Component {
   }
 
   getPlotLineById(id) {
-    if (!this.chart) return;
+    if (!this.chart.current || !this.chart.current.chart) return;
 
     var plotLinesAndBands = this.chart.current.chart.xAxis[0].plotLinesAndBands;
     var plotLine = plotLinesAndBands.filter(
@@ -281,8 +313,12 @@ class TimeSeriesPanel extends Component {
   }
 
   getActivePlotLine() {
-    if (!this.chart) return;
-
+    if (
+      !this.chart.current ||
+      !this.chart.current.chart ||
+      !this.state.controlStates.activePlotLineId
+    )
+      return;
     var plotLinesAndBands = this.chart.current.chart.xAxis[0].plotLinesAndBands;
     var plotLine = plotLinesAndBands.filter(
       item => item.options.isPlotline && item.options.isActive
@@ -292,7 +328,7 @@ class TimeSeriesPanel extends Component {
   }
 
   getSelectedPlotBand() {
-    if (!this.chart) return;
+    if (!this.chart.current || !this.chart.current.chart) return;
 
     var plotBands = this.chart.current.chart.xAxis[0].plotLinesAndBands.filter(
       item => !item.options.isPlotline
@@ -305,7 +341,7 @@ class TimeSeriesPanel extends Component {
   }
 
   getSecondBoundaryByPlotLineIdAndLabelId(id, labelId) {
-    if (!this.chart) return;
+    if (!this.chart.current || !this.chart.current.chart) return;
 
     var plotLinesAndBands = this.chart.current.chart.xAxis[0].plotLinesAndBands;
     var plotLine = plotLinesAndBands.filter(
@@ -319,7 +355,7 @@ class TimeSeriesPanel extends Component {
   }
 
   getPlotbandByLabelId(labelId) {
-    if (!this.chart) return;
+    if (!this.chart.current || !this.chart.current.chart) return;
 
     var plotLinesAndBands = this.chart.current.chart.xAxis[0].plotLinesAndBands;
     var plotBand = plotLinesAndBands.filter(

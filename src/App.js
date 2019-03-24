@@ -17,8 +17,10 @@ import './App.css';
 import AuthWall from './routes/login';
 import ListPage from './routes/list';
 import DatasetPage from './routes/dataset';
+import LabelingsPage from './routes/labelings';
 
 import logo from './logo.png';
+import labelings from './routes/labelings';
 
 class App extends Component {
   constructor(props) {
@@ -44,7 +46,7 @@ class App extends Component {
               </Link>
             </NavItem>
             <NavItem>
-              <Link className="nav-link" to="/">
+              <Link className="nav-link" to="/labelings">
                 Labelings
               </Link>
             </NavItem>
@@ -64,8 +66,9 @@ class App extends Component {
         </Navbar>
         <Container>
           <Route exact path="/list" component={ListPage} />
+          <Route exact path="/labelings" component={LabelingsPage} />
           <Route exact path="/" component={ListPage} />
-          <Route path="/dataset/:id" component={DatasetPage} />
+          <Route path="/datasets/:id" component={DatasetPage} />
         </Container>
       </AuthWall>
     );

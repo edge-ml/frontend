@@ -2,28 +2,30 @@
   position: fixed;
   bottom: 15px;
   left: 15px;
-  height: 70px;
-  width: calc(75% - 15px);
+  width: calc(83.3333% - 15px);
 }
 
-.input {
+.LabelingPanel > .informationBox {
   float: left;
   padding: 0px;
   margin: 0px;
 }
 
-.timeInputGroupText {
-  width: 40px !important;
-}
-
-.timeInput {
-  width: 80px !important;
-}
-
-.deleteButton {
+.informationBox > .inputGroup {
+  padding: 0px;
+  margin: 0px;
+  width: 160px;
   float: left;
 }
 
-.labelingBox {
+.informationBox > .deleteButton {
+  float: left;
+}
+
+.LabelingPanel > .labelingBox {
+  float: right;
+}
+
+.labelingBox > .labelingButton {
   float: right;
 }

@@ -65,13 +65,13 @@ class DatasetPage extends Component {
           labelingId: '0x923',
           labels: [
             {
-              id: '0x1234144',
+              id: '1',
               typeId: '0x1482',
               from: Date.now() - 450000,
               to: Date.now() - 400000
             },
             {
-              id: '0x1481230020013',
+              id: '2',
               typeId: '0x1483',
               from: Date.now() - 300000,
               to: Date.now() - 200000
@@ -89,7 +89,7 @@ class DatasetPage extends Component {
           {
             id: '0x1482',
             name: 'Apnea',
-            color: '#FFEB3B'
+            color: 'orange'
           },
           {
             id: '0x1483',
@@ -110,7 +110,7 @@ class DatasetPage extends Component {
           {
             id: '0x14812',
             name: 'Awake',
-            color: '#FFEB3B'
+            color: 'orange'
           },
           {
             id: '0x1483123',
@@ -136,7 +136,7 @@ class DatasetPage extends Component {
           {
             id: '0x14853462',
             name: 'Left',
-            color: '#FFEB3B'
+            color: 'orange'
           },
           {
             id: '0x148312512',
@@ -146,7 +146,7 @@ class DatasetPage extends Component {
           {
             id: '0x14251285',
             name: 'Back',
-            color: '#00BCD4'
+            color: 'purple'
           },
           {
             id: '0x11200192334',
@@ -162,7 +162,7 @@ class DatasetPage extends Component {
           {
             id: '0x14853462',
             name: 'Low',
-            color: '#FFEB3B'
+            color: 'orange'
           },
           {
             id: '0x148312512',
@@ -197,6 +197,7 @@ class DatasetPage extends Component {
     );
     this.onSelectedLabelChanged = this.onSelectedLabelChanged.bind(this);
     this.onLabelChanged = this.onLabelChanged.bind(this);
+    this.onDeleteSelectedLabel = this.onDeleteSelectedLabel.bind(this);
   }
 
   onSelectedLabelingIdChanged(selectedLabelingId) {
@@ -270,6 +271,23 @@ class DatasetPage extends Component {
     this.forceUpdate();
   }
 
+  onDeleteSelectedLabel() {
+    let labeling = this.state.dataset.labelings.filter(
+      labeling =>
+        labeling.labelingId === this.state.controlStates.selectedLabelingId
+    )[0];
+    labeling.labels = labeling.labels.filter(
+      label => label.id !== this.state.controlStates.selectedLabelId
+    );
+    this.setState({
+      controlStates: {
+        selectedLabelId: undefined,
+        selectedLabelingId: this.state.controlStates.selectedLabelingId,
+        selectedLabelTypeId: undefined
+      }
+    });
+  }
+
   render() {
     var selectedLabeling = this.state.labelingsDefinition.filter(
       labeling => labeling.id === this.state.controlStates.selectedLabelingId
@@ -307,7 +325,7 @@ class DatasetPage extends Component {
               />
             </div>
           </Col>
-          <Col xs={3}>
+          <Col xs={2}>
             <Fade in={this.state.fadeIn}>
               <div>
                 <InteractionControlPanel
@@ -340,6 +358,7 @@ class DatasetPage extends Component {
               labelTypes={selectedLabeling.types}
               selectedLabelTypeId={this.state.controlStates.selectedLabelTypeId}
               onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
+              onDeleteSelectedLabel={this.onDeleteSelectedLabel}
             />
           </Col>
           <Col xs={3} />
