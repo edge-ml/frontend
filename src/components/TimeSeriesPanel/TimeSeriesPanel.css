@@ -1,0 +1,14 @@
+.TimeSeriesPanel {
+}
+
+.selected {
+  opacity: 0.4;
+}
+
+.deselected {
+  opacity: 0.2;
+}
+
+.plotline {
+  cursor: col-resize;
+}
