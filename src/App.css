@@ -5,8 +5,6 @@
   padding: 30px;
   margin: auto;
   margin-top: 10%;
-  width: 40%;
-  height: 40%;
 }
 
 .input-group {
@@ -69,7 +67,14 @@ a .octicon-trashcan:hover {
 .loader {
   display: block;
   margin: 0 auto;
-  border-color: red;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+.navbar-brand > img {
+  padding: 7px 14px;
 }
 
 .svg-white {

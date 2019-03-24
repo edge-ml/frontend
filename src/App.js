@@ -18,6 +18,8 @@ import AuthWall from './routes/login';
 import ListPage from './routes/list';
 import DatasetPage from './routes/dataset';
 
+import logo from './logo.png';
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -34,7 +36,7 @@ class App extends Component {
     return (
       <AuthWall>
         <Navbar color="light" light expand="md">
-          <NavbarBrand>AURA Explorer</NavbarBrand>
+          <NavbarBrand>Explorer</NavbarBrand>
           <Nav className="ml-auto" navbar>
             <NavItem>
               <Link className="nav-link" to="/list">

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Container,
   Col,
+  Row,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -133,51 +134,57 @@ class LoginPage extends Component {
     } else {
       return (
         <Container className="Page">
-          <div className="login">
-            <h2>Sign In</h2>
-            <Col>
-              <InputGroup>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <PersonIcon />
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  type="username"
-                  name="username"
-                  id="username"
-                  placeholder="username"
-                  onChange={this.userChange}
-                />
-              </InputGroup>
+          <Row>
+            <Col className="login" xs={11} sm={6} lg={4}>
+              <Row>
+                <Col>
+                  <h2>Sign In</h2>
+                  <Col>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <PersonIcon />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="username"
+                        name="username"
+                        id="username"
+                        placeholder="username"
+                        onChange={this.userChange}
+                      />
+                    </InputGroup>
+                  </Col>
+                  <Col>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <ShieldIcon />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="password"
+                        name="password"
+                        id="password"
+                        placeholder="password"
+                        onChange={this.passChange}
+                      />
+                    </InputGroup>
+                  </Col>
+                  <Col>
+                    <Button
+                      id="login-button"
+                      onClick={this.submit}
+                      disabled={this.state.button.disabled}
+                      color={this.state.button.color}
+                    >
+                      Login
+                    </Button>
+                  </Col>
+                </Col>
+              </Row>
             </Col>
-            <Col>
-              <InputGroup>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <ShieldIcon />
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="password"
-                  onChange={this.passChange}
-                />
-              </InputGroup>
-            </Col>
-            <Col>
-              <Button
-                id="login-button"
-                onClick={this.submit}
-                disabled={this.state.button.disabled}
-                color={this.state.button.color}
-              >
-                Login
-              </Button>
-            </Col>
-          </div>
+          </Row>
         </Container>
       );
     }

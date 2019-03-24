@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { PacmanLoader as LoaderAnimation } from 'react-spinners';
+import { BeatLoader as LoaderAnimation } from 'react-spinners';
 
 class Loader extends Component {
   render() {
@@ -8,8 +8,7 @@ class Loader extends Component {
         <LoaderAnimation
           className="loader"
           sizeUnit={'px'}
-          size={50}
-          color={'rgba(0, 0, 255, 0.5)'}
+          color={'rgba(100, 100, 100, 0.5)'}
           loading={true}
         />
       );

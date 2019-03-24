@@ -16,7 +16,6 @@ import TagsPanel from '../components/TagsPanel/TagsPanel';
 import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
 import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
 import InteractionControlPanel from '../components/InteractionControlPanel/InteractionControlPanel';
-import XAxisPanel from '../components/XAxisPanel/XAxisPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
 
@@ -34,6 +33,7 @@ class DatasetPage extends Component {
         {
           id: '0x123434',
           name: 'VOC',
+          unit: 'kOhm',
           data: [
             [Date.now() - 500000, 20],
             [Date.now() - 400000, 40],
@@ -47,6 +47,7 @@ class DatasetPage extends Component {
         {
           id: '0x1123992',
           name: 'SPO2',
+          unit: '%',
           data: [
             [Date.now() - 500000, 50],
             [Date.now() - 450000, 12],
@@ -248,7 +249,7 @@ class DatasetPage extends Component {
       controlStates: {
         selectedLabelId: selectedLabelId,
         selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: label.typeId
+        selectedLabelTypeId: label ? label.typeId : undefined
       }
     });
   }
@@ -314,20 +315,6 @@ class DatasetPage extends Component {
                 />
               </div>
               <div className="mt-3">
-                <LabelingPanel
-                  id={this.state.controlStates.selectedLabelId}
-                  from={label ? label.from : null}
-                  to={label ? label.to : null}
-                  labelTypes={selectedLabeling.types}
-                  selectedLabelTypeId={
-                    this.state.controlStates.selectedLabelTypeId
-                  }
-                  onSelectedLabelTypeIdChanged={
-                    this.onSelectedLabelTypeIdChanged
-                  }
-                />
-              </div>
-              <div className="mt-3">
                 <TagsPanel tags={this.state.dataset.tags} />
               </div>
               <div className="mt-3">
@@ -346,7 +333,14 @@ class DatasetPage extends Component {
         </Row>
         <Row>
           <Col xs={9}>
-            <XAxisPanel />
+            <LabelingPanel
+              id={this.state.controlStates.selectedLabelId}
+              from={label ? label.from : null}
+              to={label ? label.to : null}
+              labelTypes={selectedLabeling.types}
+              selectedLabelTypeId={this.state.controlStates.selectedLabelTypeId}
+              onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
+            />
           </Col>
           <Col xs={3} />
         </Row>

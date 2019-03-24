@@ -40,11 +40,10 @@ class LabelingPanel extends Component {
 
   render() {
     return (
-      <Card>
+      <Card className="LabelingPanel">
         <div className="selection-panel">
-          <h5>Selected Label</h5>
-          <div>
-            <InputGroup>
+          <div className="input">
+            <InputGroup className="input m-1">
               <InputGroupAddon addonType="prepend">
                 <InputGroupText className="timeInputGroupText">
                   Id
@@ -56,9 +55,7 @@ class LabelingPanel extends Component {
                 className="text-right"
               />
             </InputGroup>
-          </div>
-          <div>
-            <InputGroup>
+            <InputGroup className="input">
               <InputGroupAddon addonType="prepend">
                 <InputGroupText className="timeInputGroupText">
                   From
@@ -66,7 +63,7 @@ class LabelingPanel extends Component {
               </InputGroupAddon>
               <Input
                 readOnly
-                className="text-right"
+                className="text-right timeInput"
                 value={
                   this.state.from
                     ? new Date(this.state.from).toTimeString().split(' ')[0]
@@ -74,16 +71,15 @@ class LabelingPanel extends Component {
                 }
               />
             </InputGroup>
-          </div>
-          <div>
-            <InputGroup>
+
+            <InputGroup className="input">
               <InputGroupAddon addonType="prepend">
                 <InputGroupText className="timeInputGroupText">
                   To
                 </InputGroupText>
               </InputGroupAddon>
               <Input
-                className="text-right"
+                className="text-right timeInput"
                 readOnly
                 value={
                   this.state.to
@@ -93,30 +89,28 @@ class LabelingPanel extends Component {
               />
             </InputGroup>
           </div>
-          <hr />
-          <div>
+          <Button className="deleteButton m-1" outline color="danger">
+            Delete
+          </Button>
+          <span className="labelingBox">
             {this.state.labelTypes.map(label => (
               <Button
-                className={'btn-light'}
+                className="btn-light m-1"
                 style={
                   label.id === this.state.selectedLabelTypeId
                     ? { backgroundColor: label.color }
                     : null
                 }
-                block
                 onClick={e => this.handleLabelTypeClicked(e, label.id)}
               >
                 {label.name}
               </Button>
             ))}
-            <Button block color="secondary">
+            <Button className="m-1" color="secondary">
               + Add
             </Button>
-          </div>
+          </span>
           <hr />
-          <Button block outline color="danger">
-            Delete
-          </Button>
         </div>
       </Card>
     );
