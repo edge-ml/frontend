@@ -56,6 +56,19 @@ class DatasetPage extends Component {
             [now - 110000, 15],
             [now - 80000, 30]
           ]
+        },
+        {
+          id: '0x12364774',
+          name: 'EMG',
+          unit: 'mV',
+          data: [
+            [now - 300000, 20],
+            [now - 200000, 40],
+            [now - 180000, 60],
+            [now - 140000, 10],
+            [now - 110000, 15],
+            [now - 80000, 30]
+          ]
         }
       ],
       labelings: [
@@ -184,7 +197,8 @@ class DatasetPage extends Component {
       controlStates: {
         selectedLabelId: undefined,
         selectedLabelingId: labelingsDefinition[0].id,
-        selectedLabelTypeId: undefined
+        selectedLabelTypeId: undefined,
+        canEdit: false
       }
     };
 
@@ -197,6 +211,7 @@ class DatasetPage extends Component {
     this.onSelectedLabelChanged = this.onSelectedLabelChanged.bind(this);
     this.onLabelChanged = this.onLabelChanged.bind(this);
     this.onDeleteSelectedLabel = this.onDeleteSelectedLabel.bind(this);
+    this.onCanEditChanged = this.onCanEditChanged.bind(this);
   }
 
   onSelectedLabelingIdChanged(selectedLabelingId) {
@@ -204,7 +219,8 @@ class DatasetPage extends Component {
       controlStates: {
         selectedLabelId: undefined,
         selectedLabelingId: selectedLabelingId,
-        selectedLabelTypeId: undefined
+        selectedLabelTypeId: undefined,
+        canEdit: this.state.controlStates.canEdit
       }
     });
   }
@@ -232,7 +248,8 @@ class DatasetPage extends Component {
       controlStates: {
         selectedLabelId: this.state.controlStates.selectedLabelId,
         selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: selectedLabelTypeId
+        selectedLabelTypeId: selectedLabelTypeId,
+        canEdit: this.state.controlStates.canEdit
       }
     });
   }
@@ -249,7 +266,8 @@ class DatasetPage extends Component {
       controlStates: {
         selectedLabelId: selectedLabelId,
         selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: label ? label.typeId : undefined
+        selectedLabelTypeId: label ? label.typeId : undefined,
+        canEdit: this.state.controlStates.canEdit
       }
     });
   }
@@ -259,14 +277,36 @@ class DatasetPage extends Component {
       labeling =>
         labeling.labelingId === this.state.controlStates.selectedLabelingId
     )[0];
+
     let label = labeling.labels.filter(label => label.id === labelId)[0];
-    if (from < to) {
+
+    if (label !== undefined && label.from === undefined) {
+      label.from = from === undefined ? to : from;
+    } else if (label !== undefined && label.to === undefined) {
+      label.to = from === undefined ? to : from;
+    } else if (!label) {
+      label = {
+        id: labelId,
+        from: from,
+        to: to,
+        typeId: this.state.labelingsDefinition.filter(
+          labeling =>
+            this.state.controlStates.selectedLabelingId === labeling.id
+        )[0].types[0].id
+      };
+      labeling.labels = [...labeling.labels, label];
+    } else {
       label.from = from;
       label.to = to;
-    } else {
-      label.from = to;
-      label.to = from;
     }
+
+    let temp;
+    if (label.from > label.to) {
+      temp = label.from;
+      label.from = label.to;
+      label.to = temp;
+    }
+
     this.forceUpdate();
   }
 
@@ -282,7 +322,19 @@ class DatasetPage extends Component {
       controlStates: {
         selectedLabelId: undefined,
         selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: undefined
+        selectedLabelTypeId: undefined,
+        canEdit: this.state.controlStates.canEdit
+      }
+    });
+  }
+
+  onCanEditChanged(canEdit) {
+    this.setState({
+      controlStates: {
+        selectedLabelId: this.state.controlStates.selectedLabelId,
+        selectedLabelingId: this.state.controlStates.selectedLabelingId,
+        selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
+        canEdit: canEdit
       }
     });
   }
@@ -303,7 +355,7 @@ class DatasetPage extends Component {
       : null;
 
     return (
-      <div>
+      <div className="pb-5">
         <Row className="pt-3">
           <Col
             onMouseUp={this.mouseUpHandler}
@@ -311,7 +363,11 @@ class DatasetPage extends Component {
             lg={9}
             className="pr-lg-0"
           >
-            <div className="mb-3">
+            <div
+              style={{
+                paddingBottom: '86px'
+              }}
+            >
               <LabelingSelectionPanel
                 labelingsDefinition={this.state.labelingsDefinition}
                 selectedLabelingId={this.state.controlStates.selectedLabelingId}
@@ -326,6 +382,7 @@ class DatasetPage extends Component {
                 start={this.state.dataset.start}
                 end={this.state.dataset.end}
                 onLabelChanged={this.onLabelChanged}
+                canEdit={this.state.controlStates.canEdit}
               />
             </div>
           </Col>
@@ -361,6 +418,8 @@ class DatasetPage extends Component {
               selectedLabelTypeId={this.state.controlStates.selectedLabelTypeId}
               onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
               onDeleteSelectedLabel={this.onDeleteSelectedLabel}
+              onCanEditChanged={this.onCanEditChanged}
+              canEdit={this.state.controlStates.canEdit}
             />
           </Col>
           <Col />

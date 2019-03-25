@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Button,
-  Card,
-  InputGroup,
-  InputGroupText,
-  InputGroupAddon,
-  Input
-} from 'reactstrap';
+import { Card, CardBody } from 'reactstrap';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 
@@ -36,6 +29,10 @@ class TimeSeriesPanel extends Component {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMoved = this.onMouseMoved.bind(this);
     this.onPlotBandMouseDown = this.onPlotBandMouseDown.bind(this);
+    this.onMouseDown = this.onMouseDown.bind(this);
+    this.onPlotBandMouseOver = this.onPlotBandMouseOver.bind(this);
+    this.onPlotBandMouseOut = this.onPlotBandMouseOut.bind(this);
+    this.uuidv4 = this.uuidv4.bind(this);
 
     this.generateState = this.generateState.bind(this);
     this.state = this.generateState(props);
@@ -49,6 +46,12 @@ class TimeSeriesPanel extends Component {
   }
 
   generateState(props) {
+    let filteredLabels = props.labeling.labels.filter(
+      label => label.from === undefined || label.to === undefined
+    );
+    let drawingId =
+      filteredLabels.length !== 0 ? filteredLabels[0].id : undefined;
+
     return {
       chartOptions: {
         rangeSelector: {
@@ -81,13 +84,16 @@ class TimeSeriesPanel extends Component {
               props.selectedLabelId
             )
           ),
+          crosshair: {
+            snap: false
+          },
           min: props.start,
           max: props.end,
           startOnTick: false,
           endOnTick: false,
           events: {
             setExtremes: e => {
-              console.log(e);
+              console.log(e); // TODO
             }
           }
         },
@@ -114,8 +120,7 @@ class TimeSeriesPanel extends Component {
         },
         scrollbar: {
           enabled: false
-        },
-        events: {}
+        }
       },
       labeling: props.labeling,
       labelTypes: props.labelTypes,
@@ -125,13 +130,17 @@ class TimeSeriesPanel extends Component {
       controlStates: {
         activePlotLineId: !this.state
           ? undefined
-          : this.state.controlStates.activePlotLineId
+          : this.state.controlStates.activePlotLineId,
+        drawingId: drawingId,
+        canEdit: props.canEdit
       }
     };
   }
 
   labelingsToPlotBands(labeling, labelTypes, selectedLabelId) {
     var mouseDownHandler = this.onPlotBandMouseDown;
+    var mouseOverHandler = this.onPlotBandMouseOver;
+    var mouseOutHandler = this.onPlotBandMouseOut;
 
     if (labeling.labels === undefined) return [];
     return labeling.labels.map(label => ({
@@ -156,7 +165,9 @@ class TimeSeriesPanel extends Component {
         isSelected: selectedLabelId === label.id
       },
       events: {
-        mousedown: e => mouseDownHandler(e, 'band_' + label.id, label.id)
+        mousedown: e => mouseDownHandler(e, 'band_' + label.id, label.id),
+        mouseover: e => mouseOverHandler(label.id === selectedLabelId),
+        mouseout: e => mouseOutHandler()
       }
     }));
   }
@@ -187,6 +198,10 @@ class TimeSeriesPanel extends Component {
   }
 
   onPlotLineMouseDown(e, id) {
+    if (!this.state.controlStates.canEdit) return;
+
+    e.stopPropagation();
+
     var plotLine = this.getPlotLineById(id);
     if (!plotLine.options.isSelected) {
       this.state.onLabelClicked(plotLine.options.labelId);
@@ -198,12 +213,15 @@ class TimeSeriesPanel extends Component {
     plotLine.options.clickX = e.pageX - plotLine.svgElem.translateX;
     this.setState({
       controlStates: {
-        activePlotLineId: id
+        activePlotLineId: id,
+        drawingId: this.state.controlStates.drawingId,
+        canEdit: this.state.controlStates.canEdit
       }
     });
   }
 
   onPlotBandMouseDown(e, id, labelId) {
+    e.stopPropagation();
     var plotBand = this.getSelectedPlotBand();
 
     if (plotBand && !plotBand.options.className === 'selected') {
@@ -216,6 +234,14 @@ class TimeSeriesPanel extends Component {
       this.state.onLabelClicked(labelId);
       return;
     }
+  }
+
+  onPlotBandMouseOver(isSelected) {
+    // dragging
+  }
+
+  onPlotBandMouseOut() {
+    // dragging
   }
 
   onMouseMoved(e) {
@@ -268,7 +294,9 @@ class TimeSeriesPanel extends Component {
 
     this.setState({
       controlStates: {
-        activePlotLineId: undefined
+        activePlotLineId: undefined,
+        drawingId: this.state.controlStates.drawingId,
+        canEdit: this.state.controlStates.canEdit
       }
     });
 
@@ -285,6 +313,64 @@ class TimeSeriesPanel extends Component {
       newValue,
       remainingValue
     );
+  }
+
+  uuidv4() {
+    return 'xxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = (Math.random() * 16) | 0,
+        v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+  }
+
+  onMouseDown(e) {
+    if (
+      !(
+        e.target.classList.contains('highcharts-background') ||
+        e.target.classList.contains('highcharts-grid-line') ||
+        e.target.classList.contains('highcharts-tracker-line')
+      )
+    )
+      return;
+
+    var plotBand = this.getSelectedPlotBand();
+    if (plotBand) {
+      this.onPlotBandMouseDown(
+        e,
+        plotBand.options.id,
+        plotBand.options.labelId
+      );
+      return;
+    } else {
+      if (!this.state.controlStates.canEdit) return;
+
+      let position = this.chart.current.chart.xAxis[0].toValue(
+        e.pageX - this.chart.current.chart.plotBox.x / 2
+      );
+      let id;
+      if (this.state.controlStates.drawingId) {
+        id = this.state.controlStates.drawingId;
+        this.setState({
+          controlStates: {
+            activePlotLineId: undefined,
+            drawingId: undefined,
+            canEdit: this.state.controlStates.canEdit
+          }
+        });
+        this.state.onLabelChanged(id, position, undefined);
+      } else {
+        id = this.uuidv4();
+        this.setState({
+          controlStates: {
+            activePlotLineId: undefined,
+            drawingId: id,
+            canEdit: this.state.controlStates.canEdit
+          }
+        });
+        this.state.onLabelChanged(id, position, undefined);
+      }
+    }
+    e.stopPropagation();
   }
 
   labelingsToRightHandPlotLines(labeling, labelTypes, selectedLabelId) {
@@ -379,13 +465,17 @@ class TimeSeriesPanel extends Component {
   render() {
     return (
       <Card className="mt-3">
-        <HighchartsReact
-          ref={this.chart}
-          highcharts={Highcharts}
-          options={this.state.chartOptions}
-          oneToOne={true}
-          constructorType={'stockChart'}
-        />
+        <CardBody>
+          <div id="chartWrapper" onMouseDown={this.onMouseDown}>
+            <HighchartsReact
+              ref={this.chart}
+              highcharts={Highcharts}
+              options={this.state.chartOptions}
+              oneToOne={true}
+              constructorType={'stockChart'}
+            />
+          </div>
+        </CardBody>
       </Card>
     );
   }

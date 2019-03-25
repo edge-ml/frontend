@@ -1,2 +1,6 @@
 .EditLabelingModal {
 }
+
+.clear::-ms-clear {
+  display: none;
+}

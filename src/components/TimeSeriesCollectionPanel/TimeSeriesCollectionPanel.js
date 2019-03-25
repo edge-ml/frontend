@@ -24,7 +24,8 @@ class TimeSeriesCollectionPanel extends Component {
       selectedLabelId: props.selectedLabelId,
       start: props.start,
       end: props.end,
-      onLabelChanged: props.onLabelChanged
+      onLabelChanged: props.onLabelChanged,
+      canEdit: props.canEdit
     };
   }
 
@@ -37,7 +38,8 @@ class TimeSeriesCollectionPanel extends Component {
       selectedLabelId: props.selectedLabelId,
       start: props.start,
       end: props.end,
-      onLabelChanged: props.onLabelChanged
+      onLabelChanged: props.onLabelChanged,
+      canEdit: props.canEdit
     }));
   }
 
@@ -56,6 +58,7 @@ class TimeSeriesCollectionPanel extends Component {
             start={this.state.start}
             end={this.state.end}
             onLabelChanged={this.state.onLabelChanged}
+            canEdit={this.state.canEdit}
           />
         ))}
       </div>

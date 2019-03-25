@@ -10,6 +10,9 @@ import {
 } from 'reactstrap';
 import './LabelingPanel.css';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
+
 class LabelingPanel extends Component {
   constructor(props) {
     super(props);
@@ -20,8 +23,12 @@ class LabelingPanel extends Component {
       labelTypes: props.labelTypes,
       selectedLabelTypeId: props.selectedLabelTypeId,
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
-      onDeleteSelectedLabel: props.onDeleteSelectedLabel
+      onDeleteSelectedLabel: props.onDeleteSelectedLabel,
+      canEdit: props.canEdit,
+      onCanEditChanged: props.onCanEditChanged
     };
+
+    this.toggleEdit = this.toggleEdit.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -32,7 +39,9 @@ class LabelingPanel extends Component {
       labelTypes: props.labelTypes,
       selectedLabelTypeId: props.selectedLabelTypeId,
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
-      onDeleteSelectedLabel: props.onDeleteSelectedLabel
+      onDeleteSelectedLabel: props.onDeleteSelectedLabel,
+      canEdit: props.canEdit,
+      onCanEditChanged: props.onCanEditChanged
     }));
   }
 
@@ -46,11 +55,25 @@ class LabelingPanel extends Component {
     this.state.onDeleteSelectedLabel();
   }
 
+  toggleEdit() {
+    this.state.onCanEditChanged(!this.state.canEdit);
+  }
+
   render() {
     return (
       <Card className="LabelingPanel">
         <CardBody>
           <div className="informationBox">
+            <Button
+              className="m-1 btn-light"
+              style={{ float: 'left' }}
+              onClick={this.toggleEdit}
+            >
+              <FontAwesomeIcon
+                style={{ color: !this.state.canEdit ? 'red' : 'green' }}
+                icon={!this.state.canEdit ? faLock : faUnlock}
+              />
+            </Button>
             <InputGroup className="inputGroup m-1">
               <InputGroupAddon addonType="prepend" className="inputGroupAddon">
                 <InputGroupText className="inputLabel">Id</InputGroupText>
@@ -90,7 +113,10 @@ class LabelingPanel extends Component {
               />
             </InputGroup>
             <Button
-              disabled={this.state.selectedLabelTypeId === undefined}
+              disabled={
+                this.state.selectedLabelTypeId === undefined ||
+                !this.state.canEdit
+              }
               className="deleteButton m-1"
               outline
               color="danger"
@@ -107,6 +133,10 @@ class LabelingPanel extends Component {
             {this.state.labelTypes.map(label => (
               <Button
                 className="btn-light m-1 labelingButton"
+                disabled={
+                  this.state.selectedLabelTypeId === undefined ||
+                  !this.state.canEdit
+                }
                 style={{
                   backgroundColor:
                     label.id === this.state.selectedLabelTypeId
