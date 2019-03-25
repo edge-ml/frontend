@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Badge } from 'reactstrap';
+import { Card, CardBody, CardHeader, Badge } from 'reactstrap';
 import './TagsPanel.css';
 
 class TagsPanel extends Component {
@@ -19,8 +19,10 @@ class TagsPanel extends Component {
   render() {
     return (
       <Card>
-        <div className="selection-panel">
-          <h5>Tags</h5>
+        <CardHeader>
+          <b>Tags</b>
+        </CardHeader>
+        <CardBody>
           <div className="tagsContainer">
             {this.state.tags.map(tag => (
               <span className="m-1">
@@ -28,7 +30,7 @@ class TagsPanel extends Component {
               </span>
             ))}
           </div>
-        </div>
+        </CardBody>
       </Card>
     );
   }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Button,
   Card,
+  CardBody,
   InputGroup,
   InputGroupText,
   InputGroupAddon,
@@ -48,7 +49,7 @@ class LabelingPanel extends Component {
   render() {
     return (
       <Card className="LabelingPanel">
-        <div>
+        <CardBody>
           <div className="informationBox">
             <InputGroup className="inputGroup m-1">
               <InputGroupAddon addonType="prepend" className="inputGroupAddon">
@@ -126,7 +127,7 @@ class LabelingPanel extends Component {
               </Button>
             ))}
           </div>
-        </div>
+        </CardBody>
       </Card>
     );
   }

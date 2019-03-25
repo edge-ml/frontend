@@ -122,7 +122,8 @@ class LabelingsPage extends Component {
       isReady: true,
       modal: {
         labeling: undefined,
-        isOpen: false
+        isOpen: false,
+        isNewLabeling: false
       }
     };
 
@@ -134,28 +135,33 @@ class LabelingsPage extends Component {
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
   }
 
-  toggleModal(labeling) {
+  toggleModal(labeling, isNewLabeling) {
     this.setState({
       modal: {
         labeling: this.state.modal.isOpen ? undefined : labeling,
-        isOpen: !this.state.modal.isOpen
+        isOpen: !this.state.modal.isOpen,
+        isNewLabeling: isNewLabeling
       }
     });
   }
 
   onAddLabeling() {
-    this.toggleModal({
-      id: this.uuidv4(),
-      name: '',
-      types: []
-    });
+    this.toggleModal(
+      {
+        id: this.uuidv4(),
+        name: '',
+        types: []
+      },
+      true
+    );
   }
 
   onCloseModal() {
     this.setState({
       modal: {
         labeling: undefined,
-        isOpen: false
+        isOpen: false,
+        isNewLabeling: false
       }
     });
   }
@@ -167,7 +173,8 @@ class LabelingsPage extends Component {
       ),
       modal: {
         isOpen: false,
-        labeling: undefined
+        labeling: undefined,
+        isNewLabeling: false
       }
     });
   }
@@ -253,7 +260,7 @@ class LabelingsPage extends Component {
                           className="btn-light mt-0"
                           block
                           onClick={e => {
-                            this.toggleModal(labeling);
+                            this.toggleModal(labeling, false);
                           }}
                         >
                           Edit
@@ -285,6 +292,7 @@ class LabelingsPage extends Component {
           onCloseModal={this.onCloseModal}
           onDeleteLabeling={this.onDeleteLabeling}
           onSave={this.onSave}
+          isNewLabeling={this.state.modal.isNewLabeling}
         />
       </Loader>
     );

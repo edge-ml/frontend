@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Button } from 'reactstrap';
+import { Card, Button, CardBody } from 'reactstrap';
 import './InteractionControlPanel.css';
 
 class InteractionControlPanel extends Component {
@@ -19,7 +19,7 @@ class InteractionControlPanel extends Component {
   render() {
     return (
       <Card>
-        <div className="interaction-control-panel">
+        <CardBody>
           <Button block outline color="primary" className="m-0">
             Save
           </Button>
@@ -28,7 +28,7 @@ class InteractionControlPanel extends Component {
               Publish
             </Button>
           ) : null}
-        </div>
+        </CardBody>
       </Card>
     );
   }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Button } from 'reactstrap';
+import { Card, CardBody, Button } from 'reactstrap';
 import './LabelingSelectionPanel.css';
 
 class LabelingSelectionPanel extends Component {
@@ -30,7 +30,7 @@ class LabelingSelectionPanel extends Component {
 
     return (
       <Card className="LabelingSelectionPanel">
-        <div className="text-left">
+        <CardBody className="text-left">
           {this.state.labelingsDefinition.map(labeling => (
             <Button
               className={classNames(
@@ -51,7 +51,7 @@ class LabelingSelectionPanel extends Component {
           <Button className="m-1" color="secondary">
             <bold>+ Add</bold>
           </Button>
-        </div>
+        </CardBody>
       </Card>
     );
   }

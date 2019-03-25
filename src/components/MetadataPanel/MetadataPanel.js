@@ -4,7 +4,9 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Input
+  Input,
+  CardBody,
+  CardHeader
 } from 'reactstrap';
 import './MetadataPanel.css';
 
@@ -31,8 +33,10 @@ class MetadataPanel extends Component {
   render() {
     return (
       <Card>
-        <div className="selection-panel">
-          <h5>Metadata</h5>
+        <CardHeader>
+          <b>Metadata</b>
+        </CardHeader>
+        <CardBody>
           <div>
             <InputGroup>
               <InputGroupAddon addonType="prepend">
@@ -89,7 +93,7 @@ class MetadataPanel extends Component {
               <Input className="text-right" value={this.state.email} readOnly />
             </InputGroup>
           </div>
-        </div>
+        </CardBody>
       </Card>
     );
   }
