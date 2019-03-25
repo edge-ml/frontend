@@ -114,7 +114,8 @@ class TimeSeriesPanel extends Component {
         },
         scrollbar: {
           enabled: false
-        }
+        },
+        events: {}
       },
       labeling: props.labeling,
       labelTypes: props.labelTypes,
