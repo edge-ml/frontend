@@ -1,16 +1,7 @@
 import React, { Component } from 'react';
-import { Col, Row, Button, Fade } from 'reactstrap';
-import Request from 'request-promise';
-import update from 'immutability-helper';
-import { load } from 'protobufjs';
+import { Col, Row, Fade } from 'reactstrap';
 import { view } from 'react-easy-state';
 
-import { CloudDownloadIcon } from 'react-octicons';
-
-import State from '../state';
-import Loader from '../modules/loader';
-import DatasetToolbar from '../modules/datasetToolbar';
-import SaveToolbar from '../modules/datasetSave';
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
 import TagsPanel from '../components/TagsPanel/TagsPanel';
 import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
@@ -355,39 +346,41 @@ class DatasetPage extends Component {
       : null;
 
     return (
-      <div className="pb-5">
-        <Row className="pt-3">
-          <Col
-            onMouseUp={this.mouseUpHandler}
-            xs={12}
-            lg={9}
-            className="pr-lg-0"
-          >
-            <div
-              style={{
-                paddingBottom: '86px'
-              }}
+      <Fade in={this.state.fadeIn}>
+        <div className="pb-5">
+          <Row className="pt-3">
+            <Col
+              onMouseUp={this.mouseUpHandler}
+              xs={12}
+              lg={9}
+              className="pr-lg-0"
             >
-              <LabelingSelectionPanel
-                labelingsDefinition={this.state.labelingsDefinition}
-                selectedLabelingId={this.state.controlStates.selectedLabelingId}
-                onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
-              />
-              <TimeSeriesCollectionPanel
-                timeSeries={this.state.dataset.timeSeries}
-                labeling={labeling}
-                labelTypes={selectedLabelingTypes}
-                onLabelClicked={this.onSelectedLabelChanged}
-                selectedLabelId={this.state.controlStates.selectedLabelId}
-                start={this.state.dataset.start}
-                end={this.state.dataset.end}
-                onLabelChanged={this.onLabelChanged}
-                canEdit={this.state.controlStates.canEdit}
-              />
-            </div>
-          </Col>
-          <Col xs={12} lg={3}>
-            <Fade in={this.state.fadeIn}>
+              <div
+                style={{
+                  paddingBottom: '86px'
+                }}
+              >
+                <LabelingSelectionPanel
+                  labelingsDefinition={this.state.labelingsDefinition}
+                  selectedLabelingId={
+                    this.state.controlStates.selectedLabelingId
+                  }
+                  onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
+                />
+                <TimeSeriesCollectionPanel
+                  timeSeries={this.state.dataset.timeSeries}
+                  labeling={labeling}
+                  labelTypes={selectedLabelingTypes}
+                  onLabelClicked={this.onSelectedLabelChanged}
+                  selectedLabelId={this.state.controlStates.selectedLabelId}
+                  start={this.state.dataset.start}
+                  end={this.state.dataset.end}
+                  onLabelChanged={this.onLabelChanged}
+                  canEdit={this.state.controlStates.canEdit}
+                />
+              </div>
+            </Col>
+            <Col xs={12} lg={3}>
               <div>
                 <InteractionControlPanel
                   isPublished={this.state.dataset.isPublished}
@@ -407,24 +400,26 @@ class DatasetPage extends Component {
               <div className="mt-3">
                 <ManagementPanel />
               </div>
-            </Fade>
-          </Col>
-          <Col xs={12}>
-            <LabelingPanel
-              id={this.state.controlStates.selectedLabelId}
-              from={label ? label.from : null}
-              to={label ? label.to : null}
-              labelTypes={selectedLabeling.types}
-              selectedLabelTypeId={this.state.controlStates.selectedLabelTypeId}
-              onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
-              onDeleteSelectedLabel={this.onDeleteSelectedLabel}
-              onCanEditChanged={this.onCanEditChanged}
-              canEdit={this.state.controlStates.canEdit}
-            />
-          </Col>
-          <Col />
-        </Row>
-      </div>
+            </Col>
+            <Col xs={12}>
+              <LabelingPanel
+                id={this.state.controlStates.selectedLabelId}
+                from={label ? label.from : null}
+                to={label ? label.to : null}
+                labelTypes={selectedLabeling.types}
+                selectedLabelTypeId={
+                  this.state.controlStates.selectedLabelTypeId
+                }
+                onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
+                onDeleteSelectedLabel={this.onDeleteSelectedLabel}
+                onCanEditChanged={this.onCanEditChanged}
+                canEdit={this.state.controlStates.canEdit}
+              />
+            </Col>
+            <Col />
+          </Row>
+        </div>
+      </Fade>
     );
   }
 }

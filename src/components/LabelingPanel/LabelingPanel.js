@@ -70,9 +70,15 @@ class LabelingPanel extends Component {
               onClick={this.toggleEdit}
             >
               <FontAwesomeIcon
-                style={{ color: !this.state.canEdit ? 'red' : 'green' }}
+                style={{ color: !this.state.canEdit ? '#b71c1c' : '#43A047' }}
                 icon={!this.state.canEdit ? faLock : faUnlock}
+                className="mr-2"
               />
+              <span
+                style={{ color: !this.state.canEdit ? '#b71c1c' : '#43A047' }}
+              >
+                {!this.state.canEdit ? 'Locked' : 'Unlocked'}
+              </span>
             </Button>
             <InputGroup className="inputGroup m-1">
               <InputGroupAddon addonType="prepend" className="inputGroupAddon">
