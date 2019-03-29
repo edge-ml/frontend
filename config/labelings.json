@@ -21,32 +21,6 @@
 		]
 	},
 	{
-		"id": "0x924",
-		"name": "Sleep Stages",
-		"types": [
-			{
-				"id": "0x14812",
-				"name": "Awake",
-				"color": "#FF6347"
-			},
-			{
-				"id": "0x1483123",
-				"name": "Light",
-				"color": "#4CAF50"
-			},
-			{
-				"id": "0x148571235",
-				"name": "Deep",
-				"color": "#00BCD4"
-			},
-			{
-				"id": "0x17865485",
-				"name": "REM",
-				"color": "#AB61CD"
-			}
-		]
-	},
-	{
 		"id": "0x92353",
 		"name": "Sleep Position",
 		"types": [
@@ -69,6 +43,16 @@
 				"id": "0x11200192334",
 				"name": "Belly",
 				"color": "#00BCD4"
+			},
+			{
+				"id": "97fa64ae-135c-48b1-b0a1-c0ef8b526843",
+				"name": "",
+				"color": "#9FB0DC"
+			},
+			{
+				"id": "3343fcee-1688-47a4-bd6a-dff14b4f22ab",
+				"name": "",
+				"color": "#24AEA8"
 			}
 		]
 	},
@@ -90,73 +74,6 @@
 				"id": "0x14251285",
 				"name": "High",
 				"color": "#00BCD4"
-			}
-		]
-	},
-	{
-		"id": "8deb74e5e4bbbb4",
-		"name": "",
-		"types": []
-	},
-	{
-		"id": "26f0b4d7eb8e79b",
-		"name": "test123",
-		"types": [
-			{
-				"id": "f5448ac0-8490-4a4f-8f15-e739e28802dc",
-				"name": "a",
-				"color": "#69062C"
-			},
-			{
-				"id": "c8d92daf-5534-4405-a1c7-082d8749646b",
-				"name": "s",
-				"color": "#7BAD7C"
-			},
-			{
-				"id": "62bb3be6-0ec4-4e85-be9e-28edd9d4f47e",
-				"name": "d",
-				"color": "#8C1067"
-			},
-			{
-				"id": "5a997a11-feac-4aed-88f4-dccdca819eef",
-				"name": "f",
-				"color": "#9EA86D"
-			}
-		]
-	},
-	{
-		"id": "f32ad422623ec0f",
-		"name": "test1234",
-		"types": [
-			{
-				"id": "85441f57-00ef-45f9-9099-5312b1213971",
-				"name": "a",
-				"color": "#07D5CD"
-			},
-			{
-				"id": "fc1bdba9-3e5c-471d-b7cc-16ff0cc7c9c1",
-				"name": "s",
-				"color": "#B21702"
-			},
-			{
-				"id": "556ff645-8759-423c-9b48-10ed28a0b169",
-				"name": "d",
-				"color": "#995E08"
-			},
-			{
-				"id": "c9c5ab1c-4b8d-49b1-afe6-d458bba69ac0",
-				"name": "f",
-				"color": "#6FF5C9"
-			},
-			{
-				"id": "36defc27-ea5e-45a0-9ee0-fe3af8078664",
-				"name": "g",
-				"color": "#C7105E"
-			},
-			{
-				"id": "4bad7180-52b3-4681-8833-a1c38baa279e",
-				"name": "h",
-				"color": "#3107C9"
 			}
 		]
 	}

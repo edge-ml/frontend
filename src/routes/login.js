@@ -31,7 +31,7 @@ class LoginPage extends Component {
       username: '',
       password: '',
       button: {
-        color: 'secondary',
+        color: 'primary',
         disabled: false
       },
       isLoggedIn: props.isLoggedIn,
@@ -50,7 +50,6 @@ class LoginPage extends Component {
     this.submit = this.submit.bind(this);
     this.onLogin = this.onLogin.bind(this);
     this.onTwoFA = this.onTwoFA.bind(this);
-    this.onConfirmTokenClicked = this.onConfirmTokenClicked.bind(this);
     this.onTokenChanged = this.onTokenChanged.bind(this);
     this.onVerified = this.onVerified.bind(this);
   }
@@ -90,8 +89,7 @@ class LoginPage extends Component {
         update(this.state, {
           $merge: {
             button: {
-              disabled: false,
-              color: 'secondary'
+              disabled: false
             }
           }
         })
@@ -111,6 +109,9 @@ class LoginPage extends Component {
 
   onTokenChanged(e) {
     if (e.target.value.length > 6) return;
+    else if (e.target.value.length === 6) {
+      twoFAAuthenticate(e.target.value);
+    }
 
     this.setState({
       twoFactorAuthentication: {
@@ -118,10 +119,6 @@ class LoginPage extends Component {
         qrCode: this.state.twoFactorAuthentication.qrCode
       }
     });
-  }
-
-  onConfirmTokenClicked() {
-    twoFAAuthenticate(this.state.twoFactorAuthentication.token, test => {});
   }
 
   onVerified(success) {
@@ -136,8 +133,7 @@ class LoginPage extends Component {
       update(this.state, {
         $merge: {
           button: {
-            disabled: true,
-            color: 'primary'
+            disabled: true
           }
         }
       })
@@ -244,7 +240,7 @@ class LoginPage extends Component {
             <ModalHeader>
               {this.state.twoFactorAuthentication.qrCode
                 ? 'Scan the QR Code with Google Authenticator and enter the token to confirm.'
-                : 'Enter the token shown in your Google Authenticator App.'}
+                : 'Enter the token shown in Google Authenticator.'}
             </ModalHeader>
             <ModalBody
               style={{
@@ -259,7 +255,8 @@ class LoginPage extends Component {
                 />
               ) : null}
               <Input
-                className="mt-1"
+                autoFocus
+                className={'mt-1'}
                 placeholder="Token"
                 value={this.state.twoFactorAuthentication.token}
                 style={{
@@ -267,13 +264,6 @@ class LoginPage extends Component {
                 }}
                 onChange={this.onTokenChanged}
               />
-              <Button
-                color="primary"
-                block
-                onClick={this.onConfirmTokenClicked}
-              >
-                Confirm
-              </Button>
             </ModalBody>
           </Modal>
         </Container>

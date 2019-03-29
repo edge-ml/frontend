@@ -93,16 +93,18 @@ class LabelingsPage extends Component {
   }
 
   onDeleteLabeling(labelingId) {
+    let newLabelings = this.state.labelingsDefinition.filter(
+      labeling => labeling.id !== labelingId
+    );
     this.setState({
-      labelingsDefinition: this.state.labelingsDefinition.filter(
-        labeling => labeling.id !== labelingId
-      ),
+      labelingsDefinition: newLabelings,
       modal: {
         isOpen: false,
         labeling: undefined,
         isNewLabeling: false
       }
     });
+    updateLabelings(newLabelings);
   }
 
   onSave(labelingId, name, types) {
