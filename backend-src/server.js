@@ -70,17 +70,8 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('labelings', (newLabelings) => {
-<<<<<<< HEAD
-		console.log("labelings", socket.client.twoFactorAuthenticated)
-
-		if (!socket.client.twoFactorAuthenticated) return; // TODO: this should happen somwhere consistent
-
-		if (!newLabelings){
-			socket.emit('labelings', labelings)
-		} else {
-			labelings = newLabelings
-			socket.emit('labelings', newLabelings)
-=======
+		if (!socket.client.twoFactorAuthenticated) return;
+		
 		if(!newLabelings){
 			console.log('labeling request');
 			socket.emit('labelings', labelings);
@@ -95,7 +86,6 @@ io.on('connection', (socket) => {
 			});
 
 			io.emit('labelings', newLabelings);
->>>>>>> f58f5709fefd550527021acb1c0b4a97975a894b
 		}
 	});
 
