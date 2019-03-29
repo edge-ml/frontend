@@ -7,7 +7,10 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Button
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody
 } from 'reactstrap';
 import { PersonIcon, ShieldIcon } from 'react-octicons';
 import Request from 'request-promise';
@@ -15,7 +18,11 @@ import update from 'immutability-helper';
 
 import State from '../state';
 
-import { login } from '../services/SocketService';
+import {
+  login,
+  twoFAAuthenticate,
+  subscribeVerified
+} from '../services/SocketService';
 
 class LoginPage extends Component {
   constructor(props) {
@@ -27,21 +34,32 @@ class LoginPage extends Component {
         color: 'secondary',
         disabled: false
       },
-      authed: props.isAuthenticated,
+      isLoggedIn: props.isLoggedIn,
+      isTwoFactorAuthenticated: props.isTwoFactorAuthenticated,
       authenticationHandlers: {
-        onLogin: props.onLogin
+        onLogin: props.onLogin,
+        oneTwoFA: props.oneTwoFA
+      },
+      twoFactorAuthentication: {
+        qrCode: undefined,
+        token: undefined
       }
     };
     this.userChange = this.userChange.bind(this);
     this.passChange = this.passChange.bind(this);
     this.submit = this.submit.bind(this);
     this.onLogin = this.onLogin.bind(this);
+    this.onTwoFA = this.onTwoFA.bind(this);
+    this.onConfirmTokenClicked = this.onConfirmTokenClicked.bind(this);
+    this.onTokenChanged = this.onTokenChanged.bind(this);
+    this.onVerified = this.onVerified.bind(this);
   }
 
   componentWillReceiveProps(props) {
     this.setState(
       update(this.state, {
-        authed: { $set: props.isAuthenticated }
+        isLoggedIn: { $set: props.isLoggedIn },
+        isTwoFactorAuthenticated: { $set: props.isTwoFactorAuthenticated }
       })
     );
   }
@@ -78,8 +96,39 @@ class LoginPage extends Component {
           }
         })
       );
+      subscribeVerified(this.onVerified);
     }
     this.state.authenticationHandlers.onLogin(didSucceed);
+  }
+
+  onTwoFA(qrCode) {
+    this.setState({
+      twoFactorAuthentication: {
+        qrCode: qrCode
+      }
+    });
+  }
+
+  onTokenChanged(e) {
+    if (e.target.value.length > 6) return;
+
+    this.setState({
+      twoFactorAuthentication: {
+        token: e.target.value.trim(),
+        qrCode: this.state.twoFactorAuthentication.qrCode
+      }
+    });
+  }
+
+  onConfirmTokenClicked() {
+    twoFAAuthenticate(this.state.twoFactorAuthentication.token, test => {});
+  }
+
+  onVerified(success) {
+    if (!success) alert('Token does not match. Try Again.');
+    else {
+      this.state.authenticationHandlers.oneTwoFA(success);
+    }
   }
 
   submit(event) {
@@ -94,7 +143,7 @@ class LoginPage extends Component {
       })
     );
 
-    login(this.state.username, this.state.password, this.onLogin);
+    login(this.state.username, this.state.password, this.onLogin, this.onTwoFA);
   }
 
   componentDidMount() {
@@ -130,7 +179,7 @@ class LoginPage extends Component {
   }
 
   render() {
-    if (this.state.authed) {
+    if (this.state.isLoggedIn && this.state.isTwoFactorAuthenticated) {
       return this.props.children;
     } else {
       return (
@@ -187,6 +236,46 @@ class LoginPage extends Component {
               </Row>
             </Col>
           </Row>
+          <Modal
+            isOpen={
+              this.state.isLoggedIn && !this.state.isTwoFactorAuthenticated
+            }
+          >
+            <ModalHeader>
+              {this.state.twoFactorAuthentication.qrCode
+                ? 'Scan the QR Code with Google Authenticator and enter the token to confirm.'
+                : 'Enter the token shown in your Google Authenticator App.'}
+            </ModalHeader>
+            <ModalBody
+              style={{
+                margin: 'auto'
+              }}
+            >
+              {this.state.twoFactorAuthentication.qrCode ? (
+                <img
+                  width="100%"
+                  alt="2FA QR Code"
+                  src={this.state.twoFactorAuthentication.qrCode}
+                />
+              ) : null}
+              <Input
+                className="mt-1"
+                placeholder="Token"
+                value={this.state.twoFactorAuthentication.token}
+                style={{
+                  textAlign: 'center'
+                }}
+                onChange={this.onTokenChanged}
+              />
+              <Button
+                color="primary"
+                block
+                onClick={this.onConfirmTokenClicked}
+              >
+                Confirm
+              </Button>
+            </ModalBody>
+          </Modal>
         </Container>
       );
     }

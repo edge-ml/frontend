@@ -26,26 +26,41 @@ class App extends Component {
     super(props);
 
     this.state = {
-      isAuthenticated: false
+      isLoggedIn: false,
+      isTwoFactorAuthenticated: false
     };
 
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);
+    this.oneTwoFA = this.oneTwoFA.bind(this);
   }
 
   onLogout(didSucceed) {
-    if (didSucceed)
+    if (didSucceed) {
       this.setState({
-        isAuthenticated: false
+        isLoggedIn: false,
+        isTwoFactorAuthenticated: false
       });
+    }
   }
 
   onLogin(didSucceed) {
-    if (didSucceed)
+    if (didSucceed) {
       this.setState({
-        isAuthenticated: true
+        isLoggedIn: true,
+        isTwoFactorAuthenticated: this.state.isTwoFactorAuthenticated
       });
+    }
+  }
+
+  oneTwoFA(success) {
+    if (success) {
+      this.setState({
+        isLoggedIn: this.state.isLoggedIn,
+        isTwoFactorAuthenticated: success
+      });
+    }
   }
 
   logoutHandler(e) {
@@ -55,8 +70,10 @@ class App extends Component {
   render() {
     return (
       <AuthWall
-        isAuthenticated={this.state.isAuthenticated}
+        isLoggedIn={this.state.isLoggedIn}
+        isTwoFactorAuthenticated={this.state.isTwoFactorAuthenticated}
         onLogin={this.onLogin}
+        oneTwoFA={this.oneTwoFA}
       >
         <Navbar color="light" light expand="md">
           <NavbarBrand>Explorer</NavbarBrand>
