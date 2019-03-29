@@ -10,11 +10,12 @@ import {
   Button
 } from 'reactstrap';
 import { PersonIcon, ShieldIcon } from 'react-octicons';
-import { view } from 'react-easy-state';
 import Request from 'request-promise';
 import update from 'immutability-helper';
 
 import State from '../state';
+
+import { login } from '../services/SocketService';
 
 class LoginPage extends Component {
   constructor(props) {
@@ -26,11 +27,23 @@ class LoginPage extends Component {
         color: 'secondary',
         disabled: false
       },
-      authed: false
+      authed: props.isAuthenticated,
+      authenticationHandlers: {
+        onLogin: props.onLogin
+      }
     };
     this.userChange = this.userChange.bind(this);
     this.passChange = this.passChange.bind(this);
     this.submit = this.submit.bind(this);
+    this.onLogin = this.onLogin.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState(
+      update(this.state, {
+        authed: { $set: props.isAuthenticated }
+      })
+    );
   }
 
   userChange(event) {
@@ -53,6 +66,22 @@ class LoginPage extends Component {
     );
   }
 
+  onLogin(didSucceed) {
+    if (didSucceed) {
+      this.setState(
+        update(this.state, {
+          $merge: {
+            button: {
+              disabled: false,
+              color: 'secondary'
+            }
+          }
+        })
+      );
+    }
+    this.state.authenticationHandlers.onLogin(didSucceed);
+  }
+
   submit(event) {
     this.setState(
       update(this.state, {
@@ -65,35 +94,7 @@ class LoginPage extends Component {
       })
     );
 
-    const options = {
-      method: 'POST',
-      url: `${State.auth0}/oauth/token`,
-      form: {
-        grant_type: 'password',
-        client_id: '4uE1DwK5BtnyInN14LO0Lb42NXtr5MHC',
-        username: this.state.username,
-        password: this.state.password,
-        scope: 'openid'
-      }
-    };
-
-    Request(options)
-      .then(res => {
-        const response = JSON.parse(res);
-        window.localStorage.setItem('id_token', response.id_token);
-        this.setState(
-          update(this.state, {
-            authed: { $set: true }
-          })
-        );
-      })
-      .catch(err => {
-        this.setState(
-          update(this.state, {
-            authed: { $set: false }
-          })
-        );
-      });
+    login(this.state.username, this.state.password, this.onLogin);
   }
 
   componentDidMount() {
@@ -177,6 +178,7 @@ class LoginPage extends Component {
                       onClick={this.submit}
                       disabled={this.state.button.disabled}
                       color={this.state.button.color}
+                      block
                     >
                       Login
                     </Button>
@@ -190,5 +192,4 @@ class LoginPage extends Component {
     }
   }
 }
-
-export default view(LoginPage);
+export default LoginPage;

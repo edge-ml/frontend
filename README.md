@@ -10,3 +10,6 @@ yarn start      or     npm start
 4. Start the app using npm start or yarn start
 5. you can now debug the app
 
+## Running the Explorer
+yarn run start:backend
+yarn start

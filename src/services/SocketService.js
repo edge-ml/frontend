@@ -4,16 +4,34 @@ let socket;
 let authenticated = false;
 
 /***
- *
+ * Authentication
  */
-export const authenticate = (username, password) => {
-  socket = openSocket('http://localhost:8000');
+export const login = (username, password, callback) => {
+  if (socket) return;
+
+  socket = openSocket('http://localhost:3001');
   socket.on('connect', function() {
-    socket.emit('authentication', { username: 'John', password: 'secret' });
+    socket.emit('authentication', { username: username, password: password });
     socket.on('authenticated', function() {
       authenticated = true;
+      callback(true);
+    });
+    socket.on('unauthorized', function() {
+      authenticated = false;
+      callback(false);
     });
   });
+};
+
+export const logout = callback => {
+  if (authenticated && socket) {
+    socket.disconnect();
+    authenticated = false;
+    socket = undefined;
+    callback(true);
+  } else {
+    callback(false);
+  }
 };
 
 /***
@@ -22,7 +40,14 @@ export const authenticate = (username, password) => {
 export const subscribeLabelings = callback => {
   if (!authenticated) return;
 
-  socket.on('labelings', timestamp => callback(null, timestamp));
+  socket.on('labelings', timestamp => callback(timestamp));
+  socket.emit('labelings');
+};
+
+export const updateLabelings = labelings => {
+  if (!authenticated) return;
+
+  socket.emit('labelings', labelings);
 };
 
 export const unsubscribeLabelings = callback => {
@@ -32,27 +57,13 @@ export const unsubscribeLabelings = callback => {
 };
 
 /***
- * Labeling
- */
-export const subscribeLabeling = (id, callback) => {
-  if (!authenticated) return;
-
-  socket.on(`labelings_${id}`, timestamp => callback(null, timestamp));
-};
-
-export const unsubscribeLabeling = id => {
-  if (!authenticated) return;
-
-  socket.off(`labelings_${id}`);
-};
-
-/***
  * Datasets
  */
 export const subscribeDatasets = callback => {
   if (!authenticated) return;
 
-  socket.on(`datasets`, timestamp => callback(null, timestamp));
+  socket.on(`datasets`, timestamp => callback(timestamp));
+  socket.emit(`datasets`);
 };
 
 export const unsubscribeDatasets = () => {
@@ -74,16 +85,4 @@ export const unsubscribeDataset = (id, callback) => {
   if (!authenticated) return;
 
   socket.off(`datasets_${id}`);
-};
-
-export const onDatasetLabelingsChanged = dataset => {
-  if (!authenticated) return;
-
-  dataset.labelings = dataset.labelings.array.forEach(labeling => {
-    labeling.labels = labeling.labels.filter(
-      label => label.from !== undefined && label.to !== undefined
-    );
-  });
-
-  socket.emit(dataset.id, dataset.labelings);
 };

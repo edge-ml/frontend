@@ -19,24 +19,45 @@ import ListPage from './routes/list';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labelings';
 
-import logo from './logo.png';
-import labelings from './routes/labelings';
+import { logout } from './services/SocketService';
 
 class App extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      isAuthenticated: false
+    };
+
     this.logoutHandler = this.logoutHandler.bind(this);
+    this.onLogout = this.onLogout.bind(this);
+    this.onLogin = this.onLogin.bind(this);
+  }
+
+  onLogout(didSucceed) {
+    if (didSucceed)
+      this.setState({
+        isAuthenticated: false
+      });
+  }
+
+  onLogin(didSucceed) {
+    if (didSucceed)
+      this.setState({
+        isAuthenticated: true
+      });
   }
 
   logoutHandler(e) {
-    e.preventDefault();
-    window.localStorage.clear();
-    window.location.reload();
+    logout(this.onLogout);
   }
 
   render() {
     return (
-      <AuthWall>
+      <AuthWall
+        isAuthenticated={this.state.isAuthenticated}
+        onLogin={this.onLogin}
+      >
         <Navbar color="light" light expand="md">
           <NavbarBrand>Explorer</NavbarBrand>
           <Nav className="ml-auto" navbar>

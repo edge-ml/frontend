@@ -13,7 +13,7 @@ const server = http.createServer(app.callback());
 const io = socketio(server);
 
 const auth = require(path.join(__dirname, '../', 'config', 'auth.json'));
-const labelings = require(path.join(__dirname, '../', 'config', 'labelings.json'));
+let labelings = require(path.join(__dirname, '../', 'config', 'labelings.json'));
 
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => callback(null, (auth[data.username] === data.password)),
@@ -27,9 +27,15 @@ SocketIoAuth(io, {
 io.on('connection', (socket) => {
 	console.log('client connected');
 
-	socket.on('labelings', (msg) => {
-		console.log(`client: labelings >>> ${msg}`);
-		socket.emit('labelings', labelings);
+	socket.on('labelings', (newLabelings) => {
+		if (!newLabelings) {
+			console.log("sending")
+			socket.emit('labelings', labelings);
+		} else {
+			console.log("updating")
+			labelings = newLabelings;
+			socket.emit('labelings', newLabelings);	
+		}
 	});
 
 	socket.on('disconnect', () => {

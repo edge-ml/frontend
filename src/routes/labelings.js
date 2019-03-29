@@ -16,110 +16,20 @@ import { view } from 'react-easy-state';
 import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
 
+import {
+  subscribeLabelings,
+  updateLabelings,
+  unsubscribeLabelings
+} from '../services/SocketService';
+import { Socket } from 'dgram';
+
 class LabelingsPage extends Component {
   constructor(props) {
     super(props);
 
-    const labelingsDefinition = [
-      {
-        id: '0x923',
-        name: 'Sleep Apnea',
-        types: [
-          {
-            id: '0x1482',
-            name: 'Apnea',
-            color: '#FF6347'
-          },
-          {
-            id: '0x1483',
-            name: 'Hypopnea',
-            color: '#EC407A'
-          },
-          {
-            id: '0x1485',
-            name: 'Noise',
-            color: '#00BCD4'
-          }
-        ]
-      },
-      {
-        id: '0x924',
-        name: 'Sleep Stages',
-        types: [
-          {
-            id: '0x14812',
-            name: 'Awake',
-            color: '#FF6347'
-          },
-          {
-            id: '0x1483123',
-            name: 'Light',
-            color: '#4CAF50'
-          },
-          {
-            id: '0x148571235',
-            name: 'Deep',
-            color: '#00BCD4'
-          },
-          {
-            id: '0x17865485',
-            name: 'REM',
-            color: '#AB61CD'
-          }
-        ]
-      },
-      {
-        id: '0x92353',
-        name: 'Sleep Position',
-        types: [
-          {
-            id: '0x14853462',
-            name: 'Left',
-            color: '#FF6347'
-          },
-          {
-            id: '0x148312512',
-            name: 'Right',
-            color: '#4CAF50'
-          },
-          {
-            id: '0x14251285',
-            name: 'Back',
-            color: '#9400D3'
-          },
-          {
-            id: '0x11200192334',
-            name: 'Belly',
-            color: '#00BCD4'
-          }
-        ]
-      },
-      {
-        id: '0x92355453',
-        name: 'Sleep Movement',
-        types: [
-          {
-            id: '0x14853462',
-            name: 'Low',
-            color: '#FF6347'
-          },
-          {
-            id: '0x148312512',
-            name: 'Medium',
-            color: '#4CAF50'
-          },
-          {
-            id: '0x14251285',
-            name: 'High',
-            color: '#00BCD4'
-          }
-        ]
-      }
-    ];
-
     this.state = {
-      labelingsDefinition: labelingsDefinition,
-      isReady: true,
+      labelingsDefinition: [],
+      isReady: false,
       modal: {
         labeling: undefined,
         isOpen: false,
@@ -133,6 +43,22 @@ class LabelingsPage extends Component {
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
+    this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
+
+    subscribeLabelings(this.onLabelingsChanged);
+  }
+
+  onLabelingsChanged(labelings) {
+    if (!labelings) labelings = [];
+
+    this.setState({
+      labelingsDefinition: labelings,
+      isReady: true
+    });
+  }
+
+  componentWillUnmount() {
+    unsubscribeLabelings();
   }
 
   toggleModal(labeling, isNewLabeling) {
@@ -180,25 +106,28 @@ class LabelingsPage extends Component {
   }
 
   onSave(labelingId, name, types) {
+    let newLabelings =
+      this.state.labelingsDefinition.filter(
+        labeling => labeling.id === labelingId
+      )[0] !== undefined
+        ? this.state.labelingsDefinition.map(labeling =>
+            labeling.id === labelingId
+              ? Object.assign({}, labeling, { types: types, name: name })
+              : labeling
+          )
+        : [
+            ...this.state.labelingsDefinition,
+            { id: labelingId, name: name, types: types }
+          ];
+
     this.setState({
-      labelingsDefinition:
-        this.state.labelingsDefinition.filter(
-          labeling => labeling.id === labelingId
-        )[0] !== undefined
-          ? this.state.labelingsDefinition.map(labeling =>
-              labeling.id === labelingId
-                ? Object.assign({}, labeling, { types: types, name: name })
-                : labeling
-            )
-          : [
-              ...this.state.labelingsDefinition,
-              { id: labelingId, name: name, types: types }
-            ],
+      labelingsDefinition: newLabelings,
       modal: {
         labeling: undefined,
         isOpen: false
       }
     });
+    updateLabelings(newLabelings);
   }
 
   uuidv4() {
