@@ -1,5 +1,6 @@
 const path = require('path');
 const http = require('http');
+const fs   = require('fs');
 
 const Koa = require('koa');
 const socketio = require('socket.io');
@@ -17,8 +18,10 @@ const server = http.createServer(app.callback());
 
 const io = socketio(server);
 
+const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
+
 const auth = require(path.join(__dirname, '../', 'config', 'auth.json'));
-let labelings = require(path.join(__dirname, '../', 'config', 'labelings.json'));
+let labelings = require(labelingsPath);
 
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
@@ -67,6 +70,7 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('labelings', (newLabelings) => {
+<<<<<<< HEAD
 		console.log("labelings", socket.client.twoFactorAuthenticated)
 
 		if (!socket.client.twoFactorAuthenticated) return; // TODO: this should happen somwhere consistent
@@ -76,6 +80,22 @@ io.on('connection', (socket) => {
 		} else {
 			labelings = newLabelings
 			socket.emit('labelings', newLabelings)
+=======
+		if(!newLabelings){
+			console.log('labeling request');
+			socket.emit('labelings', labelings);
+		}else{
+			console.log('got new labelings');
+			labelings = newLabelings;
+
+			fs.writeFile(labelingsPath, JSON.stringify(labelings, null, '\t'), (err) => {
+				if(err){
+					console.error(err);
+				}
+			});
+
+			io.emit('labelings', newLabelings);
+>>>>>>> f58f5709fefd550527021acb1c0b4a97975a894b
 		}
 	});
 
