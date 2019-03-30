@@ -36,15 +36,15 @@ SocketIoAuth(io, {
 
 		if (!socket.client.isTwoFAClientConfigured){
 			const secret = speakeasy.generateSecret();
-			auth[data.username].twoFactorAuthenticationSecret = secret.base32;
-			socket.client.twoFactorAuthenticationSecret = secret.base32;
-			
-			QRCode.toDataURL(secret.otpauth_url, function(err, data_url) {
-				socket.emit('2FA', data_url)
+			auth[data.username].twoFASecret = secret.base32;
+			socket.client.twoFASecret = secret.base32;
+
+			QRCode.toDataURL(secret.otpauth_url, (error, dataUrl) => {
+				if (!error)	socket.emit('2FA', dataUrl);
 			});
 		} else {
 			socket.client.isTwoFAClientConfigured = true;
-			socket.client.twoFactorAuthenticationSecret = auth[data.username].twoFactorAuthenticationSecret;
+			socket.client.twoFASecret = auth[data.username].twoFASecret;
 			socket.emit('2FA');
 		}
 
@@ -55,19 +55,20 @@ SocketIoAuth(io, {
 io.on('connection', (socket) => {
 	socket.on('2FA', (userToken) => {
 		const isValid = speakeasy.totp.verify({
-			secret: socket.client.twoFactorAuthenticationSecret,
+			secret: socket.client.twoFASecret,
 			encoding: 'base32',
-			token: userToken });
-			
+			token: userToken
+		});
+
 		if (isValid) {
 			socket.client.twoFactorAuthenticated = true;
 			socket.emit('verified', true);
 		} else {
 			socket.emit('verified', false);
 		}
-		
+
 		if (isValid && !socket.twoFAConfigured) {
-			auth[socket.client.username].twoFactorAuthenticationSecret = socket.client.twoFactorAuthenticationSecret;
+			auth[socket.client.username].twoFASecret = socket.client.twoFASecret;
 			auth[socket.client.username].isTwoFAClientConfigured = true;
 
 			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
