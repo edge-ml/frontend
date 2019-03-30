@@ -26,7 +26,6 @@ let labelings = require(labelingsPath);
 
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
-		// TODO
 		callback(null, auth[data.username]
 			&& passwordHash.verify(data.password, auth[data.username].passwordHash));
 	},
