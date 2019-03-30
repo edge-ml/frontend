@@ -33,7 +33,7 @@ class App extends Component {
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);
-    this.oneTwoFA = this.oneTwoFA.bind(this);
+    this.onTwoFA = this.onTwoFA.bind(this);
   }
 
   onLogout(didSucceed) {
@@ -54,7 +54,7 @@ class App extends Component {
     }
   }
 
-  oneTwoFA(success) {
+  onTwoFA(success) {
     if (success) {
       this.setState({
         isLoggedIn: this.state.isLoggedIn,
@@ -63,7 +63,7 @@ class App extends Component {
     }
   }
 
-  logoutHandler(e) {
+  logoutHandler() {
     logout(this.onLogout);
   }
 
@@ -73,7 +73,8 @@ class App extends Component {
         isLoggedIn={this.state.isLoggedIn}
         isTwoFactorAuthenticated={this.state.isTwoFactorAuthenticated}
         onLogin={this.onLogin}
-        oneTwoFA={this.oneTwoFA}
+        onTwoFA={this.onTwoFA}
+        onCancelLogin={this.logoutHandler}
       >
         <Navbar color="light" light expand="md">
           <NavbarBrand>Explorer</NavbarBrand>

@@ -20,6 +20,9 @@ export const login = (username, password, callback, twoFACallback) => {
     });
 
     socket.on('unauthorized', function() {
+      socket.disconnect();
+      verified = false;
+      socket = undefined;
       authenticated = false;
       callback(false);
     });
@@ -38,11 +41,12 @@ export const login = (username, password, callback, twoFACallback) => {
 
 export const twoFAAuthenticate = (token, callback) => {
   if (!socket && !authenticated) return;
+
   socket.emit('2FA', token);
 };
 
 export const logout = callback => {
-  if (authenticated && verified && socket) {
+  if (socket) {
     socket.disconnect();
     authenticated = false;
     verified = false;

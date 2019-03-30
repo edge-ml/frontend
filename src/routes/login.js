@@ -8,9 +8,6 @@ import {
   InputGroupAddon,
   InputGroupText,
   Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
   Card,
   CardBody,
   CardHeader
@@ -42,11 +39,14 @@ class LoginPage extends Component {
       isTwoFactorAuthenticated: props.isTwoFactorAuthenticated,
       authenticationHandlers: {
         onLogin: props.onLogin,
-        oneTwoFA: props.oneTwoFA
+        onTwoFA: props.onTwoFA,
+        onCancelLogin: props.onCancelLogin,
+        didLoginFail: false
       },
       twoFactorAuthentication: {
         qrCode: undefined,
-        token: undefined
+        token: undefined,
+        tokenFailed: false
       }
     };
     this.userChange = this.userChange.bind(this);
@@ -56,6 +56,7 @@ class LoginPage extends Component {
     this.onTwoFA = this.onTwoFA.bind(this);
     this.onTokenChanged = this.onTokenChanged.bind(this);
     this.onVerified = this.onVerified.bind(this);
+    this.onLoginCanceled = this.onLoginCanceled.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -93,6 +94,12 @@ class LoginPage extends Component {
         $merge: {
           button: {
             disabled: false
+          },
+          authenticationHandlers: {
+            didLoginFail: !didSucceed,
+            onLogin: this.state.authenticationHandlers.onLogin,
+            onTwoFA: this.state.authenticationHandlers.onTwoFA,
+            onCancelLogin: this.state.authenticationHandlers.onCancelLogin
           }
         }
       })
@@ -122,23 +129,36 @@ class LoginPage extends Component {
     this.setState({
       twoFactorAuthentication: {
         token: e.target.value.trim(),
-        qrCode: this.state.twoFactorAuthentication.qrCode
+        qrCode: this.state.twoFactorAuthentication.qrCode,
+        tokenFailed: false
       }
     });
   }
 
   onVerified(success) {
-    if (!success) alert('Token does not match. Try Again.');
-    else {
+    if (!success) {
+      this.setState({
+        twoFactorAuthentication: {
+          token: this.state.twoFactorAuthentication.token,
+          qrCode: this.state.twoFactorAuthentication.qrCode,
+          tokenFailed: true
+        }
+      });
+    } else {
       this.setState({
         twoFactorAuthentication: {
           token: undefined,
-          qrCode: undefined
+          qrCode: undefined,
+          tokenFailed: false
         }
       });
 
-      this.state.authenticationHandlers.oneTwoFA(success);
+      this.state.authenticationHandlers.onTwoFA(success);
     }
+  }
+
+  onLoginCanceled() {
+    this.state.authenticationHandlers.onCancelLogin();
   }
 
   submit(event) {
@@ -196,7 +216,16 @@ class LoginPage extends Component {
           <Row>
             <Col className="login" xs={11} sm={6} lg={4}>
               <FadeInUp duration="0.3s" playState="running">
-                <Card>
+                <Card
+                  style={
+                    this.state.authenticationHandlers.didLoginFail ||
+                    this.state.twoFactorAuthentication.tokenFailed
+                      ? {
+                          animation: 'hzejgT 0.3s ease 0s 1 normal none running'
+                        }
+                      : null
+                  }
+                >
                   <CardHeader hidden={this.state.isLoggedIn}>
                     <b>Explorer Login</b>
                   </CardHeader>
@@ -295,7 +324,9 @@ class LoginPage extends Component {
                         this.tokenInput = input;
                       }}
                     />
-                    <Button block>Cancel</Button>
+                    <Button block onClick={this.onLoginCanceled}>
+                      Cancel
+                    </Button>
                   </CardBody>
                 </Card>
               </FadeInUp>
