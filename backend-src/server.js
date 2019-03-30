@@ -33,7 +33,7 @@ SocketIoAuth(io, {
 		socket.client.username = data.username;
 		socket.client.isTwoFAClientConfigured = auth[data.username].isTwoFAClientConfigured;
 
-		if (!socket.client.isTwoFAClientConfigured){
+		if (!socket.client.isTwoFAClientConfigured) {
 			const secret = speakeasy.generateSecret();
 			auth[data.username].twoFASecret = secret.base32;
 			socket.client.twoFASecret = secret.base32;
@@ -81,15 +81,15 @@ io.on('connection', (socket) => {
 	socket.on('labelings', (newLabelings) => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
-		if(!newLabelings){
+		if (!newLabelings) {
 			console.log('labeling request');
 			socket.emit('labelings', labelings);
-		}else{
+		} else {
 			console.log('got new labelings');
 			labelings = newLabelings;
 
 			fs.writeFile(labelingsPath, JSON.stringify(labelings, null, '\t'), (err) => {
-				if(err){
+				if (err) {
 					console.error(err);
 				}
 			});
