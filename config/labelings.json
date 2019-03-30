@@ -1,79 +1,85 @@
 [
 	{
-		"id": "0x923",
+		"id": "1",
 		"name": "Sleep Apnea",
 		"types": [
 			{
-				"id": "0x1482",
+				"id": "1",
 				"name": "Apnea",
 				"color": "#FF6347"
 			},
 			{
-				"id": "0x1483",
+				"id": "2",
 				"name": "Hypopnea",
 				"color": "#EC407A"
 			},
 			{
-				"id": "0x1485",
+				"id": "3",
 				"name": "Noise",
 				"color": "#00BCD4"
 			}
 		]
 	},
 	{
-		"id": "0x92353",
+		"id": "2",
 		"name": "Sleep Position",
 		"types": [
 			{
-				"id": "0x14853462",
+				"id": "1",
 				"name": "Left",
 				"color": "#FF6347"
 			},
 			{
-				"id": "0x148312512",
+				"id": "2",
 				"name": "Right",
 				"color": "#4CAF50"
 			},
 			{
-				"id": "0x14251285",
+				"id": "3",
 				"name": "Back",
 				"color": "#9400D3"
 			},
 			{
-				"id": "0x11200192334",
+				"id": "4",
 				"name": "Belly",
 				"color": "#00BCD4"
-			},
-			{
-				"id": "97fa64ae-135c-48b1-b0a1-c0ef8b526843",
-				"name": "",
-				"color": "#9FB0DC"
-			},
-			{
-				"id": "3343fcee-1688-47a4-bd6a-dff14b4f22ab",
-				"name": "",
-				"color": "#24AEA8"
 			}
 		]
 	},
 	{
-		"id": "0x92355453",
+		"id": "3",
 		"name": "Sleep Movement",
 		"types": [
 			{
-				"id": "0x14853462",
+				"id": "1",
 				"name": "Low",
 				"color": "#FF6347"
 			},
 			{
-				"id": "0x148312512",
+				"id": "2",
 				"name": "Medium",
 				"color": "#4CAF50"
 			},
 			{
-				"id": "0x14251285",
+				"id": "3",
 				"name": "High",
 				"color": "#00BCD4"
+			}
+		]
+	},
+	{
+		"id": "90e02fa4ab60b31",
+		"name": "",
+		"types": [
+			{
+				"id": "286d8bc2-6e81-4734-a592-454a3f56d282",
+				"name": "",
+				"color": "#9CDBB8"
+			},
+			{
+				"id": "8663fc87-54cc-4de5-bb72-79f7983b2af4",
+				"name": "",
+				"color": "#66CB42"
 			}
 		]
 	}

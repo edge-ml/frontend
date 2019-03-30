@@ -10,13 +10,18 @@ import {
   Button,
   Modal,
   ModalHeader,
-  ModalBody
+  ModalBody,
+  Card,
+  CardBody,
+  CardHeader
 } from 'reactstrap';
 import { PersonIcon, ShieldIcon } from 'react-octicons';
 import Request from 'request-promise';
 import update from 'immutability-helper';
 
 import State from '../state';
+
+import { FadeInUp } from 'animate-components';
 
 import {
   login,
@@ -31,7 +36,6 @@ class LoginPage extends Component {
       username: '',
       password: '',
       button: {
-        color: 'primary',
         disabled: false
       },
       isLoggedIn: props.isLoggedIn,
@@ -84,16 +88,17 @@ class LoginPage extends Component {
   }
 
   onLogin(didSucceed) {
-    if (didSucceed) {
-      this.setState(
-        update(this.state, {
-          $merge: {
-            button: {
-              disabled: false
-            }
+    this.setState(
+      update(this.state, {
+        $merge: {
+          button: {
+            disabled: false
           }
-        })
-      );
+        }
+      })
+    );
+
+    if (didSucceed) {
       subscribeVerified(this.onVerified);
     }
     this.state.authenticationHandlers.onLogin(didSucceed);
@@ -105,6 +110,7 @@ class LoginPage extends Component {
         qrCode: qrCode
       }
     });
+    this.tokenInput.focus();
   }
 
   onTokenChanged(e) {
@@ -124,6 +130,13 @@ class LoginPage extends Component {
   onVerified(success) {
     if (!success) alert('Token does not match. Try Again.');
     else {
+      this.setState({
+        twoFactorAuthentication: {
+          token: undefined,
+          qrCode: undefined
+        }
+      });
+
       this.state.authenticationHandlers.oneTwoFA(success);
     }
   }
@@ -182,90 +195,112 @@ class LoginPage extends Component {
         <Container className="Page">
           <Row>
             <Col className="login" xs={11} sm={6} lg={4}>
-              <Row>
-                <Col>
-                  <h2>Sign In</h2>
-                  <Col>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <PersonIcon />
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input
-                        type="username"
-                        name="username"
-                        id="username"
-                        placeholder="username"
-                        onChange={this.userChange}
+              <FadeInUp duration="0.3s" playState="running">
+                <Card>
+                  <CardHeader hidden={this.state.isLoggedIn}>
+                    <b>Explorer Login</b>
+                  </CardHeader>
+                  <CardBody hidden={this.state.isLoggedIn}>
+                    <Row>
+                      <Col>
+                        <Col>
+                          <InputGroup>
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <PersonIcon />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <Input
+                              type="username"
+                              name="username"
+                              id="username"
+                              placeholder="username"
+                              onChange={this.userChange}
+                            />
+                          </InputGroup>
+                        </Col>
+                        <Col>
+                          <InputGroup>
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <ShieldIcon />
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <Input
+                              type="password"
+                              name="password"
+                              id="password"
+                              placeholder="password"
+                              onChange={this.passChange}
+                            />
+                          </InputGroup>
+                        </Col>
+                        <Col>
+                          <Button
+                            id="login-button"
+                            onClick={this.submit}
+                            disabled={this.state.button.disabled}
+                            color="primary"
+                            block
+                          >
+                            Login
+                          </Button>
+                        </Col>
+                      </Col>
+                    </Row>
+                  </CardBody>
+                  <CardHeader
+                    hidden={
+                      !(
+                        this.state.isLoggedIn &&
+                        !this.state.isTwoFactorAuthenticated
+                      )
+                    }
+                    style={{ alignContent: 'center' }}
+                  >
+                    {this.state.twoFactorAuthentication.qrCode ? (
+                      <b>Two Factor Authentication Setup</b>
+                    ) : (
+                      <b>Two Factor Authentication</b>
+                    )}
+                  </CardHeader>
+                  <CardBody
+                    hidden={
+                      !(
+                        this.state.isLoggedIn &&
+                        !this.state.isTwoFactorAuthenticated
+                      )
+                    }
+                    style={{
+                      margin: 'auto'
+                    }}
+                  >
+                    {this.state.twoFactorAuthentication.qrCode ? (
+                      <img
+                        width="100%"
+                        alt="2FA QR Code"
+                        src={this.state.twoFactorAuthentication.qrCode}
                       />
-                    </InputGroup>
-                  </Col>
-                  <Col>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <ShieldIcon />
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input
-                        type="password"
-                        name="password"
-                        id="password"
-                        placeholder="password"
-                        onChange={this.passChange}
-                      />
-                    </InputGroup>
-                  </Col>
-                  <Col>
-                    <Button
-                      id="login-button"
-                      onClick={this.submit}
-                      disabled={this.state.button.disabled}
-                      color={this.state.button.color}
-                      block
-                    >
-                      Login
-                    </Button>
-                  </Col>
-                </Col>
-              </Row>
+                    ) : null}
+                    <Input
+                      autoFocus
+                      className={'mt-1'}
+                      placeholder="Token"
+                      value={this.state.twoFactorAuthentication.token}
+                      style={{
+                        textAlign: 'center'
+                      }}
+                      onChange={this.onTokenChanged}
+                      ref={input => {
+                        this.tokenInput = input;
+                      }}
+                    />
+                    <Button block>Cancel</Button>
+                  </CardBody>
+                </Card>
+              </FadeInUp>
             </Col>
           </Row>
-          <Modal
-            isOpen={
-              this.state.isLoggedIn && !this.state.isTwoFactorAuthenticated
-            }
-          >
-            <ModalHeader>
-              {this.state.twoFactorAuthentication.qrCode
-                ? 'Scan the QR Code with Google Authenticator and enter the token to confirm.'
-                : 'Enter the token shown in Google Authenticator.'}
-            </ModalHeader>
-            <ModalBody
-              style={{
-                margin: 'auto'
-              }}
-            >
-              {this.state.twoFactorAuthentication.qrCode ? (
-                <img
-                  width="100%"
-                  alt="2FA QR Code"
-                  src={this.state.twoFactorAuthentication.qrCode}
-                />
-              ) : null}
-              <Input
-                autoFocus
-                className={'mt-1'}
-                placeholder="Token"
-                value={this.state.twoFactorAuthentication.token}
-                style={{
-                  textAlign: 'center'
-                }}
-                onChange={this.onTokenChanged}
-              />
-            </ModalBody>
-          </Modal>
         </Container>
       );
     }

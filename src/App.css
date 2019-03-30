@@ -1,8 +1,5 @@
 .login {
   text-align: center;
-  background-color: #eee;
-  border-radius: 25px;
-  padding: 30px;
   margin: auto;
   margin-top: 10%;
 }
@@ -68,7 +65,6 @@ a .octicon-trashcan:hover {
   display: block;
   margin: 0 auto;
   text-align: center;
-  vertical-align: middle;
 }
 
 .navbar-brand {

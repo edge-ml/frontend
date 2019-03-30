@@ -18,6 +18,7 @@ const server = http.createServer(app.callback());
 
 const io = socketio(server);
 
+const authPath = path.join(__dirname, '../', 'config', 'auth.json');
 const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
 
 const auth = require(path.join(__dirname, '../', 'config', 'auth.json'));
@@ -26,7 +27,7 @@ let labelings = require(labelingsPath);
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
 		//TODO
-		callback(null, passwordHash.verify(data.password, auth[data.username].passwordHash))
+		callback(null, auth[data.username] && passwordHash.verify(data.password, auth[data.username].passwordHash))
 	},
 	postAuthenticate: (socket, data) => {
 		socket.client.username = data.username;
@@ -66,12 +67,18 @@ io.on('connection', (socket) => {
 		if (isValid && !socket.twoFAConfigured) {
 			auth[socket.client.username].twoFactorAuthenticationSecret = socket.client.twoFactorAuthenticationSecret;
 			auth[socket.client.username].isTwoFAClientConfigured = true;
+
+			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+				if(err){
+					console.error(err);
+				}
+			});
 		}
 	});
 
 	socket.on('labelings', (newLabelings) => {
 		if (!socket.client.twoFactorAuthenticated) return;
-		
+
 		if(!newLabelings){
 			console.log('labeling request');
 			socket.emit('labelings', labelings);
