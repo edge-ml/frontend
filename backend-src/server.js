@@ -7,7 +7,7 @@ const socketio = require('socket.io');
 const KoaStaticServer = require('koa-static-server');
 const SocketIoAuth = require('socketio-auth');
 
-var passwordHash = require('password-hash');
+const passwordHash = require('password-hash');
 
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
@@ -21,7 +21,7 @@ const io = socketio(server);
 const authPath = path.join(__dirname, '../', 'config', 'auth.json');
 const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
 
-const auth = require(path.join(__dirname, '../', 'config', 'auth.json'));
+const auth = require(authPath);
 let labelings = require(labelingsPath);
 
 SocketIoAuth(io, {
