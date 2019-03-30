@@ -26,15 +26,16 @@ let labelings = require(labelingsPath);
 
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
-		//TODO
-		callback(null, auth[data.username] && passwordHash.verify(data.password, auth[data.username].passwordHash))
+		// TODO
+		callback(null, auth[data.username]
+			&& passwordHash.verify(data.password, auth[data.username].passwordHash));
 	},
 	postAuthenticate: (socket, data) => {
 		socket.client.username = data.username;
 		socket.client.isTwoFAClientConfigured = auth[data.username].isTwoFAClientConfigured;
 
 		if (!socket.client.isTwoFAClientConfigured){
-			var secret = speakeasy.generateSecret();
+			const secret = speakeasy.generateSecret();
 			auth[data.username].twoFactorAuthenticationSecret = secret.base32;
 			socket.client.twoFactorAuthenticationSecret = secret.base32;
 			
@@ -44,7 +45,7 @@ SocketIoAuth(io, {
 		} else {
 			socket.client.isTwoFAClientConfigured = true;
 			socket.client.twoFactorAuthenticationSecret = auth[data.username].twoFactorAuthenticationSecret;
-			socket.emit('2FA')
+			socket.emit('2FA');
 		}
 
 		socket.client.authed = true;
@@ -53,15 +54,16 @@ SocketIoAuth(io, {
 
 io.on('connection', (socket) => {
 	socket.on('2FA', (userToken) => {
-		var isValid = speakeasy.totp.verify({ secret: socket.client.twoFactorAuthenticationSecret,
+		const isValid = speakeasy.totp.verify({
+			secret: socket.client.twoFactorAuthenticationSecret,
 			encoding: 'base32',
 			token: userToken });
 			
 		if (isValid) {
 			socket.client.twoFactorAuthenticated = true;
-			socket.emit('verified', true)
+			socket.emit('verified', true);
 		} else {
-			socket.emit('verified', false)
+			socket.emit('verified', false);
 		}
 		
 		if (isValid && !socket.twoFAConfigured) {
@@ -110,5 +112,3 @@ app.use(KoaStaticServer({
 }));
 
 server.listen(3001);
-
-
