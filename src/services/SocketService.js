@@ -10,7 +10,7 @@ let verified = false;
 export const login = (username, password, callback, twoFACallback) => {
   if (socket) return;
 
-  socket = openSocket('http://localhost:3001');
+  socket = openSocket('https://edge.ng.aura.rest');
   socket.on('connect', function() {
     socket.emit('authentication', { username: username, password: password });
 
