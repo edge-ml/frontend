@@ -203,6 +203,13 @@ class DatasetPage extends Component {
     this.onLabelChanged = this.onLabelChanged.bind(this);
     this.onDeleteSelectedLabel = this.onDeleteSelectedLabel.bind(this);
     this.onCanEditChanged = this.onCanEditChanged.bind(this);
+    this.addTimeSeries = this.addTimeSeries.bind(this);
+  }
+
+  addTimeSeries(obj) {
+    let dataset = { ...this.state.dataset };
+    dataset.timeSeries.push(obj);
+    this.setState({ dataset });
   }
 
   onSelectedLabelingIdChanged(selectedLabelingId) {
@@ -398,7 +405,7 @@ class DatasetPage extends Component {
                 />
               </div>
               <div className="mt-3">
-                <ManagementPanel />
+                <ManagementPanel onUpload={obj => this.addTimeSeries(obj)} />
               </div>
             </Col>
             <Col xs={12}>
