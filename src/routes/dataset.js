@@ -405,7 +405,10 @@ class DatasetPage extends Component {
                 />
               </div>
               <div className="mt-3">
-                <ManagementPanel onUpload={obj => this.addTimeSeries(obj)} />
+                <ManagementPanel
+                  onUpload={obj => this.addTimeSeries(obj)}
+                  startTime={this.state.dataset.start}
+                />
               </div>
             </Col>
             <Col xs={12}>

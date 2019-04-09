@@ -39,6 +39,7 @@ class ManagementPanel extends Component {
           isOpen={this.state.isModalOpen}
           onUpload={obj => this.props.onUpload(obj)}
           onCloseModal={this.toggleModal}
+          startTime={this.props.startTime}
         />
       </Card>
     );
