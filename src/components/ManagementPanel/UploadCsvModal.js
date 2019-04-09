@@ -7,7 +7,8 @@ import {
   Button,
   Input,
   Label,
-  FormText
+  FormGroup,
+  InputGroup
 } from 'reactstrap';
 
 class UploadCsvModal extends Component {
@@ -105,7 +106,7 @@ class UploadCsvModal extends Component {
           obj.message = undefined;
           this.props.onUpload(obj);
 
-          this.setState({ file: null });
+          this.setState({ file: null, adjustTime: false });
           this.props.onCloseModal();
         }
       };
@@ -118,23 +119,32 @@ class UploadCsvModal extends Component {
       <Modal isOpen={this.props.isOpen}>
         <ModalHeader>{'Upload CSV'}</ModalHeader>
         <ModalBody>
-          <Label for="fileInput">File</Label>
-          <Input
-            id="fileInput"
-            type="file"
-            onChange={e => this.setState({ file: e.target.files[0] })}
-            accept=".csv"
-          />
-          <div style={{ marginTop: 10, marginLeft: 25 }}>
-            <Input
-              type="checkbox"
-              id="checkbox"
-              onChange={e => this.setState({ adjustTime: e.target.checked })}
-            />{' '}
-            <FormText color="muted">
-              automatically adjust time according to dataset
-            </FormText>
+          <div class="input-group">
+            <div class="custom-file">
+              <input
+                id="fileInput"
+                accept=".csv"
+                onChange={e => this.setState({ file: e.target.files[0] })}
+                type="file"
+                class="custom-file-input"
+              />
+              <label class="custom-file-label">
+                {!this.state.file ? 'Choose File' : this.state.file.name}
+              </label>
+            </div>
           </div>
+          <FormGroup check>
+            <Label>
+              <Input
+                type="checkbox"
+                id="checkbox"
+                onChange={e => this.setState({ adjustTime: e.target.checked })}
+              />{' '}
+              <span color="muted">
+                adjust time series start time to the dataset's start time
+              </span>
+            </Label>
+          </FormGroup>
         </ModalBody>
         <ModalFooter>
           <Button
