@@ -116,10 +116,8 @@ io.on('connection', (socket) => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
 		if (!newLabelings) {
-			console.log('labeling request');
 			socket.emit('labelings', labelings);
 		} else {
-			console.log('got new labelings');
 			labelings = newLabelings;
 
 			fs.writeFile(labelingsPath, JSON.stringify(labelings, null, '\t'), (err) => {
