@@ -57,7 +57,7 @@ class App extends Component {
   onTwoFA(success) {
     if (success) {
       this.setState({
-        isLoggedIn: this.state.isLoggedIn,
+        isLoggedIn: success,
         isTwoFactorAuthenticated: success
       });
     }

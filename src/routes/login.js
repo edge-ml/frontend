@@ -23,7 +23,8 @@ import { FadeInUp } from 'animate-components';
 import {
   login,
   twoFAAuthenticate,
-  subscribeVerified
+  subscribeVerified,
+  restoreSession
 } from '../services/SocketService';
 
 class LoginPage extends Component {
@@ -57,6 +58,9 @@ class LoginPage extends Component {
     this.onTokenChanged = this.onTokenChanged.bind(this);
     this.onVerified = this.onVerified.bind(this);
     this.onLoginCanceled = this.onLoginCanceled.bind(this);
+    this.onDidRestoreSession = this.onDidRestoreSession.bind(this);
+
+    restoreSession(this.onDidRestoreSession);
   }
 
   componentWillReceiveProps(props) {
@@ -155,6 +159,10 @@ class LoginPage extends Component {
 
       this.state.authenticationHandlers.onTwoFA(success);
     }
+  }
+
+  onDidRestoreSession() {
+    this.onVerified(true);
   }
 
   onLoginCanceled() {

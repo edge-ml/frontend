@@ -1,5 +1,8 @@
 import openSocket from 'socket.io-client';
 
+const socketUrl = 'http://localhost:3001';
+const jwt = require('jsonwebtoken');
+
 let socket;
 let authenticated = false;
 let verified = false;
@@ -10,7 +13,7 @@ let verified = false;
 export const login = (username, password, callback, twoFACallback) => {
   if (socket) return;
 
-  socket = openSocket('http://localhost:3001');
+  socket = openSocket(socketUrl);
   socket.on('connect', function() {
     socket.emit('authentication', { username: username, password: password });
 
@@ -51,6 +54,7 @@ export const logout = callback => {
     authenticated = false;
     verified = false;
     socket = undefined;
+    sessionStorage.token = undefined;
     callback(true);
   } else {
     callback(false);
@@ -58,9 +62,41 @@ export const logout = callback => {
 };
 
 export const subscribeVerified = callback => {
-  socket.on('verified', success => {
+  socket.on('verified', (success, token) => {
     verified = success;
+    sessionStorage.token = token;
     callback(success);
+  });
+};
+
+export const restoreSession = callback => {
+  var token = sessionStorage.token;
+  if (!token) return;
+
+  var decodedToken = jwt.decode(token, { complete: true });
+  var dateNow = new Date();
+
+  if (!decodedToken || decodedToken.exp < dateNow.getTime()) {
+    sessionStorage.token = undefined;
+    return;
+  }
+
+  socket = openSocket(socketUrl);
+
+  socket.on('connect', function() {
+    socket.emit('authentication', { jwtToken: token });
+
+    socket.on('authenticated', function(success) {
+      if (!success) {
+        socket.disconnect();
+        socket = undefined;
+        return;
+      } else {
+        authenticated = true;
+        verified = true;
+        callback(true);
+      }
+    });
   });
 };
 

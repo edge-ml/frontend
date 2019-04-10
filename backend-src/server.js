@@ -5,9 +5,10 @@ const fs   = require('fs');
 const Koa = require('koa');
 const socketio = require('socket.io');
 const KoaStaticServer = require('koa-static-server');
-const SocketIoAuth = require('socketio-auth');
 
 const passwordHash = require('password-hash');
+const SocketIoAuth = require('socketio-auth');
+const jwt  = require('jsonwebtoken');
 
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
@@ -24,12 +25,35 @@ const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
 const auth = require(authPath);
 let labelings = require(labelingsPath);
 
+// JWT
+const privateKeyPath = path.join(__dirname, '../', 'config', 'keys', 'private.key');
+const publicKeyPath = path.join(__dirname, '../', 'config', 'keys', 'public.key');
+
+const privateKey  = fs.readFileSync(privateKeyPath, 'utf-8');
+const publicKey  = fs.readFileSync(publicKeyPath, 'utf-8');
+
+const tokenIssuer = 'AURA';
+const tokenAudience = 'http://explorer.aura.rest';
+
+
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
-		callback(null, auth[data.username]
-			&& passwordHash.verify(data.password, auth[data.username].passwordHash));
+		if (data.jwtToken) {
+			jwt.verify(data.jwtToken, publicKey, (err, decoded) => {
+				socket.client.twoFactorAuthenticated = true;
+				if (err === null) callback(null, true);
+			});
+		} else {
+			callback(null, (auth[data.username]
+				&& passwordHash.verify(data.password, auth[data.username].passwordHash)));
+		}
 	},
 	postAuthenticate: (socket, data) => {
+		if (socket.client.twoFactorAuthenticated) {
+			socket.client.authed = true;
+			return;
+		}
+
 		socket.client.username = data.username;
 		socket.client.isTwoFAClientConfigured = auth[data.username].isTwoFAClientConfigured;
 
@@ -61,7 +85,17 @@ io.on('connection', (socket) => {
 
 		if (isValid) {
 			socket.client.twoFactorAuthenticated = true;
-			socket.emit('verified', true);
+			const signOptions = {
+				issuer: tokenIssuer,
+				subject: socket.client.username,
+				audience: tokenAudience,
+				expiresIn: '48h',
+				algorithm: 'RS256'
+			};
+
+			const token = jwt.sign({}, privateKey, signOptions);
+
+			socket.emit('verified', true, token);
 		} else {
 			socket.emit('verified', false);
 		}
