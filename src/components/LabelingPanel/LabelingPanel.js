@@ -20,7 +20,7 @@ class LabelingPanel extends Component {
       id: props.id,
       from: props.from,
       to: props.to,
-      labelTypes: props.labelTypes,
+      labeling: props.labeling,
       selectedLabelTypeId: props.selectedLabelTypeId,
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
@@ -29,6 +29,7 @@ class LabelingPanel extends Component {
     };
 
     this.toggleEdit = this.toggleEdit.bind(this);
+    this.onAddLabel = this.onAddLabel.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -36,7 +37,7 @@ class LabelingPanel extends Component {
       id: props.id,
       from: props.from,
       to: props.to,
-      labelTypes: props.labelTypes,
+      labeling: props.labeling,
       selectedLabelTypeId: props.selectedLabelTypeId,
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
@@ -57,6 +58,15 @@ class LabelingPanel extends Component {
 
   toggleEdit() {
     this.state.onCanEditChanged(!this.state.canEdit);
+  }
+
+  onAddLabel() {
+    this.props.history.push({
+      pathname: '/labelings',
+      state: {
+        labeling: this.state.labeling
+      }
+    });
   }
 
   render() {
@@ -133,10 +143,14 @@ class LabelingPanel extends Component {
           </div>
 
           <div className="labelingBox">
-            <Button className="labelingButton m-1" color="secondary">
+            <Button
+              className="labelingButton m-1"
+              color="secondary"
+              onClick={this.onAddLabel}
+            >
               + Add
             </Button>
-            {this.state.labelTypes.map(label => (
+            {this.state.labeling.types.map(label => (
               <Button
                 className="btn-light m-1 labelingButton"
                 disabled={
