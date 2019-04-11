@@ -1,7 +1,10 @@
 import openSocket from 'socket.io-client';
+import Cookies from 'universal-cookie';
 
 const socketUrl = 'http://localhost:3001';
 const jwt = require('jsonwebtoken');
+
+const cookies = new Cookies();
 
 let socket;
 let authenticated = false;
@@ -54,7 +57,7 @@ export const logout = callback => {
     authenticated = false;
     verified = false;
     socket = undefined;
-    sessionStorage.token = undefined;
+    cookies.set('token', undefined, { path: '/' });
     callback(true);
   } else {
     callback(false);
@@ -64,20 +67,20 @@ export const logout = callback => {
 export const subscribeVerified = callback => {
   socket.on('verified', (success, token) => {
     verified = success;
-    sessionStorage.token = token;
+    cookies.set('token', token, { path: '/' });
     callback(success);
   });
 };
 
 export const restoreSession = callback => {
-  var token = sessionStorage.token;
+  var token = cookies.get('token');
   if (!token) return;
 
   var decodedToken = jwt.decode(token, { complete: true });
   var dateNow = new Date();
 
   if (!decodedToken || decodedToken.exp < dateNow.getTime()) {
-    sessionStorage.token = undefined;
+    cookies.set('token', undefined, { path: '/' });
     return;
   }
 
