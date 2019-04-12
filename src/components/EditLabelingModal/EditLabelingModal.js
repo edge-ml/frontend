@@ -29,6 +29,7 @@ class EditLabelingModal extends Component {
       isOpen: props.isOpen,
       onCloseModal: props.onCloseModal,
       onSave: props.onSave,
+      onDeleteLabeling: props.onDeleteLabeling,
       isNewLabeling: props.isNewLabeling
     };
 
