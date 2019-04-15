@@ -12,77 +12,92 @@ import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/T
 
 class DatasetPage extends Component {
   constructor(props) {
+    let isSandbox = props.location.pathname === '/datasets/sandbox';
+
     var now = Date.now();
-    const dataset = {
-      id: '0x1234',
-      userId: '0x9321',
-      email: 'test@test.de',
-      start: now - 600000,
-      end: now + 100000,
-      tags: ['Alcohol', 'Medication', 'Test', 'ABC'],
-      isPublished: false,
-      timeSeries: [
-        {
-          id: '0x123434',
-          name: 'VOC',
-          unit: 'kOhm',
-          data: [
-            [now - 500000, 20],
-            [now - 400000, 40],
-            [now - 300000, 60],
-            [now - 200000, 10],
-            [now - 140000, 15],
-            [now - 100000, 30]
-          ]
-        },
-        {
-          id: '0x1123992',
-          name: 'SPO2',
-          unit: '%',
-          data: [
-            [now - 300000, 20],
-            [now - 200000, 40],
-            [now - 180000, 60],
-            [now - 140000, 10],
-            [now - 110000, 15],
-            [now - 80000, 30]
-          ]
-        },
-        {
-          id: '0x12364774',
-          name: 'EMG',
-          unit: 'mV',
-          data: [
-            [now - 300000, 20],
-            [now - 200000, 40],
-            [now - 180000, 60],
-            [now - 140000, 10],
-            [now - 110000, 15],
-            [now - 80000, 30]
-          ]
+    const dataset = isSandbox
+      ? {
+          id: 'sandbox',
+          userId: 'sandboxUser',
+          email: 'sand@box.com',
+          start: now - 100000,
+          end: now + 100000,
+          tags: ['Sandbox Tag'],
+          isPublished: false,
+          timeSeries: [],
+          labelings: []
         }
-      ],
-      labelings: [
-        {
-          id: '0x3441234234',
-          labelingId: '0x923',
-          labels: [
+      : {
+          // TODO: pull real dataset
+          id: '0x1234',
+          userId: '0x9321',
+          email: 'test@test.de',
+          start: now - 600000,
+          end: now + 100000,
+          tags: ['Alcohol', 'Medication', 'Test', 'ABC'],
+          isPublished: false,
+          timeSeries: [
             {
-              id: '1',
-              typeId: '0x1482',
-              from: now - 450000,
-              to: now - 400000
+              id: '0x123434',
+              name: 'VOC',
+              unit: 'kOhm',
+              data: [
+                [now - 500000, 20],
+                [now - 400000, 40],
+                [now - 300000, 60],
+                [now - 200000, 10],
+                [now - 140000, 15],
+                [now - 100000, 30]
+              ]
             },
             {
-              id: '2',
-              typeId: '0x1483',
-              from: now - 300000,
-              to: now - 200000
+              id: '0x1123992',
+              name: 'SPO2',
+              unit: '%',
+              data: [
+                [now - 300000, 20],
+                [now - 200000, 40],
+                [now - 180000, 60],
+                [now - 140000, 10],
+                [now - 110000, 15],
+                [now - 80000, 30]
+              ]
+            },
+            {
+              id: '0x12364774',
+              name: 'EMG',
+              unit: 'mV',
+              data: [
+                [now - 300000, 20],
+                [now - 200000, 40],
+                [now - 180000, 60],
+                [now - 140000, 10],
+                [now - 110000, 15],
+                [now - 80000, 30]
+              ]
+            }
+          ],
+          labelings: [
+            {
+              id: '0x3441234234',
+              labelingId: '0x923',
+              labels: [
+                {
+                  id: '1',
+                  typeId: '0x1482',
+                  from: now - 450000,
+                  to: now - 400000
+                },
+                {
+                  id: '2',
+                  typeId: '0x1483',
+                  from: now - 300000,
+                  to: now - 200000
+                }
+              ]
             }
           ]
-        }
-      ]
-    };
+        };
 
     const labelingsDefinition = [
       {
