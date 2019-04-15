@@ -9,6 +9,8 @@ import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
 import InteractionControlPanel from '../components/InteractionControlPanel/InteractionControlPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
+import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
+import { uuidv4 } from '../services/UUIDService';
 
 class DatasetPage extends Component {
   constructor(props) {
@@ -77,6 +79,7 @@ class DatasetPage extends Component {
               ]
             }
           ],
+          fusedSeries: [],
           labelings: [
             {
               id: '0x3441234234',
@@ -219,6 +222,7 @@ class DatasetPage extends Component {
     this.onDeleteSelectedLabel = this.onDeleteSelectedLabel.bind(this);
     this.onCanEditChanged = this.onCanEditChanged.bind(this);
     this.addTimeSeries = this.addTimeSeries.bind(this);
+    this.onFuseTimeSeries = this.onFuseTimeSeries.bind(this);
   }
 
   addTimeSeries(obj) {
@@ -352,6 +356,15 @@ class DatasetPage extends Component {
     });
   }
 
+  onFuseTimeSeries(seriesIds) {
+    let dataset = { ...this.state.dataset };
+    dataset.fusedSeries.push({
+      id: uuidv4(),
+      series: seriesIds
+    });
+    this.setState({ dataset });
+  }
+
   render() {
     var selectedLabeling = this.state.labelingsDefinition.filter(
       labeling => labeling.id === this.state.controlStates.selectedLabelingId
@@ -391,6 +404,7 @@ class DatasetPage extends Component {
                 />
                 <TimeSeriesCollectionPanel
                   timeSeries={this.state.dataset.timeSeries}
+                  fusedSeries={this.state.dataset.fusedSeries}
                   labeling={labeling}
                   labelTypes={selectedLabelingTypes}
                   onLabelClicked={this.onSelectedLabelChanged}
@@ -442,6 +456,10 @@ class DatasetPage extends Component {
               />
             </Col>
             <Col />
+            <CombineTimeSeriesModal
+              timeSeries={this.state.dataset.timeSeries}
+              onFuse={this.onFuseTimeSeries}
+            />
           </Row>
         </div>
       </Fade>

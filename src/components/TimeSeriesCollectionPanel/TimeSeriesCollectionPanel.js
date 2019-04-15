@@ -17,7 +17,8 @@ class TimeSeriesCollectionPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      timeSeries: this.props.timeSeries,
+      timeSeries: props.timeSeries,
+      fusedSeries: props.fusedSeries ? props.fusedSeries : [],
       labeling: this.props.labeling,
       labelTypes: this.props.labelTypes,
       onLabelClicked: props.onLabelClicked,
@@ -34,6 +35,7 @@ class TimeSeriesCollectionPanel extends Component {
       labeling: props.labeling,
       labelTypes: props.labelTypes,
       timeSeries: props.timeSeries,
+      fusedSeries: props.fusedSeries ? props.fusedSeries : [],
       onLabelClicked: props.onLabelClicked,
       selectedLabelId: props.selectedLabelId,
       start: props.start,
@@ -51,6 +53,37 @@ class TimeSeriesCollectionPanel extends Component {
             data={timeSeries.data}
             name={timeSeries.name}
             unit={timeSeries.unit}
+            labeling={this.state.labeling}
+            labelTypes={this.state.labelTypes}
+            onLabelClicked={this.state.onLabelClicked}
+            selectedLabelId={this.state.selectedLabelId}
+            start={this.state.start}
+            end={this.state.end}
+            onLabelChanged={this.state.onLabelChanged}
+            canEdit={this.state.canEdit}
+          />
+        ))}
+        {this.state.fusedSeries.map(fusedSeries => (
+          <TimeSeriesPanel
+            data={this.state.timeSeries
+              .filter(timeSeries => {
+                return (
+                  fusedSeries.series.filter(
+                    seriesId => seriesId === timeSeries.id
+                  ).length !== 0
+                );
+              })
+              .map(series => series.data)}
+            name={this.state.timeSeries
+              .filter(timeSeries => {
+                return (
+                  fusedSeries.series.filter(
+                    seriesId => seriesId === timeSeries.id
+                  ).length !== 0
+                );
+              })
+              .map(series => series.name)}
+            unit={''}
             labeling={this.state.labeling}
             labelTypes={this.state.labelTypes}
             onLabelClicked={this.state.onLabelClicked}

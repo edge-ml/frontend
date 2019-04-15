@@ -72,12 +72,16 @@ class TimeSeriesPanel extends Component {
         },
         panning: false,
         title: null,
-        series: [
-          {
-            name: props.name,
-            data: props.data
-          }
-        ],
+        series: !Array.isArray(props.name)
+          ? [
+              {
+                name: props.name,
+                data: props.data
+              }
+            ]
+          : props.data.map((dataItem, index) => {
+              return { name: this.props.name[index], data: dataItem };
+            }),
         xAxis: {
           type: 'datetime',
           ordinal: false,
