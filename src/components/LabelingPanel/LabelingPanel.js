@@ -63,9 +63,7 @@ class LabelingPanel extends Component {
   onAddLabel() {
     this.props.history.push({
       pathname: '/labelings',
-      state: {
-        labeling: this.state.labeling
-      }
+      search: '?id=' + this.state.labeling.id
     });
   }
 

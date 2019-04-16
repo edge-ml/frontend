@@ -109,103 +109,6 @@ class DatasetPage extends Component {
           ]
         };
 
-    const labelingsDefinition = [
-      {
-        id: '0x923',
-        name: 'Sleep Apnea',
-        types: [
-          {
-            id: '0x1482',
-            name: 'Apnea',
-            color: 'orange'
-          },
-          {
-            id: '0x1483',
-            name: 'Hypopnea',
-            color: '#EC407A'
-          },
-          {
-            id: '0x1485',
-            name: 'Noise',
-            color: '#00BCD4'
-          }
-        ]
-      },
-      {
-        id: '0x924',
-        name: 'Sleep Stages',
-        types: [
-          {
-            id: '0x14812',
-            name: 'Awake',
-            color: 'orange'
-          },
-          {
-            id: '0x1483123',
-            name: 'Light',
-            color: '#4CAF50'
-          },
-          {
-            id: '0x148571235',
-            name: 'Deep',
-            color: '#00BCD4'
-          },
-          {
-            id: '0x17865485',
-            name: 'REM',
-            color: '#AB61CD'
-          }
-        ]
-      },
-      {
-        id: '0x92353',
-        name: 'Sleep Position',
-        types: [
-          {
-            id: '0x14853462',
-            name: 'Left',
-            color: 'orange'
-          },
-          {
-            id: '0x148312512',
-            name: 'Right',
-            color: '#4CAF50'
-          },
-          {
-            id: '0x14251285',
-            name: 'Back',
-            color: 'purple'
-          },
-          {
-            id: '0x11200192334',
-            name: 'Belly',
-            color: '#00BCD4'
-          }
-        ]
-      },
-      {
-        id: '0x92355453',
-        name: 'Sleep Movement',
-        types: [
-          {
-            id: '0x14853462',
-            name: 'Low',
-            color: 'orange'
-          },
-          {
-            id: '0x148312512',
-            name: 'Medium',
-            color: '#4CAF50'
-          },
-          {
-            id: '0x14251285',
-            name: 'High',
-            color: '#00BCD4'
-          }
-        ]
-      }
-    ];
-
     super(props);
     this.state = {
       dataset: dataset, //props.dataset
@@ -236,14 +139,36 @@ class DatasetPage extends Component {
     this.onFuseTimeSeries = this.onFuseTimeSeries.bind(this);
     this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
     this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
+    this.uuidv4 = this.uuidv4.bind(this);
   }
 
   onLabelingsChanged(labelings) {
     if (!labelings) labelings = [];
 
+    let dataset = { ...this.state.dataset };
+    labelings.forEach(def => {
+      if (
+        !this.state.dataset.labelings.some(
+          labeling => labeling.labelingId === def.id
+        )
+      ) {
+        dataset.labelings.push({
+          id: this.uuidv4(),
+          labelingId: def.id,
+          labels: []
+        });
+      }
+    });
+
     this.setState({
+      dataset: dataset,
       labelingsDefinition: labelings,
-      controlStates: { selectedLabelingId: labelings[0].id },
+      controlStates: {
+        selectedLabelId: this.state.controlStates.selectedLabelId,
+        selectedLabelingId: labelings[0].id,
+        selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
+        canEdit: this.state.controlStates.canEdit
+      },
       isReady: true
     });
   }
@@ -405,6 +330,14 @@ class DatasetPage extends Component {
     fuseTimeSeriesModalState.isOpen = true;
 
     this.setState({ fuseTimeSeriesModalState });
+  }
+
+  uuidv4() {
+    return 'xxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = (Math.random() * 16) | 0,
+        v = c === 'x' ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
   }
 
   render() {
