@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row, Fade } from 'reactstrap';
+import { Col, Row, Fade, Button } from 'reactstrap';
 import { view } from 'react-easy-state';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
@@ -208,6 +208,9 @@ class DatasetPage extends Component {
         selectedLabelingId: labelingsDefinition[0].id,
         selectedLabelTypeId: undefined,
         canEdit: false
+      },
+      fuseTimeSeriesModalState: {
+        isOpen: false
       }
     };
 
@@ -223,6 +226,7 @@ class DatasetPage extends Component {
     this.onCanEditChanged = this.onCanEditChanged.bind(this);
     this.addTimeSeries = this.addTimeSeries.bind(this);
     this.onFuseTimeSeries = this.onFuseTimeSeries.bind(this);
+    this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
   }
 
   addTimeSeries(obj) {
@@ -362,7 +366,18 @@ class DatasetPage extends Component {
       id: uuidv4(),
       series: seriesIds
     });
+    let fuseTimeSeriesModalState = { ...this.state.fuseTimeSeriesModalState };
+    fuseTimeSeriesModalState.isOpen = false;
+
     this.setState({ dataset });
+    this.setState({ fuseTimeSeriesModalState });
+  }
+
+  onOpenFuseTimeSeriesModal() {
+    let fuseTimeSeriesModalState = { ...this.state.fuseTimeSeriesModalState };
+    fuseTimeSeriesModalState.isOpen = true;
+
+    this.setState({ fuseTimeSeriesModalState });
   }
 
   render() {
@@ -414,6 +429,9 @@ class DatasetPage extends Component {
                   onLabelChanged={this.onLabelChanged}
                   canEdit={this.state.controlStates.canEdit}
                 />
+                <Button block outline onClick={this.onOpenFuseTimeSeriesModal}>
+                  + Fuse Multiple Time Series
+                </Button>
               </div>
             </Col>
             <Col xs={12} lg={3}>
@@ -459,6 +477,7 @@ class DatasetPage extends Component {
             <CombineTimeSeriesModal
               timeSeries={this.state.dataset.timeSeries}
               onFuse={this.onFuseTimeSeries}
+              isOpen={this.state.fuseTimeSeriesModalState.isOpen}
             />
           </Row>
         </div>

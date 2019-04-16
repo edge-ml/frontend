@@ -11,7 +11,6 @@ import {
 } from 'reactstrap';
 
 import './CombineTimeSeriesModal.css';
-import { isCallExpression } from 'typescript';
 
 class CombineTimeSeriesModal extends Component {
   constructor(props) {
@@ -20,7 +19,7 @@ class CombineTimeSeriesModal extends Component {
       timeSeries: props.timeSeries ? props.timeSeries : [],
       selectedTimeSeries: [],
       modalState: {
-        isOpen: true
+        isOpen: false
       },
       eventHandlers: {
         onFuse: this.props.onFuse
@@ -34,12 +33,17 @@ class CombineTimeSeriesModal extends Component {
   componentWillReceiveProps(props) {
     this.setState(state => ({
       timeSeries: props.timeSeries ? props.timeSeries : [],
-      selectedTimeSeries: this.state.selectedTimeSeries
+      selectedTimeSeries: [],
+      modalState: {
+        isOpen: props.isOpen
+      }
     }));
   }
 
   onCloseModal() {
     this.setState(state => ({
+      timeSeries: this.state.timeSeries,
+      selectedTimeSeries: [],
       modalState: {
         isOpen: false
       }
@@ -56,7 +60,8 @@ class CombineTimeSeriesModal extends Component {
   }
 
   onFuse() {
-    this.state.eventHandlers.onFuse(this.state.selectedTimeSeries);
+    if (this.state.selectedTimeSeries.length < 2) return;
+
     this.setState(state => ({
       timeSeries: this.state.timeSeries,
       selectedTimeSeries: [],
@@ -64,6 +69,7 @@ class CombineTimeSeriesModal extends Component {
         isOpen: false
       }
     }));
+    this.state.eventHandlers.onFuse(this.state.selectedTimeSeries);
   }
 
   render() {
@@ -94,7 +100,12 @@ class CombineTimeSeriesModal extends Component {
           ))}
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" className="m-1 mr-auto" onClick={this.onFuse}>
+          <Button
+            active={this.state.selectedTimeSeries.length <= 1}
+            color="primary"
+            className="m-1 mr-auto"
+            onClick={this.onFuse}
+          >
             Fuse
           </Button>{' '}
           <Button color="secondary" className="m-1" onClick={this.onCloseModal}>
