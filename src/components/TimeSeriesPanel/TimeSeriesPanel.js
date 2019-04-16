@@ -9,6 +9,8 @@ const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
 const prefixPlotBand = 'plotBand_';
 
+var updating = false;
+
 class TimeSeriesPanel extends Component {
   constructor(props) {
     super(props);
@@ -103,8 +105,15 @@ class TimeSeriesPanel extends Component {
           startOnTick: false,
           endOnTick: false,
           events: {
-            setExtremes: e => {
-              console.log(e); // TODO
+            afterSetExtremes: e => {
+              if (!updating) {
+                updating = true;
+                Highcharts.charts.forEach(chart => {
+                  chart.xAxis[0].setExtremes(e.min, e.max);
+                });
+              } else {
+                updating = false;
+              }
             }
           }
         },
