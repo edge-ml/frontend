@@ -29,8 +29,7 @@ class LabelingSelectionPanel extends Component {
 
   onAddLabeling() {
     this.props.history.push({
-      pathname: '/labelings',
-      state: { addNew: true }
+      pathname: '/labelings/new'
     });
   }
 

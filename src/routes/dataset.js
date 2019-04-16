@@ -123,7 +123,7 @@ class DatasetPage extends Component {
     if (!labelings) labelings = [];
 
     let dataset = { ...this.state.dataset };
-    labelings.map(def => {
+    labelings.forEach(def => {
       if (
         !this.state.dataset.labelings.some(
           labeling => labeling.labelingId === def.id

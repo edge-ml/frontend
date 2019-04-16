@@ -56,13 +56,23 @@ class LabelingsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelings(this.onLabelingsChanged);
+    subscribeLabelings(labelings => {
+      this.onLabelingsChanged(labelings);
 
-    let state = this.props.location.state;
-    if (state) {
-      state.addNew && this.onAddLabeling();
-      state.labeling && this.toggleModal(state.labeling, false);
-    }
+      if (this.props.location.pathname === '/labelings/new') {
+        this.onAddLabeling();
+      } else {
+        const searchParams = new URLSearchParams(this.props.location.search);
+        const id = searchParams.get('id');
+
+        if (id) {
+          let labeling = this.state.labelingsDefinition.filter(labeling => {
+            return labeling.id === id;
+          })[0];
+          this.toggleModal(labeling, false);
+        }
+      }
+    });
   }
 
   componentWillUnmount() {

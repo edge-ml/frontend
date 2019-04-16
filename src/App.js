@@ -106,6 +106,7 @@ class App extends Component {
         <Container>
           <Route exact path="/list" component={ListPage} />
           <Route exact path="/labelings" component={LabelingsPage} />
+          <Route exact path="/labelings/new" component={LabelingsPage} />
           <Route exact path="/" component={ListPage} />
           <Route path="/datasets/:id" component={DatasetPage} />
         </Container>
