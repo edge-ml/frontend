@@ -80,6 +80,16 @@ class LabelingsPage extends Component {
   }
 
   toggleModal(labeling, isNewLabeling) {
+    if (isNewLabeling) {
+      window.history.replaceState({}, document.title, '/labelings/new');
+    } else {
+      window.history.replaceState(
+        {},
+        document.title,
+        '/labelings?id=' + labeling.id
+      );
+    }
+
     this.setState({
       modal: {
         labeling: this.state.modal.isOpen ? undefined : labeling,
@@ -101,6 +111,8 @@ class LabelingsPage extends Component {
   }
 
   onCloseModal() {
+    window.history.replaceState({}, document.title, '/labelings');
+
     this.setState({
       modal: {
         labeling: undefined,
