@@ -34,7 +34,8 @@ class DatasetPage extends Component {
           tags: ['Sandbox Tag'],
           isPublished: false,
           timeSeries: [],
-          labelings: []
+          labelings: [],
+          fusedSeries: []
         }
       : {
           // TODO: pull real dataset
