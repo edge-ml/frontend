@@ -12,6 +12,13 @@ import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/T
 import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
 import { uuidv4 } from '../services/UUIDService';
 
+import {
+  subscribeLabelings,
+  updateLabelings,
+  unsubscribeLabelings
+} from '../services/SocketService';
+import Loader from '../modules/loader';
+
 class DatasetPage extends Component {
   constructor(props) {
     let isSandbox = props.location.pathname === '/datasets/sandbox';
@@ -83,17 +90,17 @@ class DatasetPage extends Component {
           labelings: [
             {
               id: '0x3441234234',
-              labelingId: '0x923',
+              labelingId: 'e53325deda5e5b4',
               labels: [
                 {
                   id: '1',
-                  typeId: '0x1482',
+                  typeId: 'fa7b84e8-fe20-42dc-9eb3-4c2cc4a82031',
                   from: now - 450000,
                   to: now - 400000
                 },
                 {
                   id: '2',
-                  typeId: '0x1483',
+                  typeId: '85e364fa-8b71-4ef4-bfec-f4b7344e777e',
                   from: now - 300000,
                   to: now - 200000
                 }
@@ -202,10 +209,11 @@ class DatasetPage extends Component {
     super(props);
     this.state = {
       dataset: dataset, //props.dataset
-      labelingsDefinition: labelingsDefinition,
+      labelingsDefinition: [],
+      isReady: false,
       controlStates: {
         selectedLabelId: undefined,
-        selectedLabelingId: labelingsDefinition[0].id,
+        selectedLabelingId: undefined,
         selectedLabelTypeId: undefined,
         canEdit: false
       },
@@ -227,6 +235,25 @@ class DatasetPage extends Component {
     this.addTimeSeries = this.addTimeSeries.bind(this);
     this.onFuseTimeSeries = this.onFuseTimeSeries.bind(this);
     this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
+    this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
+  }
+
+  onLabelingsChanged(labelings) {
+    if (!labelings) labelings = [];
+
+    this.setState({
+      labelingsDefinition: labelings,
+      controlStates: { selectedLabelingId: labelings[0].id },
+      isReady: true
+    });
+  }
+
+  componentDidMount() {
+    subscribeLabelings(this.onLabelingsChanged);
+  }
+
+  componentWillUnmount() {
+    unsubscribeLabelings();
   }
 
   addTimeSeries(obj) {
@@ -381,6 +408,8 @@ class DatasetPage extends Component {
   }
 
   render() {
+    if (!this.state.isReady) return <Loader loading={true} />;
+
     var selectedLabeling = this.state.labelingsDefinition.filter(
       labeling => labeling.id === this.state.controlStates.selectedLabelingId
     )[0];
@@ -411,6 +440,7 @@ class DatasetPage extends Component {
                 }}
               >
                 <LabelingSelectionPanel
+                  history={this.props.history}
                   labelingsDefinition={this.state.labelingsDefinition}
                   selectedLabelingId={
                     this.state.controlStates.selectedLabelingId
@@ -460,10 +490,11 @@ class DatasetPage extends Component {
             </Col>
             <Col xs={12}>
               <LabelingPanel
+                history={this.props.history}
                 id={this.state.controlStates.selectedLabelId}
                 from={label ? label.from : null}
                 to={label ? label.to : null}
-                labelTypes={selectedLabeling.types}
+                labeling={selectedLabeling}
                 selectedLabelTypeId={
                   this.state.controlStates.selectedLabelTypeId
                 }

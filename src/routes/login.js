@@ -59,6 +59,7 @@ class LoginPage extends Component {
     this.onVerified = this.onVerified.bind(this);
     this.onLoginCanceled = this.onLoginCanceled.bind(this);
     this.onDidRestoreSession = this.onDidRestoreSession.bind(this);
+    this.passHandleKey = this.passHandleKey.bind(this);
 
     restoreSession(this.onDidRestoreSession);
   }
@@ -90,6 +91,12 @@ class LoginPage extends Component {
         }
       })
     );
+  }
+
+  passHandleKey(event) {
+    if (event.keyCode === 13) {
+      this.submit();
+    }
   }
 
   onLogin(didSucceed) {
@@ -269,6 +276,7 @@ class LoginPage extends Component {
                               id="password"
                               placeholder="password"
                               onChange={this.passChange}
+                              onKeyDown={this.passHandleKey}
                             />
                           </InputGroup>
                         </Col>

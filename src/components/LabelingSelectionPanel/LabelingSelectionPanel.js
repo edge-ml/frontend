@@ -10,6 +10,8 @@ class LabelingSelectionPanel extends Component {
       selectedLabelingId: props.selectedLabelingId,
       onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged
     };
+
+    this.onAddLabeling = this.onAddLabeling.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -23,6 +25,13 @@ class LabelingSelectionPanel extends Component {
   handleLabelingClicked(e, id) {
     e.preventDefault();
     this.state.onSelectedLabelingIdChanged(id);
+  }
+
+  onAddLabeling() {
+    this.props.history.push({
+      pathname: '/labelings',
+      state: { addNew: true }
+    });
   }
 
   render() {
@@ -48,7 +57,11 @@ class LabelingSelectionPanel extends Component {
               {labeling.name}
             </Button>
           ))}
-          <Button className="m-1" color="secondary">
+          <Button
+            className="m-1"
+            color="secondary"
+            onClick={this.onAddLabeling}
+          >
             <bold>+ Add</bold>
           </Button>
         </CardBody>

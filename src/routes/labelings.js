@@ -44,8 +44,6 @@ class LabelingsPage extends Component {
     this.onSave = this.onSave.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
     this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
-
-    subscribeLabelings(this.onLabelingsChanged);
   }
 
   onLabelingsChanged(labelings) {
@@ -55,6 +53,16 @@ class LabelingsPage extends Component {
       labelingsDefinition: labelings,
       isReady: true
     });
+  }
+
+  componentDidMount() {
+    subscribeLabelings(this.onLabelingsChanged);
+
+    let state = this.props.location.state;
+    if (state) {
+      state.addNew && this.onAddLabeling();
+      state.labeling && this.toggleModal(state.labeling, false);
+    }
   }
 
   componentWillUnmount() {
