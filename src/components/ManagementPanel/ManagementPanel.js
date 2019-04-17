@@ -2,19 +2,26 @@ import React, { Component } from 'react';
 import { Button, Card, CardHeader, CardBody } from 'reactstrap';
 import './ManagementPanel.css';
 import UploadCsvModal from './UploadCsvModal';
+import HelpModal from './HelpModal';
 
 class ManagementPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isModalOpen: false
+      isUploadModalOpen: false,
+      isHelpModalOpen: false
     };
 
-    this.toggleModal = this.toggleModal.bind(this);
+    this.toggleUploadModal = this.toggleUploadModal.bind(this);
+    this.toggleHelpModal = this.toggleHelpModal.bind(this);
   }
 
-  toggleModal() {
-    this.setState({ isModalOpen: !this.state.isModalOpen });
+  toggleUploadModal() {
+    this.setState({ isUploadModalOpen: !this.state.isUploadModalOpen });
+  }
+
+  toggleHelpModal() {
+    this.setState({ isHelpModalOpen: !this.state.isHelpModalOpen });
   }
 
   render() {
@@ -24,7 +31,12 @@ class ManagementPanel extends Component {
           <b>Management</b>
         </CardHeader>
         <CardBody>
-          <Button block outline color="primary" onClick={this.toggleModal}>
+          <Button
+            block
+            outline
+            color="primary"
+            onClick={this.toggleUploadModal}
+          >
             Upload CSV
           </Button>
           <hr />
@@ -34,12 +46,25 @@ class ManagementPanel extends Component {
           <Button block outline color="danger">
             Delete Dataset
           </Button>
+          <hr />
+          <Button
+            block
+            outline
+            color="secondary"
+            onClick={this.toggleHelpModal}
+          >
+            Help
+          </Button>
         </CardBody>
         <UploadCsvModal
-          isOpen={this.state.isModalOpen}
+          isOpen={this.state.isUploadModalOpen}
           onUpload={obj => this.props.onUpload(obj)}
-          onCloseModal={this.toggleModal}
+          onCloseModal={this.toggleUploadModal}
           startTime={this.props.startTime}
+        />
+        <HelpModal
+          isOpen={this.state.isHelpModalOpen}
+          onCloseModal={this.toggleHelpModal}
         />
       </Card>
     );

@@ -142,15 +142,13 @@ class DatasetPage extends Component {
     this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
     this.uuidv4 = this.uuidv4.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
-
-    document.addEventListener('keydown', this.onKeyDown);
   }
 
   onKeyDown(e) {
     let keyCode = e.keyCode ? e.keyCode : e.which;
 
     // 1 to 9
-    if ((e.ctrlKey || e.metaKey) && keyCode > 48 && keyCode < 58) {
+    if (e.ctrlKey && keyCode > 48 && keyCode < 58) {
       e.preventDefault();
       let index = keyCode - 49;
       if (index < this.state.labelingsDefinition.length) {
@@ -165,15 +163,18 @@ class DatasetPage extends Component {
 
       if (
         controlStates.selectedLabelingId &&
-        controlStates.selectedLabelTypeId &&
-        controlStates.canEdit
+        controlStates.selectedLabelTypeId
       ) {
-        let labeling = this.state.labelingsDefinition.filter(labeling => {
-          return labeling.id === controlStates.selectedLabelingId;
-        })[0];
+        if (controlStates.canEdit) {
+          let labeling = this.state.labelingsDefinition.filter(labeling => {
+            return labeling.id === controlStates.selectedLabelingId;
+          })[0];
 
-        if (index < labeling.types.length) {
-          this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
+          if (index < labeling.types.length) {
+            this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
+          }
+        } else {
+          window.alert('Editing not unlocked. Press "L" to unlock.');
         }
       }
       // l
@@ -186,10 +187,13 @@ class DatasetPage extends Component {
       let controlStates = this.state.controlStates;
       if (
         controlStates.selectedLabelingId &&
-        controlStates.selectedLabelTypeId &&
-        controlStates.canEdit
+        controlStates.selectedLabelTypeId
       ) {
-        this.onDeleteSelectedLabel();
+        if (controlStates.canEdit) {
+          this.onDeleteSelectedLabel();
+        } else {
+          window.alert('Editing not unlocked. Press "L" to unlock.');
+        }
       }
     }
   }
@@ -226,10 +230,12 @@ class DatasetPage extends Component {
   }
 
   componentDidMount() {
+    window.addEventListener('keydown', this.onKeyDown);
     subscribeLabelings(this.onLabelingsChanged);
   }
 
   componentWillUnmount() {
+    window.removeEventListener('keydown', this.onKeyDown);
     unsubscribeLabelings();
   }
 
@@ -336,21 +342,23 @@ class DatasetPage extends Component {
   }
 
   onDeleteSelectedLabel() {
-    let labeling = this.state.dataset.labelings.filter(
-      labeling =>
-        labeling.labelingId === this.state.controlStates.selectedLabelingId
-    )[0];
-    labeling.labels = labeling.labels.filter(
-      label => label.id !== this.state.controlStates.selectedLabelId
-    );
-    this.setState({
-      controlStates: {
-        selectedLabelId: undefined,
-        selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: undefined,
-        canEdit: this.state.controlStates.canEdit
-      }
-    });
+    if (window.confirm('Are you sure to delete this label?')) {
+      let labeling = this.state.dataset.labelings.filter(
+        labeling =>
+          labeling.labelingId === this.state.controlStates.selectedLabelingId
+      )[0];
+      labeling.labels = labeling.labels.filter(
+        label => label.id !== this.state.controlStates.selectedLabelId
+      );
+      this.setState({
+        controlStates: {
+          selectedLabelId: undefined,
+          selectedLabelingId: this.state.controlStates.selectedLabelingId,
+          selectedLabelTypeId: undefined,
+          canEdit: this.state.controlStates.canEdit
+        }
+      });
+    }
   }
 
   onCanEditChanged(canEdit) {
