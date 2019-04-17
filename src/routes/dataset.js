@@ -78,12 +78,12 @@ class DatasetPage extends Component {
               name: 'EMG',
               unit: 'mV',
               data: [
-                [now - 300000, 20],
-                [now - 200000, 40],
-                [now - 180000, 60],
-                [now - 140000, 10],
-                [now - 110000, 15],
-                [now - 80000, 30]
+                [now - 300000, 60],
+                [now - 200000, 20],
+                [now - 180000, 35],
+                [now - 140000, 55],
+                [now - 110000, 25],
+                [now - 80000, 20]
               ]
             }
           ],
