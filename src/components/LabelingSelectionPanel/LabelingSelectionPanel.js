@@ -39,7 +39,7 @@ class LabelingSelectionPanel extends Component {
     return (
       <Card className="LabelingSelectionPanel">
         <CardBody className="text-left">
-          {this.state.labelingsDefinition.map(labeling => (
+          {this.state.labelingsDefinition.map((labeling, index) => (
             <Button
               className={classNames(
                 'm-1',
@@ -53,7 +53,7 @@ class LabelingSelectionPanel extends Component {
                 labeling.id === this.state.selectedLabelingId ? 'primary' : {}
               }
             >
-              {labeling.name}
+              {labeling.name} {index < 9 ? '(' + (index + 1) + ')' : ''}
             </Button>
           ))}
           <Button

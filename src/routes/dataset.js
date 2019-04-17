@@ -141,6 +141,57 @@ class DatasetPage extends Component {
     this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
     this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
     this.uuidv4 = this.uuidv4.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
+
+    document.addEventListener('keydown', this.onKeyDown);
+  }
+
+  onKeyDown(e) {
+    let keyCode = e.keyCode ? e.keyCode : e.which;
+
+    // 1 to 9
+    if ((e.ctrlKey || e.metaKey) && keyCode > 48 && keyCode < 58) {
+      e.preventDefault();
+      let index = keyCode - 49;
+      if (index < this.state.labelingsDefinition.length) {
+        this.onSelectedLabelingIdChanged(
+          this.state.labelingsDefinition[index].id
+        );
+      }
+    } else if (keyCode > 48 && keyCode < 58) {
+      e.preventDefault();
+      let index = keyCode - 49;
+      let controlStates = this.state.controlStates;
+
+      if (
+        controlStates.selectedLabelingId &&
+        controlStates.selectedLabelTypeId &&
+        controlStates.canEdit
+      ) {
+        let labeling = this.state.labelingsDefinition.filter(labeling => {
+          return labeling.id === controlStates.selectedLabelingId;
+        })[0];
+
+        if (index < labeling.types.length) {
+          this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
+        }
+      }
+      // l
+    } else if (keyCode === 76) {
+      e.preventDefault();
+      this.onCanEditChanged(!this.state.controlStates.canEdit);
+      // backspace or delete
+    } else if (keyCode === 8 || keyCode === 46) {
+      e.preventDefault();
+      let controlStates = this.state.controlStates;
+      if (
+        controlStates.selectedLabelingId &&
+        controlStates.selectedLabelTypeId &&
+        controlStates.canEdit
+      ) {
+        this.onDeleteSelectedLabel();
+      }
+    }
   }
 
   onLabelingsChanged(labelings) {

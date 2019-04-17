@@ -104,14 +104,20 @@ class TimeSeriesPanel extends Component {
           endOnTick: false,
           events: {
             afterSetExtremes: e => {
-              Highcharts.charts.forEach(chart => {
-                if (chart.index !== this.chart.current.chart.index) {
-                  let ex = chart.xAxis[0].getExtremes();
-                  if (ex.min !== e.min || ex.max !== e.max) {
-                    chart.xAxis[0].setExtremes(e.min, e.max);
-                  }
-                }
-              });
+              if (this.chart.current.chart && Highcharts.charts) {
+                Highcharts.charts
+                  .filter(chart => {
+                    return chart;
+                  })
+                  .forEach(chart => {
+                    if (chart.index !== this.chart.current.chart.index) {
+                      let ex = chart.xAxis[0].getExtremes();
+                      if (ex.min !== e.min || ex.max !== e.max) {
+                        chart.xAxis[0].setExtremes(e.min, e.max);
+                      }
+                    }
+                  });
+              }
             }
           }
         },
