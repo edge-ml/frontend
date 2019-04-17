@@ -9,6 +9,7 @@ import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
 import InteractionControlPanel from '../components/InteractionControlPanel/InteractionControlPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
+import ApiPanel from '../components/ApiPanel/ApiPanel';
 import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
 import { uuidv4 } from '../services/UUIDService';
 
@@ -414,6 +415,9 @@ class DatasetPage extends Component {
                   end={this.state.dataset.end}
                   email={this.state.dataset.email}
                 />
+              </div>
+              <div className="mt-3">
+                <ApiPanel />
               </div>
               <div className="mt-3">
                 <ManagementPanel

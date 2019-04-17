@@ -10,6 +10,8 @@ let socket;
 let authenticated = false;
 let verified = false;
 
+export let client_name = '';
+
 /***
  * Authentication
  */
@@ -154,4 +156,17 @@ export const unsubscribeDataset = (id, callback) => {
   if (!authenticated || !verified) return;
 
   socket.off(`datasets_${id}`);
+};
+
+/***
+ * Client Name
+ */
+export const getClientName = async () => {
+  return await new Promise(resolve => {
+    socket.emit('client_name');
+    socket.on('client_name', client_name => {
+      socket.off('client_name');
+      resolve(client_name);
+    });
+  });
 };

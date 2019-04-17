@@ -1,9 +1,6 @@
 const path = require('path');
-const http = require('http');
 const fs   = require('fs');
 
-const Koa = require('koa');
-const socketio = require('socket.io');
 const KoaStatic = require('koa-static');
 const KoaRouter = require('koa-router');
 const KoaLogger = require('koa-logger');
@@ -15,13 +12,11 @@ const jwt  = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
 
-const app = new Koa();
+const { uniqueNamesGenerator } = require('unique-names-generator');
 
-const server = http.createServer(app.callback());
+const { io, app, server } = require('./server_singleton');
 
-const io = socketio(server);
-
-const sandboxRouter = require('./SandboxRouter');
+const sandboxRouter = require('./sandboxRouter');
 
 const authPath = path.join(__dirname, '../', 'config', 'auth.json');
 const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
@@ -39,6 +34,7 @@ const publicKey  = fs.readFileSync(publicKeyPath, 'utf-8');
 const tokenIssuer = 'AURA';
 const tokenAudience = 'http://explorer.aura.rest';
 
+const clientmap = {};
 
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
@@ -80,6 +76,16 @@ SocketIoAuth(io, {
 });
 
 io.on('connection', (socket) => {
+	// generate unique-id
+	const name = uniqueNamesGenerator('-', true);
+
+	socket.on('client_name', () => {
+		// join room with client id name
+		socket.join(name);
+
+		socket.emit('client_name', name);
+	});
+
 	socket.on('2FA', (userToken) => {
 		const isValid = speakeasy.totp.verify({
 			secret: socket.client.twoFASecret,
@@ -142,16 +148,11 @@ io.on('connection', (socket) => {
 	});
 });
 
-/* app.use(KoaStaticServer({
-	rootDir: path.join(__dirname, '../', 'build'),
-	index: 'index.html',
-}));*/
-
 app.use(KoaLogger());
 
 const router = new KoaRouter();
 
-router.use('/api/sandbox', sandboxRouter.routes(), sandboxRouter.allowedMethods());
+router.use('/sandbox/:name', sandboxRouter.routes(), sandboxRouter.allowedMethods());
 
 app.use(router.routes());
 app.use(router.allowedMethods());
