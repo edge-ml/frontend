@@ -4,7 +4,9 @@ const fs   = require('fs');
 
 const Koa = require('koa');
 const socketio = require('socket.io');
-const KoaStaticServer = require('koa-static-server');
+const KoaStatic = require('koa-static');
+const KoaRouter = require('koa-router');
+const KoaLogger = require('koa-logger');
 
 const passwordHash = require('password-hash');
 const SocketIoAuth = require('socketio-auth');
@@ -18,6 +20,8 @@ const app = new Koa();
 const server = http.createServer(app.callback());
 
 const io = socketio(server);
+
+const sandboxRouter = require('./SandboxRouter');
 
 const authPath = path.join(__dirname, '../', 'config', 'auth.json');
 const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
@@ -138,9 +142,20 @@ io.on('connection', (socket) => {
 	});
 });
 
-app.use(KoaStaticServer({
+/* app.use(KoaStaticServer({
 	rootDir: path.join(__dirname, '../', 'build'),
 	index: 'index.html',
-}));
+}));*/
+
+app.use(KoaLogger());
+
+const router = new KoaRouter();
+
+router.use('/api/sandbox', sandboxRouter.routes(), sandboxRouter.allowedMethods());
+
+app.use(router.routes());
+app.use(router.allowedMethods());
+
+app.use(KoaStatic(path.join(__dirname, '../', 'build'), {maxage: 1}));
 
 server.listen(3001);
