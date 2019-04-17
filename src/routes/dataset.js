@@ -186,7 +186,6 @@ class DatasetPage extends Component {
   addTimeSeries(obj) {
     let dataset = { ...this.state.dataset };
     dataset.timeSeries.push(obj);
-    console.log(dataset);
     this.setState({ dataset });
   }
 
@@ -418,7 +417,10 @@ class DatasetPage extends Component {
                 />
               </div>
               <div className="mt-3">
-                <ApiPanel onUpload={obj => this.addTimeSeries(obj)} />
+                <ApiPanel
+                  onUpload={obj => this.addTimeSeries(obj)}
+                  startTime={this.state.dataset.start}
+                />
               </div>
               <div className="mt-3">
                 <ManagementPanel

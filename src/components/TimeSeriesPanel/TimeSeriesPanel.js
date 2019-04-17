@@ -67,6 +67,14 @@ class TimeSeriesPanel extends Component {
 
     return {
       chartOptions: {
+        navigator: {
+          xAxis: {
+            isInternal: true
+          },
+          yAxis: {
+            isInternal: true
+          }
+        },
         rangeSelector: {
           enabled: false
         },

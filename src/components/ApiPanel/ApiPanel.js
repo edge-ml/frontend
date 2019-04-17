@@ -32,7 +32,7 @@ class ApiPanel extends Component {
     // subscribe to plot events
     subscribePlot(csvs => {
       for (const csv of csvs) {
-        const obj = parseCSV(csv, Date.now(), true);
+        const obj = parseCSV(csv, this.props.startTime, true);
 
         if (obj.error) {
           alert(obj.message);
