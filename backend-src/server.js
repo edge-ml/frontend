@@ -14,7 +14,7 @@ const QRCode = require('qrcode');
 
 const { uniqueNamesGenerator } = require('unique-names-generator');
 
-const { io, app, server } = require('./server_singleton');
+const { io, app, server, activeClients } = require('./server_singleton');
 
 const sandboxRouter = require('./sandboxRouter');
 
@@ -77,13 +77,15 @@ SocketIoAuth(io, {
 
 io.on('connection', (socket) => {
 	// generate unique-id
-	const name = uniqueNamesGenerator('-', true);
+	const name = uniqueNamesGenerator('', true);
 
 	socket.on('client_name', () => {
 		// join room with client id name
 		socket.join(name);
 
 		socket.emit('client_name', name);
+
+		activeClients.push(name);
 	});
 
 	socket.on('2FA', (userToken) => {
@@ -141,6 +143,7 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('disconnect', () => {
+		// TODO: remove client from activeClients
 	});
 
 	socket.on('user', (user) => {
@@ -152,7 +155,7 @@ app.use(KoaLogger());
 
 const router = new KoaRouter();
 
-router.use('/sandbox/:name', sandboxRouter.routes(), sandboxRouter.allowedMethods());
+router.use('/api/:name', sandboxRouter.routes(), sandboxRouter.allowedMethods());
 
 app.use(router.routes());
 app.use(router.allowedMethods());

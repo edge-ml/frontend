@@ -9,7 +9,10 @@ const server = http.createServer(app.callback());
 
 const io = socketio(server);
 
+let activeClients = [];
+
 module.exports = {
+	activeClients: activeClients,
 	app: app,
 	io: io,
 	server: server,

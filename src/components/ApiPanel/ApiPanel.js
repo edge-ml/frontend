@@ -9,7 +9,8 @@ import {
   CardHeader
 } from 'reactstrap';
 
-import { getClientName } from '../../services/SocketService';
+import { getClientName, subscribePlot } from '../../services/SocketService';
+import { parseCSV } from '../../services/helpers.js';
 
 import './ApiPanel.css';
 
@@ -27,6 +28,21 @@ class ApiPanel extends Component {
         clientName: name
       }))
     );
+
+    // subscribe to plot events
+    subscribePlot(csvs => {
+      for (const csv of csvs) {
+        const obj = parseCSV(csv, Date.now(), true);
+
+        if (obj.error) {
+          alert(obj.message);
+        } else {
+          obj.error = undefined;
+          obj.message = undefined;
+          this.props.onUpload(obj);
+        }
+      }
+    });
   }
 
   render() {

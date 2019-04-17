@@ -170,3 +170,10 @@ export const getClientName = async () => {
     });
   });
 };
+
+/***
+ * plot
+ */
+export const subscribePlot = callback => {
+  socket.on('plot', data => callback(data));
+};
