@@ -38,8 +38,9 @@ class TimeSeriesCollectionPanel extends Component {
   render() {
     return (
       <div>
-        {this.state.timeSeries.map(timeSeries => (
+        {this.state.timeSeries.map((timeSeries, key) => (
           <TimeSeriesPanel
+            key={key}
             data={timeSeries.data}
             name={timeSeries.name}
             unit={timeSeries.unit}
@@ -53,8 +54,9 @@ class TimeSeriesCollectionPanel extends Component {
             canEdit={this.state.canEdit}
           />
         ))}
-        {this.state.fusedSeries.map(fusedSeries => (
+        {this.state.fusedSeries.map((fusedSeries, key) => (
           <TimeSeriesPanel
+            key={key}
             data={this.state.timeSeries
               .filter(timeSeries => {
                 return (

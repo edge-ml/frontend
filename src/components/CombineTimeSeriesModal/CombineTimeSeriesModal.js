@@ -77,8 +77,8 @@ class CombineTimeSeriesModal extends Component {
       <Modal isOpen={this.state.modalState.isOpen}>
         <ModalHeader>Fuse Multiple Time Series</ModalHeader>
         <ModalBody>
-          {this.state.timeSeries.map(series => (
-            <FormGroup check style={{ margin: '10px 0px' }}>
+          {this.state.timeSeries.map((series, key) => (
+            <FormGroup check key={key} style={{ margin: '10px 0px' }}>
               <Label check>
                 <Input
                   type="checkbox"
