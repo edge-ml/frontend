@@ -75,6 +75,32 @@ class ApiPanel extends Component {
                 readOnly
               />
             </InputGroup>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText className="timeInputGroupText">
+                  Plot
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                className="text-right"
+                value={
+                  this.state.clientName
+                    ? `${window.location.protocol}//${
+                        window.location.hostname
+                      }${
+                        window.location.port
+                          ? `:${
+                              window.location.port == 3000
+                                ? 3001
+                                : window.location.port
+                            }`
+                          : ''
+                      }/api/${this.state.clientName}/plot?fuse=true`
+                    : 'loading...'
+                }
+                readOnly
+              />
+            </InputGroup>
           </div>
         </CardBody>
       </Card>
