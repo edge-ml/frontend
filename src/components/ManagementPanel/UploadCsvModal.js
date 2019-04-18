@@ -55,16 +55,16 @@ class UploadCsvModal extends Component {
       <Modal isOpen={this.props.isOpen}>
         <ModalHeader>{'Upload CSV'}</ModalHeader>
         <ModalBody>
-          <div class="input-group">
-            <div class="custom-file">
+          <div className="input-group">
+            <div className="custom-file">
               <input
                 id="fileInput"
                 accept=".csv"
                 onChange={e => this.setState({ file: e.target.files[0] })}
                 type="file"
-                class="custom-file-input"
+                className="custom-file-input"
               />
-              <label class="custom-file-label">
+              <label className="custom-file-label">
                 {!this.state.file ? 'Choose File' : this.state.file.name}
               </label>
             </div>
