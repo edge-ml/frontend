@@ -64,7 +64,7 @@ class ApiPanel extends Component {
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText className="timeInputGroupText">
-                  ID:
+                  Id
                 </InputGroupText>
               </InputGroupAddon>
               <Input
