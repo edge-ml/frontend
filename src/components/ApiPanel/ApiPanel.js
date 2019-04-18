@@ -30,17 +30,25 @@ class ApiPanel extends Component {
     );
 
     // subscribe to plot events
-    subscribePlot(csvs => {
-      for (const csv of csvs) {
-        const obj = parseCSV(csv, this.props.startTime, true);
+    subscribePlot(data => {
+      const { plots, fuse } = data;
+
+      const ids = [];
+
+      for (const plot of plots) {
+        const obj = parseCSV(plot, this.props.startTime, true);
 
         if (obj.error) {
           alert(obj.message);
         } else {
           obj.error = undefined;
           obj.message = undefined;
+          ids.push(obj.id);
           this.props.onUpload(obj);
         }
+      }
+      if (fuse && ids.length > 1) {
+        this.props.onFuse(ids);
       }
     });
   }

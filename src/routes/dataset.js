@@ -419,6 +419,7 @@ class DatasetPage extends Component {
               <div className="mt-3">
                 <ApiPanel
                   onUpload={obj => this.addTimeSeries(obj)}
+                  onFuse={this.onFuseTimeSeries}
                   startTime={this.state.dataset.start}
                 />
               </div>

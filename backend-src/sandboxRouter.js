@@ -13,6 +13,7 @@ sandboxRouter.put('/plot', multer.fields([
 	{ name: 'csv', maxCount: 10 }
 ]), (ctx) => {
 	const { name } = ctx.params;
+	const { fuse } = ctx.query;
 
 	// assert client exists
 	if(activeClients.includes(name)){
@@ -22,7 +23,10 @@ sandboxRouter.put('/plot', multer.fields([
 			csvs.push(csv.buffer.toString());
 		}
 
-		io.to(name).emit('plot', csvs);
+		io.to(name).emit('plot', {
+			fuse: fuse === undefined ? false : fuse,
+			plots: csvs,
+		});
 
 		ctx.body = {success: true};
 	} else {
