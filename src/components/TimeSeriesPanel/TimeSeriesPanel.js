@@ -7,7 +7,6 @@ import './TimeSeriesPanel.css';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
-const prefixPlotBand = 'plotBand_';
 
 class TimeSeriesPanel extends Component {
   constructor(props) {

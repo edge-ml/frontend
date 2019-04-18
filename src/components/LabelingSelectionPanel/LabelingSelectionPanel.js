@@ -39,7 +39,7 @@ class LabelingSelectionPanel extends Component {
     return (
       <Card className="LabelingSelectionPanel">
         <CardBody className="text-left">
-          {this.state.labelingsDefinition.map(labeling => (
+          {this.state.labelingsDefinition.map((labeling, key) => (
             <Button
               className={classNames(
                 'm-1',
@@ -50,8 +50,9 @@ class LabelingSelectionPanel extends Component {
               )}
               onClick={e => this.handleLabelingClicked(e, labeling.id)}
               color={
-                labeling.id === this.state.selectedLabelingId ? 'primary' : {}
+                labeling.id === this.state.selectedLabelingId ? 'primary' : ''
               }
+              key={key}
             >
               {labeling.name}
             </Button>
@@ -61,7 +62,7 @@ class LabelingSelectionPanel extends Component {
             color="secondary"
             onClick={this.onAddLabeling}
           >
-            <bold>+ Add</bold>
+            <b>+ Add</b>
           </Button>
         </CardBody>
       </Card>

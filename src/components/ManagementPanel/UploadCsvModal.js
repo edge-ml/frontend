@@ -7,8 +7,7 @@ import {
   Button,
   Input,
   Label,
-  FormGroup,
-  InputGroup
+  FormGroup
 } from 'reactstrap';
 
 import { parseCSV } from '../../services/helpers.js';

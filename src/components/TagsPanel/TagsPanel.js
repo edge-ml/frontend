@@ -24,8 +24,8 @@ class TagsPanel extends Component {
         </CardHeader>
         <CardBody>
           <div className="tagsContainer">
-            {this.state.tags.map(tag => (
-              <span className="m-1">
+            {this.state.tags.map((tag, key) => (
+              <span className="m-1" key={key}>
                 <Badge color="secondary">{tag}</Badge>
               </span>
             ))}

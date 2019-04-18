@@ -1,16 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Container,
-  Col,
-  Row,
-  Table,
-  Badge,
-  Button,
-  ButtonGroup
-} from 'reactstrap';
-import Request from 'request-promise';
-import update from 'immutability-helper';
-import { load } from 'protobufjs';
+import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
 import { view } from 'react-easy-state';
 
 import Loader from '../modules/loader';
@@ -21,7 +10,6 @@ import {
   updateLabelings,
   unsubscribeLabelings
 } from '../services/SocketService';
-import { Socket } from 'dgram';
 
 class LabelingsPage extends Component {
   constructor(props) {

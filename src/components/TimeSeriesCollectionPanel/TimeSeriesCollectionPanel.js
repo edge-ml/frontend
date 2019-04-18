@@ -1,14 +1,4 @@
 import React, { Component } from 'react';
-import {
-  Button,
-  Card,
-  InputGroup,
-  InputGroupText,
-  InputGroupAddon,
-  Input
-} from 'reactstrap';
-import Highcharts from 'highcharts/highstock';
-import HighchartsReact from 'highcharts-react-official';
 
 import './TimeSeriesCollectionPanel.css';
 import TimeSeriesPanel from '../TimeSeriesPanel/TimeSeriesPanel';

@@ -15,7 +15,6 @@ import { uuidv4 } from '../services/UUIDService';
 
 import {
   subscribeLabelings,
-  updateLabelings,
   unsubscribeLabelings
 } from '../services/SocketService';
 import Loader from '../modules/loader';

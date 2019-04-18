@@ -90,7 +90,7 @@ class ApiPanel extends Component {
                       }${
                         window.location.port
                           ? `:${
-                              window.location.port == 3000
+                              window.location.port === 3000
                                 ? 3001
                                 : window.location.port
                             }`
