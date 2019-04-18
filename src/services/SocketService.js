@@ -177,3 +177,11 @@ export const getClientName = async () => {
 export const subscribePlot = callback => {
   socket.on('plot', data => callback(data));
 };
+
+export const waitForEvent = async eventName => {
+  return await new Promise(resolve => {
+    socket.on(eventName, payload => {
+      resolve(payload);
+    });
+  });
+};

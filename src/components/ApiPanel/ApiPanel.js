@@ -9,7 +9,11 @@ import {
   CardHeader
 } from 'reactstrap';
 
-import { getClientName, subscribePlot } from '../../services/SocketService';
+import {
+  getClientName,
+  subscribePlot,
+  waitForEvent
+} from '../../services/SocketService';
 import { parseCSV } from '../../services/helpers.js';
 
 import './ApiPanel.css';
@@ -31,24 +35,30 @@ class ApiPanel extends Component {
 
     // subscribe to plot events
     subscribePlot(data => {
-      const { plots, fuse } = data;
+      switch (data.action) {
+        case 'add':
+          const { plots, fuse } = data;
 
-      const ids = [];
+          const ids = [];
 
-      for (const plot of plots) {
-        const obj = parseCSV(plot, this.props.startTime, true);
+          for (const plot of plots) {
+            const obj = parseCSV(plot, this.props.startTime, true);
 
-        if (obj.error) {
-          alert(obj.message);
-        } else {
-          obj.error = undefined;
-          obj.message = undefined;
-          ids.push(obj.id);
-          this.props.onUpload(obj);
-        }
-      }
-      if (fuse && ids.length > 1) {
-        this.props.onFuse(ids);
+            if (obj.error) {
+              alert(obj.message);
+            } else {
+              obj.error = undefined;
+              obj.message = undefined;
+              ids.push(obj.id);
+              this.props.onUpload(obj);
+            }
+          }
+          if (fuse && ids.length > 1) {
+            this.props.onFuse(ids);
+          }
+          break;
+        case 'getPlots':
+          break;
       }
     });
   }
