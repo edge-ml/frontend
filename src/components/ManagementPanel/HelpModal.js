@@ -23,13 +23,13 @@ class HelpModal extends Component {
             <table>
               <tr>
                 <td>
-                  <code>Ctrl + Shift + [0 - 9]</code>
+                  <code>Ctrl + Shift + [number]</code>
                 </td>
                 <td>Set active labeling</td>
               </tr>
               <tr>
                 <td>
-                  <code>Ctrl + [0 - 9]</code>
+                  <code>Ctrl + [number]</code>
                 </td>
                 <td>Set active label type</td>
               </tr>
