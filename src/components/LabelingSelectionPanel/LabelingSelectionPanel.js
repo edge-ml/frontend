@@ -62,7 +62,7 @@ class LabelingSelectionPanel extends Component {
             color="secondary"
             onClick={this.onAddLabeling}
           >
-            <b>+ Add</b>
+            + Add
           </Button>
         </CardBody>
       </Card>
