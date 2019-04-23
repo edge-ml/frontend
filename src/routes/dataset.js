@@ -144,12 +144,19 @@ class DatasetPage extends Component {
     this.onKeyUp = this.onKeyUp.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onFuseCanceled = this.onFuseCanceled.bind(this);
+    this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
 
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false
     };
+  }
+
+  clearKeyBuffer() {
+    this.pressedKeys.num = [];
+    this.pressedKeys.ctrl = false;
+    this.pressedKeys.shift = false;
   }
 
   onKeyDown(e) {
@@ -171,6 +178,17 @@ class DatasetPage extends Component {
     // shift
     if (keyCode === 16) {
       e.preventDefault();
+      this.clearKeyBuffer();
+
+      // ctrl
+    } else if (keyCode === 17) {
+      e.preventDefault();
+
+      if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
+        this.clearKeyBuffer();
+      }
+    } else if (keyCode > 47 && keyCode < 58) {
+      e.preventDefault();
 
       if (this.pressedKeys.ctrl && this.pressedKeys.shift) {
         let length = this.pressedKeys.num.length;
@@ -185,18 +203,9 @@ class DatasetPage extends Component {
           );
         } else {
           window.alert('Labeling (' + (index + 1) + ") doesn't exist.");
+          this.clearKeyBuffer();
         }
-      }
-
-      this.pressedKeys.num = [];
-      this.pressedKeys.ctrl = false;
-      this.pressedKeys.shift = false;
-
-      // ctrl
-    } else if (keyCode === 17) {
-      e.preventDefault();
-
-      if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
+      } else if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
         let length = this.pressedKeys.num.length;
         let index =
           this.pressedKeys.num.reduce((total, current, index, array) => {
@@ -217,17 +226,16 @@ class DatasetPage extends Component {
               this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
             } else {
               window.alert('Label (' + (index + 1) + ") doesn't exist.");
+              this.clearKeyBuffer();
             }
           } else {
             window.alert('Editing not unlocked. Press "L" to unlock.');
+            this.clearKeyBuffer();
           }
         } else if (!controlStates.selectedLabelTypeId) {
           window.alert('No label selected.');
+          this.clearKeyBuffer();
         }
-
-        this.pressedKeys.num = [];
-        this.pressedKeys.ctrl = false;
-        this.pressedKeys.shift = false;
       }
 
       // l
