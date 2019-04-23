@@ -141,6 +141,162 @@ class DatasetPage extends Component {
     this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
     this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
     this.uuidv4 = this.uuidv4.bind(this);
+    this.onKeyUp = this.onKeyUp.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
+    this.onFuseCanceled = this.onFuseCanceled.bind(this);
+    this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
+
+    this.pressedKeys = {
+      num: [],
+      ctrl: false,
+      shift: false
+    };
+  }
+
+  clearKeyBuffer() {
+    this.pressedKeys.num = [];
+    this.pressedKeys.ctrl = false;
+    this.pressedKeys.shift = false;
+  }
+
+  onKeyDown(e) {
+    let keyCode = e.keyCode ? e.keyCode : e.which;
+
+    if ((e.ctrlKey || e.shiftKey) && keyCode > 47 && keyCode < 58) {
+      e.preventDefault();
+
+      this.pressedKeys.ctrl = e.ctrlKey;
+      this.pressedKeys.shift = e.shiftKey;
+
+      this.pressedKeys.num.push(keyCode - 48);
+
+      if (this.pressedKeys.ctrl && this.pressedKeys.shift) {
+        let index =
+          this.pressedKeys.num.reduce((total, current, index) => {
+            return (
+              total +
+              current * Math.pow(10, this.pressedKeys.num.length - index - 1)
+            );
+          }, 0) - 1;
+
+        if (index >= 0 && index < this.state.labelingsDefinition.length) {
+          this.onSelectedLabelingIdChanged(
+            this.state.labelingsDefinition[index].id
+          );
+        } else {
+          while (
+            index >= this.state.labelingsDefinition.length &&
+            this.pressedKeys.num.length > 1
+          ) {
+            this.pressedKeys.num.shift();
+            index =
+              this.pressedKeys.num.reduce((total, current, index) => {
+                return (
+                  total +
+                  current *
+                    Math.pow(10, this.pressedKeys.num.length - index - 1)
+                );
+              }, 0) - 1;
+          }
+
+          if (index >= this.state.labelingsDefinition.length || index < 0) {
+            this.clearKeyBuffer();
+          } else {
+            this.onSelectedLabelingIdChanged(
+              this.state.labelingsDefinition[index].id
+            );
+          }
+        }
+      } else if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
+        let index =
+          this.pressedKeys.num.reduce((total, current, index) => {
+            return (
+              total +
+              current * Math.pow(10, this.pressedKeys.num.length - index - 1)
+            );
+          }, 0) - 1;
+        let controlStates = this.state.controlStates;
+
+        if (
+          controlStates.selectedLabelingId &&
+          controlStates.selectedLabelTypeId
+        ) {
+          if (controlStates.canEdit) {
+            let labeling = this.state.labelingsDefinition.filter(labeling => {
+              return labeling.id === controlStates.selectedLabelingId;
+            })[0];
+
+            if (index >= 0 && index < labeling.types.length) {
+              this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
+            } else {
+              while (
+                index >= labeling.types.length &&
+                this.pressedKeys.num.length > 1
+              ) {
+                this.pressedKeys.num.shift();
+                index =
+                  this.pressedKeys.num.reduce((total, current, index) => {
+                    return (
+                      total +
+                      current *
+                        Math.pow(10, this.pressedKeys.num.length - index - 1)
+                    );
+                  }, 0) - 1;
+              }
+
+              if (index >= labeling.types.length || index < 0) {
+                this.clearKeyBuffer();
+              } else {
+                this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
+              }
+            }
+          } else {
+            window.alert('Editing not unlocked. Press "L" to unlock.');
+            this.clearKeyBuffer();
+          }
+        } else if (!controlStates.selectedLabelTypeId) {
+          window.alert('No label selected.');
+          this.clearKeyBuffer();
+        }
+      }
+
+      // l
+    } else if (keyCode === 76) {
+      e.preventDefault();
+      this.onCanEditChanged(!this.state.controlStates.canEdit);
+      // backspace or delete
+    } else if (keyCode === 8 || keyCode === 46) {
+      e.preventDefault();
+      let controlStates = this.state.controlStates;
+      if (
+        controlStates.selectedLabelingId &&
+        controlStates.selectedLabelTypeId
+      ) {
+        if (controlStates.canEdit) {
+          this.onDeleteSelectedLabel();
+        } else {
+          window.alert('Editing not unlocked. Press "L" to unlock.');
+        }
+      }
+    }
+  }
+
+  onKeyUp(e) {
+    let keyCode = e.keyCode ? e.keyCode : e.which;
+
+    // shift
+    if (keyCode === 16) {
+      e.preventDefault();
+      this.clearKeyBuffer();
+
+      // ctrl
+    } else if (keyCode === 17) {
+      e.preventDefault();
+
+      if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
+        this.clearKeyBuffer();
+      }
+    }
   }
 
   onLabelingsChanged(labelings) {
@@ -175,10 +331,14 @@ class DatasetPage extends Component {
   }
 
   componentDidMount() {
+    window.addEventListener('keyup', this.onKeyUp);
+    window.addEventListener('keydown', this.onKeyDown);
     subscribeLabelings(this.onLabelingsChanged);
   }
 
   componentWillUnmount() {
+    window.removeEventListener('keyup', this.onKeyUp);
+    window.removeEventListener('keydown', this.onKeyDown);
     unsubscribeLabelings();
   }
 
@@ -285,21 +445,23 @@ class DatasetPage extends Component {
   }
 
   onDeleteSelectedLabel() {
-    let labeling = this.state.dataset.labelings.filter(
-      labeling =>
-        labeling.labelingId === this.state.controlStates.selectedLabelingId
-    )[0];
-    labeling.labels = labeling.labels.filter(
-      label => label.id !== this.state.controlStates.selectedLabelId
-    );
-    this.setState({
-      controlStates: {
-        selectedLabelId: undefined,
-        selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: undefined,
-        canEdit: this.state.controlStates.canEdit
-      }
-    });
+    if (window.confirm('Are you sure to delete this label?')) {
+      let labeling = this.state.dataset.labelings.filter(
+        labeling =>
+          labeling.labelingId === this.state.controlStates.selectedLabelingId
+      )[0];
+      labeling.labels = labeling.labels.filter(
+        label => label.id !== this.state.controlStates.selectedLabelId
+      );
+      this.setState({
+        controlStates: {
+          selectedLabelId: undefined,
+          selectedLabelingId: this.state.controlStates.selectedLabelingId,
+          selectedLabelTypeId: undefined,
+          canEdit: this.state.controlStates.canEdit
+        }
+      });
+    }
   }
 
   onCanEditChanged(canEdit) {
@@ -323,6 +485,13 @@ class DatasetPage extends Component {
     fuseTimeSeriesModalState.isOpen = false;
 
     this.setState({ dataset });
+    this.setState({ fuseTimeSeriesModalState });
+  }
+
+  onFuseCanceled() {
+    let fuseTimeSeriesModalState = { ...this.state.fuseTimeSeriesModalState };
+    fuseTimeSeriesModalState.isOpen = false;
+
     this.setState({ fuseTimeSeriesModalState });
   }
 
@@ -449,6 +618,7 @@ class DatasetPage extends Component {
             <CombineTimeSeriesModal
               timeSeries={this.state.dataset.timeSeries}
               onFuse={this.onFuseTimeSeries}
+              onFuseCanceled={this.onFuseCanceled}
               isOpen={this.state.fuseTimeSeriesModalState.isOpen}
             />
           </Row>

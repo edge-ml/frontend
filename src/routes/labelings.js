@@ -32,6 +32,7 @@ class LabelingsPage extends Component {
     this.onSave = this.onSave.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
     this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
+    this.resetURL = this.resetURL.bind(this);
   }
 
   onLabelingsChanged(labelings) {
@@ -68,6 +69,18 @@ class LabelingsPage extends Component {
   }
 
   toggleModal(labeling, isNewLabeling) {
+    if (isNewLabeling) {
+      this.props.history.replace({
+        pathname: '/labelings/new',
+        search: null
+      });
+    } else {
+      this.props.history.replace({
+        pathname: '/labelings',
+        search: '?id=' + labeling.id
+      });
+    }
+
     this.setState({
       modal: {
         labeling: this.state.modal.isOpen ? undefined : labeling,
@@ -89,6 +102,8 @@ class LabelingsPage extends Component {
   }
 
   onCloseModal() {
+    this.resetURL();
+
     this.setState({
       modal: {
         labeling: undefined,
@@ -110,6 +125,7 @@ class LabelingsPage extends Component {
         isNewLabeling: false
       }
     });
+    this.resetURL();
     updateLabelings(newLabelings);
   }
 
@@ -135,7 +151,15 @@ class LabelingsPage extends Component {
         isOpen: false
       }
     });
+    this.resetURL();
     updateLabelings(newLabelings);
+  }
+
+  resetURL() {
+    this.props.history.replace({
+      pathname: '/labelings',
+      search: null
+    });
   }
 
   uuidv4() {

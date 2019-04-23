@@ -22,7 +22,8 @@ class CombineTimeSeriesModal extends Component {
         isOpen: false
       },
       eventHandlers: {
-        onFuse: this.props.onFuse
+        onFuse: props.onFuse,
+        onFuseCanceled: props.onFuseCanceled
       }
     };
 
@@ -36,6 +37,10 @@ class CombineTimeSeriesModal extends Component {
       selectedTimeSeries: [],
       modalState: {
         isOpen: props.isOpen
+      },
+      eventHandlers: {
+        onFuse: props.onFuse,
+        onFuseCanceled: props.onFuseCanceled
       }
     }));
   }
@@ -48,6 +53,7 @@ class CombineTimeSeriesModal extends Component {
         isOpen: false
       }
     }));
+    this.state.eventHandlers.onFuseCanceled();
   }
 
   onTimeSeriesSelectedChanged(isChecked, id) {

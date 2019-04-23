@@ -89,6 +89,11 @@ class App extends Component {
                 Labelings
               </Link>
             </NavItem>
+            <NavItem>
+              <Link className="nav-link" to="/settings">
+                Settings
+              </Link>
+            </NavItem>
             <Form className="form-inline my-2 my-lg-0">
               <Link
                 className="nav-link m-0 p-0 ml-3"

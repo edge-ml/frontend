@@ -148,7 +148,7 @@ class LabelingPanel extends Component {
             >
               + Add
             </Button>
-            {this.state.labeling.types.map((label, key) => (
+            {this.state.labeling.types.map((label, index) => (
               <Button
                 className="btn-light m-1 labelingButton"
                 disabled={
@@ -170,9 +170,9 @@ class LabelingPanel extends Component {
                       : label.color
                 }}
                 onClick={e => this.handleLabelTypeClicked(e, label.id)}
-                key={key}
+                key={index}
               >
-                {label.name}
+                {label.name} {'(' + (index + 1) + ')'}
               </Button>
             ))}
           </div>
