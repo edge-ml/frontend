@@ -142,6 +142,7 @@ class DatasetPage extends Component {
     this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
     this.uuidv4 = this.uuidv4.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.onFuseCanceled = this.onFuseCanceled.bind(this);
   }
 
   onKeyDown(e) {
@@ -385,6 +386,13 @@ class DatasetPage extends Component {
     this.setState({ fuseTimeSeriesModalState });
   }
 
+  onFuseCanceled() {
+    let fuseTimeSeriesModalState = { ...this.state.fuseTimeSeriesModalState };
+    fuseTimeSeriesModalState.isOpen = false;
+
+    this.setState({ fuseTimeSeriesModalState });
+  }
+
   onOpenFuseTimeSeriesModal() {
     let fuseTimeSeriesModalState = { ...this.state.fuseTimeSeriesModalState };
     fuseTimeSeriesModalState.isOpen = true;
@@ -501,6 +509,7 @@ class DatasetPage extends Component {
             <CombineTimeSeriesModal
               timeSeries={this.state.dataset.timeSeries}
               onFuse={this.onFuseTimeSeries}
+              onFuseCanceled={this.onFuseCanceled}
               isOpen={this.state.fuseTimeSeriesModalState.isOpen}
             />
           </Row>
