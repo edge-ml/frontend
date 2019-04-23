@@ -169,32 +169,14 @@ class DatasetPage extends Component {
       this.pressedKeys.shift = e.shiftKey;
 
       this.pressedKeys.num.push(keyCode - 48);
-    }
-  }
-
-  onKeyUp(e) {
-    let keyCode = e.keyCode ? e.keyCode : e.which;
-
-    // shift
-    if (keyCode === 16) {
-      e.preventDefault();
-      this.clearKeyBuffer();
-
-      // ctrl
-    } else if (keyCode === 17) {
-      e.preventDefault();
-
-      if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
-        this.clearKeyBuffer();
-      }
-    } else if (keyCode > 47 && keyCode < 58) {
-      e.preventDefault();
 
       if (this.pressedKeys.ctrl && this.pressedKeys.shift) {
-        let length = this.pressedKeys.num.length;
         let index =
-          this.pressedKeys.num.reduce((total, current, index, array) => {
-            return total + current * Math.pow(10, length - index - 1);
+          this.pressedKeys.num.reduce((total, current, index) => {
+            return (
+              total +
+              current * Math.pow(10, this.pressedKeys.num.length - index - 1)
+            );
           }, 0) - 1;
 
         if (index >= 0 && index < this.state.labelingsDefinition.length) {
@@ -202,14 +184,36 @@ class DatasetPage extends Component {
             this.state.labelingsDefinition[index].id
           );
         } else {
-          window.alert('Labeling (' + (index + 1) + ") doesn't exist.");
-          this.clearKeyBuffer();
+          while (
+            index >= this.state.labelingsDefinition.length &&
+            this.pressedKeys.num.length > 1
+          ) {
+            this.pressedKeys.num.shift();
+            index =
+              this.pressedKeys.num.reduce((total, current, index) => {
+                return (
+                  total +
+                  current *
+                    Math.pow(10, this.pressedKeys.num.length - index - 1)
+                );
+              }, 0) - 1;
+          }
+
+          if (index >= this.state.labelingsDefinition.length || index < 0) {
+            this.clearKeyBuffer();
+          } else {
+            this.onSelectedLabelingIdChanged(
+              this.state.labelingsDefinition[index].id
+            );
+          }
         }
       } else if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
-        let length = this.pressedKeys.num.length;
         let index =
-          this.pressedKeys.num.reduce((total, current, index, array) => {
-            return total + current * Math.pow(10, length - index - 1);
+          this.pressedKeys.num.reduce((total, current, index) => {
+            return (
+              total +
+              current * Math.pow(10, this.pressedKeys.num.length - index - 1)
+            );
           }, 0) - 1;
         let controlStates = this.state.controlStates;
 
@@ -225,8 +229,26 @@ class DatasetPage extends Component {
             if (index >= 0 && index < labeling.types.length) {
               this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
             } else {
-              window.alert('Label (' + (index + 1) + ") doesn't exist.");
-              this.clearKeyBuffer();
+              while (
+                index >= labeling.types.length &&
+                this.pressedKeys.num.length > 1
+              ) {
+                this.pressedKeys.num.shift();
+                index =
+                  this.pressedKeys.num.reduce((total, current, index) => {
+                    return (
+                      total +
+                      current *
+                        Math.pow(10, this.pressedKeys.num.length - index - 1)
+                    );
+                  }, 0) - 1;
+              }
+
+              if (index >= labeling.types.length || index < 0) {
+                this.clearKeyBuffer();
+              } else {
+                this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
+              }
             }
           } else {
             window.alert('Editing not unlocked. Press "L" to unlock.');
@@ -255,6 +277,24 @@ class DatasetPage extends Component {
         } else {
           window.alert('Editing not unlocked. Press "L" to unlock.');
         }
+      }
+    }
+  }
+
+  onKeyUp(e) {
+    let keyCode = e.keyCode ? e.keyCode : e.which;
+
+    // shift
+    if (keyCode === 16) {
+      e.preventDefault();
+      this.clearKeyBuffer();
+
+      // ctrl
+    } else if (keyCode === 17) {
+      e.preventDefault();
+
+      if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
+        this.clearKeyBuffer();
       }
     }
   }
