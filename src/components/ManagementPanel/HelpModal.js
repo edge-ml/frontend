@@ -23,25 +23,25 @@ class HelpModal extends Component {
             <table>
               <tr>
                 <td>
-                  <code>Ctrl + Shift + [number]</code>
+                  <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[Number]</kbd>
                 </td>
                 <td>Set active labeling</td>
               </tr>
               <tr>
                 <td>
-                  <code>Ctrl + [number]</code>
+                  <kbd>Ctrl</kbd> + <kbd>[Number]</kbd>
                 </td>
                 <td>Set active label type</td>
               </tr>
               <tr>
                 <td>
-                  <code>L / l</code>
+                  <kbd>L</kbd> / <kbd>l</kbd>
                 </td>
                 <td>Lock or unlock active label editing</td>
               </tr>
               <tr>
                 <td>
-                  <code>Backspace / Delete</code>
+                  <kbd>Backspace</kbd> / <kbd>Delete</kbd>
                 </td>
                 <td>Delete current label</td>
               </tr>
