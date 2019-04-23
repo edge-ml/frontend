@@ -20,26 +20,32 @@ class HelpModal extends Component {
         <ModalBody>
           <div className="py-2">
             <h6>Shortcuts</h6>
-            <span className="shortcut">
-              <code>Ctrl + [0 - 9]</code>
-            </span>
-            Set active labeling
-            <br />
-            <span className="shortcut">
-              <code>[0 - 9]</code>
-            </span>
-            Set active label type
-            <br />
-            <span className="shortcut">
-              <code>L / l</code>
-            </span>
-            Lock or unlock active label editing
-            <br />
-            <span className="shortcut">
-              <code>Backspace / Delete</code>
-            </span>
-            Delete current label
-            <br />
+            <table>
+              <tr>
+                <td>
+                  <code>Ctrl + Shift + [0 - 9]</code>
+                </td>
+                <td>Set active labeling</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>Ctrl + [0 - 9]</code>
+                </td>
+                <td>Set active label type</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>L / l</code>
+                </td>
+                <td>Lock or unlock active label editing</td>
+              </tr>
+              <tr>
+                <td>
+                  <code>Backspace / Delete</code>
+                </td>
+                <td>Delete current label</td>
+              </tr>
+            </table>
           </div>
           <hr />
           <div className="py-2">

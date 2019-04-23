@@ -53,7 +53,7 @@ class LabelingSelectionPanel extends Component {
                 labeling.id === this.state.selectedLabelingId ? 'primary' : {}
               }
             >
-              {labeling.name} {index < 9 ? '(' + (index + 1) + ')' : ''}
+              {labeling.name} {'(' + (index + 1) + ')'}
             </Button>
           ))}
           <Button

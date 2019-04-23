@@ -171,7 +171,7 @@ class LabelingPanel extends Component {
                 }}
                 onClick={e => this.handleLabelTypeClicked(e, label.id)}
               >
-                {label.name} {index < 9 ? '(' + (index + 1) + ')' : ''}
+                {label.name} {'(' + (index + 1) + ')'}
               </Button>
             ))}
           </div>

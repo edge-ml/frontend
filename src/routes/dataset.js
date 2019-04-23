@@ -141,43 +141,95 @@ class DatasetPage extends Component {
     this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
     this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
     this.uuidv4 = this.uuidv4.bind(this);
+    this.onKeyUp = this.onKeyUp.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onFuseCanceled = this.onFuseCanceled.bind(this);
+
+    this.pressedKeys = {
+      num: [],
+      ctrl: false,
+      shift: false
+    };
   }
 
   onKeyDown(e) {
     let keyCode = e.keyCode ? e.keyCode : e.which;
 
-    // 1 to 9
-    if (e.ctrlKey && keyCode > 48 && keyCode < 58) {
+    if ((e.ctrlKey || e.shiftKey) && keyCode > 47 && keyCode < 58) {
       e.preventDefault();
-      let index = keyCode - 49;
-      if (index < this.state.labelingsDefinition.length) {
-        this.onSelectedLabelingIdChanged(
-          this.state.labelingsDefinition[index].id
-        );
-      }
-    } else if (keyCode > 48 && keyCode < 58) {
+
+      this.pressedKeys.ctrl = e.ctrlKey;
+      this.pressedKeys.shift = e.shiftKey;
+
+      this.pressedKeys.num.push(keyCode - 48);
+    }
+  }
+
+  onKeyUp(e) {
+    let keyCode = e.keyCode ? e.keyCode : e.which;
+
+    // shift
+    if (keyCode === 16) {
       e.preventDefault();
-      let index = keyCode - 49;
-      let controlStates = this.state.controlStates;
 
-      if (
-        controlStates.selectedLabelingId &&
-        controlStates.selectedLabelTypeId
-      ) {
-        if (controlStates.canEdit) {
-          let labeling = this.state.labelingsDefinition.filter(labeling => {
-            return labeling.id === controlStates.selectedLabelingId;
-          })[0];
+      if (this.pressedKeys.ctrl && this.pressedKeys.shift) {
+        let length = this.pressedKeys.num.length;
+        let index =
+          this.pressedKeys.num.reduce((total, current, index, array) => {
+            return total + current * Math.pow(10, length - index - 1);
+          }, 0) - 1;
 
-          if (index < labeling.types.length) {
-            this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
-          }
+        if (index >= 0 && index < this.state.labelingsDefinition.length) {
+          this.onSelectedLabelingIdChanged(
+            this.state.labelingsDefinition[index].id
+          );
         } else {
-          window.alert('Editing not unlocked. Press "L" to unlock.');
+          window.alert('Labeling (' + (index + 1) + ") doesn't exist.");
         }
       }
+
+      this.pressedKeys.num = [];
+      this.pressedKeys.ctrl = false;
+      this.pressedKeys.shift = false;
+
+      // ctrl
+    } else if (keyCode === 17) {
+      e.preventDefault();
+
+      if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
+        let length = this.pressedKeys.num.length;
+        let index =
+          this.pressedKeys.num.reduce((total, current, index, array) => {
+            return total + current * Math.pow(10, length - index - 1);
+          }, 0) - 1;
+        let controlStates = this.state.controlStates;
+
+        if (
+          controlStates.selectedLabelingId &&
+          controlStates.selectedLabelTypeId
+        ) {
+          if (controlStates.canEdit) {
+            let labeling = this.state.labelingsDefinition.filter(labeling => {
+              return labeling.id === controlStates.selectedLabelingId;
+            })[0];
+
+            if (index >= 0 && index < labeling.types.length) {
+              this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
+            } else {
+              window.alert('Label (' + (index + 1) + ") doesn't exist.");
+            }
+          } else {
+            window.alert('Editing not unlocked. Press "L" to unlock.');
+          }
+        } else if (!controlStates.selectedLabelTypeId) {
+          window.alert('No label selected.');
+        }
+
+        this.pressedKeys.num = [];
+        this.pressedKeys.ctrl = false;
+        this.pressedKeys.shift = false;
+      }
+
       // l
     } else if (keyCode === 76) {
       e.preventDefault();
@@ -231,11 +283,13 @@ class DatasetPage extends Component {
   }
 
   componentDidMount() {
+    window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
     subscribeLabelings(this.onLabelingsChanged);
   }
 
   componentWillUnmount() {
+    window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('keydown', this.onKeyDown);
     unsubscribeLabelings();
   }
