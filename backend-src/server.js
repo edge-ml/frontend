@@ -146,8 +146,25 @@ io.on('connection', (socket) => {
 		// TODO: remove client from activeClients
 	});
 
-	socket.on('user', (user) => {
-		// TODO: add or update user config
+	socket.on('users', (updatedUsers) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		if (!updatedUsers) {
+			if (socket.isAdmin) {
+				socket.emit('users', Object.keys(auth).map(identifier => ({
+					username: identifier,
+					isAdmin: auth[identifier].isAdmin,
+					registered: auth[identifier].isTwoFAClientConfigured
+				})));
+			} else {
+				const user = auth[socket.client.username];
+				socket.emit('users', [{
+					username: socket.client.username,
+					isAdmin: user.isAdmin,
+					registered: user.isTwoFAClientConfigured
+				}]);
+			}
+		}
 	});
 });
 
