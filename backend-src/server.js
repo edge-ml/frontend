@@ -146,24 +146,34 @@ io.on('connection', (socket) => {
 		// TODO: remove client from activeClients
 	});
 
-	socket.on('users', (updatedUsers) => {
+	socket.on('users', () => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
-		if (!updatedUsers) {
-			if (socket.isAdmin) {
-				socket.emit('users', Object.keys(auth).map(identifier => ({
-					username: identifier,
-					isAdmin: auth[identifier].isAdmin,
-					registered: auth[identifier].isTwoFAClientConfigured
-				})));
-			} else {
-				const user = auth[socket.client.username];
-				socket.emit('users', [{
-					username: socket.client.username,
-					isAdmin: user.isAdmin,
-					registered: user.isTwoFAClientConfigured
-				}]);
-			}
+		if (socket.isAdmin) {
+			socket.emit('users', Object.keys(auth).map(identifier => ({
+				username: identifier,
+				isAdmin: auth[identifier].isAdmin,
+				registered: auth[identifier].isTwoFAClientConfigured
+			})));
+		} else {
+			const user = auth[socket.client.username];
+			socket.emit('users', [{
+				username: socket.client.username,
+				isAdmin: user.isAdmin,
+				registered: user.isTwoFAClientConfigured
+			}]);
+		}
+	});
+
+	socket.on('password', (username, newPassword, confirmationPassword) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin && username !== socket.client.username) return;
+
+		const confirmationUsername = (socket.client.isAdmin) ? socket.client.username : username;
+
+		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash))
+		{
+			
 		}
 	});
 });
