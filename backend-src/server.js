@@ -16,7 +16,7 @@ const { uniqueNamesGenerator } = require('unique-names-generator');
 
 const { io, app, server, activeClients } = require('./server_singleton');
 
-const sandboxRouter = require('./sandboxRouter');
+const apiRouter = require('./apiRouter');
 
 const authPath = path.join(__dirname, '../', 'config', 'auth.json');
 const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
@@ -34,12 +34,10 @@ const publicKey  = fs.readFileSync(publicKeyPath, 'utf-8');
 const tokenIssuer = 'AURA';
 const tokenAudience = 'http://explorer.aura.rest';
 
-const clientmap = {};
-
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
 		if (data.jwtToken) {
-			jwt.verify(data.jwtToken, publicKey, (err, decoded) => {
+			jwt.verify(data.jwtToken, publicKey, (err) => {
 				socket.client.twoFactorAuthenticated = true;
 				if (err === null) callback(null, true);
 			});
@@ -195,7 +193,7 @@ app.use(KoaLogger());
 
 const router = new KoaRouter();
 
-router.use('/api/:name', sandboxRouter.routes(), sandboxRouter.allowedMethods());
+router.use('/api/:name', apiRouter.routes(), apiRouter.allowedMethods());
 
 app.use(router.routes());
 app.use(router.allowedMethods());
