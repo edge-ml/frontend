@@ -171,9 +171,22 @@ io.on('connection', (socket) => {
 
 		const confirmationUsername = (socket.client.isAdmin) ? socket.client.username : username;
 
-		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash))
-		{
-			
+		if (passwordHash.verify(confirmationPassword, auth[confirmationUsername].passwordHash)) {
+			auth[username].passwordHash = newPassword;
+			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+				if (err) {
+					console.error(err);
+				}
+			});
+		}
+	});
+
+	socket.on('reset2FA', (username, confirmationPassword) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin) return;
+
+		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash)) {
+			// TODO
 		}
 	});
 });
