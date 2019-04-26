@@ -159,6 +159,22 @@ export const unsubscribeDataset = (id, callback) => {
 };
 
 /***
+ * Users
+ */
+export const subscribeUsers = callback => {
+  if (!authenticated || !verified) return;
+
+  socket.on('users', users => callback(users));
+  socket.emit('users');
+};
+
+export const unsubscribeUsers = callback => {
+  if (!authenticated || !verified) return;
+
+  socket.off('users');
+};
+
+/***
  * Client Name
  */
 export const getClientName = async () => {

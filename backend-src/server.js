@@ -39,6 +39,10 @@ SocketIoAuth(io, {
 		if (data.jwtToken) {
 			jwt.verify(data.jwtToken, publicKey, (err) => {
 				socket.client.twoFactorAuthenticated = true;
+				const username = jwt.decode(data.jwtToken).sub;
+				socket.client.username = username;
+				socket.client.isTwoFAClientConfigured  = auth[username].isTwoFAClientConfigured;
+				socket.client.isAdmin = auth[username].isAdmin;
 				if (err === null) callback(null, true);
 			});
 		} else {
@@ -147,18 +151,18 @@ io.on('connection', (socket) => {
 	socket.on('users', () => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
-		if (socket.isAdmin) {
+		if (socket.client.isAdmin) {
 			socket.emit('users', Object.keys(auth).map(identifier => ({
 				username: identifier,
 				isAdmin: auth[identifier].isAdmin,
-				registered: auth[identifier].isTwoFAClientConfigured
+				isRegistered: auth[identifier].isTwoFAClientConfigured
 			})));
 		} else {
 			const user = auth[socket.client.username];
 			socket.emit('users', [{
 				username: socket.client.username,
 				isAdmin: user.isAdmin,
-				registered: user.isTwoFAClientConfigured
+				isRegistered: user.isTwoFAClientConfigured
 			}]);
 		}
 	});
