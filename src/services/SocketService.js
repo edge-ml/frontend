@@ -1,5 +1,6 @@
 import openSocket from 'socket.io-client';
 import Cookies from 'universal-cookie';
+import { stringify } from 'querystring';
 
 const socketUrl = 'http://localhost:3001';
 const jwt = require('jsonwebtoken');
@@ -81,7 +82,7 @@ export const restoreSession = callback => {
   var decodedToken = jwt.decode(token, { complete: true });
   var dateNow = new Date();
 
-  if (!decodedToken || decodedToken.exp < dateNow.getTime()) {
+  if (!decodedToken || decodedToken.payload.exp < dateNow.getTime()) {
     cookies.set('token', undefined, { path: '/' });
     return;
   }

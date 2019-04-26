@@ -340,7 +340,11 @@ class LoginPage extends Component {
                         this.tokenInput = input;
                       }}
                     />
-                    <Button block onClick={this.onLoginCanceled}>
+                    <Button
+                      block
+                      onClick={this.onLoginCanceled}
+                      className={'mt-2'}
+                    >
                       Cancel
                     </Button>
                   </CardBody>
