@@ -58,6 +58,7 @@ SocketIoAuth(io, {
 
 		socket.client.username = data.username;
 		socket.client.isTwoFAClientConfigured = auth[data.username].isTwoFAClientConfigured;
+		socket.client.isAdmin = auth[data.username].isAdmin;
 
 		if (!socket.client.isTwoFAClientConfigured) {
 			const secret = speakeasy.generateSecret();
