@@ -82,7 +82,7 @@ export const restoreSession = callback => {
   var decodedToken = jwt.decode(token, { complete: true });
   var dateNow = new Date();
 
-  if (!decodedToken || decodedToken.payload.exp < dateNow.getTime()) {
+  if (!decodedToken || decodedToken.payload.exp * 1000 < dateNow.getTime()) {
     cookies.set('token', undefined, { path: '/' });
     return;
   }
