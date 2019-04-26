@@ -7,7 +7,7 @@ import Loader from '../modules/loader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
-import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
+import EditUserModal from '../components/EditUserModal/EditUserModal';
 
 import { subscribeUsers, unsubscribeUsers } from '../services/SocketService';
 
