@@ -582,7 +582,7 @@ class DatasetPage extends Component {
               <div>
                 <VideoPanel ref={this.videoPanel} />
               </div>
-              <div className="mt-3">
+              <div className="mt-0">
                 <InteractionControlPanel
                   isPublished={this.state.dataset.isPublished}
                 />

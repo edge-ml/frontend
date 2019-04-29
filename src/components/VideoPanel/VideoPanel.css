@@ -1,4 +1,13 @@
 .VideoPanel {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  width: calc(25% - 30px);
+  z-index: 4;
+}
+
+.PanelWrapper {
+  height: 390px;
 }
 
 .timeInputGroupText {

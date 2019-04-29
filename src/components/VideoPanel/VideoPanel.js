@@ -1,10 +1,22 @@
 import React, { Component } from 'react';
-import { Button, Card, CardHeader, CardBody } from 'reactstrap';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  Input,
+  Card,
+  CardHeader,
+  CardBody
+} from 'reactstrap';
 import './VideoPanel.css';
 
 class VideoPanel extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      duration: undefined
+    };
 
     this.videoReference = React.createRef();
     this.onSetTime = this.onSetTime.bind(this);
@@ -29,16 +41,20 @@ class VideoPanel extends Component {
 
   seek = () => {
     this.videoReference.current.currentTime = 0;
+    this.setState({
+      duration: this.videoReference.current.duration
+    });
   };
 
   render() {
     return (
-      <Card className={'p-0'} style={{ overflow: 'hidden' }}>
+      <Card className={'VideoPanel'} style={{ overflow: 'hidden' }}>
         <video
           style={{ display: 'block', lineHeight: 0 }}
           width="100%"
           height="auto"
           ref={this.videoReference}
+          controls
         >
           <source
             src="http://mirrors.standaloneinstaller.com/video-sample/page18-movie-4.mp4"
