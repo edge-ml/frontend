@@ -49,7 +49,8 @@ class TimeSeriesCollectionPanel extends Component {
   onCrosshairDrawn(crosshairEvent) {
     //alert("test")
     const xAxisValue = Highcharts.charts[0].xAxis[0].toValue(
-      crosshairEvent.e.pageX
+      crosshairEvent.e.pageX - Highcharts.charts[0].plotBox.x / 2,
+      false
     );
     const difference = xAxisValue - this.state.start;
     //console.log(difference / 1000)
