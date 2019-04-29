@@ -46,6 +46,7 @@ class TimeSeriesPanel extends Component {
     // state
     this.generateState = this.generateState.bind(this);
     this.state = this.generateState(props);
+    this.pastScrubbValue = 0;
   }
 
   componentWillReceiveProps(props) {
@@ -103,7 +104,8 @@ class TimeSeriesPanel extends Component {
             props.selectedLabelId
           ),
           crosshair: {
-            snap: false
+            snap: false,
+            color: '#b71c1c'
           },
           min: props.start,
           max: props.end,
@@ -223,7 +225,12 @@ class TimeSeriesPanel extends Component {
 
   onMouseMoved(e) {
     var plotLine = this.getActivePlotLine();
+
     if (!plotLine) return;
+
+    let newValue = this.chart.current.chart.xAxis[0].toValue(
+      e.pageX - this.chart.current.chart.plotBox.x / 2
+    );
 
     e.preventDefault();
 
@@ -251,9 +258,6 @@ class TimeSeriesPanel extends Component {
       isSelected: plotbandOptions.isSelected
     });
 
-    let newValue = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX - this.chart.current.chart.plotBox.x / 2
-    );
     let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(
       plotLine.options.id,
       plotLine.options.labelId

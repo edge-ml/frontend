@@ -18,19 +18,20 @@ import {
   unsubscribeLabelings
 } from '../services/SocketService';
 import Loader from '../modules/loader';
+import VideoPanel from '../components/VideoPanel/VideoPanel';
 
 class DatasetPage extends Component {
   constructor(props) {
     let isSandbox = props.location.pathname === '/datasets/sandbox';
 
-    var now = Date.now();
+    var now = new Date().getTime();
     const dataset = isSandbox
       ? {
           id: 'sandbox',
           userId: 'sandboxUser',
           email: 'sand@box.com',
-          start: now - 100000,
-          end: now + 100000,
+          start: now - 500000,
+          end: now - 80000,
           tags: ['Sandbox Tag'],
           isPublished: false,
           timeSeries: [],
@@ -42,8 +43,8 @@ class DatasetPage extends Component {
           id: '0x1234',
           userId: '0x9321',
           email: 'test@test.de',
-          start: now - 600000,
-          end: now + 100000,
+          start: now - 500000,
+          end: now - 80000,
           tags: ['Alcohol', 'Medication', 'Test', 'ABC'],
           isPublished: false,
           timeSeries: [
@@ -145,12 +146,15 @@ class DatasetPage extends Component {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onFuseCanceled = this.onFuseCanceled.bind(this);
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
+    this.onScrubbed = this.onScrubbed.bind(this);
 
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false
     };
+
+    this.videoPanel = React.createRef();
   }
 
   clearKeyBuffer() {
@@ -297,6 +301,12 @@ class DatasetPage extends Component {
         this.clearKeyBuffer();
       }
     }
+  }
+
+  onScrubbed(position) {
+    if (!this.videoPanel.current) return;
+
+    this.videoPanel.current.onSetTime(position);
   }
 
   onLabelingsChanged(labelings) {
@@ -561,6 +571,7 @@ class DatasetPage extends Component {
                   end={this.state.dataset.end}
                   onLabelChanged={this.onLabelChanged}
                   canEdit={this.state.controlStates.canEdit}
+                  onScrubbed={this.onScrubbed}
                 />
                 <Button block outline onClick={this.onOpenFuseTimeSeriesModal}>
                   + Fuse Multiple Time Series
@@ -569,6 +580,9 @@ class DatasetPage extends Component {
             </Col>
             <Col xs={12} lg={3}>
               <div>
+                <VideoPanel ref={this.videoPanel} />
+              </div>
+              <div className="mt-3">
                 <InteractionControlPanel
                   isPublished={this.state.dataset.isPublished}
                 />

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import './TimeSeriesCollectionPanel.css';
 import TimeSeriesPanel from '../TimeSeriesPanel/TimeSeriesPanel';
+import Highcharts from 'highcharts/highstock';
 
 class TimeSeriesCollectionPanel extends Component {
   constructor(props) {
@@ -16,8 +17,17 @@ class TimeSeriesCollectionPanel extends Component {
       start: props.start,
       end: props.end,
       onLabelChanged: props.onLabelChanged,
-      canEdit: props.canEdit
+      canEdit: props.canEdit,
+      onScrubbed: props.onScrubbed
     };
+
+    this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
+
+    Highcharts.addEvent(
+      Highcharts.Axis,
+      'afterDrawCrosshair',
+      this.onCrosshairDrawn
+    );
   }
 
   componentWillReceiveProps(props) {
@@ -31,8 +41,19 @@ class TimeSeriesCollectionPanel extends Component {
       start: props.start,
       end: props.end,
       onLabelChanged: props.onLabelChanged,
-      canEdit: props.canEdit
+      canEdit: props.canEdit,
+      onScrubbed: props.onScrubbed
     }));
+  }
+
+  onCrosshairDrawn(crosshairEvent) {
+    //alert("test")
+    const xAxisValue = Highcharts.charts[0].xAxis[0].toValue(
+      crosshairEvent.e.pageX
+    );
+    const difference = xAxisValue - this.state.start;
+    //console.log(difference / 1000)
+    this.state.onScrubbed(difference / 1000);
   }
 
   render() {
@@ -52,6 +73,7 @@ class TimeSeriesCollectionPanel extends Component {
             end={this.state.end}
             onLabelChanged={this.state.onLabelChanged}
             canEdit={this.state.canEdit}
+            onScrubbed={this.state.onScrubbed}
           />
         ))}
         {this.state.fusedSeries.map((fusedSeries, key) => (
@@ -84,6 +106,7 @@ class TimeSeriesCollectionPanel extends Component {
             end={this.state.end}
             onLabelChanged={this.state.onLabelChanged}
             canEdit={this.state.canEdit}
+            onScrubbed={this.state.onScrubbed}
           />
         ))}
       </div>
