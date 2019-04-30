@@ -587,10 +587,10 @@ class DatasetPage extends Component {
                   isPublished={this.state.dataset.isPublished}
                 />
               </div>
-              <div className="mt-3">
+              <div className="mt-1">
                 <TagsPanel tags={this.state.dataset.tags} />
               </div>
-              <div className="mt-3">
+              <div className="mt-1">
                 <MetadataPanel
                   id={this.state.dataset.id}
                   start={this.state.dataset.start}
@@ -598,14 +598,14 @@ class DatasetPage extends Component {
                   email={this.state.dataset.email}
                 />
               </div>
-              <div className="mt-3">
+              <div className="mt-1">
                 <ApiPanel
                   onUpload={obj => this.addTimeSeries(obj)}
                   onFuse={this.onFuseTimeSeries}
                   startTime={this.state.dataset.start}
                 />
               </div>
-              <div className="mt-3">
+              <div className="mt-1" style={{ marginBottom: '230px' }}>
                 <ManagementPanel
                   onUpload={obj => this.addTimeSeries(obj)}
                   startTime={this.state.dataset.start}

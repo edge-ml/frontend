@@ -70,7 +70,7 @@ class LabelingPanel extends Component {
   render() {
     return (
       <Card className="LabelingPanel">
-        <CardBody>
+        <CardBody className="p-1">
           <div className="informationBox">
             <Button
               className="m-1 btn-light"

@@ -5,6 +5,8 @@ import HighchartsReact from 'highcharts-react-official';
 
 import './TimeSeriesPanel.css';
 
+import { generateRandomColor } from '../../services/ColorService';
+
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
 
@@ -53,6 +55,15 @@ class TimeSeriesPanel extends Component {
     this.setState(state => this.generateState(props));
   }
 
+  componentDidMount() {
+    const container = this.chart.current.container.current;
+
+    container.style.height = '170px';
+    container.style.width = '100%';
+
+    this.chart.current.chart.reflow();
+  }
+
   generateState(props) {
     let filteredLabels =
       props.labeling.labels !== undefined
@@ -68,6 +79,7 @@ class TimeSeriesPanel extends Component {
     return {
       chartOptions: {
         navigator: {
+          enabled: false,
           xAxis: {
             isInternal: true
           },
@@ -84,11 +96,16 @@ class TimeSeriesPanel extends Component {
           ? [
               {
                 name: props.name,
-                data: props.data
+                data: props.data,
+                lineWidth: 1
               }
             ]
           : props.data.map((dataItem, index) => {
-              return { name: this.props.name[index], data: dataItem };
+              return {
+                name: this.props.name[index],
+                data: dataItem,
+                lineWidth: 1
+              };
             }),
         xAxis: {
           type: 'datetime',
@@ -140,10 +157,10 @@ class TimeSeriesPanel extends Component {
           opposite: false
         },
         legend: {
-          align: 'right',
+          align: 'left',
           verticalAlign: 'center',
           layout: 'vertical',
-          x: 0,
+          x: 45,
           y: 0,
           enabled: true
         },
@@ -513,9 +530,9 @@ class TimeSeriesPanel extends Component {
 
   render() {
     return (
-      <Card className="mt-3">
-        <CardBody>
-          <div id="chartWrapper" onMouseDown={this.onMouseDown}>
+      <Card className="mt-1" style={{ overflow: 'hidden' }}>
+        <CardBody className="p-0">
+          <div className="chartWrapper" onMouseDown={this.onMouseDown}>
             <HighchartsReact
               ref={this.chart}
               highcharts={Highcharts}

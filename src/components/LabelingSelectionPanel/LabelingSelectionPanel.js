@@ -38,7 +38,7 @@ class LabelingSelectionPanel extends Component {
 
     return (
       <Card className="LabelingSelectionPanel">
-        <CardBody className="text-left">
+        <CardBody className="text-left p-1">
           {this.state.labelingsDefinition.map((labeling, index) => (
             <Button
               className={classNames(
