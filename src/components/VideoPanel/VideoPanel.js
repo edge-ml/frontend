@@ -15,7 +15,8 @@ class VideoPanel extends Component {
     super(props);
 
     this.state = {
-      duration: undefined
+      duration: undefined,
+      isScrubbingOutsideVideo: false
     };
 
     this.videoReference = React.createRef();
@@ -26,6 +27,22 @@ class VideoPanel extends Component {
     if (!this.videoReference) return;
 
     this.videoReference.current.currentTime = time;
+
+    if (
+      (this.videoReference.current.duration < time || time < 0) &&
+      !this.state.isScrubbingOutsideVideo
+    ) {
+      this.setState({
+        isScrubbingOutsideVideo: true
+      });
+    } else if (
+      this.state.isScrubbingOutsideVideo &&
+      !(this.videoReference.current.duration < time || time < 0)
+    ) {
+      this.setState({
+        isScrubbingOutsideVideo: false
+      });
+    }
   }
 
   componentDidMount() {
@@ -49,8 +66,41 @@ class VideoPanel extends Component {
   render() {
     return (
       <Card className={'VideoPanel'} style={{ overflow: 'hidden' }}>
+        <div
+          style={{
+            background: 'gray',
+            position: 'absolute',
+            top: '0px',
+            right: '0px',
+            bottom: '0px',
+            left: '0px',
+            zIndex: -1,
+            color: 'black',
+            textAlign: 'center'
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              top: '44%',
+              textAlign: 'center',
+              width: '100%',
+              color: 'lightgray'
+            }}
+          >
+            <b>no video available at this point in time</b>
+          </div>
+        </div>
         <video
-          style={{ display: 'block', lineHeight: 0 }}
+          style={{
+            display: 'block',
+            lineHeight: 0,
+            visibility:
+              this.state.isScrubbingOutsideVideo ||
+              this.videoReference === undefined
+                ? 'hidden'
+                : 'visible'
+          }}
           width="100%"
           height="auto"
           ref={this.videoReference}

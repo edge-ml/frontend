@@ -104,8 +104,7 @@ class TimeSeriesPanel extends Component {
             props.selectedLabelId
           ),
           crosshair: {
-            snap: false,
-            color: '#b71c1c'
+            snap: false
           },
           min: props.start,
           max: props.end,
