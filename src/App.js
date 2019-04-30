@@ -115,7 +115,13 @@ class App extends Component {
           <Route exact path="/labelings/new" component={LabelingsPage} />
           <Route exact path="/" component={ListPage} />
           <Route path="/datasets/:id" component={DatasetPage} />
-          <Route exact path="/settings" component={SettingsPage} />
+          <Route
+            exact
+            path="/settings"
+            render={props => (
+              <SettingsPage {...props} onLogout={this.logoutHandler} />
+            )}
+          />
         </Container>
       </AuthWall>
     );

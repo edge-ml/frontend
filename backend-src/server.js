@@ -175,7 +175,65 @@ io.on('connection', (socket) => {
 		const confirmationUsername = (socket.client.isAdmin) ? socket.client.username : username;
 
 		if (passwordHash.verify(confirmationPassword, auth[confirmationUsername].passwordHash)) {
-			auth[username].passwordHash = newPassword;
+			auth[username].passwordHash = passwordHash.generate(newPassword);
+			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+				if (err) {
+					console.error(err);
+				}
+			});
+		}
+	});
+
+	socket.on('username', (username, newName, confirmationPassword) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin && username !== socket.client.username) return;
+
+		const confirmationUsername = (socket.client.isAdmin) ? socket.client.username : username;
+
+		if (passwordHash.verify(confirmationPassword, auth[confirmationUsername].passwordHash)) {
+			if (username !== newName && newName in auth) {
+				socket.emit('has_err', true);
+			} else {
+				socket.emit('has_err', false);
+				auth[newName] = auth[username];
+				delete auth[username];
+				fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+					if (err) {
+						console.error(err);
+					}
+				});
+			}
+		}
+	});
+
+	socket.on('delete_user', (username, confirmationPassword) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin && username !== socket.client.username) return;
+
+		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash)) {
+			delete auth[username];
+			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+				if (err) {
+					console.error(err);
+				}
+			});
+		}
+	});
+
+	socket.on('add_user', (username, password, isAdmin) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin) return;
+
+		if (username in auth) {
+			socket.emit('has_err', true);
+		} else {
+			socket.emit('has_err', false);
+			auth[username] = {
+				passwordHash: passwordHash.generate(password),
+				twoFactorAuthenticationSecret: null,
+				isTwoFAClientConfigured: false,
+				isAdmin: isAdmin,
+			}
 			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
 				if (err) {
 					console.error(err);
@@ -189,7 +247,14 @@ io.on('connection', (socket) => {
 		if (!socket.client.isAdmin) return;
 
 		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash)) {
-			// TODO
+			auth[username].twoFactorAuthenticationSecret = null;
+			auth[username].isTwoFAClientConfigured = false;
+			auth[username].twoFASecret = undefined;
+			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+				if (err) {
+					console.error(err);
+				}
+			});
 		}
 	});
 });

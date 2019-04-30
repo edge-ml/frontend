@@ -175,6 +175,49 @@ export const unsubscribeUsers = callback => {
   socket.off('users');
 };
 
+export const updatePassword = (username, newPassword, confirmationPassword) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('password', username, newPassword, confirmationPassword);
+};
+
+export const updateUsername = (
+  username,
+  newName,
+  confirmationPassword,
+  callback
+) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('username', username, newName, confirmationPassword);
+  socket.on('has_err', hasErr => {
+    callback(hasErr);
+    socket.off('has_err');
+  });
+};
+
+export const deleteUser = (username, confirmationPassword) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('delete_user', username, confirmationPassword);
+};
+
+export const addUser = (username, password, isAdmin, callback) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('add_user', username, password, isAdmin);
+  socket.on('has_err', hasErr => {
+    callback(hasErr);
+    socket.off('has_err');
+  });
+};
+
+export const reset2FA = (username, confirmationPassword) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('reset2FA', username, confirmationPassword);
+};
+
 /***
  * Client Name
  */
