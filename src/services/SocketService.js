@@ -175,47 +175,80 @@ export const unsubscribeUsers = callback => {
   socket.off('users');
 };
 
-export const updatePassword = (username, newPassword, confirmationPassword) => {
+export const getCurrentUser = callback => {
   if (!authenticated || !verified) return;
 
-  socket.emit('password', username, newPassword, confirmationPassword);
+  socket.emit('user');
+  socket.on('user', user => {
+    callback(user);
+    socket.off('user');
+  });
 };
 
-export const updateUsername = (
+export const editUser = (
   username,
   newName,
+  newPassword,
   confirmationPassword,
   callback
 ) => {
   if (!authenticated || !verified) return;
 
-  socket.emit('username', username, newName, confirmationPassword);
-  socket.on('has_err', hasErr => {
-    callback(hasErr);
-    socket.off('has_err');
+  socket.emit(
+    'edit_user',
+    username,
+    newName,
+    newPassword,
+    confirmationPassword
+  );
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
   });
 };
 
-export const deleteUser = (username, confirmationPassword) => {
+export const deleteUser = (username, confirmationPassword, callback) => {
   if (!authenticated || !verified) return;
 
   socket.emit('delete_user', username, confirmationPassword);
-};
-
-export const addUser = (username, password, isAdmin, callback) => {
-  if (!authenticated || !verified) return;
-
-  socket.emit('add_user', username, password, isAdmin);
-  socket.on('has_err', hasErr => {
-    callback(hasErr);
-    socket.off('has_err');
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
   });
 };
 
-export const reset2FA = (username, confirmationPassword) => {
+export const addUser = (
+  username,
+  password,
+  isAdmin,
+  confirmationPassword,
+  callback
+) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('add_user', username, password, isAdmin, confirmationPassword);
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const reset2FA = (username, confirmationPassword, callback) => {
   if (!authenticated || !verified) return;
 
   socket.emit('reset2FA', username, confirmationPassword);
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
+  });
 };
 
 /***

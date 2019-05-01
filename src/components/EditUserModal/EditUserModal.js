@@ -169,19 +169,21 @@ class EditUserModal extends Component {
       return;
     }
 
+    if (!this.state.inputVariables.currentPassword) {
+      window.alert('Current password is required.');
+      return;
+    }
+
     if (this.state.isNewUser) {
       this.state.onAddUser(
         this.state.inputVariables.name,
         this.state.inputVariables.newPassword,
-        this.state.inputVariables.isAdmin
+        this.state.inputVariables.isAdmin,
+        this.state.inputVariables.currentPassword
       );
     } else {
-      if (!this.state.inputVariables.currentPassword) {
-        window.alert('Current password is required.');
-        return;
-      }
-
       this.state.onSave(
+        this.state.user.username,
         this.state.inputVariables.name,
         this.state.inputVariables.newPassword,
         this.state.inputVariables.currentPassword
@@ -192,13 +194,15 @@ class EditUserModal extends Component {
   }
 
   render() {
+    let username = this.state.user ? this.state.user.username : '';
+
     return (
       <Modal isOpen={this.state.modalState.isOpen}>
         <ModalHeader>
-          {this.state.isNewUser ? 'Add User' : 'Edit User'}
+          {this.state.isNewUser ? 'Add User' : 'Edit User: ' + username}
         </ModalHeader>
         <ModalBody>
-          <InputGroup>
+          <InputGroup className="m-0">
             <InputGroupAddon addonType="prepend">
               <InputGroupText>{'Username'}</InputGroupText>
             </InputGroupAddon>
@@ -208,12 +212,29 @@ class EditUserModal extends Component {
               onChange={e => this.onNameChanged(e.target.value)}
             />
           </InputGroup>
+          {this.state.isNewUser ? (
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <Input
+                    addon
+                    type="checkbox"
+                    id="checkbox"
+                    onChange={e => this.onAdminRightsChanged(e.target.checked)}
+                  />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input placeholder="Admin Rights" disabled />
+            </InputGroup>
+          ) : null}
+          <hr />
+
           <InputGroup>
             <InputGroupAddon addonType="prepend">
-              <InputGroupText>{'Password'}</InputGroupText>
+              <InputGroupText>{'New Password'}</InputGroupText>
             </InputGroupAddon>
             <Input
-              placeholder={'Password'}
+              placeholder={'New Password'}
               type="password"
               value={this.state.inputVariables.newPassword}
               onChange={e => this.onPasswordChanged(e.target.value)}
@@ -230,20 +251,37 @@ class EditUserModal extends Component {
               onChange={e => this.onPasswordConfirmChanged(e.target.value)}
             />
           </InputGroup>
-          {!this.state.isNewUser ? (
+
+          <hr />
+          <InputGroup className="m-0">
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>{'Current Password'}</InputGroupText>
+            </InputGroupAddon>
+            <Input
+              placeholder={'Enter your current password to verify'}
+              type="password"
+              value={this.state.inputVariables.currentPassword}
+              onChange={e => this.onCurrentPasswordChanged(e.target.value)}
+            />
+          </InputGroup>
+
+          {!this.state.isNewUser && this.state.currentIsAdmin ? (
             <div>
               <hr />
-              <InputGroup>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>{'Current Password'}</InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  placeholder={'your current password'}
-                  type="password"
-                  value={this.state.inputVariables.currentPassword}
-                  onChange={e => this.onCurrentPasswordChanged(e.target.value)}
-                />
-              </InputGroup>
+              <Button
+                color="secondary"
+                block
+                className="m-0"
+                outline
+                onClick={this.onReset2FA}
+              >
+                Reset 2FA
+              </Button>
+            </div>
+          ) : null}
+
+          {!this.state.isNewUser ? (
+            <div>
               <hr />
               <Button
                 color="danger"
@@ -255,31 +293,6 @@ class EditUserModal extends Component {
                 Delete
               </Button>
             </div>
-          ) : (
-            <div>
-              <FormGroup check>
-                <Label>
-                  <Input
-                    type="checkbox"
-                    id="checkbox"
-                    onChange={e => this.onAdminRightsChanged(e.target.checked)}
-                  />{' '}
-                  <span color="muted">Admin</span>
-                </Label>
-              </FormGroup>
-            </div>
-          )}
-
-          {!this.state.isNewUser && this.state.currentIsAdmin ? (
-            <Button
-              color="secondary"
-              block
-              className="m-0 mt-1"
-              outline
-              onClick={this.onReset2FA}
-            >
-              Reset 2FA
-            </Button>
           ) : null}
         </ModalBody>
         <ModalFooter>

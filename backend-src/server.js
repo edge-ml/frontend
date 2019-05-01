@@ -168,23 +168,18 @@ io.on('connection', (socket) => {
 		}
 	});
 
-	socket.on('password', (username, newPassword, confirmationPassword) => {
+	socket.on('user', () => {
 		if (!socket.client.twoFactorAuthenticated) return;
-		if (!socket.client.isAdmin && username !== socket.client.username) return;
 
-		const confirmationUsername = (socket.client.isAdmin) ? socket.client.username : username;
+		const user = auth[socket.client.username];
+		socket.emit('user', {
+			username: socket.client.username,
+			isAdmin: user.isAdmin,
+			isRegistered: user.isTwoFAClientConfigured
+		});
+	})
 
-		if (passwordHash.verify(confirmationPassword, auth[confirmationUsername].passwordHash)) {
-			auth[username].passwordHash = passwordHash.generate(newPassword);
-			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
-				if (err) {
-					console.error(err);
-				}
-			});
-		}
-	});
-
-	socket.on('username', (username, newName, confirmationPassword) => {
+	socket.on('edit_user', (username, newName, newPassword, confirmationPassword) => {
 		if (!socket.client.twoFactorAuthenticated) return;
 		if (!socket.client.isAdmin && username !== socket.client.username) return;
 
@@ -192,17 +187,28 @@ io.on('connection', (socket) => {
 
 		if (passwordHash.verify(confirmationPassword, auth[confirmationUsername].passwordHash)) {
 			if (username !== newName && newName in auth) {
-				socket.emit('has_err', true);
+				socket.emit('err', 'This user already exists.');
 			} else {
-				socket.emit('has_err', false);
-				auth[newName] = auth[username];
-				delete auth[username];
+				if (username !== newName) {
+					auth[newName] = auth[username];
+					delete auth[username];
+					fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+						if (err) {
+							console.error(err);
+						}
+					});
+				}
+
+				auth[newName].passwordHash = passwordHash.generate(newPassword);
 				fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
 					if (err) {
 						console.error(err);
 					}
 				});
+				socket.emit('err', false);
 			}
+		} else {
+			socket.emit('err', 'Current password is wrong.')
 		}
 	});
 
@@ -217,28 +223,35 @@ io.on('connection', (socket) => {
 					console.error(err);
 				}
 			});
+			socket.emit('err', false);
+		} else {
+			socket.emit('err', 'Current password is wrong.')
 		}
 	});
 
-	socket.on('add_user', (username, password, isAdmin) => {
+	socket.on('add_user', (username, password, isAdmin, confirmationPassword) => {
 		if (!socket.client.twoFactorAuthenticated) return;
 		if (!socket.client.isAdmin) return;
 
-		if (username in auth) {
-			socket.emit('has_err', true);
-		} else {
-			socket.emit('has_err', false);
-			auth[username] = {
-				passwordHash: passwordHash.generate(password),
-				twoFactorAuthenticationSecret: null,
-				isTwoFAClientConfigured: false,
-				isAdmin: isAdmin,
-			}
-			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
-				if (err) {
-					console.error(err);
+		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash)) {
+			if (username in auth) {
+				socket.emit('err', 'This user already exists.');
+			} else {
+				auth[username] = {
+					passwordHash: passwordHash.generate(password),
+					twoFactorAuthenticationSecret: null,
+					isTwoFAClientConfigured: false,
+					isAdmin: isAdmin,
 				}
-			});
+				fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+					if (err) {
+						console.error(err);
+					}
+				});
+				socket.emit('err', false);
+			}
+		} else {
+			socket.emit('err', 'Current password is wrong.')
 		}
 	});
 
@@ -255,6 +268,9 @@ io.on('connection', (socket) => {
 					console.error(err);
 				}
 			});
+			socket.emit('err', false);
+		} else {
+			socket.emit('err', 'Current password is wrong.')
 		}
 	});
 });

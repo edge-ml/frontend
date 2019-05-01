@@ -12,11 +12,11 @@ import EditUserModal from '../components/EditUserModal/EditUserModal';
 import {
   subscribeUsers,
   unsubscribeUsers,
-  updateUsername,
-  updatePassword,
+  editUser,
   deleteUser,
   addUser,
-  reset2FA
+  reset2FA,
+  getCurrentUser
 } from '../services/SocketService';
 
 class SettingsPage extends Component {
@@ -29,7 +29,8 @@ class SettingsPage extends Component {
         isOpen: false,
         isNewUser: false,
         user: undefined
-      }
+      },
+      user: undefined
     };
 
     this.onAddUser = this.onAddUser.bind(this);
@@ -44,6 +45,10 @@ class SettingsPage extends Component {
   componentDidMount() {
     subscribeUsers(users => {
       this.onUsersChanged(users);
+    });
+
+    getCurrentUser(user => {
+      this.setState({ user });
     });
   }
 
@@ -71,36 +76,14 @@ class SettingsPage extends Component {
     });
   }
 
-  onSave(newName, newPassword, confirmationPassword) {
-    let username = this.state.modal.user.username;
-
-    if (newName !== username) {
-      updateUsername(username, newName, confirmationPassword, hasErr => {
-        if (hasErr) {
-          window.alert('This user already exists.');
-          return;
-        }
-      });
-    }
-
-    if (newPassword) {
-      updatePassword(username, newPassword, confirmationPassword);
-    }
-
-    subscribeUsers(users => {
-      this.onUsersChanged(users);
+  onSave(username, newName, newPassword, confirmationPassword) {
+    editUser(username, newName, newPassword, confirmationPassword, err => {
+      window.alert(err);
+      return;
     });
-  }
 
-  onDeleteUser(username, confirmationPassword) {
-    deleteUser(username, confirmationPassword);
-
-    if (
-      this.state.users.length === 1 &&
-      !this.state.users[0].isAdmin &&
-      this.state.users[0].username === username
-    ) {
-      // delete self
+    if (this.state.user.username === username && username !== newName) {
+      // change own name
       this.props.onLogout();
     } else {
       subscribeUsers(users => {
@@ -109,20 +92,37 @@ class SettingsPage extends Component {
     }
   }
 
-  onAddUser(username, password, isAdmin) {
-    addUser(username, password, isAdmin, hasErr => {
-      if (hasErr) {
-        window.alert('This user already exists.');
-      } else {
-        subscribeUsers(users => {
-          this.onUsersChanged(users);
-        });
-      }
+  onDeleteUser(username, confirmationPassword) {
+    deleteUser(username, confirmationPassword, err => {
+      window.alert(err);
+      return;
+    });
+
+    if (this.state.user.username === username) {
+      this.props.onLogout();
+    } else {
+      subscribeUsers(users => {
+        this.onUsersChanged(users);
+      });
+    }
+  }
+
+  onAddUser(username, password, isAdmin, confirmationPassword) {
+    addUser(username, password, isAdmin, confirmationPassword, err => {
+      window.alert(err);
+      return;
+    });
+
+    subscribeUsers(users => {
+      this.onUsersChanged(users);
     });
   }
 
   onReset2FA(username, confirmationPassword) {
-    reset2FA(username, confirmationPassword);
+    reset2FA(username, confirmationPassword, err => {
+      window.alert(err);
+      return;
+    });
 
     subscribeUsers(users => {
       this.onUsersChanged(users);
