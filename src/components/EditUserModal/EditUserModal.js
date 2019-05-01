@@ -224,7 +224,7 @@ class EditUserModal extends Component {
                   />
                 </InputGroupText>
               </InputGroupAddon>
-              <Input placeholder="Admin Rights" disabled />
+              <Input value="Admin Rights" disabled />
             </InputGroup>
           ) : null}
           <hr />

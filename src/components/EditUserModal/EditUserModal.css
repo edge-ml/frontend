@@ -4,6 +4,3 @@
 .clear::-ms-clear {
   display: none;
 }
-
-input:disabled {
-}
