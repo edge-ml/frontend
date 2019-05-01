@@ -104,7 +104,6 @@ class VideoPanel extends Component {
           width="100%"
           height="auto"
           ref={this.videoReference}
-          controls
         >
           <source
             src="http://mirrors.standaloneinstaller.com/video-sample/page18-movie-4.mp4"

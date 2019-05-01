@@ -59,7 +59,7 @@ class TimeSeriesCollectionPanel extends Component {
 
   render() {
     return (
-      <div>
+      <div className="TimeSeriesCollectionPanel">
         {this.state.timeSeries.map((timeSeries, key) => (
           <TimeSeriesPanel
             key={key}

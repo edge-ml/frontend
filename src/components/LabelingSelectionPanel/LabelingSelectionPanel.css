@@ -1,4 +1,7 @@
 .LabelingSelectionPanel {
+  position: fixed;
+  width: calc(75% - 15px);
+  z-index: 1;
 }
 
 .LabelingSelectionButtonsContainer {
