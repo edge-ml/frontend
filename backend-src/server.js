@@ -199,12 +199,14 @@ io.on('connection', (socket) => {
 					});
 				}
 
-				auth[newName].passwordHash = passwordHash.generate(newPassword);
-				fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
-					if (err) {
-						console.error(err);
-					}
-				});
+				if (newPassword) {
+					auth[newName].passwordHash = passwordHash.generate(newPassword);
+					fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+						if (err) {
+							console.error(err);
+						}
+					});
+				}
 				socket.emit('err', false);
 			}
 		} else {
