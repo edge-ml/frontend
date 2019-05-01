@@ -16,7 +16,7 @@ const { uniqueNamesGenerator } = require('unique-names-generator');
 
 const { io, app, server, activeClients } = require('./server_singleton');
 
-const sandboxRouter = require('./sandboxRouter');
+const apiRouter = require('./apiRouter');
 
 const authPath = path.join(__dirname, '../', 'config', 'auth.json');
 const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
@@ -34,13 +34,15 @@ const publicKey  = fs.readFileSync(publicKeyPath, 'utf-8');
 const tokenIssuer = 'AURA';
 const tokenAudience = 'http://explorer.aura.rest';
 
-const clientmap = {};
-
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
 		if (data.jwtToken) {
-			jwt.verify(data.jwtToken, publicKey, (err, decoded) => {
+			jwt.verify(data.jwtToken, publicKey, (err) => {
 				socket.client.twoFactorAuthenticated = true;
+				const username = jwt.decode(data.jwtToken).sub;
+				socket.client.username = username;
+				socket.client.isTwoFAClientConfigured  = auth[username].isTwoFAClientConfigured;
+				socket.client.isAdmin = auth[username].isAdmin;
 				if (err === null) callback(null, true);
 			});
 		} else {
@@ -56,6 +58,7 @@ SocketIoAuth(io, {
 
 		socket.client.username = data.username;
 		socket.client.isTwoFAClientConfigured = auth[data.username].isTwoFAClientConfigured;
+		socket.client.isAdmin = auth[data.username].isAdmin;
 
 		if (!socket.client.isTwoFAClientConfigured) {
 			const secret = speakeasy.generateSecret();
@@ -146,8 +149,131 @@ io.on('connection', (socket) => {
 		// TODO: remove client from activeClients
 	});
 
-	socket.on('user', (user) => {
-		// TODO: add or update user config
+	socket.on('users', () => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		if (socket.client.isAdmin) {
+			socket.emit('users', Object.keys(auth).map(identifier => ({
+				username: identifier,
+				isAdmin: auth[identifier].isAdmin,
+				isRegistered: auth[identifier].isTwoFAClientConfigured
+			})));
+		} else {
+			const user = auth[socket.client.username];
+			socket.emit('users', [{
+				username: socket.client.username,
+				isAdmin: user.isAdmin,
+				isRegistered: user.isTwoFAClientConfigured
+			}]);
+		}
+	});
+
+	socket.on('user', () => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		const user = auth[socket.client.username];
+		socket.emit('user', {
+			username: socket.client.username,
+			isAdmin: user.isAdmin,
+			isRegistered: user.isTwoFAClientConfigured
+		});
+	})
+
+	socket.on('edit_user', (username, newName, newPassword, confirmationPassword) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin && username !== socket.client.username) return;
+
+		const confirmationUsername = (socket.client.isAdmin) ? socket.client.username : username;
+
+		if (passwordHash.verify(confirmationPassword, auth[confirmationUsername].passwordHash)) {
+			if (username !== newName && newName in auth) {
+				socket.emit('err', 'This user already exists.');
+			} else {
+				if (username !== newName) {
+					auth[newName] = auth[username];
+					delete auth[username];
+					fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+						if (err) {
+							console.error(err);
+						}
+					});
+				}
+
+				if (newPassword) {
+					auth[newName].passwordHash = passwordHash.generate(newPassword);
+					fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+						if (err) {
+							console.error(err);
+						}
+					});
+				}
+				socket.emit('err', false);
+			}
+		} else {
+			socket.emit('err', 'Current password is wrong.')
+		}
+	});
+
+	socket.on('delete_user', (username, confirmationPassword) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin && username !== socket.client.username) return;
+
+		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash)) {
+			delete auth[username];
+			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+				if (err) {
+					console.error(err);
+				}
+			});
+			socket.emit('err', false);
+		} else {
+			socket.emit('err', 'Current password is wrong.')
+		}
+	});
+
+	socket.on('add_user', (username, password, isAdmin, confirmationPassword) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin) return;
+
+		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash)) {
+			if (username in auth) {
+				socket.emit('err', 'This user already exists.');
+			} else {
+				auth[username] = {
+					passwordHash: passwordHash.generate(password),
+					twoFactorAuthenticationSecret: null,
+					isTwoFAClientConfigured: false,
+					isAdmin: isAdmin,
+				}
+				fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+					if (err) {
+						console.error(err);
+					}
+				});
+				socket.emit('err', false);
+			}
+		} else {
+			socket.emit('err', 'Current password is wrong.')
+		}
+	});
+
+	socket.on('reset2FA', (username, confirmationPassword) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin) return;
+
+		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash)) {
+			auth[username].twoFactorAuthenticationSecret = null;
+			auth[username].isTwoFAClientConfigured = false;
+			auth[username].twoFASecret = undefined;
+			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+				if (err) {
+					console.error(err);
+				}
+			});
+			socket.emit('err', false);
+		} else {
+			socket.emit('err', 'Current password is wrong.')
+		}
 	});
 });
 
@@ -155,7 +281,7 @@ app.use(KoaLogger());
 
 const router = new KoaRouter();
 
-router.use('/api/:name', sandboxRouter.routes(), sandboxRouter.allowedMethods());
+router.use('/api/:name', apiRouter.routes(), apiRouter.allowedMethods());
 
 app.use(router.routes());
 app.use(router.allowedMethods());

@@ -1,5 +1,6 @@
 import openSocket from 'socket.io-client';
 import Cookies from 'universal-cookie';
+import { stringify } from 'querystring';
 
 const socketUrl = 'http://localhost:3001';
 const jwt = require('jsonwebtoken');
@@ -81,7 +82,7 @@ export const restoreSession = callback => {
   var decodedToken = jwt.decode(token, { complete: true });
   var dateNow = new Date();
 
-  if (!decodedToken || decodedToken.exp < dateNow.getTime()) {
+  if (!decodedToken || decodedToken.payload.exp * 1000 < dateNow.getTime()) {
     cookies.set('token', undefined, { path: '/' });
     return;
   }
@@ -156,6 +157,98 @@ export const unsubscribeDataset = (id, callback) => {
   if (!authenticated || !verified) return;
 
   socket.off(`datasets_${id}`);
+};
+
+/***
+ * Users
+ */
+export const subscribeUsers = callback => {
+  if (!authenticated || !verified) return;
+
+  socket.on('users', users => callback(users));
+  socket.emit('users');
+};
+
+export const unsubscribeUsers = callback => {
+  if (!authenticated || !verified) return;
+
+  socket.off('users');
+};
+
+export const getCurrentUser = callback => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('user');
+  socket.on('user', user => {
+    callback(user);
+    socket.off('user');
+  });
+};
+
+export const editUser = (
+  username,
+  newName,
+  newPassword,
+  confirmationPassword,
+  callback
+) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit(
+    'edit_user',
+    username,
+    newName,
+    newPassword,
+    confirmationPassword
+  );
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const deleteUser = (username, confirmationPassword, callback) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('delete_user', username, confirmationPassword);
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const addUser = (
+  username,
+  password,
+  isAdmin,
+  confirmationPassword,
+  callback
+) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('add_user', username, password, isAdmin, confirmationPassword);
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const reset2FA = (username, confirmationPassword, callback) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('reset2FA', username, confirmationPassword);
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
+  });
 };
 
 /***
