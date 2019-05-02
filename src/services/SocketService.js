@@ -189,6 +189,7 @@ export const editUser = (
   username,
   newName,
   newPassword,
+  isAdmin,
   confirmationPassword,
   callback
 ) => {
@@ -199,6 +200,7 @@ export const editUser = (
     username,
     newName,
     newPassword,
+    isAdmin,
     confirmationPassword
   );
   socket.on('err', err => {
