@@ -31,7 +31,7 @@ class UploadCsvModal extends Component {
       reader.onload = () => {
         const obj = parseCSV(
           reader.result,
-          this.state.startTime,
+          this.props.startTime,
           this.state.adjustTime
         );
 
