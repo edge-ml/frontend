@@ -95,7 +95,7 @@ class TimeSeriesPanel extends Component {
         series: !Array.isArray(props.name)
           ? [
               {
-                name: props.name,
+                name: props.name + ' (' + props.unit + ')',
                 data: props.data,
                 lineWidth: 1
               }
@@ -148,11 +148,7 @@ class TimeSeriesPanel extends Component {
         },
         yAxis: {
           title: {
-            enabled: true,
-            text: props.unit,
-            style: {
-              fontWeight: 'normal'
-            }
+            enabled: false
           },
           opposite: false
         },
@@ -530,19 +526,17 @@ class TimeSeriesPanel extends Component {
 
   render() {
     return (
-      <Card className="mt-1" style={{ overflow: 'hidden' }}>
-        <CardBody className="p-0">
-          <div className="chartWrapper" onMouseDown={this.onMouseDown}>
-            <HighchartsReact
-              ref={this.chart}
-              highcharts={Highcharts}
-              options={this.state.chartOptions}
-              oneToOne={true}
-              constructorType={'stockChart'}
-            />
-          </div>
-        </CardBody>
-      </Card>
+      <div className="mt-2" style={{ overflow: 'hidden' }}>
+        <div className="chartWrapper" onMouseDown={this.onMouseDown}>
+          <HighchartsReact
+            ref={this.chart}
+            highcharts={Highcharts}
+            options={this.state.chartOptions}
+            oneToOne={true}
+            constructorType={'stockChart'}
+          />
+        </div>
+      </div>
     );
   }
 }
