@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
-  Card,
-  CardHeader,
-  CardBody
-} from 'reactstrap';
+import { Card, Button } from 'reactstrap';
 import './VideoPanel.css';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faExpandArrowsAlt,
+  faCompressArrowsAlt
+} from '@fortawesome/free-solid-svg-icons';
 
 class VideoPanel extends Component {
   constructor(props) {
@@ -16,11 +14,15 @@ class VideoPanel extends Component {
 
     this.state = {
       duration: undefined,
-      isScrubbingOutsideVideo: false
+      isScrubbingOutsideVideo: false,
+      pip: {
+        isEnabled: false
+      }
     };
 
     this.videoReference = React.createRef();
     this.onSetTime = this.onSetTime.bind(this);
+    this.onTogglePictureInPicture = this.onTogglePictureInPicture.bind(this);
   }
 
   onSetTime(time) {
@@ -45,6 +47,24 @@ class VideoPanel extends Component {
     }
   }
 
+  onTogglePictureInPicture() {
+    this.setState({
+      pip: {
+        isEnabled: !this.state.pip.isEnabled
+      }
+    });
+
+    if (
+      !this.state.pip.isEnabled &&
+      this.videoReference &&
+      !document.pictureInPicture
+    ) {
+      this.videoReference.current.requestPictureInPicture();
+    } else if (this.videoReference) {
+      this.videoReference.current.exitPictureInPicture();
+    }
+  }
+
   componentDidMount() {
     this.videoReference.current.addEventListener('loadedmetadata', this.seek);
   }
@@ -66,6 +86,18 @@ class VideoPanel extends Component {
   render() {
     return (
       <Card className={'VideoPanel'} style={{ overflow: 'hidden' }}>
+        <Button
+          style={{ position: 'absolute', right: '0px', top: '0px' }}
+          onClick={this.onTogglePictureInPicture}
+        >
+          <FontAwesomeIcon
+            icon={
+              !this.state.pip.isEnabled
+                ? faExpandArrowsAlt
+                : faCompressArrowsAlt
+            }
+          />
+        </Button>
         <div
           style={{
             background: 'gray',
@@ -88,7 +120,11 @@ class VideoPanel extends Component {
               color: 'lightgray'
             }}
           >
-            <b>no video available at this point in time</b>
+            {!this.state.pip.isEnabled ? (
+              <b>no video available at this point in time</b>
+            ) : (
+              <b>picture in picture enabled</b>
+            )}
           </div>
         </div>
         <video
@@ -97,7 +133,8 @@ class VideoPanel extends Component {
             lineHeight: 0,
             visibility:
               this.state.isScrubbingOutsideVideo ||
-              this.videoReference === undefined
+              this.videoReference === undefined ||
+              this.state.pip.isEnabled
                 ? 'hidden'
                 : 'visible'
           }}

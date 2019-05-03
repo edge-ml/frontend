@@ -573,7 +573,12 @@ class DatasetPage extends Component {
                   canEdit={this.state.controlStates.canEdit}
                   onScrubbed={this.onScrubbed}
                 />
-                <Button block outline onClick={this.onOpenFuseTimeSeriesModal}>
+                <Button
+                  block
+                  outline
+                  onClick={this.onOpenFuseTimeSeriesModal}
+                  className="mt-2"
+                >
                   + Fuse Multiple Time Series
                 </Button>
               </div>
