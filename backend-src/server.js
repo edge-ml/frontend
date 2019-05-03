@@ -179,7 +179,7 @@ io.on('connection', (socket) => {
 		});
 	})
 
-	socket.on('edit_user', (username, newName, newPassword, confirmationPassword) => {
+	socket.on('edit_user', (username, newName, newPassword, isAdmin, confirmationPassword) => {
 		if (!socket.client.twoFactorAuthenticated) return;
 		if (!socket.client.isAdmin && username !== socket.client.username) return;
 
@@ -192,21 +192,19 @@ io.on('connection', (socket) => {
 				if (username !== newName) {
 					auth[newName] = auth[username];
 					delete auth[username];
-					fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
-						if (err) {
-							console.error(err);
-						}
-					});
 				}
 
+				auth[newName].isAdmin = isAdmin;
+				
 				if (newPassword) {
 					auth[newName].passwordHash = passwordHash.generate(newPassword);
-					fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
-						if (err) {
-							console.error(err);
-						}
-					});
 				}
+
+				fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
+					if (err) {
+						console.error(err);
+					}
+				});
 				socket.emit('err', false);
 			}
 		} else {

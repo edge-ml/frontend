@@ -34,7 +34,7 @@ class EditUserModal extends Component {
         newPassword: '',
         passwordConfirm: '',
         currentPassword: '',
-        isAdmin: false
+        isAdmin: props.user ? props.user.isAdmin : false
       },
       modalState: {
         isOpen: props.isOpen
@@ -74,7 +74,7 @@ class EditUserModal extends Component {
         newPassword: state.inputVariables.newPassword,
         passwordConfirm: state.inputVariables.passwordConfirm,
         currentPassword: state.inputVariables.currentPassword,
-        isAdmin: state.inputVariables.isAdmin
+        isAdmin: props.user ? props.user.isAdmin : false
       }
     }));
   }
@@ -186,6 +186,7 @@ class EditUserModal extends Component {
         this.state.user.username,
         this.state.inputVariables.name,
         this.state.inputVariables.newPassword,
+        this.state.inputVariables.isAdmin,
         this.state.inputVariables.currentPassword
       );
     }
@@ -212,21 +213,26 @@ class EditUserModal extends Component {
               onChange={e => this.onNameChanged(e.target.value)}
             />
           </InputGroup>
-          {this.state.isNewUser ? (
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <Input
-                    addon
-                    type="checkbox"
-                    id="checkbox"
-                    onChange={e => this.onAdminRightsChanged(e.target.checked)}
-                  />
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input value="Admin Rights" disabled />
-            </InputGroup>
-          ) : null}
+          <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>
+                <Input
+                  addon
+                  type="checkbox"
+                  checked={this.state.inputVariables.isAdmin}
+                  onChange={e => this.onAdminRightsChanged(e.target.checked)}
+                />
+              </InputGroupText>
+            </InputGroupAddon>
+            <Input
+              defaultValue="Admin Rights"
+              className={
+                this.state.inputVariables.isAdmin
+                  ? 'inputChecked'
+                  : 'inputNotChecked'
+              }
+            />
+          </InputGroup>
           <hr />
 
           <InputGroup>

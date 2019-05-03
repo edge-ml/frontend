@@ -76,11 +76,18 @@ class SettingsPage extends Component {
     });
   }
 
-  onSave(username, newName, newPassword, confirmationPassword) {
-    editUser(username, newName, newPassword, confirmationPassword, err => {
-      window.alert(err);
-      return;
-    });
+  onSave(username, newName, newPassword, isAdmin, confirmationPassword) {
+    editUser(
+      username,
+      newName,
+      newPassword,
+      isAdmin,
+      confirmationPassword,
+      err => {
+        window.alert(err);
+        return;
+      }
+    );
 
     if (this.state.user.username === username && username !== newName) {
       // change own name
