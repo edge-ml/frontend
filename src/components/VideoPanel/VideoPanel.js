@@ -5,7 +5,8 @@ import './VideoPanel.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faExpandArrowsAlt,
-  faCompressArrowsAlt
+  faCompressArrowsAlt,
+  faExternalLinkAlt
 } from '@fortawesome/free-solid-svg-icons';
 
 class VideoPanel extends Component {
@@ -17,6 +18,14 @@ class VideoPanel extends Component {
       isScrubbingOutsideVideo: false,
       pip: {
         isEnabled: false
+      },
+      browser: {
+        isChrome:
+          /Chrome/.test(navigator.userAgent) &&
+          /Google Inc/.test(navigator.vendor),
+        isSafari:
+          /Safari/.test(navigator.userAgent) &&
+          /Apple Computer/.test(navigator.vendor)
       }
     };
 
@@ -59,9 +68,19 @@ class VideoPanel extends Component {
       this.videoReference &&
       !document.pictureInPicture
     ) {
-      this.videoReference.current.requestPictureInPicture();
+      if (this.state.browser.isSafari) {
+        this.videoReference.current.webkitSetPresentationMode(
+          'picture-in-picture'
+        );
+      } else if (this.state.browser.isChrome) {
+        this.videoReference.current.requestPictureInPicture();
+      }
     } else if (this.videoReference) {
-      this.videoReference.current.exitPictureInPicture();
+      if (this.state.browser.isSafari) {
+        this.videoReference.current.webkitSetPresentationMode('inline');
+      } else if (this.state.browser.isChrome) {
+        document.exitPictureInPicture();
+      }
     }
   }
 
@@ -81,13 +100,35 @@ class VideoPanel extends Component {
     this.setState({
       duration: this.videoReference.current.duration
     });
+
+    this.videoReference.current.addEventListener(
+      'leavepictureinpicture',
+      () => {
+        alert('test');
+        this.setState({
+          pip: {
+            isEnabled: false
+          }
+        });
+      }
+    );
   };
 
   render() {
     return (
       <Card className={'VideoPanel'} style={{ overflow: 'hidden' }}>
         <Button
-          style={{ position: 'absolute', right: '0px', top: '0px' }}
+          style={{
+            position: 'absolute',
+            right: '0px',
+            top: '0px',
+            zIndex: 1,
+            visibility: !(
+              this.state.browser.isChrome || this.state.browser.isSafari
+            )
+              ? 'hidden'
+              : 'visible'
+          }}
           onClick={this.onTogglePictureInPicture}
         >
           <FontAwesomeIcon
@@ -100,7 +141,7 @@ class VideoPanel extends Component {
         </Button>
         <div
           style={{
-            background: 'gray',
+            background: this.state.pip.isEnabled ? 'lightgray' : 'black',
             position: 'absolute',
             top: '0px',
             right: '0px',
@@ -117,13 +158,20 @@ class VideoPanel extends Component {
               top: '44%',
               textAlign: 'center',
               width: '100%',
-              color: 'lightgray'
+              color: this.state.pip.isEnabled ? 'black' : 'white'
             }}
           >
             {!this.state.pip.isEnabled ? (
               <b>no video available at this point in time</b>
             ) : (
-              <b>picture in picture enabled</b>
+              <div>
+                <FontAwesomeIcon
+                  className="mb-3"
+                  icon={faExternalLinkAlt}
+                  size="lg"
+                />
+                <div>Picture in Picture Enabled</div>
+              </div>
             )}
           </div>
         </div>
