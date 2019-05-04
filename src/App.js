@@ -6,7 +6,9 @@ import {
   Nav,
   NavItem,
   Button,
-  Form
+  Form,
+  Collapse,
+  NavbarToggler
 } from 'reactstrap';
 import { Route, Link } from 'react-router-dom';
 
@@ -28,13 +30,17 @@ class App extends Component {
 
     this.state = {
       isLoggedIn: false,
-      isTwoFactorAuthenticated: false
+      isTwoFactorAuthenticated: false,
+      navbarState: {
+        isOpen: false
+      }
     };
 
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);
     this.onTwoFA = this.onTwoFA.bind(this);
+    this.toggleNavbar = this.toggleNavbar.bind(this);
   }
 
   onLogout(didSucceed) {
@@ -68,6 +74,14 @@ class App extends Component {
     logout(this.onLogout);
   }
 
+  toggleNavbar() {
+    this.setState({
+      navbarState: {
+        isOpen: !this.state.navbarState.isOpen
+      }
+    });
+  }
+
   render() {
     return (
       <AuthWall
@@ -79,35 +93,38 @@ class App extends Component {
       >
         <Navbar color="light" light expand="md">
           <NavbarBrand>Explorer</NavbarBrand>
-          <Nav className="ml-auto" navbar>
-            <NavItem>
-              <Link className="nav-link" to="/list">
-                Datasets
-              </Link>
-            </NavItem>
-            <NavItem>
-              <Link className="nav-link" to="/labelings">
-                Labelings
-              </Link>
-            </NavItem>
-            <NavItem>
-              <Link className="nav-link" to="/settings">
-                Settings
-              </Link>
-            </NavItem>
-            <Form className="form-inline my-2 my-lg-0">
-              <Link
-                className="nav-link m-0 p-0 ml-3"
-                to="/"
-                onClick={this.logoutHandler}
-              >
-                <Button className="m-0 my-2 my-sm-0" outline>
-                  Logout
-                </Button>
-              </Link>
-            </Form>
-            <NavItem />
-          </Nav>
+          <NavbarToggler onClick={this.toggleNavbar} />
+          <Collapse isOpen={this.state.navbarState.isOpen} navbar>
+            <Nav className="ml-auto" navbar>
+              <NavItem>
+                <Link className="nav-link" to="/list">
+                  Datasets
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Link className="nav-link" to="/labelings">
+                  Labelings
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Link className="nav-link" to="/settings">
+                  Settings
+                </Link>
+              </NavItem>
+              <Form className="form-inline my-2 my-lg-0">
+                <Link
+                  className="nav-link m-0 p-0 ml-3"
+                  to="/"
+                  onClick={this.logoutHandler}
+                >
+                  <Button className="m-0 my-2 my-sm-0" outline>
+                    Logout
+                  </Button>
+                </Link>
+              </Form>
+              <NavItem />
+            </Nav>
+          </Collapse>
         </Navbar>
         <Container>
           <Route exact path="/list" component={ListPage} />
