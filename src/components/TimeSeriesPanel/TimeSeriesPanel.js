@@ -102,7 +102,8 @@ class TimeSeriesPanel extends Component {
             ]
           : props.data.map((dataItem, index) => {
               return {
-                name: this.props.name[index],
+                name:
+                  this.props.name[index] + ' (' + this.props.unit[index] + ')',
                 data: dataItem,
                 lineWidth: 1
               };

@@ -98,7 +98,15 @@ class TimeSeriesCollectionPanel extends Component {
                 );
               })
               .map(series => series.name)}
-            unit={''}
+            unit={this.state.timeSeries
+              .filter(timeSeries => {
+                return (
+                  fusedSeries.series.filter(
+                    seriesId => seriesId === timeSeries.id
+                  ).length !== 0
+                );
+              })
+              .map(series => series.unit)}
             labeling={this.state.labeling}
             labelTypes={this.state.labelTypes}
             onLabelClicked={this.state.onLabelClicked}
