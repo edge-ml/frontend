@@ -181,7 +181,10 @@ class TimeSeriesPanel extends Component {
           height: this.props.index === 0 ? 0 : undefined,
           gridLineWidth: this.props.index === 0 ? 0 : 1,
           labels: {
-            enabled: this.props.index !== 0
+            enabled: this.props.index !== 0,
+            align: 'left',
+            x: 0,
+            y: -2
           },
           title: {
             enabled: false
