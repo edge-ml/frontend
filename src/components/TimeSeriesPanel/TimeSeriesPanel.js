@@ -58,7 +58,7 @@ class TimeSeriesPanel extends Component {
   componentDidMount() {
     const container = this.chart.current.container.current;
 
-    container.style.height = '170px';
+    container.style.height = this.props.index === 0 ? '80px' : '170px';
     container.style.width = '100%';
 
     this.chart.current.chart.reflow();
@@ -79,7 +79,7 @@ class TimeSeriesPanel extends Component {
     return {
       chartOptions: {
         navigator: {
-          enabled: false,
+          enabled: this.props.index === 0,
           xAxis: {
             isInternal: true
           },
@@ -92,34 +92,61 @@ class TimeSeriesPanel extends Component {
         },
         panning: false,
         title: null,
-        series: !Array.isArray(props.name)
-          ? [
-              {
-                name: props.name + ' (' + props.unit + ')',
-                data: props.data,
-                lineWidth: 1
-              }
-            ]
-          : props.data.map((dataItem, index) => {
-              return {
-                name: this.props.name[index],
-                data: dataItem,
-                lineWidth: 1
-              };
-            }),
+        series:
+          this.props.index === 0
+            ? [
+                {
+                  lineWidth: 0,
+                  marker: {
+                    enabled: false,
+                    states: {
+                      hover: {
+                        enabled: false
+                      }
+                    }
+                  },
+                  data: props.data
+                }
+              ]
+            : !Array.isArray(props.name)
+            ? [
+                {
+                  name: props.name + ' (' + props.unit + ')',
+                  data: props.data,
+                  lineWidth: 1
+                }
+              ]
+            : props.data.map((dataItem, index) => {
+                return {
+                  name: this.props.name[index],
+                  data: dataItem,
+                  lineWidth: 1
+                };
+              }),
         xAxis: {
+          lineWidth: this.props.index === 0 ? 0 : 1,
+          tickLength: this.props.index === 0 ? 0 : 10,
+          labels: {
+            enabled: this.props.index !== 0
+          },
           type: 'datetime',
           ordinal: false,
-          plotBands: this.labelingToPlotBands(
-            props.labeling,
-            props.labelTypes,
-            props.selectedLabelId
-          ),
-          plotLines: this.labelingToPlotLines(
-            props.labeling.labels,
-            props.labelTypes,
-            props.selectedLabelId
-          ),
+          plotBands:
+            this.props.index === 0
+              ? undefined
+              : this.labelingToPlotBands(
+                  props.labeling,
+                  props.labelTypes,
+                  props.selectedLabelId
+                ),
+          plotLines:
+            this.props.index === 0
+              ? undefined
+              : this.labelingToPlotLines(
+                  props.labeling.labels,
+                  props.labelTypes,
+                  props.selectedLabelId
+                ),
           crosshair: {
             snap: false
           },
@@ -147,6 +174,11 @@ class TimeSeriesPanel extends Component {
           }
         },
         yAxis: {
+          height: this.props.index === 0 ? 0 : undefined,
+          gridLineWidth: this.props.index === 0 ? 0 : 1,
+          labels: {
+            enabled: this.props.index !== 0
+          },
           title: {
             enabled: false
           },
@@ -158,9 +190,12 @@ class TimeSeriesPanel extends Component {
           layout: 'vertical',
           x: 45,
           y: 0,
-          enabled: true
+          enabled: this.props.index !== 0
         },
         tooltip: {
+          enabled: false
+        },
+        credits: {
           enabled: false
         },
         scrollbar: {

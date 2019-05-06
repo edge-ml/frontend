@@ -60,6 +60,21 @@ class TimeSeriesCollectionPanel extends Component {
   render() {
     return (
       <div className="TimeSeriesCollectionPanel">
+        <TimeSeriesPanel
+          index={0}
+          data={this.state.timeSeries[0].data}
+          name={this.state.timeSeries[0].name}
+          unit={this.state.timeSeries[0].unit}
+          labeling={this.state.labeling}
+          labelTypes={this.state.labelTypes}
+          onLabelClicked={this.state.onLabelClicked}
+          selectedLabelId={this.state.selectedLabelId}
+          start={this.state.start}
+          end={this.state.end}
+          onLabelChanged={this.state.onLabelChanged}
+          canEdit={this.state.canEdit}
+          onScrubbed={this.state.onScrubbed}
+        />
         {this.state.timeSeries.map((timeSeries, key) => (
           <TimeSeriesPanel
             key={key}
