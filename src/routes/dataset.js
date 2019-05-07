@@ -585,7 +585,7 @@ class DatasetPage extends Component {
                   block
                   outline
                   onClick={this.onOpenFuseTimeSeriesModal}
-                  className="mt-2"
+                  style={{ zIndex: 999, position: 'relative' }}
                 >
                   + Fuse Multiple Time Series
                 </Button>

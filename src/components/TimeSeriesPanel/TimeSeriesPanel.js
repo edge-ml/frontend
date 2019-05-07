@@ -572,15 +572,17 @@ class TimeSeriesPanel extends Component {
   }
 
   render() {
-    let addNegativeMargin =
-      this.props.index !== 0 && this.props.index < this.props.numSeries - 1;
-
     return (
       <div
         className="mt-2"
         style={{
           overflow: 'hidden',
-          marginBottom: addNegativeMargin ? '-25px' : 0
+          marginBottom:
+            this.props.index === 0
+              ? 0
+              : this.props.index < this.props.numSeries - 1
+              ? '-25px'
+              : '-10px'
         }}
       >
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
