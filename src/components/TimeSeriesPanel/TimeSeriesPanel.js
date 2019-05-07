@@ -80,6 +80,10 @@ class TimeSeriesPanel extends Component {
       chartOptions: {
         navigator: {
           enabled: this.props.index === 0,
+          series: {
+            color: '#FFFFFF',
+            lineWidth: 0
+          },
           xAxis: {
             isInternal: true
           },

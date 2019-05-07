@@ -355,6 +355,14 @@ class DatasetPage extends Component {
   addTimeSeries(obj) {
     let dataset = { ...this.state.dataset };
     dataset.timeSeries.push(obj);
+
+    let times = [];
+    obj.data.forEach(element => times.push(element[0]));
+    let max = Math.max(...times);
+    let min = Math.min(...times);
+    dataset.end = max > dataset.end ? max : dataset.end;
+    dataset.start = min < dataset.start ? min : dataset.start;
+
     this.setState({ dataset });
   }
 
