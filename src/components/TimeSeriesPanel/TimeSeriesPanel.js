@@ -91,6 +91,9 @@ class TimeSeriesPanel extends Component {
             isInternal: true
           }
         },
+        scrollbar: {
+          liveRedraw: true
+        },
         rangeSelector: {
           enabled: false
         },
@@ -164,6 +167,7 @@ class TimeSeriesPanel extends Component {
           endOnTick: false,
           events: {
             afterSetExtremes: e => {
+              console.log('after set');
               if (this.chart.current.chart && Highcharts.charts) {
                 Highcharts.charts
                   .filter(chart => {
@@ -178,6 +182,9 @@ class TimeSeriesPanel extends Component {
                     }
                   });
               }
+            },
+            setExtremes: e => {
+              console.log('set');
             }
           }
         },
