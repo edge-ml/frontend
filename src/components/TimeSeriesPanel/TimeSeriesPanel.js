@@ -58,7 +58,7 @@ class TimeSeriesPanel extends Component {
   componentDidMount() {
     const container = this.chart.current.container.current;
 
-    container.style.height = this.props.index === 0 ? '80px' : '170px';
+    container.style.height = this.props.index === 0 ? '80px' : '200px';
     container.style.width = '100%';
 
     this.chart.current.chart.reflow();
@@ -90,9 +90,6 @@ class TimeSeriesPanel extends Component {
           yAxis: {
             isInternal: true
           }
-        },
-        scrollbar: {
-          liveRedraw: true
         },
         rangeSelector: {
           enabled: false
@@ -167,7 +164,6 @@ class TimeSeriesPanel extends Component {
           endOnTick: false,
           events: {
             afterSetExtremes: e => {
-              console.log('after set');
               if (this.chart.current.chart && Highcharts.charts) {
                 Highcharts.charts
                   .filter(chart => {
@@ -182,9 +178,6 @@ class TimeSeriesPanel extends Component {
                     }
                   });
               }
-            },
-            setExtremes: e => {
-              console.log('set');
             }
           }
         },
@@ -217,7 +210,8 @@ class TimeSeriesPanel extends Component {
           enabled: false
         },
         scrollbar: {
-          enabled: false
+          height: 0,
+          buttonArrowColor: '#fff'
         }
       },
       labeling: props.labeling,
@@ -578,8 +572,17 @@ class TimeSeriesPanel extends Component {
   }
 
   render() {
+    let addNegativeMargin =
+      this.props.index !== 0 && this.props.index < this.props.numSeries - 1;
+
     return (
-      <div className="mt-2" style={{ overflow: 'hidden' }}>
+      <div
+        className="mt-2"
+        style={{
+          overflow: 'hidden',
+          marginBottom: addNegativeMargin ? '-25px' : 0
+        }}
+      >
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
           <HighchartsReact
             ref={this.chart}

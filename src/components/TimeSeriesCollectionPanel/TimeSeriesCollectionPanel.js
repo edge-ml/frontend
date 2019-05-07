@@ -74,10 +74,13 @@ class TimeSeriesCollectionPanel extends Component {
           onLabelChanged={this.state.onLabelChanged}
           canEdit={this.state.canEdit}
           onScrubbed={this.state.onScrubbed}
+          numSeries={
+            this.state.timeSeries.length + this.state.fusedSeries.length + 1
+          }
         />
         {this.state.timeSeries.map((timeSeries, key) => (
           <TimeSeriesPanel
-            key={key}
+            index={key + 1}
             data={timeSeries.data}
             name={timeSeries.name}
             unit={timeSeries.unit}
@@ -90,11 +93,14 @@ class TimeSeriesCollectionPanel extends Component {
             onLabelChanged={this.state.onLabelChanged}
             canEdit={this.state.canEdit}
             onScrubbed={this.state.onScrubbed}
+            numSeries={
+              this.state.timeSeries.length + this.state.fusedSeries.length + 1
+            }
           />
         ))}
         {this.state.fusedSeries.map((fusedSeries, key) => (
           <TimeSeriesPanel
-            key={key}
+            index={key + this.state.timeSeries.length + 1}
             data={this.state.timeSeries
               .filter(timeSeries => {
                 return (
@@ -131,6 +137,9 @@ class TimeSeriesCollectionPanel extends Component {
             onLabelChanged={this.state.onLabelChanged}
             canEdit={this.state.canEdit}
             onScrubbed={this.state.onScrubbed}
+            numSeries={
+              this.state.timeSeries.length + this.state.fusedSeries.length + 1
+            }
           />
         ))}
       </div>
