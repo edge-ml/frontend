@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import EditUserModal from '../components/EditUserModal/EditUserModal';
+import EditSourceModal from '../components/EditSourceModal/EditSourceModal';
 
 import {
   subscribeUsers,
@@ -16,7 +17,12 @@ import {
   deleteUser,
   addUser,
   reset2FA,
-  getCurrentUser
+  getCurrentUser,
+  subscribeSources,
+  unsubscribeSources,
+  addSource,
+  editSource,
+  deleteSource
 } from '../services/SocketService';
 
 class SettingsPage extends Component {
@@ -25,21 +31,33 @@ class SettingsPage extends Component {
 
     this.state = {
       users: [],
-      modal: {
+      userModal: {
         isOpen: false,
         isNewUser: false,
         user: undefined
       },
-      user: undefined
+      user: undefined,
+      sourceModal: {
+        isOpen: false,
+        isNewSource: false,
+        source: undefined
+      },
+      sources: []
     };
 
     this.onAddUser = this.onAddUser.bind(this);
     this.onUsersChanged = this.onUsersChanged.bind(this);
-    this.toggleModal = this.toggleModal.bind(this);
+    this.toggleUserModal = this.toggleUserModal.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
-    this.onSave = this.onSave.bind(this);
+    this.onSaveUser = this.onSaveUser.bind(this);
     this.onDeleteUser = this.onDeleteUser.bind(this);
     this.onReset2FA = this.onReset2FA.bind(this);
+
+    this.toggleSourceModal = this.toggleSourceModal.bind(this);
+    this.onSourcesChanged = this.onSourcesChanged.bind(this);
+    this.onAddSource = this.onAddSource.bind(this);
+    this.onSaveSource = this.onSaveSource.bind(this);
+    this.onDeleteSource = this.onDeleteSource.bind(this);
   }
 
   componentDidMount() {
@@ -50,33 +68,53 @@ class SettingsPage extends Component {
     getCurrentUser(user => {
       this.setState({ user });
     });
+
+    subscribeSources(sources => {
+      this.onSourcesChanged(sources);
+    });
   }
 
   componentWillUnmount() {
     unsubscribeUsers();
+    unsubscribeSources();
   }
 
-  toggleModal(user, isNewUser) {
+  toggleUserModal(user, isNewUser) {
     this.setState({
-      modal: {
-        isOpen: !this.state.modal.isOpen,
+      userModal: {
+        isOpen: true,
         isNewUser: isNewUser,
         user: user
       }
     });
   }
 
-  onCloseModal() {
+  toggleSourceModal(source, isNewSource) {
     this.setState({
-      modal: {
-        isOpen: false,
-        isNewUser: false,
-        user: undefined
+      sourceModal: {
+        isOpen: true,
+        isNewSource: isNewSource,
+        source: source
       }
     });
   }
 
-  onSave(username, newName, newPassword, isAdmin, confirmationPassword) {
+  onCloseModal() {
+    this.setState({
+      userModal: {
+        isOpen: false,
+        isNewUser: false,
+        user: undefined
+      },
+      sourceModal: {
+        isOpen: false,
+        isNewSource: false,
+        source: undefined
+      }
+    });
+  }
+
+  onSaveUser(username, newName, newPassword, isAdmin, confirmationPassword) {
     editUser(
       username,
       newName,
@@ -142,12 +180,93 @@ class SettingsPage extends Component {
     });
   }
 
+  onAddSource(name, url, enabled) {
+    addSource(name, url, enabled, err => {
+      window.alert(err);
+    });
+  }
+
+  onSaveSource(name, newName, newUrl, enabled) {
+    editSource(name, newName, newUrl, enabled, err => {
+      window.alert(err);
+    });
+  }
+
+  onDeleteSource(name) {
+    deleteSource(name);
+  }
+
+  onSourcesChanged(sources) {
+    this.setState({
+      sources: sources
+    });
+  }
+
   render() {
     let isAdmin = this.state.users.length !== 1 || this.state.users[0].isAdmin;
 
     return (
       <Loader>
         <Container>
+          <Row className="mt-3">
+            <Col>
+              <Table responsive>
+                <thead>
+                  <tr className={'bg-light'}>
+                    <th>Name</th>
+                    <th>URL</th>
+                    <th>Enabled</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.sources.map((source, index) => {
+                    return (
+                      <tr className={'bg-light'}>
+                        <th>{source.name}</th>
+                        <td>{source.url}</td>
+                        <td>
+                          {
+                            <FontAwesomeIcon
+                              style={{
+                                color: source.enabled ? '#43A047' : '#b71c1c'
+                              }}
+                              icon={source.enabled ? faCheck : faTimes}
+                            />
+                          }
+                        </td>
+                        <td>
+                          {isAdmin ? (
+                            <Button
+                              block
+                              className="btn-secondary mt-0"
+                              onClick={e => {
+                                this.toggleSourceModal(source, false);
+                              }}
+                            >
+                              Edit
+                            </Button>
+                          ) : null}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
+              {isAdmin ? (
+                <Button
+                  block
+                  className="mb-5"
+                  color="secondary"
+                  outline
+                  onClick={e => this.toggleSourceModal(null, true)}
+                >
+                  + Add
+                </Button>
+              ) : null}
+            </Col>
+          </Row>
+
           <Row className="mt-3">
             <Col>
               <Table responsive>
@@ -189,7 +308,7 @@ class SettingsPage extends Component {
                             block
                             className="btn-secondary mt-0"
                             onClick={e => {
-                              this.toggleModal(user, false);
+                              this.toggleUserModal(user, false);
                             }}
                           >
                             Edit
@@ -206,7 +325,7 @@ class SettingsPage extends Component {
                   className="mb-5"
                   color="secondary"
                   outline
-                  onClick={e => this.toggleModal(null, true)}
+                  onClick={e => this.toggleUserModal(null, true)}
                 >
                   + Add
                 </Button>
@@ -215,15 +334,24 @@ class SettingsPage extends Component {
           </Row>
         </Container>
         <EditUserModal
-          isOpen={this.state.modal.isOpen}
+          isOpen={this.state.userModal.isOpen}
           onCloseModal={this.onCloseModal}
-          isNewUser={this.state.modal.isNewUser}
-          user={this.state.modal.user}
-          onSave={this.onSave}
+          isNewUser={this.state.userModal.isNewUser}
+          user={this.state.userModal.user}
+          onSave={this.onSaveUser}
           onDeleteUser={this.onDeleteUser}
           onAddUser={this.onAddUser}
           onReset2FA={this.onReset2FA}
           currentIsAdmin={isAdmin}
+        />
+        <EditSourceModal
+          isOpen={this.state.sourceModal.isOpen}
+          onCloseModal={this.onCloseModal}
+          isNewSource={this.state.sourceModal.isNewSource}
+          source={this.state.sourceModal.source}
+          onSave={this.onSaveSource}
+          onDeleteSource={this.onDeleteSource}
+          onAddSource={this.onAddSource}
         />
       </Loader>
     );
