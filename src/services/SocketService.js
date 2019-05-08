@@ -254,6 +254,52 @@ export const reset2FA = (username, confirmationPassword, callback) => {
 };
 
 /***
+ * Sources
+ */
+export const subscribeSources = callback => {
+  if (!authenticated || !verified) return;
+
+  socket.on('sources', sources => callback(sources));
+  socket.emit('sources');
+};
+
+export const unsubscribeSources = callback => {
+  if (!authenticated || !verified) return;
+
+  socket.off('sources');
+};
+
+export const addSource = (name, url, enabled, callback) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('add_source', name, url, enabled);
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const editSource = (name, newName, newUrl, enabled, callback) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('edit_source', name, newName, newUrl, enabled);
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const deleteSource = name => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('delete_source', name);
+};
+
+/***
  * Client Name
  */
 export const getClientName = async () => {

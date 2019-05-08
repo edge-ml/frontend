@@ -20,9 +20,11 @@ const apiRouter = require('./apiRouter');
 
 const authPath = path.join(__dirname, '../', 'config', 'auth.json');
 const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
+const sourcesPath = path.join(__dirname, '../', 'config', 'sources.json');
 
 const auth = require(authPath);
 let labelings = require(labelingsPath);
+let sources = require(sourcesPath);
 
 // JWT
 const privateKeyPath = path.join(__dirname, '../', 'config', 'keys', 'private.key');
@@ -195,7 +197,7 @@ io.on('connection', (socket) => {
 				}
 
 				auth[newName].isAdmin = isAdmin;
-				
+
 				if (newPassword) {
 					auth[newName].passwordHash = passwordHash.generate(newPassword);
 				}
@@ -273,6 +275,78 @@ io.on('connection', (socket) => {
 			socket.emit('err', 'Current password is wrong.')
 		}
 	});
+
+	socket.on('sources', () => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		socket.emit('sources', sources);
+	});
+
+	socket.on('add_source', (name, url, enabled) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin) return;
+
+		if (sources.some(element => element.name === name || element.url === url)) {
+			socket.emit('err', 'This source with the same name or URL already exists.');
+		} else {
+			sources.push({
+				name: name,
+				url: url,
+				enabled: enabled
+			});
+
+			fs.writeFile(sourcesPath, JSON.stringify(sources, null, '\t'), (err) => {
+				if (err) {
+					console.error(err);
+				}
+			});
+
+			socket.emit('err', false);
+			io.emit('sources', sources);
+		}
+	});
+
+	socket.on('edit_source', (name, newName, newUrl, enabled) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin) return;
+
+		let editIndex = sources.findIndex(element => element.name === name);
+
+		if (sources.some((element, index) => {
+			return index !== editIndex && (element.name === newName || element.url === newUrl);
+		})) {
+			socket.emit('err', 'This source with the same name or URL already exists.');
+		} else {
+			sources[editIndex].name = newName;
+			sources[editIndex].url = newUrl;
+			sources[editIndex].enabled = enabled;
+
+			fs.writeFile(sourcesPath, JSON.stringify(sources, null, '\t'), (err) => {
+				if (err) {
+					console.error(err);
+				}
+			});
+
+			socket.emit('err', false);
+			io.emit('sources', sources);
+		}
+	});
+
+	socket.on('delete_source', name => {
+		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.isAdmin) return;
+
+		sources = sources.filter(element => element.name !== name);
+		
+		fs.writeFile(sourcesPath, JSON.stringify(sources, null, '\t'), (err) => {
+			if (err) {
+				console.error(err);
+			}
+		});
+
+		io.emit('sources', sources);
+	})
+
 });
 
 app.use(KoaLogger());
