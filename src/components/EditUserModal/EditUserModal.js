@@ -161,6 +161,11 @@ class EditUserModal extends Component {
   }
 
   onSave() {
+    if (!this.state.inputVariables.name) {
+      window.alert('Username cannot be empty.');
+      return;
+    }
+
     if (
       this.state.inputVariables.newPassword !==
       this.state.inputVariables.passwordConfirm
@@ -175,6 +180,11 @@ class EditUserModal extends Component {
     }
 
     if (this.state.isNewUser) {
+      if (!this.state.inputVariables.newPassword) {
+        window.alert('Password cannot be empty.');
+        return;
+      }
+
       this.state.onAddUser(
         this.state.inputVariables.name,
         this.state.inputVariables.newPassword,
@@ -213,26 +223,30 @@ class EditUserModal extends Component {
               onChange={e => this.onNameChanged(e.target.value)}
             />
           </InputGroup>
-          <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText>
-                <Input
-                  addon
-                  type="checkbox"
-                  checked={this.state.inputVariables.isAdmin}
-                  onChange={e => this.onAdminRightsChanged(e.target.checked)}
-                />
-              </InputGroupText>
-            </InputGroupAddon>
-            <Input
-              defaultValue="Admin Rights"
-              className={
-                this.state.inputVariables.isAdmin
-                  ? 'inputChecked'
-                  : 'inputNotChecked'
-              }
-            />
-          </InputGroup>
+
+          {this.state.currentIsAdmin ? (
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <Input
+                    addon
+                    type="checkbox"
+                    checked={this.state.inputVariables.isAdmin}
+                    onChange={e => this.onAdminRightsChanged(e.target.checked)}
+                  />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                defaultValue="Admin Rights"
+                className={
+                  this.state.inputVariables.isAdmin
+                    ? 'inputChecked'
+                    : 'inputNotChecked'
+                }
+              />
+            </InputGroup>
+          ) : null}
+
           <hr />
 
           <InputGroup>
