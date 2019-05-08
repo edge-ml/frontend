@@ -130,10 +130,6 @@ class SettingsPage extends Component {
     if (this.state.user.username === username && username !== newName) {
       // change own name
       this.props.onLogout();
-    } else {
-      subscribeUsers(users => {
-        this.onUsersChanged(users);
-      });
     }
   }
 
@@ -145,32 +141,18 @@ class SettingsPage extends Component {
 
     if (this.state.user.username === username) {
       this.props.onLogout();
-    } else {
-      subscribeUsers(users => {
-        this.onUsersChanged(users);
-      });
     }
   }
 
   onAddUser(username, password, isAdmin, confirmationPassword) {
     addUser(username, password, isAdmin, confirmationPassword, err => {
       window.alert(err);
-      return;
-    });
-
-    subscribeUsers(users => {
-      this.onUsersChanged(users);
     });
   }
 
   onReset2FA(username, confirmationPassword) {
     reset2FA(username, confirmationPassword, err => {
       window.alert(err);
-      return;
-    });
-
-    subscribeUsers(users => {
-      this.onUsersChanged(users);
     });
   }
 

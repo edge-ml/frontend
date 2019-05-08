@@ -207,6 +207,21 @@ io.on('connection', (socket) => {
 						console.error(err);
 					}
 				});
+
+				if (socket.client.isAdmin) {
+					socket.emit('users', Object.keys(auth).map(identifier => ({
+						username: identifier,
+						isAdmin: auth[identifier].isAdmin,
+						isRegistered: auth[identifier].isTwoFAClientConfigured
+					})));
+				} else {
+					const user = auth[socket.client.username];
+					socket.emit('users', [{
+						username: socket.client.username,
+						isAdmin: user.isAdmin,
+						isRegistered: user.isTwoFAClientConfigured
+					}]);
+				}
 				socket.emit('err', false);
 			}
 		} else {
@@ -225,6 +240,21 @@ io.on('connection', (socket) => {
 					console.error(err);
 				}
 			});
+
+			if (socket.client.isAdmin) {
+				socket.emit('users', Object.keys(auth).map(identifier => ({
+					username: identifier,
+					isAdmin: auth[identifier].isAdmin,
+					isRegistered: auth[identifier].isTwoFAClientConfigured
+				})));
+			} else {
+				const user = auth[socket.client.username];
+				socket.emit('users', [{
+					username: socket.client.username,
+					isAdmin: user.isAdmin,
+					isRegistered: user.isTwoFAClientConfigured
+				}]);
+			}
 			socket.emit('err', false);
 		} else {
 			socket.emit('err', 'Current password is wrong.')
@@ -245,11 +275,27 @@ io.on('connection', (socket) => {
 					isTwoFAClientConfigured: false,
 					isAdmin: isAdmin,
 				}
+
 				fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
 					if (err) {
 						console.error(err);
 					}
 				});
+
+				if (socket.client.isAdmin) {
+					socket.emit('users', Object.keys(auth).map(identifier => ({
+						username: identifier,
+						isAdmin: auth[identifier].isAdmin,
+						isRegistered: auth[identifier].isTwoFAClientConfigured
+					})));
+				} else {
+					const user = auth[socket.client.username];
+					socket.emit('users', [{
+						username: socket.client.username,
+						isAdmin: user.isAdmin,
+						isRegistered: user.isTwoFAClientConfigured
+					}]);
+				}
 				socket.emit('err', false);
 			}
 		} else {
@@ -265,11 +311,27 @@ io.on('connection', (socket) => {
 			auth[username].twoFactorAuthenticationSecret = null;
 			auth[username].isTwoFAClientConfigured = false;
 			auth[username].twoFASecret = undefined;
+
 			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
 				if (err) {
 					console.error(err);
 				}
 			});
+
+			if (socket.client.isAdmin) {
+				socket.emit('users', Object.keys(auth).map(identifier => ({
+					username: identifier,
+					isAdmin: auth[identifier].isAdmin,
+					isRegistered: auth[identifier].isTwoFAClientConfigured
+				})));
+			} else {
+				const user = auth[socket.client.username];
+				socket.emit('users', [{
+					username: socket.client.username,
+					isAdmin: user.isAdmin,
+					isRegistered: user.isTwoFAClientConfigured
+				}]);
+			}
 			socket.emit('err', false);
 		} else {
 			socket.emit('err', 'Current password is wrong.')
@@ -337,7 +399,7 @@ io.on('connection', (socket) => {
 		if (!socket.client.isAdmin) return;
 
 		sources = sources.filter(element => element.name !== name);
-		
+
 		fs.writeFile(sourcesPath, JSON.stringify(sources, null, '\t'), (err) => {
 			if (err) {
 				console.error(err);
