@@ -35,6 +35,11 @@ a .octicon-trashcan:hover {
   height: 100%;
 }
 
+.btn-edit {
+  float: right;
+  max-width: 100px;
+}
+
 .dataset-plotband {
   z-index: 9;
   opacity: 0.8;
