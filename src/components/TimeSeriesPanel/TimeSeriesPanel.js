@@ -173,7 +173,7 @@ class TimeSeriesPanel extends Component {
                     if (chart.index !== this.chart.current.chart.index) {
                       let ex = chart.xAxis[0].getExtremes();
                       if (ex.min !== e.min || ex.max !== e.max) {
-                        chart.xAxis[0].setExtremes(e.min, e.max);
+                        chart.xAxis[0].setExtremes(e.min, e.max, true, false);
                       }
                     }
                   });
