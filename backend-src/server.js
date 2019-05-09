@@ -154,20 +154,7 @@ io.on('connection', (socket) => {
 	socket.on('users', () => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
-		if (socket.client.isAdmin) {
-			socket.emit('users', Object.keys(auth).map(identifier => ({
-				username: identifier,
-				isAdmin: auth[identifier].isAdmin,
-				isRegistered: auth[identifier].isTwoFAClientConfigured
-			})));
-		} else {
-			const user = auth[socket.client.username];
-			socket.emit('users', [{
-				username: socket.client.username,
-				isAdmin: user.isAdmin,
-				isRegistered: user.isTwoFAClientConfigured
-			}]);
-		}
+		emitUsers(socket);
 	});
 
 	socket.on('user', () => {
@@ -208,21 +195,10 @@ io.on('connection', (socket) => {
 					}
 				});
 
-				if (socket.client.isAdmin) {
-					socket.emit('users', Object.keys(auth).map(identifier => ({
-						username: identifier,
-						isAdmin: auth[identifier].isAdmin,
-						isRegistered: auth[identifier].isTwoFAClientConfigured
-					})));
-				} else {
-					const user = auth[socket.client.username];
-					socket.emit('users', [{
-						username: socket.client.username,
-						isAdmin: user.isAdmin,
-						isRegistered: user.isTwoFAClientConfigured
-					}]);
-				}
 				socket.emit('err', false);
+				for (socketId in io.sockets.sockets) {
+					emitUsers(io.sockets.sockets[socketId]);
+				}
 			}
 		} else {
 			socket.emit('err', 'Current password is wrong.')
@@ -241,21 +217,10 @@ io.on('connection', (socket) => {
 				}
 			});
 
-			if (socket.client.isAdmin) {
-				socket.emit('users', Object.keys(auth).map(identifier => ({
-					username: identifier,
-					isAdmin: auth[identifier].isAdmin,
-					isRegistered: auth[identifier].isTwoFAClientConfigured
-				})));
-			} else {
-				const user = auth[socket.client.username];
-				socket.emit('users', [{
-					username: socket.client.username,
-					isAdmin: user.isAdmin,
-					isRegistered: user.isTwoFAClientConfigured
-				}]);
-			}
 			socket.emit('err', false);
+			for (socketId in io.sockets.sockets) {
+				emitUsers(io.sockets.sockets[socketId]);
+			}
 		} else {
 			socket.emit('err', 'Current password is wrong.')
 		}
@@ -282,21 +247,10 @@ io.on('connection', (socket) => {
 					}
 				});
 
-				if (socket.client.isAdmin) {
-					socket.emit('users', Object.keys(auth).map(identifier => ({
-						username: identifier,
-						isAdmin: auth[identifier].isAdmin,
-						isRegistered: auth[identifier].isTwoFAClientConfigured
-					})));
-				} else {
-					const user = auth[socket.client.username];
-					socket.emit('users', [{
-						username: socket.client.username,
-						isAdmin: user.isAdmin,
-						isRegistered: user.isTwoFAClientConfigured
-					}]);
-				}
 				socket.emit('err', false);
+				for (socketId in io.sockets.sockets) {
+					emitUsers(io.sockets.sockets[socketId]);
+				}
 			}
 		} else {
 			socket.emit('err', 'Current password is wrong.')
@@ -318,21 +272,10 @@ io.on('connection', (socket) => {
 				}
 			});
 
-			if (socket.client.isAdmin) {
-				socket.emit('users', Object.keys(auth).map(identifier => ({
-					username: identifier,
-					isAdmin: auth[identifier].isAdmin,
-					isRegistered: auth[identifier].isTwoFAClientConfigured
-				})));
-			} else {
-				const user = auth[socket.client.username];
-				socket.emit('users', [{
-					username: socket.client.username,
-					isAdmin: user.isAdmin,
-					isRegistered: user.isTwoFAClientConfigured
-				}]);
-			}
 			socket.emit('err', false);
+			for (socketId in io.sockets.sockets) {
+				emitUsers(io.sockets.sockets[socketId]);
+			}
 		} else {
 			socket.emit('err', 'Current password is wrong.')
 		}
@@ -410,6 +353,23 @@ io.on('connection', (socket) => {
 	})
 
 });
+
+let emitUsers = socket => {
+	if (socket.client.isAdmin) {
+		socket.emit('users', Object.keys(auth).map(identifier => ({
+			username: identifier,
+			isAdmin: auth[identifier].isAdmin,
+			isRegistered: auth[identifier].isTwoFAClientConfigured
+		})));
+	} else {
+		const user = auth[socket.client.username];
+		socket.emit('users', [{
+			username: socket.client.username,
+			isAdmin: user.isAdmin,
+			isRegistered: user.isTwoFAClientConfigured
+		}]);
+	}
+}
 
 app.use(KoaLogger());
 
