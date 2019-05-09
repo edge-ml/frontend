@@ -204,7 +204,7 @@ class SettingsPage extends Component {
                 <tbody>
                   {this.state.sources.map((source, index) => {
                     return (
-                      <tr className={'bg-light'}>
+                      <tr>
                         <th>{source.name}</th>
                         <td>{source.url}</td>
                         <td>
@@ -221,7 +221,7 @@ class SettingsPage extends Component {
                           {isAdmin ? (
                             <Button
                               block
-                              className="btn-secondary mt-0"
+                              className="btn-secondary mt-0 btn-edit"
                               onClick={e => {
                                 this.toggleSourceModal(source, false);
                               }}
@@ -249,6 +249,8 @@ class SettingsPage extends Component {
             </Col>
           </Row>
 
+          <hr className={'mb-5'} />
+
           <Row className="mt-3">
             <Col>
               <Table responsive>
@@ -263,7 +265,7 @@ class SettingsPage extends Component {
                 <tbody>
                   {this.state.users.map((user, index) => {
                     return (
-                      <tr className={'bg-light'}>
+                      <tr>
                         <th>{user.username}</th>
                         <td>
                           {
@@ -288,7 +290,7 @@ class SettingsPage extends Component {
                         <td>
                           <Button
                             block
-                            className="btn-secondary mt-0"
+                            className="btn-secondary mt-0 btn-edit"
                             onClick={e => {
                               this.toggleUserModal(user, false);
                             }}

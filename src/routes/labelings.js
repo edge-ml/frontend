@@ -218,7 +218,7 @@ class LabelingsPage extends Component {
                       </td>
                       <td>
                         <Button
-                          className="btn-secondary mt-0"
+                          className="btn-secondary mt-0 btn-edit"
                           block
                           onClick={e => {
                             this.toggleModal(labeling, false);
