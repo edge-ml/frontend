@@ -18,19 +18,20 @@ import {
   unsubscribeLabelings
 } from '../services/SocketService';
 import Loader from '../modules/loader';
+import VideoPanel from '../components/VideoPanel/VideoPanel';
 
 class DatasetPage extends Component {
   constructor(props) {
     let isSandbox = props.location.pathname === '/datasets/sandbox';
 
-    var now = Date.now();
+    var now = new Date().getTime();
     const dataset = isSandbox
       ? {
           id: 'sandbox',
           userId: 'sandboxUser',
           email: 'sand@box.com',
-          start: now - 100000,
-          end: now + 100000,
+          start: now - 500000,
+          end: now - 80000,
           tags: ['Sandbox Tag'],
           isPublished: false,
           timeSeries: [],
@@ -42,8 +43,8 @@ class DatasetPage extends Component {
           id: '0x1234',
           userId: '0x9321',
           email: 'test@test.de',
-          start: now - 600000,
-          end: now + 100000,
+          start: now - 500000,
+          end: now - 80000,
           tags: ['Alcohol', 'Medication', 'Test', 'ABC'],
           isPublished: false,
           timeSeries: [
@@ -145,12 +146,15 @@ class DatasetPage extends Component {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onFuseCanceled = this.onFuseCanceled.bind(this);
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
+    this.onScrubbed = this.onScrubbed.bind(this);
 
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false
     };
+
+    this.videoPanel = React.createRef();
   }
 
   clearKeyBuffer() {
@@ -299,6 +303,12 @@ class DatasetPage extends Component {
     }
   }
 
+  onScrubbed(position) {
+    if (!this.videoPanel.current) return;
+
+    this.videoPanel.current.onSetTime(position);
+  }
+
   onLabelingsChanged(labelings) {
     if (!labelings) labelings = [];
 
@@ -345,6 +355,14 @@ class DatasetPage extends Component {
   addTimeSeries(obj) {
     let dataset = { ...this.state.dataset };
     dataset.timeSeries.push(obj);
+
+    let times = [];
+    obj.data.forEach(element => times.push(element[0]));
+    let max = Math.max(...times);
+    let min = Math.min(...times);
+    dataset.end = Math.max(max, dataset.end);
+    dataset.start = Math.min(min, dataset.start);
+
     this.setState({ dataset });
   }
 
@@ -561,22 +579,31 @@ class DatasetPage extends Component {
                   end={this.state.dataset.end}
                   onLabelChanged={this.onLabelChanged}
                   canEdit={this.state.controlStates.canEdit}
+                  onScrubbed={this.onScrubbed}
                 />
-                <Button block outline onClick={this.onOpenFuseTimeSeriesModal}>
+                <Button
+                  block
+                  outline
+                  onClick={this.onOpenFuseTimeSeriesModal}
+                  style={{ zIndex: 999, position: 'relative' }}
+                >
                   + Fuse Multiple Time Series
                 </Button>
               </div>
             </Col>
             <Col xs={12} lg={3}>
               <div>
+                <VideoPanel ref={this.videoPanel} />
+              </div>
+              <div className="mt-0">
                 <InteractionControlPanel
                   isPublished={this.state.dataset.isPublished}
                 />
               </div>
-              <div className="mt-3">
+              <div className="mt-2">
                 <TagsPanel tags={this.state.dataset.tags} />
               </div>
-              <div className="mt-3">
+              <div className="mt-2">
                 <MetadataPanel
                   id={this.state.dataset.id}
                   start={this.state.dataset.start}
@@ -584,14 +611,14 @@ class DatasetPage extends Component {
                   email={this.state.dataset.email}
                 />
               </div>
-              <div className="mt-3">
+              <div className="mt-2">
                 <ApiPanel
                   onUpload={obj => this.addTimeSeries(obj)}
                   onFuse={this.onFuseTimeSeries}
                   startTime={this.state.dataset.start}
                 />
               </div>
-              <div className="mt-3">
+              <div className="mt-2" style={{ marginBottom: '230px' }}>
                 <ManagementPanel
                   onUpload={obj => this.addTimeSeries(obj)}
                   startTime={this.state.dataset.start}

@@ -58,7 +58,7 @@ class MetadataPanel extends Component {
                 className="text-right"
                 value={
                   this.state.start
-                    ? new Date(this.state.start).toTimeString().split(' ')[0]
+                    ? new Date(this.state.start).toUTCString().split(' ')[4]
                     : ''
                 }
                 readOnly
@@ -76,7 +76,7 @@ class MetadataPanel extends Component {
                 className="text-right"
                 value={
                   this.state.end
-                    ? new Date(this.state.end).toTimeString().split(' ')[0]
+                    ? new Date(this.state.end).toUTCString().split(' ')[4]
                     : ''
                 }
                 readOnly

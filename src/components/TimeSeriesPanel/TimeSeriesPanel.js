@@ -5,6 +5,8 @@ import HighchartsReact from 'highcharts-react-official';
 
 import './TimeSeriesPanel.css';
 
+import { generateRandomColor } from '../../services/ColorService';
+
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
 
@@ -46,10 +48,20 @@ class TimeSeriesPanel extends Component {
     // state
     this.generateState = this.generateState.bind(this);
     this.state = this.generateState(props);
+    this.pastScrubbValue = 0;
   }
 
   componentWillReceiveProps(props) {
     this.setState(state => this.generateState(props));
+  }
+
+  componentDidMount() {
+    const container = this.chart.current.container.current;
+
+    container.style.height = this.props.index === 0 ? '80px' : '200px';
+    container.style.width = '100%';
+
+    this.chart.current.chart.reflow();
   }
 
   generateState(props) {
@@ -67,6 +79,11 @@ class TimeSeriesPanel extends Component {
     return {
       chartOptions: {
         navigator: {
+          enabled: this.props.index === 0,
+          series: {
+            color: '#FFFFFF',
+            lineWidth: 0
+          },
           xAxis: {
             isInternal: true
           },
@@ -79,29 +96,65 @@ class TimeSeriesPanel extends Component {
         },
         panning: false,
         title: null,
-        series: !Array.isArray(props.name)
-          ? [
-              {
-                name: props.name,
-                data: props.data
-              }
-            ]
-          : props.data.map((dataItem, index) => {
-              return { name: this.props.name[index], data: dataItem };
-            }),
+        series:
+          this.props.index === 0
+            ? [
+                {
+                  lineWidth: 0,
+                  marker: {
+                    enabled: false,
+                    states: {
+                      hover: {
+                        enabled: false
+                      }
+                    }
+                  },
+                  data: props.data
+                }
+              ]
+            : !Array.isArray(props.name)
+            ? [
+                {
+                  name: props.name + ' (' + props.unit + ')',
+                  data: props.data,
+                  lineWidth: 1
+                }
+              ]
+            : props.data.map((dataItem, index) => {
+                return {
+                  name:
+                    this.props.name[index] +
+                    ' (' +
+                    this.props.unit[index] +
+                    ')',
+                  data: dataItem,
+                  lineWidth: 1
+                };
+              }),
         xAxis: {
+          lineWidth: this.props.index === 0 ? 0 : 1,
+          tickLength: this.props.index === 0 ? 0 : 10,
+          labels: {
+            enabled: this.props.index !== 0
+          },
           type: 'datetime',
           ordinal: false,
-          plotBands: this.labelingToPlotBands(
-            props.labeling,
-            props.labelTypes,
-            props.selectedLabelId
-          ),
-          plotLines: this.labelingToPlotLines(
-            props.labeling.labels,
-            props.labelTypes,
-            props.selectedLabelId
-          ),
+          plotBands:
+            this.props.index === 0
+              ? undefined
+              : this.labelingToPlotBands(
+                  props.labeling,
+                  props.labelTypes,
+                  props.selectedLabelId
+                ),
+          plotLines:
+            this.props.index === 0
+              ? undefined
+              : this.labelingToPlotLines(
+                  props.labeling.labels,
+                  props.labelTypes,
+                  props.selectedLabelId
+                ),
           crosshair: {
             snap: false
           },
@@ -120,7 +173,7 @@ class TimeSeriesPanel extends Component {
                     if (chart.index !== this.chart.current.chart.index) {
                       let ex = chart.xAxis[0].getExtremes();
                       if (ex.min !== e.min || ex.max !== e.max) {
-                        chart.xAxis[0].setExtremes(e.min, e.max);
+                        chart.xAxis[0].setExtremes(e.min, e.max, true, false);
                       }
                     }
                   });
@@ -129,28 +182,36 @@ class TimeSeriesPanel extends Component {
           }
         },
         yAxis: {
+          height: this.props.index === 0 ? 0 : undefined,
+          gridLineWidth: this.props.index === 0 ? 0 : 1,
+          labels: {
+            enabled: this.props.index !== 0,
+            align: 'left',
+            x: 0,
+            y: -2
+          },
           title: {
-            enabled: true,
-            text: props.unit,
-            style: {
-              fontWeight: 'normal'
-            }
+            enabled: false
           },
           opposite: false
         },
         legend: {
-          align: 'right',
+          align: 'left',
           verticalAlign: 'center',
           layout: 'vertical',
-          x: 0,
+          x: 45,
           y: 0,
-          enabled: true
+          enabled: this.props.index !== 0
         },
         tooltip: {
           enabled: false
         },
-        scrollbar: {
+        credits: {
           enabled: false
+        },
+        scrollbar: {
+          height: 0,
+          buttonArrowColor: '#fff'
         }
       },
       labeling: props.labeling,
@@ -223,7 +284,12 @@ class TimeSeriesPanel extends Component {
 
   onMouseMoved(e) {
     var plotLine = this.getActivePlotLine();
+
     if (!plotLine) return;
+
+    let newValue = this.chart.current.chart.xAxis[0].toValue(
+      e.pageX - this.chart.current.chart.plotBox.x / 2
+    );
 
     e.preventDefault();
 
@@ -251,9 +317,6 @@ class TimeSeriesPanel extends Component {
       isSelected: plotbandOptions.isSelected
     });
 
-    let newValue = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX - this.chart.current.chart.plotBox.x / 2
-    );
     let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(
       plotLine.options.id,
       plotLine.options.labelId
@@ -510,19 +573,28 @@ class TimeSeriesPanel extends Component {
 
   render() {
     return (
-      <Card className="mt-3">
-        <CardBody>
-          <div id="chartWrapper" onMouseDown={this.onMouseDown}>
-            <HighchartsReact
-              ref={this.chart}
-              highcharts={Highcharts}
-              options={this.state.chartOptions}
-              oneToOne={true}
-              constructorType={'stockChart'}
-            />
-          </div>
-        </CardBody>
-      </Card>
+      <div
+        className="mt-2"
+        style={{
+          overflow: 'hidden',
+          marginBottom:
+            this.props.index === 0
+              ? 0
+              : this.props.index < this.props.numSeries - 1
+              ? '-25px'
+              : '-10px'
+        }}
+      >
+        <div className="chartWrapper" onMouseDown={this.onMouseDown}>
+          <HighchartsReact
+            ref={this.chart}
+            highcharts={Highcharts}
+            options={this.state.chartOptions}
+            oneToOne={true}
+            constructorType={'stockChart'}
+          />
+        </div>
+      </div>
     );
   }
 }

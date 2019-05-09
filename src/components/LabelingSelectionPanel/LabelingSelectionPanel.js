@@ -8,10 +8,14 @@ class LabelingSelectionPanel extends Component {
     this.state = {
       labelingsDefinition: props.labelingsDefinition,
       selectedLabelingId: props.selectedLabelingId,
-      onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged
+      onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged,
+      uiState: {
+        isSticky: false
+      }
     };
 
     this.onAddLabeling = this.onAddLabeling.bind(this);
+    this.onScroll = this.onScroll.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -20,6 +24,10 @@ class LabelingSelectionPanel extends Component {
       selectedLabelingId: props.selectedLabelingId,
       onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged
     }));
+  }
+
+  componentDidMount() {
+    window.addEventListener('scroll', this.onScroll);
   }
 
   handleLabelingClicked(e, id) {
@@ -33,12 +41,28 @@ class LabelingSelectionPanel extends Component {
     });
   }
 
+  onScroll() {
+    console.log(window.pageYOffset);
+
+    if (window.pageYOffset > 56) {
+      this.setState({ uiState: { isSticky: true } });
+    } else if (window.pageYOffset < 56) {
+      this.setState({ uiState: { isSticky: false } });
+    }
+  }
+
   render() {
     var classNames = require('classnames');
 
     return (
-      <Card className="LabelingSelectionPanel">
-        <CardBody className="text-left">
+      <Card
+        className={
+          !this.state.uiState.isSticky
+            ? 'LabelingSelectionPanel'
+            : 'StickyLabelingSelectionPanel'
+        }
+      >
+        <CardBody className="text-left p-1">
           {this.state.labelingsDefinition.map((labeling, index) => (
             <Button
               className={classNames(
