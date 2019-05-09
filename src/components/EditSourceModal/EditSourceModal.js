@@ -12,6 +12,7 @@ import {
   FormGroup,
   Label
 } from 'reactstrap';
+import isURL from 'validator/lib/isURL';
 
 import {
   isValidColor,
@@ -115,6 +116,11 @@ class EditSourceModal extends Component {
   onSave() {
     if (!this.state.inputVariables.name || !this.state.inputVariables.url) {
       window.alert('Name and URL cannot be empty.');
+      return;
+    }
+
+    if (!isURL(this.state.inputVariables.url)) {
+      window.alert('Please enter a valid URL.');
       return;
     }
 

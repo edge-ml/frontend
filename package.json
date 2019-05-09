@@ -58,6 +58,7 @@
     "typescript": "^3.3.4000",
     "unique-names-generator": "^2.0.2",
     "universal-cookie": "^3.1.0",
+    "validator": "^10.11.0",
     "zingchart": "^2.8.0",
     "zingchart-react": "^1.0.6"
   },
