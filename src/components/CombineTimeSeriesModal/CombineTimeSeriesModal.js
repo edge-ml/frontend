@@ -7,7 +7,10 @@ import {
   Button,
   FormGroup,
   Label,
-  Input
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText
 } from 'reactstrap';
 
 import './CombineTimeSeriesModal.css';
@@ -84,25 +87,37 @@ class CombineTimeSeriesModal extends Component {
         <ModalHeader>Fuse Multiple Time Series</ModalHeader>
         <ModalBody>
           {this.state.timeSeries.map((series, key) => (
-            <FormGroup check key={key} style={{ margin: '10px 0px' }}>
-              <Label check>
-                <Input
-                  type="checkbox"
-                  checked={
-                    this.state.selectedTimeSeries.filter(
-                      filteredSeries => filteredSeries === series.id
-                    ).length !== 0
-                  }
-                  onChange={e =>
-                    this.onTimeSeriesSelectedChanged(
-                      e.target.checked,
-                      series.id
-                    )
-                  }
-                />{' '}
-                <span>{series.name}</span>
-              </Label>
-            </FormGroup>
+            <InputGroup style={{ margin: '10px 0px' }}>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <Input
+                    addon
+                    type="checkbox"
+                    checked={
+                      this.state.selectedTimeSeries.filter(
+                        filteredSeries => filteredSeries === series.id
+                      ).length !== 0
+                    }
+                    onChange={e =>
+                      this.onTimeSeriesSelectedChanged(
+                        e.target.checked,
+                        series.id
+                      )
+                    }
+                  />
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                defaultValue={series.name}
+                className={
+                  this.state.selectedTimeSeries.filter(
+                    filteredSeries => filteredSeries === series.id
+                  ).length !== 0
+                    ? 'inputChecked'
+                    : 'inputNotChecked'
+                }
+              />
+            </InputGroup>
           ))}
         </ModalBody>
         <ModalFooter>

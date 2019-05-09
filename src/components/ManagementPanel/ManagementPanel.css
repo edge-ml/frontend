@@ -4,3 +4,15 @@
 .timeInputGroupText {
   width: 110px;
 }
+
+.inputChecked {
+  color: #495057;
+  background-color: #e9ecef;
+  pointer-events: none;
+}
+
+.inputNotChecked {
+  color: grey;
+  background-color: #e9ecef;
+  pointer-events: none;
+}
