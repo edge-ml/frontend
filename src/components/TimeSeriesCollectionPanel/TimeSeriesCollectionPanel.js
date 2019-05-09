@@ -100,6 +100,7 @@ class TimeSeriesCollectionPanel extends Component {
         ))}
         {this.state.fusedSeries.map((fusedSeries, key) => (
           <TimeSeriesPanel
+            fused={true}
             index={key + this.state.timeSeries.length + 1}
             data={this.state.timeSeries
               .filter(timeSeries => {
