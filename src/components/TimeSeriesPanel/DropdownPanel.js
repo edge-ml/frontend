@@ -130,7 +130,7 @@ class DropdownPanel extends Component {
           <div className="dropdown">
             {!this.props.fused ? (
               <div>
-                <Table borderless className="text-nowrap">
+                <Table borderless>
                   <tbody>
                     <tr>
                       <td>Year</td>

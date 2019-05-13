@@ -39,7 +39,6 @@
 
 .table {
   table-layout: fixed;
-  white-space: nowrap;
 }
 
 .table tr td {
