@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Input, Table } from 'reactstrap';
+import { Button, Input, Table, Card } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +14,7 @@ class DropdownPanel extends Component {
 
     this.state = {
       isOpen: false,
+      timestamp: undefined,
       year: time.getFullYear(),
       month: time.getMonth() + 1,
       date: time.getDate(),
@@ -54,11 +55,24 @@ class DropdownPanel extends Component {
     }
 
     // click outside the component to close dropdown
-    this.setState({ isOpen: false });
+    this.setState({
+      isOpen: false,
+      timestamp: undefined
+    });
   };
 
   toggleDropdown = () => {
-    this.setState({ isOpen: !this.state.isOpen });
+    if (this.state.isOpen) {
+      this.setState({
+        isOpen: false,
+        timestamp: undefined
+      });
+    } else {
+      this.setState({
+        isOpen: true,
+        timestamp: this.props.startTime
+      });
+    }
   };
 
   onShift = (unit, value) => {
@@ -110,6 +124,12 @@ class DropdownPanel extends Component {
     this.props.onShift(timestamp);
   };
 
+  onReset = () => {
+    if (window.confirm('Are you sure to reset the time series?')) {
+      this.props.onShift(this.state.timestamp);
+    }
+  };
+
   onDelete = () => {
     if (window.confirm('Are you sure to delete this time series?')) {
       this.toggleDropdown();
@@ -127,7 +147,7 @@ class DropdownPanel extends Component {
         </button>
 
         {this.state.isOpen ? (
-          <div className="dropdown">
+          <Card className="dropdown">
             {!this.props.fused ? (
               <div>
                 <Table borderless>
@@ -228,6 +248,15 @@ class DropdownPanel extends Component {
                     </tr>
                   </tbody>
                 </Table>
+                <Button
+                  color="secondary"
+                  block
+                  className="m-0"
+                  outline
+                  onClick={() => this.onReset()}
+                >
+                  Reset
+                </Button>
                 <hr />
               </div>
             ) : null}
@@ -240,7 +269,7 @@ class DropdownPanel extends Component {
             >
               Delete
             </Button>
-          </div>
+          </Card>
         ) : null}
       </div>
     );

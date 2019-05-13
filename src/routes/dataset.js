@@ -314,7 +314,7 @@ class DatasetPage extends Component {
   onLabelingsChanged(labelings) {
     if (!labelings) labelings = [];
 
-    let dataset = { ...this.state.dataset };
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
     labelings.forEach(def => {
       if (
         !this.state.dataset.labelings.some(
@@ -355,7 +355,7 @@ class DatasetPage extends Component {
   }
 
   addTimeSeries(obj) {
-    let dataset = { ...this.state.dataset };
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
     dataset.timeSeries.push(obj);
 
     dataset.end = Math.max(obj.data[obj.data.length - 1][0], dataset.end);
@@ -492,7 +492,7 @@ class DatasetPage extends Component {
   }
 
   onFuseTimeSeries(seriesIds) {
-    let dataset = { ...this.state.dataset };
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
     dataset.fusedSeries.push({
       id: uuidv4(),
       series: seriesIds
@@ -519,7 +519,7 @@ class DatasetPage extends Component {
   }
 
   onDeleteTimeSeries(fused, index) {
-    let dataset = { ...this.state.dataset };
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
 
     if (!fused) {
       dataset.timeSeries.splice(index, 1);
@@ -533,12 +533,14 @@ class DatasetPage extends Component {
   }
 
   onShiftTimeSeries(index, timestamp) {
-    let dataset = { ...this.state.dataset };
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
 
-    let diff = timestamp - dataset.timeSeries[index].data[0][0];
-    dataset.timeSeries[index].data.forEach(data => {
-      data[0] = data[0] + diff;
+    let data = dataset.timeSeries[index].data;
+    let diff = timestamp - data[0][0];
+    data.forEach(element => {
+      element[0] = element[0] + diff;
     });
+    dataset.timeSeries[index].data = data;
 
     dataset.start = this.getStartTime(dataset.timeSeries);
     dataset.end = this.getEndTime(dataset.timeSeries);
