@@ -147,6 +147,8 @@ class DatasetPage extends Component {
     this.onFuseCanceled = this.onFuseCanceled.bind(this);
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
     this.onScrubbed = this.onScrubbed.bind(this);
+    this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
+    this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -356,12 +358,8 @@ class DatasetPage extends Component {
     let dataset = { ...this.state.dataset };
     dataset.timeSeries.push(obj);
 
-    let times = [];
-    obj.data.forEach(element => times.push(element[0]));
-    let max = Math.max(...times);
-    let min = Math.min(...times);
-    dataset.end = Math.max(max, dataset.end);
-    dataset.start = Math.min(min, dataset.start);
+    dataset.end = Math.max(obj.data[obj.data.length - 1][0], dataset.end);
+    dataset.start = Math.min(obj.data[0][0], dataset.start);
 
     this.setState({ dataset });
   }
@@ -520,6 +518,54 @@ class DatasetPage extends Component {
     this.setState({ fuseTimeSeriesModalState });
   }
 
+  onDeleteTimeSeries(fused, index) {
+    let dataset = { ...this.state.dataset };
+
+    if (!fused) {
+      dataset.timeSeries.splice(index, 1);
+      dataset.start = this.getStartTime(dataset.timeSeries);
+      dataset.end = this.getEndTime(dataset.timeSeries);
+    } else {
+      dataset.fusedSeries.splice(index, 1);
+    }
+
+    this.setState({ dataset });
+  }
+
+  onShiftTimeSeries(index, timestamp) {
+    let dataset = { ...this.state.dataset };
+
+    let diff = timestamp - dataset.timeSeries[index].data[0][0];
+    dataset.timeSeries[index].data.forEach(data => {
+      data[0] = data[0] + diff;
+    });
+
+    dataset.start = this.getStartTime(dataset.timeSeries);
+    dataset.end = this.getEndTime(dataset.timeSeries);
+
+    this.setState({ dataset });
+  }
+
+  getStartTime(timeSeries) {
+    let startTimes = [];
+
+    timeSeries.forEach(element => {
+      startTimes.push(element.data[0][0]);
+    });
+
+    return Math.min(...startTimes);
+  }
+
+  getEndTime(timeSeries) {
+    let endTimes = [];
+
+    timeSeries.forEach(element => {
+      endTimes.push(element.data[element.data.length - 1][0]);
+    });
+
+    return Math.max(...endTimes);
+  }
+
   uuidv4() {
     return 'xxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       var r = (Math.random() * 16) | 0,
@@ -580,6 +626,8 @@ class DatasetPage extends Component {
                   onLabelChanged={this.onLabelChanged}
                   canEdit={this.state.controlStates.canEdit}
                   onScrubbed={this.onScrubbed}
+                  onShift={this.onShiftTimeSeries}
+                  onDelete={this.onDeleteTimeSeries}
                 />
                 <Button
                   block

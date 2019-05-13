@@ -590,6 +590,8 @@ class TimeSeriesPanel extends Component {
           <DropdownPanel
             fused={this.props.fused}
             startTime={this.props.data[0][0]}
+            onShift={this.props.onShift}
+            onDelete={this.props.onDelete}
           />
         ) : null}
 

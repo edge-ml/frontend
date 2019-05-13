@@ -53,7 +53,7 @@ class DropdownPanel extends Component {
       return;
     }
 
-    // outside the component
+    // click outside the component to close dropdown
     this.setState({ isOpen: false });
   };
 
@@ -61,7 +61,65 @@ class DropdownPanel extends Component {
     this.setState({ isOpen: !this.state.isOpen });
   };
 
+  onShift = (unit, value) => {
+    let { year, month, date, hour, min, sec, millisec } = this.state;
+
+    switch (unit) {
+      case 'y':
+        this.setState({ year: value });
+        year = value;
+        break;
+      case 'm':
+        this.setState({ month: value });
+        month = value;
+        break;
+      case 'd':
+        this.setState({ date: value });
+        date = value;
+        break;
+      case 'h':
+        this.setState({ hour: value });
+        hour = value;
+        break;
+      case 'min':
+        this.setState({ min: value });
+        min = value;
+        break;
+      case 's':
+        this.setState({ sec: value });
+        sec = value;
+        break;
+      case 'ms':
+        this.setState({ millisec: value });
+        millisec = value;
+        break;
+      default:
+        return;
+    }
+
+    month = month - 1;
+    let timestamp = new Date(
+      year,
+      month,
+      date,
+      hour,
+      min,
+      sec,
+      millisec
+    ).getTime();
+    this.props.onShift(timestamp);
+  };
+
+  onDelete = () => {
+    if (window.confirm('Are you sure to delete this time series?')) {
+      this.toggleDropdown();
+      this.props.onDelete();
+    }
+  };
+
   render() {
+    let numOfDays = new Date(this.state.year, this.state.month, 0).getDate();
+
     return (
       <div className="dropdownWrapper" ref={node => (this.node = node)}>
         <button className="dropdownBtn" onClick={this.toggleDropdown}>
@@ -73,86 +131,101 @@ class DropdownPanel extends Component {
             {!this.props.fused ? (
               <div>
                 <Table borderless>
-                  <tr>
-                    <td>Y</td>
-                    <td>M</td>
-                    <td>D</td>
-                    <td>H</td>
-                    <td>Min</td>
-                    <td>Sec</td>
-                    <td>MSec</td>
-                  </tr>
+                  <tbody>
+                    <tr>
+                      <td>a</td>
+                      <td>m</td>
+                      <td>d</td>
+                      <td>h</td>
+                      <td>min</td>
+                      <td>s</td>
+                      <td>ms</td>
+                    </tr>
 
-                  <tr>
-                    <td>
-                      <Input
-                        value={this.state.year}
-                        min={0}
-                        max={10000}
-                        type="number"
-                        step="1"
-                      />
-                    </td>
-                    <td>
-                      <Input
-                        value={this.state.month}
-                        min={1}
-                        max={12}
-                        type="number"
-                        step="1"
-                      />
-                    </td>
-                    <td>
-                      <Input
-                        value={this.state.date}
-                        min={1}
-                        max={31}
-                        type="number"
-                        step="1"
-                      />
-                    </td>
-                    <td>
-                      <Input
-                        value={this.state.hour}
-                        min={0}
-                        max={24}
-                        type="number"
-                        step="1"
-                      />
-                    </td>
-                    <td>
-                      <Input
-                        value={this.state.min}
-                        min={0}
-                        max={60}
-                        type="number"
-                        step="1"
-                      />
-                    </td>
-                    <td>
-                      <Input
-                        value={this.state.sec}
-                        min={0}
-                        max={60}
-                        type="number"
-                        step="1"
-                      />
-                    </td>
-                    <td>
-                      <Input
-                        value={this.state.millisec}
-                        min={0}
-                        max={999}
-                        type="number"
-                        step="1"
-                      />
-                    </td>
-                  </tr>
+                    <tr>
+                      <td>
+                        <Input
+                          value={this.state.year}
+                          min={0}
+                          max={10000}
+                          type="number"
+                          step="1"
+                          onChange={e => this.onShift('y', e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <Input
+                          value={this.state.month}
+                          min={1}
+                          max={12}
+                          type="number"
+                          step="1"
+                          onChange={e => this.onShift('m', e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <Input
+                          value={this.state.date}
+                          min={1}
+                          max={numOfDays}
+                          type="number"
+                          step="1"
+                          onChange={e => this.onShift('d', e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <Input
+                          value={this.state.hour}
+                          min={0}
+                          max={24}
+                          type="number"
+                          step="1"
+                          onChange={e => this.onShift('h', e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <Input
+                          value={this.state.min}
+                          min={0}
+                          max={60}
+                          type="number"
+                          step="1"
+                          onChange={e => this.onShift('min', e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <Input
+                          value={this.state.sec}
+                          min={0}
+                          max={60}
+                          type="number"
+                          step="1"
+                          onChange={e => this.onShift('s', e.target.value)}
+                        />
+                      </td>
+                      <td>
+                        <Input
+                          value={this.state.millisec}
+                          min={0}
+                          max={999}
+                          type="number"
+                          step="1"
+                          onChange={e => this.onShift('ms', e.target.value)}
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
                 </Table>
                 <hr />
               </div>
             ) : null}
-            <Button color="danger" block className="m-0" outline>
+            <Button
+              color="danger"
+              block
+              className="m-0"
+              outline
+              onClick={() => this.onDelete()}
+            >
               Delete
             </Button>
           </div>
