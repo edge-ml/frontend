@@ -128,7 +128,9 @@ class LoginPage extends Component {
         qrCode: qrCode
       }
     });
-    this.tokenInput.focus();
+    if (this.tokenInput) {
+      this.tokenInput.focus();
+    }
   }
 
   onTokenChanged(e) {
