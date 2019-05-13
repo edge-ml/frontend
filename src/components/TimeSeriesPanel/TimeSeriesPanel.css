@@ -39,26 +39,42 @@
 
 .table {
   table-layout: fixed;
+  white-space: nowrap;
+}
+
+.table tr td {
+  vertical-align: middle;
+  text-align: center;
+  width: 67px;
+  font-size: 0.9rem;
+  color: #495057;
 }
 
 .table tr:first-child td {
-  vertical-align: middle;
-  text-align: center;
-  padding: 0 0.5em 0.2em 0.5em;
-  width: 80px;
+  padding: 0 0.2em 0.2em 0.2em;
 }
 
 .table tr:last-child td {
-  vertical-align: middle;
-  text-align: center;
-  padding: 0.2em 0.5em 0 0.5em;
-  width: 80px;
+  padding: 0.2em 0.2em 0 0.2em;
 }
 
 .table tr td:first-child {
-  width: 100px;
+  width: 85px;
 }
 
 .table tr td:last-child {
-  width: 90px;
+  width: 75px;
+}
+
+.table tr td:nth-child(even) {
+  width: 5px;
+  padding: 0;
+}
+
+input.form-control {
+  font-size: 0.9rem;
+}
+
+.dropdown button {
+  font-size: 0.9rem;
 }

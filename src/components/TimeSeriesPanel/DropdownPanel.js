@@ -130,16 +130,22 @@ class DropdownPanel extends Component {
           <div className="dropdown">
             {!this.props.fused ? (
               <div>
-                <Table borderless>
+                <Table borderless className="text-nowrap">
                   <tbody>
                     <tr>
-                      <td>a</td>
-                      <td>m</td>
-                      <td>d</td>
-                      <td>h</td>
-                      <td>min</td>
-                      <td>s</td>
-                      <td>ms</td>
+                      <td>Year</td>
+                      <td />
+                      <td>Month</td>
+                      <td />
+                      <td>Date</td>
+                      <td />
+                      <td>Hours</td>
+                      <td />
+                      <td>Minutes</td>
+                      <td />
+                      <td>Seconds</td>
+                      <td />
+                      <td>Milliseconds</td>
                     </tr>
 
                     <tr>
@@ -153,6 +159,7 @@ class DropdownPanel extends Component {
                           onChange={e => this.onShift('y', e.target.value)}
                         />
                       </td>
+                      <td>-</td>
                       <td>
                         <Input
                           value={this.state.month}
@@ -163,6 +170,7 @@ class DropdownPanel extends Component {
                           onChange={e => this.onShift('m', e.target.value)}
                         />
                       </td>
+                      <td>-</td>
                       <td>
                         <Input
                           value={this.state.date}
@@ -173,6 +181,7 @@ class DropdownPanel extends Component {
                           onChange={e => this.onShift('d', e.target.value)}
                         />
                       </td>
+                      <td> </td>
                       <td>
                         <Input
                           value={this.state.hour}
@@ -183,6 +192,7 @@ class DropdownPanel extends Component {
                           onChange={e => this.onShift('h', e.target.value)}
                         />
                       </td>
+                      <td>:</td>
                       <td>
                         <Input
                           value={this.state.min}
@@ -193,6 +203,7 @@ class DropdownPanel extends Component {
                           onChange={e => this.onShift('min', e.target.value)}
                         />
                       </td>
+                      <td>:</td>
                       <td>
                         <Input
                           value={this.state.sec}
@@ -203,6 +214,7 @@ class DropdownPanel extends Component {
                           onChange={e => this.onShift('s', e.target.value)}
                         />
                       </td>
+                      <td>.</td>
                       <td>
                         <Input
                           value={this.state.millisec}
