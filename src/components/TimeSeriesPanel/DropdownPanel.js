@@ -137,7 +137,7 @@ class DropdownPanel extends Component {
                       <td />
                       <td>Month</td>
                       <td />
-                      <td>Date</td>
+                      <td>Day</td>
                       <td />
                       <td>Hours</td>
                       <td />
