@@ -219,7 +219,9 @@ io.on('connection', (socket) => {
 
 			socket.emit('err', false);
 			for (socketId in io.sockets.sockets) {
-				emitUsers(io.sockets.sockets[socketId]);
+				if (io.sockets.sockets[socketId].client.username !== username) {
+					emitUsers(io.sockets.sockets[socketId]);
+				}
 			}
 		} else {
 			socket.emit('err', 'Current password is wrong.')
