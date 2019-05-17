@@ -249,15 +249,15 @@ class LoginPage extends Component {
       return this.props.children;
     } else {
       return (
-        <Container className="Page">
+        <Container className="Page" style={{ paddingLeft: 0, paddingRight: 0 }}>
           <Alert
             color="info"
             hidden={
               !(this.state.isLoggedIn && !this.state.isTwoFactorAuthenticated)
             }
           >
-            The device time must be synchronized with server time for the token
-            to work. Current server time:{' '}
+            Your device's time must be synchronized with the server time or
+            otherwise your token might be rejected. The current server time is:{' '}
             <b>{this.state.time ? this.state.time.toLocaleString() : ''}</b>
           </Alert>
           <Row>
