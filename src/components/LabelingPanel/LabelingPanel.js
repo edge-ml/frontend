@@ -148,33 +148,36 @@ class LabelingPanel extends Component {
             >
               + Add
             </Button>
-            {this.state.labeling.types.map((label, index) => (
-              <Button
-                className="btn-light m-1 labelingButton"
-                disabled={
-                  this.state.selectedLabelTypeId === undefined ||
-                  !this.state.canEdit
-                }
-                style={{
-                  backgroundColor:
-                    label.id === this.state.selectedLabelTypeId
-                      ? label.color
-                      : null,
-                  borderColor:
-                    label.id === this.state.selectedLabelTypeId
-                      ? null
-                      : label.color,
-                  color:
-                    label.id === this.state.selectedLabelTypeId
-                      ? null
-                      : label.color
-                }}
-                onClick={e => this.handleLabelTypeClicked(e, label.id)}
-                key={index}
-              >
-                {label.name} {'(' + (index + 1) + ')'}
-              </Button>
-            ))}
+            {this.state.labeling.types
+              .slice(0)
+              .reverse()
+              .map((label, index, array) => (
+                <Button
+                  className="btn-light m-1 labelingButton"
+                  disabled={
+                    this.state.selectedLabelTypeId === undefined ||
+                    !this.state.canEdit
+                  }
+                  style={{
+                    backgroundColor:
+                      label.id === this.state.selectedLabelTypeId
+                        ? label.color
+                        : null,
+                    borderColor:
+                      label.id === this.state.selectedLabelTypeId
+                        ? null
+                        : label.color,
+                    color:
+                      label.id === this.state.selectedLabelTypeId
+                        ? null
+                        : label.color
+                  }}
+                  onClick={e => this.handleLabelTypeClicked(e, label.id)}
+                  key={index}
+                >
+                  {label.name} {'(' + (array.length - index) + ')'}
+                </Button>
+              ))}
           </div>
         </CardBody>
       </Card>
