@@ -1,0 +1,96 @@
+import React, { Component } from 'react';
+import { Card, CardBody, Button } from 'reactstrap';
+import './LabelingSelectionPanel.css';
+
+class LabelingSelectionPanel extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      labelingsDefinition: props.labelingsDefinition,
+      selectedLabelingId: props.selectedLabelingId,
+      onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged,
+      uiState: {
+        isSticky: false
+      }
+    };
+
+    this.onAddLabeling = this.onAddLabeling.bind(this);
+    this.onScroll = this.onScroll.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    this.setState(state => ({
+      labelingsDefinition: props.labelingsDefinition,
+      selectedLabelingId: props.selectedLabelingId,
+      onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged
+    }));
+  }
+
+  componentDidMount() {
+    window.addEventListener('scroll', this.onScroll);
+  }
+
+  handleLabelingClicked(e, id) {
+    e.preventDefault();
+    this.state.onSelectedLabelingIdChanged(id);
+  }
+
+  onAddLabeling() {
+    this.props.history.push({
+      pathname: '/labelings/new'
+    });
+  }
+
+  onScroll() {
+    console.log(window.pageYOffset);
+
+    if (window.pageYOffset > 56) {
+      this.setState({ uiState: { isSticky: true } });
+    } else if (window.pageYOffset < 56) {
+      this.setState({ uiState: { isSticky: false } });
+    }
+  }
+
+  render() {
+    var classNames = require('classnames');
+
+    return (
+      <Card
+        className={
+          !this.state.uiState.isSticky
+            ? 'LabelingSelectionPanel'
+            : 'StickyLabelingSelectionPanel'
+        }
+      >
+        <CardBody className="text-left p-1">
+          {this.state.labelingsDefinition.map((labeling, index) => (
+            <Button
+              className={classNames(
+                'm-1',
+                {
+                  'btn-primary': labeling.id === this.state.selectedLabelingId
+                },
+                { 'btn-light': labeling.id !== this.state.selectedLabelingId }
+              )}
+              onClick={e => this.handleLabelingClicked(e, labeling.id)}
+              color={
+                labeling.id === this.state.selectedLabelingId ? 'primary' : ''
+              }
+              key={index}
+            >
+              {labeling.name} {'(' + (index + 1) + ')'}
+            </Button>
+          ))}
+          <Button
+            className="m-1"
+            color="secondary"
+            onClick={this.onAddLabeling}
+          >
+            + Add
+          </Button>
+        </CardBody>
+      </Card>
+    );
+  }
+}
+export default LabelingSelectionPanel;

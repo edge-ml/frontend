@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import {
-	Container,
-	Navbar,
-	NavbarBrand,
-	Nav,
-	NavItem,
+  Container,
+  Navbar,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  Button,
+  Form,
+  Collapse,
+  NavbarToggler
 } from 'reactstrap';
 import { Route, Link } from 'react-router-dom';
 
@@ -13,43 +17,132 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
 
 import AuthWall from './routes/login';
-import ListPage from './routes/list'
+import ListPage from './routes/list';
 import DatasetPage from './routes/dataset';
+import LabelingsPage from './routes/labelings';
+import SettingsPage from './routes/settings';
+
+import { logout } from './services/SocketService';
 
 class App extends Component {
-	constructor(props){
-		super(props);
-		this.logoutHandler = this.logoutHandler.bind(this);
-	}
+  constructor(props) {
+    super(props);
 
-	logoutHandler(e){
-		e.preventDefault();
-		window.localStorage.clear();
-		window.location.reload();
-	}
+    this.state = {
+      isLoggedIn: false,
+      isTwoFactorAuthenticated: false,
+      navbarState: {
+        isOpen: false
+      }
+    };
 
-	render() {
-		return(
-			<AuthWall>
-				<Navbar color="light" light expand="md">
-					<NavbarBrand>AURA Explorer</NavbarBrand>
-					<Nav className="ml-auto" navbar>
-						<NavItem>
-							<Link className="nav-link" to="/list">List Datasets</Link>
-						</NavItem>
-						<NavItem>
-							<Link className="nav-link" to="/" onClick={this.logoutHandler}>Logout</Link>
-						</NavItem>
-					</Nav>
-				</Navbar>
-				<Container>
-					<Route exact path="/list" component={ListPage} />
-					<Route exact path="/" component={ListPage} />
-					<Route path="/dataset/:id" component={DatasetPage} />
-				</Container>
-			</AuthWall>
-		)
-	}
+    this.logoutHandler = this.logoutHandler.bind(this);
+    this.onLogout = this.onLogout.bind(this);
+    this.onLogin = this.onLogin.bind(this);
+    this.onTwoFA = this.onTwoFA.bind(this);
+    this.toggleNavbar = this.toggleNavbar.bind(this);
+  }
+
+  onLogout(didSucceed) {
+    if (didSucceed) {
+      this.setState({
+        isLoggedIn: false,
+        isTwoFactorAuthenticated: false
+      });
+    }
+  }
+
+  onLogin(didSucceed) {
+    if (didSucceed) {
+      this.setState({
+        isLoggedIn: true,
+        isTwoFactorAuthenticated: this.state.isTwoFactorAuthenticated
+      });
+    }
+  }
+
+  onTwoFA(success) {
+    if (success) {
+      this.setState({
+        isLoggedIn: success,
+        isTwoFactorAuthenticated: success
+      });
+    }
+  }
+
+  logoutHandler() {
+    logout(this.onLogout);
+  }
+
+  toggleNavbar() {
+    this.setState({
+      navbarState: {
+        isOpen: !this.state.navbarState.isOpen
+      }
+    });
+  }
+
+  render() {
+    return (
+      <AuthWall
+        isLoggedIn={this.state.isLoggedIn}
+        isTwoFactorAuthenticated={this.state.isTwoFactorAuthenticated}
+        onLogin={this.onLogin}
+        onTwoFA={this.onTwoFA}
+        onCancelLogin={this.logoutHandler}
+      >
+        <Navbar color="light" light expand="md">
+          <NavbarBrand>Explorer</NavbarBrand>
+          <NavbarToggler onClick={this.toggleNavbar} />
+          <Collapse isOpen={this.state.navbarState.isOpen} navbar>
+            <Nav className="ml-auto" navbar>
+              <NavItem>
+                <Link className="nav-link" to="/list">
+                  Datasets
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Link className="nav-link" to="/labelings">
+                  Labelings
+                </Link>
+              </NavItem>
+              <NavItem>
+                <Link className="nav-link" to="/settings">
+                  Settings
+                </Link>
+              </NavItem>
+              <Form className="form-inline my-2 my-lg-0">
+                <Link
+                  className="nav-link m-0 p-0 ml-3"
+                  to="/"
+                  onClick={this.logoutHandler}
+                >
+                  <Button className="m-0 my-2 my-sm-0" outline>
+                    Logout
+                  </Button>
+                </Link>
+              </Form>
+              <NavItem />
+            </Nav>
+          </Collapse>
+        </Navbar>
+        <Container>
+          <Route exact path="/list" component={ListPage} />
+          <Route exact path="/labelings" component={LabelingsPage} />
+          <Route exact path="/labelings/new" component={LabelingsPage} />
+          <Route exact path="/" component={ListPage} />
+          <Route path="/datasets/:id" component={DatasetPage} />
+          <Route
+            exact
+            path="/settings"
+            render={props => (
+              <SettingsPage {...props} onLogout={this.logoutHandler} />
+            )}
+          />
+        </Container>
+      </AuthWall>
+    );
+  }
 }
 
 export default App;

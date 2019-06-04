@@ -1,0 +1,101 @@
+[
+	{
+		"id": "e53325deda5e5b4",
+		"name": "Sleep Phase",
+		"types": [
+			{
+				"id": "fa7b84e8-fe20-42dc-9eb3-4c2cc4a82031",
+				"name": "Awake",
+				"color": "#E3C700"
+			},
+			{
+				"id": "85e364fa-8b71-4ef4-bfec-f4b7344e777e",
+				"name": "S1",
+				"color": "#64E9F9"
+			},
+			{
+				"id": "e4ad544b-4579-4964-8f3f-72c28d735d71",
+				"name": "S2",
+				"color": "#616BEC"
+			},
+			{
+				"id": "d5f69f11-b15b-443e-9500-7cc46d4846e4",
+				"name": "S3",
+				"color": "#985423"
+			},
+			{
+				"id": "b015debb-5abb-4205-9229-23797cb2481f",
+				"name": "REM",
+				"color": "#139624"
+			}
+		]
+	},
+	{
+		"id": "3e8bf9c50e99132",
+		"name": "Sleep Respiration",
+		"types": [
+			{
+				"id": "3cc0ea84-d7ff-4d5b-ae64-089a3330d92b",
+				"name": "Apnea",
+				"color": "#D1A793"
+			},
+			{
+				"id": "e0dc4b89-d0bc-42bd-a36a-4ed5d863d161",
+				"name": "Hypopnea",
+				"color": "#2EED3D"
+			},
+			{
+				"id": "6fd42307-d479-44d5-b905-d9fc769dbb9e",
+				"name": "Noise",
+				"color": "#b71c1c"
+			}
+		]
+	},
+	{
+		"id": "34da6959081032d",
+		"name": "Sleep Movement",
+		"types": [
+			{
+				"id": "c310ccee-1726-479d-a2a0-8114617bbff0",
+				"name": "Low",
+				"color": "#C389C5"
+			},
+			{
+				"id": "b62705b6-9c30-4adc-8d66-d3542991e7c2",
+				"name": "Medium",
+				"color": "#0F656B"
+			},
+			{
+				"id": "850dd30a-fb99-456d-ba2b-a59a83bd41ad",
+				"name": "High",
+				"color": "#342FB6"
+			}
+		]
+	},
+	{
+		"id": "34c5daa9ebabf19",
+		"name": "Sleep Position",
+		"types": [
+			{
+				"id": "d1c809fe-46cf-4f87-9b1e-0346cf861e82",
+				"name": "Left",
+				"color": "#AEF76D"
+			},
+			{
+				"id": "7da7eee0-0835-4704-a824-24735202e819",
+				"name": "Right",
+				"color": "#635568"
+			},
+			{
+				"id": "f89cba87-0a60-47ae-a974-03b28bc4d03a",
+				"name": "Back",
+				"color": "#0BA081"
+			},
+			{
+				"id": "27b36961-e396-4abe-b2d5-11044f781d0c",
+				"name": "Belly",
+				"color": "#D293DD"
+			}
+		]
+	}
+]

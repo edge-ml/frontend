@@ -1,0 +1,31 @@
+.LabelingPanel {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  width: calc(75% - 15px);
+}
+
+.LabelingPanel > .informationBox {
+  float: left;
+  padding: 0px;
+  margin: 0px;
+}
+
+.informationBox > .inputGroup {
+  padding: 0px;
+  margin: 0px;
+  width: 160px;
+  float: left;
+}
+
+.informationBox > .deleteButton {
+  float: left;
+}
+
+.LabelingPanel > .labelingBox {
+  float: right;
+}
+
+.labelingBox > .labelingButton {
+  float: right;
+}

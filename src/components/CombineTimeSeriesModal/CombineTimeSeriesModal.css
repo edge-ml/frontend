@@ -1,0 +1,6 @@
+.CombineTimeSeriesModal {
+}
+
+.clear::-ms-clear {
+  display: none;
+}
