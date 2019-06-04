@@ -1,8 +1,5 @@
-.ManagementPanel {
-}
-
-.timeInputGroupText {
-  width: 110px;
+.clear::-ms-clear {
+  display: none;
 }
 
 .inputChecked {

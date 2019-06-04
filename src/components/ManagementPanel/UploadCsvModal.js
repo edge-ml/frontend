@@ -7,10 +7,13 @@ import {
   Button,
   Input,
   Label,
-  FormGroup
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText
 } from 'reactstrap';
 
 import { parseCSV } from '../../services/helpers.js';
+import './ManagementPanel.css';
 
 class UploadCsvModal extends Component {
   constructor(props) {
@@ -69,18 +72,27 @@ class UploadCsvModal extends Component {
               </label>
             </div>
           </div>
-          <FormGroup check>
-            <Label>
-              <Input
-                type="checkbox"
-                id="checkbox"
-                onChange={e => this.setState({ adjustTime: e.target.checked })}
-              />{' '}
-              <span color="muted">
-                adjust time series start time to the dataset's start time
-              </span>
-            </Label>
-          </FormGroup>
+
+          <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>
+                <Input
+                  addon
+                  type="checkbox"
+                  checked={this.state.adjustTime}
+                  onChange={e =>
+                    this.setState({ adjustTime: e.target.checked })
+                  }
+                />
+              </InputGroupText>
+            </InputGroupAddon>
+            <Input
+              defaultValue="Adjust time series start time to the dataset's start time"
+              className={
+                this.state.adjustTime ? 'inputChecked' : 'inputNotChecked'
+              }
+            />
+          </InputGroup>
         </ModalBody>
         <ModalFooter>
           <Button
