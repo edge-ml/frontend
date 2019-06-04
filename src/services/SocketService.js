@@ -2,7 +2,10 @@ import openSocket from 'socket.io-client';
 import Cookies from 'universal-cookie';
 import { stringify } from 'querystring';
 
-const socketUrl = 'http://localhost:3001';
+const socketUrl =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3001'
+    : 'https://explorer.aura.rest';
 const jwt = require('jsonwebtoken');
 
 const cookies = new Cookies();
