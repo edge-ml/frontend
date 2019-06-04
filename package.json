@@ -92,5 +92,8 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",
     "nodemon": "^1.18.10"
+  },
+  "nodemonConfig": {
+    "ignore": ["config/"]
   }
 }

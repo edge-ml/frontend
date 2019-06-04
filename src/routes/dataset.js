@@ -147,6 +147,8 @@ class DatasetPage extends Component {
     this.onFuseCanceled = this.onFuseCanceled.bind(this);
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
     this.onScrubbed = this.onScrubbed.bind(this);
+    this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
+    this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -312,7 +314,7 @@ class DatasetPage extends Component {
   onLabelingsChanged(labelings) {
     if (!labelings) labelings = [];
 
-    let dataset = { ...this.state.dataset };
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
     labelings.forEach(def => {
       if (
         !this.state.dataset.labelings.some(
@@ -353,15 +355,11 @@ class DatasetPage extends Component {
   }
 
   addTimeSeries(obj) {
-    let dataset = { ...this.state.dataset };
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
     dataset.timeSeries.push(obj);
 
-    let times = [];
-    obj.data.forEach(element => times.push(element[0]));
-    let max = Math.max(...times);
-    let min = Math.min(...times);
-    dataset.end = Math.max(max, dataset.end);
-    dataset.start = Math.min(min, dataset.start);
+    dataset.end = Math.max(obj.data[obj.data.length - 1][0], dataset.end);
+    dataset.start = Math.min(obj.data[0][0], dataset.start);
 
     this.setState({ dataset });
   }
@@ -494,7 +492,7 @@ class DatasetPage extends Component {
   }
 
   onFuseTimeSeries(seriesIds) {
-    let dataset = { ...this.state.dataset };
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
     dataset.fusedSeries.push({
       id: uuidv4(),
       series: seriesIds
@@ -518,6 +516,56 @@ class DatasetPage extends Component {
     fuseTimeSeriesModalState.isOpen = true;
 
     this.setState({ fuseTimeSeriesModalState });
+  }
+
+  onDeleteTimeSeries(fused, index) {
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+
+    if (!fused) {
+      dataset.timeSeries.splice(index, 1);
+      dataset.start = this.getStartTime(dataset.timeSeries);
+      dataset.end = this.getEndTime(dataset.timeSeries);
+    } else {
+      dataset.fusedSeries.splice(index, 1);
+    }
+
+    this.setState({ dataset });
+  }
+
+  onShiftTimeSeries(index, timestamp) {
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+
+    let data = dataset.timeSeries[index].data;
+    let diff = timestamp - data[0][0];
+    data.forEach(element => {
+      element[0] = element[0] + diff;
+    });
+    dataset.timeSeries[index].data = data;
+
+    dataset.start = this.getStartTime(dataset.timeSeries);
+    dataset.end = this.getEndTime(dataset.timeSeries);
+
+    this.setState({ dataset });
+  }
+
+  getStartTime(timeSeries) {
+    let startTimes = [];
+
+    timeSeries.forEach(element => {
+      startTimes.push(element.data[0][0]);
+    });
+
+    return Math.min(...startTimes);
+  }
+
+  getEndTime(timeSeries) {
+    let endTimes = [];
+
+    timeSeries.forEach(element => {
+      endTimes.push(element.data[element.data.length - 1][0]);
+    });
+
+    return Math.max(...endTimes);
   }
 
   uuidv4() {
@@ -580,12 +628,14 @@ class DatasetPage extends Component {
                   onLabelChanged={this.onLabelChanged}
                   canEdit={this.state.controlStates.canEdit}
                   onScrubbed={this.onScrubbed}
+                  onShift={this.onShiftTimeSeries}
+                  onDelete={this.onDeleteTimeSeries}
                 />
                 <Button
                   block
                   outline
                   onClick={this.onOpenFuseTimeSeriesModal}
-                  style={{ zIndex: 999, position: 'relative' }}
+                  style={{ zIndex: 1, position: 'relative' }}
                 >
                   + Fuse Multiple Time Series
                 </Button>

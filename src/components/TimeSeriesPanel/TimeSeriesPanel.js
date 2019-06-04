@@ -4,7 +4,7 @@ import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 
 import './TimeSeriesPanel.css';
-
+import DropdownPanel from './DropdownPanel';
 import { generateRandomColor } from '../../services/ColorService';
 
 const prefixLeftPlotLine = 'plotLine_left_';
@@ -576,7 +576,8 @@ class TimeSeriesPanel extends Component {
       <div
         className="mt-2"
         style={{
-          overflow: 'hidden',
+          position: 'relative',
+          overflow: 'visible',
           marginBottom:
             this.props.index === 0
               ? 0
@@ -585,6 +586,15 @@ class TimeSeriesPanel extends Component {
               : '-10px'
         }}
       >
+        {this.props.index !== 0 ? (
+          <DropdownPanel
+            fused={this.props.fused}
+            startTime={this.props.data[0][0]}
+            onShift={this.props.onShift}
+            onDelete={this.props.onDelete}
+          />
+        ) : null}
+
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
           <HighchartsReact
             ref={this.chart}

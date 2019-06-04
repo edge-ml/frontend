@@ -10,7 +10,8 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader
+  CardHeader,
+  Alert
 } from 'reactstrap';
 import { PersonIcon, ShieldIcon } from 'react-octicons';
 import Request from 'request-promise';
@@ -26,6 +27,7 @@ import {
   subscribeVerified,
   restoreSession
 } from '../services/SocketService';
+import { getServerTime } from '../services/helpers.js';
 
 class LoginPage extends Component {
   constructor(props) {
@@ -48,7 +50,8 @@ class LoginPage extends Component {
         qrCode: undefined,
         token: undefined,
         tokenFailed: false
-      }
+      },
+      time: undefined
     };
     this.userChange = this.userChange.bind(this);
     this.passChange = this.passChange.bind(this);
@@ -60,6 +63,7 @@ class LoginPage extends Component {
     this.onLoginCanceled = this.onLoginCanceled.bind(this);
     this.onDidRestoreSession = this.onDidRestoreSession.bind(this);
     this.passHandleKey = this.passHandleKey.bind(this);
+    this.tick = this.tick.bind(this);
 
     restoreSession(this.onDidRestoreSession);
   }
@@ -222,6 +226,22 @@ class LoginPage extends Component {
           }
         });
     }
+
+    this.setState({ time: getServerTime() });
+    this.interval = setInterval(this.tick, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  tick() {
+    let time = new Date(this.state.time);
+
+    if (time) {
+      time.setSeconds(time.getSeconds() + 1);
+      this.setState({ time });
+    }
   }
 
   render() {
@@ -229,7 +249,17 @@ class LoginPage extends Component {
       return this.props.children;
     } else {
       return (
-        <Container className="Page">
+        <Container className="Page" style={{ paddingLeft: 0, paddingRight: 0 }}>
+          <Alert
+            color="info"
+            hidden={
+              !(this.state.isLoggedIn && !this.state.isTwoFactorAuthenticated)
+            }
+          >
+            Your device's time must be synchronized with the server time or
+            otherwise your token might be rejected. The current server time is:{' '}
+            <b>{this.state.time ? this.state.time.toLocaleString() : ''}</b>
+          </Alert>
           <Row>
             <Col className="login" xs={11} sm={6} lg={4}>
               <FadeInUp duration="0.3s" playState="running">

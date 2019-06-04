@@ -12,3 +12,71 @@
 .plotline {
   cursor: col-resize;
 }
+
+.dropdownWrapper {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 5;
+}
+
+.dropdownBtn {
+  background-color: #f2f2f2;
+  padding: 0 10px 1px 10px;
+  border-radius: 15%;
+  border: none;
+}
+
+.dropdownBtn:hover {
+  background-color: #e6e6e6;
+}
+
+.dropdown {
+  z-index: 10;
+  position: absolute;
+  top: 0;
+  right: 26px;
+  background-color: rgba(255, 255, 255, 0.4);
+  padding: 1rem;
+}
+
+.dropdown .table {
+  table-layout: fixed;
+}
+
+.dropdown .table tr td {
+  vertical-align: middle;
+  text-align: center;
+  width: 67px;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.dropdown .table tr:first-child td {
+  padding: 0 0.2em 0.2em 0.2em;
+}
+
+.dropdown .table tr:last-child td {
+  padding: 0.2em 0.2em 0 0.2em;
+}
+
+.dropdown .table tr td:first-child {
+  width: 85px;
+}
+
+.dropdown .table tr td:last-child {
+  width: 90px;
+}
+
+.dropdown .table tr td:nth-child(even) {
+  width: 5px;
+  padding: 0;
+}
+
+.dropdown .dropdown > input.form-control {
+  font-size: 0.9rem;
+}
+
+.dropdown button {
+  font-size: 0.9rem;
+}

@@ -18,7 +18,9 @@ class TimeSeriesCollectionPanel extends Component {
       end: props.end,
       onLabelChanged: props.onLabelChanged,
       canEdit: props.canEdit,
-      onScrubbed: props.onScrubbed
+      onScrubbed: props.onScrubbed,
+      onShift: props.onShift,
+      onDelete: props.onDelete
     };
 
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
@@ -42,19 +44,27 @@ class TimeSeriesCollectionPanel extends Component {
       end: props.end,
       onLabelChanged: props.onLabelChanged,
       canEdit: props.canEdit,
-      onScrubbed: props.onScrubbed
+      onScrubbed: props.onScrubbed,
+      onShift: props.onShift,
+      onDelete: props.onDelete
     }));
   }
 
   onCrosshairDrawn(crosshairEvent) {
     //alert("test")
-    const xAxisValue = Highcharts.charts[0].xAxis[0].toValue(
-      crosshairEvent.e.pageX - Highcharts.charts[0].plotBox.x / 2,
-      false
-    );
-    const difference = xAxisValue - this.state.start;
-    //console.log(difference / 1000)
-    this.state.onScrubbed(difference / 1000);
+    if (
+      Highcharts.charts &&
+      Highcharts.charts[0] &&
+      Highcharts.charts[0].xAxis[0]
+    ) {
+      const xAxisValue = Highcharts.charts[0].xAxis[0].toValue(
+        crosshairEvent.e.pageX - Highcharts.charts[0].plotBox.x / 2,
+        false
+      );
+      const difference = xAxisValue - this.state.start;
+      //console.log(difference / 1000)
+      this.state.onScrubbed(difference / 1000);
+    }
   }
 
   render() {
@@ -96,10 +106,13 @@ class TimeSeriesCollectionPanel extends Component {
             numSeries={
               this.state.timeSeries.length + this.state.fusedSeries.length + 1
             }
+            onShift={timestamp => this.state.onShift(key, timestamp)}
+            onDelete={() => this.state.onDelete(false, key)}
           />
         ))}
         {this.state.fusedSeries.map((fusedSeries, key) => (
           <TimeSeriesPanel
+            fused={true}
             index={key + this.state.timeSeries.length + 1}
             data={this.state.timeSeries
               .filter(timeSeries => {
@@ -140,6 +153,7 @@ class TimeSeriesCollectionPanel extends Component {
             numSeries={
               this.state.timeSeries.length + this.state.fusedSeries.length + 1
             }
+            onDelete={() => this.state.onDelete(true, key)}
           />
         ))}
       </div>

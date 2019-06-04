@@ -64,3 +64,14 @@ export const parseCSV = (string, startTime, adjustTime) => {
   obj.error = false;
   return obj;
 };
+
+export const getServerTime = () => {
+  let xmlHttp;
+
+  xmlHttp = new XMLHttpRequest();
+  xmlHttp.open('HEAD', window.location.href.toString(), false);
+  xmlHttp.setRequestHeader('Content-Type', 'text/html');
+  xmlHttp.send('');
+
+  return new Date(xmlHttp.getResponseHeader('Date'));
+};
