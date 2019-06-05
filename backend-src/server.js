@@ -385,3 +385,5 @@ app.use(router.routes());
 app.use(router.allowedMethods());
 
 server.listen(process.env.BACKENDPORT || 3001);
+
+console.log(`serving at 120.0.0.1:${process.env.BACKENDPORT || 3001}`);
