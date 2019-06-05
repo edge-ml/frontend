@@ -356,7 +356,7 @@ io.on('connection', (socket) => {
 
 });
 
-let emitUsers = socket => {
+let emitUsers = (socket) => {
 	if (socket.client.isAdmin) {
 		socket.emit('users', Object.keys(auth).map(identifier => ({
 			username: identifier,
@@ -371,7 +371,7 @@ let emitUsers = socket => {
 			isRegistered: user.isTwoFAClientConfigured
 		}]);
 	}
-}
+};
 
 app.use(KoaLogger());
 
@@ -379,9 +379,9 @@ const router = new KoaRouter();
 
 router.use('/api/:name', apiRouter.routes(), apiRouter.allowedMethods());
 
+app.use(KoaStatic(path.join(__dirname, '../', 'build'), {maxage: 1}));
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 
-app.use(KoaStatic(path.join(__dirname, '../', 'build'), {maxage: 1}));
-
-server.listen(3001);
+server.listen(process.env.BACKENDPORT || 3001);
