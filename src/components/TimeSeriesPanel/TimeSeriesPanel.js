@@ -115,6 +115,7 @@ class TimeSeriesPanel extends Component {
             : !Array.isArray(props.name)
             ? [
                 {
+                  showInLegend: !props.isEmpty,
                   name: props.name + ' (' + props.unit + ')',
                   data: props.data,
                   lineWidth: 1
@@ -586,7 +587,7 @@ class TimeSeriesPanel extends Component {
               : '-10px'
         }}
       >
-        {this.props.index !== 0 ? (
+        {this.props.index !== 0 && !this.props.isEmpty ? (
           <DropdownPanel
             fused={this.props.fused}
             startTime={this.props.data[0][0]}

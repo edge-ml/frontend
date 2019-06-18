@@ -72,9 +72,11 @@ class TimeSeriesCollectionPanel extends Component {
       <div className="TimeSeriesCollectionPanel">
         <TimeSeriesPanel
           index={0}
-          data={this.state.timeSeries[0].data}
-          name={this.state.timeSeries[0].name}
-          unit={this.state.timeSeries[0].unit}
+          data={
+            this.state.timeSeries[0]
+              ? this.state.timeSeries[0].data
+              : [[this.state.start, 10], [this.state.end, 10]]
+          }
           labeling={this.state.labeling}
           labelTypes={this.state.labelTypes}
           onLabelClicked={this.state.onLabelClicked}
@@ -88,6 +90,27 @@ class TimeSeriesCollectionPanel extends Component {
             this.state.timeSeries.length + this.state.fusedSeries.length + 1
           }
         />
+
+        {this.state.timeSeries.length === 0 ? (
+          <TimeSeriesPanel
+            isEmpty={true}
+            index={1}
+            data={[]}
+            name={''}
+            unit={''}
+            labeling={this.state.labeling}
+            labelTypes={this.state.labelTypes}
+            onLabelClicked={this.state.onLabelClicked}
+            selectedLabelId={this.state.selectedLabelId}
+            start={this.state.start}
+            end={this.state.end}
+            onLabelChanged={this.state.onLabelChanged}
+            canEdit={this.state.canEdit}
+            onScrubbed={this.state.onScrubbed}
+            numSeries={2}
+          />
+        ) : null}
+
         {this.state.timeSeries.map((timeSeries, key) => (
           <TimeSeriesPanel
             index={key + 1}
