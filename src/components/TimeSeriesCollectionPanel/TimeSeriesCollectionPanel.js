@@ -20,7 +20,11 @@ class TimeSeriesCollectionPanel extends Component {
       canEdit: props.canEdit,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
-      onDelete: props.onDelete
+      onDelete: props.onDelete,
+      onDrawPlotband: props.onDrawPlotband,
+      drawingId: props.drawingId,
+      drawingPosition: props.drawingPosition,
+      newPosition: props.newPosition
     };
 
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
@@ -46,7 +50,11 @@ class TimeSeriesCollectionPanel extends Component {
       canEdit: props.canEdit,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
-      onDelete: props.onDelete
+      onDelete: props.onDelete,
+      onDrawPlotband: props.onDrawPlotband,
+      drawingId: props.drawingId,
+      drawingPosition: props.drawingPosition,
+      newPosition: props.newPosition
     }));
   }
 
@@ -61,9 +69,11 @@ class TimeSeriesCollectionPanel extends Component {
         crosshairEvent.e.pageX - Highcharts.charts[0].plotBox.x / 2,
         false
       );
-      const difference = xAxisValue - this.state.start;
-      //console.log(difference / 1000)
-      this.state.onScrubbed(difference / 1000);
+
+      if (!isNaN(xAxisValue)) {
+        const difference = xAxisValue - this.state.start;
+        this.state.onScrubbed(difference / 1000);
+      }
     }
   }
 
@@ -73,7 +83,7 @@ class TimeSeriesCollectionPanel extends Component {
         <TimeSeriesPanel
           index={0}
           data={
-            this.state.timeSeries[0]
+            this.state.timeSeries.length > 0
               ? this.state.timeSeries[0].data
               : [[this.state.start, 10], [this.state.end, 10]]
           }
@@ -108,6 +118,10 @@ class TimeSeriesCollectionPanel extends Component {
             canEdit={this.state.canEdit}
             onScrubbed={this.state.onScrubbed}
             numSeries={2}
+            onDrawPlotband={this.state.onDrawPlotband}
+            drawingId={this.state.drawingId}
+            drawingPosition={this.state.drawingPosition}
+            newPosition={this.state.newPosition}
           />
         ) : null}
 
@@ -131,6 +145,10 @@ class TimeSeriesCollectionPanel extends Component {
             }
             onShift={timestamp => this.state.onShift(key, timestamp)}
             onDelete={() => this.state.onDelete(false, key)}
+            onDrawPlotband={this.state.onDrawPlotband}
+            drawingId={this.state.drawingId}
+            drawingPosition={this.state.drawingPosition}
+            newPosition={this.state.newPosition}
           />
         ))}
         {this.state.fusedSeries.map((fusedSeries, key) => (
@@ -177,6 +195,10 @@ class TimeSeriesCollectionPanel extends Component {
               this.state.timeSeries.length + this.state.fusedSeries.length + 1
             }
             onDelete={() => this.state.onDelete(true, key)}
+            onDrawPlotband={this.state.onDrawPlotband}
+            drawingId={this.state.drawingId}
+            drawingPosition={this.state.drawingPosition}
+            newPosition={this.state.newPosition}
           />
         ))}
       </div>

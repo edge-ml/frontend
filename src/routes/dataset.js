@@ -120,7 +120,10 @@ class DatasetPage extends Component {
         selectedLabelId: undefined,
         selectedLabelingId: undefined,
         selectedLabelTypeId: undefined,
-        canEdit: false
+        canEdit: false,
+        drawingId: undefined,
+        drawingPosition: undefined,
+        newPosition: undefined
       },
       fuseTimeSeriesModalState: {
         isOpen: false
@@ -149,6 +152,7 @@ class DatasetPage extends Component {
     this.onScrubbed = this.onScrubbed.bind(this);
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
     this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
+    this.onDrawPlotband = this.onDrawPlotband.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -157,6 +161,20 @@ class DatasetPage extends Component {
     };
 
     this.videoPanel = React.createRef();
+  }
+
+  onDrawPlotband(id, position, newPosition) {
+    this.setState({
+      controlStates: {
+        selectedLabelId: this.state.controlStates.selectedLabelId,
+        selectedLabelingId: this.state.controlStates.selectedLabelingId,
+        selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
+        canEdit: this.state.controlStates.canEdit,
+        drawingId: id,
+        drawingPosition: position,
+        newPosition: newPosition
+      }
+    });
   }
 
   clearKeyBuffer() {
@@ -336,7 +354,10 @@ class DatasetPage extends Component {
         selectedLabelId: this.state.controlStates.selectedLabelId,
         selectedLabelingId: labelings[0].id,
         selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
-        canEdit: this.state.controlStates.canEdit
+        canEdit: this.state.controlStates.canEdit,
+        drawingId: this.state.controlStates.drawingId,
+        drawingPosition: this.state.controlStates.drawingPosition,
+        newPosition: this.state.controlStates.newPosition
       },
       isReady: true
     });
@@ -370,7 +391,10 @@ class DatasetPage extends Component {
         selectedLabelId: undefined,
         selectedLabelingId: selectedLabelingId,
         selectedLabelTypeId: undefined,
-        canEdit: this.state.controlStates.canEdit
+        canEdit: this.state.controlStates.canEdit,
+        drawingId: this.state.controlStates.drawingId,
+        drawingPosition: this.state.controlStates.drawingPosition,
+        newPosition: this.state.controlStates.newPosition
       }
     });
   }
@@ -399,7 +423,10 @@ class DatasetPage extends Component {
         selectedLabelId: this.state.controlStates.selectedLabelId,
         selectedLabelingId: this.state.controlStates.selectedLabelingId,
         selectedLabelTypeId: selectedLabelTypeId,
-        canEdit: this.state.controlStates.canEdit
+        canEdit: this.state.controlStates.canEdit,
+        drawingId: this.state.controlStates.drawingId,
+        drawingPosition: this.state.controlStates.drawingPosition,
+        newPosition: this.state.controlStates.newPosition
       }
     });
   }
@@ -417,7 +444,10 @@ class DatasetPage extends Component {
         selectedLabelId: selectedLabelId,
         selectedLabelingId: this.state.controlStates.selectedLabelingId,
         selectedLabelTypeId: label ? label.typeId : undefined,
-        canEdit: this.state.controlStates.canEdit
+        canEdit: this.state.controlStates.canEdit,
+        drawingId: this.state.controlStates.drawingId,
+        drawingPosition: this.state.controlStates.drawingPosition,
+        newPosition: this.state.controlStates.newPosition
       }
     });
   }
@@ -474,7 +504,10 @@ class DatasetPage extends Component {
           selectedLabelId: undefined,
           selectedLabelingId: this.state.controlStates.selectedLabelingId,
           selectedLabelTypeId: undefined,
-          canEdit: this.state.controlStates.canEdit
+          canEdit: this.state.controlStates.canEdit,
+          drawingId: this.state.controlStates.drawingId,
+          drawingPosition: this.state.controlStates.drawingPosition,
+          newPosition: this.state.controlStates.newPosition
         }
       });
     }
@@ -486,7 +519,10 @@ class DatasetPage extends Component {
         selectedLabelId: this.state.controlStates.selectedLabelId,
         selectedLabelingId: this.state.controlStates.selectedLabelingId,
         selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
-        canEdit: canEdit
+        canEdit: canEdit,
+        drawingId: this.state.controlStates.drawingId,
+        drawingPosition: this.state.controlStates.drawingPosition,
+        newPosition: this.state.controlStates.newPosition
       }
     });
   }
@@ -549,6 +585,11 @@ class DatasetPage extends Component {
   }
 
   getStartTime(timeSeries) {
+    if (timeSeries.length === 0) {
+      let now = new Date().getTime();
+      return now - 500000; // TODO
+    }
+
     let startTimes = [];
 
     timeSeries.forEach(element => {
@@ -559,6 +600,11 @@ class DatasetPage extends Component {
   }
 
   getEndTime(timeSeries) {
+    if (timeSeries.length === 0) {
+      let now = new Date().getTime();
+      return now - 80000; // TODO
+    }
+
     let endTimes = [];
 
     timeSeries.forEach(element => {
@@ -630,6 +676,10 @@ class DatasetPage extends Component {
                   onScrubbed={this.onScrubbed}
                   onShift={this.onShiftTimeSeries}
                   onDelete={this.onDeleteTimeSeries}
+                  onDrawPlotband={this.onDrawPlotband}
+                  drawingId={this.state.controlStates.drawingId}
+                  drawingPosition={this.state.controlStates.drawingPosition}
+                  newPosition={this.state.controlStates.newPosition}
                 />
                 <Button
                   block
