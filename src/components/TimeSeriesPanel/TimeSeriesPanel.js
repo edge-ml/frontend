@@ -55,6 +55,7 @@ class TimeSeriesPanel extends Component {
 
     this.drawPlotband = this.drawPlotband.bind(this);
     this.clearDrawingInterval = this.clearDrawingInterval.bind(this);
+    this.onPressSpace = this.onPressSpace.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -247,41 +248,43 @@ class TimeSeriesPanel extends Component {
     if (keyCode === 32) {
       e.preventDefault();
 
-      if (this.interval) {
-        this.clearDrawingInterval();
-        return;
-      }
+      this.onPressSpace();
+    }
+  }
 
-      if (!this.state.controlStates.canEdit) return;
+  onPressSpace() {
+    if (this.interval) {
+      this.clearDrawingInterval();
+      return;
+    }
 
-      if (
-        this.state.controlStates.drawingId &&
-        !this.state.controlStates.drawingPosition
-      ) {
-        let id = this.state.controlStates.drawingId;
+    if (!this.state.controlStates.canEdit) return;
 
-        let plotLinesAndBands = this.chart.current.chart.xAxis[0]
-          .plotLinesAndBands;
-        let plotLines = plotLinesAndBands.filter(
-          item => item.options.isPlotline
-        );
-        if (plotLines.length === 0) return;
+    if (
+      this.state.controlStates.drawingId &&
+      !this.state.controlStates.drawingPosition
+    ) {
+      let id = this.state.controlStates.drawingId;
 
-        let plotLine = plotLines[plotLines.length - 1];
-        if (!plotLine.options.isLeftPlotline) return;
-        let position = plotLine.options.value;
+      let plotLinesAndBands = this.chart.current.chart.xAxis[0]
+        .plotLinesAndBands;
+      let plotLines = plotLinesAndBands.filter(item => item.options.isPlotline);
+      if (plotLines.length === 0) return;
 
-        this.setState({
-          controlStates: {
-            activePlotLineId: this.state.controlStates.activePlotLineId,
-            drawingId: id,
-            drawingPosition: position,
-            newPosition: undefined,
-            canEdit: true
-          }
-        });
-        this.interval = setInterval(this.drawPlotband, 10);
-      }
+      let plotLine = plotLines[plotLines.length - 1];
+      if (!plotLine.options.isLeftPlotline) return;
+      let position = plotLine.options.value;
+
+      this.setState({
+        controlStates: {
+          activePlotLineId: this.state.controlStates.activePlotLineId,
+          drawingId: id,
+          drawingPosition: position,
+          newPosition: undefined,
+          canEdit: true
+        }
+      });
+      this.interval = setInterval(this.drawPlotband, 10);
     }
   }
 

@@ -34,6 +34,8 @@ class TimeSeriesCollectionPanel extends Component {
       'afterDrawCrosshair',
       this.onCrosshairDrawn
     );
+
+    this.chart = React.createRef();
   }
 
   componentWillReceiveProps(props) {
@@ -56,6 +58,10 @@ class TimeSeriesCollectionPanel extends Component {
       drawingPosition: props.drawingPosition,
       newPosition: props.newPosition
     }));
+  }
+
+  onPlay() {
+    this.chart.current.onPressSpace();
   }
 
   onCrosshairDrawn(crosshairEvent) {
@@ -103,6 +109,7 @@ class TimeSeriesCollectionPanel extends Component {
 
         {this.state.timeSeries.length === 0 ? (
           <TimeSeriesPanel
+            ref={this.chart}
             isEmpty={true}
             index={1}
             data={[]}
@@ -127,6 +134,7 @@ class TimeSeriesCollectionPanel extends Component {
 
         {this.state.timeSeries.map((timeSeries, key) => (
           <TimeSeriesPanel
+            ref={this.chart}
             index={key + 1}
             data={timeSeries.data}
             name={timeSeries.name}

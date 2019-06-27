@@ -162,9 +162,14 @@ class DatasetPage extends Component {
     };
 
     this.videoPanel = React.createRef();
+    this.timeSeriesCollectionPanel = React.createRef();
   }
 
-  onPlay() {}
+  onPlay() {
+    if (!this.timeSeriesCollectionPanel.current) return;
+
+    this.timeSeriesCollectionPanel.current.onPlay();
+  }
 
   onDrawPlotband(id, position, newPosition) {
     this.setState({
@@ -666,6 +671,7 @@ class DatasetPage extends Component {
                   onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
                 />
                 <TimeSeriesCollectionPanel
+                  ref={this.timeSeriesCollectionPanel}
                   timeSeries={this.state.dataset.timeSeries}
                   fusedSeries={this.state.dataset.fusedSeries}
                   labeling={labeling}

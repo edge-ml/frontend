@@ -141,10 +141,7 @@ class LabelingPanel extends Component {
               Delete
             </Button>
             <Button
-              disabled={
-                this.state.selectedLabelTypeId === undefined ||
-                !this.state.canEdit
-              }
+              disabled={!this.state.canEdit}
               className="playButton m-1"
               color="info"
               onClick={e => this.state.onPlay()}
