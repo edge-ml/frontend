@@ -153,6 +153,7 @@ class DatasetPage extends Component {
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
     this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
     this.onDrawPlotband = this.onDrawPlotband.bind(this);
+    this.onPlay = this.onPlay.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -162,6 +163,8 @@ class DatasetPage extends Component {
 
     this.videoPanel = React.createRef();
   }
+
+  onPlay() {}
 
   onDrawPlotband(id, position, newPosition) {
     this.setState({
@@ -739,6 +742,7 @@ class DatasetPage extends Component {
                 onDeleteSelectedLabel={this.onDeleteSelectedLabel}
                 onCanEditChanged={this.onCanEditChanged}
                 canEdit={this.state.controlStates.canEdit}
+                onPlay={this.onPlay}
               />
             </Col>
             <Col />

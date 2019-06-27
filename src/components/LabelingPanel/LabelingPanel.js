@@ -11,7 +11,7 @@ import {
 import './LabelingPanel.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faUnlock, faPlay } from '@fortawesome/free-solid-svg-icons';
 
 class LabelingPanel extends Component {
   constructor(props) {
@@ -25,7 +25,8 @@ class LabelingPanel extends Component {
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
-      onCanEditChanged: props.onCanEditChanged
+      onCanEditChanged: props.onCanEditChanged,
+      onPlay: props.onPlay
     };
 
     this.toggleEdit = this.toggleEdit.bind(this);
@@ -42,7 +43,8 @@ class LabelingPanel extends Component {
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
-      onCanEditChanged: props.onCanEditChanged
+      onCanEditChanged: props.onCanEditChanged,
+      onPlay: props.onPlay
     }));
   }
 
@@ -137,6 +139,22 @@ class LabelingPanel extends Component {
               onClick={e => this.state.onDeleteSelectedLabel()}
             >
               Delete
+            </Button>
+            <Button
+              disabled={
+                this.state.selectedLabelTypeId === undefined ||
+                !this.state.canEdit
+              }
+              className="playButton m-1"
+              color="info"
+              onClick={e => this.state.onPlay()}
+            >
+              <FontAwesomeIcon
+                style={{ color: '#fff' }}
+                icon={faPlay}
+                className="mr-2 fa-xs"
+              />
+              Play
             </Button>
           </div>
 

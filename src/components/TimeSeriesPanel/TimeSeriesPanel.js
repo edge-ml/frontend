@@ -280,7 +280,7 @@ class TimeSeriesPanel extends Component {
             canEdit: true
           }
         });
-        this.interval = setInterval(this.drawPlotband, 100);
+        this.interval = setInterval(this.drawPlotband, 10);
       }
     }
   }
@@ -291,8 +291,8 @@ class TimeSeriesPanel extends Component {
     if (!id || !position) return;
 
     let newPosition = this.state.controlStates.newPosition
-      ? this.state.controlStates.newPosition + 1000
-      : position + 1000;
+      ? this.state.controlStates.newPosition + 500
+      : position + 500;
     this.setState({
       controlStates: {
         activePlotLineId: this.state.controlStates.activePlotLineId,
