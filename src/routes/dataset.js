@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Col, Row, Fade, Button } from 'reactstrap';
 import { view } from 'react-easy-state';
+import Highcharts from 'highcharts/highstock';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
 import TagsPanel from '../components/TagsPanel/TagsPanel';
@@ -152,7 +153,6 @@ class DatasetPage extends Component {
     this.onScrubbed = this.onScrubbed.bind(this);
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
     this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
-    this.onDrawPlotband = this.onDrawPlotband.bind(this);
     this.onPlay = this.onPlay.bind(this);
     this.updateControlStates = this.updateControlStates.bind(this);
     this.setPlayInterval = this.setPlayInterval.bind(this);
@@ -165,7 +165,6 @@ class DatasetPage extends Component {
     };
 
     this.videoPanel = React.createRef();
-    this.timeSeriesCollectionPanel = React.createRef();
   }
 
   updateControlStates(drawingId, drawingPosition, newPosition, canEdit) {
@@ -200,7 +199,6 @@ class DatasetPage extends Component {
       let difference = newPosition - this.state.dataset.start;
       this.onScrubbed(difference / 1000);
 
-      this.onDrawPlotband(id, position, newPosition);
       this.onLabelChanged(id, position, newPosition);
     }, 10);
   }
@@ -215,10 +213,19 @@ class DatasetPage extends Component {
       undefined,
       this.state.controlStates.canEdit
     );
-    this.onDrawPlotband(undefined, undefined, undefined);
   }
 
   onPlay() {
+    if (!this.state.controlStates.canEdit) return;
+
+    if (this.interval) {
+      this.clearPlayInterval();
+      return;
+    }
+
+    let charts = Highcharts.charts;
+    if (charts.length < 2) return;
+
     if (this.state.controlStates.selectedLabelId) {
       let labeling = this.state.dataset.labelings.filter(
         labeling =>
@@ -235,26 +242,38 @@ class DatasetPage extends Component {
         label.to,
         this.state.controlStates.canEdit
       );
-      this.timeSeriesCollectionPanel.current.onPlay();
-    } else {
-      if (!this.timeSeriesCollectionPanel.current) return;
-
-      this.timeSeriesCollectionPanel.current.onPlay();
     }
-  }
 
-  onDrawPlotband(id, position, newPosition) {
-    this.setState({
-      controlStates: {
-        selectedLabelId: this.state.controlStates.selectedLabelId,
-        selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
-        canEdit: this.state.controlStates.canEdit,
-        drawingId: id,
-        drawingPosition: position,
-        newPosition: newPosition
-      }
-    });
+    if (
+      !this.state.controlStates.selectedLabelId &&
+      this.state.controlStates.drawingId &&
+      !this.state.controlStates.drawingPosition
+    ) {
+      let id = this.state.controlStates.drawingId;
+
+      let plotLinesAndBands = charts[1].xAxis[0].plotLinesAndBands;
+      let plotLines = plotLinesAndBands.filter(item => item.options.isPlotline);
+      if (plotLines.length === 0) return;
+
+      let plotLine = plotLines[plotLines.length - 1];
+      if (!plotLine.options.isLeftPlotline) return;
+      let position = plotLine.options.value;
+
+      this.updateControlStates(id, position, undefined, true);
+      this.setPlayInterval();
+    } else if (
+      this.state.controlStates.selectedLabelId &&
+      this.state.controlStates.drawingId &&
+      this.state.controlStates.drawingPosition
+    ) {
+      this.updateControlStates(
+        this.state.controlStates.drawingId,
+        this.state.controlStates.drawingPosition,
+        this.state.controlStates.newPosition,
+        true
+      );
+      this.setPlayInterval();
+    }
   }
 
   clearKeyBuffer() {
@@ -733,10 +752,6 @@ class DatasetPage extends Component {
           this.state.controlStates.selectedLabelId)) ||
       isIntervalActive;
 
-    let isLabelSelected = this.state.controlStates.selectedLabelId
-      ? true
-      : false;
-
     return (
       <Fade in={this.state.fadeIn}>
         <div className="pb-5">
@@ -761,7 +776,6 @@ class DatasetPage extends Component {
                   onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
                 />
                 <TimeSeriesCollectionPanel
-                  ref={this.timeSeriesCollectionPanel}
                   timeSeries={this.state.dataset.timeSeries}
                   fusedSeries={this.state.dataset.fusedSeries}
                   labeling={labeling}
@@ -775,15 +789,12 @@ class DatasetPage extends Component {
                   onScrubbed={this.onScrubbed}
                   onShift={this.onShiftTimeSeries}
                   onDelete={this.onDeleteTimeSeries}
-                  onDrawPlotband={this.onDrawPlotband}
                   drawingId={this.state.controlStates.drawingId}
                   drawingPosition={this.state.controlStates.drawingPosition}
                   newPosition={this.state.controlStates.newPosition}
                   updateControlStates={this.updateControlStates}
-                  setPlayInterval={this.setPlayInterval}
                   clearPlayInterval={this.clearPlayInterval}
                   interval={this.interval}
-                  isLabelSelected={isLabelSelected}
                 />
                 <Button
                   block

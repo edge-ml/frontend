@@ -49,8 +49,6 @@ class TimeSeriesPanel extends Component {
     this.generateState = this.generateState.bind(this);
     this.state = this.generateState(props);
     this.pastScrubbValue = 0;
-
-    this.onPlay = this.onPlay.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -234,47 +232,6 @@ class TimeSeriesPanel extends Component {
           : this.state.controlStates.activePlotLineId
       }
     };
-  }
-
-  onPlay() {
-    if (this.props.interval) {
-      this.props.clearPlayInterval();
-      return;
-    }
-
-    if (!this.props.canEdit) return;
-
-    if (
-      !this.props.isLabelSelected &&
-      this.props.drawingId &&
-      !this.props.drawingPosition
-    ) {
-      let id = this.props.drawingId;
-
-      let plotLinesAndBands = this.chart.current.chart.xAxis[0]
-        .plotLinesAndBands;
-      let plotLines = plotLinesAndBands.filter(item => item.options.isPlotline);
-      if (plotLines.length === 0) return;
-
-      let plotLine = plotLines[plotLines.length - 1];
-      if (!plotLine.options.isLeftPlotline) return;
-      let position = plotLine.options.value;
-
-      this.props.updateControlStates(id, position, undefined, true);
-      this.props.setPlayInterval();
-    } else if (
-      this.props.isLabelSelected &&
-      this.props.drawingId &&
-      this.props.drawingPosition
-    ) {
-      this.props.updateControlStates(
-        this.props.drawingId,
-        this.props.drawingPosition,
-        this.props.newPosition,
-        true
-      );
-      this.props.setPlayInterval();
-    }
   }
 
   /***

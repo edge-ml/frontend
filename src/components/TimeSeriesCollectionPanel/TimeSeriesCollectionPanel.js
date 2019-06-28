@@ -19,8 +19,7 @@ class TimeSeriesCollectionPanel extends Component {
       onLabelChanged: props.onLabelChanged,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
-      onDelete: props.onDelete,
-      onDrawPlotband: props.onDrawPlotband
+      onDelete: props.onDelete
     };
 
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
@@ -30,8 +29,6 @@ class TimeSeriesCollectionPanel extends Component {
       'afterDrawCrosshair',
       this.onCrosshairDrawn
     );
-
-    this.chart = React.createRef();
   }
 
   componentWillReceiveProps(props) {
@@ -47,13 +44,8 @@ class TimeSeriesCollectionPanel extends Component {
       onLabelChanged: props.onLabelChanged,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
-      onDelete: props.onDelete,
-      onDrawPlotband: props.onDrawPlotband
+      onDelete: props.onDelete
     }));
-  }
-
-  onPlay() {
-    this.chart.current.onPlay();
   }
 
   onCrosshairDrawn(crosshairEvent) {
@@ -101,7 +93,6 @@ class TimeSeriesCollectionPanel extends Component {
 
         {this.state.timeSeries.length === 0 ? (
           <TimeSeriesPanel
-            ref={this.chart}
             isEmpty={true}
             index={1}
             data={[]}
@@ -117,21 +108,17 @@ class TimeSeriesCollectionPanel extends Component {
             canEdit={this.props.canEdit}
             onScrubbed={this.state.onScrubbed}
             numSeries={2}
-            onDrawPlotband={this.state.onDrawPlotband}
             drawingId={this.props.drawingId}
             drawingPosition={this.props.drawingPosition}
             newPosition={this.props.newPosition}
             updateControlStates={this.props.updateControlStates}
-            setPlayInterval={this.props.setPlayInterval}
             clearPlayInterval={this.props.clearPlayInterval}
             interval={this.props.interval}
-            isLabelSelected={this.props.isLabelSelected}
           />
         ) : null}
 
         {this.state.timeSeries.map((timeSeries, key) => (
           <TimeSeriesPanel
-            ref={this.chart}
             index={key + 1}
             data={timeSeries.data}
             name={timeSeries.name}
@@ -150,15 +137,12 @@ class TimeSeriesCollectionPanel extends Component {
             }
             onShift={timestamp => this.state.onShift(key, timestamp)}
             onDelete={() => this.state.onDelete(false, key)}
-            onDrawPlotband={this.state.onDrawPlotband}
             drawingId={this.props.drawingId}
             drawingPosition={this.props.drawingPosition}
             newPosition={this.props.newPosition}
             updateControlStates={this.props.updateControlStates}
-            setPlayInterval={this.props.setPlayInterval}
             clearPlayInterval={this.props.clearPlayInterval}
             interval={this.props.interval}
-            isLabelSelected={this.props.isLabelSelected}
           />
         ))}
         {this.state.fusedSeries.map((fusedSeries, key) => (
@@ -205,15 +189,12 @@ class TimeSeriesCollectionPanel extends Component {
               this.state.timeSeries.length + this.state.fusedSeries.length + 1
             }
             onDelete={() => this.state.onDelete(true, key)}
-            onDrawPlotband={this.state.onDrawPlotband}
             drawingId={this.props.drawingId}
             drawingPosition={this.props.drawingPosition}
             newPosition={this.props.newPosition}
             updateControlStates={this.props.updateControlStates}
-            setPlayInterval={this.props.setPlayInterval}
             clearPlayInterval={this.props.clearPlayInterval}
             interval={this.props.interval}
-            isLabelSelected={this.props.isLabelSelected}
           />
         ))}
       </div>
