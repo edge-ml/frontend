@@ -11,7 +11,12 @@ import {
 import './LabelingPanel.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faUnlock, faPlay } from '@fortawesome/free-solid-svg-icons';
+import {
+  faLock,
+  faUnlock,
+  faPlay,
+  faPause
+} from '@fortawesome/free-solid-svg-icons';
 
 class LabelingPanel extends Component {
   constructor(props) {
@@ -26,7 +31,9 @@ class LabelingPanel extends Component {
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
       onCanEditChanged: props.onCanEditChanged,
-      onPlay: props.onPlay
+      onPlay: props.onPlay,
+      isIntervalActive: props.isIntervalActive,
+      isPlayButtonActive: props.isPlayButtonActive
     };
 
     this.toggleEdit = this.toggleEdit.bind(this);
@@ -44,7 +51,9 @@ class LabelingPanel extends Component {
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
       onCanEditChanged: props.onCanEditChanged,
-      onPlay: props.onPlay
+      onPlay: props.onPlay,
+      isIntervalActive: props.isIntervalActive,
+      isPlayButtonActive: props.isPlayButtonActive
     }));
   }
 
@@ -75,6 +84,7 @@ class LabelingPanel extends Component {
         <CardBody className="p-1">
           <div className="informationBox">
             <Button
+              disabled={this.props.isIntervalActive}
               className="m-1 btn-light"
               style={{ float: 'left' }}
               onClick={this.toggleEdit}
@@ -141,17 +151,17 @@ class LabelingPanel extends Component {
               Delete
             </Button>
             <Button
-              disabled={!this.state.canEdit}
+              disabled={!this.state.isPlayButtonActive}
               className="playButton m-1"
               color="info"
               onClick={e => this.state.onPlay()}
             >
               <FontAwesomeIcon
                 style={{ color: '#fff' }}
-                icon={faPlay}
+                icon={this.state.isIntervalActive ? faPause : faPlay}
                 className="mr-2 fa-xs"
               />
-              Play
+              {this.state.isIntervalActive ? 'Stop' : 'Play'}
             </Button>
           </div>
 

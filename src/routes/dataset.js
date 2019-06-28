@@ -154,6 +154,9 @@ class DatasetPage extends Component {
     this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
     this.onDrawPlotband = this.onDrawPlotband.bind(this);
     this.onPlay = this.onPlay.bind(this);
+    this.updateControlStates = this.updateControlStates.bind(this);
+    this.setPlayInterval = this.setPlayInterval.bind(this);
+    this.clearPlayInterval = this.clearPlayInterval.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -165,10 +168,79 @@ class DatasetPage extends Component {
     this.timeSeriesCollectionPanel = React.createRef();
   }
 
-  onPlay() {
-    if (!this.timeSeriesCollectionPanel.current) return;
+  updateControlStates(drawingId, drawingPosition, newPosition, canEdit) {
+    this.setState({
+      controlStates: {
+        selectedLabelId: this.state.controlStates.selectedLabelId,
+        selectedLabelingId: this.state.controlStates.selectedLabelingId,
+        selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
+        canEdit: canEdit,
+        drawingId: drawingId,
+        drawingPosition: drawingPosition,
+        newPosition: newPosition
+      }
+    });
+  }
 
-    this.timeSeriesCollectionPanel.current.onPlay();
+  setPlayInterval() {
+    this.interval = setInterval(() => {
+      let id = this.state.controlStates.drawingId;
+      let position = this.state.controlStates.drawingPosition;
+      if (!id || !position) return;
+      let newPosition = this.state.controlStates.newPosition
+        ? this.state.controlStates.newPosition + 500
+        : position + 500;
+      this.updateControlStates(
+        id,
+        position,
+        newPosition,
+        this.state.controlStates.canEdit
+      );
+
+      let difference = newPosition - this.state.dataset.start;
+      this.onScrubbed(difference / 1000);
+
+      this.onDrawPlotband(id, position, newPosition);
+      this.onLabelChanged(id, position, newPosition);
+    }, 10);
+  }
+
+  clearPlayInterval() {
+    clearInterval(this.interval);
+    this.interval = false;
+
+    this.updateControlStates(
+      undefined,
+      undefined,
+      undefined,
+      this.state.controlStates.canEdit
+    );
+    this.onDrawPlotband(undefined, undefined, undefined);
+  }
+
+  onPlay() {
+    if (this.state.controlStates.selectedLabelId) {
+      let labeling = this.state.dataset.labelings.filter(
+        labeling =>
+          labeling.labelingId === this.state.controlStates.selectedLabelingId
+      )[0];
+
+      let label = labeling.labels.filter(
+        label => label.id === this.state.controlStates.selectedLabelId
+      )[0];
+
+      this.updateControlStates(
+        this.state.controlStates.selectedLabelId,
+        label.from,
+        label.to,
+        this.state.controlStates.canEdit
+      );
+      this.timeSeriesCollectionPanel.current.onPlay();
+    } else {
+      if (!this.timeSeriesCollectionPanel.current) return;
+
+      this.timeSeriesCollectionPanel.current.onPlay();
+    }
   }
 
   onDrawPlotband(id, position, newPosition) {
@@ -310,6 +382,9 @@ class DatasetPage extends Component {
           window.alert('Editing not unlocked. Press "L" to unlock.');
         }
       }
+    } else if (keyCode === 32) {
+      e.preventDefault();
+      this.onPlay();
     }
   }
 
@@ -522,17 +597,19 @@ class DatasetPage extends Component {
   }
 
   onCanEditChanged(canEdit) {
-    this.setState({
-      controlStates: {
-        selectedLabelId: this.state.controlStates.selectedLabelId,
-        selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
-        canEdit: canEdit,
-        drawingId: this.state.controlStates.drawingId,
-        drawingPosition: this.state.controlStates.drawingPosition,
-        newPosition: this.state.controlStates.newPosition
-      }
-    });
+    if (!this.interval) {
+      this.setState({
+        controlStates: {
+          selectedLabelId: this.state.controlStates.selectedLabelId,
+          selectedLabelingId: this.state.controlStates.selectedLabelingId,
+          selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
+          canEdit: canEdit,
+          drawingId: this.state.controlStates.drawingId,
+          drawingPosition: this.state.controlStates.drawingPosition,
+          newPosition: this.state.controlStates.newPosition
+        }
+      });
+    }
   }
 
   onFuseTimeSeries(seriesIds) {
@@ -647,6 +724,19 @@ class DatasetPage extends Component {
         )[0]
       : null;
 
+    let isIntervalActive = this.interval ? true : false;
+
+    let isPlayButtonActive =
+      (this.state.controlStates.canEdit &&
+        ((this.state.controlStates.drawingId &&
+          !this.state.controlStates.drawingPosition) ||
+          this.state.controlStates.selectedLabelId)) ||
+      isIntervalActive;
+
+    let isLabelSelected = this.state.controlStates.selectedLabelId
+      ? true
+      : false;
+
     return (
       <Fade in={this.state.fadeIn}>
         <div className="pb-5">
@@ -689,6 +779,11 @@ class DatasetPage extends Component {
                   drawingId={this.state.controlStates.drawingId}
                   drawingPosition={this.state.controlStates.drawingPosition}
                   newPosition={this.state.controlStates.newPosition}
+                  updateControlStates={this.updateControlStates}
+                  setPlayInterval={this.setPlayInterval}
+                  clearPlayInterval={this.clearPlayInterval}
+                  interval={this.interval}
+                  isLabelSelected={isLabelSelected}
                 />
                 <Button
                   block
@@ -749,6 +844,8 @@ class DatasetPage extends Component {
                 onCanEditChanged={this.onCanEditChanged}
                 canEdit={this.state.controlStates.canEdit}
                 onPlay={this.onPlay}
+                isIntervalActive={isIntervalActive}
+                isPlayButtonActive={isPlayButtonActive}
               />
             </Col>
             <Col />

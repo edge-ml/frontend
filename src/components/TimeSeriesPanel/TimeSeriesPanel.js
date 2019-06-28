@@ -21,11 +21,8 @@ class TimeSeriesPanel extends Component {
     this.onMouseMoved = this.onMouseMoved.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
 
-    this.onKeyDown = this.onKeyDown.bind(this);
-
     document.addEventListener('mousemove', this.onMouseMoved);
     document.addEventListener('mouseup', this.onMouseUp);
-    document.addEventListener('keydown', this.onKeyDown);
 
     // PlotBands
     this.onPlotBandMouseDown = this.onPlotBandMouseDown.bind(this);
@@ -53,9 +50,7 @@ class TimeSeriesPanel extends Component {
     this.state = this.generateState(props);
     this.pastScrubbValue = 0;
 
-    this.drawPlotband = this.drawPlotband.bind(this);
-    this.clearDrawingInterval = this.clearDrawingInterval.bind(this);
-    this.onPressSpace = this.onPressSpace.bind(this);
+    this.onPlay = this.onPlay.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -63,6 +58,22 @@ class TimeSeriesPanel extends Component {
   }
 
   componentDidMount() {
+    let filteredLabels =
+      this.props.labeling.labels !== undefined
+        ? this.props.labeling.labels.filter(
+            label => label.from === undefined || label.to === undefined
+          )
+        : undefined;
+
+    if (filteredLabels !== undefined && filteredLabels.length !== 0) {
+      this.props.updateControlStates(
+        filteredLabels[0].id,
+        this.props.drawingPosition,
+        this.props.newPosition,
+        this.props.canEdit
+      );
+    }
+
     const container = this.chart.current.container.current;
 
     container.style.height = this.props.index === 0 ? '80px' : '200px';
@@ -72,17 +83,6 @@ class TimeSeriesPanel extends Component {
   }
 
   generateState(props) {
-    let filteredLabels =
-      props.labeling.labels !== undefined
-        ? props.labeling.labels.filter(
-            label => label.from === undefined || label.to === undefined
-          )
-        : undefined;
-    let drawingId =
-      filteredLabels !== undefined && filteredLabels.length !== 0
-        ? filteredLabels[0].id
-        : props.drawingId;
-
     return {
       chartOptions: {
         navigator: {
@@ -227,44 +227,29 @@ class TimeSeriesPanel extends Component {
       selectedLabelId: props.selectedLabelId,
       onLabelClicked: props.onLabelClicked,
       onLabelChanged: props.onLabelChanged,
-      onDrawPlotband: props.onDrawPlotband,
       onScrubbed: props.onScrubbed,
       controlStates: {
         activePlotLineId: !this.state
           ? undefined
-          : this.state.controlStates.activePlotLineId,
-        drawingId: drawingId,
-        drawingPosition: props.drawingPosition,
-        newPosition: props.newPosition,
-        canEdit: props.canEdit
+          : this.state.controlStates.activePlotLineId
       }
     };
   }
 
-  onKeyDown(e) {
-    let keyCode = e.keyCode ? e.keyCode : e.which;
-
-    // space
-    if (keyCode === 32) {
-      e.preventDefault();
-
-      this.onPressSpace();
-    }
-  }
-
-  onPressSpace() {
-    if (this.interval) {
-      this.clearDrawingInterval();
+  onPlay() {
+    if (this.props.interval) {
+      this.props.clearPlayInterval();
       return;
     }
 
-    if (!this.state.controlStates.canEdit) return;
+    if (!this.props.canEdit) return;
 
     if (
-      this.state.controlStates.drawingId &&
-      !this.state.controlStates.drawingPosition
+      !this.props.isLabelSelected &&
+      this.props.drawingId &&
+      !this.props.drawingPosition
     ) {
-      let id = this.state.controlStates.drawingId;
+      let id = this.props.drawingId;
 
       let plotLinesAndBands = this.chart.current.chart.xAxis[0]
         .plotLinesAndBands;
@@ -275,58 +260,21 @@ class TimeSeriesPanel extends Component {
       if (!plotLine.options.isLeftPlotline) return;
       let position = plotLine.options.value;
 
-      this.setState({
-        controlStates: {
-          activePlotLineId: this.state.controlStates.activePlotLineId,
-          drawingId: id,
-          drawingPosition: position,
-          newPosition: undefined,
-          canEdit: true
-        }
-      });
-      this.interval = setInterval(this.drawPlotband, 10);
+      this.props.updateControlStates(id, position, undefined, true);
+      this.props.setPlayInterval();
+    } else if (
+      this.props.isLabelSelected &&
+      this.props.drawingId &&
+      this.props.drawingPosition
+    ) {
+      this.props.updateControlStates(
+        this.props.drawingId,
+        this.props.drawingPosition,
+        this.props.newPosition,
+        true
+      );
+      this.props.setPlayInterval();
     }
-  }
-
-  drawPlotband() {
-    let id = this.state.controlStates.drawingId;
-    let position = this.state.controlStates.drawingPosition;
-    if (!id || !position) return;
-
-    let newPosition = this.state.controlStates.newPosition
-      ? this.state.controlStates.newPosition + 500
-      : position + 500;
-    this.setState({
-      controlStates: {
-        activePlotLineId: this.state.controlStates.activePlotLineId,
-        drawingId: id,
-        drawingPosition: position,
-        newPosition: newPosition,
-        canEdit: this.state.controlStates.canEdit
-      }
-    });
-
-    let difference = newPosition - this.props.start;
-    this.state.onScrubbed(difference / 1000);
-
-    this.state.onDrawPlotband(id, position, newPosition);
-    this.state.onLabelChanged(id, position, newPosition);
-  }
-
-  clearDrawingInterval() {
-    clearInterval(this.interval);
-    this.interval = false;
-
-    this.setState({
-      controlStates: {
-        activePlotLineId: this.state.controlStates.activePlotLineId,
-        drawingId: undefined,
-        drawingPosition: undefined,
-        newPosition: undefined,
-        canEdit: this.state.controlStates.canEdit
-      }
-    });
-    this.state.onDrawPlotband(undefined, undefined, undefined);
   }
 
   /***
@@ -351,53 +299,40 @@ class TimeSeriesPanel extends Component {
       );
       return;
     } else {
-      if (!this.state.controlStates.canEdit) return;
+      if (!this.props.canEdit) return;
 
       let position = this.chart.current.chart.xAxis[0].toValue(
         e.pageX - this.chart.current.chart.plotBox.x / 2
       );
       let id;
-      if (
-        this.state.controlStates.drawingId &&
-        !this.state.controlStates.drawingPosition
-      ) {
-        id = this.state.controlStates.drawingId;
-        this.setState({
-          controlStates: {
-            activePlotLineId: undefined,
-            drawingId: undefined,
-            drawingPosition: undefined,
-            newPosition: undefined,
-            canEdit: this.state.controlStates.canEdit
-          }
-        });
+      if (this.props.drawingId && !this.props.drawingPosition) {
+        id = this.props.drawingId;
+        this.props.updateControlStates(
+          undefined,
+          undefined,
+          undefined,
+          this.props.canEdit
+        );
         this.state.onLabelChanged(id, position, undefined);
       } else if (
-        this.state.controlStates.drawingId &&
-        this.state.controlStates.drawingPosition &&
-        this.state.controlStates.newPosition
+        this.props.drawingId &&
+        this.props.drawingPosition &&
+        this.props.newPosition
       ) {
-        id = this.state.controlStates.drawingId;
-        this.state.onLabelChanged(
-          id,
-          this.state.controlStates.drawingPosition,
-          position
-        );
+        id = this.props.drawingId;
+        this.state.onLabelChanged(id, this.props.drawingPosition, position);
 
-        if (this.interval) {
-          this.clearDrawingInterval();
+        if (this.props.interval) {
+          this.props.clearPlayInterval();
         }
       } else {
         id = this.uuidv4();
-        this.setState({
-          controlStates: {
-            activePlotLineId: undefined,
-            drawingId: id,
-            drawingPosition: undefined,
-            newPosition: undefined,
-            canEdit: this.state.controlStates.canEdit
-          }
-        });
+        this.props.updateControlStates(
+          id,
+          undefined,
+          undefined,
+          this.props.canEdit
+        );
         this.state.onLabelChanged(id, position, undefined);
       }
     }
@@ -456,13 +391,15 @@ class TimeSeriesPanel extends Component {
 
     this.setState({
       controlStates: {
-        activePlotLineId: undefined,
-        drawingId: this.state.controlStates.drawingId,
-        drawingPosition: undefined,
-        newPosition: undefined,
-        canEdit: this.state.controlStates.canEdit
+        activePlotLineId: undefined
       }
     });
+    this.props.updateControlStates(
+      this.props.drawingId,
+      undefined,
+      undefined,
+      this.props.canEdit
+    );
 
     plotLine.options.isActive = false;
     let newValue = this.chart.current.chart.xAxis[0].toValue(
@@ -557,7 +494,7 @@ class TimeSeriesPanel extends Component {
    * PlotLines
    */
   onPlotLineMouseDown(e, id) {
-    if (!this.state.controlStates.canEdit) return;
+    if (!this.props.canEdit) return;
 
     e.stopPropagation();
 
@@ -572,13 +509,15 @@ class TimeSeriesPanel extends Component {
     plotLine.options.clickX = e.pageX - plotLine.svgElem.translateX;
     this.setState({
       controlStates: {
-        activePlotLineId: id,
-        drawingId: this.state.controlStates.drawingId,
-        drawingPosition: undefined,
-        newPosition: undefined,
-        canEdit: this.state.controlStates.canEdit
+        activePlotLineId: id
       }
     });
+    this.props.updateControlStates(
+      this.props.drawingId,
+      undefined,
+      undefined,
+      this.props.canEdit
+    );
   }
 
   labelingToPlotLines(labels, labelTypes, selectedLabelId) {

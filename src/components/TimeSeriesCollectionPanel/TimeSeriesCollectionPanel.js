@@ -17,14 +17,10 @@ class TimeSeriesCollectionPanel extends Component {
       start: props.start,
       end: props.end,
       onLabelChanged: props.onLabelChanged,
-      canEdit: props.canEdit,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
       onDelete: props.onDelete,
-      onDrawPlotband: props.onDrawPlotband,
-      drawingId: props.drawingId,
-      drawingPosition: props.drawingPosition,
-      newPosition: props.newPosition
+      onDrawPlotband: props.onDrawPlotband
     };
 
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
@@ -49,19 +45,15 @@ class TimeSeriesCollectionPanel extends Component {
       start: props.start,
       end: props.end,
       onLabelChanged: props.onLabelChanged,
-      canEdit: props.canEdit,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
       onDelete: props.onDelete,
-      onDrawPlotband: props.onDrawPlotband,
-      drawingId: props.drawingId,
-      drawingPosition: props.drawingPosition,
-      newPosition: props.newPosition
+      onDrawPlotband: props.onDrawPlotband
     }));
   }
 
   onPlay() {
-    this.chart.current.onPressSpace();
+    this.chart.current.onPlay();
   }
 
   onCrosshairDrawn(crosshairEvent) {
@@ -100,7 +92,7 @@ class TimeSeriesCollectionPanel extends Component {
           start={this.state.start}
           end={this.state.end}
           onLabelChanged={this.state.onLabelChanged}
-          canEdit={this.state.canEdit}
+          canEdit={this.props.canEdit}
           onScrubbed={this.state.onScrubbed}
           numSeries={
             this.state.timeSeries.length + this.state.fusedSeries.length + 1
@@ -122,13 +114,18 @@ class TimeSeriesCollectionPanel extends Component {
             start={this.state.start}
             end={this.state.end}
             onLabelChanged={this.state.onLabelChanged}
-            canEdit={this.state.canEdit}
+            canEdit={this.props.canEdit}
             onScrubbed={this.state.onScrubbed}
             numSeries={2}
             onDrawPlotband={this.state.onDrawPlotband}
-            drawingId={this.state.drawingId}
-            drawingPosition={this.state.drawingPosition}
-            newPosition={this.state.newPosition}
+            drawingId={this.props.drawingId}
+            drawingPosition={this.props.drawingPosition}
+            newPosition={this.props.newPosition}
+            updateControlStates={this.props.updateControlStates}
+            setPlayInterval={this.props.setPlayInterval}
+            clearPlayInterval={this.props.clearPlayInterval}
+            interval={this.props.interval}
+            isLabelSelected={this.props.isLabelSelected}
           />
         ) : null}
 
@@ -146,7 +143,7 @@ class TimeSeriesCollectionPanel extends Component {
             start={this.state.start}
             end={this.state.end}
             onLabelChanged={this.state.onLabelChanged}
-            canEdit={this.state.canEdit}
+            canEdit={this.props.canEdit}
             onScrubbed={this.state.onScrubbed}
             numSeries={
               this.state.timeSeries.length + this.state.fusedSeries.length + 1
@@ -154,9 +151,14 @@ class TimeSeriesCollectionPanel extends Component {
             onShift={timestamp => this.state.onShift(key, timestamp)}
             onDelete={() => this.state.onDelete(false, key)}
             onDrawPlotband={this.state.onDrawPlotband}
-            drawingId={this.state.drawingId}
-            drawingPosition={this.state.drawingPosition}
-            newPosition={this.state.newPosition}
+            drawingId={this.props.drawingId}
+            drawingPosition={this.props.drawingPosition}
+            newPosition={this.props.newPosition}
+            updateControlStates={this.props.updateControlStates}
+            setPlayInterval={this.props.setPlayInterval}
+            clearPlayInterval={this.props.clearPlayInterval}
+            interval={this.props.interval}
+            isLabelSelected={this.props.isLabelSelected}
           />
         ))}
         {this.state.fusedSeries.map((fusedSeries, key) => (
@@ -197,16 +199,21 @@ class TimeSeriesCollectionPanel extends Component {
             start={this.state.start}
             end={this.state.end}
             onLabelChanged={this.state.onLabelChanged}
-            canEdit={this.state.canEdit}
+            canEdit={this.props.canEdit}
             onScrubbed={this.state.onScrubbed}
             numSeries={
               this.state.timeSeries.length + this.state.fusedSeries.length + 1
             }
             onDelete={() => this.state.onDelete(true, key)}
             onDrawPlotband={this.state.onDrawPlotband}
-            drawingId={this.state.drawingId}
-            drawingPosition={this.state.drawingPosition}
-            newPosition={this.state.newPosition}
+            drawingId={this.props.drawingId}
+            drawingPosition={this.props.drawingPosition}
+            newPosition={this.props.newPosition}
+            updateControlStates={this.props.updateControlStates}
+            setPlayInterval={this.props.setPlayInterval}
+            clearPlayInterval={this.props.clearPlayInterval}
+            interval={this.props.interval}
+            isLabelSelected={this.props.isLabelSelected}
           />
         ))}
       </div>
