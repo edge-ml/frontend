@@ -86,6 +86,9 @@ class CombineTimeSeriesModal extends Component {
       <Modal isOpen={this.state.modalState.isOpen}>
         <ModalHeader>Fuse Multiple Time Series</ModalHeader>
         <ModalBody>
+          {this.state.timeSeries.length === 0 ? (
+            <p class="text-muted m-1">No time series available.</p>
+          ) : null}
           {this.state.timeSeries.map((series, key) => (
             <InputGroup style={{ margin: '10px 0px' }}>
               <InputGroupAddon addonType="prepend">

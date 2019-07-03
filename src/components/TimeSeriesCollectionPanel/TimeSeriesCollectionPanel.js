@@ -112,8 +112,8 @@ class TimeSeriesCollectionPanel extends Component {
             drawingPosition={this.props.drawingPosition}
             newPosition={this.props.newPosition}
             updateControlStates={this.props.updateControlStates}
-            clearPlayInterval={this.props.clearPlayInterval}
-            interval={this.props.interval}
+            clearDrawingInterval={this.props.clearDrawingInterval}
+            drawingInterval={this.props.drawingInterval}
           />
         ) : null}
 
@@ -141,8 +141,8 @@ class TimeSeriesCollectionPanel extends Component {
             drawingPosition={this.props.drawingPosition}
             newPosition={this.props.newPosition}
             updateControlStates={this.props.updateControlStates}
-            clearPlayInterval={this.props.clearPlayInterval}
-            interval={this.props.interval}
+            clearDrawingInterval={this.props.clearDrawingInterval}
+            drawingInterval={this.props.drawingInterval}
           />
         ))}
         {this.state.fusedSeries.map((fusedSeries, key) => (
@@ -193,8 +193,8 @@ class TimeSeriesCollectionPanel extends Component {
             drawingPosition={this.props.drawingPosition}
             newPosition={this.props.newPosition}
             updateControlStates={this.props.updateControlStates}
-            clearPlayInterval={this.props.clearPlayInterval}
-            interval={this.props.interval}
+            clearDrawingInterval={this.props.clearDrawingInterval}
+            drawingInterval={this.props.drawingInterval}
           />
         ))}
       </div>

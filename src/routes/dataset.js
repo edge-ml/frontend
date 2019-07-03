@@ -155,8 +155,8 @@ class DatasetPage extends Component {
     this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
     this.onPlay = this.onPlay.bind(this);
     this.updateControlStates = this.updateControlStates.bind(this);
-    this.setPlayInterval = this.setPlayInterval.bind(this);
-    this.clearPlayInterval = this.clearPlayInterval.bind(this);
+    this.setDrawingInterval = this.setDrawingInterval.bind(this);
+    this.clearDrawingInterval = this.clearDrawingInterval.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -181,8 +181,8 @@ class DatasetPage extends Component {
     });
   }
 
-  setPlayInterval() {
-    this.interval = setInterval(() => {
+  setDrawingInterval() {
+    this.drawingInterval = setInterval(() => {
       let id = this.state.controlStates.drawingId;
       let position = this.state.controlStates.drawingPosition;
       if (!id || !position) return;
@@ -203,9 +203,9 @@ class DatasetPage extends Component {
     }, 10);
   }
 
-  clearPlayInterval() {
-    clearInterval(this.interval);
-    this.interval = false;
+  clearDrawingInterval() {
+    clearInterval(this.drawingInterval);
+    this.drawingInterval = false;
 
     this.updateControlStates(
       undefined,
@@ -218,8 +218,8 @@ class DatasetPage extends Component {
   onPlay() {
     if (!this.state.controlStates.canEdit) return;
 
-    if (this.interval) {
-      this.clearPlayInterval();
+    if (this.drawingInterval) {
+      this.clearDrawingInterval();
       return;
     }
 
@@ -260,7 +260,7 @@ class DatasetPage extends Component {
       let position = plotLine.options.value;
 
       this.updateControlStates(id, position, undefined, true);
-      this.setPlayInterval();
+      this.setDrawingInterval();
     } else if (
       this.state.controlStates.selectedLabelId &&
       this.state.controlStates.drawingId &&
@@ -272,8 +272,45 @@ class DatasetPage extends Component {
         this.state.controlStates.newPosition,
         true
       );
-      this.setPlayInterval();
+      this.setDrawingInterval();
+    } else if (
+      !this.state.controlStates.selectedLabelId &&
+      !this.state.controlStates.drawingId
+    ) {
+      let chart = charts[1];
+      let x = chart.xAxis[0].toPixels(this.state.dataset.start);
+      let y = chart.yAxis[0].toPixels(0);
+      let e = { chartX: x, chartY: y };
+      chart.xAxis[0].drawCrosshair(e);
+
+      //this.updateControlStates(undefined, charts[1].xAxis[0].)
+      //this.moveCursorFromBeginning();
     }
+  }
+
+  setCrosshairInterval() {
+    let charts = Highcharts.charts;
+    if (charts.length < 2) return;
+
+    this.crosshairInterval = setInterval(() => {
+      let position = this.state.controlStates.drawingPosition;
+
+      let chart = charts[1];
+      let x = chart.xAxis[0].toPixels(position);
+      let y = chart.yAxis[0].toPixels(0);
+      let e = { chartX: x, chartY: y };
+      chart.xAxis[0].drawCrosshair(e);
+
+      this.updateControlStates(
+        undefined,
+        position + 500,
+        undefined,
+        this.state.controlStates.canEdit
+      );
+
+      let difference = position + 500 - this.state.dataset.start;
+      this.onScrubbed(difference / 1000);
+    }, 10);
   }
 
   clearKeyBuffer() {
@@ -616,7 +653,7 @@ class DatasetPage extends Component {
   }
 
   onCanEditChanged(canEdit) {
-    if (!this.interval) {
+    if (!this.drawingInterval) {
       this.setState({
         controlStates: {
           selectedLabelId: this.state.controlStates.selectedLabelId,
@@ -743,14 +780,14 @@ class DatasetPage extends Component {
         )[0]
       : null;
 
-    let isIntervalActive = this.interval ? true : false;
+    let isDrawingIntervalActive = this.drawingInterval ? true : false;
 
     let isPlayButtonActive =
       (this.state.controlStates.canEdit &&
         ((this.state.controlStates.drawingId &&
           !this.state.controlStates.drawingPosition) ||
           this.state.controlStates.selectedLabelId)) ||
-      isIntervalActive;
+      isDrawingIntervalActive;
 
     return (
       <Fade in={this.state.fadeIn}>
@@ -793,8 +830,8 @@ class DatasetPage extends Component {
                   drawingPosition={this.state.controlStates.drawingPosition}
                   newPosition={this.state.controlStates.newPosition}
                   updateControlStates={this.updateControlStates}
-                  clearPlayInterval={this.clearPlayInterval}
-                  interval={this.interval}
+                  clearDrawingInterval={this.clearDrawingInterval}
+                  drawingInterval={this.drawingInterval}
                 />
                 <Button
                   block
@@ -855,7 +892,7 @@ class DatasetPage extends Component {
                 onCanEditChanged={this.onCanEditChanged}
                 canEdit={this.state.controlStates.canEdit}
                 onPlay={this.onPlay}
-                isIntervalActive={isIntervalActive}
+                isDrawingIntervalActive={isDrawingIntervalActive}
                 isPlayButtonActive={isPlayButtonActive}
               />
             </Col>

@@ -32,7 +32,7 @@ class LabelingPanel extends Component {
       canEdit: props.canEdit,
       onCanEditChanged: props.onCanEditChanged,
       onPlay: props.onPlay,
-      isIntervalActive: props.isIntervalActive,
+      isDrawingIntervalActive: props.isDrawingIntervalActive,
       isPlayButtonActive: props.isPlayButtonActive
     };
 
@@ -52,7 +52,7 @@ class LabelingPanel extends Component {
       canEdit: props.canEdit,
       onCanEditChanged: props.onCanEditChanged,
       onPlay: props.onPlay,
-      isIntervalActive: props.isIntervalActive,
+      isDrawingIntervalActive: props.isDrawingIntervalActive,
       isPlayButtonActive: props.isPlayButtonActive
     }));
   }
@@ -84,7 +84,7 @@ class LabelingPanel extends Component {
         <CardBody className="p-1">
           <div className="informationBox">
             <Button
-              disabled={this.props.isIntervalActive}
+              disabled={this.props.isDrawingIntervalActive}
               className="m-1 btn-light"
               style={{ float: 'left' }}
               onClick={this.toggleEdit}
@@ -158,10 +158,10 @@ class LabelingPanel extends Component {
             >
               <FontAwesomeIcon
                 style={{ color: '#fff' }}
-                icon={this.state.isIntervalActive ? faPause : faPlay}
+                icon={this.state.isDrawingIntervalActive ? faPause : faPlay}
                 className="mr-2 fa-xs"
               />
-              {this.state.isIntervalActive ? 'Stop' : 'Play'}
+              {this.state.isDrawingIntervalActive ? 'Stop' : 'Play'}
             </Button>
           </div>
 

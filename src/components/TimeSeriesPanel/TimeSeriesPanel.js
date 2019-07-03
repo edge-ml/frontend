@@ -279,8 +279,8 @@ class TimeSeriesPanel extends Component {
         id = this.props.drawingId;
         this.state.onLabelChanged(id, this.props.drawingPosition, position);
 
-        if (this.props.interval) {
-          this.props.clearPlayInterval();
+        if (this.props.drawingInterval) {
+          this.props.clearDrawingInterval();
         }
       } else {
         id = this.uuidv4();
