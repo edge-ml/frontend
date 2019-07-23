@@ -8,8 +8,11 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Input
+  Input,
+  UncontrolledTooltip
 } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import {
   isValidColor,
@@ -202,7 +205,21 @@ class EditLabelingModal extends Component {
             ? this.state.types.map(type => (
                 <InputGroup>
                   <InputGroupAddon addonType="prepend">
-                    <InputGroupText>Label</InputGroupText>
+                    <InputGroupText>
+                      <FontAwesomeIcon
+                        id={'type' + type.id}
+                        style={{ color: '#8b8d8f' }}
+                        icon={faInfoCircle}
+                        className="mr-2 fa-s"
+                      />
+                      <UncontrolledTooltip
+                        placement="top-start"
+                        target={'type' + type.id}
+                      >
+                        <b>TypeId:</b> {type.id}
+                      </UncontrolledTooltip>
+                      Label
+                    </InputGroupText>
                   </InputGroupAddon>
                   <Input
                     placeholder="Name"

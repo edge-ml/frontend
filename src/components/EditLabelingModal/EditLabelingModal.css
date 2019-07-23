@@ -4,3 +4,7 @@
 .clear::-ms-clear {
   display: none;
 }
+
+.tooltip > .tooltip-inner {
+  font-size: 13px;
+}
