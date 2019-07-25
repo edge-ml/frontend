@@ -157,6 +157,7 @@ class DatasetPage extends Component {
     this.updateControlStates = this.updateControlStates.bind(this);
     this.setDrawingInterval = this.setDrawingInterval.bind(this);
     this.clearDrawingInterval = this.clearDrawingInterval.bind(this);
+    this.setCrosshairInterval = this.setCrosshairInterval.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -242,9 +243,8 @@ class DatasetPage extends Component {
         label.to,
         this.state.controlStates.canEdit
       );
-    }
-
-    if (
+      this.setDrawingInterval();
+    } else if (
       !this.state.controlStates.selectedLabelId &&
       this.state.controlStates.drawingId &&
       !this.state.controlStates.drawingPosition
@@ -277,14 +277,23 @@ class DatasetPage extends Component {
       !this.state.controlStates.selectedLabelId &&
       !this.state.controlStates.drawingId
     ) {
-      let chart = charts[1];
-      let x = chart.xAxis[0].toPixels(this.state.dataset.start);
-      let y = chart.yAxis[0].toPixels(0);
-      let e = { chartX: x, chartY: y };
-      chart.xAxis[0].drawCrosshair(e);
+      let charts = Highcharts.charts;
+      if (charts.length < 2) return;
 
-      //this.updateControlStates(undefined, charts[1].xAxis[0].)
-      //this.moveCursorFromBeginning();
+      charts[1].xAxis[0].addPlotLine({
+        value: this.state.dataset.start + 205000,
+        id: 'plotline_new',
+        dashStyle: 'ShortDot',
+        width: 2,
+        color: 'red'
+      });
+      this.updateControlStates(
+        undefined,
+        this.state.dataset.start,
+        undefined,
+        this.state.controlStates.canEdit
+      );
+      //this.setCrosshairInterval();
     }
   }
 
@@ -295,11 +304,10 @@ class DatasetPage extends Component {
     this.crosshairInterval = setInterval(() => {
       let position = this.state.controlStates.drawingPosition;
 
-      let chart = charts[1];
-      let x = chart.xAxis[0].toPixels(position);
-      let y = chart.yAxis[0].toPixels(0);
-      let e = { chartX: x, chartY: y };
-      chart.xAxis[0].drawCrosshair(e);
+      charts.forEach((chart, index) => {
+        if (index !== 0) {
+        }
+      });
 
       this.updateControlStates(
         undefined,
@@ -516,11 +524,56 @@ class DatasetPage extends Component {
 
   addTimeSeries(obj) {
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+
+    let labels = JSON.parse(JSON.stringify(obj.labels));
+    obj.labels = undefined;
     dataset.timeSeries.push(obj);
+
+    labels = labels.filter(label => {
+      let labelingsDefinition = this.state.labelingsDefinition;
+      for (let j = 0; j < labelingsDefinition.length; j++) {
+        if (label.labelingId === labelingsDefinition[j].id) {
+          if (
+            !labelingsDefinition[j].types.some(type => type.id === label.typeId)
+          ) {
+            window.alert(
+              `The typeId ${
+                label.typeId
+              } does not match any defined label type of labeling ${
+                label.labelingId
+              }.`
+            );
+            return;
+          }
+
+          for (let i = 0; i < dataset.labelings.length; i++) {
+            if (dataset.labelings[i].labelingId === label.labelingId) {
+              dataset.labelings[i].labels.push({
+                id: this.uuidv4(),
+                typeId: label.typeId,
+                from: label.from,
+                to: label.to
+              });
+              break;
+            }
+          }
+          break;
+        }
+      }
+    });
+
+    if (labels.length !== 0) {
+      window.alert(
+        `The labelingId ${
+          labels[0].labelingId
+        } does not match any defined labeling.`
+      );
+      return;
+    }
 
     dataset.end = Math.max(obj.data[obj.data.length - 1][0], dataset.end);
     dataset.start = Math.min(obj.data[0][0], dataset.start);
-
+    console.log(dataset.labelings);
     this.setState({ dataset });
   }
 
