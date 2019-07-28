@@ -33,7 +33,7 @@ class LabelingPanel extends Component {
       onCanEditChanged: props.onCanEditChanged,
       onPlay: props.onPlay,
       isDrawingIntervalActive: props.isDrawingIntervalActive,
-      isPlayButtonActive: props.isPlayButtonActive
+      isCrosshairIntervalActive: props.isCrosshairIntervalActive
     };
 
     this.toggleEdit = this.toggleEdit.bind(this);
@@ -53,7 +53,7 @@ class LabelingPanel extends Component {
       onCanEditChanged: props.onCanEditChanged,
       onPlay: props.onPlay,
       isDrawingIntervalActive: props.isDrawingIntervalActive,
-      isPlayButtonActive: props.isPlayButtonActive
+      isCrosshairIntervalActive: props.isCrosshairIntervalActive
     }));
   }
 
@@ -84,7 +84,10 @@ class LabelingPanel extends Component {
         <CardBody className="p-1">
           <div className="informationBox">
             <Button
-              disabled={this.props.isDrawingIntervalActive}
+              disabled={
+                this.props.isDrawingIntervalActive ||
+                this.props.isCrosshairIntervalActive
+              }
               className="m-1 btn-light"
               style={{ float: 'left' }}
               onClick={this.toggleEdit}
@@ -151,7 +154,7 @@ class LabelingPanel extends Component {
               Delete
             </Button>
             <Button
-              disabled={!this.state.isPlayButtonActive}
+              disabled={!this.state.canEdit}
               className="playButton m-1"
               color="info"
               onClick={e => this.state.onPlay()}
@@ -161,7 +164,11 @@ class LabelingPanel extends Component {
                 icon={this.state.isDrawingIntervalActive ? faPause : faPlay}
                 className="mr-2 fa-xs"
               />
-              {this.state.isDrawingIntervalActive ? 'Stop' : 'Play'}
+              {this.state.isCrosshairIntervalActive
+                ? 'Draw'
+                : this.state.isDrawingIntervalActive
+                ? 'Stop'
+                : 'Play'}
             </Button>
           </div>
 

@@ -52,7 +52,20 @@ class TimeSeriesPanel extends Component {
   }
 
   componentWillReceiveProps(props) {
+    let plotlines = this.state.chartOptions.xAxis.plotLines;
+
     this.setState(state => this.generateState(props));
+
+    if (plotlines) {
+      plotlines = plotlines.filter(
+        plotline => plotline.id === 'plotline_cursor'
+      );
+      if (plotlines.length > 0) {
+        let chartOptions = this.state.chartOptions;
+        chartOptions.xAxis.plotLines.push(plotlines[0]);
+        this.setState({ chartOptions });
+      }
+    }
   }
 
   componentDidMount() {
@@ -154,6 +167,7 @@ class TimeSeriesPanel extends Component {
                   props.selectedLabelId
                 ),
           plotLines:
+            //state.chartOptions.xAxis.plotLines
             this.props.index === 0
               ? undefined
               : this.labelingToPlotLines(

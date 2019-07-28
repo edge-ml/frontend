@@ -158,6 +158,7 @@ class DatasetPage extends Component {
     this.setDrawingInterval = this.setDrawingInterval.bind(this);
     this.clearDrawingInterval = this.clearDrawingInterval.bind(this);
     this.setCrosshairInterval = this.setCrosshairInterval.bind(this);
+    this.clearCrosshairInterval = this.clearCrosshairInterval.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -190,6 +191,12 @@ class DatasetPage extends Component {
       let newPosition = this.state.controlStates.newPosition
         ? this.state.controlStates.newPosition + 500
         : position + 500;
+
+      if (newPosition >= this.state.dataset.end) {
+        this.clearDrawingInterval();
+        return;
+      }
+
       this.updateControlStates(
         id,
         position,
@@ -280,21 +287,62 @@ class DatasetPage extends Component {
       let charts = Highcharts.charts;
       if (charts.length < 2) return;
 
-      charts[1].xAxis[0].addPlotLine({
-        value: this.state.dataset.start + 205000,
-        id: 'plotline_new',
-        dashStyle: 'ShortDot',
-        width: 2,
-        color: 'red'
-      });
-      this.updateControlStates(
-        undefined,
-        this.state.dataset.start,
-        undefined,
-        this.state.controlStates.canEdit
-      );
-      //this.setCrosshairInterval();
+      if (this.crosshairInterval) {
+        let drawingPosition = this.state.controlStates.drawingPosition;
+        this.clearCrosshairInterval();
+
+        this.updateControlStates(
+          this.uuidv4(),
+          drawingPosition,
+          undefined,
+          true
+        );
+        this.setDrawingInterval();
+      } else if (
+        !charts[1].xAxis[0].plotLinesAndBands.some(
+          plotline => plotline.id === 'plotline_cursor'
+        )
+      ) {
+        charts.forEach((chart, index) => {
+          if (index !== 0) {
+            chart.xAxis[0].addPlotLine({
+              value: this.state.dataset.start,
+              id: 'plotline_cursor',
+              dashStyle: 'ShortDot',
+              width: 2,
+              color: '#bfbfbf'
+            });
+          }
+        });
+
+        this.updateControlStates(
+          undefined,
+          this.state.dataset.start + 500,
+          undefined,
+          this.state.controlStates.canEdit
+        );
+        this.setCrosshairInterval();
+      }
     }
+  }
+
+  clearCrosshairInterval() {
+    clearInterval(this.crosshairInterval);
+    this.crosshairInterval = false;
+
+    this.updateControlStates(
+      undefined,
+      undefined,
+      undefined,
+      this.state.controlStates.canEdit
+    );
+
+    let charts = Highcharts.charts;
+    charts.forEach((chart, index) => {
+      if (index !== 0) {
+        chart.xAxis[0].removePlotLine('plotline_cursor');
+      }
+    });
   }
 
   setCrosshairInterval() {
@@ -303,9 +351,21 @@ class DatasetPage extends Component {
 
     this.crosshairInterval = setInterval(() => {
       let position = this.state.controlStates.drawingPosition;
+      if (position >= this.state.dataset.end) {
+        this.clearCrosshairInterval();
+        return;
+      }
 
       charts.forEach((chart, index) => {
         if (index !== 0) {
+          chart.xAxis[0].removePlotLine('plotline_cursor');
+          chart.xAxis[0].addPlotLine({
+            value: position,
+            id: 'plotline_cursor',
+            dashStyle: 'ShortDot',
+            width: 2,
+            color: '#bfbfbf'
+          });
         }
       });
 
@@ -573,7 +633,6 @@ class DatasetPage extends Component {
 
     dataset.end = Math.max(obj.data[obj.data.length - 1][0], dataset.end);
     dataset.start = Math.min(obj.data[0][0], dataset.start);
-    console.log(dataset.labelings);
     this.setState({ dataset });
   }
 
@@ -834,13 +893,7 @@ class DatasetPage extends Component {
       : null;
 
     let isDrawingIntervalActive = this.drawingInterval ? true : false;
-
-    let isPlayButtonActive =
-      (this.state.controlStates.canEdit &&
-        ((this.state.controlStates.drawingId &&
-          !this.state.controlStates.drawingPosition) ||
-          this.state.controlStates.selectedLabelId)) ||
-      isDrawingIntervalActive;
+    let isCrosshairIntervalActive = this.crosshairInterval ? true : false;
 
     return (
       <Fade in={this.state.fadeIn}>
@@ -946,7 +999,7 @@ class DatasetPage extends Component {
                 canEdit={this.state.controlStates.canEdit}
                 onPlay={this.onPlay}
                 isDrawingIntervalActive={isDrawingIntervalActive}
-                isPlayButtonActive={isPlayButtonActive}
+                isCrosshairIntervalActive={isCrosshairIntervalActive}
               />
             </Col>
             <Col />
