@@ -12,14 +12,16 @@ import LabelingSelectionPanel from '../components/LabelingSelectionPanel/Labelin
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
 import ApiPanel from '../components/ApiPanel/ApiPanel';
 import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
-import { uuidv4 } from '../services/UUIDService';
+import { uuidv4, shortId } from '../services/UUIDService';
 
 import {
   subscribeLabelings,
+  updateLabelings,
   unsubscribeLabelings,
   subscribeDatasets,
   unsubscribeDatasets
 } from '../services/SocketService';
+import { generateRandomColor } from '../services/ColorService';
 import Loader from '../modules/loader';
 import VideoPanel from '../components/VideoPanel/VideoPanel';
 
@@ -527,7 +529,7 @@ class DatasetPage extends Component {
     this.videoPanel.current.onSetTime(position);
   }
 
-  onDatasetsChanged(datasets, callback, param) {
+  onDatasetsChanged(datasets) {
     if (!datasets) return;
 
     datasets = datasets.data.filter(
@@ -547,9 +549,51 @@ class DatasetPage extends Component {
 
   onLabelingsChanged(labelings) {
     if (!labelings) labelings = [];
-    console.log(this.state.dataset);
 
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+
+    let labelingsChanged = false;
+    dataset.labelings.forEach(labeling => {
+      if (!labelings.some(def => def.id === labeling.labelingId)) {
+        let types = [];
+        labeling.labels.forEach(label => {
+          if (!types.some(type => type.id === label.type)) {
+            types = [
+              ...types,
+              {
+                id: label.type,
+                name: 'Type ' + shortId(),
+                color: generateRandomColor()
+              }
+            ];
+          }
+        });
+
+        labelings = [
+          ...labelings,
+          {
+            id: labeling.labelingId,
+            name: 'Labeling ' + shortId(),
+            types: types
+          }
+        ];
+        labelingsChanged = true;
+      } else {
+        let def = labelings.filter(def => def.id === labeling.labelingId)[0];
+
+        labeling.labels.forEach(label => {
+          if (!def.types.some(type => type.id === label.type)) {
+            def.types.push({
+              id: label.type,
+              name: 'Type ' + shortId(),
+              color: generateRandomColor()
+            });
+            labelingsChanged = true;
+          }
+        });
+      }
+    });
+
     labelings.forEach(def => {
       if (
         !this.state.dataset.labelings.some(
@@ -578,6 +622,10 @@ class DatasetPage extends Component {
       },
       isReady: true
     });
+
+    if (labelingsChanged) {
+      updateLabelings(labelings);
+    }
   }
 
   componentDidMount() {

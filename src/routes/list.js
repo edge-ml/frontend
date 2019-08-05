@@ -19,6 +19,11 @@ import { view } from 'react-easy-state';
 import State from '../state';
 import Loader from '../modules/loader';
 
+import {
+  subscribeDatasets,
+  unsubscribeDatasets
+} from '../services/SocketService';
+
 class ListPage extends Component {
   constructor(props) {
     super(props);
@@ -39,7 +44,7 @@ class ListPage extends Component {
         },
         {
           dataField: 'user',
-          text: 'User Nickname'
+          text: 'UserID'
         },
         {
           dataField: 'numSamples',
@@ -98,6 +103,7 @@ class ListPage extends Component {
     this.deleteHandler = this.deleteHandler.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.modalDeleteHandler = this.modalDeleteHandler.bind(this);
+    this.onDatasetsChanged = this.onDatasetsChanged.bind(this);
   }
 
   deleteHandler(id) {
@@ -145,29 +151,18 @@ class ListPage extends Component {
     );
   }
 
-  componentDidMount() {
-    const options = {
-      method: 'GET',
-      url: `${State.edge}/dataset`,
-      headers: {
-        Authorization: `Bearer ${window.localStorage.getItem('id_token')}`
-      }
-    };
+  onDatasetsChanged(datasets) {
+    if (!datasets) return;
+    console.log(datasets);
 
-    Request(options).then(res => {
-      res = JSON.parse(res);
-      let i = 0;
-      res.forEach(elem => {
-        elem.key = i;
-        i++;
-      });
-      this.setState(
-        update(this.state, {
-          ready: { $set: true },
-          rows: { $set: res }
-        })
-      );
+    this.setState({
+      datasets: datasets,
+      ready: true
     });
+  }
+
+  componentDidMount() {
+    subscribeDatasets(this.onDatasetsChanged);
   }
 
   render() {

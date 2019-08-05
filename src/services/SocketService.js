@@ -115,7 +115,7 @@ export const restoreSession = callback => {
 export const subscribeLabelings = callback => {
   if (!authenticated || !verified) return;
 
-  socket.on('labelings', timestamp => callback(timestamp));
+  socket.on('labelings', labelings => callback(labelings));
   socket.emit('labelings');
 };
 
