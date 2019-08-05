@@ -19,6 +19,7 @@ import {
   hexToForegroundColor,
   generateRandomColor
 } from '../../services/ColorService';
+import { uuidv4 } from '../../services/UUIDService';
 
 import './EditLabelingModal.css';
 
@@ -37,7 +38,6 @@ class EditLabelingModal extends Component {
     };
 
     this.onAddType = this.onAddType.bind(this);
-    this.uuidv4 = this.uuidv4.bind(this);
     this.onDeleteType = this.onDeleteType.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onSave = this.onSave.bind(this);
@@ -62,7 +62,7 @@ class EditLabelingModal extends Component {
 
   onAddType() {
     let newLabel = {
-      id: this.uuidv4(),
+      id: uuidv4(),
       name: '',
       color: generateRandomColor()
     };
@@ -175,14 +175,6 @@ class EditLabelingModal extends Component {
       onSave: this.state.onSave,
       onDeleteLabeling: this.state.onDeleteLabeling,
       isNewLabeling: this.state.isNewLabeling
-    });
-  }
-
-  uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = (Math.random() * 16) | 0,
-        v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
     });
   }
 

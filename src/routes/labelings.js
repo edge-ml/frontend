@@ -10,6 +10,7 @@ import {
   updateLabelings,
   unsubscribeLabelings
 } from '../services/SocketService';
+import { uuidv4 } from '../services/UUIDService';
 
 class LabelingsPage extends Component {
   constructor(props) {
@@ -27,7 +28,6 @@ class LabelingsPage extends Component {
 
     this.toggleModal = this.toggleModal.bind(this);
     this.onAddLabeling = this.onAddLabeling.bind(this);
-    this.uuidv4 = this.uuidv4.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
@@ -93,7 +93,7 @@ class LabelingsPage extends Component {
   onAddLabeling() {
     this.toggleModal(
       {
-        id: this.uuidv4(),
+        id: uuidv4(),
         name: '',
         types: []
       },
@@ -159,14 +159,6 @@ class LabelingsPage extends Component {
     this.props.history.replace({
       pathname: '/labelings',
       search: null
-    });
-  }
-
-  uuidv4() {
-    return 'xxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = (Math.random() * 16) | 0,
-        v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
     });
   }
 

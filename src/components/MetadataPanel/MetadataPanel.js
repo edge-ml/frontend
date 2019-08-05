@@ -17,7 +17,7 @@ class MetadataPanel extends Component {
       id: props.id,
       start: props.start,
       end: props.end,
-      email: props.email
+      user: props.user
     };
   }
 
@@ -90,7 +90,7 @@ class MetadataPanel extends Component {
                   User
                 </InputGroupText>
               </InputGroupAddon>
-              <Input className="text-right" value={this.state.email} readOnly />
+              <Input className="text-right" value={this.state.user} readOnly />
             </InputGroup>
           </div>
         </CardBody>

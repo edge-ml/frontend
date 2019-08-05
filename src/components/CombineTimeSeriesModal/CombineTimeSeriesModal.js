@@ -98,13 +98,13 @@ class CombineTimeSeriesModal extends Component {
                     type="checkbox"
                     checked={
                       this.state.selectedTimeSeries.filter(
-                        filteredSeries => filteredSeries === series.id
+                        filteredSeries => filteredSeries === series['_id']
                       ).length !== 0
                     }
                     onChange={e =>
                       this.onTimeSeriesSelectedChanged(
                         e.target.checked,
-                        series.id
+                        series['_id']
                       )
                     }
                   />
@@ -114,7 +114,7 @@ class CombineTimeSeriesModal extends Component {
                 defaultValue={series.name}
                 className={
                   this.state.selectedTimeSeries.filter(
-                    filteredSeries => filteredSeries === series.id
+                    filteredSeries => filteredSeries === series['_id']
                   ).length !== 0
                     ? 'inputChecked'
                     : 'inputNotChecked'

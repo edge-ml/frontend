@@ -1,5 +1,7 @@
 const path = require('path');
-const fs   = require('fs');
+const fs = require('fs');
+var rp = require('request-promise');
+const request = require('request');
 
 const KoaStatic = require('koa-static');
 const KoaRouter = require('koa-router');
@@ -145,6 +147,24 @@ io.on('connection', (socket) => {
 
 			io.emit('labelings', newLabelings);
 		}
+	});
+
+	socket.on('datasets', (newLabelings) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			uri: 'https://edge.aura.rest/datasets',
+			headers: {
+        'User-Agent': 'Explorer'
+    	},
+			json: true
+		})
+    .then(datasets => {
+      socket.emit('datasets', datasets);
+    })
+    .catch(err => {
+      console.log(err)
+    });
 	});
 
 	socket.on('disconnect', () => {

@@ -137,7 +137,7 @@ export const unsubscribeLabelings = callback => {
 export const subscribeDatasets = callback => {
   if (!authenticated || !verified) return;
 
-  socket.on(`datasets`, timestamp => callback(timestamp));
+  socket.on(`datasets`, datasets => callback(datasets));
   socket.emit(`datasets`);
 };
 

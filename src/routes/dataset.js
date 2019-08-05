@@ -16,7 +16,9 @@ import { uuidv4 } from '../services/UUIDService';
 
 import {
   subscribeLabelings,
-  unsubscribeLabelings
+  unsubscribeLabelings,
+  subscribeDatasets,
+  unsubscribeDatasets
 } from '../services/SocketService';
 import Loader from '../modules/loader';
 import VideoPanel from '../components/VideoPanel/VideoPanel';
@@ -41,6 +43,7 @@ class DatasetPage extends Component {
         }
       : {
           // TODO: pull real dataset
+          /*
           id: '0x1234',
           userId: '0x9321',
           email: 'test@test.de',
@@ -110,6 +113,7 @@ class DatasetPage extends Component {
               ]
             }
           ]
+          */
         };
 
     super(props);
@@ -145,7 +149,7 @@ class DatasetPage extends Component {
     this.onFuseTimeSeries = this.onFuseTimeSeries.bind(this);
     this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
     this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
-    this.uuidv4 = this.uuidv4.bind(this);
+    this.onDatasetsChanged = this.onDatasetsChanged.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onFuseCanceled = this.onFuseCanceled.bind(this);
@@ -241,18 +245,22 @@ class DatasetPage extends Component {
       )[0];
 
       let label = labeling.labels.filter(
-        label => label.id === this.state.controlStates.selectedLabelId
+        label => label['_id'] === this.state.controlStates.selectedLabelId
       )[0];
 
       this.updateControlStates(
         this.state.controlStates.selectedLabelId,
-        label.from,
-        label.to,
+        label.start,
+        label.end,
         this.state.controlStates.canEdit
       );
       this.setDrawingInterval();
     } else if (
-      !this.state.controlStates.selectedLabelId &&
+      this.state.controlStates.drawingId &&
+      this.state.controlStates.drawingPosition
+    ) {
+      this.setDrawingInterval();
+    } else if (
       this.state.controlStates.drawingId &&
       !this.state.controlStates.drawingPosition
     ) {
@@ -268,22 +276,7 @@ class DatasetPage extends Component {
 
       this.updateControlStates(id, position, undefined, true);
       this.setDrawingInterval();
-    } else if (
-      this.state.controlStates.selectedLabelId &&
-      this.state.controlStates.drawingId &&
-      this.state.controlStates.drawingPosition
-    ) {
-      this.updateControlStates(
-        this.state.controlStates.drawingId,
-        this.state.controlStates.drawingPosition,
-        this.state.controlStates.newPosition,
-        true
-      );
-      this.setDrawingInterval();
-    } else if (
-      !this.state.controlStates.selectedLabelId &&
-      !this.state.controlStates.drawingId
-    ) {
+    } else if (!this.state.controlStates.drawingId) {
       let charts = Highcharts.charts;
       if (charts.length < 2) return;
 
@@ -291,12 +284,7 @@ class DatasetPage extends Component {
         let drawingPosition = this.state.controlStates.drawingPosition;
         this.clearCrosshairInterval();
 
-        this.updateControlStates(
-          this.uuidv4(),
-          drawingPosition,
-          undefined,
-          true
-        );
+        this.updateControlStates(uuidv4(), drawingPosition, undefined, true);
         this.setDrawingInterval();
       } else if (
         !charts[1].xAxis[0].plotLinesAndBands.some(
@@ -492,6 +480,7 @@ class DatasetPage extends Component {
     } else if (keyCode === 76) {
       e.preventDefault();
       this.onCanEditChanged(!this.state.controlStates.canEdit);
+
       // backspace or delete
     } else if (keyCode === 8 || keyCode === 46) {
       e.preventDefault();
@@ -506,6 +495,8 @@ class DatasetPage extends Component {
           window.alert('Editing not unlocked. Press "L" to unlock.');
         }
       }
+
+      // space
     } else if (keyCode === 32) {
       e.preventDefault();
       this.onPlay();
@@ -536,8 +527,27 @@ class DatasetPage extends Component {
     this.videoPanel.current.onSetTime(position);
   }
 
+  onDatasetsChanged(datasets, callback, param) {
+    if (!datasets) return;
+
+    datasets = datasets.data.filter(
+      dataset => dataset['_id'] === this.props.match.params.id
+    );
+    if (datasets.length === 0) return;
+
+    let dataset = datasets[0];
+    dataset.fusedSeries = dataset.fusedSeries.filter(
+      fused => fused.timeSeries.length > 1
+    );
+    this.setState(
+      { dataset: dataset },
+      subscribeLabelings(this.onLabelingsChanged)
+    );
+  }
+
   onLabelingsChanged(labelings) {
     if (!labelings) labelings = [];
+    console.log(this.state.dataset);
 
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
     labelings.forEach(def => {
@@ -547,7 +557,7 @@ class DatasetPage extends Component {
         )
       ) {
         dataset.labelings.push({
-          id: this.uuidv4(),
+          _id: uuidv4(),
           labelingId: def.id,
           labels: []
         });
@@ -573,13 +583,14 @@ class DatasetPage extends Component {
   componentDidMount() {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
-    subscribeLabelings(this.onLabelingsChanged);
+    subscribeDatasets(this.onDatasetsChanged);
   }
 
   componentWillUnmount() {
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('keydown', this.onKeyDown);
     unsubscribeLabelings();
+    unsubscribeDatasets();
   }
 
   addTimeSeries(obj) {
@@ -587,6 +598,14 @@ class DatasetPage extends Component {
 
     let labels = JSON.parse(JSON.stringify(obj.labels));
     obj.labels = undefined;
+    obj.offset = 0;
+    obj.data = obj.data.map(point => {
+      return {
+        _id: uuidv4(),
+        timestamp: point[0],
+        value: point[1]
+      };
+    });
     dataset.timeSeries.push(obj);
 
     labels = labels.filter(label => {
@@ -594,14 +613,10 @@ class DatasetPage extends Component {
       for (let j = 0; j < labelingsDefinition.length; j++) {
         if (label.labelingId === labelingsDefinition[j].id) {
           if (
-            !labelingsDefinition[j].types.some(type => type.id === label.typeId)
+            !labelingsDefinition[j].types.some(type => type.id === label.type)
           ) {
             window.alert(
-              `The typeId ${
-                label.typeId
-              } does not match any defined label type of labeling ${
-                label.labelingId
-              }.`
+              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
             );
             return;
           }
@@ -609,10 +624,10 @@ class DatasetPage extends Component {
           for (let i = 0; i < dataset.labelings.length; i++) {
             if (dataset.labelings[i].labelingId === label.labelingId) {
               dataset.labelings[i].labels.push({
-                id: this.uuidv4(),
-                typeId: label.typeId,
-                from: label.from,
-                to: label.to
+                _id: uuidv4(),
+                type: label.type,
+                start: label.start,
+                end: label.end
               });
               break;
             }
@@ -624,15 +639,16 @@ class DatasetPage extends Component {
 
     if (labels.length !== 0) {
       window.alert(
-        `The labelingId ${
-          labels[0].labelingId
-        } does not match any defined labeling.`
+        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`
       );
       return;
     }
 
-    dataset.end = Math.max(obj.data[obj.data.length - 1][0], dataset.end);
-    dataset.start = Math.min(obj.data[0][0], dataset.start);
+    dataset.end = Math.max(
+      obj.data[obj.data.length - 1].timestamp,
+      dataset.end
+    );
+    dataset.start = Math.min(obj.data[0].timestamp, dataset.start);
     this.setState({ dataset });
   }
 
@@ -659,13 +675,13 @@ class DatasetPage extends Component {
         labeling.labelingId === this.state.controlStates.selectedLabelingId
     )[0];
     let label = labeling.labels.filter(
-      label => label.id === this.state.controlStates.selectedLabelId
+      label => label['_id'] === this.state.controlStates.selectedLabelId
     )[0];
     var selectedLabeling = this.state.labelingsDefinition.filter(
       labeling => labeling.id === this.state.controlStates.selectedLabelingId
     )[0];
     var selectedLabelingTypes = selectedLabeling.types;
-    label.typeId = selectedLabelingTypes.filter(
+    label.type = selectedLabelingTypes.filter(
       labelType => labelType.id === selectedLabelTypeId
     )[0].id;
 
@@ -688,13 +704,13 @@ class DatasetPage extends Component {
         labeling.labelingId === this.state.controlStates.selectedLabelingId
     )[0];
     let label = labeling.labels.filter(
-      label => label.id === selectedLabelId
+      label => label['_id'] === selectedLabelId
     )[0];
     this.setState({
       controlStates: {
         selectedLabelId: selectedLabelId,
         selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: label ? label.typeId : undefined,
+        selectedLabelTypeId: label ? label.type : undefined,
         canEdit: this.state.controlStates.canEdit,
         drawingId: this.state.controlStates.drawingId,
         drawingPosition: this.state.controlStates.drawingPosition,
@@ -703,39 +719,39 @@ class DatasetPage extends Component {
     });
   }
 
-  onLabelChanged(labelId, from, to) {
+  onLabelChanged(labelId, start, end) {
     let labeling = this.state.dataset.labelings.filter(
       labeling =>
         labeling.labelingId === this.state.controlStates.selectedLabelingId
     )[0];
 
-    let label = labeling.labels.filter(label => label.id === labelId)[0];
+    let label = labeling.labels.filter(label => label['_id'] === labelId)[0];
 
-    if (label !== undefined && label.from === undefined) {
-      label.from = from === undefined ? to : from;
+    if (label !== undefined && label.start === undefined) {
+      label.start = start === undefined ? start : end;
     } else if (label !== undefined && label.to === undefined) {
-      label.to = from === undefined ? to : from;
+      label.end = start === undefined ? start : end;
     } else if (!label) {
       label = {
-        id: labelId,
-        from: from,
-        to: to,
-        typeId: this.state.labelingsDefinition.filter(
+        _id: labelId,
+        start: start,
+        end: end,
+        type: this.state.labelingsDefinition.filter(
           labeling =>
             this.state.controlStates.selectedLabelingId === labeling.id
         )[0].types[0].id
       };
       labeling.labels = [...labeling.labels, label];
     } else {
-      label.from = from;
-      label.to = to;
+      label.start = start;
+      label.end = end;
     }
 
     let temp;
-    if (label.from > label.to) {
-      temp = label.from;
-      label.from = label.to;
-      label.to = temp;
+    if (label.start > label.end) {
+      temp = label.start;
+      label.start = label.end;
+      label.end = temp;
     }
 
     this.forceUpdate();
@@ -748,7 +764,7 @@ class DatasetPage extends Component {
           labeling.labelingId === this.state.controlStates.selectedLabelingId
       )[0];
       labeling.labels = labeling.labels.filter(
-        label => label.id !== this.state.controlStates.selectedLabelId
+        label => label['_id'] !== this.state.controlStates.selectedLabelId
       );
       this.setState({
         controlStates: {
@@ -783,8 +799,8 @@ class DatasetPage extends Component {
   onFuseTimeSeries(seriesIds) {
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
     dataset.fusedSeries.push({
-      id: uuidv4(),
-      series: seriesIds
+      _id: uuidv4(),
+      timeSeries: seriesIds
     });
     let fuseTimeSeriesModalState = { ...this.state.fuseTimeSeriesModalState };
     fuseTimeSeriesModalState.isOpen = false;
@@ -811,9 +827,17 @@ class DatasetPage extends Component {
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
 
     if (!fused) {
+      dataset.fusedSeries.forEach(series => {
+        series.timeSeries = series.timeSeries.filter(
+          timeSeries => timeSeries !== dataset.timeSeries[index]['_id']
+        );
+      });
       dataset.timeSeries.splice(index, 1);
       dataset.start = this.getStartTime(dataset.timeSeries);
       dataset.end = this.getEndTime(dataset.timeSeries);
+      dataset.fusedSeries = dataset.fusedSeries.filter(
+        series => series.timeSeries.length > 1
+      );
     } else {
       dataset.fusedSeries.splice(index, 1);
     }
@@ -825,9 +849,9 @@ class DatasetPage extends Component {
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
 
     let data = dataset.timeSeries[index].data;
-    let diff = timestamp - data[0][0];
+    let diff = timestamp - data[0].timestamp;
     data.forEach(element => {
-      element[0] = element[0] + diff;
+      element.timestamp = element.timestamp + diff;
     });
     dataset.timeSeries[index].data = data;
 
@@ -846,7 +870,7 @@ class DatasetPage extends Component {
     let startTimes = [];
 
     timeSeries.forEach(element => {
-      startTimes.push(element.data[0][0]);
+      startTimes.push(element.data[0].timestamp);
     });
 
     return Math.min(...startTimes);
@@ -861,18 +885,10 @@ class DatasetPage extends Component {
     let endTimes = [];
 
     timeSeries.forEach(element => {
-      endTimes.push(element.data[element.data.length - 1][0]);
+      endTimes.push(element.data[element.data.length - 1].timestamp);
     });
 
     return Math.max(...endTimes);
-  }
-
-  uuidv4() {
-    return 'xxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = (Math.random() * 16) | 0,
-        v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
   }
 
   render() {
@@ -888,7 +904,7 @@ class DatasetPage extends Component {
     if (labeling === undefined) labeling = [];
     let label = labeling.labels
       ? labeling.labels.filter(
-          label => label.id === this.state.controlStates.selectedLabelId
+          label => label['_id'] === this.state.controlStates.selectedLabelId
         )[0]
       : null;
 
@@ -959,14 +975,14 @@ class DatasetPage extends Component {
                 />
               </div>
               <div className="mt-2">
-                <TagsPanel tags={this.state.dataset.tags} />
+                <TagsPanel events={this.state.dataset.events} />
               </div>
               <div className="mt-2">
                 <MetadataPanel
-                  id={this.state.dataset.id}
+                  id={this.state.dataset['_id']}
                   start={this.state.dataset.start}
                   end={this.state.dataset.end}
-                  email={this.state.dataset.email}
+                  user={this.state.dataset.userId}
                 />
               </div>
               <div className="mt-2">
@@ -987,8 +1003,8 @@ class DatasetPage extends Component {
               <LabelingPanel
                 history={this.props.history}
                 id={this.state.controlStates.selectedLabelId}
-                from={label ? label.from : null}
-                to={label ? label.to : null}
+                from={label ? label.start : null}
+                to={label ? label.end : null}
                 labeling={selectedLabeling}
                 selectedLabelTypeId={
                   this.state.controlStates.selectedLabelTypeId
