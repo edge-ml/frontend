@@ -132,7 +132,8 @@ class DatasetPage extends Component {
         canEdit: false,
         drawingId: undefined,
         drawingPosition: undefined,
-        newPosition: undefined
+        newPosition: undefined,
+        fromLastPosition: false
       },
       fuseTimeSeriesModalState: {
         isOpen: false
@@ -177,7 +178,13 @@ class DatasetPage extends Component {
     this.videoPanel = React.createRef();
   }
 
-  updateControlStates(drawingId, drawingPosition, newPosition, canEdit) {
+  updateControlStates(
+    drawingId,
+    drawingPosition,
+    newPosition,
+    canEdit,
+    fromLastPosition = this.state.controlStates.fromLastPosition
+  ) {
     this.setState({
       controlStates: {
         selectedLabelId: this.state.controlStates.selectedLabelId,
@@ -186,7 +193,8 @@ class DatasetPage extends Component {
         canEdit: canEdit,
         drawingId: drawingId,
         drawingPosition: drawingPosition,
-        newPosition: newPosition
+        newPosition: newPosition,
+        fromLastPosition: fromLastPosition
       }
     });
   }
@@ -209,7 +217,8 @@ class DatasetPage extends Component {
         id,
         position,
         newPosition,
-        this.state.controlStates.canEdit
+        this.state.controlStates.canEdit,
+        this.state.controlStates.fromLastPosition
       );
 
       let difference = newPosition - this.state.dataset.start;
@@ -225,9 +234,12 @@ class DatasetPage extends Component {
 
     this.updateControlStates(
       undefined,
+      this.state.controlStates.fromLastPosition
+        ? this.state.controlStates.newPosition
+        : undefined,
       undefined,
-      undefined,
-      this.state.controlStates.canEdit
+      this.state.controlStates.canEdit,
+      this.state.controlStates.fromLastPosition
     );
   }
 
@@ -256,7 +268,8 @@ class DatasetPage extends Component {
         this.state.controlStates.selectedLabelId,
         label.start,
         label.end,
-        this.state.controlStates.canEdit
+        this.state.controlStates.canEdit,
+        false
       );
       this.setDrawingInterval();
     } else if (
@@ -278,7 +291,7 @@ class DatasetPage extends Component {
       if (!plotLine.options.isLeftPlotline) return;
       let position = plotLine.options.value;
 
-      this.updateControlStates(id, position, undefined, true);
+      this.updateControlStates(id, position, undefined, true, false);
       this.setDrawingInterval();
     } else if (!this.state.controlStates.drawingId) {
       let charts = Highcharts.charts;
@@ -288,17 +301,30 @@ class DatasetPage extends Component {
         let drawingPosition = this.state.controlStates.drawingPosition;
         this.clearCrosshairInterval();
 
-        this.updateControlStates(uuidv4(), drawingPosition, undefined, true);
+        this.updateControlStates(
+          uuidv4(),
+          drawingPosition,
+          undefined,
+          true,
+          true
+        );
         this.setDrawingInterval();
       } else if (
         !charts[1].xAxis[0].plotLinesAndBands.some(
           plotline => plotline.id === 'plotline_cursor'
         )
       ) {
+        let position;
+        if (this.state.controlStates.drawingPosition) {
+          position = this.state.controlStates.drawingPosition;
+        } else {
+          position = this.state.dataset.start;
+        }
+
         charts.forEach((chart, index) => {
           if (index !== 0) {
             chart.xAxis[0].addPlotLine({
-              value: this.state.dataset.start,
+              value: position,
               id: 'plotline_cursor',
               dashStyle: 'ShortDot',
               width: 2,
@@ -309,9 +335,10 @@ class DatasetPage extends Component {
 
         this.updateControlStates(
           undefined,
-          this.state.dataset.start + 500,
+          position + 500,
           undefined,
-          this.state.controlStates.canEdit
+          this.state.controlStates.canEdit,
+          true
         );
         this.setCrosshairInterval();
       }
@@ -326,7 +353,8 @@ class DatasetPage extends Component {
       undefined,
       undefined,
       undefined,
-      this.state.controlStates.canEdit
+      this.state.controlStates.canEdit,
+      this.state.controlStates.fromLastPosition
     );
 
     let charts = Highcharts.charts;
@@ -365,7 +393,8 @@ class DatasetPage extends Component {
         undefined,
         position + 500,
         undefined,
-        this.state.controlStates.canEdit
+        this.state.controlStates.canEdit,
+        true
       );
 
       let difference = position + 500 - this.state.dataset.start;

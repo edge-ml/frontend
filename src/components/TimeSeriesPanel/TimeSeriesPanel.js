@@ -282,7 +282,8 @@ class TimeSeriesPanel extends Component {
           id,
           position,
           undefined,
-          this.props.canEdit
+          this.props.canEdit,
+          false
         );
       } else if (!this.props.drawingPosition) {
         this.state.onLabelChanged(this.props.drawingId, position, undefined);
@@ -290,7 +291,8 @@ class TimeSeriesPanel extends Component {
           this.props.drawingId,
           position,
           undefined,
-          this.props.canEdit
+          this.props.canEdit,
+          false
         );
       } else {
         this.state.onLabelChanged(
