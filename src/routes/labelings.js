@@ -178,8 +178,8 @@ class LabelingsPage extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.labelingsDefinition.map(labeling => (
-                    <tr>
+                  {this.state.labelingsDefinition.map((labeling, index) => (
+                    <tr key={index}>
                       <th className="labelings-column" scope="row">
                         {labeling.id}
                       </th>
@@ -193,8 +193,9 @@ class LabelingsPage extends Component {
                         {labeling.name !== '' ? labeling.name : 'Untitled'}
                       </td>
                       <td className="labelings-column">
-                        {labeling.types.map(type => (
+                        {labeling.types.map((type, index) => (
                           <Badge
+                            key={index}
                             className={
                               type.name === ''
                                 ? 'm-1 font-italic font-weight-normal'
