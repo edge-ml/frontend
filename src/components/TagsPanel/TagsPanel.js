@@ -41,11 +41,13 @@ class TagsPanel extends Component {
             {events.map((event, key) => (
               <div className="m-2" key={key}>
                 <Badge color="light">
-                  <span class="float-left">
+                  <span className="float-left">
                     <b>{event.name}, </b>
                     {event.value} {event.unit}
                   </span>
-                  <span class="float-right">{this.parseTime(event.time)}</span>
+                  <span className="float-right">
+                    {this.parseTime(event.time)}
+                  </span>
                 </Badge>
               </div>
             ))}

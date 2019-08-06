@@ -122,6 +122,7 @@ class TimeSeriesCollectionPanel extends Component {
 
         {this.state.timeSeries.map((timeSeries, key) => (
           <TimeSeriesPanel
+            key={key}
             index={key + 1}
             data={timeSeries.data}
             name={timeSeries.name}

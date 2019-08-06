@@ -90,7 +90,7 @@ class CombineTimeSeriesModal extends Component {
             <p class="text-muted m-1">No time series available.</p>
           ) : null}
           {this.state.timeSeries.map((series, key) => (
-            <InputGroup style={{ margin: '10px 0px' }}>
+            <InputGroup key={series['_id']} style={{ margin: '10px 0px' }}>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>
                   <Input
