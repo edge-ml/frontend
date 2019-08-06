@@ -137,14 +137,14 @@ export const unsubscribeLabelings = callback => {
 export const subscribeDatasets = callback => {
   if (!authenticated || !verified) return;
 
-  socket.on(`datasets`, datasets => callback(datasets));
-  socket.emit(`datasets`);
+  socket.on('datasets', datasets => callback(datasets));
+  socket.emit('datasets');
 };
 
 export const unsubscribeDatasets = () => {
   if (!authenticated || !verified) return;
 
-  socket.off(`datasets`);
+  socket.off('datasets');
 };
 
 /***
@@ -153,13 +153,26 @@ export const unsubscribeDatasets = () => {
 export const subscribeDataset = (id, callback) => {
   if (!authenticated || !verified) return;
 
-  socket.on(`datasets_${id}`, timestamp => callback(null, timestamp));
+  socket.on(`dataset_${id}`, dataset => callback(dataset));
+  socket.emit('dataset', id);
 };
 
 export const unsubscribeDataset = (id, callback) => {
   if (!authenticated || !verified) return;
 
-  socket.off(`datasets_${id}`);
+  socket.off(`dataset_${id}`);
+};
+
+export const deleteDataset = (id, callback) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('delete_dataset', id);
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
+  });
 };
 
 /***

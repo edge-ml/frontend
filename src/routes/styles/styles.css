@@ -1,0 +1,8 @@
+.react-bootstrap-table thead {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.react-bootstrap-table td {
+  word-wrap: break-word;
+}

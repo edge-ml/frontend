@@ -149,7 +149,7 @@ io.on('connection', (socket) => {
 		}
 	});
 
-	socket.on('datasets', (newLabelings) => {
+	socket.on('datasets', () => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
 		rp({
@@ -160,11 +160,48 @@ io.on('connection', (socket) => {
 			json: true
 		})
     .then(datasets => {
-      socket.emit('datasets', datasets);
+      socket.emit('datasets', datasets.data);
     })
     .catch(err => {
       console.log(err)
     });
+	});
+
+	socket.on('dataset', id => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			uri: `https://edge.aura.rest/datasets/${id}`,
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			json: true
+		})
+		.then(dataset => {
+			socket.emit(`dataset_${id}`, dataset.data);
+		})
+		.catch(err => {
+			console.log(err)
+		});
+	});
+
+	socket.on('delete_dataset', id => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			method: 'DELETE',
+			uri: `https://edge.aura.rest/datasets/${id}`,
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			json: true
+		})
+		.then(response => {
+			socket.emit('err', false);
+		})
+		.catch(err => {
+			socket.emit('err', err);
+		});
 	});
 
 	socket.on('disconnect', () => {

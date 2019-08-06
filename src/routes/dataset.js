@@ -18,8 +18,8 @@ import {
   subscribeLabelings,
   updateLabelings,
   unsubscribeLabelings,
-  subscribeDatasets,
-  unsubscribeDatasets
+  subscribeDataset,
+  unsubscribeDataset
 } from '../services/SocketService';
 import { generateRandomColor } from '../services/ColorService';
 import Loader from '../modules/loader';
@@ -120,7 +120,9 @@ class DatasetPage extends Component {
 
     super(props);
     this.state = {
-      dataset: dataset, //props.dataset
+      dataset: this.props.location.state.dataset
+        ? this.props.location.state.dataset
+        : dataset,
       labelingsDefinition: [],
       isReady: false,
       controlStates: {
@@ -151,7 +153,7 @@ class DatasetPage extends Component {
     this.onFuseTimeSeries = this.onFuseTimeSeries.bind(this);
     this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
     this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
-    this.onDatasetsChanged = this.onDatasetsChanged.bind(this);
+    this.onDatasetChanged = this.onDatasetChanged.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onFuseCanceled = this.onFuseCanceled.bind(this);
@@ -529,15 +531,9 @@ class DatasetPage extends Component {
     this.videoPanel.current.onSetTime(position);
   }
 
-  onDatasetsChanged(datasets) {
-    if (!datasets) return;
+  onDatasetChanged(dataset) {
+    if (!dataset) return;
 
-    datasets = datasets.data.filter(
-      dataset => dataset['_id'] === this.props.match.params.id
-    );
-    if (datasets.length === 0) return;
-
-    let dataset = datasets[0];
     dataset.fusedSeries = dataset.fusedSeries.filter(
       fused => fused.timeSeries.length > 1
     );
@@ -631,14 +627,14 @@ class DatasetPage extends Component {
   componentDidMount() {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
-    subscribeDatasets(this.onDatasetsChanged);
+    subscribeDataset(this.props.match.params.id, this.onDatasetChanged);
   }
 
   componentWillUnmount() {
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('keydown', this.onKeyDown);
     unsubscribeLabelings();
-    unsubscribeDatasets();
+    unsubscribeDataset(this.props.match.params.id);
   }
 
   addTimeSeries(obj) {
