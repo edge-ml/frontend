@@ -110,25 +110,25 @@ export const restoreSession = callback => {
 };
 
 /***
- * Labelings
+ * LabelingsDefinition
  */
-export const subscribeLabelings = callback => {
+export const subscribeLabelingsDef = callback => {
   if (!authenticated || !verified) return;
 
-  socket.on('labelings', labelings => callback(labelings));
-  socket.emit('labelings');
+  socket.on('labelings_def', labelings => callback(labelings));
+  socket.emit('labelings_def');
 };
 
-export const updateLabelings = labelings => {
+export const updateLabelingsDef = labelings => {
   if (!authenticated || !verified) return;
 
-  socket.emit('labelings', labelings);
+  socket.emit('labelings_def', labelings);
 };
 
-export const unsubscribeLabelings = callback => {
+export const unsubscribeLabelingsDef = callback => {
   if (!authenticated || !verified) return;
 
-  socket.off('labelings');
+  socket.off('labelings_def');
 };
 
 /***
@@ -170,6 +170,60 @@ export const deleteDataset = (id, callback) => {
   socket.on('err', err => {
     if (err) {
       callback(err);
+    }
+    socket.off('err');
+  });
+};
+
+/***
+ * Labeling
+ */
+export const addLabeling = (datasetId, labeling) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('add_labeling', datasetId, labeling);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    socket.off('err');
+  });
+};
+
+/***
+ * Label
+ */
+export const addLabel = (datasetId, labelingId, label) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('add_label', datasetId, labelingId, label);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const updateLabel = (datasetId, labelingId, label) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('update_label', datasetId, labelingId, label);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const deleteLabel = (datasetId, labelingId, labelId) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('delete_label', datasetId, labelingId, labelId);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
     }
     socket.off('err');
   });

@@ -6,9 +6,9 @@ import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
 
 import {
-  subscribeLabelings,
-  updateLabelings,
-  unsubscribeLabelings
+  subscribeLabelingsDef,
+  updateLabelingsDef,
+  unsubscribeLabelingsDef
 } from '../services/SocketService';
 import { uuidv4 } from '../services/UUIDService';
 
@@ -45,7 +45,7 @@ class LabelingsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelings(labelings => {
+    subscribeLabelingsDef(labelings => {
       this.onLabelingsChanged(labelings);
 
       if (this.props.location.pathname === '/labelings/new') {
@@ -65,7 +65,7 @@ class LabelingsPage extends Component {
   }
 
   componentWillUnmount() {
-    unsubscribeLabelings();
+    unsubscribeLabelingsDef();
   }
 
   toggleModal(labeling, isNewLabeling) {
@@ -126,7 +126,7 @@ class LabelingsPage extends Component {
       }
     });
     this.resetURL();
-    updateLabelings(newLabelings);
+    updateLabelingsDef(newLabelings);
   }
 
   onSave(labelingId, name, types) {
@@ -152,7 +152,7 @@ class LabelingsPage extends Component {
       }
     });
     this.resetURL();
-    updateLabelings(newLabelings);
+    updateLabelingsDef(newLabelings);
   }
 
   resetURL() {

@@ -131,11 +131,11 @@ io.on('connection', (socket) => {
 		}
 	});
 
-	socket.on('labelings', (newLabelings) => {
+	socket.on('labelings_def', (newLabelings) => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
 		if (!newLabelings) {
-			socket.emit('labelings', labelings);
+			socket.emit('labelings_def', labelings);
 		} else {
 			labelings = newLabelings;
 
@@ -145,7 +145,7 @@ io.on('connection', (socket) => {
 				}
 			});
 
-			io.emit('labelings', newLabelings);
+			io.emit('labelings_def', newLabelings);
 		}
 	});
 
@@ -160,7 +160,7 @@ io.on('connection', (socket) => {
 			json: true
 		})
     .then(datasets => {
-      socket.emit('datasets', datasets.data);
+      socket.emit('datasets', datasets);
     })
     .catch(err => {
       console.log(err)
@@ -178,7 +178,7 @@ io.on('connection', (socket) => {
 			json: true
 		})
 		.then(dataset => {
-			socket.emit(`dataset_${id}`, dataset.data);
+			socket.emit(`dataset_${id}`, dataset);
 		})
 		.catch(err => {
 			console.log(err)
@@ -191,6 +191,85 @@ io.on('connection', (socket) => {
 		rp({
 			method: 'DELETE',
 			uri: `https://edge.aura.rest/datasets/${id}`,
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			json: true
+		})
+		.then(response => {
+			socket.emit('err', false);
+		})
+		.catch(err => {
+			socket.emit('err', err);
+		});
+	});
+
+	socket.on('add_labeling', (datasetId, labeling) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			method: 'POST',
+			uri: `https://edge.aura.rest/datasets/${datasetId}/labelings`,
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			body: labeling,
+			json: true
+		})
+		.then(response => {
+			socket.emit('err', false);
+		})
+		.catch(err => {
+			socket.emit('err', err);
+		});
+	});
+
+	socket.on('add_label', (datasetId, labelingId, label) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			method: 'POST',
+			uri: `https://edge.aura.rest/datasets/${datasetId}/labelings/${labelingId}/labels`,
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			body: label,
+			json: true
+		})
+		.then(response => {
+			socket.emit('err', false);
+		})
+		.catch(err => {
+			socket.emit('err', err);
+		});
+	});
+
+	socket.on('update_label', (datasetId, labelingId, label) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			method: 'PUT',
+			uri: `https://edge.aura.rest/datasets/${datasetId}/labelings/${labelingId}/labels/${label['_id']}`,
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			body: label,
+			json: true
+		})
+		.then(response => {
+			socket.emit('err', false);
+		})
+		.catch(err => {
+			socket.emit('err', err);
+		});
+	});
+
+	socket.on('delete_label', (datasetId, labelingId, labelId) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			method: 'DELETE',
+			uri: `https://edge.aura.rest/datasets/${datasetId}/labelings/${labelingId}/labels/${labelId}`,
 			headers: {
 				'User-Agent': 'Explorer'
 			},

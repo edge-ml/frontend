@@ -15,11 +15,15 @@ import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/Combine
 import { uuidv4, shortId } from '../services/UUIDService';
 
 import {
-  subscribeLabelings,
-  updateLabelings,
-  unsubscribeLabelings,
+  subscribeLabelingsDef,
+  updateLabelingsDef,
+  unsubscribeLabelingsDef,
   subscribeDataset,
-  unsubscribeDataset
+  unsubscribeDataset,
+  addLabeling,
+  addLabel,
+  updateLabel,
+  deleteLabel
 } from '../services/SocketService';
 import { generateRandomColor } from '../services/ColorService';
 import Loader from '../modules/loader';
@@ -120,7 +124,7 @@ class DatasetPage extends Component {
 
     super(props);
     this.state = {
-      dataset: this.props.location.state.dataset
+      dataset: this.props.location.state
         ? this.props.location.state.dataset
         : dataset,
       labelingsDefinition: [],
@@ -568,7 +572,7 @@ class DatasetPage extends Component {
     );
     this.setState(
       { dataset: dataset },
-      subscribeLabelings(this.onLabelingsChanged)
+      subscribeLabelingsDef(this.onLabelingsChanged)
     );
   }
 
@@ -577,7 +581,7 @@ class DatasetPage extends Component {
 
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
 
-    let labelingsChanged = false;
+    let labelingsDefChanged = false;
     dataset.labelings.forEach(labeling => {
       if (!labelings.some(def => def.id === labeling.labelingId)) {
         let types = [];
@@ -602,7 +606,7 @@ class DatasetPage extends Component {
             types: types
           }
         ];
-        labelingsChanged = true;
+        labelingsDefChanged = true;
       } else {
         let def = labelings.filter(def => def.id === labeling.labelingId)[0];
 
@@ -613,7 +617,7 @@ class DatasetPage extends Component {
               name: 'Type ' + shortId(),
               color: generateRandomColor()
             });
-            labelingsChanged = true;
+            labelingsDefChanged = true;
           }
         });
       }
@@ -648,8 +652,8 @@ class DatasetPage extends Component {
       isReady: true
     });
 
-    if (labelingsChanged) {
-      updateLabelings(labelings);
+    if (labelingsDefChanged) {
+      updateLabelingsDef(labelings);
     }
   }
 
@@ -662,7 +666,7 @@ class DatasetPage extends Component {
   componentWillUnmount() {
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('keydown', this.onKeyDown);
-    unsubscribeLabelings();
+    unsubscribeLabelingsDef();
     unsubscribeDataset(this.props.match.params.id);
   }
 
@@ -814,7 +818,13 @@ class DatasetPage extends Component {
             this.state.controlStates.selectedLabelingId === labeling.id
         )[0].types[0].id
       };
+
+      if (labeling.labels.length === 0) {
+        addLabeling(this.state.dataset['_id'], labeling);
+      }
+
       labeling.labels = [...labeling.labels, label];
+      addLabel(this.state.dataset['_id'], labeling['_id'], label);
     } else {
       label.start = start;
       label.end = end;
@@ -826,6 +836,7 @@ class DatasetPage extends Component {
       label.start = label.end;
       label.end = temp;
     }
+    updateLabel(this.state.dataset['_id'], labeling['_id'], label);
 
     this.forceUpdate();
   }

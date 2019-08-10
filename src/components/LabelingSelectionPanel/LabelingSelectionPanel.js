@@ -30,6 +30,10 @@ class LabelingSelectionPanel extends Component {
     window.addEventListener('scroll', this.onScroll);
   }
 
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll);
+  }
+
   handleLabelingClicked(e, id) {
     e.preventDefault();
     this.state.onSelectedLabelingIdChanged(id);
