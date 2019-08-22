@@ -6,69 +6,81 @@ import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
 
 import {
-  subscribeLabelingsDef,
-  updateLabelingsDef,
-  unsubscribeLabelingsDef
+  subscribeLabelingsAndLabels,
+  addLabeling,
+  updateLabeling,
+  deleteLabeling,
+  updateLabelingAndLabels,
+  unsubscribeLabelingsAndLabels
 } from '../services/SocketService';
-import { uuidv4 } from '../services/UUIDService';
 
 class LabelingsPage extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      labelingsDefinition: [],
+      labelings: [],
+      labels: [],
       isReady: false,
       modal: {
         labeling: undefined,
+        labels: undefined,
         isOpen: false,
         isNewLabeling: false
       }
     };
 
     this.toggleModal = this.toggleModal.bind(this);
-    this.onAddLabeling = this.onAddLabeling.bind(this);
+    this.onModalAddLabeling = this.onModalAddLabeling.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
-    this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
+    this.onLabelingsAndLabelsChanged = this.onLabelingsAndLabelsChanged.bind(
+      this
+    );
     this.resetURL = this.resetURL.bind(this);
   }
 
-  onLabelingsChanged(labelings) {
-    if (!labelings) labelings = [];
-
-    this.setState({
-      labelingsDefinition: labelings,
-      isReady: true
-    });
-  }
-
   componentDidMount() {
-    subscribeLabelingsDef(labelings => {
-      this.onLabelingsChanged(labelings);
+    subscribeLabelingsAndLabels((labelings, labels) => {
+      this.onLabelingsAndLabelsChanged(labelings, labels);
 
       if (this.props.location.pathname === '/labelings/new') {
-        this.onAddLabeling();
+        this.onModalAddLabeling();
       } else {
         const searchParams = new URLSearchParams(this.props.location.search);
         const id = searchParams.get('id');
 
         if (id) {
-          let labeling = this.state.labelingsDefinition.filter(labeling => {
-            return labeling.id === id;
-          })[0];
-          this.toggleModal(labeling, false);
+          let labeling = this.state.labelings.filter(
+            labeling => labeling['_id'] === id
+          )[0];
+          let labels = this.state.labels.filter(label =>
+            labeling.labels.includes(label['_id'])
+          );
+
+          this.toggleModal(labeling, labels, false);
         }
       }
     });
   }
 
   componentWillUnmount() {
-    unsubscribeLabelingsDef();
+    unsubscribeLabelingsAndLabels();
   }
 
-  toggleModal(labeling, isNewLabeling) {
+  onLabelingsAndLabelsChanged(labelings, labels) {
+    if (labelings === undefined) labelings = this.state.labelings;
+    if (labels === undefined) labels = this.state.labels;
+
+    this.setState({
+      labelings: labelings,
+      labels: labels,
+      isReady: true
+    });
+  }
+
+  toggleModal(labeling, labels, isNewLabeling) {
     if (isNewLabeling) {
       this.props.history.replace({
         pathname: '/labelings/new',
@@ -77,26 +89,27 @@ class LabelingsPage extends Component {
     } else {
       this.props.history.replace({
         pathname: '/labelings',
-        search: '?id=' + labeling.id
+        search: '?id=' + labeling['_id']
       });
     }
 
     this.setState({
       modal: {
         labeling: this.state.modal.isOpen ? undefined : labeling,
-        isOpen: !this.state.modal.isOpen,
+        labels: this.state.modal.isOpen ? undefined : labels,
+        isOpen: true,
         isNewLabeling: isNewLabeling
       }
     });
   }
 
-  onAddLabeling() {
+  onModalAddLabeling() {
     this.toggleModal(
       {
-        id: uuidv4(),
         name: '',
-        types: []
+        labels: []
       },
+      [],
       true
     );
   }
@@ -107,6 +120,7 @@ class LabelingsPage extends Component {
     this.setState({
       modal: {
         labeling: undefined,
+        labels: undefined,
         isOpen: false,
         isNewLabeling: false
       }
@@ -114,45 +128,27 @@ class LabelingsPage extends Component {
   }
 
   onDeleteLabeling(labelingId) {
-    let newLabelings = this.state.labelingsDefinition.filter(
-      labeling => labeling.id !== labelingId
-    );
-    this.setState({
-      labelingsDefinition: newLabelings,
-      modal: {
-        isOpen: false,
-        labeling: undefined,
-        isNewLabeling: false
-      }
-    });
-    this.resetURL();
-    updateLabelingsDef(newLabelings);
+    this.onCloseModal();
+    deleteLabeling(labelingId);
   }
 
-  onSave(labelingId, name, types) {
-    let newLabelings =
-      this.state.labelingsDefinition.filter(
-        labeling => labeling.id === labelingId
-      )[0] !== undefined
-        ? this.state.labelingsDefinition.map(labeling =>
-            labeling.id === labelingId
-              ? Object.assign({}, labeling, { types: types, name: name })
-              : labeling
-          )
-        : [
-            ...this.state.labelingsDefinition,
-            { id: labelingId, name: name, types: types }
-          ];
+  onSave(labeling, labels, deletedLabels) {
+    if (!labeling || !labels) return;
 
-    this.setState({
-      labelingsDefinition: newLabelings,
-      modal: {
-        labeling: undefined,
-        isOpen: false
-      }
-    });
-    this.resetURL();
-    updateLabelingsDef(newLabelings);
+    if (this.state.modal.isNewLabeling && labels.length === 0) {
+      addLabeling(labeling);
+    } else if (
+      !this.state.modal.isNewLabeling &&
+      labeling.updated &&
+      deletedLabels.length === 0 &&
+      !labels.some(label => label.updated || label.isNewLabel)
+    ) {
+      updateLabeling(labeling);
+    } else {
+      updateLabelingAndLabels(labeling, labels, deletedLabels);
+    }
+
+    this.onCloseModal();
   }
 
   resetURL() {
@@ -171,17 +167,17 @@ class LabelingsPage extends Component {
               <Table responsive>
                 <thead>
                   <tr className={'bg-light'}>
-                    <th>Id</th>
+                    <th>ID</th>
                     <th>Name</th>
-                    <th>Types</th>
+                    <th>Labels</th>
                     <th />
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.labelingsDefinition.map((labeling, index) => (
+                  {this.state.labelings.map((labeling, index) => (
                     <tr key={index}>
                       <th className="labelings-column" scope="row">
-                        {labeling.id}
+                        {labeling['_id']}
                       </th>
                       <td
                         className={
@@ -193,28 +189,40 @@ class LabelingsPage extends Component {
                         {labeling.name !== '' ? labeling.name : 'Untitled'}
                       </td>
                       <td className="labelings-column">
-                        {labeling.types.map((type, index) => (
-                          <Badge
-                            key={index}
-                            className={
-                              type.name === ''
-                                ? 'm-1 font-italic font-weight-normal'
-                                : 'm-1'
-                            }
-                            style={{
-                              backgroundColor: type.color
-                            }}
-                          >
-                            {type.name !== '' ? type.name : 'Untitled'}
-                          </Badge>
-                        ))}
+                        {labeling.labels.map((labelId, index) => {
+                          let label = this.state.labels.filter(
+                            label => label['_id'] === labelId
+                          )[0];
+
+                          return (
+                            <Badge
+                              key={index}
+                              className={
+                                label.name === ''
+                                  ? 'm-1 font-italic font-weight-normal'
+                                  : 'm-1'
+                              }
+                              style={{
+                                backgroundColor: label.color
+                              }}
+                            >
+                              {label.name !== '' ? label.name : 'Untitled'}
+                            </Badge>
+                          );
+                        })}
                       </td>
                       <td>
                         <Button
                           className="btn-secondary mt-0 btn-edit"
                           block
                           onClick={e => {
-                            this.toggleModal(labeling, false);
+                            this.toggleModal(
+                              labeling,
+                              this.state.labels.filter(label =>
+                                labeling.labels.includes(label['_id'])
+                              ),
+                              false
+                            );
                           }}
                         >
                           Edit
@@ -229,7 +237,7 @@ class LabelingsPage extends Component {
                 className="mb-5"
                 color="secondary"
                 outline
-                onClick={this.onAddLabeling}
+                onClick={this.onModalAddLabeling}
               >
                 + Add
               </Button>
@@ -237,11 +245,8 @@ class LabelingsPage extends Component {
           </Row>
         </Container>
         <EditLabelingModal
-          name={this.state.modal.labeling ? this.state.modal.labeling.name : ''}
-          types={
-            this.state.modal.labeling ? this.state.modal.labeling.types : []
-          }
-          id={this.state.modal.labeling ? this.state.modal.labeling.id : ''}
+          labeling={this.state.modal.labeling}
+          labels={this.state.modal.labels}
           isOpen={this.state.modal.isOpen}
           onCloseModal={this.onCloseModal}
           onDeleteLabeling={this.onDeleteLabeling}

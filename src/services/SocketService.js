@@ -110,25 +110,74 @@ export const restoreSession = callback => {
 };
 
 /***
- * LabelingsDefinition
+ * Labelings and labels
  */
-export const subscribeLabelingsDef = callback => {
+export const subscribeLabelingsAndLabels = callback => {
   if (!authenticated || !verified) return;
 
-  socket.on('labelings_def', labelings => callback(labelings));
-  socket.emit('labelings_def');
+  socket.on('labelings_labels', results => {
+    if (results) {
+      callback(results.labelings, results.labels);
+    }
+  });
+  socket.emit('labelings_labels');
 };
 
-export const updateLabelingsDef = labelings => {
+export const unsubscribeLabelingsAndLabels = () => {
   if (!authenticated || !verified) return;
 
-  socket.emit('labelings_def', labelings);
+  socket.off('labelings_labels');
 };
 
-export const unsubscribeLabelingsDef = callback => {
+export const updateLabelingAndLabels = (labeling, labels, deletedLabels) => {
   if (!authenticated || !verified) return;
 
-  socket.off('labelings_def');
+  socket.emit('update_labeling_labels', labeling, labels, deletedLabels);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    socket.off('err');
+  });
+};
+
+/***
+ * Labelings
+ */
+export const addLabeling = newLabeling => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('add_labeling', newLabeling);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const updateLabeling = labeling => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('update_labeling', labeling);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const deleteLabeling = labelingId => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('delete_labeling', labelingId);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    socket.off('err');
+  });
 };
 
 /***
@@ -157,7 +206,7 @@ export const subscribeDataset = (id, callback) => {
   socket.emit('dataset', id);
 };
 
-export const unsubscribeDataset = (id, callback) => {
+export const unsubscribeDataset = id => {
   if (!authenticated || !verified) return;
 
   socket.off(`dataset_${id}`);
@@ -176,56 +225,33 @@ export const deleteDataset = (id, callback) => {
 };
 
 /***
- * Labeling
+ * DatasetLabeling
  */
-export const addLabeling = (datasetId, labeling) => {
+export const addDatasetLabeling = (datasetId, labeling, callback) => {
   if (!authenticated || !verified) return;
 
-  socket.emit('add_labeling', datasetId, labeling);
-  socket.on('err', err => {
+  socket.emit('add_dataset_labeling', datasetId, labeling);
+  socket.on('add_dataset_labeling', (err, labeling) => {
     if (err) {
       console.log(err);
+    } else if (callback) {
+      callback(labeling);
     }
-    socket.off('err');
+    socket.off('add_dataset_labeling');
   });
 };
 
-/***
- * Label
- */
-export const addLabel = (datasetId, labelingId, label) => {
+export const updateDatasetLabeling = (datasetId, labeling, callback) => {
   if (!authenticated || !verified) return;
 
-  socket.emit('add_label', datasetId, labelingId, label);
-  socket.on('err', err => {
+  socket.emit('update_dataset_labeling', datasetId, labeling);
+  socket.on('update_dataset_labeling', (err, labeling) => {
     if (err) {
       console.log(err);
+    } else if (callback) {
+      callback(labeling);
     }
-    socket.off('err');
-  });
-};
-
-export const updateLabel = (datasetId, labelingId, label) => {
-  if (!authenticated || !verified) return;
-
-  socket.emit('update_label', datasetId, labelingId, label);
-  socket.on('err', err => {
-    if (err) {
-      console.log(err);
-    }
-    socket.off('err');
-  });
-};
-
-export const deleteLabel = (datasetId, labelingId, labelId) => {
-  if (!authenticated || !verified) return;
-
-  socket.emit('delete_label', datasetId, labelingId, labelId);
-  socket.on('err', err => {
-    if (err) {
-      console.log(err);
-    }
-    socket.off('err');
+    socket.off('update_dataset_labeling');
   });
 };
 

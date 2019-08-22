@@ -21,11 +21,11 @@ const { io, app, server, activeClients } = require('./server_singleton');
 const apiRouter = require('./apiRouter');
 
 const authPath = path.join(__dirname, '../', 'config', 'auth.json');
-const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
+//const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
 const sourcesPath = path.join(__dirname, '../', 'config', 'sources.json');
 
 const auth = require(authPath);
-let labelings = require(labelingsPath);
+//let labelings = require(labelingsPath);
 let sources = require(sourcesPath);
 
 // JWT
@@ -37,6 +37,8 @@ const publicKey  = fs.readFileSync(publicKeyPath, 'utf-8');
 
 const tokenIssuer = 'AURA';
 const tokenAudience = 'http://explorer.aura.rest';
+
+const uri = 'https://dal.aura.rest';
 
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
@@ -131,29 +133,226 @@ io.on('connection', (socket) => {
 		}
 	});
 
-	socket.on('labelings_def', (newLabelings) => {
+	/***
+	 * Labelings and labels
+	 */
+	socket.on('labelings_labels', () => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
-		if (!newLabelings) {
-			socket.emit('labelings_def', labelings);
-		} else {
-			labelings = newLabelings;
-
-			fs.writeFile(labelingsPath, JSON.stringify(labelings, null, '\t'), (err) => {
-				if (err) {
-					console.error(err);
-				}
-			});
-
-			io.emit('labelings_def', newLabelings);
-		}
+		Promise.all([
+			rp({
+				uri: uri + '/labelings',
+				headers: {
+					'User-Agent': 'Explorer'
+				},
+				json: true
+			}),
+			rp({
+				uri: uri + '/labels',
+				headers: {
+					'User-Agent': 'Explorer'
+				},
+				json: true
+			})
+		])
+		.then(results => {
+			socket.emit('labelings_labels', {labelings: results[0], labels: results[1]});
+		})
+		.catch(err => {
+			console.log(err);
+		});
 	});
 
+	socket.on('add_labeling', newLabeling => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			method: 'POST',
+			uri: uri + '/labelings',
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			body: newLabeling,
+			json: true
+		})
+		.then(response => {
+			return rp({
+				uri: uri + '/labelings',
+				headers: {
+					'User-Agent': 'Explorer'
+				},
+				json: true
+			});
+		})
+		.then(labelings => {
+			socket.emit('err', false);
+			io.emit('labelings_labels', {labelings, labels: undefined});
+		})
+		.catch(err => {
+			socket.emit('err', err);
+		});
+	});
+
+	socket.on('update_labeling', labeling => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			method: 'PUT',
+			uri: uri + `/labelings/${labeling['_id']}`,
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			body: labeling,
+			json: true
+		})
+		.then(response => {
+			return rp({
+				uri: uri + '/labelings',
+				headers: {
+					'User-Agent': 'Explorer'
+				},
+				json: true
+			});
+		})
+		.then(labelings => {
+			socket.emit('err', false);
+			io.emit('labelings_labels', {labelings, labels: undefined});
+		})
+		.catch(err => {
+			socket.emit('err', err);
+		});
+	});
+
+	socket.on('delete_labeling', labelingId => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			method: 'DELETE',
+			uri: uri + `/labelings/${labelingId}`,
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			json: true
+		})
+		.then(response => {
+			return rp({
+				uri: uri + '/labelings',
+				headers: {
+					'User-Agent': 'Explorer'
+				},
+				json: true
+			});
+		})
+		.then(labelings => {
+			socket.emit('err', false);
+			io.emit('labelings_labels', {labelings, labels: undefined});
+		})
+		.catch(err => {
+			socket.emit('err', err);
+		});
+	});
+
+	socket.on('update_labeling_labels', (labeling, labels, deletedLabels) => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		Promise.all(labels.filter(label => label.isNewLabel).map(label => rp({
+			method: 'POST',
+			uri: uri + '/labels',
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			body: label,
+			json: true
+		})))
+		.then(newLabels => {
+			let newLabelsId = newLabels.map(label => label['_id']);
+			labeling.labels = [ ...labeling.labels, ...newLabelsId ];
+
+			let promises = [];
+			if (!labeling['_id']) {
+				promises = [
+					...promises,
+					rp({
+						method: 'POST',
+						uri: uri + '/labelings',
+						headers: {
+							'User-Agent': 'Explorer'
+						},
+						body: labeling,
+						json: true
+					})
+				];
+			} else {
+				let updatedLabels = labels.filter(label => label.updated);
+
+				promises = [
+					...promises,
+					rp({
+						method: 'PUT',
+						uri: uri + `/labelings/${labeling['_id']}`,
+						headers: {
+							'User-Agent': 'Explorer'
+						},
+						body: labeling,
+						json: true
+					}),
+					...updatedLabels.map(label => rp({
+						method: 'PUT',
+						uri: uri + `/labels/${label['_id']}`,
+						headers: {
+							'User-Agent': 'Explorer'
+						},
+						body: label,
+						json: true
+					})),
+					...deletedLabels.map(labelId => rp({
+						method: 'DELETE',
+						uri: uri + `/labels/${labelId}`,
+						headers: {
+							'User-Agent': 'Explorer'
+						},
+						json: true
+					}))
+				];
+			}
+
+			return Promise.all(promises);
+		})
+		.then(responses =>{
+			return Promise.all([
+				rp({
+					uri: uri + '/labelings',
+					headers: {
+						'User-Agent': 'Explorer'
+					},
+					json: true
+				}),
+				rp({
+					uri: uri + '/labels',
+					headers: {
+						'User-Agent': 'Explorer'
+					},
+					json: true
+				})
+			]);
+		})
+		.then(results => {
+			socket.emit('err', false);
+			io.emit('labelings_labels', {labelings: results[0], labels: results[1]});
+		})
+		.catch(err => {
+			socket.emit('err', err);
+		});
+	});
+
+	/***
+	 * Datasets
+	 */
 	socket.on('datasets', () => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
 		rp({
-			uri: 'https://edge.aura.rest/datasets',
+			uri: uri + '/datasets',
 			headers: {
         'User-Agent': 'Explorer'
     	},
@@ -171,7 +370,7 @@ io.on('connection', (socket) => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
 		rp({
-			uri: `https://edge.aura.rest/datasets/${id}`,
+			uri: uri + `/datasets/${id}`,
 			headers: {
 				'User-Agent': 'Explorer'
 			},
@@ -190,7 +389,7 @@ io.on('connection', (socket) => {
 
 		rp({
 			method: 'DELETE',
-			uri: `https://edge.aura.rest/datasets/${id}`,
+			uri: uri + `/datasets/${id}`,
 			headers: {
 				'User-Agent': 'Explorer'
 			},
@@ -204,12 +403,15 @@ io.on('connection', (socket) => {
 		});
 	});
 
-	socket.on('add_labeling', (datasetId, labeling) => {
+	/***
+	 * DatasetLabelings
+	 */
+	socket.on('add_dataset_labeling', (datasetId, labeling) => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
 		rp({
 			method: 'POST',
-			uri: `https://edge.aura.rest/datasets/${datasetId}/labelings`,
+			uri: uri + `/datasets/${datasetId}/labelings`,
 			headers: {
 				'User-Agent': 'Explorer'
 			},
@@ -217,6 +419,7 @@ io.on('connection', (socket) => {
 			json: true
 		})
 		.then(response => {
+			console.log(response)
 			socket.emit('err', false);
 		})
 		.catch(err => {
@@ -224,62 +427,35 @@ io.on('connection', (socket) => {
 		});
 	});
 
-	socket.on('add_label', (datasetId, labelingId, label) => {
-		if (!socket.client.twoFactorAuthenticated) return;
-
-		rp({
-			method: 'POST',
-			uri: `https://edge.aura.rest/datasets/${datasetId}/labelings/${labelingId}/labels`,
-			headers: {
-				'User-Agent': 'Explorer'
-			},
-			body: label,
-			json: true
-		})
-		.then(response => {
-			socket.emit('err', false);
-		})
-		.catch(err => {
-			socket.emit('err', err);
-		});
-	});
-
-	socket.on('update_label', (datasetId, labelingId, label) => {
+	socket.on('update_dataset_labeling', (datasetId, labeling) => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
 		rp({
 			method: 'PUT',
-			uri: `https://edge.aura.rest/datasets/${datasetId}/labelings/${labelingId}/labels/${label['_id']}`,
+			uri: uri + `/datasets/${datasetId}/labelings/${labeling['_id']}`,
 			headers: {
 				'User-Agent': 'Explorer'
 			},
-			body: label,
+			body: labeling,
 			json: true
 		})
 		.then(response => {
-			socket.emit('err', false);
+			rp({
+				uri: uri + `/datasets/${datasetId}/labelings/${labeling['_id']}`,
+				headers: {
+					'User-Agent': 'Explorer'
+				},
+				json: true
+			})
+			.then(labeling => {
+				socket.emit('update_dataset_labeling', false, labeling);
+			})
+			.catch(err => {
+				socket.emit('update_dataset_labeling', err, null);
+			})
 		})
 		.catch(err => {
-			socket.emit('err', err);
-		});
-	});
-
-	socket.on('delete_label', (datasetId, labelingId, labelId) => {
-		if (!socket.client.twoFactorAuthenticated) return;
-
-		rp({
-			method: 'DELETE',
-			uri: `https://edge.aura.rest/datasets/${datasetId}/labelings/${labelingId}/labels/${labelId}`,
-			headers: {
-				'User-Agent': 'Explorer'
-			},
-			json: true
-		})
-		.then(response => {
-			socket.emit('err', false);
-		})
-		.catch(err => {
-			socket.emit('err', err);
+			socket.emit('update_dataset_labeling', err, null);
 		});
 	});
 
@@ -287,6 +463,9 @@ io.on('connection', (socket) => {
 		// TODO: remove client from activeClients
 	});
 
+	/***
+	 * Users
+	 */
 	socket.on('users', () => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
@@ -419,6 +598,9 @@ io.on('connection', (socket) => {
 		}
 	});
 
+	/***
+	 * Sources
+	 */
 	socket.on('sources', () => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
