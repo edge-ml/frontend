@@ -12,18 +12,14 @@ import LabelingSelectionPanel from '../components/LabelingSelectionPanel/Labelin
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
 import ApiPanel from '../components/ApiPanel/ApiPanel';
 import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
-import { uuidv4, shortId } from '../services/UUIDService';
+import { uuidv4 } from '../services/UUIDService';
 
 import {
-  subscribeLabelingsDef,
-  updateLabelingsDef,
-  unsubscribeLabelingsDef,
   subscribeDataset,
   unsubscribeDataset,
-  addLabeling,
-  addLabel,
-  updateLabel,
-  deleteLabel
+  updateDataset,
+  subscribeLabelingsAndLabels,
+  unsubscribeLabelingsAndLabels
 } from '../services/SocketService';
 import { generateRandomColor } from '../services/ColorService';
 import Loader from '../modules/loader';
@@ -47,92 +43,21 @@ class DatasetPage extends Component {
           labelings: [],
           fusedSeries: []
         }
-      : {
-          // TODO: pull real dataset
-          /*
-          id: '0x1234',
-          userId: '0x9321',
-          email: 'test@test.de',
-          start: now - 500000,
-          end: now - 80000,
-          tags: ['Alcohol', 'Medication', 'Test', 'ABC'],
-          isPublished: false,
-          timeSeries: [
-            {
-              id: '0x123434',
-              name: 'VOC',
-              unit: 'kOhm',
-              data: [
-                [now - 500000, 20],
-                [now - 400000, 40],
-                [now - 300000, 60],
-                [now - 200000, 10],
-                [now - 140000, 15],
-                [now - 100000, 30]
-              ]
-            },
-            {
-              id: '0x1123992',
-              name: 'SPO2',
-              unit: '%',
-              data: [
-                [now - 300000, 20],
-                [now - 200000, 40],
-                [now - 180000, 60],
-                [now - 140000, 10],
-                [now - 110000, 15],
-                [now - 80000, 30]
-              ]
-            },
-            {
-              id: '0x12364774',
-              name: 'EMG',
-              unit: 'mV',
-              data: [
-                [now - 300000, 60],
-                [now - 200000, 20],
-                [now - 180000, 35],
-                [now - 140000, 55],
-                [now - 110000, 25],
-                [now - 80000, 20]
-              ]
-            }
-          ],
-          fusedSeries: [],
-          labelings: [
-            {
-              id: '0x3441234234',
-              labelingId: 'e53325deda5e5b4',
-              labels: [
-                {
-                  id: '1',
-                  typeId: 'fa7b84e8-fe20-42dc-9eb3-4c2cc4a82031',
-                  from: now - 450000,
-                  to: now - 400000
-                },
-                {
-                  id: '2',
-                  typeId: '85e364fa-8b71-4ef4-bfec-f4b7344e777e',
-                  from: now - 300000,
-                  to: now - 200000
-                }
-              ]
-            }
-          ]
-          */
-        };
+      : null;
 
     super(props);
     this.state = {
       dataset: this.props.location.state
         ? this.props.location.state.dataset
         : dataset,
-      labelingsDefinition: [],
+      labelings: [],
+      labels: [],
       isReady: false,
       controlStates: {
         selectedLabelId: undefined,
         selectedLabelingId: undefined,
         selectedLabelTypeId: undefined,
+        selectedLabelTypes: undefined,
         canEdit: false,
         drawingId: undefined,
         drawingPosition: undefined,
@@ -157,7 +82,9 @@ class DatasetPage extends Component {
     this.addTimeSeries = this.addTimeSeries.bind(this);
     this.onFuseTimeSeries = this.onFuseTimeSeries.bind(this);
     this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
-    this.onLabelingsChanged = this.onLabelingsChanged.bind(this);
+    this.onLabelingsAndLabelsChanged = this.onLabelingsAndLabelsChanged.bind(
+      this
+    );
     this.onDatasetChanged = this.onDatasetChanged.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
@@ -182,6 +109,327 @@ class DatasetPage extends Component {
     this.videoPanel = React.createRef();
   }
 
+  componentDidMount() {
+    window.addEventListener('keyup', this.onKeyUp);
+    window.addEventListener('keydown', this.onKeyDown);
+    subscribeDataset(this.props.match.params.id, this.onDatasetChanged);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keyup', this.onKeyUp);
+    window.removeEventListener('keydown', this.onKeyDown);
+    unsubscribeLabelingsAndLabels();
+    unsubscribeDataset(this.props.match.params.id);
+  }
+
+  onDatasetChanged(dataset) {
+    if (!dataset) return;
+
+    dataset.fusedSeries = dataset.fusedSeries.filter(
+      fused => fused.timeSeries.length > 1
+    );
+    this.setState({ dataset }, () =>
+      subscribeLabelingsAndLabels(this.onLabelingsAndLabelsChanged)
+    );
+  }
+
+  onLabelingsAndLabelsChanged(labelings, labels) {
+    let selectedLabeling = labelings[0];
+    let selectedLabelTypes = labels.filter(label =>
+      selectedLabeling.labels.includes(label['_id'])
+    );
+
+    this.setState({
+      labelings: labelings || [],
+      labels: labels || [],
+      controlStates: {
+        ...this.state.controlStates,
+        selectedLabelingId: selectedLabeling['_id'],
+        selectedLabelTypes: selectedLabelTypes
+      },
+      isReady: true
+    });
+  }
+
+  onKeyDown(e) {
+    let keyCode = e.keyCode ? e.keyCode : e.which;
+
+    if ((e.ctrlKey || e.shiftKey) && keyCode > 47 && keyCode < 58) {
+      e.preventDefault();
+
+      this.pressedKeys.ctrl = e.ctrlKey;
+      this.pressedKeys.shift = e.shiftKey;
+
+      this.pressedKeys.num.push(keyCode - 48);
+
+      if (this.pressedKeys.ctrl && this.pressedKeys.shift) {
+        let index =
+          this.pressedKeys.num.reduce((total, current, index) => {
+            return (
+              total +
+              current * Math.pow(10, this.pressedKeys.num.length - index - 1)
+            );
+          }, 0) - 1;
+
+        if (index >= 0 && index < this.state.labelings.length) {
+          this.onSelectedLabelingIdChanged(this.state.labelings[index]['_id']);
+        } else {
+          while (
+            index >= this.state.labelings.length &&
+            this.pressedKeys.num.length > 1
+          ) {
+            this.pressedKeys.num.shift();
+            index =
+              this.pressedKeys.num.reduce((total, current, index) => {
+                return (
+                  total +
+                  current *
+                    Math.pow(10, this.pressedKeys.num.length - index - 1)
+                );
+              }, 0) - 1;
+          }
+
+          if (index >= this.state.labelings.length || index < 0) {
+            this.clearKeyBuffer();
+          } else {
+            this.onSelectedLabelingIdChanged(
+              this.state.labelings[index]['_id']
+            );
+          }
+        }
+      } else if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
+        let index =
+          this.pressedKeys.num.reduce((total, current, index) => {
+            return (
+              total +
+              current * Math.pow(10, this.pressedKeys.num.length - index - 1)
+            );
+          }, 0) - 1;
+        let controlStates = this.state.controlStates;
+
+        if (
+          controlStates.selectedLabelingId &&
+          controlStates.selectedLabelTypeId
+        ) {
+          if (controlStates.canEdit) {
+            let labeling = this.state.labelings.filter(labeling => {
+              return labeling['_id'] === controlStates.selectedLabelingId;
+            })[0];
+
+            let labels = this.state.labels.filter(label =>
+              labeling.labels.includes(label['_id'])
+            );
+
+            if (index >= 0 && index < labels.length) {
+              this.onSelectedLabelTypeIdChanged(labels[index]['_id']);
+            } else {
+              while (
+                index >= labels.length &&
+                this.pressedKeys.num.length > 1
+              ) {
+                this.pressedKeys.num.shift();
+                index =
+                  this.pressedKeys.num.reduce((total, current, index) => {
+                    return (
+                      total +
+                      current *
+                        Math.pow(10, this.pressedKeys.num.length - index - 1)
+                    );
+                  }, 0) - 1;
+              }
+
+              if (index >= labels.length || index < 0) {
+                this.clearKeyBuffer();
+              } else {
+                this.onSelectedLabelTypeIdChanged(labels[index]['_id']);
+              }
+            }
+          } else {
+            window.alert('Editing not unlocked. Press "L" to unlock.');
+            this.clearKeyBuffer();
+          }
+        } else if (!controlStates.selectedLabelTypeId) {
+          window.alert('No label selected.');
+          this.clearKeyBuffer();
+        }
+      }
+
+      // l
+    } else if (keyCode === 76) {
+      e.preventDefault();
+      this.onCanEditChanged(!this.state.controlStates.canEdit);
+
+      // backspace or delete
+    } else if (keyCode === 8 || keyCode === 46) {
+      e.preventDefault();
+      let controlStates = this.state.controlStates;
+      if (
+        controlStates.selectedLabelingId &&
+        controlStates.selectedLabelTypeId
+      ) {
+        if (controlStates.canEdit) {
+          this.onDeleteSelectedLabel();
+        } else {
+          window.alert('Editing not unlocked. Press "L" to unlock.');
+        }
+      }
+
+      // space
+    } else if (keyCode === 32) {
+      e.preventDefault();
+      this.onPlay();
+    }
+  }
+
+  onKeyUp(e) {
+    let keyCode = e.keyCode ? e.keyCode : e.which;
+
+    // shift
+    if (keyCode === 16) {
+      e.preventDefault();
+      this.clearKeyBuffer();
+
+      // ctrl
+    } else if (keyCode === 17) {
+      e.preventDefault();
+
+      if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
+        this.clearKeyBuffer();
+      }
+    }
+  }
+
+  clearKeyBuffer() {
+    this.pressedKeys.num = [];
+    this.pressedKeys.ctrl = false;
+    this.pressedKeys.shift = false;
+  }
+
+  addTimeSeries(obj) {
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+
+    let labels = JSON.parse(JSON.stringify(obj.labels));
+    obj.labels = undefined;
+    obj.offset = 0;
+    obj.data = obj.data.map(point => {
+      return {
+        timestamp: point[0],
+        value: point[1]
+      };
+    });
+    dataset.timeSeries.push(obj);
+
+    labels = labels.filter(label => {
+      let labelings = this.state.labelings;
+
+      for (let j = 0; j < labelings.length; j++) {
+        let labelTypes = this.state.labels.filter(labelType =>
+          labelings[j].labels.includes(labelType['_id'])
+        );
+
+        if (label.labelingId === labelings[j]['_id']) {
+          if (!labelTypes.some(type => type['_id'] === label.typeId)) {
+            window.alert(
+              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
+            );
+            return;
+          }
+
+          for (let i = 0; i < dataset.labelings.length; i++) {
+            if (dataset.labelings[i].labelingId === label.labelingId) {
+              dataset.labelings[i].labels.push({
+                type: label.typeId,
+                start: label.start,
+                end: label.end
+              });
+              break;
+            }
+          }
+          break;
+        }
+      }
+    });
+
+    if (labels.length !== 0) {
+      window.alert(
+        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`
+      );
+      return;
+    }
+
+    dataset.end = Math.max(
+      obj.data[obj.data.length - 1].timestamp,
+      dataset.end
+    );
+    dataset.start = Math.min(obj.data[0].timestamp, dataset.start);
+
+    updateDataset(dataset, dataset => {
+      this.setState({ dataset });
+    });
+  }
+
+  onDeleteTimeSeries(fused, index) {
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+
+    if (!fused) {
+      dataset.fusedSeries.forEach(series => {
+        series.timeSeries = series.timeSeries.filter(
+          timeSeries => timeSeries !== dataset.timeSeries[index]['_id']
+        );
+      });
+      dataset.timeSeries.splice(index, 1);
+      dataset.start = this.getStartTime(dataset.timeSeries);
+      dataset.end = this.getEndTime(dataset.timeSeries);
+      dataset.fusedSeries = dataset.fusedSeries.filter(
+        series => series.timeSeries.length > 1
+      );
+    } else {
+      dataset.fusedSeries.splice(index, 1);
+    }
+
+    this.setState({ dataset });
+    updateDataset(dataset);
+  }
+
+  onShiftTimeSeries(index, timestamp) {
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+
+    let data = dataset.timeSeries[index].data;
+    let diff = timestamp - data[0].timestamp;
+    data.forEach(element => {
+      element.timestamp = element.timestamp + diff;
+    });
+    dataset.timeSeries[index].data = data;
+
+    dataset.start = this.getStartTime(dataset.timeSeries);
+    dataset.end = this.getEndTime(dataset.timeSeries);
+
+    this.setState({ dataset });
+    updateDataset(dataset);
+  }
+
+  onFuseTimeSeries(seriesIds) {
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+    dataset.fusedSeries.push({
+      timeSeries: seriesIds
+    });
+
+    updateDataset(dataset, dataset => {
+      this.setState({
+        dataset,
+        fuseTimeSeriesModalState: { isOpen: false }
+      });
+    });
+  }
+
+  onFuseCanceled() {
+    this.setState({ fuseTimeSeriesModalState: { isOpen: false } });
+  }
+
+  onOpenFuseTimeSeriesModal() {
+    this.setState({ fuseTimeSeriesModalState: { isOpen: true } });
+  }
+
   updateControlStates(
     drawingId,
     drawingPosition,
@@ -191,9 +439,7 @@ class DatasetPage extends Component {
   ) {
     this.setState({
       controlStates: {
-        selectedLabelId: this.state.controlStates.selectedLabelId,
-        selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
+        ...this.state.controlStates,
         canEdit: canEdit,
         drawingId: drawingId,
         drawingPosition: drawingPosition,
@@ -201,50 +447,6 @@ class DatasetPage extends Component {
         fromLastPosition: fromLastPosition
       }
     });
-  }
-
-  setDrawingInterval() {
-    this.drawingInterval = setInterval(() => {
-      let id = this.state.controlStates.drawingId;
-      let position = this.state.controlStates.drawingPosition;
-      if (!id || !position) return;
-      let newPosition = this.state.controlStates.newPosition
-        ? this.state.controlStates.newPosition + 500
-        : position + 500;
-
-      if (newPosition >= this.state.dataset.end) {
-        this.clearDrawingInterval();
-        return;
-      }
-
-      this.updateControlStates(
-        id,
-        position,
-        newPosition,
-        this.state.controlStates.canEdit,
-        this.state.controlStates.fromLastPosition
-      );
-
-      let difference = newPosition - this.state.dataset.start;
-      this.onScrubbed(difference / 1000);
-
-      this.onLabelChanged(id, position, newPosition);
-    }, 10);
-  }
-
-  clearDrawingInterval() {
-    clearInterval(this.drawingInterval);
-    this.drawingInterval = false;
-
-    this.updateControlStates(
-      undefined,
-      this.state.controlStates.fromLastPosition
-        ? this.state.controlStates.newPosition
-        : undefined,
-      undefined,
-      this.state.controlStates.canEdit,
-      this.state.controlStates.fromLastPosition
-    );
   }
 
   onPlay() {
@@ -305,13 +507,7 @@ class DatasetPage extends Component {
         let drawingPosition = this.state.controlStates.drawingPosition;
         this.clearCrosshairInterval();
 
-        this.updateControlStates(
-          uuidv4(),
-          drawingPosition,
-          undefined,
-          true,
-          true
-        );
+        this.updateControlStates(null, drawingPosition, undefined, true, true);
         this.setDrawingInterval();
       } else if (
         !charts[1].xAxis[0].plotLinesAndBands.some(
@@ -349,24 +545,48 @@ class DatasetPage extends Component {
     }
   }
 
-  clearCrosshairInterval() {
-    clearInterval(this.crosshairInterval);
-    this.crosshairInterval = false;
+  setDrawingInterval() {
+    this.drawingInterval = setInterval(() => {
+      let id = this.state.controlStates.drawingId;
+      let position = this.state.controlStates.drawingPosition;
+
+      let newPosition = this.state.controlStates.newPosition
+        ? this.state.controlStates.newPosition + 500
+        : position + 500;
+
+      if (newPosition >= this.state.dataset.end) {
+        this.clearDrawingInterval();
+        return;
+      }
+
+      this.updateControlStates(
+        id,
+        position,
+        newPosition,
+        this.state.controlStates.canEdit,
+        this.state.controlStates.fromLastPosition
+      );
+
+      let difference = newPosition - this.state.dataset.start;
+      this.onScrubbed(difference / 1000);
+
+      this.onLabelChanged(id, position, newPosition);
+    }, 10);
+  }
+
+  clearDrawingInterval() {
+    clearInterval(this.drawingInterval);
+    this.drawingInterval = false;
 
     this.updateControlStates(
       undefined,
-      undefined,
+      this.state.controlStates.fromLastPosition
+        ? this.state.controlStates.newPosition
+        : undefined,
       undefined,
       this.state.controlStates.canEdit,
       this.state.controlStates.fromLastPosition
     );
-
-    let charts = Highcharts.charts;
-    charts.forEach((chart, index) => {
-      if (index !== 0) {
-        chart.xAxis[0].removePlotLine('plotline_cursor');
-      }
-    });
   }
 
   setCrosshairInterval() {
@@ -406,339 +626,41 @@ class DatasetPage extends Component {
     }, 10);
   }
 
-  clearKeyBuffer() {
-    this.pressedKeys.num = [];
-    this.pressedKeys.ctrl = false;
-    this.pressedKeys.shift = false;
-  }
+  clearCrosshairInterval() {
+    clearInterval(this.crosshairInterval);
+    this.crosshairInterval = false;
 
-  onKeyDown(e) {
-    let keyCode = e.keyCode ? e.keyCode : e.which;
-
-    if ((e.ctrlKey || e.shiftKey) && keyCode > 47 && keyCode < 58) {
-      e.preventDefault();
-
-      this.pressedKeys.ctrl = e.ctrlKey;
-      this.pressedKeys.shift = e.shiftKey;
-
-      this.pressedKeys.num.push(keyCode - 48);
-
-      if (this.pressedKeys.ctrl && this.pressedKeys.shift) {
-        let index =
-          this.pressedKeys.num.reduce((total, current, index) => {
-            return (
-              total +
-              current * Math.pow(10, this.pressedKeys.num.length - index - 1)
-            );
-          }, 0) - 1;
-
-        if (index >= 0 && index < this.state.labelingsDefinition.length) {
-          this.onSelectedLabelingIdChanged(
-            this.state.labelingsDefinition[index].id
-          );
-        } else {
-          while (
-            index >= this.state.labelingsDefinition.length &&
-            this.pressedKeys.num.length > 1
-          ) {
-            this.pressedKeys.num.shift();
-            index =
-              this.pressedKeys.num.reduce((total, current, index) => {
-                return (
-                  total +
-                  current *
-                    Math.pow(10, this.pressedKeys.num.length - index - 1)
-                );
-              }, 0) - 1;
-          }
-
-          if (index >= this.state.labelingsDefinition.length || index < 0) {
-            this.clearKeyBuffer();
-          } else {
-            this.onSelectedLabelingIdChanged(
-              this.state.labelingsDefinition[index].id
-            );
-          }
-        }
-      } else if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
-        let index =
-          this.pressedKeys.num.reduce((total, current, index) => {
-            return (
-              total +
-              current * Math.pow(10, this.pressedKeys.num.length - index - 1)
-            );
-          }, 0) - 1;
-        let controlStates = this.state.controlStates;
-
-        if (
-          controlStates.selectedLabelingId &&
-          controlStates.selectedLabelTypeId
-        ) {
-          if (controlStates.canEdit) {
-            let labeling = this.state.labelingsDefinition.filter(labeling => {
-              return labeling.id === controlStates.selectedLabelingId;
-            })[0];
-
-            if (index >= 0 && index < labeling.types.length) {
-              this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
-            } else {
-              while (
-                index >= labeling.types.length &&
-                this.pressedKeys.num.length > 1
-              ) {
-                this.pressedKeys.num.shift();
-                index =
-                  this.pressedKeys.num.reduce((total, current, index) => {
-                    return (
-                      total +
-                      current *
-                        Math.pow(10, this.pressedKeys.num.length - index - 1)
-                    );
-                  }, 0) - 1;
-              }
-
-              if (index >= labeling.types.length || index < 0) {
-                this.clearKeyBuffer();
-              } else {
-                this.onSelectedLabelTypeIdChanged(labeling.types[index].id);
-              }
-            }
-          } else {
-            window.alert('Editing not unlocked. Press "L" to unlock.');
-            this.clearKeyBuffer();
-          }
-        } else if (!controlStates.selectedLabelTypeId) {
-          window.alert('No label selected.');
-          this.clearKeyBuffer();
-        }
-      }
-
-      // l
-    } else if (keyCode === 76) {
-      e.preventDefault();
-      this.onCanEditChanged(!this.state.controlStates.canEdit);
-
-      // backspace or delete
-    } else if (keyCode === 8 || keyCode === 46) {
-      e.preventDefault();
-      let controlStates = this.state.controlStates;
-      if (
-        controlStates.selectedLabelingId &&
-        controlStates.selectedLabelTypeId
-      ) {
-        if (controlStates.canEdit) {
-          this.onDeleteSelectedLabel();
-        } else {
-          window.alert('Editing not unlocked. Press "L" to unlock.');
-        }
-      }
-
-      // space
-    } else if (keyCode === 32) {
-      e.preventDefault();
-      this.onPlay();
-    }
-  }
-
-  onKeyUp(e) {
-    let keyCode = e.keyCode ? e.keyCode : e.which;
-
-    // shift
-    if (keyCode === 16) {
-      e.preventDefault();
-      this.clearKeyBuffer();
-
-      // ctrl
-    } else if (keyCode === 17) {
-      e.preventDefault();
-
-      if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
-        this.clearKeyBuffer();
-      }
-    }
-  }
-
-  onScrubbed(position) {
-    if (!this.videoPanel.current) return;
-
-    this.videoPanel.current.onSetTime(position);
-  }
-
-  onDatasetChanged(dataset) {
-    if (!dataset) return;
-
-    dataset.fusedSeries = dataset.fusedSeries.filter(
-      fused => fused.timeSeries.length > 1
+    this.updateControlStates(
+      undefined,
+      undefined,
+      undefined,
+      this.state.controlStates.canEdit,
+      this.state.controlStates.fromLastPosition
     );
-    this.setState(
-      { dataset: dataset },
-      subscribeLabelingsDef(this.onLabelingsChanged)
-    );
-  }
 
-  onLabelingsChanged(labelings) {
-    if (!labelings) labelings = [];
-
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-
-    let labelingsDefChanged = false;
-    dataset.labelings.forEach(labeling => {
-      if (!labelings.some(def => def.id === labeling.labelingId)) {
-        let types = [];
-        labeling.labels.forEach(label => {
-          if (!types.some(type => type.id === label.type)) {
-            types = [
-              ...types,
-              {
-                id: label.type,
-                name: 'Type ' + shortId(),
-                color: generateRandomColor()
-              }
-            ];
-          }
-        });
-
-        labelings = [
-          ...labelings,
-          {
-            id: labeling.labelingId,
-            name: 'Labeling ' + shortId(),
-            types: types
-          }
-        ];
-        labelingsDefChanged = true;
-      } else {
-        let def = labelings.filter(def => def.id === labeling.labelingId)[0];
-
-        labeling.labels.forEach(label => {
-          if (!def.types.some(type => type.id === label.type)) {
-            def.types.push({
-              id: label.type,
-              name: 'Type ' + shortId(),
-              color: generateRandomColor()
-            });
-            labelingsDefChanged = true;
-          }
-        });
+    let charts = Highcharts.charts;
+    charts.forEach((chart, index) => {
+      if (index !== 0) {
+        chart.xAxis[0].removePlotLine('plotline_cursor');
       }
     });
-
-    labelings.forEach(def => {
-      if (
-        !this.state.dataset.labelings.some(
-          labeling => labeling.labelingId === def.id
-        )
-      ) {
-        dataset.labelings.push({
-          _id: uuidv4(),
-          labelingId: def.id,
-          labels: []
-        });
-      }
-    });
-
-    this.setState({
-      dataset: dataset,
-      labelingsDefinition: labelings,
-      controlStates: {
-        selectedLabelId: this.state.controlStates.selectedLabelId,
-        selectedLabelingId: labelings[0].id,
-        selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
-        canEdit: this.state.controlStates.canEdit,
-        drawingId: this.state.controlStates.drawingId,
-        drawingPosition: this.state.controlStates.drawingPosition,
-        newPosition: this.state.controlStates.newPosition
-      },
-      isReady: true
-    });
-
-    if (labelingsDefChanged) {
-      updateLabelingsDef(labelings);
-    }
-  }
-
-  componentDidMount() {
-    window.addEventListener('keyup', this.onKeyUp);
-    window.addEventListener('keydown', this.onKeyDown);
-    subscribeDataset(this.props.match.params.id, this.onDatasetChanged);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keyup', this.onKeyUp);
-    window.removeEventListener('keydown', this.onKeyDown);
-    unsubscribeLabelingsDef();
-    unsubscribeDataset(this.props.match.params.id);
-  }
-
-  addTimeSeries(obj) {
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-
-    let labels = JSON.parse(JSON.stringify(obj.labels));
-    obj.labels = undefined;
-    obj.offset = 0;
-    obj.data = obj.data.map(point => {
-      return {
-        _id: uuidv4(),
-        timestamp: point[0],
-        value: point[1]
-      };
-    });
-    dataset.timeSeries.push(obj);
-
-    labels = labels.filter(label => {
-      let labelingsDefinition = this.state.labelingsDefinition;
-      for (let j = 0; j < labelingsDefinition.length; j++) {
-        if (label.labelingId === labelingsDefinition[j].id) {
-          if (
-            !labelingsDefinition[j].types.some(type => type.id === label.type)
-          ) {
-            window.alert(
-              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
-            );
-            return;
-          }
-
-          for (let i = 0; i < dataset.labelings.length; i++) {
-            if (dataset.labelings[i].labelingId === label.labelingId) {
-              dataset.labelings[i].labels.push({
-                _id: uuidv4(),
-                type: label.type,
-                start: label.start,
-                end: label.end
-              });
-              break;
-            }
-          }
-          break;
-        }
-      }
-    });
-
-    if (labels.length !== 0) {
-      window.alert(
-        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`
-      );
-      return;
-    }
-
-    dataset.end = Math.max(
-      obj.data[obj.data.length - 1].timestamp,
-      dataset.end
-    );
-    dataset.start = Math.min(obj.data[0].timestamp, dataset.start);
-    this.setState({ dataset });
   }
 
   onSelectedLabelingIdChanged(selectedLabelingId) {
+    let labeling = this.state.labelings.filter(
+      labeling => labeling['_id'] === selectedLabelingId
+    )[0];
+    let labelTypes = this.state.labels.filter(label =>
+      labeling.labels.includes(label['_id'])
+    );
+
     this.setState({
       controlStates: {
+        ...this.state.controlStates,
         selectedLabelId: undefined,
         selectedLabelingId: selectedLabelingId,
         selectedLabelTypeId: undefined,
-        canEdit: this.state.controlStates.canEdit,
-        drawingId: this.state.controlStates.drawingId,
-        drawingPosition: this.state.controlStates.drawingPosition,
-        newPosition: this.state.controlStates.newPosition
+        selectedLabelTypes: labelTypes
       }
     });
   }
@@ -746,33 +668,25 @@ class DatasetPage extends Component {
   onSelectedLabelTypeIdChanged(selectedLabelTypeId) {
     if (this.state.controlStates.selectedLabelId === undefined) return;
 
-    // TODO: wtf - all this filter has to be improved
-    let labeling = this.state.dataset.labelings.filter(
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+    let labeling = dataset.labelings.filter(
       labeling =>
         labeling.labelingId === this.state.controlStates.selectedLabelingId
     )[0];
     let label = labeling.labels.filter(
       label => label['_id'] === this.state.controlStates.selectedLabelId
     )[0];
-    var selectedLabeling = this.state.labelingsDefinition.filter(
-      labeling => labeling.id === this.state.controlStates.selectedLabelingId
-    )[0];
-    var selectedLabelingTypes = selectedLabeling.types;
-    label.type = selectedLabelingTypes.filter(
-      labelType => labelType.id === selectedLabelTypeId
-    )[0].id;
+    label.type = selectedLabelTypeId;
 
     this.setState({
+      dataset,
       controlStates: {
-        selectedLabelId: this.state.controlStates.selectedLabelId,
-        selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: selectedLabelTypeId,
-        canEdit: this.state.controlStates.canEdit,
-        drawingId: this.state.controlStates.drawingId,
-        drawingPosition: this.state.controlStates.drawingPosition,
-        newPosition: this.state.controlStates.newPosition
+        ...this.state.controlStates,
+        selectedLabelTypeId: selectedLabelTypeId
       }
     });
+
+    updateDataset(dataset);
   }
 
   onSelectedLabelChanged(selectedLabelId) {
@@ -783,51 +697,59 @@ class DatasetPage extends Component {
     let label = labeling.labels.filter(
       label => label['_id'] === selectedLabelId
     )[0];
+
     this.setState({
       controlStates: {
+        ...this.state.controlStates,
         selectedLabelId: selectedLabelId,
-        selectedLabelingId: this.state.controlStates.selectedLabelingId,
-        selectedLabelTypeId: label ? label.type : undefined,
-        canEdit: this.state.controlStates.canEdit,
-        drawingId: this.state.controlStates.drawingId,
-        drawingPosition: this.state.controlStates.drawingPosition,
-        newPosition: this.state.controlStates.newPosition
+        selectedLabelTypeId: label ? label.type : undefined
       }
     });
   }
 
-  onLabelChanged(labelId, start, end) {
-    let labeling = this.state.dataset.labelings.filter(
+  onLabelChanged(labelId, start, end, callback) {
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+    let labeling = dataset.labelings.filter(
       labeling =>
         labeling.labelingId === this.state.controlStates.selectedLabelingId
     )[0];
 
-    let label = labeling.labels.filter(label => label['_id'] === labelId)[0];
+    let labelingOrLabelAdded = false;
 
-    if (label !== undefined && label.start === undefined) {
-      label.start = start === undefined ? start : end;
-    } else if (label !== undefined && label.to === undefined) {
-      label.end = start === undefined ? start : end;
-    } else if (!label) {
-      label = {
-        _id: labelId,
-        start: start,
-        end: end,
-        type: this.state.labelingsDefinition.filter(
-          labeling =>
-            this.state.controlStates.selectedLabelingId === labeling.id
-        )[0].types[0].id
+    if (!labeling) {
+      labeling = {
+        labels: [],
+        labelingId: this.state.controlStates.selectedLabelingId,
+        creator: this.state.dataset.userId
       };
 
-      if (labeling.labels.length === 0) {
-        addLabeling(this.state.dataset['_id'], labeling);
-      }
+      dataset.labelings = [...dataset.labelings, labeling];
+      labelingOrLabelAdded = true;
+    }
+
+    let label;
+
+    if (!labelId) {
+      label = {
+        start: start,
+        end: end,
+        type: this.state.controlStates.selectedLabelTypeId
+          ? this.state.controlStates.selectedLabelTypeId
+          : this.state.controlStates.selectedLabelTypes[0]['_id']
+      };
 
       labeling.labels = [...labeling.labels, label];
-      addLabel(this.state.dataset['_id'], labeling['_id'], label);
+      labelingOrLabelAdded = true;
     } else {
-      label.start = start;
-      label.end = end;
+      label = labeling.labels.filter(label => label['_id'] === labelId)[0];
+      if (label !== undefined && label.start === undefined) {
+        label.start = start === undefined ? start : end;
+      } else if (label !== undefined && label.end === undefined) {
+        label.end = start === undefined ? start : end;
+      } else {
+        label.start = start;
+        label.end = end;
+      }
     }
 
     let temp;
@@ -836,14 +758,32 @@ class DatasetPage extends Component {
       label.start = label.end;
       label.end = temp;
     }
-    updateLabel(this.state.dataset['_id'], labeling['_id'], label);
 
-    this.forceUpdate();
+    if (labelingOrLabelAdded) {
+      updateDataset(dataset, dataset => {
+        let labeling = dataset.labelings.filter(
+          labeling =>
+            labeling.labelingId === this.state.controlStates.selectedLabelingId
+        )[0];
+
+        this.setState({
+          dataset,
+          controlStates: {
+            ...this.state.controlStates,
+            drawingId: labeling.labels[labeling.labels.length - 1]['_id']
+          }
+        });
+      });
+    } else {
+      this.setState({ dataset });
+      updateDataset(dataset);
+    }
   }
 
   onDeleteSelectedLabel() {
     if (window.confirm('Are you sure to delete this label?')) {
-      let labeling = this.state.dataset.labelings.filter(
+      let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+      let labeling = dataset.labelings.filter(
         labeling =>
           labeling.labelingId === this.state.controlStates.selectedLabelingId
       )[0];
@@ -851,98 +791,30 @@ class DatasetPage extends Component {
         label => label['_id'] !== this.state.controlStates.selectedLabelId
       );
       this.setState({
+        dataset,
         controlStates: {
+          ...this.state.controlStates,
           selectedLabelId: undefined,
-          selectedLabelingId: this.state.controlStates.selectedLabelingId,
-          selectedLabelTypeId: undefined,
-          canEdit: this.state.controlStates.canEdit,
-          drawingId: this.state.controlStates.drawingId,
-          drawingPosition: this.state.controlStates.drawingPosition,
-          newPosition: this.state.controlStates.newPosition
+          selectedLabelTypeId: undefined
         }
       });
+
+      updateDataset(dataset);
     }
   }
 
   onCanEditChanged(canEdit) {
     if (!this.drawingInterval) {
       this.setState({
-        controlStates: {
-          selectedLabelId: this.state.controlStates.selectedLabelId,
-          selectedLabelingId: this.state.controlStates.selectedLabelingId,
-          selectedLabelTypeId: this.state.controlStates.selectedLabelTypeId,
-          canEdit: canEdit,
-          drawingId: this.state.controlStates.drawingId,
-          drawingPosition: this.state.controlStates.drawingPosition,
-          newPosition: this.state.controlStates.newPosition
-        }
+        controlStates: { ...this.state.controlStates, canEdit: canEdit }
       });
     }
   }
 
-  onFuseTimeSeries(seriesIds) {
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-    dataset.fusedSeries.push({
-      _id: uuidv4(),
-      timeSeries: seriesIds
-    });
-    let fuseTimeSeriesModalState = { ...this.state.fuseTimeSeriesModalState };
-    fuseTimeSeriesModalState.isOpen = false;
+  onScrubbed(position) {
+    if (!this.videoPanel.current) return;
 
-    this.setState({ dataset });
-    this.setState({ fuseTimeSeriesModalState });
-  }
-
-  onFuseCanceled() {
-    let fuseTimeSeriesModalState = { ...this.state.fuseTimeSeriesModalState };
-    fuseTimeSeriesModalState.isOpen = false;
-
-    this.setState({ fuseTimeSeriesModalState });
-  }
-
-  onOpenFuseTimeSeriesModal() {
-    let fuseTimeSeriesModalState = { ...this.state.fuseTimeSeriesModalState };
-    fuseTimeSeriesModalState.isOpen = true;
-
-    this.setState({ fuseTimeSeriesModalState });
-  }
-
-  onDeleteTimeSeries(fused, index) {
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-
-    if (!fused) {
-      dataset.fusedSeries.forEach(series => {
-        series.timeSeries = series.timeSeries.filter(
-          timeSeries => timeSeries !== dataset.timeSeries[index]['_id']
-        );
-      });
-      dataset.timeSeries.splice(index, 1);
-      dataset.start = this.getStartTime(dataset.timeSeries);
-      dataset.end = this.getEndTime(dataset.timeSeries);
-      dataset.fusedSeries = dataset.fusedSeries.filter(
-        series => series.timeSeries.length > 1
-      );
-    } else {
-      dataset.fusedSeries.splice(index, 1);
-    }
-
-    this.setState({ dataset });
-  }
-
-  onShiftTimeSeries(index, timestamp) {
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-
-    let data = dataset.timeSeries[index].data;
-    let diff = timestamp - data[0].timestamp;
-    data.forEach(element => {
-      element.timestamp = element.timestamp + diff;
-    });
-    dataset.timeSeries[index].data = data;
-
-    dataset.start = this.getStartTime(dataset.timeSeries);
-    dataset.end = this.getEndTime(dataset.timeSeries);
-
-    this.setState({ dataset });
+    this.videoPanel.current.onSetTime(position);
   }
 
   getStartTime(timeSeries) {
@@ -978,19 +850,21 @@ class DatasetPage extends Component {
   render() {
     if (!this.state.isReady) return <Loader loading={true} />;
 
-    var selectedLabeling = this.state.labelingsDefinition.filter(
-      labeling => labeling.id === this.state.controlStates.selectedLabelingId
+    let selectedLabeling = this.state.labelings.filter(
+      labeling =>
+        labeling['_id'] === this.state.controlStates.selectedLabelingId
     )[0];
-    var selectedLabelingTypes = selectedLabeling.types;
-    var labeling = this.state.dataset.labelings.filter(
-      labeling => selectedLabeling.id === labeling.labelingId
+
+    let selectedDatasetlabeling = this.state.dataset.labelings.filter(
+      labeling => selectedLabeling['_id'] === labeling.labelingId
     )[0];
-    if (labeling === undefined) labeling = [];
-    let label = labeling.labels
-      ? labeling.labels.filter(
-          label => label['_id'] === this.state.controlStates.selectedLabelId
-        )[0]
-      : null;
+    if (!selectedDatasetlabeling) selectedDatasetlabeling = {};
+    let selectedDatasetLabel =
+      selectedDatasetlabeling && selectedDatasetlabeling.labels
+        ? selectedDatasetlabeling.labels.filter(
+            label => label['_id'] === this.state.controlStates.selectedLabelId
+          )[0]
+        : null;
 
     let isDrawingIntervalActive = this.drawingInterval ? true : false;
     let isCrosshairIntervalActive = this.crosshairInterval ? true : false;
@@ -1012,7 +886,7 @@ class DatasetPage extends Component {
               >
                 <LabelingSelectionPanel
                   history={this.props.history}
-                  labelingsDefinition={this.state.labelingsDefinition}
+                  labelings={this.state.labelings}
                   selectedLabelingId={
                     this.state.controlStates.selectedLabelingId
                   }
@@ -1021,8 +895,8 @@ class DatasetPage extends Component {
                 <TimeSeriesCollectionPanel
                   timeSeries={this.state.dataset.timeSeries}
                   fusedSeries={this.state.dataset.fusedSeries}
-                  labeling={labeling}
-                  labelTypes={selectedLabelingTypes}
+                  labeling={selectedDatasetlabeling}
+                  labelTypes={this.state.controlStates.selectedLabelTypes}
                   onLabelClicked={this.onSelectedLabelChanged}
                   selectedLabelId={this.state.controlStates.selectedLabelId}
                   start={this.state.dataset.start}
@@ -1087,9 +961,10 @@ class DatasetPage extends Component {
               <LabelingPanel
                 history={this.props.history}
                 id={this.state.controlStates.selectedLabelId}
-                from={label ? label.start : null}
-                to={label ? label.end : null}
+                from={selectedDatasetLabel ? selectedDatasetLabel.start : null}
+                to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
                 labeling={selectedLabeling}
+                labels={this.state.controlStates.selectedLabelTypes}
                 selectedLabelTypeId={
                   this.state.controlStates.selectedLabelTypeId
                 }

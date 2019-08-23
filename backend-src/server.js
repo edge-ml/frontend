@@ -384,6 +384,35 @@ io.on('connection', (socket) => {
 		});
 	});
 
+	socket.on('update_dataset', dataset => {
+		if (!socket.client.twoFactorAuthenticated) return;
+
+		rp({
+			method: 'PUT',
+			uri: uri + `/datasets/${dataset['_id']}`,
+			headers: {
+				'User-Agent': 'Explorer'
+			},
+			body: dataset,
+			json: true
+		})
+		.then(response => {
+			return rp({
+				uri: uri + `/datasets/${dataset['_id']}`,
+				headers: {
+					'User-Agent': 'Explorer'
+				},
+				json: true
+			})
+		})
+		.then(dataset => {
+			socket.emit('err', false, dataset);
+		})
+		.catch(err => {
+			socket.emit('err', err);
+		});
+	});
+
 	socket.on('delete_dataset', id => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
@@ -418,9 +447,8 @@ io.on('connection', (socket) => {
 			body: labeling,
 			json: true
 		})
-		.then(response => {
-			console.log(response)
-			socket.emit('err', false);
+		.then(labeling => {
+			socket.emit('err', false, labeling);
 		})
 		.catch(err => {
 			socket.emit('err', err);
@@ -440,19 +468,16 @@ io.on('connection', (socket) => {
 			json: true
 		})
 		.then(response => {
-			rp({
+			return rp({
 				uri: uri + `/datasets/${datasetId}/labelings/${labeling['_id']}`,
 				headers: {
 					'User-Agent': 'Explorer'
 				},
 				json: true
-			})
-			.then(labeling => {
-				socket.emit('update_dataset_labeling', false, labeling);
-			})
-			.catch(err => {
-				socket.emit('update_dataset_labeling', err, null);
-			})
+			});
+		})
+		.then(labeling => {
+			socket.emit('update_dataset_labeling', false, labeling);
 		})
 		.catch(err => {
 			socket.emit('update_dataset_labeling', err, null);

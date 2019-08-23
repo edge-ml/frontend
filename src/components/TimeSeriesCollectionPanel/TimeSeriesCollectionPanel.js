@@ -153,6 +153,7 @@ class TimeSeriesCollectionPanel extends Component {
           .filter(fusedSeries => fusedSeries.timeSeries.length > 0)
           .map((fusedSeries, key) => (
             <TimeSeriesPanel
+              key={key}
               fused={true}
               index={key + this.state.timeSeries.length + 1}
               data={this.state.timeSeries

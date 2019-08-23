@@ -6,7 +6,6 @@ import HighchartsReact from 'highcharts-react-official';
 import './TimeSeriesPanel.css';
 import DropdownPanel from './DropdownPanel';
 import { generateRandomColor } from '../../services/ColorService';
-import { uuidv4 } from '../../services/UUIDService';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
@@ -276,15 +275,14 @@ class TimeSeriesPanel extends Component {
       );
 
       if (!this.props.drawingId) {
-        let id = uuidv4();
-        this.state.onLabelChanged(id, position, undefined);
         this.props.updateControlStates(
-          id,
+          null,
           position,
           undefined,
           this.props.canEdit,
           false
         );
+        this.state.onLabelChanged(null, position, undefined);
       } else if (!this.props.drawingPosition) {
         this.state.onLabelChanged(this.props.drawingId, position, undefined);
         this.props.updateControlStates(
@@ -365,18 +363,6 @@ class TimeSeriesPanel extends Component {
     const plotLine = this.getActivePlotLine();
     if (!plotLine) return;
 
-    this.setState({
-      controlStates: {
-        activePlotLineId: undefined
-      }
-    });
-    this.props.updateControlStates(
-      this.props.drawingId,
-      undefined,
-      undefined,
-      this.props.canEdit
-    );
-
     plotLine.options.isActive = false;
     let newValue = this.chart.current.chart.xAxis[0].toValue(
       e.pageX - this.chart.current.chart.plotBox.x / 2
@@ -389,6 +375,18 @@ class TimeSeriesPanel extends Component {
       plotLine.options.labelId,
       newValue,
       remainingValue
+    );
+
+    this.setState({
+      controlStates: {
+        activePlotLineId: undefined
+      }
+    });
+    this.props.updateControlStates(
+      this.props.drawingId,
+      undefined,
+      undefined,
+      this.props.canEdit
     );
   }
 
@@ -415,31 +413,32 @@ class TimeSeriesPanel extends Component {
     var mouseDownHandler = this.onPlotBandMouseDown;
 
     if (labeling.labels === undefined) return [];
-    return labeling.labels.map(label => ({
-      id: 'band_' + label['_id'],
-      labelId: label['_id'],
-      from: label.start,
-      to: label.end,
-      zIndex: 2,
-      className: selectedLabelId === label['_id'] ? 'selected' : 'deselected',
-      color: labelTypes.filter(labelType => labelType.id === label.type)[0]
-        .color, // TODO: get rid of ugly code duplications
-      label: {
-        text: labelTypes.filter(labelType => labelType.id === label.type)[0]
-          .name,
-        style: {
-          color: labelTypes.filter(labelType => labelType.id === label.type)[0]
-            .color,
-          fontWeight: 'bold'
+    return labeling.labels.map(label => {
+      let labelType = labelTypes.filter(type => type['_id'] === label.type)[0];
+
+      return {
+        id: 'band_' + label['_id'],
+        labelId: label['_id'],
+        from: label.start,
+        to: label.end,
+        zIndex: 2,
+        className: selectedLabelId === label['_id'] ? 'selected' : 'deselected',
+        color: labelType.color,
+        label: {
+          text: labelType.name,
+          style: {
+            color: labelType.color,
+            fontWeight: 'bold'
+          },
+          isPlotline: false,
+          isSelected: selectedLabelId === label['_id']
         },
-        isPlotline: false,
-        isSelected: selectedLabelId === label['_id']
-      },
-      events: {
-        mousedown: e =>
-          mouseDownHandler(e, 'band_' + label['_id'], label['_id'])
-      }
-    }));
+        events: {
+          mousedown: e =>
+            mouseDownHandler(e, 'band_' + label['_id'], label['_id'])
+        }
+      };
+    });
   }
 
   getPlotbandByLabelId(labelId) {
@@ -540,7 +539,7 @@ class TimeSeriesPanel extends Component {
       ? false
       : this.state.controlStates.activePlotLineId === plotLineId;
     var labelColor = labelTypes.filter(
-      labelType => labelType.id === labelTypeId
+      labelType => labelType['_id'] === labelTypeId
     )[0].color;
 
     var mouseDownHandler = this.onPlotLineMouseDown;

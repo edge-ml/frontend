@@ -26,6 +26,7 @@ class LabelingPanel extends Component {
       from: props.from,
       to: props.to,
       labeling: props.labeling,
+      labels: props.labels,
       selectedLabelTypeId: props.selectedLabelTypeId,
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
@@ -46,6 +47,7 @@ class LabelingPanel extends Component {
       from: props.from,
       to: props.to,
       labeling: props.labeling,
+      labels: props.labels,
       selectedLabelTypeId: props.selectedLabelTypeId,
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
@@ -180,36 +182,41 @@ class LabelingPanel extends Component {
             >
               + Add
             </Button>
-            {this.state.labeling.types
+            {this.state.labeling.labels
               .slice(0)
               .reverse()
-              .map((label, index, array) => (
-                <Button
-                  className="btn-light m-1 labelingButton"
-                  disabled={
-                    this.state.selectedLabelTypeId === undefined ||
-                    !this.state.canEdit
-                  }
-                  style={{
-                    backgroundColor:
-                      label.id === this.state.selectedLabelTypeId
-                        ? label.color
-                        : null,
-                    borderColor:
-                      label.id === this.state.selectedLabelTypeId
-                        ? null
-                        : label.color,
-                    color:
-                      label.id === this.state.selectedLabelTypeId
-                        ? null
-                        : label.color
-                  }}
-                  onClick={e => this.handleLabelTypeClicked(e, label.id)}
-                  key={index}
-                >
-                  {label.name} {'(' + (array.length - index) + ')'}
-                </Button>
-              ))}
+              .map((labelId, index, array) => {
+                let label = this.state.labels.filter(
+                  label => label['_id'] === labelId
+                )[0];
+                return (
+                  <Button
+                    className="btn-light m-1 labelingButton"
+                    disabled={
+                      this.state.selectedLabelTypeId === undefined ||
+                      !this.state.canEdit
+                    }
+                    style={{
+                      backgroundColor:
+                        labelId === this.state.selectedLabelTypeId
+                          ? label.color
+                          : null,
+                      borderColor:
+                        labelId === this.state.selectedLabelTypeId
+                          ? null
+                          : label.color,
+                      color:
+                        labelId === this.state.selectedLabelTypeId
+                          ? null
+                          : label.color
+                    }}
+                    onClick={e => this.handleLabelTypeClicked(e, labelId)}
+                    key={index}
+                  >
+                    {label.name} {'(' + (array.length - index) + ')'}
+                  </Button>
+                );
+              })}
           </div>
         </CardBody>
       </Card>

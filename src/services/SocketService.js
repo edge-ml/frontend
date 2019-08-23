@@ -212,46 +212,29 @@ export const unsubscribeDataset = id => {
   socket.off(`dataset_${id}`);
 };
 
-export const deleteDataset = (id, callback) => {
+export const updateDataset = (dataset, callback) => {
   if (!authenticated || !verified) return;
 
-  socket.emit('delete_dataset', id);
-  socket.on('err', err => {
+  socket.emit('update_dataset', dataset);
+  socket.on('err', (err, dataset) => {
     if (err) {
-      callback(err);
+      console.log(err);
+    } else if (callback) {
+      callback(dataset);
     }
     socket.off('err');
   });
 };
 
-/***
- * DatasetLabeling
- */
-export const addDatasetLabeling = (datasetId, labeling, callback) => {
+export const deleteDataset = id => {
   if (!authenticated || !verified) return;
 
-  socket.emit('add_dataset_labeling', datasetId, labeling);
-  socket.on('add_dataset_labeling', (err, labeling) => {
+  socket.emit('delete_dataset', id);
+  socket.on('err', err => {
     if (err) {
       console.log(err);
-    } else if (callback) {
-      callback(labeling);
     }
-    socket.off('add_dataset_labeling');
-  });
-};
-
-export const updateDatasetLabeling = (datasetId, labeling, callback) => {
-  if (!authenticated || !verified) return;
-
-  socket.emit('update_dataset_labeling', datasetId, labeling);
-  socket.on('update_dataset_labeling', (err, labeling) => {
-    if (err) {
-      console.log(err);
-    } else if (callback) {
-      callback(labeling);
-    }
-    socket.off('update_dataset_labeling');
+    socket.off('err');
   });
 };
 
