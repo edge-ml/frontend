@@ -43,8 +43,6 @@ class TimeSeriesPanel extends Component {
       this
     );
 
-    this.uuidv4 = this.uuidv4.bind(this);
-
     // state
     this.generateState = this.generateState.bind(this);
     this.state = this.generateState(props);
@@ -72,13 +70,13 @@ class TimeSeriesPanel extends Component {
     let filteredLabels =
       this.props.labeling.labels !== undefined
         ? this.props.labeling.labels.filter(
-            label => label.from === undefined || label.to === undefined
+            label => label.start === undefined || label.end === undefined
           )
         : undefined;
 
     if (filteredLabels !== undefined && filteredLabels.length !== 0) {
       this.props.updateControlStates(
-        filteredLabels[0].id,
+        filteredLabels[0]['_id'],
         this.props.drawingPosition,
         this.props.newPosition,
         this.props.canEdit
@@ -127,7 +125,7 @@ class TimeSeriesPanel extends Component {
                       }
                     }
                   },
-                  data: props.data
+                  data: props.data.map(point => [point.timestamp, point.value])
                 }
               ]
             : !Array.isArray(props.name)
@@ -135,7 +133,7 @@ class TimeSeriesPanel extends Component {
                 {
                   showInLegend: !props.isEmpty,
                   name: props.name + ' (' + props.unit + ')',
-                  data: props.data,
+                  data: props.data.map(point => [point.timestamp, point.value]),
                   lineWidth: 1
                 }
               ]
@@ -146,7 +144,7 @@ class TimeSeriesPanel extends Component {
                     ' (' +
                     this.props.unit[index] +
                     ')',
-                  data: dataItem,
+                  data: dataItem.map(point => [point.timestamp, point.value]),
                   lineWidth: 1
                 };
               }),
@@ -275,36 +273,41 @@ class TimeSeriesPanel extends Component {
       let position = this.chart.current.chart.xAxis[0].toValue(
         e.pageX - this.chart.current.chart.plotBox.x / 2
       );
-      let id;
-      if (this.props.drawingId && !this.props.drawingPosition) {
-        id = this.props.drawingId;
+
+      if (!this.props.drawingId) {
+        this.props.updateControlStates(
+          null,
+          position,
+          undefined,
+          this.props.canEdit,
+          false
+        );
+        this.state.onLabelChanged(null, position, undefined);
+      } else if (!this.props.drawingPosition) {
+        this.state.onLabelChanged(this.props.drawingId, position, undefined);
+        this.props.updateControlStates(
+          this.props.drawingId,
+          position,
+          undefined,
+          this.props.canEdit,
+          false
+        );
+      } else {
+        this.state.onLabelChanged(
+          this.props.drawingId,
+          this.props.drawingPosition,
+          position
+        );
         this.props.updateControlStates(
           undefined,
           undefined,
           undefined,
           this.props.canEdit
         );
-        this.state.onLabelChanged(id, position, undefined);
-      } else if (
-        this.props.drawingId &&
-        this.props.drawingPosition &&
-        this.props.newPosition
-      ) {
-        id = this.props.drawingId;
-        this.state.onLabelChanged(id, this.props.drawingPosition, position);
 
         if (this.props.drawingInterval) {
           this.props.clearDrawingInterval();
         }
-      } else {
-        id = this.uuidv4();
-        this.props.updateControlStates(
-          id,
-          undefined,
-          undefined,
-          this.props.canEdit
-        );
-        this.state.onLabelChanged(id, position, undefined);
       }
     }
     e.stopPropagation();
@@ -357,20 +360,8 @@ class TimeSeriesPanel extends Component {
   }
 
   onMouseUp(e, id) {
-    var plotLine = this.getActivePlotLine();
+    const plotLine = this.getActivePlotLine();
     if (!plotLine) return;
-
-    this.setState({
-      controlStates: {
-        activePlotLineId: undefined
-      }
-    });
-    this.props.updateControlStates(
-      this.props.drawingId,
-      undefined,
-      undefined,
-      this.props.canEdit
-    );
 
     plotLine.options.isActive = false;
     let newValue = this.chart.current.chart.xAxis[0].toValue(
@@ -384,6 +375,18 @@ class TimeSeriesPanel extends Component {
       plotLine.options.labelId,
       newValue,
       remainingValue
+    );
+
+    this.setState({
+      controlStates: {
+        activePlotLineId: undefined
+      }
+    });
+    this.props.updateControlStates(
+      this.props.drawingId,
+      undefined,
+      undefined,
+      this.props.canEdit
     );
   }
 
@@ -410,31 +413,32 @@ class TimeSeriesPanel extends Component {
     var mouseDownHandler = this.onPlotBandMouseDown;
 
     if (labeling.labels === undefined) return [];
-    return labeling.labels.map(label => ({
-      id: 'band_' + label.id,
-      labelId: label.id,
-      from: label.from,
-      to: label.to,
-      zIndex: 2,
-      className: selectedLabelId === label.id ? 'selected' : 'deselected',
-      color: labelTypes.filter(labelType => labelType.id === label.typeId)[0]
-        .color, // TODO: get rid of ugly code duplications
-      label: {
-        text: labelTypes.filter(labelType => labelType.id === label.typeId)[0]
-          .name,
-        style: {
-          color: labelTypes.filter(
-            labelType => labelType.id === label.typeId
-          )[0].color,
-          fontWeight: 'bold'
+    return labeling.labels.map(label => {
+      let labelType = labelTypes.filter(type => type['_id'] === label.type)[0];
+
+      return {
+        id: 'band_' + label['_id'],
+        labelId: label['_id'],
+        from: label.start,
+        to: label.end,
+        zIndex: 2,
+        className: selectedLabelId === label['_id'] ? 'selected' : 'deselected',
+        color: labelType.color,
+        label: {
+          text: labelType.name,
+          style: {
+            color: labelType.color,
+            fontWeight: 'bold'
+          },
+          isPlotline: false,
+          isSelected: selectedLabelId === label['_id']
         },
-        isPlotline: false,
-        isSelected: selectedLabelId === label.id
-      },
-      events: {
-        mousedown: e => mouseDownHandler(e, 'band_' + label.id, label.id)
-      }
-    }));
+        events: {
+          mousedown: e =>
+            mouseDownHandler(e, 'band_' + label['_id'], label['_id'])
+        }
+      };
+    });
   }
 
   getPlotbandByLabelId(labelId) {
@@ -498,18 +502,18 @@ class TimeSeriesPanel extends Component {
       (result, label) =>
         result.push(
           this.generatePlotLine(
-            label.id,
-            label.typeId,
-            label.from,
-            selectedLabelId === label.id,
+            label['_id'],
+            label.type,
+            label.start,
+            selectedLabelId === label['_id'],
             true,
             labelTypes
           ),
           this.generatePlotLine(
-            label.id,
-            label.typeId,
-            label.to,
-            selectedLabelId === label.id,
+            label['_id'],
+            label.type,
+            label.end,
+            selectedLabelId === label['_id'],
             false,
             labelTypes
           )
@@ -535,7 +539,7 @@ class TimeSeriesPanel extends Component {
       ? false
       : this.state.controlStates.activePlotLineId === plotLineId;
     var labelColor = labelTypes.filter(
-      labelType => labelType.id === labelTypeId
+      labelType => labelType['_id'] === labelTypeId
     )[0].color;
 
     var mouseDownHandler = this.onPlotLineMouseDown;
@@ -556,14 +560,6 @@ class TimeSeriesPanel extends Component {
         mousedown: e => mouseDownHandler(e, plotLineId, labelId)
       }
     };
-  }
-
-  uuidv4() {
-    return 'xxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = (Math.random() * 16) | 0,
-        v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
   }
 
   getPlotLineById(id) {
@@ -625,7 +621,7 @@ class TimeSeriesPanel extends Component {
         {this.props.index !== 0 && !this.props.isEmpty ? (
           <DropdownPanel
             fused={this.props.fused}
-            startTime={this.props.data[0][0]}
+            startTime={this.props.data[0].timestamp}
             onShift={this.props.onShift}
             onDelete={this.props.onDelete}
           />

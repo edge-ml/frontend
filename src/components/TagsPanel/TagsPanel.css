@@ -1,2 +1,10 @@
 .TagsPanel {
 }
+
+.card-body {
+  padding: 10px;
+}
+
+.tagsContainer .badge {
+  width: 100%;
+}

@@ -4,7 +4,6 @@ import {
   Row,
   Button,
   ButtonGroup,
-  UncontrolledTooltip,
   Modal,
   ModalHeader,
   ModalBody,
@@ -19,6 +18,13 @@ import { view } from 'react-easy-state';
 import State from '../state';
 import Loader from '../modules/loader';
 
+import {
+  subscribeDatasets,
+  unsubscribeDatasets,
+  deleteDataset
+} from '../services/SocketService';
+import './styles/styles.css';
+
 class ListPage extends Component {
   constructor(props) {
     super(props);
@@ -29,25 +35,33 @@ class ListPage extends Component {
       rows: [],
       columns: [
         {
+          dataField: 'id',
+          text: 'ID',
+          formatter: (cell, row) => row['_id']
+        },
+        {
           dataField: 'startTime',
           text: 'Start Time',
           sort: true,
+          sortFunc: (a, b, order, dataField, rowA, rowB) => {
+            if (order === 'desc') {
+              return rowB.start - rowA.start;
+            } else {
+              return rowA.start - rowB.start;
+            }
+          },
           formatter: (cell, row) => {
-            const date = new Date(row.startTime);
+            const date = new Date(row.start);
             return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
           }
         },
         {
           dataField: 'user',
-          text: 'User Nickname'
+          text: 'UserID',
+          formatter: (cell, row) => row.userId
         },
         {
-          dataField: 'numSamples',
-          text: 'Sample Count',
-          sort: true
-        },
-        {
-          dataField: 'id',
+          dataField: 'action',
           text: 'Action',
           formatter: (cell, row) => (
             <ButtonGroup className="list-buttongroup">
@@ -56,7 +70,7 @@ class ListPage extends Component {
                 className="button-toolbar-delete"
                 color="danger"
                 onClick={e => {
-                  this.deleteHandler(row.id);
+                  this.deleteHandler(row['_id']);
                   e.preventDefault();
                 }}
               >
@@ -66,23 +80,17 @@ class ListPage extends Component {
                 outline
                 className="button-toolbar-delete"
                 color="info"
-                id={`button-view-${row.id}`}
+                id={`button-view-${row['_id']}`}
                 onClick={e => {
-                  this.props.history.push(`datasets/${row.id}`);
+                  this.props.history.push({
+                    pathname: `datasets/${row['_id']}`,
+                    state: { dataset: row }
+                  });
                   e.preventDefault();
                 }}
               >
                 <BookIcon className="svg-teal" /> View
               </Button>
-              <UncontrolledTooltip
-                delay={{ show: 200, hide: 200 }}
-                className="list-tooltip"
-                placement="right"
-                autohide={false}
-                target={`button-view-${row.id}`}
-              >
-                {cell}
-              </UncontrolledTooltip>
             </ButtonGroup>
           )
         }
@@ -98,15 +106,14 @@ class ListPage extends Component {
     this.deleteHandler = this.deleteHandler.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.modalDeleteHandler = this.modalDeleteHandler.bind(this);
+    this.onDatasetsChanged = this.onDatasetsChanged.bind(this);
   }
 
   deleteHandler(id) {
-    this.setState(
-      update(this.state, {
-        modalID: { $set: id },
-        modal: { $set: !this.state.modal }
-      })
-    );
+    this.setState({
+      modalID: id,
+      modal: !this.state.modal
+    });
   }
 
   modalDeleteHandler() {
@@ -115,59 +122,48 @@ class ListPage extends Component {
       return;
     }
 
-    const options = {
-      method: 'DELETE',
-      url: `${State.edge}/dataset/${this.state.modalID}`,
-      headers: {
-        Authorization: `Bearer ${window.localStorage.getItem('id_token')}`
-      }
-    };
+    deleteDataset(this.state.modalID, err => {
+      window.alert(err);
+      return;
+    });
 
-    Request(options).then(res => {
-      const index = this.state.rows.findIndex(
-        row => row.id === this.state.modalID
-      );
-      this.setState(
-        update(this.state, {
-          modalID: { $set: null },
-          modal: { $set: false },
-          rows: { $splice: [[index, 1]] }
-        })
-      );
+    const index = this.state.rows.findIndex(
+      row => row['_id'] === this.state.modalID
+    );
+    this.setState({
+      modalID: null,
+      modal: false,
+      rows: this.state.rows.splice(index, 1)
     });
   }
 
   toggleModal() {
-    this.setState(
-      update(this.state, {
-        modal: { $set: !this.state.modal }
-      })
-    );
+    this.setState({
+      modal: !this.state.modal
+    });
+  }
+
+  onDatasetsChanged(datasets) {
+    if (!datasets) return;
+
+    let i = 0;
+    datasets.forEach(dataset => {
+      dataset.key = i;
+      i++;
+    });
+
+    this.setState({
+      rows: datasets,
+      ready: true
+    });
   }
 
   componentDidMount() {
-    const options = {
-      method: 'GET',
-      url: `${State.edge}/dataset`,
-      headers: {
-        Authorization: `Bearer ${window.localStorage.getItem('id_token')}`
-      }
-    };
+    subscribeDatasets(this.onDatasetsChanged);
+  }
 
-    Request(options).then(res => {
-      res = JSON.parse(res);
-      let i = 0;
-      res.forEach(elem => {
-        elem.key = i;
-        i++;
-      });
-      this.setState(
-        update(this.state, {
-          ready: { $set: true },
-          rows: { $set: res }
-        })
-      );
-    });
+  componentWillUnmount() {
+    unsubscribeDatasets();
   }
 
   render() {
@@ -177,7 +173,7 @@ class ListPage extends Component {
           <br />
           <Row>
             <BootstrapTable
-              className="ListTable"
+              className="ListTable datasetTable"
               bootstrap4={true}
               loading={this.state.loading}
               keyField="key"
@@ -191,8 +187,12 @@ class ListPage extends Component {
               toggle={this.toggleModal}
               className={this.props.className}
             >
-              <ModalHeader toggle={this.toggleModal}>O RLY?</ModalHeader>
-              <ModalBody>delete {this.state.modalID}?</ModalBody>
+              <ModalHeader toggle={this.toggleModal}>
+                Delete Dataset
+              </ModalHeader>
+              <ModalBody>
+                Are you sure to delete dataset <b>{this.state.modalID}</b>?
+              </ModalBody>
               <ModalFooter>
                 <Button
                   outline

@@ -90,7 +90,7 @@ class CombineTimeSeriesModal extends Component {
             <p class="text-muted m-1">No time series available.</p>
           ) : null}
           {this.state.timeSeries.map((series, key) => (
-            <InputGroup style={{ margin: '10px 0px' }}>
+            <InputGroup key={series['_id']} style={{ margin: '10px 0px' }}>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>
                   <Input
@@ -98,13 +98,13 @@ class CombineTimeSeriesModal extends Component {
                     type="checkbox"
                     checked={
                       this.state.selectedTimeSeries.filter(
-                        filteredSeries => filteredSeries === series.id
+                        filteredSeries => filteredSeries === series['_id']
                       ).length !== 0
                     }
                     onChange={e =>
                       this.onTimeSeriesSelectedChanged(
                         e.target.checked,
-                        series.id
+                        series['_id']
                       )
                     }
                   />
@@ -114,7 +114,7 @@ class CombineTimeSeriesModal extends Component {
                 defaultValue={series.name}
                 className={
                   this.state.selectedTimeSeries.filter(
-                    filteredSeries => filteredSeries === series.id
+                    filteredSeries => filteredSeries === series['_id']
                   ).length !== 0
                     ? 'inputChecked'
                     : 'inputNotChecked'

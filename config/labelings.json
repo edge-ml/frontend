@@ -97,5 +97,37 @@
 				"color": "#D293DD"
 			}
 		]
+	},
+	{
+		"id": "5d1b34b3c9d76a001ff39e3a",
+		"name": "Labeling 4764f8b0",
+		"types": [
+			{
+				"id": "5d1b336ec9d76a001ff39e35",
+				"name": "Type 1274e125",
+				"color": "#45AFC0"
+			},
+			{
+				"id": "5d1b336ec9d76a001ff39e36",
+				"name": "Type 5313264c",
+				"color": "#E65E1C"
+			},
+			{
+				"id": "5d1b336ec9d76a001ff39e37",
+				"name": "Type c2ced28d",
+				"color": "#EF372B"
+			}
+		]
+	},
+	{
+		"id": "5d1b386fc9d76a001ff39e4f",
+		"name": "Labeling 29c4323a",
+		"types": [
+			{
+				"id": "5d1b3394c9d76a001ff39e37",
+				"name": "Type 25a5a777",
+				"color": "#F99A8A"
+			}
+		]
 	}
 ]
