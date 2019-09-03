@@ -26,206 +26,172 @@ class EditLabelingModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: props.name,
-      types: props.types,
-      id: props.id,
+      labeling: props.labeling,
+      labels: props.labels,
       isOpen: props.isOpen,
       onCloseModal: props.onCloseModal,
       onSave: props.onSave,
       onDeleteLabeling: props.onDeleteLabeling,
-      isNewLabeling: props.isNewLabeling
+      isNewLabeling: props.isNewLabeling,
+      deletedLabels: []
     };
 
-    this.onAddType = this.onAddType.bind(this);
-    this.uuidv4 = this.uuidv4.bind(this);
-    this.onDeleteType = this.onDeleteType.bind(this);
-    this.onCloseModal = this.onCloseModal.bind(this);
-    this.onSave = this.onSave.bind(this);
-    this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
-    this.onNameChanged = this.onNameChanged.bind(this);
+    this.onAddLabel = this.onAddLabel.bind(this);
+    this.onDeleteLabel = this.onDeleteLabel.bind(this);
+    this.onLabelingNameChanged = this.onLabelingNameChanged.bind(this);
     this.onLabelNameChanged = this.onLabelNameChanged.bind(this);
     this.onLabelColorChanged = this.onLabelColorChanged.bind(this);
   }
 
   componentWillReceiveProps(props) {
-    this.setState(state => ({
-      name: props.name,
-      types: props.types,
-      id: props.id,
+    this.setState({
+      labeling: props.labeling,
+      labels: props.labels,
       isOpen: props.isOpen,
       onCloseModal: props.onCloseModal,
       onSave: props.onSave,
       onDeleteLabeling: props.onDeleteLabeling,
       isNewLabeling: props.isNewLabeling
-    }));
+    });
   }
 
-  onAddType() {
+  onLabelingNameChanged(name) {
+    if (this.state.isNewLabeling) {
+      this.setState({
+        labeling: Object.assign({}, this.state.labeling, { name })
+      });
+    } else {
+      this.setState({
+        labeling: Object.assign({}, this.state.labeling, {
+          name,
+          updated: true
+        })
+      });
+    }
+  }
+
+  onAddLabel() {
     let newLabel = {
-      id: this.uuidv4(),
       name: '',
-      color: generateRandomColor()
+      color: generateRandomColor(),
+      isNewLabel: true
     };
 
-    this.setState(state => ({
-      name: this.state.name,
-      types: [...this.state.types, newLabel],
-      id: this.state.id,
-      isOpen: this.state.isOpen,
-      onCloseModal: this.state.onCloseModal,
-      onSave: this.state.onSave,
-      onDeleteLabeling: this.state.onDeleteLabeling,
-      isNewLabeling: this.state.isNewLabeling
-    }));
-  }
-
-  onDeleteType(id) {
-    this.setState(state => ({
-      id: this.state.id,
-      name: this.state.name,
-      types: this.state.types.filter(type => type.id !== id),
-      isOpen: this.state.isOpen,
-      onCloseModal: this.state.onCloseModal,
-      onSave: this.state.onSave,
-      onDeleteLabeling: this.state.onDeleteLabeling,
-      isNewLabeling: this.state.isNewLabeling
-    }));
-  }
-
-  onDeleteLabeling() {
-    this.state.onDeleteLabeling(this.state.id);
     this.setState({
-      isOpen: false,
-      name: '',
-      types: [],
-      id: '',
-      onCloseModal: undefined,
-      onSave: undefined,
-      onDeleteLabeling: undefined,
-      isNewLabeling: false
+      labels: [...this.state.labels, newLabel]
     });
   }
 
-  onCloseModal() {
-    this.state.onCloseModal();
-    this.setState({
-      isOpen: false,
-      name: '',
-      types: undefined,
-      id: '',
-      onCloseModal: undefined,
-      onSave: undefined,
-      onDeleteLabeling: undefined,
-      isNewLabeling: false
-    });
+  onDeleteLabel(labelToDelete) {
+    let labels = this.state.labels.filter(label => label !== labelToDelete);
+    let labeling = this.state.labeling;
+    labeling.labels = labeling.labels.filter(
+      label => label !== labelToDelete['_id']
+    );
+
+    if (labelToDelete.isNewLabel) {
+      this.setState({ labels, labeling });
+    } else {
+      this.setState({
+        labels,
+        labeling,
+        deletedLabels: [...this.state.deletedLabels, labelToDelete['_id']]
+      });
+    }
   }
 
-  onSave() {
-    this.state.onSave(this.state.id, this.state.name, this.state.types);
-    this.setState({
-      isOpen: false,
-      name: '',
-      types: [],
-      id: '',
-      onCloseModal: undefined,
-      onSave: undefined,
-      onDeleteLabeling: undefined,
-      isNewLabeling: false
-    });
+  onLabelNameChanged(labelToChange, name) {
+    if (labelToChange.isNewLabel) {
+      this.setState({
+        labels: this.state.labels.map(label =>
+          label !== labelToChange ? label : Object.assign({}, label, { name })
+        )
+      });
+    } else {
+      this.setState({
+        labels: this.state.labels.map(label =>
+          label !== labelToChange
+            ? label
+            : Object.assign({}, label, { name, updated: true })
+        )
+      });
+    }
   }
 
-  onNameChanged(name) {
-    this.setState({
-      isOpen: this.state.isOpen,
-      name: name,
-      types: this.state.types,
-      id: this.state.id,
-      onCloseModal: this.state.onCloseModal,
-      onSave: this.state.onSave,
-      onDeleteLabeling: this.state.onDeleteLabeling,
-      isNewLabeling: this.state.isNewLabeling
-    });
-  }
-
-  onLabelNameChanged(id, name) {
-    this.setState({
-      isOpen: this.state.isOpen,
-      name: this.state.name,
-      types: this.state.types.map(type =>
-        type.id !== id ? type : Object.assign({}, type, { name: name })
-      ),
-      id: this.state.id,
-      onCloseModal: this.state.onCloseModal,
-      onSave: this.state.onSave,
-      onDeleteLabeling: this.state.onDeleteLabeling,
-      isNewLabeling: this.state.isNewLabeling
-    });
-  }
-
-  onLabelColorChanged(id, color) {
+  onLabelColorChanged(labelToChange, color) {
     if (color === undefined || color.length > 6) return;
-    this.setState({
-      isOpen: this.state.isOpen,
-      name: this.state.name,
-      types: this.state.types.map(type =>
-        type.id !== id ? type : Object.assign({}, type, { color: '#' + color })
-      ),
-      id: this.state.id,
-      onCloseModal: this.state.onCloseModal,
-      onSave: this.state.onSave,
-      onDeleteLabeling: this.state.onDeleteLabeling,
-      isNewLabeling: this.state.isNewLabeling
-    });
-  }
 
-  uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = (Math.random() * 16) | 0,
-        v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
+    if (labelToChange.isNewLabel) {
+      this.setState({
+        labels: this.state.labels.map(label =>
+          label !== labelToChange
+            ? label
+            : Object.assign({}, label, { color: '#' + color })
+        )
+      });
+    } else {
+      this.setState({
+        labels: this.state.labels.map(label =>
+          label !== labelToChange
+            ? label
+            : Object.assign({}, label, { color: '#' + color, updated: true })
+        )
+      });
+    }
   }
 
   render() {
     return (
       <Modal isOpen={this.state.isOpen}>
-        <ModalHeader>{this.state.id ? this.state.id : ''}</ModalHeader>
+        <ModalHeader>
+          {this.state.labeling && this.state.labeling['_id']
+            ? this.state.labeling['_id']
+            : 'Add labeling'}
+        </ModalHeader>
         <ModalBody>
           <InputGroup>
             <InputGroupAddon addonType="prepend">
               <InputGroupText>Name</InputGroupText>
             </InputGroupAddon>
             <Input
-              value={this.state.name ? this.state.name : ''}
-              onChange={e => this.onNameChanged(e.target.value)}
+              value={
+                this.state.labeling && this.state.labeling.name
+                  ? this.state.labeling.name
+                  : ''
+              }
+              onChange={e => this.onLabelingNameChanged(e.target.value)}
             />
           </InputGroup>
           <hr />
-          {this.state.types
-            ? this.state.types.map(type => (
-                <InputGroup>
+          {this.state.labels
+            ? this.state.labels.map((label, index) => (
+                <InputGroup key={'label' + index}>
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <FontAwesomeIcon
-                        id={'type' + type.id}
-                        style={{ color: '#8b8d8f' }}
-                        icon={faInfoCircle}
-                        className="mr-2 fa-s"
-                      />
-                      <UncontrolledTooltip
-                        placement="top-start"
-                        target={'type' + type.id}
-                      >
-                        <b>TypeId:</b> {type.id}
-                      </UncontrolledTooltip>
+                      {!label.isNewLabel && (
+                        <React.Fragment>
+                          <FontAwesomeIcon
+                            id={'label' + label['_id']}
+                            style={{ color: '#8b8d8f' }}
+                            icon={faInfoCircle}
+                            className="mr-2 fa-s"
+                          />
+                          <UncontrolledTooltip
+                            placement="top-start"
+                            target={'label' + label['_id']}
+                          >
+                            <b>LabelID:</b> {label['_id']}
+                          </UncontrolledTooltip>
+                        </React.Fragment>
+                      )}
                       Label
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
                     placeholder="Name"
-                    value={type.name}
+                    value={label.name}
                     onChange={e =>
-                      this.onLabelNameChanged(type.id, e.target.value)
+                      this.onLabelNameChanged(label, e.target.value)
                     }
                   />
                   <InputGroupAddon addonType="append">
@@ -234,20 +200,22 @@ class EditLabelingModal extends Component {
                   <Input
                     placeholder="Color"
                     className={
-                      isValidColor(type.color)
+                      isValidColor(label.color)
                         ? 'input-group-append is-valid'
                         : 'input-group-append clear is-invalid'
                     }
                     style={{
-                      backgroundColor: isValidColor(type.color)
-                        ? type.color
+                      backgroundColor: isValidColor(label.color)
+                        ? label.color
                         : 'white',
-                      borderColor: isValidColor(type.color) ? type.color : null,
-                      color: hexToForegroundColor(type.color)
+                      borderColor: isValidColor(label.color)
+                        ? label.color
+                        : null,
+                      color: hexToForegroundColor(label.color)
                     }}
-                    value={type.color.split('#')[1]}
+                    value={label.color.split('#')[1]}
                     onChange={e =>
-                      this.onLabelColorChanged(type.id, e.target.value)
+                      this.onLabelColorChanged(label, e.target.value)
                     }
                   />
                   <InputGroupAddon addonType="append">
@@ -256,7 +224,7 @@ class EditLabelingModal extends Component {
                       color="danger"
                       outline
                       onClick={e => {
-                        this.onDeleteType(type.id);
+                        this.onDeleteLabel(label);
                       }}
                     >
                       ✕
@@ -270,11 +238,11 @@ class EditLabelingModal extends Component {
             color="secondary"
             outline
             block
-            onClick={this.onAddType}
+            onClick={this.onAddLabel}
           >
             + Add
           </Button>
-          {!this.state.isNewLabeling ? (
+          {this.state.labeling && !this.state.isNewLabeling ? (
             <div>
               <hr />
               <Button
@@ -282,7 +250,9 @@ class EditLabelingModal extends Component {
                 block
                 className="m-0"
                 outline
-                onClick={this.onDeleteLabeling}
+                onClick={e =>
+                  this.state.onDeleteLabeling(this.state.labeling['_id'])
+                }
               >
                 Delete
               </Button>
@@ -290,10 +260,24 @@ class EditLabelingModal extends Component {
           ) : null}
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" className="m-1 mr-auto" onClick={this.onSave}>
+          <Button
+            color="primary"
+            className="m-1 mr-auto"
+            onClick={e => {
+              this.state.onSave(
+                this.state.labeling,
+                this.state.labels,
+                this.state.deletedLabels
+              );
+            }}
+          >
             Save
           </Button>{' '}
-          <Button color="secondary" className="m-1" onClick={this.onCloseModal}>
+          <Button
+            color="secondary"
+            className="m-1"
+            onClick={this.state.onCloseModal}
+          >
             Cancel
           </Button>
         </ModalFooter>

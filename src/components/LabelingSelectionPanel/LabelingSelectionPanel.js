@@ -6,7 +6,7 @@ class LabelingSelectionPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      labelingsDefinition: props.labelingsDefinition,
+      labelings: props.labelings,
       selectedLabelingId: props.selectedLabelingId,
       onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged,
       uiState: {
@@ -20,7 +20,7 @@ class LabelingSelectionPanel extends Component {
 
   componentWillReceiveProps(props) {
     this.setState(state => ({
-      labelingsDefinition: props.labelingsDefinition,
+      labelings: props.labelings,
       selectedLabelingId: props.selectedLabelingId,
       onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged
     }));
@@ -28,6 +28,10 @@ class LabelingSelectionPanel extends Component {
 
   componentDidMount() {
     window.addEventListener('scroll', this.onScroll);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll);
   }
 
   handleLabelingClicked(e, id) {
@@ -63,18 +67,23 @@ class LabelingSelectionPanel extends Component {
         }
       >
         <CardBody className="text-left p-1">
-          {this.state.labelingsDefinition.map((labeling, index) => (
+          {this.state.labelings.map((labeling, index) => (
             <Button
               className={classNames(
                 'm-1',
                 {
-                  'btn-primary': labeling.id === this.state.selectedLabelingId
+                  'btn-primary':
+                    labeling['_id'] === this.state.selectedLabelingId
                 },
-                { 'btn-light': labeling.id !== this.state.selectedLabelingId }
+                {
+                  'btn-light': labeling['_id'] !== this.state.selectedLabelingId
+                }
               )}
-              onClick={e => this.handleLabelingClicked(e, labeling.id)}
+              onClick={e => this.handleLabelingClicked(e, labeling['_id'])}
               color={
-                labeling.id === this.state.selectedLabelingId ? 'primary' : ''
+                labeling['_id'] === this.state.selectedLabelingId
+                  ? 'primary'
+                  : ''
               }
               key={index}
             >

@@ -75,7 +75,10 @@ class TimeSeriesCollectionPanel extends Component {
           data={
             this.state.timeSeries.length > 0
               ? this.state.timeSeries[0].data
-              : [[this.state.start, 10], [this.state.end, 10]]
+              : [
+                  { timestap: this.state.start, value: 10 },
+                  { timestamp: this.state.end, value: 10 }
+                ]
           }
           labeling={this.state.labeling}
           labelTypes={this.state.labelTypes}
@@ -119,6 +122,7 @@ class TimeSeriesCollectionPanel extends Component {
 
         {this.state.timeSeries.map((timeSeries, key) => (
           <TimeSeriesPanel
+            key={key}
             index={key + 1}
             data={timeSeries.data}
             name={timeSeries.name}
@@ -145,58 +149,61 @@ class TimeSeriesCollectionPanel extends Component {
             drawingInterval={this.props.drawingInterval}
           />
         ))}
-        {this.state.fusedSeries.map((fusedSeries, key) => (
-          <TimeSeriesPanel
-            fused={true}
-            index={key + this.state.timeSeries.length + 1}
-            data={this.state.timeSeries
-              .filter(timeSeries => {
-                return (
-                  fusedSeries.series.filter(
-                    seriesId => seriesId === timeSeries.id
-                  ).length !== 0
-                );
-              })
-              .map(series => series.data)}
-            name={this.state.timeSeries
-              .filter(timeSeries => {
-                return (
-                  fusedSeries.series.filter(
-                    seriesId => seriesId === timeSeries.id
-                  ).length !== 0
-                );
-              })
-              .map(series => series.name)}
-            unit={this.state.timeSeries
-              .filter(timeSeries => {
-                return (
-                  fusedSeries.series.filter(
-                    seriesId => seriesId === timeSeries.id
-                  ).length !== 0
-                );
-              })
-              .map(series => series.unit)}
-            labeling={this.state.labeling}
-            labelTypes={this.state.labelTypes}
-            onLabelClicked={this.state.onLabelClicked}
-            selectedLabelId={this.state.selectedLabelId}
-            start={this.state.start}
-            end={this.state.end}
-            onLabelChanged={this.state.onLabelChanged}
-            canEdit={this.props.canEdit}
-            onScrubbed={this.state.onScrubbed}
-            numSeries={
-              this.state.timeSeries.length + this.state.fusedSeries.length + 1
-            }
-            onDelete={() => this.state.onDelete(true, key)}
-            drawingId={this.props.drawingId}
-            drawingPosition={this.props.drawingPosition}
-            newPosition={this.props.newPosition}
-            updateControlStates={this.props.updateControlStates}
-            clearDrawingInterval={this.props.clearDrawingInterval}
-            drawingInterval={this.props.drawingInterval}
-          />
-        ))}
+        {this.state.fusedSeries
+          .filter(fusedSeries => fusedSeries.timeSeries.length > 0)
+          .map((fusedSeries, key) => (
+            <TimeSeriesPanel
+              key={key}
+              fused={true}
+              index={key + this.state.timeSeries.length + 1}
+              data={this.state.timeSeries
+                .filter(timeSeries => {
+                  return (
+                    fusedSeries.timeSeries.filter(
+                      seriesId => seriesId === timeSeries['_id']
+                    ).length !== 0
+                  );
+                })
+                .map(series => series.data)}
+              name={this.state.timeSeries
+                .filter(timeSeries => {
+                  return (
+                    fusedSeries.timeSeries.filter(
+                      seriesId => seriesId === timeSeries['_id']
+                    ).length !== 0
+                  );
+                })
+                .map(series => series.name)}
+              unit={this.state.timeSeries
+                .filter(timeSeries => {
+                  return (
+                    fusedSeries.timeSeries.filter(
+                      seriesId => seriesId === timeSeries['_id']
+                    ).length !== 0
+                  );
+                })
+                .map(series => series.unit)}
+              labeling={this.state.labeling}
+              labelTypes={this.state.labelTypes}
+              onLabelClicked={this.state.onLabelClicked}
+              selectedLabelId={this.state.selectedLabelId}
+              start={this.state.start}
+              end={this.state.end}
+              onLabelChanged={this.state.onLabelChanged}
+              canEdit={this.props.canEdit}
+              onScrubbed={this.state.onScrubbed}
+              numSeries={
+                this.state.timeSeries.length + this.state.fusedSeries.length + 1
+              }
+              onDelete={() => this.state.onDelete(true, key)}
+              drawingId={this.props.drawingId}
+              drawingPosition={this.props.drawingPosition}
+              newPosition={this.props.newPosition}
+              updateControlStates={this.props.updateControlStates}
+              clearDrawingInterval={this.props.clearDrawingInterval}
+              drawingInterval={this.props.drawingInterval}
+            />
+          ))}
       </div>
     );
   }
