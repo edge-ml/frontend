@@ -1,8 +1,1 @@
-[submodule "protocol"]
-	path = protocol
-	url = https://aura-development.visualstudio.com/Aura/Team/_git/protocol
-	master = master
-[submodule "public/protocol"]
-	path = public/protocol
-	url = https://aura-development.visualstudio.com/Aura/Team/_git/protocol
-	master = master
+
