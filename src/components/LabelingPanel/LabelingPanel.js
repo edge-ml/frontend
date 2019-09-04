@@ -34,7 +34,8 @@ class LabelingPanel extends Component {
       onCanEditChanged: props.onCanEditChanged,
       onPlay: props.onPlay,
       isDrawingIntervalActive: props.isDrawingIntervalActive,
-      isCrosshairIntervalActive: props.isCrosshairIntervalActive
+      isCrosshairIntervalActive: props.isCrosshairIntervalActive,
+      playButtonEnabled: props.playButtonEnabled
     };
 
     this.toggleEdit = this.toggleEdit.bind(this);
@@ -55,7 +56,8 @@ class LabelingPanel extends Component {
       onCanEditChanged: props.onCanEditChanged,
       onPlay: props.onPlay,
       isDrawingIntervalActive: props.isDrawingIntervalActive,
-      isCrosshairIntervalActive: props.isCrosshairIntervalActive
+      isCrosshairIntervalActive: props.isCrosshairIntervalActive,
+      playButtonEnabled: props.playButtonEnabled
     }));
   }
 
@@ -155,23 +157,25 @@ class LabelingPanel extends Component {
             >
               Delete
             </Button>
-            <Button
-              disabled={!this.state.canEdit}
-              className="playButton m-1"
-              color="info"
-              onClick={e => this.state.onPlay()}
-            >
-              <FontAwesomeIcon
-                style={{ color: '#fff' }}
-                icon={this.state.isDrawingIntervalActive ? faPause : faPlay}
-                className="mr-2 fa-xs"
-              />
-              {this.state.isCrosshairIntervalActive
-                ? 'Draw'
-                : this.state.isDrawingIntervalActive
-                ? 'Stop'
-                : 'Play'}
-            </Button>
+            {this.state.playButtonEnabled ? (
+              <Button
+                disabled={!this.state.canEdit}
+                className="playButton m-1"
+                color="info"
+                onClick={e => this.state.onPlay()}
+              >
+                <FontAwesomeIcon
+                  style={{ color: '#fff' }}
+                  icon={this.state.isDrawingIntervalActive ? faPause : faPlay}
+                  className="mr-2 fa-xs"
+                />
+                {this.state.isCrosshairIntervalActive
+                  ? 'Draw'
+                  : this.state.isDrawingIntervalActive
+                  ? 'Stop'
+                  : 'Play'}
+              </Button>
+            ) : null}
           </div>
 
           <div className="labelingBox">

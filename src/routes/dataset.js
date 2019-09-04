@@ -12,7 +12,6 @@ import LabelingSelectionPanel from '../components/LabelingSelectionPanel/Labelin
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
 import ApiPanel from '../components/ApiPanel/ApiPanel';
 import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
-import { uuidv4 } from '../services/UUIDService';
 
 import {
   subscribeDataset,
@@ -66,7 +65,9 @@ class DatasetPage extends Component {
       },
       fuseTimeSeriesModalState: {
         isOpen: false
-      }
+      },
+      videoEnabled: false,
+      playButtonEnabled: false
     };
 
     this.onSelectedLabelingIdChanged = this.onSelectedLabelingIdChanged.bind(
@@ -276,8 +277,10 @@ class DatasetPage extends Component {
 
       // space
     } else if (keyCode === 32) {
-      e.preventDefault();
-      this.onPlay();
+      if (this.state.playButtonEnabled) {
+        e.preventDefault();
+        this.onPlay();
+      }
     }
   }
 
@@ -812,7 +815,7 @@ class DatasetPage extends Component {
   }
 
   onScrubbed(position) {
-    if (!this.videoPanel.current) return;
+    if (!this.state.videoEnabled || !this.videoPanel.current) return;
 
     this.videoPanel.current.onSetTime(position);
   }
@@ -924,9 +927,11 @@ class DatasetPage extends Component {
               </div>
             </Col>
             <Col xs={12} lg={3}>
-              <div>
-                <VideoPanel ref={this.videoPanel} />
-              </div>
+              {this.state.videoEnabled ? (
+                <div>
+                  <VideoPanel ref={this.videoPanel} />
+                </div>
+              ) : null}
               <div className="mt-0">
                 <InteractionControlPanel
                   isPublished={this.state.dataset.isPublished}
@@ -975,6 +980,7 @@ class DatasetPage extends Component {
                 onPlay={this.onPlay}
                 isDrawingIntervalActive={isDrawingIntervalActive}
                 isCrosshairIntervalActive={isCrosshairIntervalActive}
+                playButtonEnabled={this.state.playButtonEnabled}
               />
             </Col>
             <Col />
