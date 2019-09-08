@@ -39,6 +39,7 @@ class ListPage extends Component {
     this.deleteDatasets = this.deleteDatasets.bind(this);
     this.onDatasetsChanged = this.onDatasetsChanged.bind(this);
     this.toggleCheck = this.toggleCheck.bind(this);
+    this.openDeleteModal = this.openDeleteModal.bind(this);
   }
 
   componentDidMount() {
@@ -73,6 +74,14 @@ class ListPage extends Component {
           id => id !== datasetId
         )
       });
+    }
+  }
+
+  openDeleteModal() {
+    if (this.state.datasetsToDelete.length > 0) {
+      this.toggleModal();
+    } else {
+      window.alert('Choose datasets to delete.');
     }
   }
 
@@ -170,7 +179,7 @@ class ListPage extends Component {
                 className="mb-5"
                 color="danger"
                 outline
-                onClick={this.toggleModal}
+                onClick={this.openDeleteModal}
               >
                 Delete
               </Button>
