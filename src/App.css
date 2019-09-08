@@ -182,6 +182,16 @@ div.card {
   vertical-align: middle !important;
 }
 
+.datasets-column {
+  vertical-align: middle !important;
+  word-wrap: break-word;
+}
+
+.datasets-check {
+  position: relative;
+  margin: 0;
+}
+
 @media (min-width: 1200px) {
   .container {
     max-width: 100%;

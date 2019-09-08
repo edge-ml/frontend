@@ -21,11 +21,9 @@ const { io, app, server, activeClients } = require('./server_singleton');
 const apiRouter = require('./apiRouter');
 
 const authPath = path.join(__dirname, '../', 'config', 'auth.json');
-//const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
 const sourcesPath = path.join(__dirname, '../', 'config', 'sources.json');
 
 const auth = require(authPath);
-//let labelings = require(labelingsPath);
 let sources = require(sourcesPath);
 
 // JWT
@@ -413,17 +411,17 @@ io.on('connection', (socket) => {
 		});
 	});
 
-	socket.on('delete_dataset', id => {
+	socket.on('delete_datasets', ids => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
-		rp({
+		Promise.all(ids.map(id => rp({
 			method: 'DELETE',
 			uri: uri + `/datasets/${id}`,
 			headers: {
 				'User-Agent': 'Explorer'
 			},
 			json: true
-		})
+		})))
 		.then(response => {
 			socket.emit('err', false);
 		})
