@@ -1,7 +1,12 @@
+/**
+ * GENERAL TODOS:
+ * - move socket topics to a single file which is shared by the react client
+ * - proxy authentications to the backend server to obtain a real api token 
+ */
+
 const path = require('path');
 const fs = require('fs');
 var rp = require('request-promise');
-const request = require('request');
 
 const KoaStatic = require('koa-static');
 const KoaRouter = require('koa-router');
@@ -38,7 +43,43 @@ const publicKey  = fs.readFileSync(publicKeyPath, 'utf-8');
 const tokenIssuer = 'AURA';
 const tokenAudience = 'http://explorer.aura.rest';
 
-const uri = 'https://dal.aura.rest';
+// TODO: remove this HARDCODED AUTHENTICATION BETWEEN EXPLORER AND API
+const access_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkZWZjYTU3YjJlODExMDAxMmZiMzhlZiIsImlhdCI6MTU3NTk5NTk5NywiZXhwIjoxNTc2MjU1MTk3fQ.898o3519E4AkGOPUfmNN_DFqBwDnk-MQfS-beFJ-YuI";
+
+// TODO: move these constants to another file
+const API_URI = 'http://aura.dmz.teco.edu/api';
+const AUTH_URI = 'http://aura.dmz.teco.edu/auth';
+
+// TODO: move this to a seperate file which contains constants
+const HTTP_METHODS = {}
+HTTP_METHODS.GET = 'GET'
+HTTP_METHODS.POST = 'POST'
+HTTP_METHODS.PUT = 'PUT'
+HTTP_METHODS.DELETE = 'DELETE'
+
+// TODO: move to constants
+const ENDPOINTS = {}
+ENDPOINTS.DEFAULT = '/'
+ENDPOINTS.LABEL_DEFINITIONS = '/labelDefinitions'
+ENDPOINTS.LABEL_TYPES = '/labelTypes'
+ENDPOINTS.DATASETS = '/datasets'
+
+/**
+ * Generate request from method, endpoint and body. 
+ * TODO: consider moving this to a utility class
+ */
+function generateRequest(method = HTTP_METHODS.GET, baseUri = API_URI, endpoint = ENDPOINTS.DEFAULT, body = {}) {
+	return {
+		method: method,
+		uri: baseUri + endpoint,
+		headers: {
+			'User-Agent': 'Explorer', // TODO: move strings to constants
+			'Authorization': access_token // TODO: move strings to constants && access token should be validated and also generated seperatly for each socket aka user
+		},
+		body: body,
+		json: true
+	}
+}
 
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
@@ -135,57 +176,30 @@ io.on('connection', (socket) => {
 
 	/***
 	 * Labelings and labels
+	 * TODO: move every aspect to a single file that hold the logic, in general still many duplications here
 	 */
 	socket.on('labelings_labels', () => {
-		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.twoFactorAuthenticated) return; // TODO: can we handle this more elegantly instead of calling it on every request which can be easily forgotten
 
 		Promise.all([
-			rp({
-				uri: uri + '/labelings',
-				headers: {
-					'User-Agent': 'Explorer'
-				},
-				json: true
-			}),
-			rp({
-				uri: uri + '/labels',
-				headers: {
-					'User-Agent': 'Explorer'
-				},
-				json: true
-			})
+			rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_DEFINITIONS)),
+			rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_TYPES))
 		])
 		.then(results => {
 			socket.emit('labelings_labels', {labelings: results[0], labels: results[1]});
 		})
 		.catch(err => {
-			console.log(err);
+			console.log(err); // TODO: handle error more meaningful
 		});
 	});
 
 	socket.on('add_labeling', newLabeling => {
-		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.twoFactorAuthenticated) return; //TODO: see above
 
-		rp({
-			method: 'POST',
-			uri: uri + '/labelings',
-			headers: {
-				'User-Agent': 'Explorer'
-			},
-			body: newLabeling,
-			json: true
-		})
-		.then(response => {
-			return rp({
-				uri: uri + '/labelings',
-				headers: {
-					'User-Agent': 'Explorer'
-				},
-				json: true
-			});
-		})
+		rp(generateRequest(HTTP_METHODS.POST, API_URI, ENDPOINTS.LABEL_DEFINITIONS, newLabeling))
+		.then(() => rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_DEFINITIONS)))
 		.then(labelings => {
-			socket.emit('err', false);
+			socket.emit('err', false); // TODO: why do we need this?
 			io.emit('labelings_labels', {labelings, labels: undefined});
 		})
 		.catch(err => {
@@ -194,26 +208,10 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('update_labeling', labeling => {
-		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
 
-		rp({
-			method: 'PUT',
-			uri: uri + `/labelings/${labeling['_id']}`,
-			headers: {
-				'User-Agent': 'Explorer'
-			},
-			body: labeling,
-			json: true
-		})
-		.then(response => {
-			return rp({
-				uri: uri + '/labelings',
-				headers: {
-					'User-Agent': 'Explorer'
-				},
-				json: true
-			});
-		})
+		rp(generateRequest(HTTP_METHODS.PUT, API_URI, ENDPOINTS.LABEL_DEFINITIONS + `/${labeling['_id']}`, labeling))
+		.then(() => rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_DEFINITIONS)))
 		.then(labelings => {
 			socket.emit('err', false);
 			io.emit('labelings_labels', {labelings, labels: undefined});
@@ -224,25 +222,10 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('delete_labeling', labelingId => {
-		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
 
-		rp({
-			method: 'DELETE',
-			uri: uri + `/labelings/${labelingId}`,
-			headers: {
-				'User-Agent': 'Explorer'
-			},
-			json: true
-		})
-		.then(response => {
-			return rp({
-				uri: uri + '/labelings',
-				headers: {
-					'User-Agent': 'Explorer'
-				},
-				json: true
-			});
-		})
+		rp(generateRequest(HTTP_METHODS.DELETE, API_URI, ENDPOINTS.LABEL_DEFINITIONS + `/${labeling['_id']}`))
+		.then(() => rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_DEFINITIONS)))
 		.then(labelings => {
 			socket.emit('err', false);
 			io.emit('labelings_labels', {labelings, labels: undefined});
@@ -253,13 +236,14 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('update_labeling_labels', (labeling, labels, deletedLabels) => {
-		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
 
 		Promise.all(labels.filter(label => label.isNewLabel).map(label => rp({
 			method: 'POST',
-			uri: uri + '/labels',
+			uri: API_URI + '/labelTypes',
 			headers: {
-				'User-Agent': 'Explorer'
+				'User-Agent': 'Explorer',
+				'Authorization': access_token
 			},
 			body: label,
 			json: true
@@ -274,9 +258,10 @@ io.on('connection', (socket) => {
 					...promises,
 					rp({
 						method: 'POST',
-						uri: uri + '/labelings',
+						uri: API_URI + '/labelDefinitions',
 						headers: {
-							'User-Agent': 'Explorer'
+							'User-Agent': 'Explorer',
+							'Authorization': access_token
 						},
 						body: labeling,
 						json: true
@@ -289,27 +274,30 @@ io.on('connection', (socket) => {
 					...promises,
 					rp({
 						method: 'PUT',
-						uri: uri + `/labelings/${labeling['_id']}`,
+						uri: API_URI + `/labelDefinitions/${labeling['_id']}`,
 						headers: {
-							'User-Agent': 'Explorer'
+							'User-Agent': 'Explorer',
+							'Authorization': access_token
 						},
 						body: labeling,
 						json: true
 					}),
 					...updatedLabels.map(label => rp({
 						method: 'PUT',
-						uri: uri + `/labels/${label['_id']}`,
+						uri: API_URI + `/labelDefinitions/${label['_id']}`,
 						headers: {
-							'User-Agent': 'Explorer'
+							'User-Agent': 'Explorer',
+							'Authorization': access_token
 						},
 						body: label,
 						json: true
 					})),
 					...deletedLabels.map(labelId => rp({
 						method: 'DELETE',
-						uri: uri + `/labels/${labelId}`,
+						uri: API_URI + `/labelDefinitions/${labelId}`,
 						headers: {
-							'User-Agent': 'Explorer'
+							'User-Agent': 'Explorer',
+							'Authorization': access_token
 						},
 						json: true
 					}))
@@ -321,16 +309,18 @@ io.on('connection', (socket) => {
 		.then(responses =>{
 			return Promise.all([
 				rp({
-					uri: uri + '/labelings',
+					uri: API_URI + '/labelDefinitions',
 					headers: {
-						'User-Agent': 'Explorer'
+						'User-Agent': 'Explorer',
+						'Authorization': access_token
 					},
 					json: true
 				}),
 				rp({
-					uri: uri + '/labels',
+					uri: API_URI + '/labelTypes',
 					headers: {
-						'User-Agent': 'Explorer'
+						'User-Agent': 'Explorer',
+						'Authorization': access_token
 					},
 					json: true
 				})
@@ -349,12 +339,13 @@ io.on('connection', (socket) => {
 	 * Datasets
 	 */
 	socket.on('datasets', () => {
-		if (!socket.client.twoFactorAuthenticated) return;
+		if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
 
 		rp({
-			uri: uri + '/datasets',
+			uri: API_URI + '/datasets',
 			headers: {
-        'User-Agent': 'Explorer'
+        'User-Agent': 'Explorer',
+		'Authorization': access_token
     	},
 			json: true
 		})
@@ -370,9 +361,10 @@ io.on('connection', (socket) => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
 		rp({
-			uri: uri + `/datasets/${id}`,
+			uri: API_URI + `/datasets/${id}`,
 			headers: {
-				'User-Agent': 'Explorer'
+				'User-Agent': 'Explorer',
+				'Authorization': access_token
 			},
 			json: true
 		})
@@ -389,18 +381,20 @@ io.on('connection', (socket) => {
 
 		rp({
 			method: 'PUT',
-			uri: uri + `/datasets/${dataset['_id']}`,
+			uri: API_URI + `/datasets/${dataset['_id']}`,
 			headers: {
-				'User-Agent': 'Explorer'
+				'User-Agent': 'Explorer',
+				'Authorization': access_token
 			},
 			body: dataset,
 			json: true
 		})
 		.then(response => {
 			return rp({
-				uri: uri + `/datasets/${dataset['_id']}`,
+				uri: API_URI + `/datasets/${dataset['_id']}`,
 				headers: {
-					'User-Agent': 'Explorer'
+					'User-Agent': 'Explorer',
+					'Authorization': access_token
 				},
 				json: true
 			})
@@ -418,9 +412,10 @@ io.on('connection', (socket) => {
 
 		rp({
 			method: 'DELETE',
-			uri: uri + `/datasets/${id}`,
+			uri: API_URI + `/datasets/${id}`,
 			headers: {
-				'User-Agent': 'Explorer'
+				'User-Agent': 'Explorer',
+				'Authorization': access_token
 			},
 			json: true
 		})
@@ -440,9 +435,10 @@ io.on('connection', (socket) => {
 
 		rp({
 			method: 'POST',
-			uri: uri + `/datasets/${datasetId}/labelings`,
+			uri: API_URI + `/datasets/${datasetId}/labelings`,
 			headers: {
-				'User-Agent': 'Explorer'
+				'User-Agent': 'Explorer',
+				'Authorization': access_token
 			},
 			body: labeling,
 			json: true
@@ -460,18 +456,20 @@ io.on('connection', (socket) => {
 
 		rp({
 			method: 'PUT',
-			uri: uri + `/datasets/${datasetId}/labelings/${labeling['_id']}`,
+			uri: API_URI + `/datasets/${datasetId}/labelings/${labeling['_id']}`,
 			headers: {
-				'User-Agent': 'Explorer'
+				'User-Agent': 'Explorer',
+				'Authorization': access_token
 			},
 			body: labeling,
 			json: true
 		})
 		.then(response => {
 			return rp({
-				uri: uri + `/datasets/${datasetId}/labelings/${labeling['_id']}`,
+				uri: API_URI + `/datasets/${datasetId}/labelings/${labeling['_id']}`,
 				headers: {
-					'User-Agent': 'Explorer'
+					'User-Agent': 'Explorer',
+					'Authorization': access_token
 				},
 				json: true
 			});
