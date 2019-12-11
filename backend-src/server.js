@@ -13,11 +13,9 @@ const KoaRouter = require('koa-router');
 const KoaLogger = require('koa-logger');
 
 const passwordHash = require('password-hash');
-const SocketIoAuth = require('socketio-auth');
-const jwt  = require('jsonwebtoken');
 
 const speakeasy = require('speakeasy');
-const QRCode = require('qrcode');
+
 
 const { uniqueNamesGenerator } = require('unique-names-generator');
 
@@ -30,18 +28,13 @@ const authPath = path.join(__dirname, '../', 'config', 'auth.json');
 const sourcesPath = path.join(__dirname, '../', 'config', 'sources.json');
 
 const auth = require(authPath);
-//let labelings = require(labelingsPath);
+
 let sources = require(sourcesPath);
-
-// JWT
-const privateKeyPath = path.join(__dirname, '../', 'config', 'keys', 'private.key');
-const publicKeyPath = path.join(__dirname, '../', 'config', 'keys', 'public.key');
-
-const privateKey  = fs.readFileSync(privateKeyPath, 'utf-8');
-const publicKey  = fs.readFileSync(publicKeyPath, 'utf-8');
-
+const jwt  = require('jsonwebtoken');
 const tokenIssuer = 'AURA';
 const tokenAudience = 'http://explorer.aura.rest';
+const privateKeyPath = path.join(__dirname, '../', 'config', 'keys', 'private.key');
+const privateKey  = fs.readFileSync(privateKeyPath, 'utf-8');
 
 // TODO: remove this HARDCODED AUTHENTICATION BETWEEN EXPLORER AND API
 const access_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkZWZjYTU3YjJlODExMDAxMmZiMzhlZiIsImlhdCI6MTU3NTk5NTk5NywiZXhwIjoxNTc2MjU1MTk3fQ.898o3519E4AkGOPUfmNN_DFqBwDnk-MQfS-beFJ-YuI";
@@ -64,6 +57,15 @@ ENDPOINTS.LABEL_DEFINITIONS = '/labelDefinitions'
 ENDPOINTS.LABEL_TYPES = '/labelTypes'
 ENDPOINTS.DATASETS = '/datasets'
 
+// import and configure middlware
+const authenticationMiddleware = require('./Middleware/AuthenticationMiddleware')
+
+authenticationMiddleware.applyTo(io)
+
+// import and configure event components
+const labelingEventComponent = require('./EventComponents/LabelEventComponent')
+const userEventComponent = require('./EventComponents/UserEventComponent')
+
 /**
  * Generate request from method, endpoint and body. 
  * TODO: consider moving this to a utility class
@@ -81,58 +83,14 @@ function generateRequest(method = HTTP_METHODS.GET, baseUri = API_URI, endpoint 
 	}
 }
 
-/**
- * Move to a seperate auth file that sets this up nicely (also other middlewares e.g. 2FA)
-*/
-SocketIoAuth(io, {
-	authenticate: (socket, data, callback) => {
-		if (data.jwtToken) {
-			jwt.verify(data.jwtToken, publicKey, (err) => {
-				socket.client.twoFactorAuthenticated = true;
-				const username = jwt.decode(data.jwtToken).sub;
-				socket.client.username = username;
-				socket.client.isTwoFAClientConfigured  = auth[username].isTwoFAClientConfigured;
-				socket.client.isAdmin = auth[username].isAdmin;
-				if (err === null) callback(null, true);
-			});
-		} else {
-			callback(null, (auth[data.username]
-				&& passwordHash.verify(data.password, auth[data.username].passwordHash)));
-		}
-	},
-	postAuthenticate: (socket, data) => {
-		if (socket.client.twoFactorAuthenticated) {
-			socket.client.authed = true;
-			return;
-		}
 
-		socket.client.username = data.username;
-		socket.client.isTwoFAClientConfigured = auth[data.username].isTwoFAClientConfigured;
-		socket.client.isAdmin = auth[data.username].isAdmin;
 
-		if (!socket.client.isTwoFAClientConfigured) {
-			const secret = speakeasy.generateSecret();
-			auth[data.username].twoFASecret = secret.base32;
-			socket.client.twoFASecret = secret.base32;
-
-			QRCode.toDataURL(secret.otpauth_url, (error, dataUrl) => {
-				if (!error)	socket.emit('2FA', dataUrl);
-			});
-		} else {
-			socket.client.isTwoFAClientConfigured = true;
-			socket.client.twoFASecret = auth[data.username].twoFASecret;
-			socket.emit('2FA');
-		}
-
-		socket.client.authed = true;
-	},
-});
 
 /**
  * TODO: use something like this to append all the different events to socket instead of listing them all in this file
  */
 function appendSocketEventComponent(socket, eventComponent) {
-	eventComponent.applyTo(socket);
+	eventComponent.applyTo(io, socket);
 }
 
 io.on('connection', (socket) => {
@@ -185,167 +143,9 @@ io.on('connection', (socket) => {
 		}
 	});
 
-	/***
-	 * Labelings and labels
-	 * TODO: move every aspect to a single file that hold the logic, in general still many duplications here
-	 */
+	appendSocketEventComponent(socket, labelingEventComponent);
+	appendSocketEventComponent(socket, userEventComponent);
 	
-	socket.on('labelings_labels', () => {
-		if (!socket.client.twoFactorAuthenticated) return; // TODO: can we handle this more elegantly instead of calling it on every request which can be easily forgotten
-
-		Promise.all([
-			rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_DEFINITIONS)),
-			rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_TYPES))
-		])
-		.then(results => {
-			socket.emit('labelings_labels', {labelings: results[0], labels: results[1]});
-		})
-		.catch(err => {
-			console.log(err); // TODO: handle error more meaningful
-		});
-	});
-
-	socket.on('add_labeling', newLabeling => {
-		if (!socket.client.twoFactorAuthenticated) return; //TODO: see above
-
-		rp(generateRequest(HTTP_METHODS.POST, API_URI, ENDPOINTS.LABEL_DEFINITIONS, newLabeling))
-		.then(() => rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_DEFINITIONS)))
-		.then(labelings => {
-			socket.emit('err', false); // TODO: why do we need this?
-			io.emit('labelings_labels', {labelings, labels: undefined});
-		})
-		.catch(err => {
-			socket.emit('err', err);
-		});
-	});
-
-	socket.on('update_labeling', labeling => {
-		if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
-
-		rp(generateRequest(HTTP_METHODS.PUT, API_URI, ENDPOINTS.LABEL_DEFINITIONS + `/${labeling['_id']}`, labeling))
-		.then(() => rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_DEFINITIONS)))
-		.then(labelings => {
-			socket.emit('err', false);
-			io.emit('labelings_labels', {labelings, labels: undefined});
-		})
-		.catch(err => {
-			socket.emit('err', err);
-		});
-	});
-
-	socket.on('delete_labeling', labelingId => {
-		if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
-
-		rp(generateRequest(HTTP_METHODS.DELETE, API_URI, ENDPOINTS.LABEL_DEFINITIONS + `/${labelingId}`))
-		.then(() => rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_DEFINITIONS)))
-		.then(labelings => {
-			socket.emit('err', false);
-			io.emit('labelings_labels', {labelings, labels: undefined});
-		})
-		.catch(err => {
-			socket.emit('err', err);
-		});
-	});
-
-	socket.on('update_labeling_labels', (labeling, labels, deletedLabels) => {
-		if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
-
-		Promise.all(labels.filter(label => label.isNewLabel).map(label => rp({
-			method: 'POST',
-			uri: API_URI + '/labelTypes',
-			headers: {
-				'User-Agent': 'Explorer',
-				'Authorization': access_token
-			},
-			body: label,
-			json: true
-		})))
-		.then(newLabels => {
-			let newLabelsId = newLabels.map(label => label['_id']);
-			labeling.labels = [ ...labeling.labels, ...newLabelsId ];
-
-			let promises = [];
-			if (!labeling['_id']) {
-				promises = [
-					...promises,
-					rp({
-						method: 'POST',
-						uri: API_URI + '/labelDefinitions',
-						headers: {
-							'User-Agent': 'Explorer',
-							'Authorization': access_token
-						},
-						body: labeling,
-						json: true
-					})
-				];
-			} else {
-				let updatedLabels = labels.filter(label => label.updated);
-
-				promises = [
-					...promises,
-					rp({
-						method: 'PUT',
-						uri: API_URI + `/labelDefinitions/${labeling['_id']}`,
-						headers: {
-							'User-Agent': 'Explorer',
-							'Authorization': access_token
-						},
-						body: labeling,
-						json: true
-					}),
-					...updatedLabels.map(label => rp({
-						method: 'PUT',
-						uri: API_URI + `/labelDefinitions/${label['_id']}`,
-						headers: {
-							'User-Agent': 'Explorer',
-							'Authorization': access_token
-						},
-						body: label,
-						json: true
-					})),
-					...deletedLabels.map(labelId => rp({
-						method: 'DELETE',
-						uri: API_URI + `/labelDefinitions/${labelId}`,
-						headers: {
-							'User-Agent': 'Explorer',
-							'Authorization': access_token
-						},
-						json: true
-					}))
-				];
-			}
-
-			return Promise.all(promises);
-		})
-		.then(responses =>{
-			return Promise.all([
-				rp({
-					uri: API_URI + '/labelDefinitions',
-					headers: {
-						'User-Agent': 'Explorer',
-						'Authorization': access_token
-					},
-					json: true
-				}),
-				rp({
-					uri: API_URI + '/labelTypes',
-					headers: {
-						'User-Agent': 'Explorer',
-						'Authorization': access_token
-					},
-					json: true
-				})
-			]);
-		})
-		.then(results => {
-			socket.emit('err', false);
-			io.emit('labelings_labels', {labelings: results[0], labels: results[1]});
-		})
-		.catch(err => {
-			socket.emit('err', err);
-		});
-	});
 
 	/***
 	 * Datasets
@@ -355,77 +155,32 @@ io.on('connection', (socket) => {
 
 		rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.DATASETS))
     	.then(datasets => socket.emit('datasets', datasets))
-    	.catch(err => console.log(err)); // TODO: handle errors more meaningful
+    	.catch(err => console.log(err)); // TODO: handle errors more meaningful e.g. reporting tool
 	});
 
 	socket.on('dataset', id => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
-		rp({
-			uri: API_URI + `/datasets/${id}`,
-			headers: {
-				'User-Agent': 'Explorer',
-				'Authorization': access_token
-			},
-			json: true
-		})
-		.then(dataset => {
-			socket.emit(`dataset_${id}`, dataset);
-		})
-		.catch(err => {
-			console.log(err)
-		});
+		rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.DATASETS + `/${id}`))
+		.then(dataset => { socket.emit(`dataset_${id}`, dataset); })
+		.catch(err => { console.log(err) }); // TODO: handle errors more meaningful
 	});
 
 	socket.on('update_dataset', dataset => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
-		rp({
-			method: 'PUT',
-			uri: API_URI + `/datasets/${dataset['_id']}`,
-			headers: {
-				'User-Agent': 'Explorer',
-				'Authorization': access_token
-			},
-			body: dataset,
-			json: true
-		})
-		.then(response => {
-			return rp({
-				uri: API_URI + `/datasets/${dataset['_id']}`,
-				headers: {
-					'User-Agent': 'Explorer',
-					'Authorization': access_token
-				},
-				json: true
-			})
-		})
-		.then(dataset => {
-			socket.emit('err', false, dataset);
-		})
-		.catch(err => {
-			socket.emit('err', err);
-		});
+		rp(generateRequest(HTTP_METHODS.PUT, API_URI, ENDPOINTS.DATASETS + `/${dataset['_id']}`, dataset))
+		.then(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.datasets + `/${dataset['_id']}`))
+		.then(dataset => socket.emit('err', false, dataset)) // TODO: this seems hacky I would rather like to have a dedicated event for it instead of using the error event?
+		.catch(err => socket.emit('err', err));
 	});
 
 	socket.on('delete_dataset', id => {
 		if (!socket.client.twoFactorAuthenticated) return;
 
-		rp({
-			method: 'DELETE',
-			uri: API_URI + `/datasets/${id}`,
-			headers: {
-				'User-Agent': 'Explorer',
-				'Authorization': access_token
-			},
-			json: true
-		})
-		.then(response => {
-			socket.emit('err', false);
-		})
-		.catch(err => {
-			socket.emit('err', err);
-		});
+		rp(generateRequest(HTTP_METHODS.DELETE, API_URI, ENDPOINTS.DATASETS + `/${id}`))
+		.then(socket.emit('err', false))
+		.catch(err => socket.emit('err', err));
 	});
 
 	/***
@@ -485,117 +240,6 @@ io.on('connection', (socket) => {
 
 	socket.on('disconnect', () => {
 		// TODO: remove client from activeClients
-	});
-
-	/***
-	 * Users
-	 */
-	socket.on('users', () => {
-		if (!socket.client.twoFactorAuthenticated) return;
-
-		emitUsers(socket);
-	});
-
-	socket.on('user', () => {
-		if (!socket.client.twoFactorAuthenticated) return;
-
-		const user = auth[socket.client.username];
-		socket.emit('user', {
-			username: socket.client.username,
-			isAdmin: user.isAdmin,
-			isRegistered: user.isTwoFAClientConfigured
-		});
-	})
-
-	socket.on('edit_user', (username, newName, newPassword, isAdmin, confirmationPassword) => {
-		if (!socket.client.twoFactorAuthenticated) return;
-		if (!socket.client.isAdmin && username !== socket.client.username) return;
-
-		const confirmationUsername = (socket.client.isAdmin) ? socket.client.username : username;
-
-		if (passwordHash.verify(confirmationPassword, auth[confirmationUsername].passwordHash)) {
-			if (username !== newName && newName in auth) {
-				socket.emit('err', 'This user already exists.');
-			} else {
-				if (username !== newName) {
-					auth[newName] = auth[username];
-					delete auth[username];
-				}
-
-				auth[newName].isAdmin = isAdmin;
-
-				if (newPassword) {
-					auth[newName].passwordHash = passwordHash.generate(newPassword);
-				}
-
-				fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
-					if (err) {
-						console.error(err);
-					}
-				});
-
-				socket.emit('err', false);
-				for (socketId in io.sockets.sockets) {
-					emitUsers(io.sockets.sockets[socketId]);
-				}
-			}
-		} else {
-			socket.emit('err', 'Current password is wrong.')
-		}
-	});
-
-	socket.on('delete_user', (username, confirmationPassword) => {
-		if (!socket.client.twoFactorAuthenticated) return;
-		if (!socket.client.isAdmin && username !== socket.client.username) return;
-
-		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash)) {
-			delete auth[username];
-			fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
-				if (err) {
-					console.error(err);
-				}
-			});
-
-			socket.emit('err', false);
-			for (socketId in io.sockets.sockets) {
-				if (io.sockets.sockets[socketId].client.username !== username) {
-					emitUsers(io.sockets.sockets[socketId]);
-				}
-			}
-		} else {
-			socket.emit('err', 'Current password is wrong.')
-		}
-	});
-
-	socket.on('add_user', (username, password, isAdmin, confirmationPassword) => {
-		if (!socket.client.twoFactorAuthenticated) return;
-		if (!socket.client.isAdmin) return;
-
-		if (passwordHash.verify(confirmationPassword, auth[socket.client.username].passwordHash)) {
-			if (username in auth) {
-				socket.emit('err', 'This user already exists.');
-			} else {
-				auth[username] = {
-					passwordHash: passwordHash.generate(password),
-					twoFactorAuthenticationSecret: null,
-					isTwoFAClientConfigured: false,
-					isAdmin: isAdmin,
-				}
-
-				fs.writeFile(authPath, JSON.stringify(auth, null, '\t'), (err) => {
-					if (err) {
-						console.error(err);
-					}
-				});
-
-				socket.emit('err', false);
-				for (socketId in io.sockets.sockets) {
-					emitUsers(io.sockets.sockets[socketId]);
-				}
-			}
-		} else {
-			socket.emit('err', 'Current password is wrong.')
-		}
 	});
 
 	socket.on('reset2FA', (username, confirmationPassword) => {
@@ -698,22 +342,6 @@ io.on('connection', (socket) => {
 
 });
 
-let emitUsers = (socket) => {
-	if (socket.client.isAdmin) {
-		socket.emit('users', Object.keys(auth).map(identifier => ({
-			username: identifier,
-			isAdmin: auth[identifier].isAdmin,
-			isRegistered: auth[identifier].isTwoFAClientConfigured
-		})));
-	} else {
-		const user = auth[socket.client.username];
-		socket.emit('users', [{
-			username: socket.client.username,
-			isAdmin: user.isAdmin,
-			isRegistered: user.isTwoFAClientConfigured
-		}]);
-	}
-};
 
 app.use(KoaLogger());
 
