@@ -81,6 +81,9 @@ function generateRequest(method = HTTP_METHODS.GET, baseUri = API_URI, endpoint 
 	}
 }
 
+/**
+ * Move to a seperate auth file that sets this up nicely (also other middlewares e.g. 2FA)
+*/
 SocketIoAuth(io, {
 	authenticate: (socket, data, callback) => {
 		if (data.jwtToken) {
@@ -125,9 +128,17 @@ SocketIoAuth(io, {
 	},
 });
 
+/**
+ * TODO: use something like this to append all the different events to socket instead of listing them all in this file
+ */
+function appendSocketEventComponent(socket, eventComponent) {
+	eventComponent.applyTo(socket);
+}
+
 io.on('connection', (socket) => {
 	// generate unique-id
 	const name = uniqueNamesGenerator('', true);
+	
 
 	socket.on('client_name', () => {
 		// join room with client id name
@@ -178,6 +189,7 @@ io.on('connection', (socket) => {
 	 * Labelings and labels
 	 * TODO: move every aspect to a single file that hold the logic, in general still many duplications here
 	 */
+	
 	socket.on('labelings_labels', () => {
 		if (!socket.client.twoFactorAuthenticated) return; // TODO: can we handle this more elegantly instead of calling it on every request which can be easily forgotten
 
@@ -224,7 +236,7 @@ io.on('connection', (socket) => {
 	socket.on('delete_labeling', labelingId => {
 		if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
 
-		rp(generateRequest(HTTP_METHODS.DELETE, API_URI, ENDPOINTS.LABEL_DEFINITIONS + `/${labeling['_id']}`))
+		rp(generateRequest(HTTP_METHODS.DELETE, API_URI, ENDPOINTS.LABEL_DEFINITIONS + `/${labelingId}`))
 		.then(() => rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.LABEL_DEFINITIONS)))
 		.then(labelings => {
 			socket.emit('err', false);
@@ -341,20 +353,9 @@ io.on('connection', (socket) => {
 	socket.on('datasets', () => {
 		if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
 
-		rp({
-			uri: API_URI + '/datasets',
-			headers: {
-        'User-Agent': 'Explorer',
-		'Authorization': access_token
-    	},
-			json: true
-		})
-    .then(datasets => {
-      socket.emit('datasets', datasets);
-    })
-    .catch(err => {
-      console.log(err)
-    });
+		rp(generateRequest(HTTP_METHODS.GET, API_URI, ENDPOINTS.DATASETS))
+    	.then(datasets => socket.emit('datasets', datasets))
+    	.catch(err => console.log(err)); // TODO: handle errors more meaningful
 	});
 
 	socket.on('dataset', id => {
