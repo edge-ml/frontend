@@ -37,11 +37,12 @@ function applyTo(io, socket) {
         if (!socket.client.twoFactorAuthenticated) return; //TODO: see above
     
         rp(generateRequest(CONSTANTS.HTTP_METHODS.POST, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.LABEL_DEFINITIONS, newLabeling))
-        .then(() => rp(generateRequest(CONSTANTS.HTTP_METHODS.GET, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.LABEL_DEFINITIONS)))
-        .then(labelings => {
-            socket.emit('err', false);
+        .then(() => rp(generateRequest(CONSTANTS.HTTP_METHODS.GET, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.LABEL_DEFINITIONS))
+            .then(labelings => {
+                socket.emit('err', false);
             io.emit('labelings_labels', {labelings, labels: undefined});
-        })
+            })
+        )
         .catch(err => socket.emit('err', err));
     });
     
@@ -65,16 +66,21 @@ function applyTo(io, socket) {
      */
     socket.on('delete_labeling', labelingId => {
         if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
-    
+        console.log(labelingId)
         rp(generateRequest(CONSTANTS.HTTP_METHODS.DELETE, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.LABEL_DEFINITIONS + `/${labelingId}`))
-        .then(() => rp(generateRequest(CONSTANTS.HTTP_METHODS.GET, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.LABEL_DEFINITIONS)))
-        .then(labelings => {
-            socket.emit('err', false);
-            io.emit('labelings_labels', {labelings, labels: undefined});
+        .then(() => {
+            Promise.all([
+                rp(generateRequest(CONSTANTS.HTTP_METHODS.GET, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.LABEL_DEFINITIONS)),
+                rp(generateRequest(CONSTANTS.HTTP_METHODS.GET, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.LABEL_TYPES))
+            ])
+            .then(results => socket.emit('labelings_labels', {labelings: results[0], labels: results[1]}))
         })
         .catch(err => socket.emit('err', err));
     });
     
+    /**
+     * UPDATE Label Types of a Labeling
+     */
     socket.on('update_labeling_labels', (labeling, labels, deletedLabels) => {
         if (!socket.client.twoFactorAuthenticated) return;  //TODO: see above
     

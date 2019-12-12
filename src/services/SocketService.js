@@ -171,6 +171,8 @@ export const updateLabeling = labeling => {
 export const deleteLabeling = labelingId => {
   if (!authenticated || !verified) return;
 
+  alert(labelingId);
+
   socket.emit('delete_labeling', labelingId);
   socket.on('err', err => {
     if (err) {
@@ -216,13 +218,11 @@ export const updateDataset = (dataset, callback) => {
   if (!authenticated || !verified) return;
 
   socket.emit('update_dataset', dataset);
-  socket.on('err', (err, dataset) => {
-    if (err) {
-      console.log(err);
-    } else if (callback) {
-      callback(dataset);
+  socket.on('dataset_updated', newDataset => {
+    if (callback) {
+      callback(newDataset);
     }
-    socket.off('err');
+    socket.off('dataset_updated');
   });
 };
 

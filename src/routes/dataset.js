@@ -330,7 +330,11 @@ class DatasetPage extends Component {
         if (label.labelingId === labelings[j]['_id']) {
           if (!labelTypes.some(type => type['_id'] === label.typeId)) {
             window.alert(
-              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
+              `The typeId ${
+                label.typeId
+              } does not match any defined label type of labeling ${
+                label.labelingId
+              }.`
             );
             return;
           }
@@ -352,7 +356,9 @@ class DatasetPage extends Component {
 
     if (labels.length !== 0) {
       window.alert(
-        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`
+        `The labelingId ${
+          labels[0].labelingId
+        } does not match any defined labeling.`
       );
       return;
     }
@@ -727,9 +733,9 @@ class DatasetPage extends Component {
       labelingOrLabelAdded = true;
     }
 
-    let label;
+    let label = {};
 
-    if (!labelId) {
+    if (labelId === null) {
       label = {
         start: start,
         end: end,
@@ -742,11 +748,13 @@ class DatasetPage extends Component {
       labelingOrLabelAdded = true;
     } else {
       label = labeling.labels.filter(label => label['_id'] === labelId)[0];
+
       if (label !== undefined && label.start === undefined) {
         label.start = start === undefined ? start : end;
       } else if (label !== undefined && label.end === undefined) {
         label.end = start === undefined ? start : end;
       } else {
+        label = {};
         label.start = start;
         label.end = end;
       }
@@ -927,12 +935,14 @@ class DatasetPage extends Component {
               <div>
                 <VideoPanel ref={this.videoPanel} />
               </div>
+              {/** 
               <div className="mt-0">
                 <InteractionControlPanel
                   isPublished={this.state.dataset.isPublished}
                 />
               </div>
-              <div className="mt-2">
+              */}
+              <div className="mt-0">
                 <TagsPanel events={this.state.dataset.events} />
               </div>
               <div className="mt-2">

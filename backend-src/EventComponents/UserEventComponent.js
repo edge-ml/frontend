@@ -1,6 +1,10 @@
 var rp = require('request-promise');
 var CONSTANTS = require('../constants')
 const auth = require('../../config/auth.json');
+const path = require('path');
+const passwordHash = require('password-hash');
+const authPath = path.join(__dirname, '../../', 'config', 'auth.json');
+const fs = require('fs');
 
 // TODO: simplify requests ect.
 
