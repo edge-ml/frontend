@@ -42,7 +42,9 @@ class SettingsPage extends Component {
         isNewSource: false,
         source: undefined
       },
-      sources: []
+      sources: [],
+      videoEnaled: false,
+      playButtonEnabled: false
     };
 
     this.onAddUser = this.onAddUser.bind(this);
@@ -221,6 +223,7 @@ class SettingsPage extends Component {
                           {isAdmin ? (
                             <Button
                               block
+                              disabled
                               className="btn-secondary mt-0 btn-edit"
                               onClick={e => {
                                 this.toggleSourceModal(source, false);
@@ -238,6 +241,7 @@ class SettingsPage extends Component {
               {isAdmin ? (
                 <Button
                   block
+                  disabled
                   className="mb-5"
                   color="secondary"
                   outline
@@ -246,6 +250,78 @@ class SettingsPage extends Component {
                   + Add
                 </Button>
               ) : null}
+            </Col>
+          </Row>
+
+          <hr className={'mb-5'} />
+
+          <Row className="mt-3">
+            <Col>
+              <Table responsive>
+                <thead>
+                  <tr className={'bg-light'}>
+                    <th>Settings</th>
+                    <th>Enabled</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>Video</th>
+                    <td>
+                      {
+                        <FontAwesomeIcon
+                          style={{
+                            color: this.state.videoEnaled
+                              ? '#43A047'
+                              : '#b71c1c'
+                          }}
+                          icon={this.state.videoEnaled ? faCheck : faTimes}
+                        />
+                      }
+                    </td>
+                    <td>
+                      {isAdmin ? (
+                        <Button
+                          block
+                          disabled
+                          className="btn-secondary mt-0 btn-edit"
+                        >
+                          Edit
+                        </Button>
+                      ) : null}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Play Button</th>
+                    <td>
+                      {
+                        <FontAwesomeIcon
+                          style={{
+                            color: this.state.playButtonEnabled
+                              ? '#43A047'
+                              : '#b71c1c'
+                          }}
+                          icon={
+                            this.state.playButtonEnabled ? faCheck : faTimes
+                          }
+                        />
+                      }
+                    </td>
+                    <td>
+                      {isAdmin ? (
+                        <Button
+                          block
+                          disabled
+                          className="btn-secondary mt-0 btn-edit"
+                        >
+                          Edit
+                        </Button>
+                      ) : null}
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
             </Col>
           </Row>
 

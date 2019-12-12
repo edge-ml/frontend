@@ -198,6 +198,21 @@ export const unsubscribeDatasets = () => {
   socket.off('datasets');
 };
 
+export const deleteDatasets = (ids, callback) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('delete_datasets', ids);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    if (callback) {
+      callback(err);
+    }
+    socket.off('err');
+  });
+};
+
 /***
  * Dataset
  */
@@ -223,18 +238,6 @@ export const updateDataset = (dataset, callback) => {
       callback(newDataset);
     }
     socket.off('dataset_updated');
-  });
-};
-
-export const deleteDataset = id => {
-  if (!authenticated || !verified) return;
-
-  socket.emit('delete_dataset', id);
-  socket.on('err', err => {
-    if (err) {
-      console.log(err);
-    }
-    socket.off('err');
   });
 };
 
