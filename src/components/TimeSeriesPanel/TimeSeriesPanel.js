@@ -275,7 +275,7 @@ class TimeSeriesPanel extends Component {
       if (!this.props.canEdit) return;
 
       let position = this.chart.current.chart.xAxis[0].toValue(
-        e.pageX - this.chart.current.chart.plotBox.x / 2
+        e.pageX - this.chart.current.chart.plotBox.x * 1.5 // TODO hack hardcoded 2 pixels how to fix?
       );
 
       if (!this.props.drawingId) {
