@@ -74,7 +74,11 @@ class TimeSeriesPanel extends Component {
           )
         : undefined;
 
-    if (filteredLabels !== undefined && filteredLabels.length !== 0) {
+    if (
+      filteredLabels !== undefined &&
+      filteredLabels.length !== 0 &&
+      this.props.updateControlStates != undefined
+    ) {
       this.props.updateControlStates(
         filteredLabels[0]['_id'],
         this.props.drawingPosition,
@@ -271,7 +275,7 @@ class TimeSeriesPanel extends Component {
       if (!this.props.canEdit) return;
 
       let position = this.chart.current.chart.xAxis[0].toValue(
-        e.pageX - this.chart.current.chart.plotBox.x / 2
+        e.pageX - this.chart.current.chart.plotBox.x * 1.5 // TODO hack hardcoded 2 pixels how to fix?
       );
 
       if (!this.props.drawingId) {
@@ -321,6 +325,8 @@ class TimeSeriesPanel extends Component {
     let newValue = this.chart.current.chart.xAxis[0].toValue(
       e.pageX - this.chart.current.chart.plotBox.x / 2
     );
+
+    console.log(newValue);
 
     e.preventDefault();
 
