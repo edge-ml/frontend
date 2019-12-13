@@ -322,21 +322,20 @@ class TimeSeriesPanel extends Component {
 
     if (!plotLine) return;
 
-    let newValue = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX - this.chart.current.chart.plotBox.x / 2
-    );
-
-    console.log(newValue);
-
     e.preventDefault();
 
-    plotLine.svgElem.translate(e.pageX - plotLine.options.clickX, 0);
+    plotLine.svgElem.translate(
+      e.chartX -
+        plotLine.svgElem.getBBox().x +
+        this.chart.current.chart.plotBox.x * 0.08,
+      0
+    );
 
     let plotband = this.getPlotbandByLabelId(plotLine.options.labelId);
     let plotbandOptions = plotband.options;
     this.chart.current.chart.xAxis[0].removePlotBand(plotbandOptions.id);
     let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX - this.chart.current.chart.plotBox.x / 2
+      e.pageX - this.chart.current.chart.plotBox.x * 1.5
     );
     let fixedPosition = plotLine.options.isLeftPlotline
       ? plotbandOptions.to
@@ -353,16 +352,6 @@ class TimeSeriesPanel extends Component {
       zIndex: plotbandOptions.zIndex,
       isSelected: plotbandOptions.isSelected
     });
-
-    let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(
-      plotLine.options.id,
-      plotLine.options.labelId
-    ).options.value;
-    this.state.onLabelChanged(
-      plotLine.options.labelId,
-      newValue,
-      remainingValue
-    );
   }
 
   onMouseUp(e, id) {
