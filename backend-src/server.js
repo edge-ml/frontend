@@ -18,11 +18,8 @@ const { io, app, server, activeClients } = require('./server_singleton');
 
 const apiRouter = require('./apiRouter');
 
-<<<<<<< HEAD
 //const labelingsPath = path.join(__dirname, '../', 'config', 'labelings.json');
-const sourcesPath = path.join(__dirname, '../', 'config', 'sources.json');
 
-=======
 const authPath = path.join(__dirname, '../', 'config', 'auth.json');
 const sourcesPath = path.join(__dirname, '../', 'config', 'sources.json');
 
@@ -32,9 +29,7 @@ let sources = require(sourcesPath);
 // JWT
 const privateKeyPath = path.join(__dirname, '../', 'config', 'keys', 'private.key');
 const publicKeyPath = path.join(__dirname, '../', 'config', 'keys', 'public.key');
->>>>>>> 382-settings
 
-let sources = require(sourcesPath);
 
 
 // TODO: remove this HARDCODED AUTHENTICATION BETWEEN EXPLORER AND API

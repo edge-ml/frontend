@@ -53,11 +53,6 @@ class ListPage extends Component {
   onDatasetsChanged(datasets) {
     if (!datasets) return;
 
-    const index = this.state.rows.findIndex(
-      row => row['_id'] === this.state.modalID
-    );
-    this.state.rows.splice(index, 1);
-
     this.setState({
       modalID: null,
       modal: false,
