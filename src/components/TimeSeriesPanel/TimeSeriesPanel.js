@@ -364,10 +364,12 @@ class TimeSeriesPanel extends Component {
         this.chart.current.chart.plotBox.x * 1.5 +
         this.chart.current.chart.plotBox.x * 0.08
     );
+
     let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(
       plotLine.options.id,
       plotLine.options.labelId
     ).options.value;
+
     this.state.onLabelChanged(
       plotLine.options.labelId,
       newValue,
