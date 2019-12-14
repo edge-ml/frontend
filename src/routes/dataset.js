@@ -738,6 +738,7 @@ class DatasetPage extends Component {
 
     let label = {};
 
+    console.log(labelId);
     if (labelId === null) {
       label = {
         start: start,
@@ -769,6 +770,7 @@ class DatasetPage extends Component {
     }
 
     if (labelingOrLabelAdded) {
+      console.log('updating for new label');
       updateDataset(dataset, newDataset => {
         let labeling = newDataset.labelings.filter(
           labeling =>
@@ -803,19 +805,21 @@ class DatasetPage extends Component {
         labeling =>
           labeling.labelingId === this.state.controlStates.selectedLabelingId
       )[0];
+
       labeling.labels = labeling.labels.filter(
         label => label['_id'] !== this.state.controlStates.selectedLabelId
       );
-      this.setState({
-        dataset,
-        controlStates: {
-          ...this.state.controlStates,
-          selectedLabelId: undefined,
-          selectedLabelTypeId: undefined
-        }
-      });
 
-      updateDataset(dataset);
+      updateDataset(dataset, () => {
+        this.setState({
+          dataset,
+          controlStates: {
+            ...this.state.controlStates,
+            selectedLabelId: undefined,
+            selectedLabelTypeId: undefined
+          }
+        });
+      });
     }
   }
 
