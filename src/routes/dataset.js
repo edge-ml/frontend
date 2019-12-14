@@ -751,12 +751,12 @@ class DatasetPage extends Component {
       labelingOrLabelAdded = true;
     } else {
       label = labeling.labels.filter(label => label['_id'] === labelId)[0];
+      console.log(JSON.stringify(label));
       if (label !== undefined && label.start === undefined) {
         label.start = start === undefined ? start : end;
       } else if (label !== undefined && label.end === undefined) {
         label.end = start === undefined ? start : end;
       } else {
-        label = {};
         label.start = start;
         label.end = end;
       }
@@ -785,6 +785,9 @@ class DatasetPage extends Component {
         });
       });
     } else {
+      this.setState({
+        dataset
+      });
       updateDataset(dataset, dataset => {
         this.setState({
           dataset
