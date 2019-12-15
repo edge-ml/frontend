@@ -31,9 +31,12 @@ function applyTo(io, socket) {
 	});
 
 	socket.on('update_dataset', dataset => {
+console.log("updating" + JSON.stringify(dataset))
+
 		rp(generateRequest(CONSTANTS.HTTP_METHODS.PUT, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.DATASETS + `/${dataset['_id']}`, dataset))
 		.then(rp(generateRequest(CONSTANTS.HTTP_METHODS.GET, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.DATASETS + `/${dataset['_id']}`))
-		    .then(dataset => {
+		    .then(updatedDataset => {
+				console.log("success with updating" + JSON.stringify(updatedDataset))
                 socket.emit('dataset_updated', dataset)
                 // TODO: error handling
             }))

@@ -232,8 +232,11 @@ export const unsubscribeDataset = id => {
 export const updateDataset = (dataset, callback) => {
   if (!authenticated || !verified) return;
 
+  alert(JSON.stringify(dataset));
+
   socket.emit('update_dataset', dataset);
   socket.on('dataset_updated', newDataset => {
+    console.log('updated dataset' + JSON.stringify(newDataset));
     if (callback) {
       callback(newDataset);
     }

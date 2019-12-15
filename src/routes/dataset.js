@@ -373,6 +373,7 @@ class DatasetPage extends Component {
     dataset.start = Math.min(obj.data[0].timestamp, dataset.start);
 
     updateDataset(dataset, dataset => {
+      alert(JSON.stringify(dataset));
       this.setState({ dataset });
     });
   }
