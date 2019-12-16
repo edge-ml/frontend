@@ -1,0 +1,11 @@
+.dropdown {
+  position: relative;
+  right: 0;
+  padding: 0;
+  z-index: auto;
+}
+
+.input-group > .input-group-append > .btn {
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}

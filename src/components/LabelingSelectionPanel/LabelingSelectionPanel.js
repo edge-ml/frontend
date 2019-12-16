@@ -6,6 +6,7 @@ class LabelingSelectionPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      objectType: props.objectType,
       labelings: props.labelings,
       selectedLabelingId: props.selectedLabelingId,
       onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged,
@@ -41,7 +42,7 @@ class LabelingSelectionPanel extends Component {
 
   onAddLabeling() {
     this.props.history.push({
-      pathname: '/labelings/new'
+      pathname: '/' + this.state.objectType + '/new'
     });
   }
 

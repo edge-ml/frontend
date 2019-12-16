@@ -192,6 +192,12 @@ div.card {
   margin: 0;
 }
 
+.instruction-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
 @media (min-width: 1200px) {
   .container {
     max-width: 100%;
