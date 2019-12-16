@@ -9,3 +9,36 @@
   border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
 }
+
+.arrow-container {
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.arrow {
+  color: #495057;
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  border-radius: 0.2rem;
+  font-size: 0.7rem;
+  height: 50%;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  cursor: pointer;
+}
+
+.arrow:first-child {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.arrow:last-child {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.arrow-disabled {
+  cursor: default;
+  color: #ced4da;
+}
