@@ -6,7 +6,7 @@ import Loader from '../modules/loader';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import EditInstructionModal from '../components/EditInstructionModal/EditInstructionModal';
 
-class InstructionsPage extends Component {
+class ExperimentsPage extends Component {
   constructor(props) {
     super(props);
 
@@ -88,7 +88,7 @@ class InstructionsPage extends Component {
   componentDidMount() {
     this.onExperimentsChanged(this.state.experiments);
 
-    if (this.props.location.pathname === '/instructions/new') {
+    if (this.props.location.pathname === '/experiments/new') {
       this.onModalAddExperiment();
     } else {
       const searchParams = new URLSearchParams(this.props.location.search);
@@ -106,7 +106,7 @@ class InstructionsPage extends Component {
     subscribeExperiments(experiments => {
       this.onExperimentsChanged(experiments);
 
-      if (this.props.location.pathname === '/instructions/new') {
+      if (this.props.location.pathname === '/experiments/new') {
         this.onModalAddExperiment();
       } else {
         const searchParams = new URLSearchParams(this.props.location.search);
@@ -141,12 +141,12 @@ class InstructionsPage extends Component {
   toggleModal = (experiment, isNewExperiment) => {
     if (isNewExperiment) {
       this.props.history.replace({
-        pathname: '/instructions/new',
+        pathname: '/experiments/new',
         search: null
       });
     } else {
       this.props.history.replace({
-        pathname: '/instructions',
+        pathname: '/experiments',
         search: '?id=' + experiment['_id']
       });
     }
@@ -232,7 +232,7 @@ class InstructionsPage extends Component {
 
   resetURL = () => {
     this.props.history.replace({
-      pathname: '/instructions',
+      pathname: '/experiments',
       search: null
     });
   };
@@ -252,7 +252,7 @@ class InstructionsPage extends Component {
           <Row className="mt-3 text-left">
             <Col>
               <LabelingSelectionPanel
-                objectType={'instructions'}
+                objectType={'experiments'}
                 history={this.props.history}
                 labelings={this.state.experiments}
                 selectedLabelingId={this.state.selectedExperimentId}
@@ -319,4 +319,4 @@ class InstructionsPage extends Component {
   }
 }
 
-export default view(InstructionsPage);
+export default view(ExperimentsPage);

@@ -21,7 +21,7 @@ import ListPage from './routes/list';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labelings';
 import SettingsPage from './routes/settings';
-import InstructionsPage from './routes/instructions';
+import ExperimentsPage from './routes/experiments';
 
 import { logout } from './services/SocketService';
 
@@ -108,8 +108,8 @@ class App extends Component {
                 </Link>
               </NavItem>
               <NavItem>
-                <Link className="nav-link" to="/instructions">
-                  Instructions
+                <Link className="nav-link" to="/experiments">
+                  Experiments
                 </Link>
               </NavItem>
               <NavItem>
@@ -138,8 +138,8 @@ class App extends Component {
           <Route exact path="/labelings/new" component={LabelingsPage} />
           <Route exact path="/" component={ListPage} />
           <Route path="/datasets/:id" component={DatasetPage} />
-          <Route exact path="/instructions" component={InstructionsPage} />
-          <Route exact path="/instructions/new" component={InstructionsPage} />
+          <Route exact path="/experiments" component={ExperimentsPage} />
+          <Route exact path="/experiments/new" component={ExperimentsPage} />
           <Route
             exact
             path="/settings"
