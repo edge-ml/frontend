@@ -6,6 +6,16 @@ import Loader from '../modules/loader';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import EditInstructionModal from '../components/EditInstructionModal/EditInstructionModal';
 
+import {
+  subscribeExperiments,
+  addExperiment,
+  updateExperiment,
+  deleteExperiment,
+  unsubscribeExperiments,
+  subscribeLabelingsAndLabels,
+  unsubscribeLabelingsAndLabels
+} from '../services/SocketService';
+
 class ExperimentsPage extends Component {
   constructor(props) {
     super(props);
@@ -86,7 +96,36 @@ class ExperimentsPage extends Component {
   }
 
   componentDidMount() {
-    this.onExperimentsChanged(this.state.experiments);
+    subscribeLabelingsAndLabels(this.onLabelingsAndLabelsChanged);
+  }
+
+  componentWillUnmount() {
+    unsubscribeExperiments();
+    unsubscribeLabelingsAndLabels();
+  }
+
+  onLabelingsAndLabelsChanged = (labelings, labels) => {
+    this.setState(
+      {
+        labelings: labelings || [],
+        labelTypes: labels || []
+      },
+      () => {
+        subscribeExperiments(experiments => {
+          this.onExperimentsChanged(experiments);
+        });
+      }
+    );
+  };
+
+  onExperimentsChanged = experiments => {
+    if (experiments === undefined) experiments = this.state.experiments;
+
+    this.setState({
+      experiments: experiments,
+      selectedExperimentId: experiments[0]['_id'],
+      isReady: true
+    });
 
     if (this.props.location.pathname === '/experiments/new') {
       this.onModalAddExperiment();
@@ -102,40 +141,6 @@ class ExperimentsPage extends Component {
         this.toggleModal(experiment, false);
       }
     }
-    /*
-    subscribeExperiments(experiments => {
-      this.onExperimentsChanged(experiments);
-
-      if (this.props.location.pathname === '/experiments/new') {
-        this.onModalAddExperiment();
-      } else {
-        const searchParams = new URLSearchParams(this.props.location.search);
-        const id = searchParams.get('id');
-
-        if (id) {
-          let experiment = this.state.experiments.filter(
-            experiment => experiment['_id'] === id
-          )[0];
-
-          this.toggleModal(experiment, false);
-        }
-      }
-    });
-    */
-  }
-
-  componentWillUnmount() {
-    //unsubscribeExperiments();
-  }
-
-  onExperimentsChanged = experiments => {
-    if (experiments === undefined) experiments = this.state.experiments;
-
-    this.setState({
-      experiments: experiments,
-      selectedExperimentId: experiments[0]['_id'],
-      isReady: true
-    });
   };
 
   toggleModal = (experiment, isNewExperiment) => {
@@ -185,6 +190,7 @@ class ExperimentsPage extends Component {
   onDeleteExperiment = experimentId => {
     this.onCloseModal();
 
+    /*
     let experiments = this.state.experiments.filter(
       experiment => experiment['_id'] !== experimentId
     );
@@ -192,7 +198,8 @@ class ExperimentsPage extends Component {
       experiments,
       selectedExperimentId: experiments[0]['_id']
     });
-    //deleteExperiment(experimentId);
+    */
+    deleteExperiment(experimentId);
   };
 
   onSave = experiment => {
@@ -207,24 +214,25 @@ class ExperimentsPage extends Component {
       !experiment.instructions ||
       experiment.instructions.length === 0 ||
       experiment.instructions.some(instruction => !instruction.labelType) ||
-      experiment.instructions.some(instruction => !instruction.duration)
+      experiment.instructions.some(instruction => !instruction.duration) ||
+      experiment.instructions.some(instruction => instruction.duration <= 0)
     ) {
       window.alert('Please enter valid instructions.');
       return;
     }
 
     if (this.state.modal.isNewExperiment) {
-      //addExperiment(experiment);
-      this.setState({
-        experiments: [...this.state.experiments, experiment]
-      });
+      addExperiment(experiment);
+      //this.setState({
+      //  experiments: [...this.state.experiments, experiment]
+      //});
     } else {
-      //updateExperiment(experiment);
-      this.setState({
-        experiments: this.state.experiments.map(exp =>
-          exp['_id'] === experiment['_id'] ? experiment : exp
-        )
-      });
+      updateExperiment(experiment);
+      //this.setState({
+      //  experiments: this.state.experiments.map(exp =>
+      //    exp['_id'] === experiment['_id'] ? experiment : exp
+      //  )
+      //});
     }
 
     this.onCloseModal();

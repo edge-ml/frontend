@@ -171,9 +171,65 @@ export const updateLabeling = labeling => {
 export const deleteLabeling = labelingId => {
   if (!authenticated || !verified) return;
 
-  alert(labelingId);
+  //alert(labelingId);
 
   socket.emit('delete_labeling', labelingId);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    socket.off('err');
+  });
+};
+
+/***
+ * Experiments
+ */
+export const subscribeExperiments = callback => {
+  if (!authenticated || !verified) return;
+
+  socket.on('experiments', experiments => {
+    if (experiments) {
+      callback(experiments);
+    }
+  });
+  socket.emit('experiments');
+};
+
+export const unsubscribeExperiments = () => {
+  if (!authenticated || !verified) return;
+
+  socket.off('experiments');
+};
+
+export const addExperiment = newExperiment => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('add_experiment', newExperiment);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const updateExperiment = experiment => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('update_experiment', experiment);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    socket.off('err');
+  });
+};
+
+export const deleteExperiment = experimentId => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('delete_experiment', experimentId);
   socket.on('err', err => {
     if (err) {
       console.log(err);

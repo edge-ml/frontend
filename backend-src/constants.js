@@ -23,7 +23,6 @@ ENDPOINTS.DEFAULT = '/'
 ENDPOINTS.LABEL_DEFINITIONS = '/labelDefinitions'
 ENDPOINTS.LABEL_TYPES = '/labelTypes'
 ENDPOINTS.DATASETS = '/datasets'
+ENDPOINTS.EXPERIMENTS = '/experiments'
 
 module.exports.ENDPOINTS = ENDPOINTS
-
-

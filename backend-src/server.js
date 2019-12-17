@@ -1,7 +1,7 @@
 /**
  * GENERAL TODOS:
  * - move socket topics to a single file which is shared by the react client
- * - proxy authentications to the backend server to obtain a real api token 
+ * - proxy authentications to the backend server to obtain a real api token
  */
 
 const path = require('path');
@@ -61,16 +61,18 @@ authenticationMiddleware.applyTo(io)
 const labelingEventComponent = require('./EventComponents/LabelEventComponent')
 const userEventComponent = require('./EventComponents/UserEventComponent')
 const datasetEventComponent = require('./EventComponents/DatasetEventComponent')
+const experimentEventComponent = require('./EventComponents/ExperimentEventComponent')
 
 io.on('connection', (socket) => {
 	// apply event components to socket
 	labelingEventComponent.applyTo(io, socket)
 	userEventComponent.applyTo(io, socket)
 	datasetEventComponent.applyTo(io, socket)
+  experimentEventComponent.applyTo(io, socket)
 
 	// generate unique-id
 	const name = uniqueNamesGenerator('', true);
-	
+
 	socket.on('client_name', () => {
 		// join room with client id name
 		socket.join(name);
@@ -84,7 +86,7 @@ io.on('connection', (socket) => {
 		// TODO: remove client from activeClients
 	});
 
-	
+
 	/***
 	 * Sources
 	 */
@@ -163,7 +165,7 @@ io.on('connection', (socket) => {
 
 
 /**
- * Generate request from method, endpoint and body. 
+ * Generate request from method, endpoint and body.
  * TODO: consider moving this to a utility class
  */
 function generateRequest(method = HTTP_METHODS.GET, baseUri = API_URI, endpoint = ENDPOINTS.DEFAULT, body = {}) {
