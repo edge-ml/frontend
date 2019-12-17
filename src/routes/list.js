@@ -54,6 +54,9 @@ class ListPage extends Component {
     if (!datasets) return;
 
     this.setState({
+      modalID: null,
+      modal: false,
+      rows: this.state.rows,
       datasets: datasets,
       ready: true
     });

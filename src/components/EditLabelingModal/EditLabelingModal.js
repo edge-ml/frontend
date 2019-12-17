@@ -250,9 +250,10 @@ class EditLabelingModal extends Component {
                 block
                 className="m-0"
                 outline
-                onClick={e =>
-                  this.state.onDeleteLabeling(this.state.labeling['_id'])
-                }
+                onClick={e => {
+                  alert(JSON.stringify(this.state.labeling));
+                  this.state.onDeleteLabeling(this.state.labeling['_id']);
+                }}
               >
                 Delete
               </Button>

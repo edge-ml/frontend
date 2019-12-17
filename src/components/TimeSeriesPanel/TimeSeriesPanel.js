@@ -74,7 +74,11 @@ class TimeSeriesPanel extends Component {
           )
         : undefined;
 
-    if (filteredLabels !== undefined && filteredLabels.length !== 0) {
+    if (
+      filteredLabels !== undefined &&
+      filteredLabels.length !== 0 &&
+      this.props.updateControlStates != undefined
+    ) {
       this.props.updateControlStates(
         filteredLabels[0]['_id'],
         this.props.drawingPosition,
@@ -271,7 +275,7 @@ class TimeSeriesPanel extends Component {
       if (!this.props.canEdit) return;
 
       let position = this.chart.current.chart.xAxis[0].toValue(
-        e.pageX - this.chart.current.chart.plotBox.x / 2
+        e.pageX - this.chart.current.chart.plotBox.x * 1.5 // TODO hack hardcoded 2 pixels how to fix?
       );
 
       if (!this.props.drawingId) {
@@ -318,19 +322,20 @@ class TimeSeriesPanel extends Component {
 
     if (!plotLine) return;
 
-    let newValue = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX - this.chart.current.chart.plotBox.x / 2
-    );
-
     e.preventDefault();
 
-    plotLine.svgElem.translate(e.pageX - plotLine.options.clickX, 0);
+    plotLine.svgElem.translate(
+      e.chartX -
+        plotLine.svgElem.getBBox().x +
+        this.chart.current.chart.plotBox.x * 0.08,
+      0
+    );
 
     let plotband = this.getPlotbandByLabelId(plotLine.options.labelId);
     let plotbandOptions = plotband.options;
     this.chart.current.chart.xAxis[0].removePlotBand(plotbandOptions.id);
     let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX - this.chart.current.chart.plotBox.x / 2
+      e.pageX - this.chart.current.chart.plotBox.x * 1.5
     );
     let fixedPosition = plotLine.options.isLeftPlotline
       ? plotbandOptions.to
@@ -347,16 +352,6 @@ class TimeSeriesPanel extends Component {
       zIndex: plotbandOptions.zIndex,
       isSelected: plotbandOptions.isSelected
     });
-
-    let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(
-      plotLine.options.id,
-      plotLine.options.labelId
-    ).options.value;
-    this.state.onLabelChanged(
-      plotLine.options.labelId,
-      newValue,
-      remainingValue
-    );
   }
 
   onMouseUp(e, id) {
@@ -365,12 +360,16 @@ class TimeSeriesPanel extends Component {
 
     plotLine.options.isActive = false;
     let newValue = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX - this.chart.current.chart.plotBox.x / 2
+      e.pageX -
+        this.chart.current.chart.plotBox.x * 1.5 +
+        this.chart.current.chart.plotBox.x * 0.08
     );
+
     let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(
       plotLine.options.id,
       plotLine.options.labelId
     ).options.value;
+
     this.state.onLabelChanged(
       plotLine.options.labelId,
       newValue,

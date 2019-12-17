@@ -194,6 +194,8 @@ class LabelingsPage extends Component {
                             label => label['_id'] === labelId
                           )[0];
 
+                          if (!label) return;
+
                           return (
                             <Badge
                               key={index}

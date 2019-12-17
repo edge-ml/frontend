@@ -72,7 +72,6 @@ class UploadCsvModal extends Component {
               </label>
             </div>
           </div>
-
           <InputGroup>
             <InputGroupAddon addonType="prepend">
               <InputGroupText>
@@ -93,6 +92,9 @@ class UploadCsvModal extends Component {
               }
             />
           </InputGroup>
+          <hr />
+          Need help? <a href="/example_file.csv">Click here</a> to download an
+          example CSV file.
         </ModalBody>
         <ModalFooter>
           <Button

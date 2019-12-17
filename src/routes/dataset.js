@@ -339,7 +339,11 @@ class DatasetPage extends Component {
         if (label.labelingId === labelings[j]['_id']) {
           if (!labelTypes.some(type => type['_id'] === label.typeId)) {
             window.alert(
-              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
+              `The typeId ${
+                label.typeId
+              } does not match any defined label type of labeling ${
+                label.labelingId
+              }.`
             );
             return;
           }
@@ -361,7 +365,9 @@ class DatasetPage extends Component {
 
     if (labels.length !== 0) {
       window.alert(
-        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`
+        `The labelingId ${
+          labels[0].labelingId
+        } does not match any defined labeling.`
       );
       return;
     }
@@ -736,9 +742,9 @@ class DatasetPage extends Component {
       labelingOrLabelAdded = true;
     }
 
-    let label;
+    let label = {};
 
-    if (!labelId) {
+    if (labelId === null) {
       label = {
         start: start,
         end: end,
@@ -769,14 +775,15 @@ class DatasetPage extends Component {
     }
 
     if (labelingOrLabelAdded) {
-      updateDataset(dataset, dataset => {
-        let labeling = dataset.labelings.filter(
+      console.log('updating for new label');
+      updateDataset(dataset, newDataset => {
+        let labeling = newDataset.labelings.filter(
           labeling =>
             labeling.labelingId === this.state.controlStates.selectedLabelingId
         )[0];
 
         this.setState({
-          dataset,
+          newDataset,
           controlStates: {
             ...this.state.controlStates,
             drawingId: labeling.labels[labeling.labels.length - 1]['_id']
@@ -784,8 +791,15 @@ class DatasetPage extends Component {
         });
       });
     } else {
-      this.setState({ dataset });
-      updateDataset(dataset);
+      this.setState({
+        dataset
+      });
+
+      updateDataset(dataset, updatedDataset => {
+        this.setState({
+          updatedDataset
+        });
+      });
     }
   }
 
@@ -796,19 +810,21 @@ class DatasetPage extends Component {
         labeling =>
           labeling.labelingId === this.state.controlStates.selectedLabelingId
       )[0];
+
       labeling.labels = labeling.labels.filter(
         label => label['_id'] !== this.state.controlStates.selectedLabelId
       );
-      this.setState({
-        dataset,
-        controlStates: {
-          ...this.state.controlStates,
-          selectedLabelId: undefined,
-          selectedLabelTypeId: undefined
-        }
-      });
 
-      updateDataset(dataset);
+      updateDataset(dataset, () => {
+        this.setState({
+          dataset,
+          controlStates: {
+            ...this.state.controlStates,
+            selectedLabelId: undefined,
+            selectedLabelTypeId: undefined
+          }
+        });
+      });
     }
   }
 
@@ -934,6 +950,10 @@ class DatasetPage extends Component {
               </div>
             </Col>
             <Col xs={12} lg={3}>
+              <div>
+                <VideoPanel ref={this.videoPanel} />
+              </div>
+              {/** 
               {this.state.videoEnabled ? (
                 <div>
                   <VideoPanel ref={this.videoPanel} />
@@ -944,7 +964,8 @@ class DatasetPage extends Component {
                   isPublished={this.state.dataset.isPublished}
                 />
               </div>
-              <div className="mt-2">
+              */}
+              <div className="mt-0">
                 <TagsPanel events={this.state.dataset.events} />
               </div>
               <div className="mt-2">
