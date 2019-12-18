@@ -119,7 +119,7 @@ class DatasetPage extends Component {
       fused => fused.timeSeries.length > 1
     );
 
-    this.onLabelingsAndLabelsChanged(this.state.labelings, this.state.labels);
+    //this.onLabelingsAndLabelsChanged(this.state.labelings, this.state.labels);
   }
 
   componentWillUnmount() {
@@ -131,7 +131,7 @@ class DatasetPage extends Component {
 
   onDatasetChanged(dataset) {
     if (!dataset) return;
-
+    console.log(dataset);
     dataset.fusedSeries = dataset.fusedSeries.filter(
       fused => fused.timeSeries.length > 1
     );
@@ -339,11 +339,7 @@ class DatasetPage extends Component {
         if (label.labelingId === labelings[j]['_id']) {
           if (!labelTypes.some(type => type['_id'] === label.typeId)) {
             window.alert(
-              `The typeId ${
-                label.typeId
-              } does not match any defined label type of labeling ${
-                label.labelingId
-              }.`
+              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
             );
             return;
           }
@@ -365,9 +361,7 @@ class DatasetPage extends Component {
 
     if (labels.length !== 0) {
       window.alert(
-        `The labelingId ${
-          labels[0].labelingId
-        } does not match any defined labeling.`
+        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`
       );
       return;
     }
@@ -953,7 +947,7 @@ class DatasetPage extends Component {
               <div>
                 <VideoPanel ref={this.videoPanel} />
               </div>
-              {/** 
+              {/**
               {this.state.videoEnabled ? (
                 <div>
                   <VideoPanel ref={this.videoPanel} />

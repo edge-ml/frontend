@@ -129,7 +129,10 @@ class TimeSeriesPanel extends Component {
                       }
                     }
                   },
-                  data: props.data.map(point => [point.timestamp, point.value])
+                  data: props.data.map((point, index) => [
+                    props.start + (1 / props.samplingRate) * (index + 1),
+                    point
+                  ])
                 }
               ]
             : !Array.isArray(props.name)
@@ -137,7 +140,10 @@ class TimeSeriesPanel extends Component {
                 {
                   showInLegend: !props.isEmpty,
                   name: props.name + ' (' + props.unit + ')',
-                  data: props.data.map(point => [point.timestamp, point.value]),
+                  data: props.data.map((point, index) => [
+                    props.start + (1 / props.samplingRate) * (index + 1),
+                    point
+                  ]),
                   lineWidth: 1
                 }
               ]
@@ -148,7 +154,10 @@ class TimeSeriesPanel extends Component {
                     ' (' +
                     this.props.unit[index] +
                     ')',
-                  data: dataItem.map(point => [point.timestamp, point.value]),
+                  data: dataItem.map((point, index) => [
+                    props.start[index] + (1 / props.samplingRate) * (index + 1),
+                    point
+                  ]),
                   lineWidth: 1
                 };
               }),
