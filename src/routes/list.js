@@ -119,7 +119,7 @@ class ListPage extends Component {
   }
 
   displayTime(time) {
-    const date = new Date(time);
+    const date = new Date(time * 1000);
     return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
   }
 
