@@ -75,18 +75,19 @@ class TimeSeriesCollectionPanel extends Component {
           data={
             this.state.timeSeries.length > 0
               ? this.state.timeSeries[0].data
-              : [
-                  { timestamp: this.state.start, value: 10 },
-                  { timestamp: this.state.end, value: 10 }
-                ]
+              : [10, 10]
           }
-          samplingRate={this.state.timeSeries.samplingRate}
+          samplingRate={
+            this.state.timeSeries[0].samplingRate
+              ? this.state.timeSeries[0].samplingRate
+              : 1
+          }
           labeling={this.state.labeling}
           labelTypes={this.state.labelTypes}
           onLabelClicked={this.state.onLabelClicked}
           selectedLabelId={this.state.selectedLabelId}
-          start={this.state.timeSeries.start}
-          end={this.state.timeSeries.end}
+          start={this.state.start}
+          end={this.state.end}
           onLabelChanged={this.state.onLabelChanged}
           canEdit={this.props.canEdit}
           onScrubbed={this.state.onScrubbed}
@@ -107,8 +108,8 @@ class TimeSeriesCollectionPanel extends Component {
             labelTypes={this.state.labelTypes}
             onLabelClicked={this.state.onLabelClicked}
             selectedLabelId={this.state.selectedLabelId}
-            start={this.state.timeSeries.start}
-            end={this.state.timeSeries.end}
+            start={this.state.start}
+            end={this.state.end}
             onLabelChanged={this.state.onLabelChanged}
             canEdit={this.props.canEdit}
             onScrubbed={this.state.onScrubbed}
@@ -127,15 +128,15 @@ class TimeSeriesCollectionPanel extends Component {
             key={key}
             index={key + 1}
             data={timeSeries.data}
-            samplingRate={timeSeries.samplingRate}
+            samplingRate={timeSeries.samplingRate ? timeSeries.samplingRate : 1}
             name={timeSeries.name}
             unit={timeSeries.unit}
             labeling={this.state.labeling}
             labelTypes={this.state.labelTypes}
             onLabelClicked={this.state.onLabelClicked}
             selectedLabelId={this.state.selectedLabelId}
-            start={this.state.timeSeries.start}
-            end={this.state.timeSeries.end}
+            start={timeSeries.start ? timeSeries.start : this.state.start}
+            end={timeSeries.end ? timeSeries.end : this.state.end}
             onLabelChanged={this.state.onLabelChanged}
             canEdit={this.props.canEdit}
             onScrubbed={this.state.onScrubbed}
@@ -176,8 +177,12 @@ class TimeSeriesCollectionPanel extends Component {
                 labelTypes={this.state.labelTypes}
                 onLabelClicked={this.state.onLabelClicked}
                 selectedLabelId={this.state.selectedLabelId}
-                start={selectedSeries.map(series => series.start)}
-                end={selectedSeries.map(series => series.end)}
+                start={selectedSeries.map(series =>
+                  series.start ? series.start : this.state.start
+                )}
+                end={selectedSeries.map(series =>
+                  series.end ? series.end : this.state.end
+                )}
                 onLabelChanged={this.state.onLabelChanged}
                 canEdit={this.props.canEdit}
                 onScrubbed={this.state.onScrubbed}

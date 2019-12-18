@@ -965,8 +965,8 @@ class DatasetPage extends Component {
               <div className="mt-2">
                 <MetadataPanel
                   id={this.state.dataset['_id']}
-                  start={this.state.dataset.start}
-                  end={this.state.dataset.end}
+                  start={this.state.dataset.start * 1000}
+                  end={this.state.dataset.end * 1000}
                   user={this.state.dataset.userId}
                 />
               </div>
