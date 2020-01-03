@@ -178,7 +178,7 @@ class EditInstructionModal extends Component {
                       </div>
                     </InputGroupAddon>
 
-                    <UncontrolledDropdown className="mr-2">
+                    <UncontrolledDropdown className="mr-2 instruction-dropdown">
                       <DropdownToggle caret>
                         {instruction.labelingId
                           ? labelings.filter(
