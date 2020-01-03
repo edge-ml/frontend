@@ -47,17 +47,22 @@ class HelpModal extends Component {
               </tr>
             </table>
           </div>
-          <hr />
-          <div className="py-2">
-            <h6>API</h6>
-            <code>
-              curl -X PUT
-              'http://localhost:3001/api/favouriteherring/plot?fuse=true' -H
-              'Content-Type: application/x-www-form-urlencoded' -F
-              'csv=@/Users/tobi/Downloads/example_1.csv' -F
-              'csv=@/Users/tobi/Downloads/example_2.csv'{' '}
-            </code>
-          </div>
+
+          {/**
+            (
+              <hr />
+              <div className="py-2">
+                <h6>API</h6>
+                <code>
+                  curl -X PUT
+                  'http://localhost:3001/api/favouriteherring/plot?fuse=true' -H
+                  'Content-Type: application/x-www-form-urlencoded' -F
+                  'csv=@/Users/tobi/Downloads/example_1.csv' -F
+                  'csv=@/Users/tobi/Downloads/example_2.csv'{' '}
+                </code>
+              </div>
+            )
+          */}
         </ModalBody>
         <ModalFooter>
           {' '}

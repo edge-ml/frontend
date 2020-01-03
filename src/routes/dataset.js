@@ -986,11 +986,15 @@ class DatasetPage extends Component {
                 />
               </div>
               <div className="mt-2">
-                <ApiPanel
-                  onUpload={obj => this.addTimeSeries(obj)}
-                  onFuse={this.onFuseTimeSeries}
-                  startTime={this.state.dataset.start}
-                />
+                {/**
+                (
+                  <ApiPanel
+                    onUpload={obj => this.addTimeSeries(obj)}
+                    onFuse={this.onFuseTimeSeries}
+                    startTime={this.state.dataset.start}
+                  />
+                )
+              */}
               </div>
               <div className="mt-2" style={{ marginBottom: '230px' }}>
                 <ManagementPanel
