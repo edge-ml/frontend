@@ -131,7 +131,7 @@ class DatasetPage extends Component {
 
   onDatasetChanged(dataset) {
     if (!dataset) return;
-    console.log(dataset);
+
     dataset.fusedSeries = dataset.fusedSeries.filter(
       fused => fused.timeSeries.length > 1
     );
@@ -769,7 +769,6 @@ class DatasetPage extends Component {
     }
 
     if (labelingOrLabelAdded) {
-      console.log('updating for new label');
       updateDataset(dataset, newDataset => {
         let labeling = newDataset.labelings.filter(
           labeling =>
