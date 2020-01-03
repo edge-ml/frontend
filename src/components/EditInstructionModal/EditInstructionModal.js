@@ -210,7 +210,7 @@ class EditInstructionModal extends Component {
                       </DropdownMenu>
                     </UncontrolledDropdown>
 
-                    <UncontrolledDropdown className="mr-2">
+                    <UncontrolledDropdown className="mr-2 instruction-dropdown">
                       <DropdownToggle caret>
                         {instruction.labelType
                           ? this.state.labelTypes.filter(

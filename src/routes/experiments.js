@@ -21,71 +21,10 @@ class ExperimentsPage extends Component {
     super(props);
 
     this.state = {
-      experiments: [
-        {
-          _id: '0',
-          name: 'experiment 1',
-          instructions: [
-            {
-              labelType: '000',
-              duration: 10
-            },
-            {
-              labelType: '111',
-              duration: 20
-            }
-          ]
-        },
-        {
-          _id: '1',
-          name: 'experiment 2',
-          instructions: [
-            {
-              labelType: '111',
-              duration: 10
-            },
-            {
-              labelType: '000',
-              duration: 20
-            }
-          ]
-        }
-      ],
+      experiments: [],
       selectedExperimentId: undefined,
-      labelings: [
-        {
-          _id: '0000',
-          labels: ['000', '111'],
-          name: 'some labeling'
-        },
-        {
-          _id: '1111',
-          labels: ['222', '333'],
-          name: 'another labeling'
-        }
-      ],
-      labelTypes: [
-        {
-          _id: '000',
-          name: 'aaa',
-          color: '#ff6677'
-        },
-        {
-          _id: '111',
-          name: 'bbb',
-          color: '#9900aa'
-        },
-        {
-          _id: '222',
-          name: 'ccc',
-          color: '#445566'
-        },
-        {
-          _id: '333',
-          name: 'ddd',
-          color: '#335599'
-        }
-      ],
+      labelings: [],
+      labelTypes: [],
       isReady: false,
       modal: {
         experiment: undefined,
@@ -249,10 +188,47 @@ class ExperimentsPage extends Component {
     this.setState({ selectedExperimentId });
   };
 
+  // in case a label definition no longer exists
+  filterInvalidInstructions = instructions => {
+    let labelings = this.state.labelings.map(labeling => {
+      let labels = this.state.labelTypes.filter(label =>
+        labeling.labels.includes(label['_id'])
+      );
+      return Object.assign({}, labeling, { labels });
+    });
+
+    return instructions.filter(instruction => {
+      if (!instruction.labelingId && !instruction.labelType) return true;
+
+      if (instruction.labelingId && !instruction.labelType) {
+        return labelings.some(
+          labeling => labeling['_id'] === instruction.labelingId
+        );
+      } else {
+        return labelings.some(
+          labeling =>
+            labeling['_id'] === instruction.labelingId &&
+            labeling.labels.some(
+              label => label['_id'] === instruction.labelType
+            )
+        );
+      }
+
+      return false;
+    });
+  };
+
   render() {
     let experiment = this.state.experiments.filter(
       experiment => experiment['_id'] === this.state.selectedExperimentId
     )[0];
+
+    let modalExperiment = this.state.modal.experiment;
+    if (modalExperiment) {
+      modalExperiment.instructions = this.filterInvalidInstructions(
+        modalExperiment.instructions
+      );
+    }
 
     return (
       <Loader loading={!this.state.isReady}>
@@ -279,9 +255,12 @@ class ExperimentsPage extends Component {
             <tbody>
               {experiment &&
                 experiment.instructions.map((instruction, index) => {
-                  let label = this.state.labelTypes.filter(
+                  let types = this.state.labelTypes.filter(
                     type => type['_id'] === instruction.labelType
-                  )[0];
+                  );
+                  if (!types || !types.length > 0) return null;
+
+                  let label = types[0];
                   return (
                     <tr key={'tr' + index + label['_id']}>
                       <td>
@@ -313,7 +292,7 @@ class ExperimentsPage extends Component {
           </Button>
         </Container>
         <EditInstructionModal
-          experiment={this.state.modal.experiment}
+          experiment={modalExperiment}
           labelTypes={this.state.labelTypes}
           labelings={this.state.labelings}
           isOpen={this.state.modal.isOpen}
