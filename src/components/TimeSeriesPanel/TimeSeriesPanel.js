@@ -424,32 +424,43 @@ class TimeSeriesPanel extends Component {
     var mouseDownHandler = this.onPlotBandMouseDown;
 
     if (labeling.labels === undefined) return [];
-    return labeling.labels.map(label => {
-      let labelType = labelTypes.filter(type => type['_id'] === label.type)[0];
 
-      return {
-        id: 'band_' + label['_id'],
-        labelId: label['_id'],
-        from: label.start,
-        to: label.end,
-        zIndex: 2,
-        className: selectedLabelId === label['_id'] ? 'selected' : 'deselected',
-        color: labelType.color,
-        label: {
-          text: labelType.name,
-          style: {
-            color: labelType.color,
-            fontWeight: 'bold'
+    return labeling.labels
+      .filter(label => {
+        let types = labelTypes.filter(type => type['_id'] === label.type);
+
+        if (!types || !types.length > 0) return false;
+        return true;
+      })
+      .map(label => {
+        let labelType = labelTypes.filter(
+          type => type['_id'] === label.type
+        )[0];
+
+        return {
+          id: 'band_' + label['_id'],
+          labelId: label['_id'],
+          from: label.start,
+          to: label.end,
+          zIndex: 2,
+          className:
+            selectedLabelId === label['_id'] ? 'selected' : 'deselected',
+          color: labelType.color,
+          label: {
+            text: labelType.name,
+            style: {
+              color: labelType.color,
+              fontWeight: 'bold'
+            },
+            isPlotline: false,
+            isSelected: selectedLabelId === label['_id']
           },
-          isPlotline: false,
-          isSelected: selectedLabelId === label['_id']
-        },
-        events: {
-          mousedown: e =>
-            mouseDownHandler(e, 'band_' + label['_id'], label['_id'])
-        }
-      };
-    });
+          events: {
+            mousedown: e =>
+              mouseDownHandler(e, 'band_' + label['_id'], label['_id'])
+          }
+        };
+      });
   }
 
   getPlotbandByLabelId(labelId) {
@@ -508,6 +519,13 @@ class TimeSeriesPanel extends Component {
 
   labelingToPlotLines(labels, labelTypes, selectedLabelId) {
     if (labels === undefined || labelTypes === undefined) return [];
+
+    labels = labels.filter(label => {
+      let types = labelTypes.filter(type => type['_id'] === label.type);
+
+      if (!types || !types.length > 0) return false;
+      return true;
+    });
 
     var plotLines = labels.reduce(
       (result, label) =>
