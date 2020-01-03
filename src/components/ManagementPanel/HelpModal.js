@@ -47,7 +47,6 @@ class HelpModal extends Component {
               </tr>
             </table>
           </div>
-
           {/**
             (
               <hr />
@@ -63,6 +62,10 @@ class HelpModal extends Component {
               </div>
             )
           */}
+          <hr />
+          <h6>Upload CSV</h6>
+          <a href="/example_file.csv">Click here</a> to download an example CSV
+          file.
         </ModalBody>
         <ModalFooter>
           {' '}
