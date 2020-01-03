@@ -157,8 +157,7 @@ class TimeSeriesPanel extends Component {
                     this.props.unit[index] +
                     ')',
                   data: dataItem.map((point, index) => [
-                    (props.start[index] +
-                      (1 / props.samplingRate) * (index + 1)) *
+                    (props.start + (1 / props.samplingRate) * (index + 1)) *
                       1000,
                     point
                   ]),
@@ -633,7 +632,7 @@ class TimeSeriesPanel extends Component {
         {this.props.index !== 0 && !this.props.isEmpty ? (
           <DropdownPanel
             fused={this.props.fused}
-            startTime={this.props.data[0].timestamp}
+            startTime={this.props.start + (1 / this.props.samplingRate) * 1000}
             onShift={this.props.onShift}
             onDelete={this.props.onDelete}
           />

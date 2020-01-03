@@ -115,9 +115,9 @@ class DatasetPage extends Component {
     window.addEventListener('keydown', this.onKeyDown);
     subscribeDataset(this.props.match.params.id, this.onDatasetChanged);
 
-    this.state.dataset.fusedSeries = this.state.dataset.fusedSeries.filter(
-      fused => fused.timeSeries.length > 1
-    );
+    //this.state.dataset.fusedSeries = this.state.dataset.fusedSeries.filter(
+    //  fused => fused.timeSeries.length > 1
+    //);
 
     //this.onLabelingsAndLabelsChanged(this.state.labelings, this.state.labels);
   }

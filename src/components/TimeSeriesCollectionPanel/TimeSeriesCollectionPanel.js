@@ -135,8 +135,8 @@ class TimeSeriesCollectionPanel extends Component {
             labelTypes={this.state.labelTypes}
             onLabelClicked={this.state.onLabelClicked}
             selectedLabelId={this.state.selectedLabelId}
-            start={timeSeries.start ? timeSeries.start : this.state.start}
-            end={timeSeries.end ? timeSeries.end : this.state.end}
+            start={this.state.start}
+            end={this.state.end}
             onLabelChanged={this.state.onLabelChanged}
             canEdit={this.props.canEdit}
             onScrubbed={this.state.onScrubbed}
@@ -177,12 +177,8 @@ class TimeSeriesCollectionPanel extends Component {
                 labelTypes={this.state.labelTypes}
                 onLabelClicked={this.state.onLabelClicked}
                 selectedLabelId={this.state.selectedLabelId}
-                start={selectedSeries.map(series =>
-                  series.start ? series.start : this.state.start
-                )}
-                end={selectedSeries.map(series =>
-                  series.end ? series.end : this.state.end
-                )}
+                start={this.state.start}
+                end={this.state.end}
                 onLabelChanged={this.state.onLabelChanged}
                 canEdit={this.props.canEdit}
                 onScrubbed={this.state.onScrubbed}
