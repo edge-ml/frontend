@@ -78,8 +78,10 @@ class TimeSeriesCollectionPanel extends Component {
               : [10, 10]
           }
           samplingRate={
-            this.state.timeSeries[0].samplingRate
+            this.state.timeSeries.length > 0
               ? this.state.timeSeries[0].samplingRate
+                ? this.state.timeSeries[0].samplingRate
+                : 1
               : 1
           }
           labeling={this.state.labeling}
