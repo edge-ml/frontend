@@ -389,8 +389,6 @@ class DatasetPage extends Component {
         );
       });
       dataset.timeSeries.splice(index, 1);
-      dataset.start = this.getStartTime(dataset.timeSeries);
-      dataset.end = this.getEndTime(dataset.timeSeries);
       dataset.fusedSeries = dataset.fusedSeries.filter(
         series => series.timeSeries.length > 1
       );
@@ -405,15 +403,9 @@ class DatasetPage extends Component {
   onShiftTimeSeries(index, timestamp) {
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
 
-    let data = dataset.timeSeries[index].data;
-    let diff = timestamp - data[0].timestamp;
-    data.forEach(element => {
-      element.timestamp = element.timestamp + diff;
-    });
-    dataset.timeSeries[index].data = data;
-
-    dataset.start = this.getStartTime(dataset.timeSeries);
-    dataset.end = this.getEndTime(dataset.timeSeries);
+    let diff =
+      timestamp - (dataset.start * 1000 + dataset.timeSeries[index].offset);
+    dataset.timeSeries[index].offset += diff;
 
     this.setState({ dataset });
     updateDataset(dataset);
@@ -835,36 +827,6 @@ class DatasetPage extends Component {
     if (!this.state.videoEnabled || !this.videoPanel.current) return;
 
     this.videoPanel.current.onSetTime(position);
-  }
-
-  getStartTime(timeSeries) {
-    if (timeSeries.length === 0) {
-      let now = new Date().getTime();
-      return now - 500000; // TODO
-    }
-
-    let startTimes = [];
-
-    timeSeries.forEach(element => {
-      startTimes.push(element.data[0].timestamp);
-    });
-
-    return Math.min(...startTimes);
-  }
-
-  getEndTime(timeSeries) {
-    if (timeSeries.length === 0) {
-      let now = new Date().getTime();
-      return now - 80000; // TODO
-    }
-
-    let endTimes = [];
-
-    timeSeries.forEach(element => {
-      endTimes.push(element.data[element.data.length - 1].timestamp);
-    });
-
-    return Math.max(...endTimes);
   }
 
   onDeleteDataset() {

@@ -72,6 +72,7 @@ class TimeSeriesCollectionPanel extends Component {
       <div className="TimeSeriesCollectionPanel">
         <TimeSeriesPanel
           index={0}
+          offset={0}
           data={
             this.state.timeSeries.length > 0
               ? this.state.timeSeries[0].data
@@ -102,6 +103,7 @@ class TimeSeriesCollectionPanel extends Component {
           <TimeSeriesPanel
             isEmpty={true}
             index={1}
+            offset={0}
             data={[]}
             samplingRate={1}
             name={''}
@@ -129,6 +131,7 @@ class TimeSeriesCollectionPanel extends Component {
           <TimeSeriesPanel
             key={key}
             index={key + 1}
+            offset={timeSeries.offset}
             data={timeSeries.data}
             samplingRate={timeSeries.samplingRate ? timeSeries.samplingRate : 1}
             name={timeSeries.name}
@@ -171,6 +174,7 @@ class TimeSeriesCollectionPanel extends Component {
                 key={key}
                 fused={true}
                 index={key + this.state.timeSeries.length + 1}
+                offset={selectedSeries.map(series => series.offset)}
                 data={selectedSeries.map(series => series.data)}
                 samplingRate={selectedSeries.map(series => series.samplingRate)}
                 name={selectedSeries.map(series => series.name)}

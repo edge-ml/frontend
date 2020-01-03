@@ -131,7 +131,8 @@ class TimeSeriesPanel extends Component {
                   },
                   data: props.data.map((point, index) => [
                     (props.start + (1 / props.samplingRate) * (index + 1)) *
-                      1000,
+                      1000 +
+                      props.offset,
                     point
                   ])
                 }
@@ -143,22 +144,25 @@ class TimeSeriesPanel extends Component {
                   name: props.name + ' (' + props.unit + ')',
                   data: props.data.map((point, index) => [
                     (props.start + (1 / props.samplingRate) * (index + 1)) *
-                      1000,
+                      1000 +
+                      props.offset,
                     point
                   ]),
                   lineWidth: 1
                 }
               ]
-            : props.data.map((dataItem, index) => {
+            : props.data.map((dataItem, indexOuter) => {
                 return {
                   name:
-                    this.props.name[index] +
+                    props.name[indexOuter] +
                     ' (' +
-                    this.props.unit[index] +
+                    props.unit[indexOuter] +
                     ')',
                   data: dataItem.map((point, index) => [
-                    (props.start + (1 / props.samplingRate) * (index + 1)) *
-                      1000,
+                    (props.start +
+                      (1 / props.samplingRate[indexOuter]) * (index + 1)) *
+                      1000 +
+                      props.offset[indexOuter],
                     point
                   ]),
                   lineWidth: 1
@@ -650,7 +654,8 @@ class TimeSeriesPanel extends Component {
         {this.props.index !== 0 && !this.props.isEmpty ? (
           <DropdownPanel
             fused={this.props.fused}
-            startTime={this.props.start + (1 / this.props.samplingRate) * 1000}
+            start={this.props.start}
+            offset={this.props.offset}
             onShift={this.props.onShift}
             onDelete={this.props.onDelete}
           />

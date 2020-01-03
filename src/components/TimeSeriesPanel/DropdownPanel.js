@@ -9,8 +9,7 @@ import './TimeSeriesPanel.css';
 class DropdownPanel extends Component {
   constructor(props) {
     super(props);
-
-    const time = new Date(props.startTime);
+    const time = new Date(props.start * 1000 + props.offset);
 
     this.state = {
       isOpen: false,
@@ -31,7 +30,7 @@ class DropdownPanel extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props !== nextProps) {
-      const time = new Date(nextProps.startTime);
+      const time = new Date(nextProps.start * 1000 + nextProps.offset);
 
       this.setState({
         year: time.getFullYear(),
@@ -70,7 +69,7 @@ class DropdownPanel extends Component {
     } else {
       this.setState({
         isOpen: true,
-        timestamp: this.props.startTime
+        timestamp: this.props.start * 1000 + this.props.offset
       });
     }
   };
