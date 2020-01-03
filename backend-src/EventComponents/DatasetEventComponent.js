@@ -31,20 +31,28 @@ function applyTo(io, socket) {
 	});
 
 	socket.on('update_dataset', dataset => {
-console.log("updating" + JSON.stringify(dataset))
-
 		rp(generateRequest(CONSTANTS.HTTP_METHODS.PUT, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.DATASETS + `/${dataset['_id']}`, dataset))
 		.then(rp(generateRequest(CONSTANTS.HTTP_METHODS.GET, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.DATASETS + `/${dataset['_id']}`))
 		    .then(updatedDataset => {
-				console.log("success with updating" + JSON.stringify(updatedDataset))
-                socket.emit('dataset_updated', dataset)
-                // TODO: error handling
-            }))
+					socket.emit('dataset_updated', dataset)
+					// TODO: error handling
+					}))
 		.catch(err => socket.emit('err', err));
 	});
 
 	socket.on('delete_dataset', id => {
 		rp(generateRequest(CONSTANTS.HTTP_METHODS.DELETE, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.DATASETS + `/${id}`))
+		.then(socket.emit('err', false))
+		.catch(err => socket.emit('err', err));
+	});
+
+	socket.on('delete_datasets', ids => {
+		let promises = [];
+		for (let id of ids) {
+			promises = [ ...promises, rp(generateRequest(CONSTANTS.HTTP_METHODS.DELETE, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.DATASETS + `/${id}`)) ];
+		}
+
+		Promise.all(promises)
 		.then(socket.emit('err', false))
 		.catch(err => socket.emit('err', err));
 	});

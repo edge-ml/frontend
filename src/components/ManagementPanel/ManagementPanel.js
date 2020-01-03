@@ -43,7 +43,16 @@ class ManagementPanel extends Component {
           <Button block outline color="primary">
             Download as CSV
           </Button>
-          <Button block outline color="danger">
+          <Button
+            block
+            outline
+            color="danger"
+            onClick={() => {
+              if (window.confirm('Are you sure to delete this dataset?')) {
+                this.props.onDeleteDataset();
+              }
+            }}
+          >
             Delete Dataset
           </Button>
           <hr />

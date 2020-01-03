@@ -296,6 +296,21 @@ export const updateDataset = (dataset, callback) => {
   });
 };
 
+export const deleteDataset = (id, callback) => {
+  if (!authenticated || !verified) return;
+
+  socket.emit('delete_dataset', id);
+  socket.on('err', err => {
+    if (err) {
+      console.log(err);
+    }
+    if (callback) {
+      callback(err);
+    }
+    socket.off('err');
+  });
+};
+
 /***
  * Users
  */

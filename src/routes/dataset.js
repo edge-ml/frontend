@@ -17,6 +17,7 @@ import {
   subscribeDataset,
   unsubscribeDataset,
   updateDataset,
+  deleteDataset,
   subscribeLabelingsAndLabels,
   unsubscribeLabelingsAndLabels
 } from '../services/SocketService';
@@ -100,6 +101,7 @@ class DatasetPage extends Component {
     this.clearDrawingInterval = this.clearDrawingInterval.bind(this);
     this.setCrosshairInterval = this.setCrosshairInterval.bind(this);
     this.clearCrosshairInterval = this.clearCrosshairInterval.bind(this);
+    this.onDeleteDataset = this.onDeleteDataset.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -865,6 +867,20 @@ class DatasetPage extends Component {
     return Math.max(...endTimes);
   }
 
+  onDeleteDataset() {
+    if (!this.state.dataset || !this.state.dataset['_id']) return;
+
+    deleteDataset(this.state.dataset['_id'], err => {
+      if (err) {
+        window.alert(err);
+      } else {
+        this.props.history.push({
+          pathname: '/list'
+        });
+      }
+    });
+  }
+
   render() {
     if (!this.state.isReady) return <Loader loading={true} />;
 
@@ -980,6 +996,7 @@ class DatasetPage extends Component {
                 <ManagementPanel
                   onUpload={obj => this.addTimeSeries(obj)}
                   startTime={this.state.dataset.start}
+                  onDeleteDataset={this.onDeleteDataset}
                 />
               </div>
             </Col>
