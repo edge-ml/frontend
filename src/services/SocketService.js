@@ -171,8 +171,6 @@ export const updateLabeling = labeling => {
 export const deleteLabeling = labelingId => {
   if (!authenticated || !verified) return;
 
-  //alert(labelingId);
-
   socket.emit('delete_labeling', labelingId);
   socket.on('err', err => {
     if (err) {

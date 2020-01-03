@@ -251,8 +251,9 @@ class EditLabelingModal extends Component {
                 className="m-0"
                 outline
                 onClick={e => {
-                  alert(JSON.stringify(this.state.labeling));
-                  this.state.onDeleteLabeling(this.state.labeling['_id']);
+                  if (window.confirm('Are you sure to delete this labeling?')) {
+                    this.state.onDeleteLabeling(this.state.labeling['_id']);
+                  }
                 }}
               >
                 Delete
