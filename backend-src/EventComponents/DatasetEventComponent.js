@@ -34,9 +34,9 @@ function applyTo(io, socket) {
 		rp(generateRequest(CONSTANTS.HTTP_METHODS.PUT, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.DATASETS + `/${dataset['_id']}`, dataset))
 		.then(rp(generateRequest(CONSTANTS.HTTP_METHODS.GET, CONSTANTS.API_URI, CONSTANTS.ENDPOINTS.DATASETS + `/${dataset['_id']}`))
 		    .then(updatedDataset => {
-					socket.emit('dataset_updated', dataset)
+					socket.emit('dataset_updated', updatedDataset)
 					// TODO: error handling
-					}))
+				}))
 		.catch(err => socket.emit('err', err));
 	});
 

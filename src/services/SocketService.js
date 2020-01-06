@@ -288,7 +288,6 @@ export const updateDataset = (dataset, callback) => {
 
   socket.emit('update_dataset', dataset);
   socket.on('dataset_updated', newDataset => {
-    //console.log('updated dataset' + JSON.stringify(newDataset));
     if (callback) {
       callback(newDataset);
     }

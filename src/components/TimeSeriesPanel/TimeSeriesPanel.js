@@ -302,8 +302,10 @@ class TimeSeriesPanel extends Component {
           this.props.canEdit,
           false
         );
+        console.log('1');
         this.state.onLabelChanged(null, position, undefined);
       } else if (!this.props.drawingPosition) {
+        console.log('2');
         this.state.onLabelChanged(this.props.drawingId, position, undefined);
         this.props.updateControlStates(
           this.props.drawingId,
@@ -313,6 +315,7 @@ class TimeSeriesPanel extends Component {
           false
         );
       } else {
+        console.log('3');
         this.state.onLabelChanged(
           this.props.drawingId,
           this.props.drawingPosition,
