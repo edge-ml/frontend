@@ -716,8 +716,6 @@ class DatasetPage extends Component {
       labeling =>
         labeling.labelingId === this.state.controlStates.selectedLabelingId
     )[0];
-    console.log(this.state.controlStates.selectedLabelingId);
-    console.log(labeling);
 
     let labelingOrLabelAdded = false;
 
@@ -746,8 +744,6 @@ class DatasetPage extends Component {
       labeling.labels = [...labeling.labels, label];
       labelingOrLabelAdded = true;
     } else {
-      console.log(labeling);
-      console.log(labelId);
       label = labeling.labels.filter(label => label['_id'] === labelId)[0];
       if (label !== undefined && label.start === undefined) {
         label.start = start === undefined ? start : end;
@@ -772,7 +768,6 @@ class DatasetPage extends Component {
           labeling =>
             labeling.labelingId === this.state.controlStates.selectedLabelingId
         )[0];
-        console.log(labeling);
 
         this.setState({
           dataset: newDataset,
@@ -783,15 +778,8 @@ class DatasetPage extends Component {
         });
       });
     } else {
-      this.setState({
-        dataset
-      });
-
-      updateDataset(dataset, updatedDataset => {
-        this.setState({
-          dataset: updatedDataset
-        });
-      });
+      this.setState({ dataset });
+      updateDataset(dataset);
     }
   }
 

@@ -289,7 +289,6 @@ class TimeSeriesPanel extends Component {
       return;
     } else {
       if (!this.props.canEdit) return;
-
       let position = this.chart.current.chart.xAxis[0].toValue(
         e.pageX - this.chart.current.chart.plotBox.x * 1.5 // TODO hack hardcoded 2 pixels how to fix?
       );
@@ -302,10 +301,8 @@ class TimeSeriesPanel extends Component {
           this.props.canEdit,
           false
         );
-        console.log('1');
         this.state.onLabelChanged(null, position, undefined);
       } else if (!this.props.drawingPosition) {
-        console.log('2');
         this.state.onLabelChanged(this.props.drawingId, position, undefined);
         this.props.updateControlStates(
           this.props.drawingId,
@@ -315,7 +312,6 @@ class TimeSeriesPanel extends Component {
           false
         );
       } else {
-        console.log('3');
         this.state.onLabelChanged(
           this.props.drawingId,
           this.props.drawingPosition,
