@@ -1,13 +1,13 @@
-# build environment
-FROM node:9.6.1
-RUN mkdir /usr/src/app
+FROM node:10
 WORKDIR /usr/src/app
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY package.json /usr/src/app/package.json
-RUN npm install --silent
-RUN npm install react-scripts@1.1.1 -g --silent
-COPY . /usr/src/app
+RUN npm install
+RUN npm install react-scripts
+COPY ./src /usr/src/app/src
+COPY ./public /usr/src/app/public
+COPY ./backend-src /usr/src/app/backend-src
+COPY ./config /usr/src/app/config
 RUN npm run build
-ENV BACKENDPORT=80
-EXPOSE 80
+EXPOSE 3001
 CMD ["npm", "run", "start:backend"]
