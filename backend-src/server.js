@@ -186,9 +186,9 @@ app.use(KoaLogger());
 
 const router = new KoaRouter();
 
-router.use('/explorer//api/:name', apiRouter.routes(), apiRouter.allowedMethods());
+router.use('/explorer/api/:name', apiRouter.routes(), apiRouter.allowedMethods());
 
-app.use(KoaStatic(path.join(__dirname, '../', 'build'), {maxage: 1}));
+app.use(KoaStatic(path.join(__dirname, '../', '/build'), {maxage: 1}));
 
 app.use(router.routes());
 app.use(router.allowedMethods());
