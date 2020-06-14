@@ -31,10 +31,6 @@ const privateKeyPath = path.join(__dirname, '../', 'config', 'keys', 'private.ke
 const publicKeyPath = path.join(__dirname, '../', 'config', 'keys', 'public.key');
 
 
-
-// TODO: remove this HARDCODED AUTHENTICATION BETWEEN EXPLORER AND API
-const access_token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkZWZjYTU3YjJlODExMDAxMmZiMzhlZiIsImlhdCI6MTU3NTk5NTk5NywiZXhwIjoxNTc2MjU1MTk3fQ.898o3519E4AkGOPUfmNN_DFqBwDnk-MQfS-beFJ-YuI";
-
 // TODO: move these constants to another file
 const API_URI = 'http://aura.dmz.teco.edu/api';
 const AUTH_URI = 'http://aura.dmz.teco.edu/auth';
@@ -186,9 +182,9 @@ app.use(KoaLogger());
 
 const router = new KoaRouter();
 
-router.use('/explorer/api/:name', apiRouter.routes(), apiRouter.allowedMethods());
+router.use('/api/:name', apiRouter.routes(), apiRouter.allowedMethods());
 
-app.use(KoaStatic(path.join(__dirname, '../', '/build'), {maxage: 1}));
+app.use(KoaStatic(path.join(__dirname, '../', 'build'), {maxage: 1}));
 
 app.use(router.routes());
 app.use(router.allowedMethods());

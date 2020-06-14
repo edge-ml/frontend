@@ -67,8 +67,8 @@ class DatasetPage extends Component {
       fuseTimeSeriesModalState: {
         isOpen: false
       },
-      videoEnabled: false,
-      playButtonEnabled: false
+      videoEnabled: this.props.getVideoOptions().videoEnabled,
+      playButtonEnabled: this.props.getVideoOptions().playButtonEnabled
     };
 
     this.onSelectedLabelingIdChanged = this.onSelectedLabelingIdChanged.bind(
@@ -341,7 +341,11 @@ class DatasetPage extends Component {
         if (label.labelingId === labelings[j]['_id']) {
           if (!labelTypes.some(type => type['_id'] === label.typeId)) {
             window.alert(
-              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
+              `The typeId ${
+                label.typeId
+              } does not match any defined label type of labeling ${
+                label.labelingId
+              }.`
             );
             return;
           }
@@ -363,7 +367,9 @@ class DatasetPage extends Component {
 
     if (labels.length !== 0) {
       window.alert(
-        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`
+        `The labelingId ${
+          labels[0].labelingId
+        } does not match any defined labeling.`
       );
       return;
     }
@@ -857,7 +863,6 @@ class DatasetPage extends Component {
 
     let isDrawingIntervalActive = this.drawingInterval ? true : false;
     let isCrosshairIntervalActive = this.crosshairInterval ? true : false;
-
     return (
       <Fade in={this.state.fadeIn}>
         <div className="pb-5">
@@ -914,10 +919,6 @@ class DatasetPage extends Component {
               </div>
             </Col>
             <Col xs={12} lg={3}>
-              <div>
-                <VideoPanel ref={this.videoPanel} />
-              </div>
-              {/**
               {this.state.videoEnabled ? (
                 <div>
                   <VideoPanel ref={this.videoPanel} />
@@ -928,7 +929,7 @@ class DatasetPage extends Component {
                   isPublished={this.state.dataset.isPublished}
                 />
               </div>
-              */}
+
               <div className="mt-0">
                 <TagsPanel events={this.state.dataset.events} />
               </div>
@@ -956,6 +957,7 @@ class DatasetPage extends Component {
                   onUpload={obj => this.addTimeSeries(obj)}
                   startTime={this.state.dataset.start}
                   onDeleteDataset={this.onDeleteDataset}
+                  dataset={this.state.dataset}
                 />
               </div>
             </Col>

@@ -43,8 +43,8 @@ class SettingsPage extends Component {
         source: undefined
       },
       sources: [],
-      videoEnaled: false,
-      playButtonEnabled: false
+      videoEnaled: this.props.getVideoOptions().videoEnabled,
+      playButtonEnabled: this.props.getVideoOptions().playButtonEnabled
     };
 
     this.onAddUser = this.onAddUser.bind(this);
@@ -55,7 +55,7 @@ class SettingsPage extends Component {
     this.onDeleteUser = this.onDeleteUser.bind(this);
     this.onReset2FA = this.onReset2FA.bind(this);
 
-    this.toggleSourceModal = this.toggleSourceModal.bind(this);
+    /*this.toggleSourceModal = this.toggleSourceModal.bind(this);*/
     this.onSourcesChanged = this.onSourcesChanged.bind(this);
     this.onAddSource = this.onAddSource.bind(this);
     this.onSaveSource = this.onSaveSource.bind(this);
@@ -91,6 +91,27 @@ class SettingsPage extends Component {
     });
   }
 
+  toggleVideoModal() {
+    this.setState({
+      videoEnaled: !this.state.videoEnaled
+    });
+    this.props.onVideoOptionsChange(
+      !this.state.videoEnaled,
+      this.state.playButtonEnabled
+    );
+  }
+
+  togglePlayButtonModal() {
+    this.setState({
+      playButtonEnabled: !this.state.playButtonEnabled
+    });
+    this.props.onVideoOptionsChange(
+      this.state.videoEnaled,
+      !this.state.playButtonEnabled
+    );
+  }
+
+  /*
   toggleSourceModal(source, isNewSource) {
     this.setState({
       sourceModal: {
@@ -99,7 +120,7 @@ class SettingsPage extends Component {
         source: source
       }
     });
-  }
+  }*/
 
   onCloseModal() {
     this.setState({
@@ -116,10 +137,18 @@ class SettingsPage extends Component {
     });
   }
 
-  onSaveUser(username, newName, newPassword, isAdmin, confirmationPassword) {
+  onSaveUser(
+    username,
+    newName,
+    newEmail,
+    newPassword,
+    isAdmin,
+    confirmationPassword
+  ) {
     editUser(
       username,
       newName,
+      newEmail,
       newPassword,
       isAdmin,
       confirmationPassword,
@@ -146,8 +175,8 @@ class SettingsPage extends Component {
     }
   }
 
-  onAddUser(username, password, isAdmin, confirmationPassword) {
-    addUser(username, password, isAdmin, confirmationPassword, err => {
+  onAddUser(username, email, password, isAdmin, confirmationPassword) {
+    addUser(username, email, password, isAdmin, confirmationPassword, err => {
       window.alert(err);
     });
   }
@@ -192,6 +221,7 @@ class SettingsPage extends Component {
     return (
       <Loader>
         <Container>
+          {/* 
           <Row className="mt-3">
             <Col>
               <Table responsive>
@@ -254,7 +284,7 @@ class SettingsPage extends Component {
           </Row>
 
           <hr className={'mb-5'} />
-
+          */}
           <Row className="mt-3">
             <Col>
               <Table responsive>
@@ -284,7 +314,9 @@ class SettingsPage extends Component {
                       {isAdmin ? (
                         <Button
                           block
-                          disabled
+                          onClick={e => {
+                            this.toggleVideoModal();
+                          }}
                           className="btn-secondary mt-0 btn-edit"
                         >
                           Edit
@@ -312,7 +344,9 @@ class SettingsPage extends Component {
                       {isAdmin ? (
                         <Button
                           block
-                          disabled
+                          onClick={e => {
+                            this.togglePlayButtonModal();
+                          }}
                           className="btn-secondary mt-0 btn-edit"
                         >
                           Edit

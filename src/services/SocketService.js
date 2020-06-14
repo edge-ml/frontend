@@ -310,6 +310,17 @@ export const deleteDataset = (id, callback) => {
   });
 };
 
+export const createDataset = (dataset, callback) => {
+  if (!authenticated || !verified) return;
+  socket.emit('create_Dataset', dataset);
+  socket.on('err', err => {
+    if (err) {
+      callback(err);
+    }
+    socket.off('err');
+  });
+};
+
 /***
  * Users
  */
@@ -339,6 +350,7 @@ export const getCurrentUser = callback => {
 export const editUser = (
   username,
   newName,
+  newEmail,
   newPassword,
   isAdmin,
   confirmationPassword,
@@ -350,6 +362,7 @@ export const editUser = (
     'edit_user',
     username,
     newName,
+    newEmail,
     newPassword,
     isAdmin,
     confirmationPassword
@@ -376,6 +389,7 @@ export const deleteUser = (username, confirmationPassword, callback) => {
 
 export const addUser = (
   username,
+  email,
   password,
   isAdmin,
   confirmationPassword,
@@ -383,7 +397,14 @@ export const addUser = (
 ) => {
   if (!authenticated || !verified) return;
 
-  socket.emit('add_user', username, password, isAdmin, confirmationPassword);
+  socket.emit(
+    'add_user',
+    username,
+    email,
+    password,
+    isAdmin,
+    confirmationPassword
+  );
   socket.on('err', err => {
     if (err) {
       callback(err);

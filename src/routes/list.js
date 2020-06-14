@@ -15,6 +15,7 @@ import {
 import Request from 'request-promise';
 import update from 'immutability-helper';
 import { view } from 'react-easy-state';
+import CreateNewDatasetModal from '../components/CreateNewDatasetModal/CreateNewDatasetModal';
 
 import State from '../state';
 import Loader from '../modules/loader';
@@ -33,13 +34,17 @@ class ListPage extends Component {
       ready: false,
       datasets: [],
       datasetsToDelete: [],
-      loading: true
+      loading: true,
+      CreateNewDatasetToggle: false
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.deleteDatasets = this.deleteDatasets.bind(this);
     this.onDatasetsChanged = this.onDatasetsChanged.bind(this);
     this.toggleCheck = this.toggleCheck.bind(this);
     this.openDeleteModal = this.openDeleteModal.bind(this);
+    this.toggleCreateNewDatasetModal = this.toggleCreateNewDatasetModal.bind(
+      this
+    );
   }
 
   componentDidMount() {
@@ -58,7 +63,8 @@ class ListPage extends Component {
       modal: false,
       rows: this.state.rows,
       datasets: datasets,
-      ready: true
+      ready: true,
+      isCreateNewDatasetOpen: false
     });
   }
 
@@ -78,6 +84,12 @@ class ListPage extends Component {
         )
       });
     }
+  }
+
+  toggleCreateNewDatasetModal() {
+    this.setState({
+      isCreateNewDatasetOpen: !this.state.isCreateNewDatasetOpen
+    });
   }
 
   openDeleteModal() {
@@ -186,6 +198,15 @@ class ListPage extends Component {
               >
                 Delete
               </Button>
+              <Button
+                block
+                className="mb-5"
+                color="secondary"
+                outline
+                onClick={this.toggleCreateNewDatasetModal}
+              >
+                + Add
+              </Button>
             </Col>
           </Row>
         </Container>
@@ -216,6 +237,12 @@ class ListPage extends Component {
             </Button>
           </ModalFooter>
         </Modal>
+        <CreateNewDatasetModal
+          isOpen={this.state.isCreateNewDatasetOpen}
+          onCloseModal={this.toggleCreateNewDatasetModal}
+        >
+          />
+        </CreateNewDatasetModal>
       </Loader>
     );
   }

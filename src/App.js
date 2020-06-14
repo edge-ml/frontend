@@ -34,7 +34,9 @@ class App extends Component {
       isTwoFactorAuthenticated: false,
       navbarState: {
         isOpen: false
-      }
+      },
+      videoEnaled: false,
+      playButtonEnabled: false
     };
 
     this.logoutHandler = this.logoutHandler.bind(this);
@@ -42,6 +44,8 @@ class App extends Component {
     this.onLogin = this.onLogin.bind(this);
     this.onTwoFA = this.onTwoFA.bind(this);
     this.toggleNavbar = this.toggleNavbar.bind(this);
+    this.toggleVideoOptions = this.toggleVideoOptions.bind(this);
+    this.getVideoOptions = this.getVideoOptions.bind(this);
   }
 
   onLogout(didSucceed) {
@@ -81,6 +85,20 @@ class App extends Component {
         isOpen: !this.state.navbarState.isOpen
       }
     });
+  }
+
+  toggleVideoOptions(videoStatus, playButtonStatus) {
+    this.setState({
+      videoEnaled: videoStatus,
+      playButtonEnabled: playButtonStatus
+    });
+  }
+
+  getVideoOptions() {
+    return {
+      videoEnabled: this.state.videoEnaled,
+      playButtonEnabled: this.state.playButtonEnabled
+    };
   }
 
   render() {
@@ -137,14 +155,24 @@ class App extends Component {
           <Route exact path="/labelings" component={LabelingsPage} />
           <Route exact path="/labelings/new" component={LabelingsPage} />
           <Route exact path="/" component={ListPage} />
-          <Route path="/datasets/:id" component={DatasetPage} />
+          <Route
+            path="/datasets/:id"
+            render={props => (
+              <DatasetPage {...props} getVideoOptions={this.getVideoOptions} />
+            )}
+          />
           <Route exact path="/experiments" component={ExperimentsPage} />
           <Route exact path="/experiments/new" component={ExperimentsPage} />
           <Route
             exact
             path="/settings"
             render={props => (
-              <SettingsPage {...props} onLogout={this.logoutHandler} />
+              <SettingsPage
+                {...props}
+                onLogout={this.logoutHandler}
+                onVideoOptionsChange={this.toggleVideoOptions}
+                getVideoOptions={this.getVideoOptions}
+              />
             )}
           />
         </Container>

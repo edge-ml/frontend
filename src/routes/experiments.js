@@ -144,7 +144,7 @@ class ExperimentsPage extends Component {
   onSave = experiment => {
     if (!experiment) return;
 
-    if (!experiment.name || experiment.name == '') {
+    if (!experiment.name || experiment.name === '') {
       window.alert('Please enter a valid name.');
       return;
     }

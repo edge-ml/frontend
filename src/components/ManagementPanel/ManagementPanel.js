@@ -3,6 +3,7 @@ import { Button, Card, CardHeader, CardBody } from 'reactstrap';
 import './ManagementPanel.css';
 import UploadCsvModal from './UploadCsvModal';
 import HelpModal from './HelpModal';
+import CreateNewDatasetModal from '../CreateNewDatasetModal/CreateNewDatasetModal';
 
 class ManagementPanel extends Component {
   constructor(props) {
@@ -14,6 +15,7 @@ class ManagementPanel extends Component {
 
     this.toggleUploadModal = this.toggleUploadModal.bind(this);
     this.toggleHelpModal = this.toggleHelpModal.bind(this);
+    this.downloadDataSet = this.downloadDataSet.bind(this);
   }
 
   toggleUploadModal() {
@@ -22,6 +24,19 @@ class ManagementPanel extends Component {
 
   toggleHelpModal() {
     this.setState({ isHelpModalOpen: !this.state.isHelpModalOpen });
+  }
+
+  async downloadDataSet() {
+    const fileName = this.props.dataset['_id'];
+    const json = JSON.stringify(this.props.dataset, undefined, 4);
+    const blob = new Blob([json], { type: 'application/json' });
+    const href = await URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = fileName + '.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   render() {
@@ -40,8 +55,8 @@ class ManagementPanel extends Component {
             Upload CSV
           </Button>
           <hr />
-          <Button block outline color="primary">
-            Download as CSV
+          <Button block outline color="primary" onClick={this.downloadDataSet}>
+            Download as JSON
           </Button>
           <Button
             block
@@ -65,12 +80,19 @@ class ManagementPanel extends Component {
             Help
           </Button>
         </CardBody>
-        <UploadCsvModal
+        {/*<UploadCsvModal
           isOpen={this.state.isUploadModalOpen}
           onUpload={obj => this.props.onUpload(obj)}
           onCloseModal={this.toggleUploadModal}
           startTime={this.props.startTime}
-        />
+        />*/}
+        <CreateNewDatasetModal
+          isOpen={this.state.isUploadModalOpen}
+          onCloseModal={this.toggleUploadModal}
+          dataset={this.props.dataset}
+        >
+          />
+        </CreateNewDatasetModal>
         <HelpModal
           isOpen={this.state.isHelpModalOpen}
           onCloseModal={this.toggleHelpModal}

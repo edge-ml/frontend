@@ -31,6 +31,7 @@ class EditUserModal extends Component {
       onCloseModal: props.onCloseModal,
       inputVariables: {
         name: props.user ? props.user.username : '',
+        email: '',
         newPassword: '',
         passwordConfirm: '',
         currentPassword: '',
@@ -82,6 +83,12 @@ class EditUserModal extends Component {
   onNameChanged(name) {
     let inputVariables = { ...this.state.inputVariables };
     inputVariables.name = name;
+    this.setState({ inputVariables });
+  }
+
+  onEMailChanged(email) {
+    let inputVariables = { ...this.state.inputVariables };
+    inputVariables.email = email;
     this.setState({ inputVariables });
   }
 
@@ -184,9 +191,9 @@ class EditUserModal extends Component {
         window.alert('Password cannot be empty.');
         return;
       }
-
       this.state.onAddUser(
         this.state.inputVariables.name,
+        this.state.inputVariables.email,
         this.state.inputVariables.newPassword,
         this.state.inputVariables.isAdmin,
         this.state.inputVariables.currentPassword
@@ -221,6 +228,17 @@ class EditUserModal extends Component {
               placeholder={'Username'}
               value={this.state.inputVariables.name}
               onChange={e => this.onNameChanged(e.target.value)}
+            />
+          </InputGroup>
+
+          <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>{'E-Mail'}</InputGroupText>
+            </InputGroupAddon>
+            <Input
+              placeholder={'E-Mail'}
+              value={this.state.inputVariables.email}
+              onChange={e => this.onEMailChanged(e.target.value)}
             />
           </InputGroup>
 
