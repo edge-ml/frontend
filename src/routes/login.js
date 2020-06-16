@@ -29,6 +29,11 @@ import {
 } from '../services/SocketService';
 import { getServerTime } from '../services/helpers.js';
 
+import {
+  login as userLogin,
+  loginUser
+} from '../services/ApiServices/AuthentificationServices';
+
 class LoginPage extends Component {
   constructor(props) {
     super(props);
@@ -121,7 +126,7 @@ class LoginPage extends Component {
     );
 
     if (didSucceed) {
-      subscribeVerified(this.onVerified);
+      //subscribeVerified(this.onVerified);
     }
     this.state.authenticationHandlers.onLogin(didSucceed);
   }
@@ -193,7 +198,8 @@ class LoginPage extends Component {
       })
     );
 
-    login(this.state.username, this.state.password, this.onLogin, this.onTwoFA);
+    //login(this.state.username, this.state.password, this.onLogin, this.onTwoFA);
+    loginUser(this.state.username, this.state.password).then(this.onLogin);
   }
 
   componentDidMount() {

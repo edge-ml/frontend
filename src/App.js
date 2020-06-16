@@ -61,7 +61,7 @@ class App extends Component {
     if (didSucceed) {
       this.setState({
         isLoggedIn: true,
-        isTwoFactorAuthenticated: this.state.isTwoFactorAuthenticated
+        isTwoFactorAuthenticated: true //Disabled 2FA
       });
     }
   }
