@@ -1,32 +1,32 @@
 var apiConsts = require('./ApiConstants');
-
 const axios = require('axios');
 
-module.exports.createDataset = function(dataset) {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateRequest(
-        apiConsts.HTTP_METHODS.POST,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.DATASETS,
-        dataset
-      )
+module.exports.getDatasets = accessToken => {
+  return axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.GET,
+      apiConsts.API_URI,
+      apiConsts.API_ENDPOINTS.DATASETS,
+      accessToken
     )
-      .then(data => resolve(data.data))
-      .catch(data => reject(data));
-  });
+  );
 };
 
-module.exports.deleteDatasets = function() {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateRequest(
-        apiConsts.HTTP_METHODS.POST,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.DATASETS
+module.exports.deleteDatasets = (accessToken, ids, callback) => {
+  let promises = [];
+  for (let id of ids) {
+    promises = [
+      ...promises,
+      axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.DELETE,
+          apiConsts.API_URI,
+          apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
+        )
       )
-    )
-      .then(data => resolve(data))
-      .catch(reject(data));
-  });
+    ];
+  }
+  return Promise.all(promises)
+    .then(callback(false))
+    .catch(callback(true));
 };

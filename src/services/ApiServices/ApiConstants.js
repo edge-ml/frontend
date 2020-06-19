@@ -16,7 +16,9 @@ module.exports = {
     REGISTER: 'register'
   },
   API_ENDPOINTS: {
-    DATASETS: 'datasets'
+    DATASETS: 'datasets',
+    LABEL_DEFINITIONS: 'labelDefinitions',
+    LABEL_TYPES: 'labelTypes'
   },
 
   generateRequest: generateRequest
@@ -37,3 +39,22 @@ function generateRequest(
     }
   };
 }
+
+module.exports.generateApiRequest = (
+  method = this.HTTP_METHODS.GET,
+  baseUri = this.API_URI,
+  endpoint = this.API_ENDPOINTS.DEFAULT,
+  accessToken = undefined,
+  body = {}
+) => {
+  return {
+    method: method,
+    url: baseUri + endpoint,
+    data: body,
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'Explorer',
+      Authorization: accessToken
+    }
+  };
+};

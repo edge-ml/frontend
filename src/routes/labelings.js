@@ -6,13 +6,16 @@ import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
 
 import {
-  subscribeLabelingsAndLabels,
-  addLabeling,
   updateLabeling,
-  deleteLabeling,
   updateLabelingAndLabels,
   unsubscribeLabelingsAndLabels
 } from '../services/SocketService';
+
+import {
+  subscribeLabelingsAndLabels,
+  addLabeling,
+  deleteLabeling
+} from '../services/ApiServices/LabelingServices';
 
 class LabelingsPage extends Component {
   constructor(props) {
@@ -42,7 +45,7 @@ class LabelingsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelingsAndLabels((labelings, labels) => {
+    subscribeLabelingsAndLabels(this.props.accessToken, (labelings, labels) => {
       this.onLabelingsAndLabelsChanged(labelings, labels);
 
       if (this.props.location.pathname === '/labelings/new') {
@@ -129,14 +132,22 @@ class LabelingsPage extends Component {
 
   onDeleteLabeling(labelingId) {
     this.onCloseModal();
-    deleteLabeling(labelingId);
+    deleteLabeling(
+      this.props.accessToken,
+      labelingId,
+      this.onLabelingsAndLabelsChanged
+    );
   }
 
   onSave(labeling, labels, deletedLabels) {
     if (!labeling || !labels) return;
 
     if (this.state.modal.isNewLabeling && labels.length === 0) {
-      addLabeling(labeling);
+      addLabeling(
+        this.props.accessToken,
+        labeling,
+        this.onLabelingsAndLabelsChanged
+      );
     } else if (
       !this.state.modal.isNewLabeling &&
       labeling.updated &&

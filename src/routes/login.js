@@ -109,6 +109,7 @@ class LoginPage extends Component {
   }
 
   onLogin(didSucceed) {
+    console.log('Executing onLogin');
     this.setState(
       update(this.state, {
         $merge: {
@@ -199,7 +200,13 @@ class LoginPage extends Component {
     );
 
     //login(this.state.username, this.state.password, this.onLogin, this.onTwoFA);
-    loginUser(this.state.username, this.state.password).then(this.onLogin);
+    loginUser(this.state.username, this.state.password).then(data => {
+      console.log('Logging in user');
+      this.props.setAccessToken(data.access_token).then(() => {
+        console.log(data.access_token);
+        this.onLogin(true);
+      });
+    });
   }
 
   componentDidMount() {

@@ -8,7 +8,7 @@ module.exports.loginUser = function(userEMail, password) {
       apiConsts.generateRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
-        apiConsts.API_ENDPOINTS.LOGIN,
+        apiConsts.AUTH_ENDPOINTS.LOGIN,
         {
           email: userEMail,
           password: password

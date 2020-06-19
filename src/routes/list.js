@@ -20,11 +20,16 @@ import CreateNewDatasetModal from '../components/CreateNewDatasetModal/CreateNew
 import State from '../state';
 import Loader from '../modules/loader';
 
-import {
+/*import {
   subscribeDatasets,
   unsubscribeDatasets,
   deleteDatasets
-} from '../services/SocketService';
+} from '../services/SocketService';*/
+import {
+  getDatasets,
+  deleteDatasets
+} from '../services/ApiServices/DatasetServices';
+import dataset from './dataset';
 
 class ListPage extends Component {
   constructor(props) {
@@ -35,7 +40,8 @@ class ListPage extends Component {
       datasets: [],
       datasetsToDelete: [],
       loading: true,
-      CreateNewDatasetToggle: false
+      CreateNewDatasetToggle: false,
+      gotToken: false
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.deleteDatasets = this.deleteDatasets.bind(this);
@@ -48,11 +54,14 @@ class ListPage extends Component {
   }
 
   componentDidMount() {
-    subscribeDatasets(this.onDatasetsChanged);
+    //subscribeDatasets(this.onDatasetsChanged);
+    getDatasets(this.props.accessToken).then(datasets =>
+      this.onDatasetsChanged(datasets.data)
+    );
   }
 
   componentWillUnmount() {
-    unsubscribeDatasets();
+    //unsubscribeDatasets(); Not necessay anymore because REST Api needs no unsubscribe
   }
 
   onDatasetsChanged(datasets) {

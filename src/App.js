@@ -24,6 +24,8 @@ import SettingsPage from './routes/settings';
 import ExperimentsPage from './routes/experiments';
 
 import { logout } from './services/SocketService';
+import { access } from 'fs';
+import { rejects } from 'assert';
 
 class App extends Component {
   constructor(props) {
@@ -36,7 +38,8 @@ class App extends Component {
         isOpen: false
       },
       videoEnaled: false,
-      playButtonEnabled: false
+      playButtonEnabled: false,
+      accessToken: undefined
     };
 
     this.logoutHandler = this.logoutHandler.bind(this);
@@ -46,6 +49,13 @@ class App extends Component {
     this.toggleNavbar = this.toggleNavbar.bind(this);
     this.toggleVideoOptions = this.toggleVideoOptions.bind(this);
     this.getVideoOptions = this.getVideoOptions.bind(this);
+    this.setAccessToken = this.setAccessToken.bind(this);
+  }
+
+  async setAccessToken(token) {
+    this.setState({
+      accessToken: token
+    });
   }
 
   onLogout(didSucceed) {
@@ -109,73 +119,116 @@ class App extends Component {
         onLogin={this.onLogin}
         onTwoFA={this.onTwoFA}
         onCancelLogin={this.logoutHandler}
+        setAccessToken={this.setAccessToken}
       >
-        <Navbar color="light" light expand="md">
-          <NavbarBrand>Explorer</NavbarBrand>
-          <NavbarToggler onClick={this.toggleNavbar} />
-          <Collapse isOpen={this.state.navbarState.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-              <NavItem>
-                <Link className="nav-link" to="/list">
-                  Datasets
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link className="nav-link" to="/labelings">
-                  Labelings
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link className="nav-link" to="/experiments">
-                  Experiments
-                </Link>
-              </NavItem>
-              <NavItem>
-                <Link className="nav-link" to="/settings">
-                  Settings
-                </Link>
-              </NavItem>
-              <Form className="form-inline my-2 my-lg-0">
-                <Link
-                  className="nav-link m-0 p-0 ml-3"
-                  to="/"
-                  onClick={this.logoutHandler}
-                >
-                  <Button className="m-0 my-2 my-sm-0" outline>
-                    Logout
-                  </Button>
-                </Link>
-              </Form>
-              <NavItem />
-            </Nav>
-          </Collapse>
-        </Navbar>
-        <Container>
-          <Route exact path="/list" component={ListPage} />
-          <Route exact path="/labelings" component={LabelingsPage} />
-          <Route exact path="/labelings/new" component={LabelingsPage} />
-          <Route exact path="/" component={ListPage} />
-          <Route
-            path="/datasets/:id"
-            render={props => (
-              <DatasetPage {...props} getVideoOptions={this.getVideoOptions} />
-            )}
-          />
-          <Route exact path="/experiments" component={ExperimentsPage} />
-          <Route exact path="/experiments/new" component={ExperimentsPage} />
-          <Route
-            exact
-            path="/settings"
-            render={props => (
-              <SettingsPage
-                {...props}
-                onLogout={this.logoutHandler}
-                onVideoOptionsChange={this.toggleVideoOptions}
-                getVideoOptions={this.getVideoOptions}
+        {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
+        {this.state.accessToken ? (
+          <div>
+            <Navbar color="light" light expand="md">
+              <NavbarBrand>Explorer</NavbarBrand>
+              <NavbarToggler onClick={this.toggleNavbar} />
+              <Collapse isOpen={this.state.navbarState.isOpen} navbar>
+                <Nav className="ml-auto" navbar>
+                  <NavItem>
+                    <Link className="nav-link" to="/list">
+                      Datasets
+                    </Link>
+                  </NavItem>
+                  <NavItem>
+                    <Link className="nav-link" to="/labelings">
+                      Labelings
+                    </Link>
+                  </NavItem>
+                  <NavItem>
+                    <Link className="nav-link" to="/experiments">
+                      Experiments
+                    </Link>
+                  </NavItem>
+                  <NavItem>
+                    <Link className="nav-link" to="/settings">
+                      Settings
+                    </Link>
+                  </NavItem>
+                  <Form className="form-inline my-2 my-lg-0">
+                    <Link
+                      className="nav-link m-0 p-0 ml-3"
+                      to="/"
+                      onClick={this.logoutHandler}
+                    >
+                      <Button className="m-0 my-2 my-sm-0" outline>
+                        Logout
+                      </Button>
+                    </Link>
+                  </Form>
+                  <NavItem />
+                </Nav>
+              </Collapse>
+            </Navbar>
+            <Container>
+              <Route
+                exact
+                path="/list"
+                render={props => (
+                  <ListPage accessToken={this.state.accessToken} />
+                )}
               />
-            )}
-          />
-        </Container>
+              <Route
+                exact
+                path="/labelings"
+                render={props => (
+                  <LabelingsPage
+                    {...props}
+                    accessToken={this.state.accessToken}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path="/labelings/new"
+                render={props => (
+                  <LabelingsPage
+                    {...props}
+                    accessToken={this.state.accessToken}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path="/"
+                render={props => (
+                  <ListPage accessToken={this.state.accessToken} />
+                )}
+              />
+              <Route
+                path="/datasets/:id"
+                render={props => (
+                  <DatasetPage
+                    {...props}
+                    getVideoOptions={this.getVideoOptions}
+                  />
+                )}
+              />
+              <Route exact path="/experiments" component={ExperimentsPage} />
+              <Route
+                exact
+                path="/experiments/new"
+                component={ExperimentsPage}
+              />
+              <Route
+                exact
+                path="/settings"
+                render={props => (
+                  <SettingsPage
+                    {...props}
+                    onLogout={this.logoutHandler}
+                    onVideoOptionsChange={this.toggleVideoOptions}
+                    getVideoOptions={this.getVideoOptions}
+                  />
+                )}
+              />
+            </Container>
+          </div>
+        ) : null}
       </AuthWall>
     );
   }
