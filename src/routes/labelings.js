@@ -6,12 +6,8 @@ import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
 
 import {
-  updateLabeling,
   updateLabelingAndLabels,
-  unsubscribeLabelingsAndLabels
-} from '../services/SocketService';
-
-import {
+  updateLabeling,
   subscribeLabelingsAndLabels,
   addLabeling,
   deleteLabeling
@@ -68,9 +64,9 @@ class LabelingsPage extends Component {
     });
   }
 
-  componentWillUnmount() {
+  /*componentWillUnmount() {
     unsubscribeLabelingsAndLabels();
-  }
+  }*/
 
   onLabelingsAndLabelsChanged(labelings, labels) {
     if (labelings === undefined) labelings = this.state.labelings;
@@ -143,6 +139,7 @@ class LabelingsPage extends Component {
     if (!labeling || !labels) return;
 
     if (this.state.modal.isNewLabeling && labels.length === 0) {
+      console.log('Saving new label');
       addLabeling(
         this.props.accessToken,
         labeling,
@@ -154,9 +151,20 @@ class LabelingsPage extends Component {
       deletedLabels.length === 0 &&
       !labels.some(label => label.updated || label.isNewLabel)
     ) {
-      updateLabeling(labeling);
+      updateLabeling(
+        this.props.accessToken,
+        labeling,
+        this.onLabelingsAndLabelsChanged
+      );
     } else {
-      updateLabelingAndLabels(labeling, labels, deletedLabels);
+      console.log('Editing existing label');
+      updateLabelingAndLabels(
+        this.props.accessToken,
+        labeling,
+        labels,
+        deletedLabels,
+        this.onLabelingsAndLabelsChanged
+      );
     }
 
     this.onCloseModal();

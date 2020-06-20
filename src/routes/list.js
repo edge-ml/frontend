@@ -20,11 +20,6 @@ import CreateNewDatasetModal from '../components/CreateNewDatasetModal/CreateNew
 import State from '../state';
 import Loader from '../modules/loader';
 
-/*import {
-  subscribeDatasets,
-  unsubscribeDatasets,
-  deleteDatasets
-} from '../services/SocketService';*/
 import {
   getDatasets,
   deleteDatasets
