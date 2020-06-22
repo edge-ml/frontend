@@ -22,17 +22,13 @@ import State from '../state';
 import { FadeInUp } from 'animate-components';
 
 import {
-  login,
   twoFAAuthenticate,
   subscribeVerified,
   restoreSession
 } from '../services/SocketService';
 import { getServerTime } from '../services/helpers.js';
 
-import {
-  login as userLogin,
-  loginUser
-} from '../services/ApiServices/AuthentificationServices';
+import { loginUser } from '../services/ApiServices/AuthentificationServices';
 
 class LoginPage extends Component {
   constructor(props) {

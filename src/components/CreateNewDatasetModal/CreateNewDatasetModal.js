@@ -9,7 +9,7 @@ import {
   Table
 } from 'reactstrap';
 
-import { createDataset, updateDataset } from '../../services/SocketService.js';
+import { updateDataset } from '../../services/ApiServices/DatasetServices';
 
 class CreateNewDatasetModal extends Component {
   constructor(props) {
@@ -124,7 +124,7 @@ class CreateNewDatasetModal extends Component {
     var dataset = this.props.dataset;
     dataset.timeSeries.push(...timeSeries);
 
-    updateDataset(dataset, function(newDataset) {
+    updateDataset(this.props.accessToken, dataset, newDataset => {
       console.log('New dataset');
       console.log(newDataset);
     });

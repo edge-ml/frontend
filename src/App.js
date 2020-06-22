@@ -23,7 +23,6 @@ import LabelingsPage from './routes/labelings';
 import SettingsPage from './routes/settings';
 import ExperimentsPage from './routes/experiments';
 
-import { logout } from './services/SocketService';
 import { access } from 'fs';
 import { rejects } from 'assert';
 
@@ -62,7 +61,8 @@ class App extends Component {
     if (didSucceed) {
       this.setState({
         isLoggedIn: false,
-        isTwoFactorAuthenticated: false
+        isTwoFactorAuthenticated: false,
+        accessToken: undefined
       });
     }
   }
@@ -86,7 +86,7 @@ class App extends Component {
   }
 
   logoutHandler() {
-    logout(this.onLogout);
+    this.onLogout();
   }
 
   toggleNavbar() {
@@ -208,7 +208,16 @@ class App extends Component {
                   />
                 )}
               />
-              <Route exact path="/experiments" component={ExperimentsPage} />
+              <Route
+                exact
+                path="/experiments"
+                render={props => (
+                  <ExperimentsPage
+                    {...props}
+                    accessToken={this.state.accessToken}
+                  />
+                )}
+              />
               <Route
                 exact
                 path="/experiments/new"

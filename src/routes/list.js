@@ -50,9 +50,7 @@ class ListPage extends Component {
 
   componentDidMount() {
     //subscribeDatasets(this.onDatasetsChanged);
-    getDatasets(this.props.accessToken).then(datasets =>
-      this.onDatasetsChanged(datasets.data)
-    );
+    getDatasets(this.props.accessToken, this.onDatasetsChanged);
   }
 
   componentWillUnmount() {
@@ -244,6 +242,7 @@ class ListPage extends Component {
         <CreateNewDatasetModal
           isOpen={this.state.isCreateNewDatasetOpen}
           onCloseModal={this.toggleCreateNewDatasetModal}
+          accessToken={this.props.accessToken}
         >
           />
         </CreateNewDatasetModal>

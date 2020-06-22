@@ -6,15 +6,13 @@ import Loader from '../modules/loader';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import EditInstructionModal from '../components/EditInstructionModal/EditInstructionModal';
 
+import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
-  subscribeExperiments,
+  deleteExperiment,
   addExperiment,
   updateExperiment,
-  deleteExperiment,
-  unsubscribeExperiments,
-  subscribeLabelingsAndLabels,
-  unsubscribeLabelingsAndLabels
-} from '../services/SocketService';
+  subscribeExperiments
+} from '../services/ApiServices/ExperimentService';
 
 class ExperimentsPage extends Component {
   constructor(props) {
@@ -35,13 +33,16 @@ class ExperimentsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelingsAndLabels(this.onLabelingsAndLabelsChanged);
+    subscribeLabelingsAndLabels(
+      this.props.accessToken,
+      this.onLabelingsAndLabelsChanged
+    );
   }
 
-  componentWillUnmount() {
+  /*componentWillUnmount() {
     unsubscribeExperiments();
     unsubscribeLabelingsAndLabels();
-  }
+  }*/
 
   onLabelingsAndLabelsChanged = (labelings, labels) => {
     this.setState(
@@ -50,7 +51,7 @@ class ExperimentsPage extends Component {
         labelTypes: labels || []
       },
       () => {
-        subscribeExperiments(experiments => {
+        subscribeExperiments(this.props.accessToken, experiments => {
           this.onExperimentsChanged(experiments);
         });
       }
@@ -138,7 +139,11 @@ class ExperimentsPage extends Component {
       selectedExperimentId: experiments[0]['_id']
     });
     */
-    deleteExperiment(experimentId);
+    deleteExperiment(
+      this.props.accessToken,
+      experimentId,
+      this.onExperimentsChanged
+    );
   };
 
   onSave = experiment => {
@@ -161,12 +166,16 @@ class ExperimentsPage extends Component {
     }
 
     if (this.state.modal.isNewExperiment) {
-      addExperiment(experiment);
+      addExperiment(
+        this.props.accessToken,
+        experiment,
+        this.onExperimentsChanged
+      );
       //this.setState({
       //  experiments: [...this.state.experiments, experiment]
       //});
     } else {
-      updateExperiment(experiment);
+      updateExperiment(experiment, this.onExperimentsChanged);
       //this.setState({
       //  experiments: this.state.experiments.map(exp =>
       //    exp['_id'] === experiment['_id'] ? experiment : exp

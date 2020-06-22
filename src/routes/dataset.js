@@ -13,14 +13,13 @@ import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/T
 import ApiPanel from '../components/ApiPanel/ApiPanel';
 import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
 
+import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
-  subscribeDataset,
-  unsubscribeDataset,
   updateDataset,
   deleteDataset,
-  subscribeLabelingsAndLabels,
-  unsubscribeLabelingsAndLabels
-} from '../services/SocketService';
+  getDatasets,
+  getDataset
+} from '../services/ApiServices/DatasetServices';
 import { generateRandomColor } from '../services/ColorService';
 import Loader from '../modules/loader';
 import VideoPanel from '../components/VideoPanel/VideoPanel';
@@ -115,7 +114,12 @@ class DatasetPage extends Component {
   componentDidMount() {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
-    subscribeDataset(this.props.match.params.id, this.onDatasetChanged);
+    //subscribeDataset(this.props.match.params.id, this.onDatasetChanged);
+    getDataset(
+      this.props.accessToken,
+      this.props.match.params.id,
+      this.onDatasetChanged
+    );
 
     //this.state.dataset.fusedSeries = this.state.dataset.fusedSeries.filter(
     //  fused => fused.timeSeries.length > 1
@@ -127,8 +131,8 @@ class DatasetPage extends Component {
   componentWillUnmount() {
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('keydown', this.onKeyDown);
-    unsubscribeLabelingsAndLabels();
-    unsubscribeDataset(this.props.match.params.id);
+    //unsubscribeLabelingsAndLabels();
+    //unsubscribeDataset(this.props.match.params.id);
   }
 
   onDatasetChanged(dataset) {
@@ -138,7 +142,10 @@ class DatasetPage extends Component {
       fused => fused.timeSeries.length > 1
     );
     this.setState({ dataset }, () =>
-      subscribeLabelingsAndLabels(this.onLabelingsAndLabelsChanged)
+      subscribeLabelingsAndLabels(
+        this.props.accessToken,
+        this.onLabelingsAndLabelsChanged
+      )
     );
   }
 
@@ -380,7 +387,7 @@ class DatasetPage extends Component {
     );
     dataset.start = Math.min(obj.data[0].timestamp, dataset.start);
 
-    updateDataset(dataset, dataset => {
+    updateDataset(this.props.accessToken, dataset, dataset => {
       this.setState({ dataset });
     });
   }
@@ -831,7 +838,7 @@ class DatasetPage extends Component {
   onDeleteDataset() {
     if (!this.state.dataset || !this.state.dataset['_id']) return;
 
-    deleteDataset(this.state.dataset['_id'], err => {
+    deleteDataset(this.props.accessToken, this.state.dataset['_id'], err => {
       if (err) {
         window.alert(err);
       } else {

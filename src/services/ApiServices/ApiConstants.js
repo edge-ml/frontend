@@ -18,7 +18,8 @@ module.exports = {
   API_ENDPOINTS: {
     DATASETS: 'datasets',
     LABEL_DEFINITIONS: 'labelDefinitions',
-    LABEL_TYPES: 'labelTypes'
+    LABEL_TYPES: 'labelTypes',
+    EXPERIMENTS: 'experiments'
   },
 
   generateRequest: generateRequest
