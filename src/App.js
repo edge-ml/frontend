@@ -86,7 +86,7 @@ class App extends Component {
   }
 
   logoutHandler() {
-    this.onLogout();
+    this.onLogout(true);
   }
 
   toggleNavbar() {
@@ -122,7 +122,7 @@ class App extends Component {
         setAccessToken={this.setAccessToken}
       >
         {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
-        {this.state.accessToken ? (
+        {this.state.isLoggedIn ? (
           <div>
             <Navbar color="light" light expand="md">
               <NavbarBrand>Explorer</NavbarBrand>

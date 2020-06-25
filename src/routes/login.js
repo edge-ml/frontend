@@ -13,7 +13,7 @@ import {
   CardHeader,
   Alert
 } from 'reactstrap';
-import { PersonIcon, ShieldIcon } from 'react-octicons';
+import { MailIcon, ShieldIcon } from 'react-octicons';
 import Request from 'request-promise';
 import update from 'immutability-helper';
 
@@ -34,7 +34,7 @@ class LoginPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
+      usermail: '',
       password: '',
       button: {
         disabled: false
@@ -54,7 +54,7 @@ class LoginPage extends Component {
       },
       time: undefined
     };
-    this.userChange = this.userChange.bind(this);
+    this.emailchange = this.emailchange.bind(this);
     this.passChange = this.passChange.bind(this);
     this.submit = this.submit.bind(this);
     this.onLogin = this.onLogin.bind(this);
@@ -72,17 +72,21 @@ class LoginPage extends Component {
   componentWillReceiveProps(props) {
     this.setState(
       update(this.state, {
-        isLoggedIn: { $set: props.isLoggedIn },
-        isTwoFactorAuthenticated: { $set: props.isTwoFactorAuthenticated }
+        isLoggedIn: {
+          $set: props.isLoggedIn
+        },
+        isTwoFactorAuthenticated: {
+          $set: props.isTwoFactorAuthenticated
+        }
       })
     );
   }
 
-  userChange(event) {
+  emailchange(event) {
     this.setState(
       update(this.state, {
         $merge: {
-          username: event.target.value
+          usermail: event.target.value
         }
       })
     );
@@ -105,7 +109,6 @@ class LoginPage extends Component {
   }
 
   onLogin(didSucceed) {
-    console.log('Executing onLogin');
     this.setState(
       update(this.state, {
         $merge: {
@@ -123,7 +126,7 @@ class LoginPage extends Component {
     );
 
     if (didSucceed) {
-      //subscribeVerified(this.onVerified);
+      // subscribeVerified(this.onVerified);
     }
     this.state.authenticationHandlers.onLogin(didSucceed);
   }
@@ -195,14 +198,14 @@ class LoginPage extends Component {
       })
     );
 
-    //login(this.state.username, this.state.password, this.onLogin, this.onTwoFA);
-    loginUser(this.state.username, this.state.password).then(data => {
-      console.log('Logging in user');
-      this.props.setAccessToken(data.access_token).then(() => {
-        console.log(data.access_token);
-        this.onLogin(true);
-      });
-    });
+    // login(this.state.usermail, this.state.password, this.onLogin, this.onTwoFA);
+    loginUser(this.state.usermail, this.state.password)
+      .then(data => {
+        this.props.setAccessToken(data.access_token).then(() => {
+          this.onLogin(true);
+        });
+      })
+      .catch(() => this.onLogin(false));
   }
 
   componentDidMount() {
@@ -220,7 +223,9 @@ class LoginPage extends Component {
         .then(res => {
           this.setState(
             update(this.state, {
-              authed: { $set: true }
+              authed: {
+                $set: true
+              }
             })
           );
         })
@@ -228,7 +233,9 @@ class LoginPage extends Component {
           if (err.statusCode === 401) {
             this.setState(
               update(this.state, {
-                authed: { $set: false }
+                authed: {
+                  $set: false
+                }
               })
             );
             window.localStorage.clear();
@@ -258,7 +265,13 @@ class LoginPage extends Component {
       return this.props.children;
     } else {
       return (
-        <Container className="Page" style={{ paddingLeft: 0, paddingRight: 0 }}>
+        <Container
+          className="Page"
+          style={{
+            paddingLeft: 0,
+            paddingRight: 0
+          }}
+        >
           <Alert
             color="info"
             hidden={
@@ -292,15 +305,15 @@ class LoginPage extends Component {
                           <InputGroup>
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <PersonIcon />
+                                <MailIcon />
                               </InputGroupText>
                             </InputGroupAddon>
                             <Input
-                              type="username"
-                              name="username"
-                              id="username"
-                              placeholder="username"
-                              onChange={this.userChange}
+                              type="email"
+                              name="email"
+                              id="email"
+                              placeholder="email"
+                              onChange={this.emailchange}
                             />
                           </InputGroup>
                         </Col>
@@ -348,7 +361,7 @@ class LoginPage extends Component {
                       <b>Two Factor Authentication Setup</b>
                     ) : (
                       <b>Two Factor Authentication</b>
-                    )}
+                    )}{' '}
                   </CardHeader>
                   <CardBody
                     hidden={
@@ -357,9 +370,7 @@ class LoginPage extends Component {
                         !this.state.isTwoFactorAuthenticated
                       )
                     }
-                    style={{
-                      margin: 'auto'
-                    }}
+                    style={{ margin: 'auto' }}
                   >
                     {this.state.twoFactorAuthentication.qrCode ? (
                       <img
@@ -373,9 +384,7 @@ class LoginPage extends Component {
                       className={'mt-1'}
                       placeholder="Token"
                       value={this.state.twoFactorAuthentication.token}
-                      style={{
-                        textAlign: 'center'
-                      }}
+                      style={{ textAlign: 'center' }}
                       onChange={this.onTokenChanged}
                       ref={input => {
                         this.tokenInput = input;

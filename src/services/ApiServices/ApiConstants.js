@@ -54,7 +54,6 @@ module.exports.generateApiRequest = (
     data: body,
     headers: {
       'Content-Type': 'application/json',
-      'User-Agent': 'Explorer',
       Authorization: accessToken
     }
   };
