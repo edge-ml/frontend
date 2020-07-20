@@ -117,16 +117,8 @@ class EditUserModal extends Component {
   }
 
   onDeleteUser() {
-    if (!this.state.inputVariables.currentPassword) {
-      window.alert('Current password is required.');
-      return;
-    }
-
     if (window.confirm('Are you sure to delete this user?')) {
-      this.state.onDeleteUser(
-        this.state.user.username,
-        this.state.inputVariables.currentPassword
-      );
+      this.state.onDeleteUser(this.state.user.email);
       this.onCloseModal();
     }
   }

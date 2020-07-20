@@ -25,6 +25,7 @@ import ExperimentsPage from './routes/experiments';
 
 import { access } from 'fs';
 import { rejects } from 'assert';
+import { subscribeUsers } from './services/ApiServices/AuthentificationServices';
 
 class App extends Component {
   constructor(props) {
@@ -38,7 +39,8 @@ class App extends Component {
       },
       videoEnaled: false,
       playButtonEnabled: false,
-      accessToken: undefined
+      accessToken: undefined,
+      currentUserMail: undefined
     };
 
     this.logoutHandler = this.logoutHandler.bind(this);
@@ -49,6 +51,18 @@ class App extends Component {
     this.toggleVideoOptions = this.toggleVideoOptions.bind(this);
     this.getVideoOptions = this.getVideoOptions.bind(this);
     this.setAccessToken = this.setAccessToken.bind(this);
+    this.getCurrentUserMail = this.getCurrentUserMail.bind(this);
+    this.setCurrentUserMail = this.setCurrentUserMail.bind(this);
+  }
+
+  getCurrentUserMail() {
+    return this.state.currentUserMail;
+  }
+
+  setCurrentUserMail(currentUserMail) {
+    this.setState({
+      currentUserMail: currentUserMail
+    });
   }
 
   async setAccessToken(token) {
@@ -120,6 +134,7 @@ class App extends Component {
         onTwoFA={this.onTwoFA}
         onCancelLogin={this.logoutHandler}
         setAccessToken={this.setAccessToken}
+        setCurrentUserMail={this.setCurrentUserMail}
       >
         {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
         {this.state.isLoggedIn ? (
@@ -229,6 +244,8 @@ class App extends Component {
                 render={props => (
                   <SettingsPage
                     {...props}
+                    getCurrentUserMail={this.getCurrentUserMail}
+                    accessToken={this.state.accessToken}
                     onLogout={this.logoutHandler}
                     onVideoOptionsChange={this.toggleVideoOptions}
                     getVideoOptions={this.getVideoOptions}

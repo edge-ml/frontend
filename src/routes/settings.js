@@ -11,19 +11,20 @@ import EditUserModal from '../components/EditUserModal/EditUserModal';
 import EditSourceModal from '../components/EditSourceModal/EditSourceModal';
 
 import {
-  subscribeUsers,
-  unsubscribeUsers,
   editUser,
-  deleteUser,
   addUser,
   reset2FA,
   getCurrentUser,
   subscribeSources,
-  unsubscribeSources,
   addSource,
   editSource,
   deleteSource
 } from '../services/SocketService';
+
+import {
+  subscribeUsers,
+  deleteUser
+} from '../services/ApiServices/AuthentificationServices';
 
 class SettingsPage extends Component {
   constructor(props) {
@@ -63,22 +64,17 @@ class SettingsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeUsers(users => {
+    subscribeUsers(this.props.accessToken, users => {
       this.onUsersChanged(users);
     });
-
-    getCurrentUser(user => {
-      this.setState({ user });
+    let userMail = this.props.getCurrentUserMail();
+    let userData = { email: userMail };
+    this.setState({
+      user: userData
     });
-
     subscribeSources(sources => {
       this.onSourcesChanged(sources);
     });
-  }
-
-  componentWillUnmount() {
-    unsubscribeUsers();
-    unsubscribeSources();
   }
 
   toggleUserModal(user, isNewUser) {
@@ -164,15 +160,27 @@ class SettingsPage extends Component {
     }
   }
 
-  onDeleteUser(username, confirmationPassword) {
-    deleteUser(username, confirmationPassword, err => {
+  onDeleteUser(email) {
+    deleteUser(email)
+      .then(() => {
+        if (this.state.user.email === email) {
+          this.props.onLogout();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        window.alert(err);
+        return;
+      });
+    /* deleteUser(email, err => {
+      console.log(err)
       window.alert(err);
       return;
     });
 
-    if (this.state.user.username === username) {
+    if (this.state.user.email === email) {
       this.props.onLogout();
-    }
+    }*/
   }
 
   onAddUser(username, email, password, isAdmin, confirmationPassword) {
@@ -221,70 +229,6 @@ class SettingsPage extends Component {
     return (
       <Loader>
         <Container>
-          {/* 
-          <Row className="mt-3">
-            <Col>
-              <Table responsive>
-                <thead>
-                  <tr className={'bg-light'}>
-                    <th>Name</th>
-                    <th>URL</th>
-                    <th>Enabled</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.state.sources.map((source, index) => {
-                    return (
-                      <tr>
-                        <th>{source.name}</th>
-                        <td>{source.url}</td>
-                        <td>
-                          {
-                            <FontAwesomeIcon
-                              style={{
-                                color: source.enabled ? '#43A047' : '#b71c1c'
-                              }}
-                              icon={source.enabled ? faCheck : faTimes}
-                            />
-                          }
-                        </td>
-                        <td>
-                          {isAdmin ? (
-                            <Button
-                              block
-                              disabled
-                              className="btn-secondary mt-0 btn-edit"
-                              onClick={e => {
-                                this.toggleSourceModal(source, false);
-                              }}
-                            >
-                              Edit
-                            </Button>
-                          ) : null}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-              {isAdmin ? (
-                <Button
-                  block
-                  disabled
-                  className="mb-5"
-                  color="secondary"
-                  outline
-                  onClick={e => this.toggleSourceModal(null, true)}
-                >
-                  + Add
-                </Button>
-              ) : null}
-            </Col>
-          </Row>
-
-          <hr className={'mb-5'} />
-          */}
           <Row className="mt-3">
             <Col>
               <Table responsive>
@@ -366,7 +310,7 @@ class SettingsPage extends Component {
               <Table responsive>
                 <thead>
                   <tr className={'bg-light'}>
-                    <th>Username</th>
+                    <th>E-Mail</th>
                     <th>Admin Rights</th>
                     <th>2FA Configured</th>
                     <th />
@@ -376,14 +320,15 @@ class SettingsPage extends Component {
                   {this.state.users.map((user, index) => {
                     return (
                       <tr>
-                        <th>{user.username}</th>
+                        <th>{user.email}</th>
                         <td>
                           {
                             <FontAwesomeIcon
                               style={{
-                                color: user.isAdmin ? '#43A047' : '#b71c1c'
+                                color:
+                                  user.role === 'admin' ? '#43A047' : '#b71c1c'
                               }}
-                              icon={user.isAdmin ? faCheck : faTimes}
+                              icon={user.role === 'admin' ? faCheck : faTimes}
                             />
                           }
                         </td>

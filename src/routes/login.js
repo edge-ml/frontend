@@ -126,6 +126,7 @@ class LoginPage extends Component {
     );
 
     if (didSucceed) {
+      this.props.setCurrentUserMail(this.state.usermail);
       // subscribeVerified(this.onVerified);
     }
     this.state.authenticationHandlers.onLogin(didSucceed);
