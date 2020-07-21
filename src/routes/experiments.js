@@ -60,10 +60,9 @@ class ExperimentsPage extends Component {
 
   onExperimentsChanged = experiments => {
     if (experiments === undefined) experiments = this.state.experiments;
-
     this.setState({
       experiments: experiments,
-      selectedExperimentId: experiments[0]['_id'],
+      selectedExperimentId: experiments[0] ? experiments[0]['_id'] : undefined,
       isReady: true
     });
 

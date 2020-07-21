@@ -236,7 +236,12 @@ class App extends Component {
               <Route
                 exact
                 path="/experiments/new"
-                component={ExperimentsPage}
+                render={props => (
+                  <ExperimentsPage
+                    {...props}
+                    accessToken={this.state.accessToken}
+                  />
+                )}
               />
               <Route
                 exact
