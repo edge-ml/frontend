@@ -243,9 +243,8 @@ class ListPage extends Component {
           isOpen={this.state.isCreateNewDatasetOpen}
           onCloseModal={this.toggleCreateNewDatasetModal}
           accessToken={this.props.accessToken}
-        >
-          />
-        </CreateNewDatasetModal>
+          onDatasetsChanged={this.onDatasetsChanged}
+        />
       </Loader>
     );
   }

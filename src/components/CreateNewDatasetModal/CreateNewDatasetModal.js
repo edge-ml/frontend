@@ -9,7 +9,10 @@ import {
   Table
 } from 'reactstrap';
 
-import { updateDataset } from '../../services/ApiServices/DatasetServices';
+import {
+  updateDataset,
+  createDataset
+} from '../../services/ApiServices/DatasetServices';
 
 class CreateNewDatasetModal extends Component {
   constructor(props) {
@@ -111,9 +114,11 @@ class CreateNewDatasetModal extends Component {
       timeSeries: timeSeries
     };
     console.log(timeSeries);
-    /*createDataset(datasetObj, function(err) {
-      console.log(err);
-    });*/
+    createDataset(
+      this.props.accessToken,
+      datasetObj,
+      this.props.onDatasetsChanged
+    );
   }
 
   updateDataSet(timeData) {
@@ -139,7 +144,12 @@ class CreateNewDatasetModal extends Component {
       reader.onload = () => {
         var res = reader.result;
         var allTextLines = res.split(/\r\n|\n/);
+        console.log(allTextLines);
+        if (allTextLines[allTextLines.length - 1] === '') {
+          allTextLines.pop();
+        }
         var lines = [];
+        console.log(allTextLines);
         for (var i = 0; i < allTextLines.length; i++) {
           var data = allTextLines[i].split(',');
           var tarr = [];
@@ -151,6 +161,7 @@ class CreateNewDatasetModal extends Component {
         timeData.push(lines);
         if (timeData.length === this.state.files.length) {
           if (!this.props.dataset) {
+            console.log(timeData);
             this.processNewDataset(timeData);
           } else {
             this.updateDataSet(timeData);

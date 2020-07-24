@@ -1,6 +1,9 @@
 module.exports = {
-  AUTH_URI: 'http://aura.dmz.teco.edu/auth/',
-  API_URI: 'http://aura.dmz.teco.edu/api/',
+  //AUTH_URI: 'http://aura.dmz.teco.edu/auth/',
+  //API_URI: 'http://aura.dmz.teco.edu/api/',
+
+  AUTH_URI: 'http://localhost/auth/',
+  API_URI: 'http://localhost/api/',
 
   HTTP_METHODS: {
     GET: 'GET',
@@ -13,7 +16,8 @@ module.exports = {
     DEFAULT: '/',
     LOGIN: 'login',
     DELETE: 'unregister',
-    REGISTER: 'register'
+    REGISTER: 'register',
+    USERS: 'USERS'
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',

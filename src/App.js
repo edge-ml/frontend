@@ -184,7 +184,7 @@ class App extends Component {
                 exact
                 path="/list"
                 render={props => (
-                  <ListPage accessToken={this.state.accessToken} />
+                  <ListPage {...props} accessToken={this.state.accessToken} />
                 )}
               />
               <Route
@@ -211,7 +211,7 @@ class App extends Component {
                 exact
                 path="/"
                 render={props => (
-                  <ListPage accessToken={this.state.accessToken} />
+                  <ListPage {...props} accessToken={this.state.accessToken} />
                 )}
               />
               <Route
@@ -219,6 +219,7 @@ class App extends Component {
                 render={props => (
                   <DatasetPage
                     {...props}
+                    accessToken={this.state.accessToken}
                     getVideoOptions={this.getVideoOptions}
                   />
                 )}

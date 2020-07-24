@@ -120,12 +120,6 @@ class DatasetPage extends Component {
       this.props.match.params.id,
       this.onDatasetChanged
     );
-
-    //this.state.dataset.fusedSeries = this.state.dataset.fusedSeries.filter(
-    //  fused => fused.timeSeries.length > 1
-    //);
-
-    //this.onLabelingsAndLabelsChanged(this.state.labelings, this.state.labels);
   }
 
   componentWillUnmount() {
@@ -150,21 +144,31 @@ class DatasetPage extends Component {
   }
 
   onLabelingsAndLabelsChanged(labelings, labels) {
-    let selectedLabeling = labelings[0];
-    let selectedLabelTypes = labels.filter(label =>
-      selectedLabeling.labels.includes(label['_id'])
-    );
+    console.log(labelings);
+    console.log(labels);
+    if (!(labelings.length === 0 || labels.length === 0)) {
+      let selectedLabeling = labelings[0];
+      let selectedLabelTypes = labels.filter(label =>
+        selectedLabeling.labels.includes(label['_id'])
+      );
 
-    this.setState({
-      labelings: labelings || [],
-      labels: labels || [],
-      controlStates: {
-        ...this.state.controlStates,
-        selectedLabelingId: selectedLabeling['_id'],
-        selectedLabelTypes: selectedLabelTypes
-      },
-      isReady: true
-    });
+      this.setState({
+        labelings: labelings || [],
+        labels: labels || [],
+        controlStates: {
+          ...this.state.controlStates,
+          selectedLabelingId: selectedLabeling['_id'],
+          selectedLabelTypes: selectedLabelTypes
+        },
+        isReady: true
+      });
+    } else {
+      this.setState({
+        isReady: true,
+        labelings: [],
+        labels: []
+      });
+    }
   }
 
   onKeyDown(e) {
@@ -968,27 +972,33 @@ class DatasetPage extends Component {
                 />
               </div>
             </Col>
-            <Col xs={12}>
-              <LabelingPanel
-                history={this.props.history}
-                id={this.state.controlStates.selectedLabelId}
-                from={selectedDatasetLabel ? selectedDatasetLabel.start : null}
-                to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
-                labeling={selectedLabeling}
-                labels={this.state.controlStates.selectedLabelTypes}
-                selectedLabelTypeId={
-                  this.state.controlStates.selectedLabelTypeId
-                }
-                onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
-                onDeleteSelectedLabel={this.onDeleteSelectedLabel}
-                onCanEditChanged={this.onCanEditChanged}
-                canEdit={this.state.controlStates.canEdit}
-                onPlay={this.onPlay}
-                isDrawingIntervalActive={isDrawingIntervalActive}
-                isCrosshairIntervalActive={isCrosshairIntervalActive}
-                playButtonEnabled={this.state.playButtonEnabled}
-              />
-            </Col>
+            {this.state.labeling ? (
+              <Col xs={12}>
+                <LabelingPanel
+                  history={this.props.history}
+                  id={this.state.controlStates.selectedLabelId}
+                  from={
+                    selectedDatasetLabel ? selectedDatasetLabel.start : null
+                  }
+                  to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
+                  labeling={selectedLabeling}
+                  labels={this.state.controlStates.selectedLabelTypes}
+                  selectedLabelTypeId={
+                    this.state.controlStates.selectedLabelTypeId
+                  }
+                  onSelectedLabelTypeIdChanged={
+                    this.onSelectedLabelTypeIdChanged
+                  }
+                  onDeleteSelectedLabel={this.onDeleteSelectedLabel}
+                  onCanEditChanged={this.onCanEditChanged}
+                  canEdit={this.state.controlStates.canEdit}
+                  onPlay={this.onPlay}
+                  isDrawingIntervalActive={isDrawingIntervalActive}
+                  isCrosshairIntervalActive={isCrosshairIntervalActive}
+                  playButtonEnabled={this.state.playButtonEnabled}
+                />
+              </Col>
+            ) : null}
             <Col />
             <CombineTimeSeriesModal
               timeSeries={this.state.dataset.timeSeries}

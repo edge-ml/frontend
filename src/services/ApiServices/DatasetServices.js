@@ -1,5 +1,6 @@
 var apiConsts = require('./ApiConstants');
 const axios = require('axios');
+const { isAssertionExpression } = require('typescript');
 
 module.exports.getDatasets = (accessToken, callback) => {
   axios(
@@ -13,11 +14,13 @@ module.exports.getDatasets = (accessToken, callback) => {
 };
 
 module.exports.getDataset = (accessToken, id, callback) => {
+  console.log(accessToken);
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.GET,
       apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
+      apiConsts.API_ENDPOINTS.DATASETS + `/${id}`,
+      accessToken
     )
   )
     .then(dataset => callback(dataset.data))
@@ -77,4 +80,16 @@ module.exports.updateDataset = (accessToken, dataset, callback) => {
       })
       .catch(err => console.log(err))
   );
+};
+
+module.exports.createDataset = (accessToken, dataset, callback) => {
+  axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.POST,
+      apiConsts.API_URI,
+      apiConsts.API_ENDPOINTS.DATASETS,
+      accessToken,
+      dataset
+    )
+  ).then(this.getDatasets(accessToken, callback));
 };
