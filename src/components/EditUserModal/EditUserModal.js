@@ -212,7 +212,7 @@ class EditUserModal extends Component {
           {this.state.isNewUser ? 'Add User' : 'Edit User: ' + username}
         </ModalHeader>
         <ModalBody>
-          <InputGroup className="m-0">
+          {/**<InputGroup className="m-0">
             <InputGroupAddon addonType="prepend">
               <InputGroupText>{'Username'}</InputGroupText>
             </InputGroupAddon>
@@ -221,7 +221,7 @@ class EditUserModal extends Component {
               value={this.state.inputVariables.name}
               onChange={e => this.onNameChanged(e.target.value)}
             />
-          </InputGroup>
+    </InputGroup>**/}
 
           <InputGroup>
             <InputGroupAddon addonType="prepend">

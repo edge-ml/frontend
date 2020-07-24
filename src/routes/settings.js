@@ -45,7 +45,8 @@ class SettingsPage extends Component {
       },
       sources: [],
       videoEnaled: this.props.getVideoOptions().videoEnabled,
-      playButtonEnabled: this.props.getVideoOptions().playButtonEnabled
+      playButtonEnabled: this.props.getVideoOptions().playButtonEnabled,
+      isAdmin: false
     };
 
     this.onAddUser = this.onAddUser.bind(this);
@@ -65,7 +66,17 @@ class SettingsPage extends Component {
 
   componentDidMount() {
     subscribeUsers(this.props.accessToken, users => {
-      this.onUsersChanged(users);
+      if (users.length === 0) {
+        this.setState({
+          isAdmin: false
+        });
+      } else {
+        console.log(users);
+        this.onUsersChanged(users);
+        this.setState({
+          isAdmin: true
+        });
+      }
     });
     let userMail = this.props.getCurrentUserMail();
     let userData = { email: userMail };
@@ -224,8 +235,8 @@ class SettingsPage extends Component {
   }
 
   render() {
-    let isAdmin = this.state.users.length !== 1 || this.state.users[0].isAdmin;
-
+    //let isAdmin = this.state.users.length !== 1 || this.state.users[0].isAdmin;
+    console.log(this.state.isAdmin);
     return (
       <Loader>
         <Container>
@@ -255,7 +266,7 @@ class SettingsPage extends Component {
                       }
                     </td>
                     <td>
-                      {isAdmin ? (
+                      {this.state.isAdmin ? (
                         <Button
                           block
                           onClick={e => {
@@ -285,7 +296,7 @@ class SettingsPage extends Component {
                       }
                     </td>
                     <td>
-                      {isAdmin ? (
+                      {this.state.isAdmin ? (
                         <Button
                           block
                           onClick={e => {
@@ -304,73 +315,78 @@ class SettingsPage extends Component {
           </Row>
 
           <hr className={'mb-5'} />
-
-          <Row className="mt-3">
-            <Col>
-              <Table responsive>
-                <thead>
-                  <tr className={'bg-light'}>
-                    <th>E-Mail</th>
-                    <th>Admin Rights</th>
-                    <th>2FA Configured</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.state.users.map((user, index) => {
-                    return (
-                      <tr>
-                        <th>{user.email}</th>
-                        <td>
-                          {
-                            <FontAwesomeIcon
-                              style={{
-                                color:
-                                  user.role === 'admin' ? '#43A047' : '#b71c1c'
+          {this.state.isAdmin ? (
+            <Row className="mt-3">
+              <Col>
+                <Table responsive>
+                  <thead>
+                    <tr className={'bg-light'}>
+                      <th>E-Mail</th>
+                      <th>Admin Rights</th>
+                      <th>2FA Configured</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.users.map((user, index) => {
+                      return (
+                        <tr>
+                          <th>{user.email}</th>
+                          <td>
+                            {
+                              <FontAwesomeIcon
+                                style={{
+                                  color:
+                                    user.role === 'admin'
+                                      ? '#43A047'
+                                      : '#b71c1c'
+                                }}
+                                icon={user.role === 'admin' ? faCheck : faTimes}
+                              />
+                            }
+                          </td>
+                          <td>
+                            {
+                              <FontAwesomeIcon
+                                style={{
+                                  color: user.isRegistered
+                                    ? '#43A047'
+                                    : '#b71c1c'
+                                }}
+                                icon={user.isRegistered ? faCheck : faTimes}
+                              />
+                            }
+                          </td>
+                          <td>
+                            <Button
+                              block
+                              className="btn-secondary mt-0 btn-edit"
+                              onClick={e => {
+                                this.toggleUserModal(user, false);
                               }}
-                              icon={user.role === 'admin' ? faCheck : faTimes}
-                            />
-                          }
-                        </td>
-                        <td>
-                          {
-                            <FontAwesomeIcon
-                              style={{
-                                color: user.isRegistered ? '#43A047' : '#b71c1c'
-                              }}
-                              icon={user.isRegistered ? faCheck : faTimes}
-                            />
-                          }
-                        </td>
-                        <td>
-                          <Button
-                            block
-                            className="btn-secondary mt-0 btn-edit"
-                            onClick={e => {
-                              this.toggleUserModal(user, false);
-                            }}
-                          >
-                            Edit
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-              {isAdmin ? (
-                <Button
-                  block
-                  className="mb-5"
-                  color="secondary"
-                  outline
-                  onClick={e => this.toggleUserModal(null, true)}
-                >
-                  + Add
-                </Button>
-              ) : null}
-            </Col>
-          </Row>
+                            >
+                              Edit
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+                {this.state.isAdmin ? (
+                  <Button
+                    block
+                    className="mb-5"
+                    color="secondary"
+                    outline
+                    onClick={e => this.toggleUserModal(null, true)}
+                  >
+                    + Add
+                  </Button>
+                ) : null}
+              </Col>
+            </Row>
+          ) : null}
         </Container>
         <EditUserModal
           isOpen={this.state.userModal.isOpen}
@@ -381,7 +397,7 @@ class SettingsPage extends Component {
           onDeleteUser={this.onDeleteUser}
           onAddUser={this.onAddUser}
           onReset2FA={this.onReset2FA}
-          currentIsAdmin={isAdmin}
+          currentIsAdmin={this.state.isAdmin}
         />
         <EditSourceModal
           isOpen={this.state.sourceModal.isOpen}
