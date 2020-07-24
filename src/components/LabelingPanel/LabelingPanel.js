@@ -83,7 +83,7 @@ class LabelingPanel extends Component {
   }
 
   render() {
-    return this.state.labeling ? (
+    return (
       <Card className="LabelingPanel">
         <CardBody className="p-1">
           <div className="informationBox">
@@ -224,7 +224,7 @@ class LabelingPanel extends Component {
           </div>
         </CardBody>
       </Card>
-    ) : null;
+    );
   }
 }
 export default LabelingPanel;

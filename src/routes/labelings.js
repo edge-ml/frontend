@@ -137,9 +137,7 @@ class LabelingsPage extends Component {
 
   onSave(labeling, labels, deletedLabels) {
     if (!labeling || !labels) return;
-
     if (this.state.modal.isNewLabeling && labels.length === 0) {
-      console.log('Saving new label');
       addLabeling(
         this.props.accessToken,
         labeling,
@@ -157,7 +155,6 @@ class LabelingsPage extends Component {
         this.onLabelingsAndLabelsChanged
       );
     } else {
-      console.log('Editing existing label');
       updateLabelingAndLabels(
         this.props.accessToken,
         labeling,

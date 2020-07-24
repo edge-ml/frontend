@@ -2,6 +2,7 @@ var apiConsts = require('./ApiConstants');
 const axios = require('axios');
 const { default: labelings } = require('../../routes/labelings');
 const { access } = require('fs');
+const { generate } = require('password-hash');
 
 module.exports.subscribeLabelingsAndLabels = (accessToken, callback) => {
   Promise.all([
@@ -111,7 +112,6 @@ module.exports.updateLabeling = (accessToken, labeling, callback) => {
     .catch(err => console.log(err));
 };
 
-//Not working jet
 module.exports.updateLabelingAndLabels = (
   accessToken,
   labeling,
@@ -121,7 +121,7 @@ module.exports.updateLabelingAndLabels = (
 ) => {
   Promise.all(
     labels
-      .filter(labels => labels.isNewLabel)
+      .filter(label => label.isNewLabel)
       .map(label =>
         axios(
           apiConsts.generateApiRequest(
@@ -135,9 +135,10 @@ module.exports.updateLabelingAndLabels = (
       )
   )
     .then(newLabels => {
-      let newLabelsId = newLabels.map(label => label['_id']);
+      console.log(newLabels);
+      let newLabelsId = newLabels.map(label => label.data['_id']);
       labeling.labels = [...labeling.labels, ...newLabelsId];
-
+      console.log(labeling);
       let promises = [];
       if (!labeling['_id']) {
         promises = [
@@ -210,12 +211,121 @@ module.exports.updateLabelingAndLabels = (
             accessToken
           )
         )
+      ]);
+    })
+    .then(results => {
+      callback(results[0].data, results[1].data);
+    })
+    .catch(err => console.log(err));
+};
+
+//Not working jet
+/*module.exports.updateLabelingAndLabels = (
+  accessToken,
+  labeling,
+  labels,
+  deletedLabels,
+  callback
+) => {
+  console.log(labeling);
+  console.log(labels);
+  Promise.all(
+    labels
+      .filter((labels) => labels.isNewLabel)
+      .map((label) =>
+        axios(
+          apiConsts.generateApiRequest(
+            apiConsts.HTTP_METHODS.POST,
+            apiConsts.API_URI,
+            apiConsts.API_ENDPOINTS.LABEL_TYPES,
+            accessToken,
+            label
+          )
+        )
+      )
+  )
+    .then((newLabels) => {
+      let newLabelsId = newLabels.map((label) => label["_id"]);
+      labeling.labels = [...labeling.labels, ...newLabelsId];
+
+      let promises = [];
+      if (!labeling["_id"]) {
+        promises = [
+          ...promises,
+          axios(
+            apiConsts.generateApiRequest(
+              apiConsts.HTTP_METHODS.POST,
+              apiConsts.API_URI,
+              apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS,
+              accessToken,
+              labeling
+            )
+          ),
+        ];
+      } else {
+        let updatedLabels = labels.filter((label) => label.updated);
+
+        promises = [
+          ...promises,
+          axios(
+            apiConsts.generateApiRequest(
+              apiConsts.HTTP_METHODS.PUT,
+              apiConsts.API_URI,
+              apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS + `/${labeling["_id"]}`,
+              accessToken,
+              labeling
+            )
+          ),
+          ...updatedLabels.map((label) =>
+            axios(
+              apiConsts.generateApiRequest(
+                apiConsts.HTTP_METHODS.PUT,
+                apiConsts.API_URI,
+                apiConsts.API_ENDPOINTS.LABEL_TYPES + `/${label["_id"]}`,
+                accessToken,
+                label
+              )
+            )
+          ),
+          ...deletedLabels.map((labelId) =>
+            axios(
+              apiConsts.generateApiRequest(
+                apiConsts.HTTP_METHODS.DELETE,
+                apiConsts.API_URI,
+                apiConsts.API_ENDPOINTS.LABEL_TYPES + `/${labelId}`,
+                accessToken
+              )
+            )
+          ),
+        ];
+      }
+
+      return Promise.all(promises);
+    })
+    .then(() => {
+      return Promise.all([
+        axios(
+          apiConsts.generateApiRequest(
+            apiConsts.HTTP_METHODS.GET,
+            apiConsts.API_URI,
+            apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS,
+            accessToken
+          )
+        ),
+        axios(
+          apiConsts.generateApiRequest(
+            apiConsts.HTTP_METHODS.GET,
+            apiConsts.API_URI,
+            apiConsts.API_ENDPOINTS.LABEL_TYPES,
+            accessToken
+          )
+        ),
       ])
-        .then(results => {
+        .then((results) => {
           if (callback) {
             callback(results[0].data, results[1].data);
           }
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     });
-};
+};*/

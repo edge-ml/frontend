@@ -35,7 +35,6 @@ class EditLabelingModal extends Component {
       isNewLabeling: props.isNewLabeling,
       deletedLabels: []
     };
-
     this.onAddLabel = this.onAddLabel.bind(this);
     this.onDeleteLabel = this.onDeleteLabel.bind(this);
     this.onLabelingNameChanged = this.onLabelingNameChanged.bind(this);
@@ -266,6 +265,7 @@ class EditLabelingModal extends Component {
             color="primary"
             className="m-1 mr-auto"
             onClick={e => {
+              console.log(this.state.labeling);
               this.state.onSave(
                 this.state.labeling,
                 this.state.labels,
