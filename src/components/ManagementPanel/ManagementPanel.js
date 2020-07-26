@@ -16,6 +16,14 @@ class ManagementPanel extends Component {
     this.toggleUploadModal = this.toggleUploadModal.bind(this);
     this.toggleHelpModal = this.toggleHelpModal.bind(this);
     this.downloadDataSet = this.downloadDataSet.bind(this);
+    this.onDatasetComplete = this.onDatasetComplete.bind(this);
+  }
+
+  onDatasetComplete() {
+    this.setState({
+      isUploadModalOpen: false
+    });
+    this.props.onDatasetComplete();
   }
 
   toggleUploadModal() {
@@ -91,9 +99,8 @@ class ManagementPanel extends Component {
           onCloseModal={this.toggleUploadModal}
           dataset={this.props.dataset}
           accessToken={this.props.accessToken}
-        >
-          />
-        </CreateNewDatasetModal>
+          onDatasetComplete={this.onDatasetComplete}
+        />
         <HelpModal
           isOpen={this.state.isHelpModalOpen}
           onCloseModal={this.toggleHelpModal}

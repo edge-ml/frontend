@@ -14,7 +14,6 @@ module.exports.getDatasets = (accessToken, callback) => {
 };
 
 module.exports.getDataset = (accessToken, id, callback) => {
-  console.log(accessToken);
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.GET,
@@ -28,6 +27,7 @@ module.exports.getDataset = (accessToken, id, callback) => {
 };
 
 module.exports.deleteDatasets = (accessToken, ids, callback) => {
+  console.log(ids);
   let promises = [];
   for (let id of ids) {
     promises = [
@@ -36,14 +36,15 @@ module.exports.deleteDatasets = (accessToken, ids, callback) => {
         apiConsts.generateApiRequest(
           apiConsts.HTTP_METHODS.DELETE,
           apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
+          apiConsts.API_ENDPOINTS.DATASETS + `/${id}`,
+          accessToken
         )
       )
     ];
   }
   return Promise.all(promises)
     .then(callback(false))
-    .catch(callback(true));
+    .catch(err => callback(err));
 };
 
 module.exports.deleteDataset = (accessToken, id, callback) => {
@@ -65,24 +66,29 @@ module.exports.updateDataset = (accessToken, dataset, callback) => {
       apiConsts.HTTP_METHODS.PUT,
       apiConsts.API_URI,
       apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`,
-      accessToken
+      accessToken,
+      dataset
     )
-  ).then(
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.GET,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`
+  )
+    .then(
+      axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.GET,
+          apiConsts.API_URI,
+          apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`,
+          accessToken
+        )
       )
+        .then(updatedDataset => {
+          callback(updatedDataset.data);
+        })
+        .catch(err => console.log(err))
     )
-      .then(updatedDataset => {
-        callback(updatedDataset.data);
-      })
-      .catch(err => console.log(err))
-  );
+    .catch(err => console.log(err));
 };
 
 module.exports.createDataset = (accessToken, dataset, callback) => {
+  console.log(dataset);
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,

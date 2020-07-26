@@ -99,6 +99,7 @@ class DatasetPage extends Component {
     this.setCrosshairInterval = this.setCrosshairInterval.bind(this);
     this.clearCrosshairInterval = this.clearCrosshairInterval.bind(this);
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
+    this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -125,6 +126,14 @@ class DatasetPage extends Component {
     window.removeEventListener('keydown', this.onKeyDown);
     //unsubscribeLabelingsAndLabels();
     //unsubscribeDataset(this.props.match.params.id);
+  }
+
+  onDatasetUpdated() {
+    getDataset(
+      this.props.accessToken,
+      this.props.match.params.id,
+      this.onDatasetChanged
+    );
   }
 
   onDatasetChanged(dataset) {
@@ -402,7 +411,7 @@ class DatasetPage extends Component {
     }
 
     this.setState({ dataset });
-    updateDataset(dataset);
+    updateDataset(this.props.accessToken, dataset, this.onDatasetChanged);
   }
 
   onShiftTimeSeries(index, timestamp) {
@@ -957,6 +966,8 @@ class DatasetPage extends Component {
                   startTime={this.state.dataset.start}
                   onDeleteDataset={this.onDeleteDataset}
                   dataset={this.state.dataset}
+                  accessToken={this.props.accessToken}
+                  onDatasetComplete={this.onDatasetUpdated}
                 />
               </div>
             </Col>

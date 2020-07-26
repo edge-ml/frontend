@@ -59,7 +59,6 @@ class ListPage extends Component {
 
   onDatasetsChanged(datasets) {
     if (!datasets) return;
-    console.log(datasets);
 
     this.setState({
       modalID: null,
@@ -115,7 +114,7 @@ class ListPage extends Component {
       return;
     }
 
-    deleteDatasets(this.state.datasetsToDelete, err => {
+    deleteDatasets(this.props.accessToken, this.state.datasetsToDelete, err => {
       if (err) {
         window.alert(err);
         this.setState({
@@ -245,6 +244,7 @@ class ListPage extends Component {
           onCloseModal={this.toggleCreateNewDatasetModal}
           accessToken={this.props.accessToken}
           onDatasetsChanged={this.onDatasetsChanged}
+          onDatasetComplete={this.onDatasetsChanged}
         />
       </Loader>
     );

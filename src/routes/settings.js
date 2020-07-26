@@ -71,7 +71,6 @@ class SettingsPage extends Component {
           isAdmin: false
         });
       } else {
-        console.log(users);
         this.onUsersChanged(users);
         this.setState({
           isAdmin: true
@@ -235,8 +234,6 @@ class SettingsPage extends Component {
   }
 
   render() {
-    //let isAdmin = this.state.users.length !== 1 || this.state.users[0].isAdmin;
-    console.log(this.state.isAdmin);
     return (
       <Loader>
         <Container>

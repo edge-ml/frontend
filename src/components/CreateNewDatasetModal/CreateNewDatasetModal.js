@@ -42,7 +42,6 @@ class CreateNewDatasetModal extends Component {
   }
 
   onNameChange(e, index) {
-    console.log('Testing  ' + e.target.value);
     var array = [...this.state.names];
     array[index] = e.target.value;
     this.setState({
@@ -113,29 +112,26 @@ class CreateNewDatasetModal extends Component {
       end: startEnd.end,
       timeSeries: timeSeries
     };
-    console.log(timeSeries);
     createDataset(
       this.props.accessToken,
       datasetObj,
-      this.props.onDatasetsChanged
+      this.props.onDatasetComplete
     );
   }
 
   updateDataSet(timeData) {
     var timeSeries = this.generateTimeSeries(timeData);
-    console.log(timeSeries);
-    //var startEnd = this.calculateStartEndTimes(timeSeries)
-
     var dataset = this.props.dataset;
     dataset.timeSeries.push(...timeSeries);
 
-    updateDataset(this.props.accessToken, dataset, newDataset => {
-      console.log('New dataset');
-      console.log(newDataset);
-    });
+    updateDataset(
+      this.props.accessToken,
+      dataset,
+      this.props.onDatasetComplete
+    );
   }
 
-  processCSV(files) {
+  processCSV(files, callback) {
     var timeData = [];
     var i = 0;
     for (i = 0; i < files.length; i++) {
@@ -144,12 +140,10 @@ class CreateNewDatasetModal extends Component {
       reader.onload = () => {
         var res = reader.result;
         var allTextLines = res.split(/\r\n|\n/);
-        console.log(allTextLines);
         if (allTextLines[allTextLines.length - 1] === '') {
           allTextLines.pop();
         }
         var lines = [];
-        console.log(allTextLines);
         for (var i = 0; i < allTextLines.length; i++) {
           var data = allTextLines[i].split(',');
           var tarr = [];
@@ -161,10 +155,9 @@ class CreateNewDatasetModal extends Component {
         timeData.push(lines);
         if (timeData.length === this.state.files.length) {
           if (!this.props.dataset) {
-            console.log(timeData);
-            this.processNewDataset(timeData);
+            this.processNewDataset(timeData, callback);
           } else {
-            this.updateDataSet(timeData);
+            this.updateDataSet(timeData, callback);
           }
         }
       };
@@ -173,7 +166,12 @@ class CreateNewDatasetModal extends Component {
   }
 
   onUpload() {
-    this.processCSV(this.state.files);
+    const func = this.props.onDatasetComplete
+      ? this.props.onDatasetComplete
+      : () => {
+          console.log('no function');
+        };
+    this.processCSV(this.state.files, func);
   }
 
   render() {
