@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Card, CardHeader, CardBody } from 'reactstrap';
 import './ManagementPanel.css';
-import UploadCsvModal from './UploadCsvModal';
 import HelpModal from './HelpModal';
 import CreateNewDatasetModal from '../CreateNewDatasetModal/CreateNewDatasetModal';
 

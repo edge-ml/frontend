@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
+import { Container, Col, Row, Table, Button } from 'reactstrap';
 import { view } from 'react-easy-state';
 
 import Loader from '../modules/loader';
@@ -14,7 +14,6 @@ import {
   editUser,
   addUser,
   reset2FA,
-  getCurrentUser,
   subscribeSources,
   addSource,
   editSource,

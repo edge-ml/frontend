@@ -1,8 +1,5 @@
 var apiConsts = require('./ApiConstants');
 const axios = require('axios');
-const { default: labelings } = require('../../routes/labelings');
-const { access } = require('fs');
-const { generate } = require('password-hash');
 
 module.exports.subscribeLabelingsAndLabels = (accessToken, callback) => {
   Promise.all([

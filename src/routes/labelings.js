@@ -210,7 +210,7 @@ class LabelingsPage extends Component {
                             label => label['_id'] === labelId
                           )[0];
 
-                          if (!label) return;
+                          if (!label) return null;
 
                           return (
                             <Badge

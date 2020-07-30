@@ -1,6 +1,5 @@
 var apiConsts = require('./ApiConstants');
 const axios = require('axios');
-const { isAssertionExpression } = require('typescript');
 
 module.exports.getDatasets = (accessToken, callback) => {
   axios(

@@ -18,7 +18,6 @@ import {
   deleteDataset,
   getDataset
 } from '../services/ApiServices/DatasetServices';
-import { generateRandomColor } from '../services/ColorService';
 import Loader from '../modules/loader';
 import VideoPanel from '../components/VideoPanel/VideoPanel';
 
@@ -355,7 +354,7 @@ class DatasetPage extends Component {
                 label.labelingId
               }.`
             );
-            return;
+            return null;
           }
 
           for (let i = 0; i < dataset.labelings.length; i++) {
@@ -371,6 +370,7 @@ class DatasetPage extends Component {
           break;
         }
       }
+      return null;
     });
 
     if (labels.length !== 0) {
@@ -949,17 +949,7 @@ class DatasetPage extends Component {
                   user={this.state.dataset.userId}
                 />
               </div>
-              <div className="mt-2">
-                {/**
-                (
-                  <ApiPanel
-                    onUpload={obj => this.addTimeSeries(obj)}
-                    onFuse={this.onFuseTimeSeries}
-                    startTime={this.state.dataset.start}
-                  />
-                )
-              */}
-              </div>
+              <div className="mt-2" />
               <div className="mt-2" style={{ marginBottom: '230px' }}>
                 <ManagementPanel
                   onUpload={obj => this.addTimeSeries(obj)}

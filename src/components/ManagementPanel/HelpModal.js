@@ -1,15 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Input,
-  Label,
-  FormGroup,
-  InputGroup
-} from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import './ManagementPanel.css';
 
 class HelpModal extends Component {

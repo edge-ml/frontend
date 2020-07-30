@@ -6,25 +6,20 @@ import {
   Table,
   Input,
   Button,
-  ButtonGroup,
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter
 } from 'reactstrap';
-import Request from 'request-promise';
-import update from 'immutability-helper';
 import { view } from 'react-easy-state';
 import CreateNewDatasetModal from '../components/CreateNewDatasetModal/CreateNewDatasetModal';
 
-import State from '../state';
 import Loader from '../modules/loader';
 
 import {
   getDatasets,
   deleteDatasets
 } from '../services/ApiServices/DatasetServices';
-import dataset from './dataset';
 
 class ListPage extends Component {
   constructor(props) {

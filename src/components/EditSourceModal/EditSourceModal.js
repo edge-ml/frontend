@@ -8,17 +8,9 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Input,
-  FormGroup,
-  Label
+  Input
 } from 'reactstrap';
 import isURL from 'validator/lib/isURL';
-
-import {
-  isValidColor,
-  hexToForegroundColor,
-  generateRandomColor
-} from '../../services/ColorService';
 
 import './EditSourceModal.css';
 

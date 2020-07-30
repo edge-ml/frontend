@@ -8,16 +8,8 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Input,
-  FormGroup,
-  Label
+  Input
 } from 'reactstrap';
-
-import {
-  isValidColor,
-  hexToForegroundColor,
-  generateRandomColor
-} from '../../services/ColorService';
 
 import './EditUserModal.css';
 
@@ -212,17 +204,6 @@ class EditUserModal extends Component {
           {this.state.isNewUser ? 'Add User' : 'Edit User: ' + username}
         </ModalHeader>
         <ModalBody>
-          {/**<InputGroup className="m-0">
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText>{'Username'}</InputGroupText>
-            </InputGroupAddon>
-            <Input
-              placeholder={'Username'}
-              value={this.state.inputVariables.name}
-              onChange={e => this.onNameChanged(e.target.value)}
-            />
-    </InputGroup>**/}
-
           <InputGroup>
             <InputGroupAddon addonType="prepend">
               <InputGroupText>{'E-Mail'}</InputGroupText>

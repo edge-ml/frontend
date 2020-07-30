@@ -23,10 +23,6 @@ import LabelingsPage from './routes/labelings';
 import SettingsPage from './routes/settings';
 import ExperimentsPage from './routes/experiments';
 
-import { access } from 'fs';
-import { rejects } from 'assert';
-import { subscribeUsers } from './services/ApiServices/AuthentificationServices';
-
 class App extends Component {
   constructor(props) {
     super(props);

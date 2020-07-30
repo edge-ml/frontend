@@ -1,6 +1,5 @@
 import openSocket from 'socket.io-client';
 import Cookies from 'universal-cookie';
-import { stringify } from 'querystring';
 
 const socketUrl =
   process.env.NODE_ENV === 'development'

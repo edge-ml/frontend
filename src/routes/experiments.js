@@ -221,8 +221,6 @@ class ExperimentsPage extends Component {
             )
         );
       }
-
-      return false;
     });
   };
 

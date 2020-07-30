@@ -21,11 +21,7 @@ import State from '../state';
 
 import { FadeInUp } from 'animate-components';
 
-import {
-  twoFAAuthenticate,
-  subscribeVerified,
-  restoreSession
-} from '../services/SocketService';
+import { twoFAAuthenticate, restoreSession } from '../services/SocketService';
 import { getServerTime } from '../services/helpers.js';
 
 import { loginUser } from '../services/ApiServices/AuthentificationServices';

@@ -1,6 +1,5 @@
 var apiConsts = require('./ApiConstants');
 const axios = require('axios');
-const { access } = require('fs');
 
 module.exports.subscribeExperiments = (accessToken, callback) => {
   axios(
