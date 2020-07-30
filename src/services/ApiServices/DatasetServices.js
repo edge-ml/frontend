@@ -9,7 +9,9 @@ module.exports.getDatasets = (accessToken, callback) => {
       apiConsts.API_ENDPOINTS.DATASETS,
       accessToken
     )
-  ).then(result => callback(result.data));
+  )
+    .then(result => callback(result.data))
+    .catch(err => window.alert(err));
 };
 
 module.exports.getDataset = (accessToken, id, callback) => {
@@ -96,5 +98,7 @@ module.exports.createDataset = (accessToken, dataset, callback) => {
       accessToken,
       dataset
     )
-  ).then(this.getDatasets(accessToken, callback));
+  )
+    .then(this.getDatasets(accessToken, callback))
+    .catch(err => window.alert(err));
 };

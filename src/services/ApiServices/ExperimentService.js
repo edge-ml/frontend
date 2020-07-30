@@ -11,7 +11,7 @@ module.exports.subscribeExperiments = (accessToken, callback) => {
     )
   )
     .then(experiments => callback(experiments.data))
-    .catch(err => console.log(err));
+    .catch(err => window.alert(err));
 };
 
 module.exports.addExperiment = (accessToken, newExperiment, callback) => {
@@ -34,9 +34,9 @@ module.exports.addExperiment = (accessToken, newExperiment, callback) => {
         )
       )
         .then(experiments => callback(experiments.data))
-        .catch(err => console.log(err))
+        .catch(err => window.alert(err))
     )
-    .catch(err => console.log(err));
+    .catch(err => window.alert(err));
 };
 
 module.exports.updateExperiment = (accessToken, experiment, callback) => {
@@ -59,7 +59,7 @@ module.exports.updateExperiment = (accessToken, experiment, callback) => {
       )
     )
     .then(experiments => callback(experiments.data))
-    .catch(err => console.log(err));
+    .catch(err => window.alert(err));
 };
 
 module.exports.deleteExperiment = (accessToken, experimentId, callback) => {
@@ -81,7 +81,7 @@ module.exports.deleteExperiment = (accessToken, experimentId, callback) => {
         )
       )
         .then(experiments => callback(experiments))
-        .catch(err => console.log(err))
+        .catch(err => window.alert(err))
     )
-    .catch(err => console.log(err));
+    .catch(err => window.alert(err));
 };
