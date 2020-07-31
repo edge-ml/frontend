@@ -48,9 +48,9 @@ module.exports.addLabeling = (accessToken, newLabeling, callback) => {
             callback(lableings.data, undefined);
           }
         })
-        .catch(window.alert(err))
+        .catch(err => window.alert(err))
     )
-    .catch(window.alert(err));
+    .catch(err => window.alert(err));
 };
 
 module.exports.deleteLabeling = (accessToken, labelingId, callback) => {

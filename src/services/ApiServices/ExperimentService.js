@@ -54,7 +54,8 @@ module.exports.updateExperiment = (accessToken, experiment, callback) => {
         apiConsts.generateApiRequest(
           apiConsts.HTTP_METHODS.GET,
           apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.EXPERIMENTS
+          apiConsts.API_ENDPOINTS.EXPERIMENTS,
+          accessToken
         )
       )
     )

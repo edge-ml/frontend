@@ -174,7 +174,11 @@ class ExperimentsPage extends Component {
       //  experiments: [...this.state.experiments, experiment]
       //});
     } else {
-      updateExperiment(experiment, this.onExperimentsChanged);
+      updateExperiment(
+        this.props.accessToken,
+        experiment,
+        this.onExperimentsChanged
+      );
       //this.setState({
       //  experiments: this.state.experiments.map(exp =>
       //    exp['_id'] === experiment['_id'] ? experiment : exp
