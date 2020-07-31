@@ -411,7 +411,7 @@ class DatasetPage extends Component {
     }
 
     this.setState({ dataset });
-    updateDataset(this.props.accessToken, dataset, this.onDatasetChanged);
+    updateDataset(this.props.accessToken, dataset, () => {});
   }
 
   onShiftTimeSeries(index, timestamp) {
@@ -422,7 +422,7 @@ class DatasetPage extends Component {
     dataset.timeSeries[index].offset += diff;
 
     this.setState({ dataset });
-    updateDataset(dataset);
+    updateDataset(this.props.accessToken, dataset, () => {});
   }
 
   onFuseTimeSeries(seriesIds) {
@@ -431,7 +431,7 @@ class DatasetPage extends Component {
       timeSeries: seriesIds
     });
 
-    updateDataset(dataset, dataset => {
+    updateDataset(this.props.accessToken, dataset, dataset => {
       this.setState({
         dataset,
         fuseTimeSeriesModalState: { isOpen: false }
@@ -703,7 +703,7 @@ class DatasetPage extends Component {
       }
     });
 
-    updateDataset(dataset);
+    updateDataset(this.props.accessToken, dataset, () => {});
   }
 
   onSelectedLabelChanged(selectedLabelId) {
@@ -777,7 +777,7 @@ class DatasetPage extends Component {
     }
 
     if (labelingOrLabelAdded) {
-      updateDataset(dataset, newDataset => {
+      updateDataset(this.props.accessToken, dataset, newDataset => {
         let labeling = newDataset.labelings.filter(
           labeling =>
             labeling.labelingId === this.state.controlStates.selectedLabelingId
@@ -793,7 +793,7 @@ class DatasetPage extends Component {
       });
     } else {
       this.setState({ dataset });
-      updateDataset(dataset);
+      updateDataset(this.props.accessToken, dataset, () => {});
     }
   }
 
@@ -809,7 +809,7 @@ class DatasetPage extends Component {
         label => label['_id'] !== this.state.controlStates.selectedLabelId
       );
 
-      updateDataset(dataset, () => {
+      updateDataset(this.props.accessToken, dataset, () => {
         this.setState({
           dataset,
           controlStates: {

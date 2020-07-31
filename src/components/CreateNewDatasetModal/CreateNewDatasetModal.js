@@ -217,8 +217,8 @@ class CreateNewDatasetModal extends Component {
               <thead>
                 <tr className="bg-light">
                   <th>FileName</th>
-                  <th>Dataset Name</th>
-                  <th>Dataset Unit</th>
+                  <th>TimeSeries Name</th>
+                  <th>TimeSeries Unit</th>
                   <th />
                 </tr>
               </thead>
