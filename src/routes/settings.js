@@ -262,17 +262,15 @@ class SettingsPage extends Component {
                       }
                     </td>
                     <td>
-                      {this.state.isAdmin ? (
-                        <Button
-                          block
-                          onClick={e => {
-                            this.toggleVideoModal();
-                          }}
-                          className="btn-secondary mt-0 btn-edit"
-                        >
-                          Edit
-                        </Button>
-                      ) : null}
+                      <Button
+                        block
+                        onClick={e => {
+                          this.toggleVideoModal();
+                        }}
+                        className="btn-secondary mt-0 btn-edit"
+                      >
+                        Toggle
+                      </Button>
                     </td>
                   </tr>
                   <tr>
@@ -292,17 +290,15 @@ class SettingsPage extends Component {
                       }
                     </td>
                     <td>
-                      {this.state.isAdmin ? (
-                        <Button
-                          block
-                          onClick={e => {
-                            this.togglePlayButtonModal();
-                          }}
-                          className="btn-secondary mt-0 btn-edit"
-                        >
-                          Edit
-                        </Button>
-                      ) : null}
+                      <Button
+                        block
+                        onClick={e => {
+                          this.togglePlayButtonModal();
+                        }}
+                        className="btn-secondary mt-0 btn-edit"
+                      >
+                        Toggle
+                      </Button>
                     </td>
                   </tr>
                 </tbody>

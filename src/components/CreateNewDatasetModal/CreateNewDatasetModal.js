@@ -78,7 +78,6 @@ class CreateNewDatasetModal extends Component {
           j !== 0 &&
           timeData[i][j][0] - timeData[i][j - 1][0] !== samplingRate
         ) {
-          console.log('Error: Samping rate not consistent');
           window.alert(
             'Error: The sampling rate of the dataset is not consistent'
           );
