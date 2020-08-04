@@ -4,10 +4,8 @@ import { view } from 'react-easy-state';
 import Highcharts from 'highcharts/highstock';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
-import TagsPanel from '../components/TagsPanel/TagsPanel';
 import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
 import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
-import InteractionControlPanel from '../components/InteractionControlPanel/InteractionControlPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
 import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
@@ -932,15 +930,6 @@ class DatasetPage extends Component {
                   <VideoPanel ref={this.videoPanel} />
                 </div>
               ) : null}
-              <div className="mt-0">
-                <InteractionControlPanel
-                  isPublished={this.state.dataset.isPublished}
-                />
-              </div>
-
-              <div className="mt-0">
-                <TagsPanel events={this.state.dataset.events} />
-              </div>
               <div className="mt-2">
                 <MetadataPanel
                   id={this.state.dataset['_id']}
