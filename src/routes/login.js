@@ -24,7 +24,10 @@ import { FadeInUp } from 'animate-components';
 import { twoFAAuthenticate, restoreSession } from '../services/SocketService';
 import { getServerTime } from '../services/helpers.js';
 
-import { loginUser } from '../services/ApiServices/AuthentificationServices';
+import {
+  loginUser,
+  verify2FA
+} from '../services/ApiServices/AuthentificationServices';
 
 class LoginPage extends Component {
   constructor(props) {
@@ -37,9 +40,10 @@ class LoginPage extends Component {
       },
       isLoggedIn: props.isLoggedIn,
       isTwoFactorAuthenticated: props.isTwoFactorAuthenticated,
+      on2FA: props.on2FA,
+      twoFactorEnabled: props.twoFactorEnabled,
       authenticationHandlers: {
         onLogin: props.onLogin,
-        onTwoFA: props.onTwoFA,
         onCancelLogin: props.onCancelLogin,
         didLoginFail: false
       },
@@ -48,7 +52,9 @@ class LoginPage extends Component {
         token: undefined,
         tokenFailed: false
       },
-      time: undefined
+      time: undefined,
+
+      user: {}
     };
     this.emailchange = this.emailchange.bind(this);
     this.passChange = this.passChange.bind(this);
@@ -141,17 +147,28 @@ class LoginPage extends Component {
 
   onTokenChanged(e) {
     if (e.target.value.length > 6) return;
-    else if (e.target.value.length === 6) {
-      twoFAAuthenticate(e.target.value);
+    else if (e.target && e.target.value.length === 6) {
+      verify2FA(this.state.user.access_token, e.target.value, data => {
+        if (data) {
+          if (data && data.status && data.status !== 200) {
+            window.alert(data.data.error);
+          } else {
+            this.setState(
+              {
+                tokenFailed: false,
+                user: data
+              },
+              () => {
+                this.props.setUser(data, () => {
+                  this.props.onLogin(true);
+                });
+              }
+              //this.state.on2FA(data)
+            );
+          }
+        }
+      });
     }
-
-    this.setState({
-      twoFactorAuthentication: {
-        token: e.target.value.trim(),
-        qrCode: this.state.twoFactorAuthentication.qrCode,
-        tokenFailed: false
-      }
-    });
   }
 
   onVerified(success) {
@@ -171,8 +188,6 @@ class LoginPage extends Component {
           tokenFailed: false
         }
       });
-
-      this.state.authenticationHandlers.onTwoFA(success);
     }
   }
 
@@ -195,14 +210,42 @@ class LoginPage extends Component {
       })
     );
 
-    // login(this.state.usermail, this.state.password, this.onLogin, this.onTwoFA);
     loginUser(this.state.usermail, this.state.password)
       .then(data => {
-        this.props.setAccessToken(data.access_token).then(() => {
-          this.onLogin(true);
-        });
+        this.setState(
+          update(this.state, {
+            $merge: {
+              button: {
+                disabled: false
+              }
+            }
+          }),
+          () => {
+            this.setState(
+              {
+                user: data,
+                isLoggedIn: true,
+                isTwoFactorAuthenticated: false
+              },
+              this.check2FALogin
+            );
+          }
+        );
       })
-      .catch(() => this.onLogin(false));
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  check2FALogin() {
+    if (this.state.user.twoFactorEnabled) {
+    } else {
+      this.props.setUser(this.state.user, () => {
+        this.setState({
+          isLoggedIn: true
+        });
+      });
+    }
   }
 
   componentDidMount() {
@@ -258,7 +301,10 @@ class LoginPage extends Component {
   }
 
   render() {
-    if (this.state.isLoggedIn && this.state.isTwoFactorAuthenticated) {
+    if (
+      (this.state.isLoggedIn && !this.state.user.twoFactorEnabled) ||
+      (this.state.user.twoFactorAuthentication && this.state.isLoggedIn)
+    ) {
       return this.props.children;
     } else {
       return (
@@ -272,7 +318,7 @@ class LoginPage extends Component {
           <Alert
             color="info"
             hidden={
-              !(this.state.isLoggedIn && !this.state.isTwoFactorAuthenticated)
+              !(this.state.isLoggedIn && !this.state.user.twoFactorVerified)
             }
           >
             Your device's time must be synchronized with the server time or
@@ -349,7 +395,8 @@ class LoginPage extends Component {
                     hidden={
                       !(
                         this.state.isLoggedIn &&
-                        !this.state.isTwoFactorAuthenticated
+                        !this.state.user.twoFactorVerified &&
+                        this.state.user.twoFactorEnabled
                       )
                     }
                     style={{ alignContent: 'center' }}
@@ -364,7 +411,8 @@ class LoginPage extends Component {
                     hidden={
                       !(
                         this.state.isLoggedIn &&
-                        !this.state.isTwoFactorAuthenticated
+                        !this.state.user.twoFactorVerified &&
+                        this.state.user.twoFactorEnabled
                       )
                     }
                     style={{ margin: 'auto' }}

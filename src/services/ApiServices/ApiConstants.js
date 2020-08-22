@@ -17,7 +17,10 @@ module.exports = {
     LOGIN: 'login',
     DELETE: 'unregister',
     REGISTER: 'register',
-    USERS: 'USERS'
+    USERS: 'USERS',
+    INIT2FA: '2fa/init',
+    VERIFY2FA: '2fa/verify',
+    RESET2FA: '2fa/reset'
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',

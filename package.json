@@ -77,7 +77,8 @@
     "eject": "react-scripts eject",
     "docker:build": "docker build . -t registry.aura.rest/explorer",
     "docker:push": "docker push registry.aura.rest/explorer",
-    "docker:deploy": "docker build . -t registry.aura.rest/explorer && docker push registry.aura.rest/explorer"
+    "docker:deploy": "docker build . -t registry.aura.rest/explorer && docker push registry.aura.rest/explorer",
+    "test-jest": "jest"
   },
   "husky": {
     "hooks": {
@@ -92,6 +93,7 @@
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",
     "husky": "^1.3.1",
+    "jest": "^26.2.2",
     "nodemon": "^1.18.10"
   },
   "nodemonConfig": {

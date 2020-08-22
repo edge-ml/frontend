@@ -26,8 +26,10 @@ import ExperimentsPage from './routes/experiments';
 class App extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
+      user: {
+        access_token: undefined
+      },
       isLoggedIn: false,
       isTwoFactorAuthenticated: false,
       navbarState: {
@@ -35,20 +37,43 @@ class App extends Component {
       },
       videoEnaled: false,
       playButtonEnabled: false,
-      accessToken: undefined,
       currentUserMail: undefined
     };
 
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);
-    this.onTwoFA = this.onTwoFA.bind(this);
     this.toggleNavbar = this.toggleNavbar.bind(this);
     this.toggleVideoOptions = this.toggleVideoOptions.bind(this);
     this.getVideoOptions = this.getVideoOptions.bind(this);
     this.setAccessToken = this.setAccessToken.bind(this);
     this.getCurrentUserMail = this.getCurrentUserMail.bind(this);
     this.setCurrentUserMail = this.setCurrentUserMail.bind(this);
+    this.setUser = this.setUser.bind(this);
+    this.on2FA = this.on2FA.bind(this);
+  }
+
+  on2FA(data) {
+    let tmpUser = { ...this.state.user };
+    tmpUser.access_token = data.access_token;
+    this.setState({
+      isTwoFactorAuthenticated: true,
+      user: tmpUser
+    });
+  }
+
+  setUser(currentUser, callback) {
+    let tmpUser = { ...currentUser };
+    if (this.state.user.twoFactorEnabled) {
+      tmpUser.twoFactorEnabled = this.state.user.twoFactorEnabled;
+    }
+    this.setState(
+      {
+        user: tmpUser,
+        isLoggedIn: true
+      },
+      () => callback()
+    );
   }
 
   getCurrentUserMail() {
@@ -62,17 +87,21 @@ class App extends Component {
   }
 
   async setAccessToken(token) {
+    let tmpUser = { ...this.state.user };
+    tmpUser.access_token = token;
     this.setState({
-      accessToken: token
+      user: tmpUser
     });
   }
 
   onLogout(didSucceed) {
     if (didSucceed) {
       this.setState({
+        user: {
+          access_token: undefined
+        },
         isLoggedIn: false,
-        isTwoFactorAuthenticated: false,
-        accessToken: undefined
+        isTwoFactorAuthenticated: false
       });
     }
   }
@@ -80,17 +109,7 @@ class App extends Component {
   onLogin(didSucceed) {
     if (didSucceed) {
       this.setState({
-        isLoggedIn: true,
-        isTwoFactorAuthenticated: true //Disabled 2FA
-      });
-    }
-  }
-
-  onTwoFA(success) {
-    if (success) {
-      this.setState({
-        isLoggedIn: success,
-        isTwoFactorAuthenticated: success
+        isLoggedIn: didSucceed
       });
     }
   }
@@ -127,10 +146,13 @@ class App extends Component {
         isLoggedIn={this.state.isLoggedIn}
         isTwoFactorAuthenticated={this.state.isTwoFactorAuthenticated}
         onLogin={this.onLogin}
-        onTwoFA={this.onTwoFA}
         onCancelLogin={this.logoutHandler}
         setAccessToken={this.setAccessToken}
         setCurrentUserMail={this.setCurrentUserMail}
+        accessToken={this.state.user.access_token}
+        setUser={this.setUser}
+        twoFactorEnabled={this.state.user.twoFactorEnabled}
+        on2FA={this.on2FA}
       >
         {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
         {this.state.isLoggedIn ? (
@@ -180,7 +202,10 @@ class App extends Component {
                 exact
                 path="/list"
                 render={props => (
-                  <ListPage {...props} accessToken={this.state.accessToken} />
+                  <ListPage
+                    {...props}
+                    accessToken={this.state.user.access_token}
+                  />
                 )}
               />
               <Route
@@ -189,7 +214,7 @@ class App extends Component {
                 render={props => (
                   <LabelingsPage
                     {...props}
-                    accessToken={this.state.accessToken}
+                    accessToken={this.state.user.access_token}
                   />
                 )}
               />
@@ -199,7 +224,7 @@ class App extends Component {
                 render={props => (
                   <LabelingsPage
                     {...props}
-                    accessToken={this.state.accessToken}
+                    accessToken={this.state.user.access_token}
                   />
                 )}
               />
@@ -207,7 +232,10 @@ class App extends Component {
                 exact
                 path="/"
                 render={props => (
-                  <ListPage {...props} accessToken={this.state.accessToken} />
+                  <ListPage
+                    {...props}
+                    accessToken={this.state.user.access_token}
+                  />
                 )}
               />
               <Route
@@ -215,7 +243,7 @@ class App extends Component {
                 render={props => (
                   <DatasetPage
                     {...props}
-                    accessToken={this.state.accessToken}
+                    accessToken={this.state.user.access_token}
                     getVideoOptions={this.getVideoOptions}
                   />
                 )}
@@ -226,7 +254,7 @@ class App extends Component {
                 render={props => (
                   <ExperimentsPage
                     {...props}
-                    accessToken={this.state.accessToken}
+                    accessToken={this.state.user.access_token}
                   />
                 )}
               />
@@ -236,7 +264,7 @@ class App extends Component {
                 render={props => (
                   <ExperimentsPage
                     {...props}
-                    accessToken={this.state.accessToken}
+                    accessToken={this.state.user.access_token}
                   />
                 )}
               />
@@ -247,10 +275,12 @@ class App extends Component {
                   <SettingsPage
                     {...props}
                     getCurrentUserMail={this.getCurrentUserMail}
-                    accessToken={this.state.accessToken}
+                    accessToken={this.state.user.access_token}
                     onLogout={this.logoutHandler}
                     onVideoOptionsChange={this.toggleVideoOptions}
                     getVideoOptions={this.getVideoOptions}
+                    user={this.state.user}
+                    setAccessToken={this.setAccessToken}
                   />
                 )}
               />

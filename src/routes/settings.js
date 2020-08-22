@@ -9,6 +9,7 @@ import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import EditUserModal from '../components/EditUserModal/EditUserModal';
 import EditSourceModal from '../components/EditSourceModal/EditSourceModal';
+import TwoFAConfigModal from '../components/2FAConfigModal/2FaConfigModal';
 
 import {
   editUser,
@@ -24,6 +25,7 @@ import {
   subscribeUsers,
   deleteUser
 } from '../services/ApiServices/AuthentificationServices';
+import TwoFAconfigModal from '../components/2FAConfigModal/2FaConfigModal';
 
 class SettingsPage extends Component {
   constructor(props) {
@@ -41,6 +43,9 @@ class SettingsPage extends Component {
         isOpen: false,
         isNewSource: false,
         source: undefined
+      },
+      TwoFaModal: {
+        isOpen: false
       },
       sources: [],
       videoEnaled: this.props.getVideoOptions().videoEnabled,
@@ -61,6 +66,24 @@ class SettingsPage extends Component {
     this.onAddSource = this.onAddSource.bind(this);
     this.onSaveSource = this.onSaveSource.bind(this);
     this.onDeleteSource = this.onDeleteSource.bind(this);
+    this.toggleConfigure2FAModal = this.toggleConfigure2FAModal.bind(this);
+    this.on2FAModalClose = this.on2FAModalClose.bind(this);
+  }
+
+  on2FAModalClose() {
+    this.setState({
+      TwoFaModal: {
+        isOpen: false
+      }
+    });
+  }
+
+  toggleConfigure2FAModal() {
+    this.setState({
+      TwoFaModal: {
+        isOpen: !this.state.TwoFaModal.isOpen
+      }
+    });
   }
 
   componentDidMount() {
@@ -177,19 +200,9 @@ class SettingsPage extends Component {
         }
       })
       .catch(err => {
-        console.log(err);
         window.alert(err);
         return;
       });
-    /* deleteUser(email, err => {
-      console.log(err)
-      window.alert(err);
-      return;
-    });
-
-    if (this.state.user.email === email) {
-      this.props.onLogout();
-    }*/
   }
 
   onAddUser(username, email, password, isAdmin, confirmationPassword) {
@@ -301,6 +314,25 @@ class SettingsPage extends Component {
                       </Button>
                     </td>
                   </tr>
+                  <tr>
+                    <th>
+                      {this.props.user.twoFactorEnabled
+                        ? '2FA enabled'
+                        : '2FA disabled'}
+                    </th>
+                    <td></td>
+                    <td>
+                      <Button
+                        block
+                        onClick={this.toggleConfigure2FAModal}
+                        className="btn-secondary mt-0 btn-edit"
+                      >
+                        {this.props.user.twoFactorEnabled
+                          ? 'Disable'
+                          : 'Enable'}
+                      </Button>
+                    </td>
+                  </tr>
                 </tbody>
               </Table>
             </Col>
@@ -400,6 +432,12 @@ class SettingsPage extends Component {
           onDeleteSource={this.onDeleteSource}
           onAddSource={this.onAddSource}
         />
+        <TwoFAconfigModal
+          isOpen={this.state.TwoFaModal.isOpen}
+          accessToken={this.props.accessToken}
+          setAccessToken={this.props.setAccessToken}
+          on2FAModalClose={this.on2FAModalClose}
+        ></TwoFAconfigModal>
       </Loader>
     );
   }

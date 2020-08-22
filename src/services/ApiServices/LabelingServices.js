@@ -2,6 +2,7 @@ var apiConsts = require('./ApiConstants');
 const axios = require('axios');
 
 module.exports.subscribeLabelingsAndLabels = (accessToken, callback) => {
+  console.log(accessToken);
   Promise.all([
     axios(
       apiConsts.generateApiRequest(

@@ -67,3 +67,45 @@ module.exports.subscribeUsers = (accessToken, callback) => {
     .then(res => callback(res.data))
     .catch(() => callback([]));
 };
+
+module.exports.init2FA = (accessToken, callback) => {
+  console.log('init 2FA');
+  axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.POST,
+      apiConsts.AUTH_URI,
+      apiConsts.AUTH_ENDPOINTS.INIT2FA,
+      accessToken
+    )
+  )
+    .then(res => callback(res.data))
+    .catch(err => callback(err));
+};
+
+module.exports.verify2FA = (accessToken, token, callback) => {
+  console.log('verify 2FA');
+  axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.POST,
+      apiConsts.AUTH_URI,
+      apiConsts.AUTH_ENDPOINTS.VERIFY2FA,
+      accessToken,
+      { token: token }
+    )
+  )
+    .then(res => callback(res.data))
+    .catch(err => callback(err.response));
+};
+
+module.exports.reset2FA = (accessToken, callback) => {
+  axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.POST,
+      apiConsts.AUTH_URI,
+      apiConsts.AUTH_ENDPOINTS.RESET2FA,
+      accessToken
+    )
+  )
+    .then(res => callback(res.data))
+    .catch(err => callback(err));
+};
