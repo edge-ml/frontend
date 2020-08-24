@@ -119,6 +119,7 @@ class SettingsPage extends Component {
 
   componentDidMount() {
     subscribeUsers(this.props.accessToken, users => {
+      console.log(users);
       if (users.length === 0) {
         this.setState({
           isAdmin: false
@@ -271,6 +272,7 @@ class SettingsPage extends Component {
         <Container>
           <Row className="mt-3">
             <Col>
+              <h3>Settings</h3>
               <Table responsive>
                 <thead>
                   <tr className={'bg-light'}>
@@ -356,78 +358,84 @@ class SettingsPage extends Component {
             </Col>
           </Row>
 
-          <hr className={'mb-5'} />
           {this.state.isAdmin ? (
-            <Row className="mt-3">
-              <Col>
-                <Table responsive>
-                  <thead>
-                    <tr className={'bg-light'}>
-                      <th>E-Mail</th>
-                      <th>Admin Rights</th>
-                      <th>2FA Configured</th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {this.state.users.map((user, index) => {
-                      return (
-                        <tr>
-                          <th>{user.email}</th>
-                          <td>
-                            {
-                              <FontAwesomeIcon
-                                style={{
-                                  color:
-                                    user.role === 'admin'
+            <div>
+              <h3>Registerd Users</h3>
+              <Row className="mt-3">
+                <Col>
+                  <Table responsive>
+                    <thead>
+                      <tr className={'bg-light'}>
+                        <th>E-Mail</th>
+                        <th>Admin Rights</th>
+                        <th>2FA Configured</th>
+                        <th />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {this.state.users.map((user, index) => {
+                        return (
+                          <tr key={index}>
+                            <th>{user.email}</th>
+                            <td>
+                              {
+                                <FontAwesomeIcon
+                                  style={{
+                                    color:
+                                      user.role === 'admin'
+                                        ? '#43A047'
+                                        : '#b71c1c'
+                                  }}
+                                  icon={
+                                    user.role === 'admin' ? faCheck : faTimes
+                                  }
+                                />
+                              }
+                            </td>
+                            <td>
+                              {
+                                <FontAwesomeIcon
+                                  style={{
+                                    color: user.twoFactorEnabled
                                       ? '#43A047'
                                       : '#b71c1c'
+                                  }}
+                                  icon={
+                                    user.twoFactorEnabled ? faCheck : faTimes
+                                  }
+                                />
+                              }
+                            </td>
+                            <td>
+                              <Button
+                                block
+                                className="btn-secondary mt-0 btn-edit"
+                                onClick={e => {
+                                  this.toggleUserModal(user, false);
                                 }}
-                                icon={user.role === 'admin' ? faCheck : faTimes}
-                              />
-                            }
-                          </td>
-                          <td>
-                            {
-                              <FontAwesomeIcon
-                                style={{
-                                  color: user.isRegistered
-                                    ? '#43A047'
-                                    : '#b71c1c'
-                                }}
-                                icon={user.isRegistered ? faCheck : faTimes}
-                              />
-                            }
-                          </td>
-                          <td>
-                            <Button
-                              block
-                              className="btn-secondary mt-0 btn-edit"
-                              onClick={e => {
-                                this.toggleUserModal(user, false);
-                              }}
-                            >
-                              Edit
-                            </Button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-                {this.state.isAdmin ? (
-                  <Button
-                    block
-                    className="mb-5"
-                    color="secondary"
-                    outline
-                    onClick={e => this.toggleUserModal(null, true)}
-                  >
-                    + Add
-                  </Button>
-                ) : null}
-              </Col>
-            </Row>
+                              >
+                                Edit
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                  {this.state.isAdmin ? (
+                    <Button
+                      block
+                      className="mb-5"
+                      color="secondary"
+                      outline
+                      onClick={e => this.toggleUserModal(null, true)}
+                    >
+                      + Add
+                    </Button>
+                  ) : null}
+                </Col>
+              </Row>
+            </div>
           ) : null}
         </Container>
         <EditUserModal
