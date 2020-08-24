@@ -9,13 +9,15 @@ import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import EditUserModal from '../components/EditUserModal/EditUserModal';
 import EditSourceModal from '../components/EditSourceModal/EditSourceModal';
-import TwoFAConfigModal from '../components/2FAConfigModal/2FaConfigModal';
-import { init2FA } from '../services/ApiServices/AuthentificationServices';
+import TwoFAconfigModal from '../components/2FAConfigModal/2FaConfigModal';
+import {
+  init2FA,
+  reset2FA
+} from '../services/ApiServices/AuthentificationServices';
 
 import {
   editUser,
   addUser,
-  reset2FA,
   subscribeSources,
   addSource,
   editSource,
@@ -26,7 +28,6 @@ import {
   subscribeUsers,
   deleteUser
 } from '../services/ApiServices/AuthentificationServices';
-import TwoFAconfigModal from '../components/2FAConfigModal/2FaConfigModal';
 
 class SettingsPage extends Component {
   constructor(props) {
@@ -71,6 +72,7 @@ class SettingsPage extends Component {
     this.toggleConfigure2FAModal = this.toggleConfigure2FAModal.bind(this);
     this.on2FAModalClose = this.on2FAModalClose.bind(this);
     this.get2FAQrCode = this.get2FAQrCode.bind(this);
+    this.handle2FaButton = this.handle2FaButton.bind(this);
   }
 
   get2FAQrCode(callback) {
@@ -100,6 +102,19 @@ class SettingsPage extends Component {
         }
       });
     });
+  }
+
+  handle2FaButton() {
+    if (this.props.twoFactorEnabled) {
+      var status = window.confirm('Disable 2FA?');
+      if (status) {
+        reset2FA(this.props.accessToken, () => {
+          window.alert('2FA disabled');
+        });
+      }
+    } else {
+      this.toggleConfigure2FAModal();
+    }
   }
 
   componentDidMount() {
@@ -251,7 +266,6 @@ class SettingsPage extends Component {
   }
 
   render() {
-    console.log(this.props.twoFactorEnabled);
     return (
       <Loader>
         <Container>
@@ -330,7 +344,7 @@ class SettingsPage extends Component {
                     <td>
                       <Button
                         block
-                        onClick={this.toggleConfigure2FAModal}
+                        onClick={this.handle2FaButton}
                         className="btn-secondary mt-0 btn-edit"
                       >
                         {this.props.twoFactorEnabled ? 'Disable' : 'Enable'}

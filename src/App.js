@@ -53,7 +53,6 @@ class App extends Component {
   }
 
   setUser(currentUser, callback) {
-    console.log(currentUser);
     let tmpUser = { ...currentUser };
     if (this.state.user.twoFactorEnabled) {
       tmpUser.twoFactorEnabled = this.state.user.twoFactorEnabled;
@@ -82,7 +81,6 @@ class App extends Component {
   }
 
   async setAccessToken(token) {
-    console.log(token);
     let tmpUser = { ...this.state.user };
     tmpUser.access_token = token;
     this.setState({
