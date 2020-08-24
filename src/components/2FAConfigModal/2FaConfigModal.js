@@ -11,10 +11,7 @@ import {
   Row
 } from 'reactstrap';
 
-import {
-  init2FA,
-  verify2FA
-} from '../../services/ApiServices/AuthentificationServices';
+import { verify2FA } from '../../services/ApiServices/AuthentificationServices';
 
 class TwoFAconfigModal extends Component {
   constructor(props) {
@@ -23,16 +20,6 @@ class TwoFAconfigModal extends Component {
       qrCode: undefined
     };
     this.onTokenChanged = this.onTokenChanged.bind(this);
-  }
-
-  componentDidMount() {
-    if (this.props.isOpen) {
-      init2FA(this.props.accessToken, qrCode => {
-        this.setState({
-          qrCode: qrCode
-        });
-      });
-    }
   }
 
   onTokenChanged(e) {
@@ -48,14 +35,6 @@ class TwoFAconfigModal extends Component {
         }
       });
     }
-
-    this.setState({
-      twoFactorAuthentication: {
-        token: e.target.value.trim(),
-        qrCode: this.state.qrCode,
-        tokenFailed: false
-      }
-    });
   }
 
   render() {
@@ -65,7 +44,7 @@ class TwoFAconfigModal extends Component {
         <ModalBody>
           <Row>
             <Col>
-              <img width="100%" alt="2FA QR Code" src={this.state.qrCode} />
+              <img width="100%" alt="2FA QR Code" src={this.props.qrCode} />
             </Col>
             <Col>
               Scan the qr-code with a supported app then enter the token from

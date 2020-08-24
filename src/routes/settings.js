@@ -10,6 +10,7 @@ import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import EditUserModal from '../components/EditUserModal/EditUserModal';
 import EditSourceModal from '../components/EditSourceModal/EditSourceModal';
 import TwoFAConfigModal from '../components/2FAConfigModal/2FaConfigModal';
+import { init2FA } from '../services/ApiServices/AuthentificationServices';
 
 import {
   editUser,
@@ -47,6 +48,7 @@ class SettingsPage extends Component {
       TwoFaModal: {
         isOpen: false
       },
+      qrCode: undefined,
       sources: [],
       videoEnaled: this.props.getVideoOptions().videoEnabled,
       playButtonEnabled: this.props.getVideoOptions().playButtonEnabled,
@@ -68,6 +70,18 @@ class SettingsPage extends Component {
     this.onDeleteSource = this.onDeleteSource.bind(this);
     this.toggleConfigure2FAModal = this.toggleConfigure2FAModal.bind(this);
     this.on2FAModalClose = this.on2FAModalClose.bind(this);
+    this.get2FAQrCode = this.get2FAQrCode.bind(this);
+  }
+
+  get2FAQrCode(callback) {
+    init2FA(this.props.accessToken, qrCode => {
+      this.setState(
+        {
+          qrCode: qrCode
+        },
+        callback
+      );
+    });
   }
 
   on2FAModalClose() {
@@ -79,10 +93,12 @@ class SettingsPage extends Component {
   }
 
   toggleConfigure2FAModal() {
-    this.setState({
-      TwoFaModal: {
-        isOpen: !this.state.TwoFaModal.isOpen
-      }
+    this.get2FAQrCode(() => {
+      this.setState({
+        TwoFaModal: {
+          isOpen: !this.state.TwoFaModal.isOpen
+        }
+      });
     });
   }
 
@@ -138,17 +154,6 @@ class SettingsPage extends Component {
       !this.state.playButtonEnabled
     );
   }
-
-  /*
-  toggleSourceModal(source, isNewSource) {
-    this.setState({
-      sourceModal: {
-        isOpen: true,
-        isNewSource: isNewSource,
-        source: source
-      }
-    });
-  }*/
 
   onCloseModal() {
     this.setState({
@@ -246,6 +251,7 @@ class SettingsPage extends Component {
   }
 
   render() {
+    console.log(this.props.twoFactorEnabled);
     return (
       <Loader>
         <Container>
@@ -316,7 +322,7 @@ class SettingsPage extends Component {
                   </tr>
                   <tr>
                     <th>
-                      {this.props.user.twoFactorEnabled
+                      {this.props.twoFactorEnabled
                         ? '2FA enabled'
                         : '2FA disabled'}
                     </th>
@@ -327,9 +333,7 @@ class SettingsPage extends Component {
                         onClick={this.toggleConfigure2FAModal}
                         className="btn-secondary mt-0 btn-edit"
                       >
-                        {this.props.user.twoFactorEnabled
-                          ? 'Disable'
-                          : 'Enable'}
+                        {this.props.twoFactorEnabled ? 'Disable' : 'Enable'}
                       </Button>
                     </td>
                   </tr>
@@ -437,6 +441,7 @@ class SettingsPage extends Component {
           accessToken={this.props.accessToken}
           setAccessToken={this.props.setAccessToken}
           on2FAModalClose={this.on2FAModalClose}
+          qrCode={this.state.qrCode}
         ></TwoFAconfigModal>
       </Loader>
     );

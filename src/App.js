@@ -50,19 +50,10 @@ class App extends Component {
     this.getCurrentUserMail = this.getCurrentUserMail.bind(this);
     this.setCurrentUserMail = this.setCurrentUserMail.bind(this);
     this.setUser = this.setUser.bind(this);
-    this.on2FA = this.on2FA.bind(this);
-  }
-
-  on2FA(data) {
-    let tmpUser = { ...this.state.user };
-    tmpUser.access_token = data.access_token;
-    this.setState({
-      isTwoFactorAuthenticated: true,
-      user: tmpUser
-    });
   }
 
   setUser(currentUser, callback) {
+    console.log(currentUser);
     let tmpUser = { ...currentUser };
     if (this.state.user.twoFactorEnabled) {
       tmpUser.twoFactorEnabled = this.state.user.twoFactorEnabled;
@@ -72,7 +63,11 @@ class App extends Component {
         user: tmpUser,
         isLoggedIn: true
       },
-      () => callback()
+      () => {
+        if (callback) {
+          callback();
+        }
+      }
     );
   }
 
@@ -87,6 +82,7 @@ class App extends Component {
   }
 
   async setAccessToken(token) {
+    console.log(token);
     let tmpUser = { ...this.state.user };
     tmpUser.access_token = token;
     this.setState({
@@ -281,6 +277,7 @@ class App extends Component {
                     getVideoOptions={this.getVideoOptions}
                     user={this.state.user}
                     setAccessToken={this.setAccessToken}
+                    twoFactorEnabled={this.state.user.twoFactorEnabled}
                   />
                 )}
               />

@@ -21,7 +21,6 @@ import State from '../state';
 
 import { FadeInUp } from 'animate-components';
 
-import { twoFAAuthenticate, restoreSession } from '../services/SocketService';
 import { getServerTime } from '../services/helpers.js';
 
 import {
@@ -59,16 +58,12 @@ class LoginPage extends Component {
     this.emailchange = this.emailchange.bind(this);
     this.passChange = this.passChange.bind(this);
     this.submit = this.submit.bind(this);
-    this.onLogin = this.onLogin.bind(this);
-    this.onTwoFA = this.onTwoFA.bind(this);
     this.onTokenChanged = this.onTokenChanged.bind(this);
     this.onVerified = this.onVerified.bind(this);
     this.onLoginCanceled = this.onLoginCanceled.bind(this);
     this.onDidRestoreSession = this.onDidRestoreSession.bind(this);
     this.passHandleKey = this.passHandleKey.bind(this);
     this.tick = this.tick.bind(this);
-
-    restoreSession(this.onDidRestoreSession);
   }
 
   componentWillReceiveProps(props) {
@@ -110,41 +105,6 @@ class LoginPage extends Component {
     }
   }
 
-  onLogin(didSucceed) {
-    this.setState(
-      update(this.state, {
-        $merge: {
-          button: {
-            disabled: false
-          },
-          authenticationHandlers: {
-            didLoginFail: !didSucceed,
-            onLogin: this.state.authenticationHandlers.onLogin,
-            onTwoFA: this.state.authenticationHandlers.onTwoFA,
-            onCancelLogin: this.state.authenticationHandlers.onCancelLogin
-          }
-        }
-      })
-    );
-
-    if (didSucceed) {
-      this.props.setCurrentUserMail(this.state.usermail);
-      // subscribeVerified(this.onVerified);
-    }
-    this.state.authenticationHandlers.onLogin(didSucceed);
-  }
-
-  onTwoFA(qrCode) {
-    this.setState({
-      twoFactorAuthentication: {
-        qrCode: qrCode
-      }
-    });
-    if (this.tokenInput) {
-      this.tokenInput.focus();
-    }
-  }
-
   onTokenChanged(e) {
     if (e.target.value.length > 6) return;
     else if (e.target && e.target.value.length === 6) {
@@ -163,7 +123,6 @@ class LoginPage extends Component {
                   this.props.onLogin(true);
                 });
               }
-              //this.state.on2FA(data)
             );
           }
         }
@@ -227,7 +186,10 @@ class LoginPage extends Component {
                 isLoggedIn: true,
                 isTwoFactorAuthenticated: false
               },
-              this.check2FALogin
+              () => {
+                this.check2FALogin();
+                this.props.setUser(data);
+              }
             );
           }
         );
@@ -238,8 +200,7 @@ class LoginPage extends Component {
   }
 
   check2FALogin() {
-    if (this.state.user.twoFactorEnabled) {
-    } else {
+    if (!this.state.user.twoFactorEnabled) {
       this.props.setUser(this.state.user, () => {
         this.setState({
           isLoggedIn: true
