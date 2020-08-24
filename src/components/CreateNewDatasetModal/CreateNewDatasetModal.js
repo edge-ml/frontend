@@ -31,6 +31,18 @@ class CreateNewDatasetModal extends Component {
     this.processNewDataset = this.processNewDataset.bind(this);
     this.updateDataSet = this.updateDataSet.bind(this);
     this.generateTimeSeries = this.generateTimeSeries.bind(this);
+    this.onCloseModal = this.onCloseModal.bind(this);
+  }
+
+  onCloseModal() {
+    this.setState(
+      {
+        files: [],
+        units: [],
+        names: []
+      },
+      this.props.onCloseModal
+    );
   }
 
   onUnitChange(e, index) {
@@ -272,11 +284,7 @@ class CreateNewDatasetModal extends Component {
           >
             Upload
           </Button>{' '}
-          <Button
-            color="secondary"
-            className="m-1"
-            onClick={this.props.onCloseModal}
-          >
+          <Button color="secondary" className="m-1" onClick={this.onCloseModal}>
             Cancel
           </Button>
         </ModalFooter>
