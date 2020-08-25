@@ -13,6 +13,8 @@ import {
 
 import './EditUserModal.css';
 
+import { deleteUser } from '../../services/ApiServices/AuthentificationServices';
+
 class EditUserModal extends Component {
   constructor(props) {
     super(props);
@@ -33,7 +35,6 @@ class EditUserModal extends Component {
         isOpen: props.isOpen
       },
       onSave: props.onSave,
-      onDeleteUser: props.onDeleteUser,
       onAddUser: props.onAddUser,
       onReset2FA: props.onReset2FA
     };
@@ -59,7 +60,6 @@ class EditUserModal extends Component {
         isOpen: props.isOpen
       },
       onSave: props.onSave,
-      onDeleteUser: props.onDeleteUser,
       onAddUser: props.onAddUser,
       onReset2FA: props.onReset2FA,
       inputVariables: {
@@ -110,7 +110,16 @@ class EditUserModal extends Component {
 
   onDeleteUser() {
     if (window.confirm('Are you sure to delete this user?')) {
-      this.state.onDeleteUser(this.state.user.email);
+      deleteUser(this.state.user.email)
+        .then(() => {
+          if (this.props.getCurrentUserMail() === this.state.user.email) {
+            this.props.onLogout();
+          }
+        })
+        .catch(err => {
+          window.alert(err);
+          return;
+        });
       this.onCloseModal();
     }
   }
@@ -196,7 +205,7 @@ class EditUserModal extends Component {
   }
 
   render() {
-    let username = this.state.user ? this.state.user.username : '';
+    let username = this.state.user ? this.state.user.email : '';
 
     return (
       <Modal isOpen={this.state.modalState.isOpen}>

@@ -39,7 +39,6 @@ class App extends Component {
       playButtonEnabled: false,
       currentUserMail: undefined
     };
-
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);
@@ -53,13 +52,9 @@ class App extends Component {
   }
 
   setUser(currentUser, callback) {
-    let tmpUser = { ...currentUser };
-    if (this.state.user.twoFactorEnabled) {
-      tmpUser.twoFactorEnabled = this.state.user.twoFactorEnabled;
-    }
     this.setState(
       {
-        user: tmpUser,
+        user: { ...this.state.user, ...currentUser },
         isLoggedIn: true
       },
       () => {

@@ -61,7 +61,6 @@ class SettingsPage extends Component {
     this.toggleUserModal = this.toggleUserModal.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onSaveUser = this.onSaveUser.bind(this);
-    this.onDeleteUser = this.onDeleteUser.bind(this);
     this.onReset2FA = this.onReset2FA.bind(this);
 
     /*this.toggleSourceModal = this.toggleSourceModal.bind(this);*/
@@ -213,19 +212,6 @@ class SettingsPage extends Component {
     }
   }
 
-  onDeleteUser(email) {
-    deleteUser(email)
-      .then(() => {
-        if (this.state.user.email === email) {
-          this.props.onLogout();
-        }
-      })
-      .catch(err => {
-        window.alert(err);
-        return;
-      });
-  }
-
   onAddUser(username, email, password, isAdmin, confirmationPassword) {
     addUser(username, email, password, isAdmin, confirmationPassword, err => {
       window.alert(err);
@@ -267,6 +253,7 @@ class SettingsPage extends Component {
   }
 
   render() {
+    console.log(this.state.users);
     return (
       <Loader>
         <Container>
@@ -445,9 +432,11 @@ class SettingsPage extends Component {
           user={this.state.userModal.user}
           onSave={this.onSaveUser}
           onDeleteUser={this.onDeleteUser}
+          onLogout={this.props.onLogout}
           onAddUser={this.onAddUser}
           onReset2FA={this.onReset2FA}
           currentIsAdmin={this.state.isAdmin}
+          getCurrentUserMail={this.props.getCurrentUserMail}
         />
         <EditSourceModal
           isOpen={this.state.sourceModal.isOpen}
