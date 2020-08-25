@@ -14,10 +14,7 @@ import {
   Alert
 } from 'reactstrap';
 import { MailIcon, ShieldIcon } from 'react-octicons';
-import Request from 'request-promise';
 import update from 'immutability-helper';
-
-import State from '../state';
 
 import { FadeInUp } from 'animate-components';
 
@@ -106,8 +103,9 @@ class LoginPage extends Component {
   }
 
   onTokenChanged(e) {
-    if (e.target.value.length > 6) return;
-    else if (e.target && e.target.value.length === 6) {
+    if (!e.target || !e.target.value) return;
+    //if (e.target.value.length > 6) return;
+    else if (e.target.value.length === 6) {
       verify2FA(this.state.user.access_token, e.target.value, data => {
         if (data) {
           if (data && data.status && data.status !== 200) {
@@ -210,40 +208,6 @@ class LoginPage extends Component {
   }
 
   componentDidMount() {
-    // check if token exsists
-    if (window.localStorage.getItem('id_token')) {
-      const options = {
-        method: 'GET',
-        url: `${State.edge}/authed`,
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('id_token')}`
-        }
-      };
-
-      Request(options)
-        .then(res => {
-          this.setState(
-            update(this.state, {
-              authed: {
-                $set: true
-              }
-            })
-          );
-        })
-        .catch(err => {
-          if (err.statusCode === 401) {
-            this.setState(
-              update(this.state, {
-                authed: {
-                  $set: false
-                }
-              })
-            );
-            window.localStorage.clear();
-          }
-        });
-    }
-
     this.setState({ time: getServerTime() });
     this.interval = setInterval(this.tick, 1000);
   }
@@ -388,6 +352,7 @@ class LoginPage extends Component {
                     <Input
                       autoFocus
                       className={'mt-1'}
+                      id="tokenInput"
                       placeholder="Token"
                       value={this.state.twoFactorAuthentication.token}
                       style={{ textAlign: 'center' }}

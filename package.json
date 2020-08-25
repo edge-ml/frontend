@@ -88,7 +88,10 @@
   "devDependencies": {
     "@babel/core": "^7.4.0",
     "ansi-styles": "^3.2.1",
+    "axios-mock-adapter": "^1.18.2",
     "babel-loader": "^8.0.5",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.3",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",

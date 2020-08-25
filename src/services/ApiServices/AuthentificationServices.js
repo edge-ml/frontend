@@ -83,7 +83,6 @@ module.exports.init2FA = (accessToken, callback) => {
 };
 
 module.exports.verify2FA = (accessToken, token, callback) => {
-  console.log('verify 2FA');
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,

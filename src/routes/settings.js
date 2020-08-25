@@ -24,10 +24,7 @@ import {
   deleteSource
 } from '../services/SocketService';
 
-import {
-  subscribeUsers,
-  deleteUser
-} from '../services/ApiServices/AuthentificationServices';
+import { subscribeUsers } from '../services/ApiServices/AuthentificationServices';
 
 class SettingsPage extends Component {
   constructor(props) {

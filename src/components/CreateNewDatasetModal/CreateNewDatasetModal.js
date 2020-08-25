@@ -106,7 +106,7 @@ class CreateNewDatasetModal extends Component {
   calculateStartEndTimes(timeSeries) {
     var min = timeSeries[0].start;
     var max = timeSeries[0].end;
-    var i = 1;
+    /*var i = 1;
     for (i = 1; i < timeSeries.length; i++) {
       if (min > timeSeries[i].start) {
         min = timeSeries[i].start;
@@ -114,7 +114,7 @@ class CreateNewDatasetModal extends Component {
       if (max < timeSeries[i].end) {
         max = timeSeries[i].end;
       }
-    }
+    }*/
     return { start: min, end: max };
   }
 
