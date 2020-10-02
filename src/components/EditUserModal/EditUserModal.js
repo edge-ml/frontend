@@ -13,7 +13,10 @@ import {
 
 import './EditUserModal.css';
 
-import { deleteUser } from '../../services/ApiServices/AuthentificationServices';
+import {
+  deleteUser,
+  editUser
+} from '../../services/ApiServices/AuthentificationServices';
 
 class EditUserModal extends Component {
   constructor(props) {
@@ -34,13 +37,11 @@ class EditUserModal extends Component {
       modalState: {
         isOpen: props.isOpen
       },
-      onSave: props.onSave,
       onAddUser: props.onAddUser,
       onReset2FA: props.onReset2FA
     };
 
     this.onCloseModal = this.onCloseModal.bind(this);
-    this.onNameChanged = this.onNameChanged.bind(this);
     this.onPasswordChanged = this.onPasswordChanged.bind(this);
     this.onPasswordConfirmChanged = this.onPasswordConfirmChanged.bind(this);
     this.onCurrentPasswordChanged = this.onCurrentPasswordChanged.bind(this);
@@ -59,7 +60,6 @@ class EditUserModal extends Component {
       modalState: {
         isOpen: props.isOpen
       },
-      onSave: props.onSave,
       onAddUser: props.onAddUser,
       onReset2FA: props.onReset2FA,
       inputVariables: {
@@ -70,12 +70,6 @@ class EditUserModal extends Component {
         isAdmin: props.user ? props.user.isAdmin : false
       }
     }));
-  }
-
-  onNameChanged(name) {
-    let inputVariables = { ...this.state.inputVariables };
-    inputVariables.name = name;
-    this.setState({ inputVariables });
   }
 
   onEMailChanged(email) {
@@ -108,9 +102,10 @@ class EditUserModal extends Component {
     this.setState({ inputVariables });
   }
 
+  // TODO: Adapt this to the new api
   onDeleteUser() {
     if (window.confirm('Are you sure to delete this user?')) {
-      deleteUser(this.state.user.email)
+      deleteUser(this.props.accessToken, this.state.user.email)
         .then(() => {
           if (this.props.getCurrentUserMail() === this.state.user.email) {
             this.props.onLogout();
@@ -155,14 +150,13 @@ class EditUserModal extends Component {
         currentPassword: '',
         isAdmin: false
       },
-      onSave: undefined,
       onDeleteUser: undefined
     });
   }
 
   onSave() {
-    if (!this.state.inputVariables.name) {
-      window.alert('Username cannot be empty.');
+    if (!this.state.inputVariables.email) {
+      window.alert('E-mail cannot be empty.');
       return;
     }
 

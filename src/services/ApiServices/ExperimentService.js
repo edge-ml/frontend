@@ -1,13 +1,23 @@
 var apiConsts = require('./ApiConstants');
-const axios = require('axios');
+const ax = require('axios');
+const { default: LocalStorageService } = require('../LocalStorageService');
+const axios = ax.create();
+const localStorageService = LocalStorageService.getService();
+
+axios.interceptors.request.use(config => {
+  const token = localStorageService.getAccessToken();
+  if (token) {
+    config.headers['Authorization'] = token;
+  }
+  return config;
+});
 
 module.exports.subscribeExperiments = (accessToken, callback) => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.GET,
       apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.EXPERIMENTS,
-      accessToken
+      apiConsts.API_ENDPOINTS.EXPERIMENTS
     )
   )
     .then(experiments => callback(experiments.data))
@@ -20,7 +30,6 @@ module.exports.addExperiment = (accessToken, newExperiment, callback) => {
       apiConsts.HTTP_METHODS.POST,
       apiConsts.API_URI,
       apiConsts.API_ENDPOINTS.EXPERIMENTS,
-      accessToken,
       newExperiment
     )
   )
@@ -29,8 +38,7 @@ module.exports.addExperiment = (accessToken, newExperiment, callback) => {
         apiConsts.generateApiRequest(
           apiConsts.HTTP_METHODS.GET,
           apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.EXPERIMENTS,
-          accessToken
+          apiConsts.API_ENDPOINTS.EXPERIMENTS
         )
       )
         .then(experiments => callback(experiments.data))
@@ -45,7 +53,6 @@ module.exports.updateExperiment = (accessToken, experiment, callback) => {
       apiConsts.HTTP_METHODS.PUT,
       apiConsts.API_URI,
       apiConsts.API_ENDPOINTS.EXPERIMENTS + `/${experiment['_id']}`,
-      accessToken,
       experiment
     )
   )
@@ -54,8 +61,7 @@ module.exports.updateExperiment = (accessToken, experiment, callback) => {
         apiConsts.generateApiRequest(
           apiConsts.HTTP_METHODS.GET,
           apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.EXPERIMENTS,
-          accessToken
+          apiConsts.API_ENDPOINTS.EXPERIMENTS
         )
       )
     )
@@ -68,8 +74,7 @@ module.exports.deleteExperiment = (accessToken, experimentId, callback) => {
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.DELETE,
       apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.EXPERIMENTS + `/${experimentId}`,
-      accessToken
+      apiConsts.API_ENDPOINTS.EXPERIMENTS + `/${experimentId}`
     )
   )
     .then(() =>
@@ -77,8 +82,7 @@ module.exports.deleteExperiment = (accessToken, experimentId, callback) => {
         apiConsts.generateApiRequest(
           apiConsts.HTTP_METHODS.GET,
           apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.EXPERIMENTS,
-          accessToken
+          apiConsts.API_ENDPOINTS.EXPERIMENTS
         )
       )
         .then(experiments => callback(experiments))

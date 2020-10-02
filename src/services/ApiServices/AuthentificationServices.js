@@ -20,13 +20,14 @@ module.exports.loginUser = function(userEMail, password) {
   });
 };
 
-module.exports.deleteUser = userEMail => {
+module.exports.deleteUser = (accesstoken, userEMail) => {
   return new Promise((resolve, reject) => {
     axios(
-      apiConsts.generateRequest(
-        apiConsts.HTTP_METHODS.POST,
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.DELETE,
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.DELETE,
+        accesstoken,
         {
           email: userEMail
         }

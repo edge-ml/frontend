@@ -15,15 +15,15 @@ import {
 } from 'reactstrap';
 import { MailIcon, ShieldIcon } from 'react-octicons';
 import update from 'immutability-helper';
-
 import { FadeInUp } from 'animate-components';
-
 import { getServerTime } from '../services/helpers.js';
-
 import {
   loginUser,
   verify2FA
 } from '../services/ApiServices/AuthentificationServices';
+
+import LocalStorageService from '../services/LocalStorageService';
+const localStorageService = LocalStorageService.getService();
 
 class LoginPage extends Component {
   constructor(props) {
@@ -169,6 +169,7 @@ class LoginPage extends Component {
 
     loginUser(this.state.usermail, this.state.password)
       .then(data => {
+        localStorageService.setToken(data.access_token, data.refresh_token);
         this.setState(
           update(this.state, {
             $merge: {

@@ -63,7 +63,6 @@ class SettingsPage extends Component {
     /*this.toggleSourceModal = this.toggleSourceModal.bind(this);*/
     this.onSourcesChanged = this.onSourcesChanged.bind(this);
     this.onAddSource = this.onAddSource.bind(this);
-    this.onSaveSource = this.onSaveSource.bind(this);
     this.onDeleteSource = this.onDeleteSource.bind(this);
     this.toggleConfigure2FAModal = this.toggleConfigure2FAModal.bind(this);
     this.on2FAModalClose = this.on2FAModalClose.bind(this);
@@ -229,12 +228,6 @@ class SettingsPage extends Component {
 
   onAddSource(name, url, enabled) {
     addSource(name, url, enabled, err => {
-      window.alert(err);
-    });
-  }
-
-  onSaveSource(name, newName, newUrl, enabled) {
-    editSource(name, newName, newUrl, enabled, err => {
       window.alert(err);
     });
   }
@@ -440,7 +433,6 @@ class SettingsPage extends Component {
           onCloseModal={this.onCloseModal}
           isNewSource={this.state.sourceModal.isNewSource}
           source={this.state.sourceModal.source}
-          onSave={this.onSaveSource}
           onDeleteSource={this.onDeleteSource}
           onAddSource={this.onAddSource}
         />

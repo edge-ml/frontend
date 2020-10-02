@@ -1,13 +1,23 @@
 var apiConsts = require('./ApiConstants');
-const axios = require('axios');
+const ax = require('axios');
+const { default: LocalStorageService } = require('../LocalStorageService');
+const axios = ax.create();
+const localStorageService = LocalStorageService.getService();
+
+axios.interceptors.request.use(config => {
+  const token = localStorageService.getAccessToken();
+  if (token) {
+    config.headers['Authorization'] = token;
+  }
+  return config;
+});
 
 module.exports.getDatasets = (accessToken, callback) => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.GET,
       apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS,
-      accessToken
+      apiConsts.API_ENDPOINTS.DATASETS
     )
   )
     .then(result => callback(result.data))
@@ -19,8 +29,7 @@ module.exports.getDataset = (accessToken, id, callback) => {
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.GET,
       apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS + `/${id}`,
-      accessToken
+      apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
     )
   )
     .then(dataset => callback(dataset.data))
@@ -37,8 +46,7 @@ module.exports.deleteDatasets = (accessToken, ids, callback) => {
         apiConsts.generateApiRequest(
           apiConsts.HTTP_METHODS.DELETE,
           apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.DATASETS + `/${id}`,
-          accessToken
+          apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
         )
       )
     ];
@@ -53,8 +61,7 @@ module.exports.deleteDataset = (accessToken, id, callback) => {
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.DELETE,
       apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS + `/${id}`,
-      accessToken
+      apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
     )
   )
     .then(callback(false))
@@ -67,7 +74,6 @@ module.exports.updateDataset = (accessToken, dataset, callback) => {
       apiConsts.HTTP_METHODS.PUT,
       apiConsts.API_URI,
       apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`,
-      accessToken,
       dataset
     )
   )
@@ -76,8 +82,7 @@ module.exports.updateDataset = (accessToken, dataset, callback) => {
         apiConsts.generateApiRequest(
           apiConsts.HTTP_METHODS.GET,
           apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`,
-          accessToken
+          apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`
         )
       )
         .then(updatedDataset => {
@@ -95,7 +100,6 @@ module.exports.createDataset = (accessToken, dataset, callback) => {
       apiConsts.HTTP_METHODS.POST,
       apiConsts.API_URI,
       apiConsts.API_ENDPOINTS.DATASETS,
-      accessToken,
       dataset
     )
   )
