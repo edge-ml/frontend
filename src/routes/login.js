@@ -21,6 +21,7 @@ import {
   loginUser,
   verify2FA
 } from '../services/ApiServices/AuthentificationServices';
+import jwt_decode from 'jwt-decode';
 
 import LocalStorageService from '../services/LocalStorageService';
 const localStorageService = LocalStorageService.getService();
@@ -61,6 +62,7 @@ class LoginPage extends Component {
     this.onDidRestoreSession = this.onDidRestoreSession.bind(this);
     this.passHandleKey = this.passHandleKey.bind(this);
     this.tick = this.tick.bind(this);
+    this.checkLoggedInStatus = this.checkLoggedInStatus.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -74,6 +76,21 @@ class LoginPage extends Component {
         }
       })
     );
+  }
+
+  checkLoggedInStatus() {
+    var accessToken = localStorageService.getAccessToken();
+    var refreshToken = localStorageService.getRefreshToken();
+    if (accessToken && jwt_decode(accessToken).exp * 1000 >= Date.now()) {
+      this.props.setUser(this.state.user);
+      this.setState({
+        isLoggedIn: true
+      });
+    }
+    if (refreshToken && jwt_decode(refreshToken).exp * 1000 >= Date.now()) {
+      //TODO: Need to obtain new Access_Token here
+      return;
+    }
   }
 
   emailchange(event) {
@@ -209,6 +226,7 @@ class LoginPage extends Component {
   }
 
   componentDidMount() {
+    this.checkLoggedInStatus();
     this.setState({ time: getServerTime() });
     this.interval = setInterval(this.tick, 1000);
   }
