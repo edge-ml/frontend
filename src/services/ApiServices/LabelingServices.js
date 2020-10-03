@@ -7,7 +7,6 @@ const localStorageService = LocalStorageService.getService();
 axios.interceptors.request.use(config => {
   const token = localStorageService.getAccessToken();
   if (token) {
-    const { default: LocalStorageService } = require('../LocalStorageService');
     config.headers['Authorization'] = token;
   }
   return config;

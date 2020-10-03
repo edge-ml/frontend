@@ -12,16 +12,20 @@ axios.interceptors.request.use(config => {
   return config;
 });
 
-module.exports.getDatasets = (accessToken, callback) => {
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.GET,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS
+module.exports.getDatasets = () => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DATASETS
+      )
     )
-  )
-    .then(result => callback(result.data))
-    .catch(err => window.alert(err));
+      .then(result => resolve(result.data))
+      .catch(err => {
+        window.alert(err);
+      });
+  });
 };
 
 module.exports.getDataset = (accessToken, id, callback) => {

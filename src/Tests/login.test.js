@@ -8,8 +8,31 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import * as AuthentificationServices from '../services/ApiServices/AuthentificationServices';
+import LocalStorageService from '../services/LocalStorageService';
 
 configure({ adapter: new Adapter() });
+class LocalStorageMock {
+  constructor() {
+    this.store = {};
+  }
+
+  clear() {
+    this.store = {};
+  }
+
+  getItem(key) {
+    return undefined;
+  }
+
+  setItem(key, value) {
+    this.store[key] = value.toString();
+  }
+
+  removeItem(key) {
+    delete this.store[key];
+  }
+}
+global.localStorage = new LocalStorageMock();
 
 let container = null;
 beforeEach(() => {
