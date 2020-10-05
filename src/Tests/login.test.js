@@ -6,6 +6,10 @@ import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import {
+  login_twoFAEnabled_twoFAVerified,
+  loginReturn_twoFAVerified
+} from './fakeData/fakeLoginData';
 
 import * as AuthentificationServices from '../services/ApiServices/AuthentificationServices';
 import LocalStorageService from '../services/LocalStorageService';
@@ -63,7 +67,9 @@ describe('Login tests', () => {
     };
 
     var mock = new MockAdapter(axios);
-    mock.onPost('http://localhost/auth/login').reply(200, fakeLoginData);
+    mock
+      .onPost('http://localhost/auth/login')
+      .reply(200, login_twoFAEnabled_twoFAVerified);
 
     await expect(
       AuthentificationServices.loginUser('no1@teco.edu', 'admin')
@@ -139,22 +145,13 @@ describe('Login tests', () => {
   });
 
   it('Login with 2FA enabled and token input', async () => {
-    const fakeLoginData = {
-      access_token: 'fakeAccessToken',
-      refresh_token: 'fakeRefreshToken',
-      twoFactorEnabled: true,
-      twoFactorVerified: false
-    };
-
-    const fakeTokenData = {
-      access_token: 'fakeAccessToken',
-      refresh_token: 'fakeRefreshToken',
-      twoFactorVerified: true
-    };
-
     var mock = new MockAdapter(axios);
-    mock.onPost('http://localhost/auth/login').reply(200, fakeLoginData);
-    mock.onPost('http://localhost/auth/2fa/verify').reply(200, fakeTokenData);
+    mock
+      .onPost('http://localhost/auth/login')
+      .reply(200, login_twoFAEnabled_twoFAVerified);
+    mock
+      .onPost('http://localhost/auth/2fa/verify')
+      .reply(200, loginReturn_twoFAVerified);
 
     const result = mount(
       <AuthWall setUser={() => {}}>
@@ -183,6 +180,56 @@ describe('Login tests', () => {
   });
 });
 
+describe('Clear input fields after not successful login', () => {
+  it('', async () => {
+    const loginError = {
+      error: 'Password not correct!'
+    };
+
+    var mock = new MockAdapter(axios);
+    mock.onPost('http://localhost/auth/login').reply(400, loginError);
+
+    const result = mount(
+      <AuthWall setUser={() => {}}>
+        <h1>WebsiteContent</h1>
+      </AuthWall>
+    );
+
+    jest.useFakeTimers();
+    await result
+      .find('#email')
+      .first()
+      .simulate('change', { target: { value: 'someMail@teco.edu' } });
+    await result
+      .find('#password')
+      .first()
+      .simulate('change', { target: { value: 'wrongPassword' } });
+    expect(result.state().usermail).toBe('someMail@teco.edu');
+    expect(result.state().password).toBe('wrongPassword');
+    await result
+      .find('#login-button')
+      .first()
+      .simulate('click');
+    //Don't know why this is necessary
+    await flushPromises();
+    jest.runAllTimers();
+    await flushPromises();
+    expect(result.state().usermail).toBe('someMail@teco.edu');
+    expect(result.state().password).toBe('');
+    expect(
+      result
+        .find('#password')
+        .first()
+        .text()
+    ).toBe('');
+
+    expect(result.state().authenticationHandlers.didLoginFail).toBe(false);
+  });
+});
+
+function flushPromises() {
+  return new Promise(resolve => setImmediate(resolve));
+}
 function tick() {
   return new Promise(resolve => {
     setTimeout(resolve, 0);

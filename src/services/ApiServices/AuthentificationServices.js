@@ -16,7 +16,7 @@ module.exports.loginUser = function(userEMail, password) {
       )
     )
       .then(data => resolve(data.data))
-      .catch(data => reject(data));
+      .catch(err => reject(err));
   });
 };
 
@@ -34,7 +34,7 @@ module.exports.deleteUser = (accesstoken, userEMail) => {
       )
     )
       .then(data => resolve(data.data))
-      .catch(error => reject(error));
+      .catch(err => reject(err));
   });
 };
 
@@ -52,7 +52,7 @@ module.exports.registerNewUser = function(userEMail, password) {
       )
     )
       .then(data => resolve(data.data))
-      .catch(data => reject(data));
+      .catch(err => reject(err));
   });
 };
 
@@ -84,17 +84,19 @@ module.exports.init2FA = (accessToken, callback) => {
 };
 
 module.exports.verify2FA = (accessToken, token, callback) => {
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.POST,
-      apiConsts.AUTH_URI,
-      apiConsts.AUTH_ENDPOINTS.VERIFY2FA,
-      accessToken,
-      { token: token }
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.VERIFY2FA,
+        accessToken,
+        { token: token }
+      )
     )
-  )
-    .then(res => callback(res.data))
-    .catch(err => callback(err.response));
+      .then(res => resolve(res.data))
+      .catch(err => reject(err.respon));
+  });
 };
 
 module.exports.reset2FA = (accessToken, callback) => {
