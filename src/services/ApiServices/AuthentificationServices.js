@@ -1,10 +1,21 @@
 var apiConsts = require('./ApiConstants');
+const ax = require('axios');
+const { default: LocalStorageService } = require('../LocalStorageService');
+const axios = ax.create();
+const axiosNoToken = ax.create();
+const localStorageService = LocalStorageService.getService();
 
-const axios = require('axios');
+axios.interceptors.request.use(config => {
+  const token = localStorageService.getAccessToken();
+  if (token) {
+    config.headers['Authorization'] = token;
+  }
+  return config;
+});
 
 module.exports.loginUser = function(userEMail, password) {
   return new Promise((resolve, reject) => {
-    axios(
+    axiosNoToken(
       apiConsts.generateRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
@@ -27,7 +38,6 @@ module.exports.deleteUser = (accesstoken, userEMail) => {
         apiConsts.HTTP_METHODS.DELETE,
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.DELETE,
-        accesstoken,
         {
           email: userEMail
         }
@@ -40,7 +50,7 @@ module.exports.deleteUser = (accesstoken, userEMail) => {
 
 module.exports.registerNewUser = function(userEMail, password) {
   return new Promise((resolve, reject) => {
-    axios(
+    axiosNoToken(
       apiConsts.generateRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
@@ -61,8 +71,7 @@ module.exports.subscribeUsers = (accessToken, callback) => {
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.GET,
       apiConsts.AUTH_URI,
-      apiConsts.AUTH_ENDPOINTS.USERS,
-      accessToken
+      apiConsts.AUTH_ENDPOINTS.USERS
     )
   )
     .then(res => callback(res.data))
@@ -75,27 +84,25 @@ module.exports.init2FA = (accessToken, callback) => {
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
       apiConsts.AUTH_URI,
-      apiConsts.AUTH_ENDPOINTS.INIT2FA,
-      accessToken
+      apiConsts.AUTH_ENDPOINTS.INIT2FA
     )
   )
     .then(res => callback(res.data))
     .catch(err => callback(err));
 };
 
-module.exports.verify2FA = (accessToken, token, callback) => {
+module.exports.verify2FA = (accessToken, token) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.VERIFY2FA,
-        accessToken,
         { token: token }
       )
     )
       .then(res => resolve(res.data))
-      .catch(err => reject(err.respon));
+      .catch(err => reject(err.response));
   });
 };
 
@@ -104,8 +111,7 @@ module.exports.reset2FA = (accessToken, callback) => {
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
       apiConsts.AUTH_URI,
-      apiConsts.AUTH_ENDPOINTS.RESET2FA,
-      accessToken
+      apiConsts.AUTH_ENDPOINTS.RESET2FA
     )
   )
     .then(res => callback(res.data))

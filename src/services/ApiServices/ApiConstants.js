@@ -52,7 +52,6 @@ module.exports.generateApiRequest = (
   method = this.HTTP_METHODS.GET,
   baseUri = this.API_URI,
   endpoint = this.API_ENDPOINTS.DEFAULT,
-  accessToken = undefined,
   body = {}
 ) => {
   return {
@@ -60,8 +59,7 @@ module.exports.generateApiRequest = (
     url: baseUri + endpoint,
     data: body,
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: accessToken
+      'Content-Type': 'application/json'
     }
   };
 };

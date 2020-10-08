@@ -111,10 +111,10 @@ class DatasetPage extends Component {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
     //subscribeDataset(this.props.match.params.id, this.onDatasetChanged);
-    getDataset(
-      this.props.accessToken,
-      this.props.match.params.id,
-      this.onDatasetChanged
+    getDataset(this.props.accessToken, this.props.match.params.id).then(
+      dataset => {
+        this.onDatasetChanged(dataset);
+      }
     );
   }
 
@@ -128,9 +128,8 @@ class DatasetPage extends Component {
   onDatasetUpdated() {
     getDataset(
       this.props.accessToken,
-      this.props.match.params.id,
-      this.onDatasetChanged
-    );
+      this.props.match.params.id
+    ).then(dataset => this.onDatasetChanged(dataset));
   }
 
   onDatasetChanged(dataset) {
@@ -346,11 +345,7 @@ class DatasetPage extends Component {
         if (label.labelingId === labelings[j]['_id']) {
           if (!labelTypes.some(type => type['_id'] === label.typeId)) {
             window.alert(
-              `The typeId ${
-                label.typeId
-              } does not match any defined label type of labeling ${
-                label.labelingId
-              }.`
+              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
             );
             return null;
           }
@@ -373,9 +368,7 @@ class DatasetPage extends Component {
 
     if (labels.length !== 0) {
       window.alert(
-        `The labelingId ${
-          labels[0].labelingId
-        } does not match any defined labeling.`
+        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`
       );
       return;
     }

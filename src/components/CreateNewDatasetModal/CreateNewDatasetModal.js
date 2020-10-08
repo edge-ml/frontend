@@ -130,11 +130,9 @@ class CreateNewDatasetModal extends Component {
       end: startEnd.end,
       timeSeries: timeSeries
     };
-    createDataset(
-      this.props.accessToken,
-      datasetObj,
-      this.props.onDatasetComplete
-    );
+    createDataset(this.props.accessToken, datasetObj).then(data => {
+      this.props.onDatasetComplete(data);
+    });
   }
 
   updateDataSet(timeData) {

@@ -207,7 +207,7 @@ class LoginPage extends Component {
     });
   }
 
-  submit(event) {
+  submit() {
     this.setState(
       update(this.state, {
         $merge: {

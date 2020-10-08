@@ -105,13 +105,8 @@ class ListPage extends Component {
       return;
     }
 
-    deleteDatasets(this.props.accessToken, this.state.datasetsToDelete, err => {
-      if (err) {
-        window.alert(err);
-        this.setState({
-          modal: false
-        });
-      } else {
+    deleteDatasets(this.props.accessToken, this.state.datasetsToDelete)
+      .then(() => {
         this.setState({
           modal: false,
           datasets: this.state.datasets.filter(
@@ -119,8 +114,13 @@ class ListPage extends Component {
           ),
           datasetsToDelete: []
         });
-      }
-    });
+      })
+      .catch(err => {
+        window.alert(err);
+        this.setState({
+          modal: false
+        });
+      });
   }
 
   displayTime(time) {

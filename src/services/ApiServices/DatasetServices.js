@@ -29,47 +29,53 @@ module.exports.getDatasets = () => {
 };
 
 module.exports.getDataset = (accessToken, id, callback) => {
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.GET,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
+      )
     )
-  )
-    .then(dataset => callback(dataset.data))
-    .catch(err => console.log(err));
+      .then(dataset => resolve(dataset.data))
+      .catch(err => console.log(err));
+  });
 };
 
 module.exports.deleteDatasets = (accessToken, ids, callback) => {
-  console.log(ids);
-  let promises = [];
-  for (let id of ids) {
-    promises = [
-      ...promises,
-      axios(
-        apiConsts.generateApiRequest(
-          apiConsts.HTTP_METHODS.DELETE,
-          apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
+  return new Promise((resolve, reject) => {
+    console.log(ids);
+    let promises = [];
+    for (let id of ids) {
+      promises = [
+        ...promises,
+        axios(
+          apiConsts.generateApiRequest(
+            apiConsts.HTTP_METHODS.DELETE,
+            apiConsts.API_URI,
+            apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
+          )
         )
-      )
-    ];
-  }
-  return Promise.all(promises)
-    .then(callback(false))
-    .catch(err => callback(err));
+      ];
+    }
+    return Promise.all(promises)
+      .then(resolve())
+      .catch(err => reject(err));
+  });
 };
 
 module.exports.deleteDataset = (accessToken, id, callback) => {
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.DELETE,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.DELETE,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DATASETS + `/${id}`
+      )
     )
-  )
-    .then(callback(false))
-    .catch(callback(true));
+      .then(resolve())
+      .catch(reject());
+  });
 };
 
 module.exports.updateDataset = (accessToken, dataset, callback) => {
@@ -97,16 +103,22 @@ module.exports.updateDataset = (accessToken, dataset, callback) => {
     .catch(err => console.log(err));
 };
 
-module.exports.createDataset = (accessToken, dataset, callback) => {
+module.exports.createDataset = (accessToken, dataset) => {
   console.log(dataset);
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.POST,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS,
-      dataset
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DATASETS,
+        dataset
+      )
     )
-  )
-    .then(this.getDatasets(accessToken, callback))
-    .catch(err => window.alert(err));
+      .then(
+        this.getDatasets(accessToken).then(datasets => {
+          resolve(datasets);
+        })
+      )
+      .catch(err => window.alert(err));
+  });
 };
