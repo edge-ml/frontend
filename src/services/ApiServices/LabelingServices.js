@@ -139,10 +139,8 @@ module.exports.updateLabelingAndLabels = (
       )
   )
     .then(newLabels => {
-      console.log(newLabels);
       let newLabelsId = newLabels.map(label => label.data['_id']);
       labeling.labels = [...labeling.labels, ...newLabelsId];
-      console.log(labeling);
       let promises = [];
       if (!labeling['_id']) {
         promises = [

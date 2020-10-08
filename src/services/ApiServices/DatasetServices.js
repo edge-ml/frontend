@@ -104,7 +104,6 @@ module.exports.updateDataset = (accessToken, dataset, callback) => {
 };
 
 module.exports.createDataset = (accessToken, dataset) => {
-  console.log(dataset);
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(

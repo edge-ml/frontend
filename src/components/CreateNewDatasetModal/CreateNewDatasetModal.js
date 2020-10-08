@@ -32,17 +32,16 @@ class CreateNewDatasetModal extends Component {
     this.updateDataSet = this.updateDataSet.bind(this);
     this.generateTimeSeries = this.generateTimeSeries.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
+    this.resetState = this.resetState.bind(this);
   }
 
   onCloseModal() {
-    this.setState(
-      {
-        files: [],
-        units: [],
-        names: []
-      },
-      this.props.onCloseModal
-    );
+    this.setState({
+      files: [],
+      units: [],
+      names: []
+    });
+    this.props.onCloseModal();
   }
 
   onUnitChange(e, index) {
@@ -61,11 +60,17 @@ class CreateNewDatasetModal extends Component {
     });
   }
 
-  onDeleteFile(e) {
-    var array = [...this.state.files];
-    array.splice(e.target.id, 1);
+  onDeleteFile(index) {
+    var files = [...this.state.files];
+    var names = [...this.state.names];
+    var units = [...this.state.units];
+    files.splice(index, 1);
+    names.splice(index, 1);
+    units.splice(index, 1);
     this.setState({
-      files: array
+      files: files,
+      names: names,
+      units: units
     });
   }
 
@@ -103,18 +108,17 @@ class CreateNewDatasetModal extends Component {
     return timeSeries;
   }
 
+  resetState() {
+    this.setState({
+      files: [],
+      names: [],
+      units: []
+    });
+  }
+
   calculateStartEndTimes(timeSeries) {
     var min = timeSeries[0].start;
     var max = timeSeries[0].end;
-    /*var i = 1;
-    for (i = 1; i < timeSeries.length; i++) {
-      if (min > timeSeries[i].start) {
-        min = timeSeries[i].start;
-      }
-      if (max < timeSeries[i].end) {
-        max = timeSeries[i].end;
-      }
-    }*/
     return { start: min, end: max };
   }
 
@@ -139,7 +143,6 @@ class CreateNewDatasetModal extends Component {
     var timeSeries = this.generateTimeSeries(timeData);
     var dataset = this.props.dataset;
     dataset.timeSeries.push(...timeSeries);
-
     updateDataset(
       this.props.accessToken,
       dataset,
@@ -147,7 +150,7 @@ class CreateNewDatasetModal extends Component {
     );
   }
 
-  processCSV(files, callback) {
+  processCSV(files) {
     var timeData = [];
     var i = 0;
     for (i = 0; i < files.length; i++) {
@@ -171,9 +174,9 @@ class CreateNewDatasetModal extends Component {
         timeData.push(lines);
         if (timeData.length === this.state.files.length) {
           if (!this.props.dataset) {
-            this.processNewDataset(timeData, callback);
+            this.processNewDataset(timeData);
           } else {
-            this.updateDataSet(timeData, callback);
+            this.updateDataSet(timeData);
           }
         }
       };
@@ -182,12 +185,8 @@ class CreateNewDatasetModal extends Component {
   }
 
   onUpload() {
-    const func = this.props.onDatasetComplete
-      ? this.props.onDatasetComplete
-      : () => {
-          console.log('no function');
-        };
-    this.processCSV(this.state.files, func);
+    this.resetState();
+    this.processCSV(this.state.files);
   }
 
   render() {
@@ -241,6 +240,7 @@ class CreateNewDatasetModal extends Component {
                       </td>
                       <td>
                         <Input
+                          id="nameInput"
                           key={index}
                           type="text"
                           placeholder="Name"
@@ -250,6 +250,7 @@ class CreateNewDatasetModal extends Component {
                       </td>
                       <td>
                         <Input
+                          id="unitInput"
                           key={index}
                           tpye="text"
                           placeholder="Unit"
@@ -259,10 +260,10 @@ class CreateNewDatasetModal extends Component {
                       </td>
                       <td>
                         <Button
-                          id={index}
+                          id="deleteButton"
                           color="danger"
                           size="sm"
-                          onClick={this.onDeleteFile}
+                          onClick={index => this.onDeleteFile(index)}
                         >
                           Delete
                         </Button>
@@ -276,13 +277,19 @@ class CreateNewDatasetModal extends Component {
         </ModalBody>
         <ModalFooter>
           <Button
+            id="uploadButton"
             color="primary"
             className="m-1 mr-auto"
             onClick={this.onUpload}
           >
             Upload
           </Button>{' '}
-          <Button color="secondary" className="m-1" onClick={this.onCloseModal}>
+          <Button
+            id="cancelButton"
+            olor="secondary"
+            className="m-1"
+            onClick={this.onCloseModal}
+          >
             Cancel
           </Button>
         </ModalFooter>

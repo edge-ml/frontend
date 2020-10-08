@@ -90,7 +90,6 @@ describe('Login tests', () => {
       .simulate('click');
     await tick();
     result.update();
-    console.log(result.html());
     expect(result.html().includes('<h1>WebsiteContent</h1>')).toEqual(true);
   });
 
