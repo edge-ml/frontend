@@ -11,8 +11,12 @@ import {
   loginReturn_twoFAVerified
 } from './fakeData/fakeLoginData';
 
-import * as AuthentificationServices from '../services/ApiServices/AuthentificationServices';
-import LocalStorageService from '../services/LocalStorageService';
+import {
+  loginUser,
+  verify2FA
+} from '../services/ApiServices/AuthentificationServices';
+
+jest.mock('../services/ApiServices/AuthentificationServices');
 
 configure({ adapter: new Adapter() });
 class LocalStorageMock {
@@ -58,24 +62,6 @@ describe('Login tests', () => {
     expect(wrapper.contains(header)).toEqual(true);
   });
 
-  it('LoginUser Api call', async () => {
-    const fakeLoginData = {
-      access_token: 'fakeAccessToken',
-      refresh_token: 'fakeRefreshToken',
-      twoFactorEnabled: true,
-      twoFactorVerified: false
-    };
-
-    var mock = new MockAdapter(axios);
-    mock
-      .onPost('http://localhost/auth/login')
-      .reply(200, login_twoFAEnabled_twoFAVerified);
-
-    await expect(
-      AuthentificationServices.loginUser('no1@teco.edu', 'admin')
-    ).resolves.toEqual(fakeLoginData);
-  });
-
   it('Login with 2FA disabled', async () => {
     const fakeLoginData = {
       access_token: 'fakeAccessToken',
@@ -83,29 +69,28 @@ describe('Login tests', () => {
       twoFactorEnabled: false,
       twoFactorVerified: false
     };
-
-    var mock = new MockAdapter(axios);
-    mock.onPost('http://localhost/auth/login').reply(200, fakeLoginData);
+    loginUser.mockReturnValue(Promise.resolve(fakeLoginData));
 
     const result = mount(
       <AuthWall setUser={() => {}}>
         <h1>WebsiteContent</h1>
       </AuthWall>
     );
-    await result
+    result
       .find('#email')
       .first()
       .simulate('change', { target: { value: 'no1@teco.edu' } });
-    await result
+    result
       .find('#password')
       .first()
       .simulate('change', { target: { value: 'admin' } });
-    await result
+    result
       .find('#login-button')
       .first()
       .simulate('click');
     await tick();
-    await result.update();
+    result.update();
+    console.log(result.html());
     expect(result.html().includes('<h1>WebsiteContent</h1>')).toEqual(true);
   });
 
@@ -117,8 +102,7 @@ describe('Login tests', () => {
       twoFactorVerified: false
     };
 
-    var mock = new MockAdapter(axios);
-    mock.onPost('http://localhost/auth/login').reply(200, fakeLoginData);
+    loginUser.mockReturnValue(Promise.resolve(fakeLoginData));
 
     const result = mount(
       <AuthWall setUser={() => {}}>
@@ -145,13 +129,10 @@ describe('Login tests', () => {
   });
 
   it('Login with 2FA enabled and token input', async () => {
-    var mock = new MockAdapter(axios);
-    mock
-      .onPost('http://localhost/auth/login')
-      .reply(200, login_twoFAEnabled_twoFAVerified);
-    mock
-      .onPost('http://localhost/auth/2fa/verify')
-      .reply(200, loginReturn_twoFAVerified);
+    loginUser.mockReturnValue(
+      Promise.resolve(login_twoFAEnabled_twoFAVerified)
+    );
+    verify2FA.mockReturnValue(Promise.resolve(loginReturn_twoFAVerified));
 
     const result = mount(
       <AuthWall setUser={() => {}}>
@@ -180,14 +161,13 @@ describe('Login tests', () => {
   });
 });
 
-describe('Clear input fields after not successful login', () => {
-  it('', async () => {
+describe('Token input', () => {
+  it('Clear input fields after not successful login', async () => {
     const loginError = {
       error: 'Password not correct!'
     };
 
-    var mock = new MockAdapter(axios);
-    mock.onPost('http://localhost/auth/login').reply(400, loginError);
+    loginUser.mockReturnValue(Promise.reject(loginError));
 
     const result = mount(
       <AuthWall setUser={() => {}}>
