@@ -29,19 +29,19 @@ class CreateNewDatasetModal extends Component {
     this.onUnitChange = this.onUnitChange.bind(this);
     this.onNameChange = this.onNameChange.bind(this);
     this.processNewDataset = this.processNewDataset.bind(this);
-    this.updateDataSet = this.updateDataSet.bind(this);
+    this.extendDataset = this.extendDataset.bind(this);
     this.generateTimeSeries = this.generateTimeSeries.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.resetState = this.resetState.bind(this);
   }
 
   onCloseModal() {
+    this.props.onCloseModal();
     this.setState({
       files: [],
       units: [],
       names: []
     });
-    this.props.onCloseModal();
   }
 
   onUnitChange(e, index) {
@@ -135,19 +135,21 @@ class CreateNewDatasetModal extends Component {
       timeSeries: timeSeries
     };
     createDataset(this.props.accessToken, datasetObj).then(data => {
+      this.resetState();
       this.props.onDatasetComplete(data);
     });
   }
 
-  updateDataSet(timeData) {
+  extendDataset(timeData) {
+    console.log(timeData);
     var timeSeries = this.generateTimeSeries(timeData);
     var dataset = this.props.dataset;
     dataset.timeSeries.push(...timeSeries);
-    updateDataset(
-      this.props.accessToken,
-      dataset,
-      this.props.onDatasetComplete
-    );
+    updateDataset(this.props.accessToken, dataset).then(data => {
+      console.log(data);
+      this.resetState();
+      this.props.onDatasetComplete(data);
+    });
   }
 
   processCSV(files) {
@@ -176,7 +178,7 @@ class CreateNewDatasetModal extends Component {
           if (!this.props.dataset) {
             this.processNewDataset(timeData);
           } else {
-            this.updateDataSet(timeData);
+            this.extendDataset(timeData);
           }
         }
       };
@@ -185,7 +187,6 @@ class CreateNewDatasetModal extends Component {
   }
 
   onUpload() {
-    this.resetState();
     this.processCSV(this.state.files);
   }
 
@@ -241,7 +242,6 @@ class CreateNewDatasetModal extends Component {
                       <td>
                         <Input
                           id="nameInput"
-                          key={index}
                           type="text"
                           placeholder="Name"
                           bsSize="sm"
@@ -251,7 +251,6 @@ class CreateNewDatasetModal extends Component {
                       <td>
                         <Input
                           id="unitInput"
-                          key={index}
                           tpye="text"
                           placeholder="Unit"
                           bsSize="sm"
@@ -263,7 +262,7 @@ class CreateNewDatasetModal extends Component {
                           id="deleteButton"
                           color="danger"
                           size="sm"
-                          onClick={index => this.onDeleteFile(index)}
+                          onClick={() => this.onDeleteFile(index)}
                         >
                           Delete
                         </Button>
