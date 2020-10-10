@@ -27,6 +27,7 @@ class ManagementPanel extends Component {
 
   toggleUploadModal() {
     this.setState({ isUploadModalOpen: !this.state.isUploadModalOpen });
+    this.props.setModalOpen(!this.state.isUploadModalOpen);
   }
 
   toggleHelpModal() {
@@ -87,12 +88,6 @@ class ManagementPanel extends Component {
             Help
           </Button>
         </CardBody>
-        {/*<UploadCsvModal
-          isOpen={this.state.isUploadModalOpen}
-          onUpload={obj => this.props.onUpload(obj)}
-          onCloseModal={this.toggleUploadModal}
-          startTime={this.props.startTime}
-        />*/}
         <CreateNewDatasetModal
           isOpen={this.state.isUploadModalOpen}
           onCloseModal={this.toggleUploadModal}

@@ -62,7 +62,8 @@ class DatasetPage extends Component {
         isOpen: false
       },
       videoEnabled: this.props.getVideoOptions().videoEnabled,
-      playButtonEnabled: this.props.getVideoOptions().playButtonEnabled
+      playButtonEnabled: this.props.getVideoOptions().playButtonEnabled,
+      modalOpen: false
     };
 
     this.onSelectedLabelingIdChanged = this.onSelectedLabelingIdChanged.bind(
@@ -97,6 +98,7 @@ class DatasetPage extends Component {
     this.clearCrosshairInterval = this.clearCrosshairInterval.bind(this);
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
     this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
+    this.setModalOpen = this.setModalOpen.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -105,6 +107,12 @@ class DatasetPage extends Component {
     };
 
     this.videoPanel = React.createRef();
+  }
+
+  setModalOpen(isOpen) {
+    this.setState({
+      modalOpen: isOpen
+    });
   }
 
   componentDidMount() {
@@ -165,6 +173,9 @@ class DatasetPage extends Component {
   }
 
   onKeyDown(e) {
+    if (this.state.modalOpen) {
+      return;
+    }
     let keyCode = e.keyCode ? e.keyCode : e.which;
 
     if ((e.ctrlKey || e.shiftKey) && keyCode > 47 && keyCode < 58) {
@@ -940,6 +951,7 @@ class DatasetPage extends Component {
                   dataset={this.state.dataset}
                   accessToken={this.props.accessToken}
                   onDatasetComplete={this.onDatasetUpdated}
+                  setModalOpen={this.setModalOpen}
                 />
               </div>
             </Col>
