@@ -79,28 +79,30 @@ module.exports.deleteDataset = (accessToken, id, callback) => {
 };
 
 module.exports.updateDataset = (accessToken, dataset, callback) => {
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.PUT,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`,
-      dataset
-    )
-  )
-    .then(
-      axios(
-        apiConsts.generateApiRequest(
-          apiConsts.HTTP_METHODS.GET,
-          apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`
-        )
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.PUT,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`,
+        dataset
       )
-        .then(updatedDataset => {
-          callback(updatedDataset.data);
-        })
-        .catch(err => console.log(err))
     )
-    .catch(err => console.log(err));
+      .then(
+        axios(
+          apiConsts.generateApiRequest(
+            apiConsts.HTTP_METHODS.GET,
+            apiConsts.API_URI,
+            apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`
+          )
+        )
+          .then(updatedDataset => {
+            resolve(updatedDataset.data);
+          })
+          .catch(err => console.log(err))
+      )
+      .catch(err => console.log(err));
+  });
 };
 
 module.exports.createDataset = (accessToken, dataset) => {

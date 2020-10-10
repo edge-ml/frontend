@@ -14,6 +14,12 @@ import {
   createDataset
 } from '../../services/ApiServices/DatasetServices';
 
+import {
+  generateTimeSeries,
+  calculateStartEndTimes,
+  processCSV
+} from '../../services/CsvService';
+
 class CreateNewDatasetModal extends Component {
   constructor(props) {
     super(props);
@@ -24,13 +30,11 @@ class CreateNewDatasetModal extends Component {
       names: []
     };
     this.onUpload = this.onUpload.bind(this);
-    this.processCSV = this.processCSV.bind(this);
     this.onDeleteFile = this.onDeleteFile.bind(this);
     this.onUnitChange = this.onUnitChange.bind(this);
     this.onNameChange = this.onNameChange.bind(this);
     this.processNewDataset = this.processNewDataset.bind(this);
     this.extendDataset = this.extendDataset.bind(this);
-    this.generateTimeSeries = this.generateTimeSeries.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.resetState = this.resetState.bind(this);
   }
@@ -74,40 +78,6 @@ class CreateNewDatasetModal extends Component {
     });
   }
 
-  generateTimeSeries(timeData) {
-    var timeSeries = [];
-    var i = 0;
-    var obj = {};
-    for (i = 0; i < timeData.length; i++) {
-      obj = {
-        name: this.state.names[i],
-        unit: this.state.units[i],
-        offset: 0,
-        start: timeData[i][0][0],
-        end: timeData[i][timeData[i].length - 1][0]
-      };
-      var j = 0;
-      var samplingRate = timeData[i][1][0] - timeData[i][0][0];
-      var data = [];
-      for (j = 0; j < timeData[i].length; j++) {
-        data.push(timeData[i][j][1]);
-        if (
-          j !== 0 &&
-          timeData[i][j][0] - timeData[i][j - 1][0] !== samplingRate
-        ) {
-          window.alert(
-            'Error: The sampling rate of the dataset is not consistent'
-          );
-          return;
-        }
-      }
-      obj.samplingRate = samplingRate;
-      obj.data = data;
-      timeSeries.push(obj);
-    }
-    return timeSeries;
-  }
-
   resetState() {
     this.setState({
       files: [],
@@ -116,19 +86,16 @@ class CreateNewDatasetModal extends Component {
     });
   }
 
-  calculateStartEndTimes(timeSeries) {
-    var min = timeSeries[0].start;
-    var max = timeSeries[0].end;
-    return { start: min, end: max };
-  }
-
   processNewDataset(timeData) {
-    var timeSeries = this.generateTimeSeries(timeData);
+    var timeSeries = generateTimeSeries(
+      timeData,
+      this.state.names,
+      this.state.units
+    );
     if (timeSeries === undefined) {
       return;
     }
-    var startEnd = this.calculateStartEndTimes(timeSeries);
-
+    var startEnd = calculateStartEndTimes(timeSeries);
     var datasetObj = {
       start: startEnd.start,
       end: startEnd.end,
@@ -141,58 +108,32 @@ class CreateNewDatasetModal extends Component {
   }
 
   extendDataset(timeData) {
-    console.log(timeData);
-    var timeSeries = this.generateTimeSeries(timeData);
+    var timeSeries = generateTimeSeries(
+      timeData,
+      this.state.names,
+      this.state.units
+    );
     var dataset = this.props.dataset;
     dataset.timeSeries.push(...timeSeries);
     updateDataset(this.props.accessToken, dataset).then(data => {
-      console.log(data);
       this.resetState();
       this.props.onDatasetComplete(data);
     });
   }
 
-  processCSV(files) {
-    var timeData = [];
-    var i = 0;
-    for (i = 0; i < files.length; i++) {
-      let file = this.state.files[i];
-      const reader = new FileReader();
-      reader.onload = () => {
-        var res = reader.result;
-        var allTextLines = res.split(/\r\n|\n/);
-        if (allTextLines[allTextLines.length - 1] === '') {
-          allTextLines.pop();
-        }
-        var lines = [];
-        for (var i = 0; i < allTextLines.length; i++) {
-          var data = allTextLines[i].split(',');
-          var tarr = [];
-          for (var j = 0; j < data.length; j++) {
-            tarr.push(parseInt(data[j], 10));
-          }
-          lines.push(tarr);
-        }
-        timeData.push(lines);
-        if (timeData.length === this.state.files.length) {
-          if (!this.props.dataset) {
-            this.processNewDataset(timeData);
-          } else {
-            this.extendDataset(timeData);
-          }
-        }
-      };
-      reader.readAsText(file);
-    }
-  }
-
   onUpload() {
-    this.processCSV(this.state.files);
+    processCSV(this.state.files).then(timeData => {
+      if (!this.props.dataset) {
+        this.processNewDataset(timeData);
+      } else {
+        this.extendDataset(timeData);
+      }
+    });
   }
 
   render() {
     return (
-      <Modal isOpen={this.props.isOpen}>
+      <Modal data-testid="modal" isOpen={this.props.isOpen}>
         <ModalHeader>
           {this.props.dataset
             ? 'Add timeseries to dataset'
@@ -203,6 +144,7 @@ class CreateNewDatasetModal extends Component {
             <div className="custom-file">
               <input
                 id="fileInput"
+                data-testid="fileInput"
                 accept=".csv"
                 onChange={e =>
                   this.setState({
@@ -242,6 +184,7 @@ class CreateNewDatasetModal extends Component {
                       <td>
                         <Input
                           id="nameInput"
+                          data-testid="nameInput"
                           type="text"
                           placeholder="Name"
                           bsSize="sm"
@@ -251,6 +194,7 @@ class CreateNewDatasetModal extends Component {
                       <td>
                         <Input
                           id="unitInput"
+                          data-testid="unitInput"
                           tpye="text"
                           placeholder="Unit"
                           bsSize="sm"
@@ -277,6 +221,7 @@ class CreateNewDatasetModal extends Component {
         <ModalFooter>
           <Button
             id="uploadButton"
+            data-testid="uploadButton"
             color="primary"
             className="m-1 mr-auto"
             onClick={this.onUpload}
