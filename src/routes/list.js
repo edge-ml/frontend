@@ -48,7 +48,6 @@ class ListPage extends Component {
   }
 
   onDatasetsChanged(datasets) {
-    console.log('Dataset changed');
     if (!datasets) return;
 
     this.setState({

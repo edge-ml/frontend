@@ -13,71 +13,30 @@ import { fakeDataset_One } from './fakeData/fakeDatasets';
 import * as AuthentificationServices from '../services/ApiServices/AuthentificationServices';
 import LocalStorageService from '../services/LocalStorageService';
 
+import { getDatasets } from '../services/ApiServices/DatasetServices';
+
+jest.mock('../services/ApiServices/DatasetServices');
+
 const flushPromises = () => new Promise(setImmediate);
 
 configure({ adapter: new Adapter() });
-class LocalStorageMock {
-  constructor() {
-    this.store = {};
-  }
 
-  clear() {
-    this.store = {};
-  }
-
-  getItem(key) {
-    return undefined;
-  }
-
-  setItem(key, value) {
-    this.store[key] = value.toString();
-  }
-
-  removeItem(key) {
-    delete this.store[key];
-  }
-}
-global.localStorage = new LocalStorageMock();
-
-let container = null;
-beforeEach(() => {
-  // setup a DOM element as a render target
-  container = document.createElement('div');
-  document.body.appendChild(container);
-});
-
-afterEach(() => {
-  // cleanup on exiting
-  unmountComponentAtNode(container);
-  container.remove();
-  container = null;
-});
 describe('Tests for list of datasets', () => {
+  getDatasets.mockReturnValue(Promise.resolve([]));
   it('List rendering', () => {
     const wrapper = shallow(<ListPage></ListPage>);
     expect(wrapper.exists('#dataList')).toEqual(true);
   });
 
-  it('Display list of datasets from API-call', () => {
-    const wrapper = shallow(<ListPage />);
-    wrapper.setState({
-      datasets: fakeDataset_One,
-      ready: true
-    });
-    expect(wrapper.html().includes('5f45114480d85700190a9ec4')).toEqual(true); // Check if datasetid is shown in table
-    var tableBody = wrapper.find('tbody');
-    expect(tableBody.find('tr')).toHaveLength(1);
-  });
+  it('Display data from api call', async done => {
+    getDatasets.mockReturnValue(Promise.resolve(fakeDataset_One));
 
-  /*it("Trying to test end to end component render to data display", async (done) => {
-    var mock = new MockAdapter(axios);
-    mock.onGet("http://localhost/api/datasets").reply(200, fakeDataset_One);
-
-    const wrapper = await mount(<ListPage></ListPage>);
-    console.log(wrapper.html());
-    expect(wrapper.html().includes("5f45114480d85700190a9ec4")).toEqual(true); // Check if datasetid is shown in table
+    const wrapper = mount(<ListPage></ListPage>);
+    await flushPromises();
+    wrapper.update();
+    expect(wrapper.contains('5f45114480d85700190a9ec4')).toBe(true);
     done();
-  });*/
+  });
 
   it('Callback returns no data', () => {
     const wrapper = shallow(<ListPage></ListPage>);
