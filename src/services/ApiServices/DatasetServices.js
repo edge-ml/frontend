@@ -28,7 +28,7 @@ module.exports.getDatasets = () => {
   });
 };
 
-module.exports.getDataset = (accessToken, id, callback) => {
+module.exports.getDataset = (id, callback) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -42,7 +42,7 @@ module.exports.getDataset = (accessToken, id, callback) => {
   });
 };
 
-module.exports.deleteDatasets = (accessToken, ids, callback) => {
+module.exports.deleteDatasets = (ids, callback) => {
   return new Promise((resolve, reject) => {
     console.log(ids);
     let promises = [];
@@ -64,7 +64,7 @@ module.exports.deleteDatasets = (accessToken, ids, callback) => {
   });
 };
 
-module.exports.deleteDataset = (accessToken, id, callback) => {
+module.exports.deleteDataset = (id, callback) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -78,7 +78,7 @@ module.exports.deleteDataset = (accessToken, id, callback) => {
   });
 };
 
-module.exports.updateDataset = (accessToken, dataset, callback) => {
+module.exports.updateDataset = (dataset, callback) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -105,7 +105,7 @@ module.exports.updateDataset = (accessToken, dataset, callback) => {
   });
 };
 
-module.exports.createDataset = (accessToken, dataset) => {
+module.exports.createDataset = dataset => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -116,7 +116,7 @@ module.exports.createDataset = (accessToken, dataset) => {
       )
     )
       .then(
-        this.getDatasets(accessToken).then(datasets => {
+        this.getDatasets().then(datasets => {
           resolve(datasets);
         })
       )

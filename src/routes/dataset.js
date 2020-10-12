@@ -119,11 +119,9 @@ class DatasetPage extends Component {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
     //subscribeDataset(this.props.match.params.id, this.onDatasetChanged);
-    getDataset(this.props.accessToken, this.props.match.params.id).then(
-      dataset => {
-        this.onDatasetChanged(dataset);
-      }
-    );
+    getDataset(this.props.match.params.id).then(dataset => {
+      this.onDatasetChanged(dataset);
+    });
   }
 
   componentWillUnmount() {
@@ -134,10 +132,9 @@ class DatasetPage extends Component {
   }
 
   onDatasetUpdated() {
-    getDataset(
-      this.props.accessToken,
-      this.props.match.params.id
-    ).then(dataset => this.onDatasetChanged(dataset));
+    getDataset(this.props.match.params.id).then(dataset =>
+      this.onDatasetChanged(dataset)
+    );
   }
 
   onDatasetChanged(dataset) {
@@ -147,10 +144,7 @@ class DatasetPage extends Component {
       fused => fused.timeSeries.length > 1
     );
     this.setState({ dataset }, () =>
-      subscribeLabelingsAndLabels(
-        this.props.accessToken,
-        this.onLabelingsAndLabelsChanged
-      )
+      subscribeLabelingsAndLabels(this.onLabelingsAndLabelsChanged)
     );
   }
 
@@ -390,7 +384,7 @@ class DatasetPage extends Component {
     );
     dataset.start = Math.min(obj.data[0].timestamp, dataset.start);
 
-    updateDataset(this.props.accessToken, dataset, dataset => {
+    updateDataset(dataset, dataset => {
       this.setState({ dataset });
     });
   }
@@ -413,7 +407,7 @@ class DatasetPage extends Component {
     }
 
     this.setState({ dataset });
-    updateDataset(this.props.accessToken, dataset, () => {});
+    updateDataset(dataset, () => {});
   }
 
   onShiftTimeSeries(index, timestamp) {
@@ -424,7 +418,7 @@ class DatasetPage extends Component {
     dataset.timeSeries[index].offset += diff;
 
     this.setState({ dataset });
-    updateDataset(this.props.accessToken, dataset, () => {});
+    updateDataset(dataset, () => {});
   }
 
   onFuseTimeSeries(seriesIds) {
@@ -433,7 +427,7 @@ class DatasetPage extends Component {
       timeSeries: seriesIds
     });
 
-    updateDataset(this.props.accessToken, dataset, dataset => {
+    updateDataset(dataset, dataset => {
       this.setState({
         dataset,
         fuseTimeSeriesModalState: { isOpen: false }
@@ -705,7 +699,7 @@ class DatasetPage extends Component {
       }
     });
 
-    updateDataset(this.props.accessToken, dataset, () => {});
+    updateDataset(dataset, () => {});
   }
 
   onSelectedLabelChanged(selectedLabelId) {
@@ -779,7 +773,7 @@ class DatasetPage extends Component {
     }
 
     if (labelingOrLabelAdded) {
-      updateDataset(this.props.accessToken, dataset, newDataset => {
+      updateDataset(dataset, newDataset => {
         let labeling = newDataset.labelings.filter(
           labeling =>
             labeling.labelingId === this.state.controlStates.selectedLabelingId
@@ -795,7 +789,7 @@ class DatasetPage extends Component {
       });
     } else {
       this.setState({ dataset });
-      updateDataset(this.props.accessToken, dataset, () => {});
+      updateDataset(dataset, () => {});
     }
   }
 
@@ -811,7 +805,7 @@ class DatasetPage extends Component {
         label => label['_id'] !== this.state.controlStates.selectedLabelId
       );
 
-      updateDataset(this.props.accessToken, dataset, () => {
+      updateDataset(dataset, () => {
         this.setState({
           dataset,
           controlStates: {
@@ -841,7 +835,7 @@ class DatasetPage extends Component {
   onDeleteDataset() {
     if (!this.state.dataset || !this.state.dataset['_id']) return;
 
-    deleteDataset(this.props.accessToken, this.state.dataset['_id'], err => {
+    deleteDataset(this.state.dataset['_id'], err => {
       if (err) {
         window.alert(err);
       } else {
@@ -949,7 +943,6 @@ class DatasetPage extends Component {
                   startTime={this.state.dataset.start}
                   onDeleteDataset={this.onDeleteDataset}
                   dataset={this.state.dataset}
-                  accessToken={this.props.accessToken}
                   onDatasetComplete={this.onDatasetUpdated}
                   setModalOpen={this.setModalOpen}
                 />

@@ -105,7 +105,7 @@ class EditUserModal extends Component {
   // TODO: Adapt this to the new api
   onDeleteUser() {
     if (window.confirm('Are you sure to delete this user?')) {
-      deleteUser(this.props.accessToken, this.state.user.email)
+      deleteUser(this.state.user.email)
         .then(() => {
           if (this.props.getCurrentUserMail() === this.state.user.email) {
             this.props.onLogout();

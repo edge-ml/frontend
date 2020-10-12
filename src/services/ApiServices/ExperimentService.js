@@ -12,7 +12,7 @@ axios.interceptors.request.use(config => {
   return config;
 });
 
-module.exports.subscribeExperiments = (accessToken, callback) => {
+module.exports.subscribeExperiments = callback => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.GET,
@@ -24,7 +24,7 @@ module.exports.subscribeExperiments = (accessToken, callback) => {
     .catch(err => window.alert(err));
 };
 
-module.exports.addExperiment = (accessToken, newExperiment, callback) => {
+module.exports.addExperiment = (newExperiment, callback) => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
@@ -47,7 +47,7 @@ module.exports.addExperiment = (accessToken, newExperiment, callback) => {
     .catch(err => window.alert(err));
 };
 
-module.exports.updateExperiment = (accessToken, experiment, callback) => {
+module.exports.updateExperiment = (experiment, callback) => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.PUT,
@@ -69,7 +69,7 @@ module.exports.updateExperiment = (accessToken, experiment, callback) => {
     .catch(err => window.alert(err));
 };
 
-module.exports.deleteExperiment = (accessToken, experimentId, callback) => {
+module.exports.deleteExperiment = (experimentId, callback) => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.DELETE,

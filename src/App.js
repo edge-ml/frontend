@@ -141,7 +141,6 @@ class App extends Component {
         onCancelLogin={this.logoutHandler}
         setAccessToken={this.setAccessToken}
         setCurrentUserMail={this.setCurrentUserMail}
-        accessToken={this.state.user.access_token}
         setUser={this.setUser}
         twoFactorEnabled={this.state.user.twoFactorEnabled}
         on2FA={this.on2FA}
@@ -193,49 +192,24 @@ class App extends Component {
               <Route
                 exact
                 path="/list"
-                render={props => (
-                  <ListPage
-                    {...props}
-                    accessToken={this.state.user.access_token}
-                  />
-                )}
+                render={props => <ListPage {...props} />}
               />
               <Route
                 exact
                 path="/labelings"
-                render={props => (
-                  <LabelingsPage
-                    {...props}
-                    accessToken={this.state.user.access_token}
-                  />
-                )}
+                render={props => <LabelingsPage {...props} />}
               />
               <Route
                 exact
                 path="/labelings/new"
-                render={props => (
-                  <LabelingsPage
-                    {...props}
-                    accessToken={this.state.user.access_token}
-                  />
-                )}
+                render={props => <LabelingsPage {...props} />}
               />
-              <Route
-                exact
-                path="/"
-                render={props => (
-                  <ListPage
-                    {...props}
-                    accessToken={this.state.user.access_token}
-                  />
-                )}
-              />
+              <Route exact path="/" render={props => <ListPage {...props} />} />
               <Route
                 path="/datasets/:id"
                 render={props => (
                   <DatasetPage
                     {...props}
-                    accessToken={this.state.user.access_token}
                     getVideoOptions={this.getVideoOptions}
                   />
                 )}
@@ -243,22 +217,12 @@ class App extends Component {
               <Route
                 exact
                 path="/experiments"
-                render={props => (
-                  <ExperimentsPage
-                    {...props}
-                    accessToken={this.state.user.access_token}
-                  />
-                )}
+                render={props => <ExperimentsPage {...props} />}
               />
               <Route
                 exact
                 path="/experiments/new"
-                render={props => (
-                  <ExperimentsPage
-                    {...props}
-                    accessToken={this.state.user.access_token}
-                  />
-                )}
+                render={props => <ExperimentsPage {...props} />}
               />
               <Route
                 exact
@@ -267,7 +231,6 @@ class App extends Component {
                   <SettingsPage
                     {...props}
                     getCurrentUserMail={this.getCurrentUserMail}
-                    accessToken={this.state.user.access_token}
                     onLogout={this.logoutHandler}
                     onVideoOptionsChange={this.toggleVideoOptions}
                     getVideoOptions={this.getVideoOptions}

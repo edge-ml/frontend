@@ -33,10 +33,7 @@ class ExperimentsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelingsAndLabels(
-      this.props.accessToken,
-      this.onLabelingsAndLabelsChanged
-    );
+    subscribeLabelingsAndLabels(this.onLabelingsAndLabelsChanged);
   }
 
   /*componentWillUnmount() {
@@ -51,7 +48,7 @@ class ExperimentsPage extends Component {
         labelTypes: labels || []
       },
       () => {
-        subscribeExperiments(this.props.accessToken, experiments => {
+        subscribeExperiments(experiments => {
           this.onExperimentsChanged(experiments);
         });
       }
@@ -138,11 +135,7 @@ class ExperimentsPage extends Component {
       selectedExperimentId: experiments[0]['_id']
     });
     */
-    deleteExperiment(
-      this.props.accessToken,
-      experimentId,
-      this.onExperimentsChanged
-    );
+    deleteExperiment(experimentId, this.onExperimentsChanged);
   };
 
   onSave = experiment => {
@@ -165,20 +158,12 @@ class ExperimentsPage extends Component {
     }
 
     if (this.state.modal.isNewExperiment) {
-      addExperiment(
-        this.props.accessToken,
-        experiment,
-        this.onExperimentsChanged
-      );
+      addExperiment(experiment, this.onExperimentsChanged);
       //this.setState({
       //  experiments: [...this.state.experiments, experiment]
       //});
     } else {
-      updateExperiment(
-        this.props.accessToken,
-        experiment,
-        this.onExperimentsChanged
-      );
+      updateExperiment(experiment, this.onExperimentsChanged);
       //this.setState({
       //  experiments: this.state.experiments.map(exp =>
       //    exp['_id'] === experiment['_id'] ? experiment : exp

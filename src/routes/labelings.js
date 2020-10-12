@@ -41,7 +41,7 @@ class LabelingsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelingsAndLabels(this.props.accessToken, (labelings, labels) => {
+    subscribeLabelingsAndLabels((labelings, labels) => {
       this.onLabelingsAndLabelsChanged(labelings, labels);
 
       if (this.props.location.pathname === '/labelings/new') {
@@ -128,35 +128,22 @@ class LabelingsPage extends Component {
 
   onDeleteLabeling(labelingId) {
     this.onCloseModal();
-    deleteLabeling(
-      this.props.accessToken,
-      labelingId,
-      this.onLabelingsAndLabelsChanged
-    );
+    deleteLabeling(labelingId, this.onLabelingsAndLabelsChanged);
   }
 
   onSave(labeling, labels, deletedLabels) {
     if (!labeling || !labels) return;
     if (this.state.modal.isNewLabeling && labels.length === 0) {
-      addLabeling(
-        this.props.accessToken,
-        labeling,
-        this.onLabelingsAndLabelsChanged
-      );
+      addLabeling(labeling, this.onLabelingsAndLabelsChanged);
     } else if (
       !this.state.modal.isNewLabeling &&
       labeling.updated &&
       deletedLabels.length === 0 &&
       !labels.some(label => label.updated || label.isNewLabel)
     ) {
-      updateLabeling(
-        this.props.accessToken,
-        labeling,
-        this.onLabelingsAndLabelsChanged
-      );
+      updateLabeling(labeling, this.onLabelingsAndLabelsChanged);
     } else {
       updateLabelingAndLabels(
-        this.props.accessToken,
         labeling,
         labels,
         deletedLabels,

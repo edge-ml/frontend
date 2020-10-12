@@ -71,7 +71,7 @@ class SettingsPage extends Component {
   }
 
   get2FAQrCode(callback) {
-    init2FA(this.props.accessToken, qrCode => {
+    init2FA(qrCode => {
       this.setState(
         {
           qrCode: qrCode
@@ -103,7 +103,7 @@ class SettingsPage extends Component {
     if (this.props.twoFactorEnabled) {
       var status = window.confirm('Disable 2FA?');
       if (status) {
-        reset2FA(this.props.accessToken, () => {
+        reset2FA(() => {
           window.alert('2FA disabled');
         });
       }
@@ -113,8 +113,7 @@ class SettingsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeUsers(this.props.accessToken, users => {
-      console.log(users);
+    subscribeUsers(users => {
       if (users.length === 0) {
         this.setState({
           isAdmin: false
@@ -243,7 +242,6 @@ class SettingsPage extends Component {
   }
 
   render() {
-    console.log(this.state.users);
     return (
       <Loader>
         <Container>
@@ -253,7 +251,7 @@ class SettingsPage extends Component {
               <Table responsive>
                 <thead>
                   <tr className={'bg-light'}>
-                    <th>Settings</th>
+                    <th>Setting</th>
                     <th>Enabled</th>
                     <th />
                   </tr>
@@ -438,8 +436,6 @@ class SettingsPage extends Component {
         />
         <TwoFAconfigModal
           isOpen={this.state.TwoFaModal.isOpen}
-          accessToken={this.props.accessToken}
-          setAccessToken={this.props.setAccessToken}
           on2FAModalClose={this.on2FAModalClose}
           qrCode={this.state.qrCode}
         ></TwoFAconfigModal>

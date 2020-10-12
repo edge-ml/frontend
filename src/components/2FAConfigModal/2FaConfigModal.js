@@ -24,9 +24,8 @@ class TwoFAconfigModal extends Component {
   onTokenChanged(e) {
     if (e.target.value.length > 6) return;
     else if (e.target.value.length === 6) {
-      verify2FA(this.props.accessToken, e.target.value)
+      verify2FA(e.target.value)
         .then(data => {
-          this.props.setAccessToken(data);
           window.alert('2FA has been activated');
           this.props.on2FAModalClose();
         })

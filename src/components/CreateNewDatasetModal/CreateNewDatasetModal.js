@@ -101,7 +101,7 @@ class CreateNewDatasetModal extends Component {
       end: startEnd.end,
       timeSeries: timeSeries
     };
-    createDataset(this.props.accessToken, datasetObj).then(data => {
+    createDataset(datasetObj).then(data => {
       this.resetState();
       this.props.onDatasetComplete(data);
     });
@@ -115,7 +115,7 @@ class CreateNewDatasetModal extends Component {
     );
     var dataset = this.props.dataset;
     dataset.timeSeries.push(...timeSeries);
-    updateDataset(this.props.accessToken, dataset).then(data => {
+    updateDataset(dataset).then(data => {
       this.resetState();
       this.props.onDatasetComplete(data);
     });

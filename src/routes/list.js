@@ -105,7 +105,7 @@ class ListPage extends Component {
       return;
     }
 
-    deleteDatasets(this.props.accessToken, this.state.datasetsToDelete)
+    deleteDatasets(this.state.datasetsToDelete)
       .then(() => {
         this.setState({
           modal: false,
@@ -236,7 +236,6 @@ class ListPage extends Component {
           <CreateNewDatasetModal
             isOpen={this.state.isCreateNewDatasetOpen}
             onCloseModal={this.toggleCreateNewDatasetModal}
-            accessToken={this.props.accessToken}
             onDatasetsChanged={this.onDatasetsChanged}
             onDatasetComplete={this.onDatasetsChanged}
           />

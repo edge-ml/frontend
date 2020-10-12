@@ -92,7 +92,6 @@ class ManagementPanel extends Component {
           isOpen={this.state.isUploadModalOpen}
           onCloseModal={this.toggleUploadModal}
           dataset={this.props.dataset}
-          accessToken={this.props.accessToken}
           onDatasetComplete={this.onDatasetComplete}
         />
         <HelpModal

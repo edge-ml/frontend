@@ -12,7 +12,7 @@ axios.interceptors.request.use(config => {
   return config;
 });
 
-module.exports.subscribeLabelingsAndLabels = (accessToken, callback) => {
+module.exports.subscribeLabelingsAndLabels = callback => {
   Promise.all([
     axios(
       apiConsts.generateApiRequest(
@@ -33,7 +33,7 @@ module.exports.subscribeLabelingsAndLabels = (accessToken, callback) => {
     .catch(err => window.alert(err));
 };
 
-module.exports.addLabeling = (accessToken, newLabeling, callback) => {
+module.exports.addLabeling = (newLabeling, callback) => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
@@ -60,7 +60,7 @@ module.exports.addLabeling = (accessToken, newLabeling, callback) => {
     .catch(err => window.alert(err));
 };
 
-module.exports.deleteLabeling = (accessToken, labelingId, callback) => {
+module.exports.deleteLabeling = (labelingId, callback) => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.DELETE,
@@ -93,7 +93,7 @@ module.exports.deleteLabeling = (accessToken, labelingId, callback) => {
   });
 };
 
-module.exports.updateLabeling = (accessToken, labeling, callback) => {
+module.exports.updateLabeling = (labeling, callback) => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.PUT,
@@ -118,7 +118,6 @@ module.exports.updateLabeling = (accessToken, labeling, callback) => {
 };
 
 module.exports.updateLabelingAndLabels = (
-  accessToken,
   labeling,
   labels,
   deletedLabels,
@@ -197,16 +196,14 @@ module.exports.updateLabelingAndLabels = (
           apiConsts.generateApiRequest(
             apiConsts.HTTP_METHODS.GET,
             apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS,
-            accessToken
+            apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS
           )
         ),
         axios(
           apiConsts.generateApiRequest(
             apiConsts.HTTP_METHODS.GET,
             apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.LABEL_TYPES,
-            accessToken
+            apiConsts.API_ENDPOINTS.LABEL_TYPES
           )
         )
       ]);

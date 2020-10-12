@@ -31,7 +31,7 @@ module.exports.loginUser = function(userEMail, password) {
   });
 };
 
-module.exports.deleteUser = (accesstoken, userEMail) => {
+module.exports.deleteUser = userEMail => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -66,7 +66,7 @@ module.exports.registerNewUser = function(userEMail, password) {
   });
 };
 
-module.exports.subscribeUsers = (accessToken, callback) => {
+module.exports.subscribeUsers = callback => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.GET,
@@ -78,7 +78,7 @@ module.exports.subscribeUsers = (accessToken, callback) => {
     .catch(() => callback([]));
 };
 
-module.exports.init2FA = (accessToken, callback) => {
+module.exports.init2FA = callback => {
   console.log('init 2FA');
   axios(
     apiConsts.generateApiRequest(
@@ -91,7 +91,7 @@ module.exports.init2FA = (accessToken, callback) => {
     .catch(err => callback(err));
 };
 
-module.exports.verify2FA = (accessToken, token) => {
+module.exports.verify2FA = token => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -106,7 +106,7 @@ module.exports.verify2FA = (accessToken, token) => {
   });
 };
 
-module.exports.reset2FA = (accessToken, callback) => {
+module.exports.reset2FA = callback => {
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
