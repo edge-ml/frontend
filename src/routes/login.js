@@ -23,8 +23,11 @@ import {
 } from '../services/ApiServices/AuthentificationServices';
 import jwt_decode from 'jwt-decode';
 
-import LocalStorageService from '../services/LocalStorageService';
-const localStorageService = LocalStorageService.getService();
+import {
+  getAccessToken,
+  getRefreshToken,
+  setToken
+} from '../services/LocalStorageService';
 
 class LoginPage extends Component {
   constructor(props) {
@@ -32,12 +35,9 @@ class LoginPage extends Component {
     this.state = {
       usermail: '',
       password: '',
-      button: {
-        disabled: false
-      },
+      buttonDisabled: false,
       isLoggedIn: props.isLoggedIn,
       isTwoFactorAuthenticated: props.isTwoFactorAuthenticated,
-      on2FA: props.on2FA,
       twoFactorEnabled: props.twoFactorEnabled,
       authenticationHandlers: {
         didLoginFail: false,
@@ -78,8 +78,8 @@ class LoginPage extends Component {
   }
 
   checkLoggedInStatus() {
-    var accessToken = localStorageService.getAccessToken();
-    var refreshToken = localStorageService.getRefreshToken();
+    var accessToken = getAccessToken();
+    var refreshToken = getRefreshToken();
     if (accessToken) {
       var decoded = jwt_decode(accessToken);
       if (
@@ -208,42 +208,25 @@ class LoginPage extends Component {
   }
 
   submit() {
-    this.setState(
-      update(this.state, {
-        $merge: {
-          button: {
-            disabled: true
-          }
-        }
-      })
-    );
+    this.setState({ buttonDisabled: true });
     loginUser(this.state.usermail, this.state.password)
       .then(data => {
-        localStorageService.setToken(data.access_token, data.refresh_token);
-        this.setState(
-          update(this.state, {
-            $merge: {
-              button: {
-                disabled: false
-              }
+        setToken(data.access_token, data.refresh_token);
+        this.setState({ buttonDisabled: false }, () => {
+          this.setState(
+            {
+              user: data,
+              isLoggedIn: true,
+              isTwoFactorAuthenticated: false,
+              usermail: '',
+              password: ''
+            },
+            () => {
+              this.check2FALogin();
+              this.props.setUser(data);
             }
-          }),
-          () => {
-            this.setState(
-              {
-                user: data,
-                isLoggedIn: true,
-                isTwoFactorAuthenticated: false,
-                usermail: '',
-                password: ''
-              },
-              () => {
-                this.check2FALogin();
-                this.props.setUser(data);
-              }
-            );
-          }
-        );
+          );
+        });
       })
       .catch(err => {
         var tmp = this.state.authenticationHandlers;
@@ -256,11 +239,9 @@ class LoginPage extends Component {
             //Wait for animation to stop then reset page
             setTimeout(() => {
               tmp.didLoginFail = false;
-              var tmpButton = this.state.button;
-              tmpButton.disabled = false;
               this.setState({
                 authenticationHandlers: tmp,
-                button: tmpButton,
+                buttonDisabled: false,
                 password: ''
               });
             }, 300);
@@ -383,7 +364,7 @@ class LoginPage extends Component {
                           <Button
                             id="login-button"
                             onClick={this.submit}
-                            disabled={this.state.button.disabled}
+                            disabled={this.state.buttonDisabled}
                             color="primary"
                             block
                           >

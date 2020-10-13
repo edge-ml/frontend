@@ -1,12 +1,11 @@
+const getAccessToken = require('../LocalStorageService').getAccessToken;
 var apiConsts = require('./ApiConstants');
 const ax = require('axios');
-const { default: LocalStorageService } = require('../LocalStorageService');
 const axios = ax.create();
 const axiosNoToken = ax.create();
-const localStorageService = LocalStorageService.getService();
 
 axios.interceptors.request.use(config => {
-  const token = localStorageService.getAccessToken();
+  const token = getAccessToken();
   if (token) {
     config.headers['Authorization'] = token;
   }
@@ -14,6 +13,7 @@ axios.interceptors.request.use(config => {
 });
 
 module.exports.loginUser = function(userEMail, password) {
+  console.log('Logging in user');
   return new Promise((resolve, reject) => {
     axiosNoToken(
       apiConsts.generateRequest(

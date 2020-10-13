@@ -22,8 +22,8 @@ import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labelings';
 import SettingsPage from './routes/settings';
 import ExperimentsPage from './routes/experiments';
-import LocalStorageService from './services/LocalStorageService';
-const localStorageService = LocalStorageService.getService();
+
+const clearToken = require('./services/LocalStorageService').clearToken;
 
 class App extends Component {
   constructor(props) {
@@ -87,7 +87,7 @@ class App extends Component {
 
   onLogout(didSucceed) {
     if (didSucceed) {
-      localStorageService.clearToken();
+      clearToken();
       this.setState({
         user: {
           access_token: undefined
