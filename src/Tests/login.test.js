@@ -16,10 +16,19 @@ import {
   verify2FA
 } from '../services/ApiServices/AuthentificationServices';
 
+import { jwtValidForever, jwtNeverValid } from './fakeData/fakeJwtTokens';
+
+import {
+  getAccessToken,
+  getRefreshToken,
+  setToken
+} from '../services/LocalStorageService';
+
 jest.mock('../services/ApiServices/AuthentificationServices');
+jest.mock('../services/LocalStorageService');
 
 configure({ adapter: new Adapter() });
-class LocalStorageMock {
+/*class LocalStorageMock {
   constructor() {
     this.store = {};
   }
@@ -39,25 +48,17 @@ class LocalStorageMock {
   removeItem(key) {
     delete this.store[key];
   }
-}
-global.localStorage = new LocalStorageMock();
+}*/
 
-let container = null;
-beforeEach(() => {
-  // setup a DOM element as a render target
-  container = document.createElement('div');
-  document.body.appendChild(container);
-});
+beforeEach(() => {});
 
 afterEach(() => {
-  // cleanup on exiting
-  unmountComponentAtNode(container);
-  container.remove();
-  container = null;
+  jest.clearAllMocks();
 });
+
 describe('Login tests', () => {
   it('Explorer Login rendering', () => {
-    const wrapper = shallow(<AuthWall />);
+    const wrapper = mount(<AuthWall />);
     const header = 'Explorer Login';
     expect(wrapper.contains(header)).toEqual(true);
   });
@@ -203,6 +204,26 @@ describe('Token input', () => {
     ).toBe('');
 
     expect(result.state().authenticationHandlers.didLoginFail).toBe(false);
+  });
+
+  it('Login with token from localstorage', () => {
+    getAccessToken.mockReturnValue(jwtValidForever);
+    const wrapper = mount(
+      <AuthWall setUser={() => {}}>WebsiteContent</AuthWall>
+    );
+    expect(wrapper.html()).toBe('WebsiteContent');
+    expect(getAccessToken).toHaveBeenCalledTimes(1);
+    expect(loginUser).not.toBeCalled();
+  });
+
+  it('Login with expired token from localstorage', () => {
+    getAccessToken.mockReturnValue(jwtNeverValid);
+    const wrapper = mount(
+      <AuthWall setUser={() => {}}>WebsiteContent</AuthWall>
+    );
+    expect(wrapper.html()).not.toBe('WebsiteContent');
+    expect(getAccessToken).toHaveBeenCalledTimes(1);
+    expect(wrapper.contains('Explorer Login')).toBe(true);
   });
 });
 
