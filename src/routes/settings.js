@@ -15,15 +15,6 @@ import {
   reset2FA
 } from '../services/ApiServices/AuthentificationServices';
 
-import {
-  editUser,
-  addUser,
-  subscribeSources,
-  addSource,
-  editSource,
-  deleteSource
-} from '../services/SocketService';
-
 import { subscribeUsers } from '../services/ApiServices/AuthentificationServices';
 
 class SettingsPage extends Component {
@@ -130,9 +121,9 @@ class SettingsPage extends Component {
     this.setState({
       user: userData
     });
-    subscribeSources(sources => {
+    /*subscribeSources(sources => {
       this.onSourcesChanged(sources);
-    });
+    });*/
   }
 
   toggleUserModal(user, isNewUser) {
@@ -188,7 +179,7 @@ class SettingsPage extends Component {
     isAdmin,
     confirmationPassword
   ) {
-    editUser(
+    /*editUser(
       username,
       newName,
       newEmail,
@@ -199,7 +190,7 @@ class SettingsPage extends Component {
         window.alert(err);
         return;
       }
-    );
+    );*/
 
     if (this.state.user.username === username && username !== newName) {
       // change own name
@@ -208,9 +199,9 @@ class SettingsPage extends Component {
   }
 
   onAddUser(username, email, password, isAdmin, confirmationPassword) {
-    addUser(username, email, password, isAdmin, confirmationPassword, err => {
+    /*addUser(username, email, password, isAdmin, confirmationPassword, err => {
       window.alert(err);
-    });
+    });*/
   }
 
   onReset2FA(username, confirmationPassword) {
@@ -226,13 +217,13 @@ class SettingsPage extends Component {
   }
 
   onAddSource(name, url, enabled) {
-    addSource(name, url, enabled, err => {
+    /*addSource(name, url, enabled, err => {
       window.alert(err);
-    });
+    });*/
   }
 
   onDeleteSource(name) {
-    deleteSource(name);
+    //deleteSource(name);
   }
 
   onSourcesChanged(sources) {
