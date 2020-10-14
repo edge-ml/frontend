@@ -1,54 +1,25 @@
-import { unmountComponentAtNode } from 'react-dom';
-import AuthWall from '../routes/login';
-import { shallow, mount } from 'enzyme';
-import { configure } from 'enzyme';
+import AuthWall from '../../routes/login';
+import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 import {
   login_twoFAEnabled_twoFAVerified,
   loginReturn_twoFAVerified
-} from './fakeData/fakeLoginData';
+} from '../fakeData/fakeLoginData';
 
 import {
   loginUser,
   verify2FA
-} from '../services/ApiServices/AuthentificationServices';
+} from '../../services/ApiServices/AuthentificationServices';
 
-import { jwtValidForever, jwtNeverValid } from './fakeData/fakeJwtTokens';
+import { jwtValidForever, jwtNeverValid } from '../fakeData/fakeJwtTokens';
 
-import {
-  getAccessToken,
-  getRefreshToken,
-  setToken
-} from '../services/LocalStorageService';
+import { getAccessToken } from '../../services/LocalStorageService';
 
-jest.mock('../services/ApiServices/AuthentificationServices');
-jest.mock('../services/LocalStorageService');
+jest.mock('../../services/ApiServices/AuthentificationServices');
+jest.mock('../../services/LocalStorageService');
 
 configure({ adapter: new Adapter() });
-/*class LocalStorageMock {
-  constructor() {
-    this.store = {};
-  }
-
-  clear() {
-    this.store = {};
-  }
-
-  getItem(key) {
-    return undefined;
-  }
-
-  setItem(key, value) {
-    this.store[key] = value.toString();
-  }
-
-  removeItem(key) {
-    delete this.store[key];
-  }
-}*/
 
 beforeEach(() => {});
 
@@ -109,20 +80,20 @@ describe('Login tests', () => {
         <h1>WebsiteContent</h1>
       </AuthWall>
     );
-    await result
+    result
       .find('#email')
       .first()
       .simulate('change', { target: { value: 'no1@teco.edu' } });
-    await result
+    result
       .find('#password')
       .first()
       .simulate('change', { target: { value: 'admin' } });
-    await result
+    result
       .find('#login-button')
       .first()
       .simulate('click');
     await tick();
-    await result.update();
+    result.update();
     expect(result.html().includes('<b>Two Factor Authentication</b>')).toEqual(
       true
     );
@@ -139,30 +110,28 @@ describe('Login tests', () => {
         <h1>WebsiteContent</h1>
       </AuthWall>
     );
-    await result
+    result
       .find('#email')
       .first()
       .simulate('change', { target: { value: 'no1@teco.edu' } });
-    await result
+    result
       .find('#password')
       .first()
       .simulate('change', { target: { value: 'admin' } });
-    await result
+    result
       .find('#login-button')
       .first()
       .simulate('click');
-    await result
+    result
       .find('#tokenInput')
       .first()
       .simulate('change', { target: { value: '123123' } });
     await tick();
-    await result.update();
+    result.update();
     expect(result.html().includes('<h1>WebsiteContent</h1>')).toEqual(true);
   });
-});
 
-describe('Token input', () => {
-  it('Clear input fields after not successful login', async () => {
+  it('Clear input fields after entering wrong login information', async () => {
     const loginError = {
       error: 'Password not correct!'
     };
@@ -205,7 +174,9 @@ describe('Token input', () => {
 
     expect(result.state().authenticationHandlers.didLoginFail).toBe(false);
   });
+});
 
+describe('Login with data from localstorage', () => {
   it('Login with token from localstorage', () => {
     getAccessToken.mockReturnValue(jwtValidForever);
     const wrapper = mount(

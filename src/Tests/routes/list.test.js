@@ -1,21 +1,13 @@
-import { unmountComponentAtNode } from 'react-dom';
-import ListPage from '../routes/list';
-import AuthWall from '../routes/login';
-import ExperimentsPage from '../routes/experiments';
+import ListPage from '../../routes/list';
 import { shallow, mount } from 'enzyme';
 import { configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import { fakeDataset_One } from './fakeData/fakeDatasets';
+import { fakeDataset_One } from '../fakeData/fakeDatasets';
 
-import * as AuthentificationServices from '../services/ApiServices/AuthentificationServices';
-import LocalStorageService from '../services/LocalStorageService';
+import { getDatasets } from '../../services/ApiServices/DatasetServices';
 
-import { getDatasets } from '../services/ApiServices/DatasetServices';
-
-jest.mock('../services/ApiServices/DatasetServices');
+jest.mock('../../services/ApiServices/DatasetServices');
 
 const flushPromises = () => new Promise(setImmediate);
 

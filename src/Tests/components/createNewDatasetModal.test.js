@@ -1,22 +1,19 @@
-import React, { component } from 'react';
+import React from 'react';
 import { unmountComponentAtNode } from 'react-dom';
-import AuthWall from '../routes/login';
-import { shallow, mount, render } from 'enzyme';
-import { act } from 'react-dom/test-utils';
+import { mount } from 'enzyme';
 import { configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import CreateNewDatasetModal from '../components/CreateNewDatasetModal/CreateNewDatasetModal';
-import { createDataset } from '../services/ApiServices/DatasetServices';
-import { bothCombined, fakeDataset_One } from './fakeData/fakeDatasets';
+import CreateNewDatasetModal from '../../components/CreateNewDatasetModal/CreateNewDatasetModal';
+import { createDataset } from '../../services/ApiServices/DatasetServices';
+import { fakeDataset_One } from '../fakeData/fakeDatasets';
 import {
   processCSV,
   generateTimeSeries,
   calculateStartEndTimes
-} from '../services/CsvService';
-import { generate } from 'password-hash';
+} from '../../services/CsvService';
 
-jest.mock('../services/ApiServices/DatasetServices');
-jest.mock('../services/CsvService');
+jest.mock('../../services/ApiServices/DatasetServices');
+jest.mock('../../services/CsvService');
 
 configure({ adapter: new Adapter() });
 const csv_dataset_1 = __dirname + '/fakeData/fakeDataSets/testData.csv';
