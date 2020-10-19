@@ -11,8 +11,8 @@ import {
   ModalBody,
   ModalFooter
 } from 'reactstrap';
-import { view } from 'react-easy-state';
 import CreateNewDatasetModal from '../components/CreateNewDatasetModal/CreateNewDatasetModal';
+import ErrorPage from '../components/ErrorPage/ErrorPage';
 
 import Loader from '../modules/loader';
 
@@ -31,7 +31,12 @@ class ListPage extends Component {
       datasetsToDelete: [],
       loading: true,
       CreateNewDatasetToggle: false,
-      gotToken: false
+      gotToken: false,
+      error: {
+        errorText: '',
+        status: 0,
+        statusText: ''
+      }
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.deleteDatasets = this.deleteDatasets.bind(this);
@@ -44,7 +49,17 @@ class ListPage extends Component {
   }
 
   componentDidMount() {
-    getDatasets().then(this.onDatasetsChanged);
+    getDatasets()
+      .then(this.onDatasetsChanged)
+      .catch(err => {
+        this.setState({
+          error: {
+            errorText: err.data.error,
+            status: err.status,
+            statusText: err.statusText
+          }
+        });
+      });
   }
 
   onDatasetsChanged(datasets) {
@@ -115,8 +130,12 @@ class ListPage extends Component {
         });
       })
       .catch(err => {
-        window.alert(err);
         this.setState({
+          error: {
+            errorText: err.data.error,
+            status: err.status,
+            statusText: err.statusText
+          },
           modal: false
         });
       });
@@ -130,115 +149,131 @@ class ListPage extends Component {
   render() {
     return (
       <div id="dataList">
-        <Loader loading={!this.state.ready}>
-          <Container>
-            <Row className="mt-3">
-              <Col>
-                <Table responsive>
-                  <thead>
-                    <tr className="bg-light">
-                      <th />
-                      <th>ID</th>
-                      <th>Start Time</th>
-                      <th>User ID</th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {this.state.datasets.map((dataset, index) => {
-                      return (
-                        <tr key={index}>
-                          <td className="datasets-column">
-                            <Input
-                              className="datasets-check"
-                              type="checkbox"
-                              checked={this.state.datasetsToDelete.includes(
-                                dataset['_id']
-                              )}
-                              onChange={e =>
-                                this.toggleCheck(e, dataset['_id'])
-                              }
-                            />
-                          </td>
-                          <th className="datasets-column">{dataset['_id']}</th>
-                          <td className="datasets-column">
-                            {this.displayTime(dataset.start)}
-                          </td>
-                          <td className="datasets-column">{dataset.userId}</td>
-                          <td className="datasets-column">
-                            <Button
-                              block
-                              className="btn-secondary mt-0 btn-edit"
-                              onClick={e => {
-                                this.props.history.push({
-                                  pathname: `datasets/${dataset['_id']}`,
-                                  state: { dataset }
-                                });
-                              }}
-                            >
-                              View
-                            </Button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-                <Button
-                  block
-                  className="mb-5"
-                  color="danger"
-                  outline
-                  onClick={this.openDeleteModal}
-                >
-                  Delete
-                </Button>
-                <Button
-                  block
-                  className="mb-5"
-                  color="secondary"
-                  outline
-                  onClick={this.toggleCreateNewDatasetModal}
-                >
-                  + Add
-                </Button>
-              </Col>
-            </Row>
-          </Container>
+        {this.state.error.status >= 300 ? (
+          <ErrorPage error={this.state.error}></ErrorPage>
+        ) : (
+          <Loader loading={!this.state.ready}>
+            <Container>
+              <Row className="mt-3">
+                <Col>
+                  <Table responsive>
+                    <thead>
+                      <tr className="bg-light">
+                        <th />
+                        <th>ID</th>
+                        <th>Start Time</th>
+                        <th>User ID</th>
+                        <th />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {this.state.datasets.map((dataset, index) => {
+                        return (
+                          <tr key={index}>
+                            <td className="datasets-column">
+                              <Input
+                                className="datasets-check"
+                                type="checkbox"
+                                checked={this.state.datasetsToDelete.includes(
+                                  dataset['_id']
+                                )}
+                                onChange={e =>
+                                  this.toggleCheck(e, dataset['_id'])
+                                }
+                              />
+                            </td>
+                            <th className="datasets-column">
+                              {dataset['_id']}
+                            </th>
+                            <td className="datasets-column">
+                              {this.displayTime(dataset.start)}
+                            </td>
+                            <td className="datasets-column">
+                              {dataset.userId}
+                            </td>
+                            <td className="datasets-column">
+                              <Button
+                                block
+                                className="btn-secondary mt-0 btn-edit"
+                                onClick={e => {
+                                  this.props.history.push({
+                                    pathname: `datasets/${dataset['_id']}`,
+                                    state: { dataset }
+                                  });
+                                }}
+                              >
+                                View
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                  <Button
+                    id="deleteDatasetsButton"
+                    block
+                    className="mb-5"
+                    color="danger"
+                    outline
+                    onClick={this.openDeleteModal}
+                  >
+                    Delete
+                  </Button>
+                  <Button
+                    block
+                    className="mb-5"
+                    color="secondary"
+                    outline
+                    onClick={this.toggleCreateNewDatasetModal}
+                  >
+                    + Add
+                  </Button>
+                </Col>
+              </Row>
+            </Container>
 
-          <Modal
-            isOpen={this.state.modal}
-            toggle={this.toggleModal}
-            className={this.props.className}
-          >
-            <ModalHeader toggle={this.toggleModal}>Delete Dataset</ModalHeader>
-            <ModalBody>
-              Are you sure to delete the following datasets?
-              {this.state.datasetsToDelete.map(id => {
-                return (
-                  <React.Fragment key={id}>
-                    <br />
-                    <b>{id}</b>
-                  </React.Fragment>
-                );
-              })}
-            </ModalBody>
-            <ModalFooter>
-              <Button outline color="danger" onClick={this.deleteDatasets}>
-                Yes
-              </Button>{' '}
-              <Button outline color="secondary" onClick={this.toggleModal}>
-                No
-              </Button>
-            </ModalFooter>
-          </Modal>
-          <CreateNewDatasetModal
-            isOpen={this.state.isCreateNewDatasetOpen}
-            onCloseModal={this.toggleCreateNewDatasetModal}
-            onDatasetsChanged={this.onDatasetsChanged}
-            onDatasetComplete={this.onDatasetsChanged}
-          />
-        </Loader>
+            <Modal
+              isOpen={this.state.modal}
+              toggle={this.toggleModal}
+              className={this.props.className}
+            >
+              <ModalHeader toggle={this.toggleModal}>
+                Delete Dataset
+              </ModalHeader>
+              <ModalBody>
+                Are you sure to delete the following datasets?
+                {this.state.datasetsToDelete.map(id => {
+                  return (
+                    <React.Fragment key={id}>
+                      <br />
+                      <b>{id}</b>
+                    </React.Fragment>
+                  );
+                })}
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  id="deleteDatasetsButtonFinal"
+                  outline
+                  color="danger"
+                  onClick={this.deleteDatasets}
+                >
+                  Yes
+                </Button>{' '}
+                <Button outline color="secondary" onClick={this.toggleModal}>
+                  No
+                </Button>
+              </ModalFooter>
+            </Modal>
+            <CreateNewDatasetModal
+              isOpen={this.state.isCreateNewDatasetOpen}
+              onCloseModal={this.toggleCreateNewDatasetModal}
+              onDatasetsChanged={this.onDatasetsChanged}
+              onDatasetComplete={this.onDatasetsChanged}
+            />
+          </Loader>
+        )}
       </div>
     );
   }

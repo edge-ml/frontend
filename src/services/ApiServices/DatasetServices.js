@@ -23,7 +23,8 @@ module.exports.getDatasets = () => {
     )
       .then(result => resolve(result.data))
       .catch(err => {
-        window.alert(err);
+        console.log(err.response);
+        reject(err.response);
       });
   });
 };
@@ -42,7 +43,7 @@ module.exports.getDataset = (id, callback) => {
   });
 };
 
-module.exports.deleteDatasets = (ids, callback) => {
+module.exports.deleteDatasets = ids => {
   return new Promise((resolve, reject) => {
     console.log(ids);
     let promises = [];
@@ -60,11 +61,11 @@ module.exports.deleteDatasets = (ids, callback) => {
     }
     return Promise.all(promises)
       .then(resolve())
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
-module.exports.deleteDataset = (id, callback) => {
+module.exports.deleteDataset = id => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -74,11 +75,11 @@ module.exports.deleteDataset = (id, callback) => {
       )
     )
       .then(resolve())
-      .catch(reject());
+      .catch(err => reject(err.response));
   });
 };
 
-module.exports.updateDataset = (dataset, callback) => {
+module.exports.updateDataset = dataset => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -95,13 +96,11 @@ module.exports.updateDataset = (dataset, callback) => {
             apiConsts.API_URI,
             apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`
           )
-        )
-          .then(updatedDataset => {
-            resolve(updatedDataset.data);
-          })
-          .catch(err => console.log(err))
+        ).then(updatedDataset => {
+          resolve(updatedDataset.data);
+        })
       )
-      .catch(err => console.log(err));
+      .catch(err => reject(err.response));
   });
 };
 
@@ -120,6 +119,6 @@ module.exports.createDataset = dataset => {
           resolve(datasets);
         })
       )
-      .catch(err => window.alert(err));
+      .catch(err => reject(err.response));
   });
 };
