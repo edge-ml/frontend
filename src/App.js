@@ -22,6 +22,7 @@ import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labelings';
 import SettingsPage from './routes/settings';
 import ExperimentsPage from './routes/experiments';
+import ErrorPage from './components/ErrorPage/ErrorPage';
 
 const clearToken = require('./services/LocalStorageService').clearToken;
 
@@ -239,6 +240,11 @@ class App extends Component {
                     twoFactorEnabled={this.state.user.twoFactorEnabled}
                   />
                 )}
+              />
+              <Route
+                exact
+                path="/errorpage/:error/:errorText/:statusText"
+                render={props => <ErrorPage {...props} />}
               />
             </Container>
           </div>
