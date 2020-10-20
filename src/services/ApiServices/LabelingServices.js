@@ -1,7 +1,6 @@
 const getAccessToken = require('../LocalStorageService').getAccessToken;
 var apiConsts = require('./ApiConstants');
 const ax = require('axios');
-const { resolve } = require('path');
 const axios = ax.create();
 
 axios.interceptors.request.use(config => {
@@ -30,8 +29,10 @@ module.exports.subscribeLabelingsAndLabels = () => {
         )
       )
     ])
-      .then(results => resolve(results[0].data, results[1].data))
-      .catch(err => window.alert(err));
+      .then(results =>
+        resolve({ labelings: results[0].data, labels: results[1].data })
+      )
+      .catch(err => reject(err.response));
   });
 };
 
@@ -55,7 +56,7 @@ module.exports.addLabeling = (newLabeling, callback) => {
         )
           .then(lableings => {
             if (callback) {
-              resolve(lableings.data, undefined);
+              resolve({ labelings: lableings.data, labels: undefined });
             }
           })
           .catch(err => window.alert(err))
@@ -90,7 +91,7 @@ module.exports.deleteLabeling = labelingId => {
         )
       ])
         .then(results => {
-          resolve(results[0].data, results[1].data);
+          resolve({ labelings: results[0].data, labels: results[1].data });
         })
         .catch(err => window.alert(err));
     });
@@ -212,7 +213,7 @@ module.exports.updateLabelingAndLabels = (labeling, labels, deletedLabels) => {
         ]);
       })
       .then(results => {
-        resolve(results[0].data, results[1].data);
+        resolve({ labelings: results[0].data, labels: results[1].data });
       })
       .catch(err => window.alert(err));
   });

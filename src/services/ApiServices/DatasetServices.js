@@ -39,7 +39,7 @@ module.exports.getDataset = (id, callback) => {
       )
     )
       .then(dataset => resolve(dataset.data))
-      .catch(err => console.log(err));
+      .catch(err => reject(err.response));
   });
 };
 

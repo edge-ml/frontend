@@ -33,13 +33,10 @@ class ExperimentsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelingsAndLabels(this.onLabelingsAndLabelsChanged);
+    subscribeLabelingsAndLabels().then(result =>
+      this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
+    );
   }
-
-  /*componentWillUnmount() {
-    unsubscribeExperiments();
-    unsubscribeLabelingsAndLabels();
-  }*/
 
   onLabelingsAndLabelsChanged = (labelings, labels) => {
     this.setState(

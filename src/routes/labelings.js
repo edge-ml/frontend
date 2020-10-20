@@ -41,8 +41,8 @@ class LabelingsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelingsAndLabels().then((labelings, labels) => {
-      this.onLabelingsAndLabelsChanged(labelings, labels);
+    subscribeLabelingsAndLabels().then(result => {
+      this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
       if (this.props.location.pathname === '/labelings/new') {
         this.onModalAddLabeling();
       } else {
@@ -116,8 +116,8 @@ class LabelingsPage extends Component {
 
   onDeleteLabeling(labelingId) {
     this.onCloseModal();
-    deleteLabeling(labelingId).then((newLabelings, newLabels) =>
-      this.onLabelingsAndLabelsChanged(newLabelings, newLabels)
+    deleteLabeling(labelingId).then(result =>
+      this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
     );
   }
 
@@ -125,8 +125,8 @@ class LabelingsPage extends Component {
     if (!labeling || !labels) return;
 
     if (this.state.modal.isNewLabeling && labels.length === 0) {
-      addLabeling(labeling).then((newLabelings, newLabels) =>
-        this.onLabelingsAndLabelsChanged(newLabelings, newLabels)
+      addLabeling(labeling).then(result =>
+        this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
       );
     } else if (
       !this.state.modal.isNewLabeling &&
@@ -138,12 +138,8 @@ class LabelingsPage extends Component {
         this.onLabelingsAndLabelsChanged(newLabelings, undefined)
       );
     } else {
-      updateLabelingAndLabels(
-        labeling,
-        labels,
-        deletedLabels
-      ).then((newLabelings, newLabels) =>
-        this.onLabelingsAndLabelsChanged(newLabelings, newLabels)
+      updateLabelingAndLabels(labeling, labels, deletedLabels).then(result =>
+        this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
       );
     }
 

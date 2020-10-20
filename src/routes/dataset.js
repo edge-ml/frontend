@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Col, Row, Fade, Button } from 'reactstrap';
-import { view } from 'react-easy-state';
 import Highcharts from 'highcharts/highstock';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
@@ -118,17 +117,12 @@ class DatasetPage extends Component {
   componentDidMount() {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
-    //subscribeDataset(this.props.match.params.id, this.onDatasetChanged);
-    getDataset(this.props.match.params.id).then(dataset => {
-      this.onDatasetChanged(dataset);
-    });
+    getDataset(this.props.match.params.id).then(this.onDatasetChanged);
   }
 
   componentWillUnmount() {
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('keydown', this.onKeyDown);
-    //unsubscribeLabelingsAndLabels();
-    //unsubscribeDataset(this.props.match.params.id);
   }
 
   onDatasetUpdated() {
@@ -144,7 +138,9 @@ class DatasetPage extends Component {
       fused => fused.timeSeries.length > 1
     );
     this.setState({ dataset }, () =>
-      subscribeLabelingsAndLabels(this.onLabelingsAndLabelsChanged)
+      subscribeLabelingsAndLabels().then(result => {
+        this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
+      })
     );
   }
 
@@ -384,7 +380,7 @@ class DatasetPage extends Component {
     );
     dataset.start = Math.min(obj.data[0].timestamp, dataset.start);
 
-    updateDataset(dataset, dataset => {
+    updateDataset(dataset).then(dataset => {
       this.setState({ dataset });
     });
   }
@@ -407,7 +403,7 @@ class DatasetPage extends Component {
     }
 
     this.setState({ dataset });
-    updateDataset(dataset, () => {});
+    updateDataset(dataset);
   }
 
   onShiftTimeSeries(index, timestamp) {
@@ -418,7 +414,7 @@ class DatasetPage extends Component {
     dataset.timeSeries[index].offset += diff;
 
     this.setState({ dataset });
-    updateDataset(dataset, () => {});
+    updateDataset(dataset);
   }
 
   onFuseTimeSeries(seriesIds) {
@@ -427,7 +423,7 @@ class DatasetPage extends Component {
       timeSeries: seriesIds
     });
 
-    updateDataset(dataset, dataset => {
+    updateDataset(dataset).then(dataset => {
       this.setState({
         dataset,
         fuseTimeSeriesModalState: { isOpen: false }
@@ -699,7 +695,7 @@ class DatasetPage extends Component {
       }
     });
 
-    updateDataset(dataset, () => {});
+    updateDataset(dataset);
   }
 
   onSelectedLabelChanged(selectedLabelId) {
@@ -773,7 +769,7 @@ class DatasetPage extends Component {
     }
 
     if (labelingOrLabelAdded) {
-      updateDataset(dataset, newDataset => {
+      updateDataset(dataset).then(newDataset => {
         let labeling = newDataset.labelings.filter(
           labeling =>
             labeling.labelingId === this.state.controlStates.selectedLabelingId
@@ -789,7 +785,7 @@ class DatasetPage extends Component {
       });
     } else {
       this.setState({ dataset });
-      updateDataset(dataset, () => {});
+      updateDataset(dataset);
     }
   }
 
@@ -805,7 +801,7 @@ class DatasetPage extends Component {
         label => label['_id'] !== this.state.controlStates.selectedLabelId
       );
 
-      updateDataset(dataset, () => {
+      updateDataset(dataset).then(() => {
         this.setState({
           dataset,
           controlStates: {
@@ -983,4 +979,4 @@ class DatasetPage extends Component {
   }
 }
 
-export default view(DatasetPage);
+export default DatasetPage;
