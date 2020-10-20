@@ -66,7 +66,6 @@ class LabelingsPage extends Component {
     if (labelings === undefined) labelings = this.state.labelings;
 
     if (labels === undefined) labels = this.state.labels;
-
     this.setState({ labelings: labelings, labels: labels, isReady: true });
   }
 
@@ -121,11 +120,11 @@ class LabelingsPage extends Component {
     );
   }
 
-  onSave(labeling, labels, deletedLabels) {
+  async onSave(labeling, labels, deletedLabels) {
     if (!labeling || !labels) return;
 
     if (this.state.modal.isNewLabeling && labels.length === 0) {
-      addLabeling(labeling).then(result =>
+      await addLabeling(labeling).then(result =>
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
       );
     } else if (
@@ -134,15 +133,18 @@ class LabelingsPage extends Component {
       deletedLabels.length === 0 &&
       !labels.some(label => label.updated || label.isNewLabel)
     ) {
-      updateLabeling(labeling).then(newLabelings =>
+      await updateLabeling(labeling).then(newLabelings =>
         this.onLabelingsAndLabelsChanged(newLabelings, undefined)
       );
     } else {
-      updateLabelingAndLabels(labeling, labels, deletedLabels).then(result =>
+      await updateLabelingAndLabels(
+        labeling,
+        labels,
+        deletedLabels
+      ).then(result =>
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
       );
     }
-
     this.onCloseModal();
   }
 
