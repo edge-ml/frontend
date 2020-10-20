@@ -61,10 +61,14 @@ describe('Failure cases', () => {
       }
     };
     getDatasets.mockReturnValue(Promise.reject(error));
-    const wrapper = mount(<ListPage></ListPage>);
+    const fakeHistory = { push: jest.fn() };
+    const wrapper = mount(<ListPage history={fakeHistory}></ListPage>);
     await flushPromises();
     wrapper.update();
-    expect(wrapper.find('#mockErrorPage').exists()).toBe(true);
+    expect(fakeHistory.push).toBeCalledWith({
+      pathname:
+        '/errorpage/404/You need to provide a valid JWT-Token/Unauthorized'
+    });
   });
 
   it('Failure to delete datasets', async () => {
@@ -81,7 +85,8 @@ describe('Failure cases', () => {
       return Promise.reject(error);
     });
 
-    const wrapper = mount(<ListPage></ListPage>);
+    const fakeHistory = { push: jest.fn() };
+    const wrapper = mount(<ListPage history={fakeHistory}></ListPage>);
 
     await flushPromises();
     wrapper.update();
@@ -103,7 +108,9 @@ describe('Failure cases', () => {
       .simulate('click');
     await flushPromises();
     wrapper.update();
-
-    expect(wrapper.find('#mockErrorPage').exists()).toBe(true);
+    expect(fakeHistory.push).toBeCalledWith({
+      pathname:
+        '/errorpage/500/You need to provide a valid JWT-Token/Internal Server Error'
+    });
   });
 });
