@@ -91,7 +91,7 @@ describe('Create a new dataset', () => {
         }
       });
     result
-      .find('#nameInput')
+      .find('#nameInput0')
       .first()
       .simulate('change', {
         target: {
@@ -99,7 +99,7 @@ describe('Create a new dataset', () => {
         }
       });
     result
-      .find('#unitInput')
+      .find('#unitInput0')
       .first()
       .simulate('change', {
         target: {
@@ -139,7 +139,7 @@ describe('Create a new dataset', () => {
         }
       });
     result
-      .find('#nameInput')
+      .find('#nameInput0')
       .first()
       .simulate('change', {
         target: {
@@ -147,7 +147,7 @@ describe('Create a new dataset', () => {
         }
       });
     result
-      .find('#unitInput')
+      .find('#unitInput0')
       .first()
       .simulate('change', {
         target: {
@@ -184,7 +184,7 @@ describe('Create a new dataset', () => {
         }
       });
     result
-      .find('#nameInput')
+      .find('#nameInput0')
       .first()
       .simulate('change', {
         target: {
@@ -192,7 +192,7 @@ describe('Create a new dataset', () => {
         }
       });
     result
-      .find('#unitInput')
+      .find('#unitInput0')
       .first()
       .simulate('change', {
         target: {
