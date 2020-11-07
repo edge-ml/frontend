@@ -9,10 +9,14 @@ import {
   Table
 } from 'reactstrap';
 
+import ReactTooltip from 'react-tooltip';
+
 import {
   updateDataset,
   createDataset
 } from '../../services/ApiServices/DatasetServices';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import {
   generateTimeSeries,
@@ -27,7 +31,8 @@ class CreateNewDatasetModal extends Component {
     this.state = {
       files: [],
       units: [],
-      names: []
+      names: [],
+      error: undefined
     };
     this.onUpload = this.onUpload.bind(this);
     this.onDeleteFile = this.onDeleteFile.bind(this);
@@ -37,6 +42,13 @@ class CreateNewDatasetModal extends Component {
     this.extendDataset = this.extendDataset.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.resetState = this.resetState.bind(this);
+    this.onError = this.onError.bind(this);
+  }
+
+  onError(errorMsgs) {
+    this.setState({
+      error: errorMsgs
+    });
   }
 
   onCloseModal() {
@@ -71,10 +83,18 @@ class CreateNewDatasetModal extends Component {
     files.splice(index, 1);
     names.splice(index, 1);
     units.splice(index, 1);
+    if (this.state.error) {
+      var error = [...this.state.error];
+      error.splice(index, 1);
+      if (error.join('') === '') {
+        error = undefined;
+      }
+    }
     this.setState({
       files: files,
       names: names,
-      units: units
+      units: units,
+      error: error
     });
   }
 
@@ -92,6 +112,10 @@ class CreateNewDatasetModal extends Component {
       this.state.names,
       this.state.units
     );
+    if (timeSeries.err) {
+      this.onError(timeSeries.err);
+      return;
+    }
     if (timeSeries === undefined) {
       return;
     }
@@ -113,6 +137,10 @@ class CreateNewDatasetModal extends Component {
       this.state.names,
       this.state.units
     );
+    if (timeSeries.err) {
+      this.onError(timeSeries.err);
+      return;
+    }
     var dataset = this.props.dataset;
     dataset.timeSeries.push(...timeSeries);
     updateDataset(dataset).then(data => {
@@ -179,11 +207,31 @@ class CreateNewDatasetModal extends Component {
                   return (
                     <tr key={index}>
                       <td>
-                        <b>{file.name}</b>
+                        <b>
+                          {file.name.substring(0, 14) +
+                            (file.name.length <= 14 ? '' : '...')}
+                        </b>
+                        {this.state.error && this.state.error[index] ? (
+                          <div>
+                            <FontAwesomeIcon
+                              style={{ color: 'red' }}
+                              icon={faExclamationTriangle}
+                              className="mr-2 fa-xs"
+                              data-tip="Error"
+                              data-for={'tooltip' + index}
+                            />
+                            <ReactTooltip
+                              id={'tooltip' + index}
+                              getContent={() => {
+                                return this.state.error[index];
+                              }}
+                            />
+                          </div>
+                        ) : null}
                       </td>
                       <td>
                         <Input
-                          id="nameInput"
+                          id={'nameInput' + index}
                           data-testid="nameInput"
                           type="text"
                           placeholder="Name"
@@ -193,7 +241,7 @@ class CreateNewDatasetModal extends Component {
                       </td>
                       <td>
                         <Input
-                          id="unitInput"
+                          id={'unitInput' + index}
                           data-testid="unitInput"
                           tpye="text"
                           placeholder="Unit"
@@ -227,7 +275,13 @@ class CreateNewDatasetModal extends Component {
             onClick={this.onUpload}
           >
             Upload
-          </Button>{' '}
+          </Button>
+          {this.state.error ? (
+            <div className="m - 1 mr-auto" style={{ color: 'red' }}>
+              {'Fix errors to upload data'}
+            </div>
+          ) : null}
+
           <Button
             id="cancelButton"
             olor="secondary"

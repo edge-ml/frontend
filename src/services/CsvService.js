@@ -2,6 +2,7 @@ module.exports.generateTimeSeries = (timeData, names, units) => {
   var timeSeries = [];
   var i = 0;
   var obj = {};
+  var errMsgs = [];
   for (i = 0; i < timeData.length; i++) {
     obj = {
       name: names[i],
@@ -13,23 +14,37 @@ module.exports.generateTimeSeries = (timeData, names, units) => {
     var j = 0;
     var samplingRate = timeData[i][1][0] - timeData[i][0][0];
     var data = [];
+    var errFound = false;
     for (j = 0; j < timeData[i].length; j++) {
+      if (errFound) {
+        break;
+      }
+      if (isNaN(timeData[i][j][0]) || isNaN(timeData[i][j][1])) {
+        errMsgs.push('Only numbers are allowed');
+        errFound = true;
+        break;
+      }
       data.push(timeData[i][j][1]);
       if (
         j !== 0 &&
         timeData[i][j][0] - timeData[i][j - 1][0] !== samplingRate
       ) {
-        window.alert(
-          'Error: The sampling rate of the dataset is not consistent'
-        );
-        return;
+        errMsgs.push('The sampling rate of the dataset is not consistent');
+        errFound = true;
+        break;
       }
+    }
+    if (!errFound) {
+      errMsgs.push(undefined);
     }
     obj.samplingRate = samplingRate;
     obj.data = data;
     timeSeries.push(obj);
   }
-  return timeSeries;
+  if (errMsgs.join('') === '') {
+    return timeSeries;
+  }
+  return { err: errMsgs };
 };
 
 module.exports.calculateStartEndTimes = timeSeries => {
