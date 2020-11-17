@@ -1,9 +1,6 @@
 module.exports = {
-  AUTH_URI: 'http://aura.dmz.teco.edu/auth/',
-  API_URI: 'http://aura.dmz.teco.edu/api/',
-
-  //AUTH_URI: 'http://localhost/auth/',
-  //API_URI: 'http://localhost/api/',
+  AUTH_URI: window.location.host + '/auth/',
+  API_URI: window.location.host + '/api/',
 
   HTTP_METHODS: {
     GET: 'GET',
