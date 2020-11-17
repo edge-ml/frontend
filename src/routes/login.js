@@ -13,75 +13,96 @@ import {
   CardHeader,
   Alert
 } from 'reactstrap';
-import { PersonIcon, ShieldIcon } from 'react-octicons';
-import Request from 'request-promise';
+import { MailIcon, ShieldIcon } from 'react-octicons';
 import update from 'immutability-helper';
-
-import State from '../state';
-
 import { FadeInUp } from 'animate-components';
+import { getServerTime } from '../services/helpers.js';
+import {
+  loginUser,
+  verify2FA
+} from '../services/ApiServices/AuthentificationServices';
+import jwt_decode from 'jwt-decode';
 
 import {
-  login,
-  twoFAAuthenticate,
-  subscribeVerified,
-  restoreSession
-} from '../services/SocketService';
-import { getServerTime } from '../services/helpers.js';
+  getAccessToken,
+  getRefreshToken,
+  setToken
+} from '../services/LocalStorageService';
 
 class LoginPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
+      usermail: '',
       password: '',
-      button: {
-        disabled: false
-      },
+      buttonDisabled: false,
       isLoggedIn: props.isLoggedIn,
       isTwoFactorAuthenticated: props.isTwoFactorAuthenticated,
+      twoFactorEnabled: props.twoFactorEnabled,
       authenticationHandlers: {
-        onLogin: props.onLogin,
-        onTwoFA: props.onTwoFA,
-        onCancelLogin: props.onCancelLogin,
-        didLoginFail: false
+        didLoginFail: false,
+        onCancelLogin: props.onCancelLogin
       },
       twoFactorAuthentication: {
         qrCode: undefined,
         token: undefined,
         tokenFailed: false
       },
-      time: undefined
+      time: undefined,
+
+      user: {}
     };
-    this.userChange = this.userChange.bind(this);
+    this.emailchange = this.emailchange.bind(this);
     this.passChange = this.passChange.bind(this);
     this.submit = this.submit.bind(this);
-    this.onLogin = this.onLogin.bind(this);
-    this.onTwoFA = this.onTwoFA.bind(this);
     this.onTokenChanged = this.onTokenChanged.bind(this);
     this.onVerified = this.onVerified.bind(this);
     this.onLoginCanceled = this.onLoginCanceled.bind(this);
     this.onDidRestoreSession = this.onDidRestoreSession.bind(this);
     this.passHandleKey = this.passHandleKey.bind(this);
     this.tick = this.tick.bind(this);
-
-    restoreSession(this.onDidRestoreSession);
+    this.checkLoggedInStatus = this.checkLoggedInStatus.bind(this);
   }
 
   componentWillReceiveProps(props) {
     this.setState(
       update(this.state, {
-        isLoggedIn: { $set: props.isLoggedIn },
-        isTwoFactorAuthenticated: { $set: props.isTwoFactorAuthenticated }
+        isLoggedIn: {
+          $set: props.isLoggedIn
+        },
+        isTwoFactorAuthenticated: {
+          $set: props.isTwoFactorAuthenticated
+        }
       })
     );
   }
 
-  userChange(event) {
+  checkLoggedInStatus() {
+    var accessToken = getAccessToken();
+    var refreshToken = getRefreshToken();
+    if (accessToken) {
+      var decoded = jwt_decode(accessToken);
+      if (
+        decoded.exp * 1000 >= Date.now() &&
+        !(decoded.twoFactorEnabled && !decoded.twoFactorVerified)
+      ) {
+        this.props.setUser(this.state.user);
+        this.setState({
+          isLoggedIn: true
+        });
+      }
+    }
+    if (refreshToken && jwt_decode(refreshToken).exp * 1000 >= Date.now()) {
+      //TODO: Need to obtain new Access_Token here
+      return;
+    }
+  }
+
+  emailchange(event) {
     this.setState(
       update(this.state, {
         $merge: {
-          username: event.target.value
+          usermail: event.target.value
         }
       })
     );
@@ -103,53 +124,47 @@ class LoginPage extends Component {
     }
   }
 
-  onLogin(didSucceed) {
-    this.setState(
-      update(this.state, {
-        $merge: {
-          button: {
-            disabled: false
-          },
-          authenticationHandlers: {
-            didLoginFail: !didSucceed,
-            onLogin: this.state.authenticationHandlers.onLogin,
-            onTwoFA: this.state.authenticationHandlers.onTwoFA,
-            onCancelLogin: this.state.authenticationHandlers.onCancelLogin
-          }
-        }
-      })
-    );
-
-    if (didSucceed) {
-      subscribeVerified(this.onVerified);
-    }
-    this.state.authenticationHandlers.onLogin(didSucceed);
-  }
-
-  onTwoFA(qrCode) {
-    this.setState({
-      twoFactorAuthentication: {
-        qrCode: qrCode
-      }
-    });
-    if (this.tokenInput) {
-      this.tokenInput.focus();
-    }
-  }
-
   onTokenChanged(e) {
-    if (e.target.value.length > 6) return;
+    if (!e.target || !e.target.value) return;
+    //if (e.target.value.length > 6) return;
     else if (e.target.value.length === 6) {
-      twoFAAuthenticate(e.target.value);
+      verify2FA(this.state.user.access_token, e.target.value)
+        .then(data => {
+          if (data) {
+            if (data && data.status && data.status !== 200) {
+              window.alert(data.data.error);
+            } else {
+              this.setState(
+                {
+                  tokenFailed: false,
+                  user: data
+                },
+                () => {
+                  this.props.setUser(data, () => {
+                    this.props.onLogin(true);
+                  });
+                }
+              );
+            }
+          }
+        })
+        .catch(err => {
+          var tmp = this.state.twoFactorAuthentication;
+          tmp.tokenFailed = true;
+          this.setState(
+            {
+              twoFactorAuthentication: tmp
+            },
+            () => {
+              setTimeout(() => {
+                document.getElementById('tokenInput').value = '';
+                tmp.tokenFailed = false;
+                this.setState({ twoFactorAuthentication: tmp });
+              }, 300);
+            }
+          );
+        });
     }
-
-    this.setState({
-      twoFactorAuthentication: {
-        token: e.target.value.trim(),
-        qrCode: this.state.twoFactorAuthentication.qrCode,
-        tokenFailed: false
-      }
-    });
   }
 
   onVerified(success) {
@@ -169,8 +184,6 @@ class LoginPage extends Component {
           tokenFailed: false
         }
       });
-
-      this.state.authenticationHandlers.onTwoFA(success);
     }
   }
 
@@ -180,54 +193,78 @@ class LoginPage extends Component {
 
   onLoginCanceled() {
     this.state.authenticationHandlers.onCancelLogin();
+    var tmpAuth = this.state.authenticationHandlers;
+    var tmp2FA = this.state.twoFactorAuthentication;
+    tmpAuth.didLoginFail = false;
+    tmp2FA.qrCode = undefined;
+    tmp2FA.token = undefined;
+    tmp2FA.tokenFailed = false;
+    this.setState({
+      authenticationHandlers: tmpAuth,
+      twoFactorAuthentication: tmp2FA,
+      usermail: '',
+      password: ''
+    });
   }
 
-  submit(event) {
-    this.setState(
-      update(this.state, {
-        $merge: {
-          button: {
-            disabled: true
-          }
-        }
+  submit() {
+    this.setState({ buttonDisabled: true });
+    loginUser(this.state.usermail, this.state.password)
+      .then(data => {
+        setToken(data.access_token, data.refresh_token);
+        this.setState({ buttonDisabled: false }, () => {
+          this.setState(
+            {
+              user: data,
+              isLoggedIn: true,
+              isTwoFactorAuthenticated: false,
+              usermail: '',
+              password: ''
+            },
+            () => {
+              this.check2FALogin();
+              this.props.setUser(data);
+            }
+          );
+        });
       })
-    );
+      .catch(err => {
+        var tmp = this.state.authenticationHandlers;
+        tmp.didLoginFail = true;
+        this.setState(
+          {
+            authenticationHandlers: tmp
+          },
+          () => {
+            //Wait for animation to stop then reset page
+            setTimeout(() => {
+              tmp.didLoginFail = false;
+              this.setState({
+                authenticationHandlers: tmp,
+                buttonDisabled: false,
+                password: ''
+              });
+            }, 300);
+          }
+        );
+      });
+  }
 
-    login(this.state.username, this.state.password, this.onLogin, this.onTwoFA);
+  check2FALogin() {
+    if (!this.state.user.twoFactorEnabled) {
+      this.props.setUser(this.state.user, () => {
+        this.setState({
+          isLoggedIn: true
+        });
+      });
+    }
   }
 
   componentDidMount() {
-    // check if token exsists
-    if (window.localStorage.getItem('id_token')) {
-      const options = {
-        method: 'GET',
-        url: `${State.edge}/authed`,
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('id_token')}`
-        }
-      };
-
-      Request(options)
-        .then(res => {
-          this.setState(
-            update(this.state, {
-              authed: { $set: true }
-            })
-          );
-        })
-        .catch(err => {
-          if (err.statusCode === 401) {
-            this.setState(
-              update(this.state, {
-                authed: { $set: false }
-              })
-            );
-            window.localStorage.clear();
-          }
-        });
-    }
-
-    this.setState({ time: getServerTime() });
+    this.checkLoggedInStatus();
+    getServerTime()
+      .then(serverTime => this.setState({ time: serverTime }))
+      .catch(err => {});
     this.interval = setInterval(this.tick, 1000);
   }
 
@@ -245,15 +282,24 @@ class LoginPage extends Component {
   }
 
   render() {
-    if (this.state.isLoggedIn && this.state.isTwoFactorAuthenticated) {
+    if (
+      (this.state.isLoggedIn && !this.state.user.twoFactorEnabled) ||
+      (this.state.user.twoFactorAuthentication && this.state.isLoggedIn)
+    ) {
       return this.props.children;
     } else {
       return (
-        <Container className="Page" style={{ paddingLeft: 0, paddingRight: 0 }}>
+        <Container
+          className="Page"
+          style={{
+            paddingLeft: 0,
+            paddingRight: 0
+          }}
+        >
           <Alert
             color="info"
             hidden={
-              !(this.state.isLoggedIn && !this.state.isTwoFactorAuthenticated)
+              !(this.state.isLoggedIn && !this.state.user.twoFactorVerified)
             }
           >
             Your device's time must be synchronized with the server time or
@@ -283,15 +329,16 @@ class LoginPage extends Component {
                           <InputGroup>
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <PersonIcon />
+                                <MailIcon />
                               </InputGroupText>
                             </InputGroupAddon>
                             <Input
-                              type="username"
-                              name="username"
-                              id="username"
-                              placeholder="username"
-                              onChange={this.userChange}
+                              type="email"
+                              name="email"
+                              id="email"
+                              placeholder="email"
+                              value={this.state.usermail}
+                              onChange={this.emailchange}
                             />
                           </InputGroup>
                         </Col>
@@ -307,6 +354,7 @@ class LoginPage extends Component {
                               name="password"
                               id="password"
                               placeholder="password"
+                              value={this.state.password}
                               onChange={this.passChange}
                               onKeyDown={this.passHandleKey}
                             />
@@ -316,7 +364,7 @@ class LoginPage extends Component {
                           <Button
                             id="login-button"
                             onClick={this.submit}
-                            disabled={this.state.button.disabled}
+                            disabled={this.state.buttonDisabled}
                             color="primary"
                             block
                           >
@@ -330,7 +378,8 @@ class LoginPage extends Component {
                     hidden={
                       !(
                         this.state.isLoggedIn &&
-                        !this.state.isTwoFactorAuthenticated
+                        !this.state.user.twoFactorVerified &&
+                        this.state.user.twoFactorEnabled
                       )
                     }
                     style={{ alignContent: 'center' }}
@@ -339,18 +388,17 @@ class LoginPage extends Component {
                       <b>Two Factor Authentication Setup</b>
                     ) : (
                       <b>Two Factor Authentication</b>
-                    )}
+                    )}{' '}
                   </CardHeader>
                   <CardBody
                     hidden={
                       !(
                         this.state.isLoggedIn &&
-                        !this.state.isTwoFactorAuthenticated
+                        !this.state.user.twoFactorVerified &&
+                        this.state.user.twoFactorEnabled
                       )
                     }
-                    style={{
-                      margin: 'auto'
-                    }}
+                    style={{ margin: 'auto' }}
                   >
                     {this.state.twoFactorAuthentication.qrCode ? (
                       <img
@@ -362,15 +410,11 @@ class LoginPage extends Component {
                     <Input
                       autoFocus
                       className={'mt-1'}
+                      id="tokenInput"
                       placeholder="Token"
                       value={this.state.twoFactorAuthentication.token}
-                      style={{
-                        textAlign: 'center'
-                      }}
+                      style={{ textAlign: 'center' }}
                       onChange={this.onTokenChanged}
-                      ref={input => {
-                        this.tokenInput = input;
-                      }}
                     />
                     <Button
                       block

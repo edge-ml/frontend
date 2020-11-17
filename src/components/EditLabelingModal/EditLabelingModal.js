@@ -35,7 +35,6 @@ class EditLabelingModal extends Component {
       isNewLabeling: props.isNewLabeling,
       deletedLabels: []
     };
-
     this.onAddLabel = this.onAddLabel.bind(this);
     this.onDeleteLabel = this.onDeleteLabel.bind(this);
     this.onLabelingNameChanged = this.onLabelingNameChanged.bind(this);
@@ -154,6 +153,7 @@ class EditLabelingModal extends Component {
               <InputGroupText>Name</InputGroupText>
             </InputGroupAddon>
             <Input
+              id="labelingName"
               value={
                 this.state.labeling && this.state.labeling.name
                   ? this.state.labeling.name
@@ -188,6 +188,7 @@ class EditLabelingModal extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
+                    id={'labelName' + index}
                     placeholder="Name"
                     value={label.name}
                     onChange={e =>
@@ -234,6 +235,7 @@ class EditLabelingModal extends Component {
               ))
             : null}
           <Button
+            id="buttonAddLabel"
             className="m-0"
             color="secondary"
             outline
@@ -246,6 +248,7 @@ class EditLabelingModal extends Component {
             <div>
               <hr />
               <Button
+                id="buttonDeleteLabeling"
                 color="danger"
                 block
                 className="m-0"
@@ -263,6 +266,7 @@ class EditLabelingModal extends Component {
         </ModalBody>
         <ModalFooter>
           <Button
+            id="buttonSaveLabeling"
             color="primary"
             className="m-1 mr-auto"
             onClick={e => {

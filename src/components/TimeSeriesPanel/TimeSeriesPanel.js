@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import { Card, CardBody } from 'reactstrap';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 
 import './TimeSeriesPanel.css';
 import DropdownPanel from './DropdownPanel';
-import { generateRandomColor } from '../../services/ColorService';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
@@ -77,7 +75,7 @@ class TimeSeriesPanel extends Component {
     if (
       filteredLabels !== undefined &&
       filteredLabels.length !== 0 &&
-      this.props.updateControlStates != undefined
+      this.props.updateControlStates !== undefined
     ) {
       this.props.updateControlStates(
         filteredLabels[0]['_id'],

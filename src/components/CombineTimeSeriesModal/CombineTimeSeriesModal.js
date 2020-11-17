@@ -5,8 +5,6 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  FormGroup,
-  Label,
   Input,
   InputGroup,
   InputGroupAddon,

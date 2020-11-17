@@ -6,15 +6,13 @@ import Loader from '../modules/loader';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import EditInstructionModal from '../components/EditInstructionModal/EditInstructionModal';
 
+import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
-  subscribeExperiments,
+  deleteExperiment,
   addExperiment,
   updateExperiment,
-  deleteExperiment,
-  unsubscribeExperiments,
-  subscribeLabelingsAndLabels,
-  unsubscribeLabelingsAndLabels
-} from '../services/SocketService';
+  subscribeExperiments
+} from '../services/ApiServices/ExperimentService';
 
 class ExperimentsPage extends Component {
   constructor(props) {
@@ -35,12 +33,9 @@ class ExperimentsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelingsAndLabels(this.onLabelingsAndLabelsChanged);
-  }
-
-  componentWillUnmount() {
-    unsubscribeExperiments();
-    unsubscribeLabelingsAndLabels();
+    subscribeLabelingsAndLabels().then(result =>
+      this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
+    );
   }
 
   onLabelingsAndLabelsChanged = (labelings, labels) => {
@@ -59,10 +54,9 @@ class ExperimentsPage extends Component {
 
   onExperimentsChanged = experiments => {
     if (experiments === undefined) experiments = this.state.experiments;
-
     this.setState({
       experiments: experiments,
-      selectedExperimentId: experiments[0]['_id'],
+      selectedExperimentId: experiments[0] ? experiments[0]['_id'] : undefined,
       isReady: true
     });
 
@@ -138,13 +132,13 @@ class ExperimentsPage extends Component {
       selectedExperimentId: experiments[0]['_id']
     });
     */
-    deleteExperiment(experimentId);
+    deleteExperiment(experimentId, this.onExperimentsChanged);
   };
 
   onSave = experiment => {
     if (!experiment) return;
 
-    if (!experiment.name || experiment.name == '') {
+    if (!experiment.name || experiment.name === '') {
       window.alert('Please enter a valid name.');
       return;
     }
@@ -161,12 +155,12 @@ class ExperimentsPage extends Component {
     }
 
     if (this.state.modal.isNewExperiment) {
-      addExperiment(experiment);
+      addExperiment(experiment, this.onExperimentsChanged);
       //this.setState({
       //  experiments: [...this.state.experiments, experiment]
       //});
     } else {
-      updateExperiment(experiment);
+      updateExperiment(experiment, this.onExperimentsChanged);
       //this.setState({
       //  experiments: this.state.experiments.map(exp =>
       //    exp['_id'] === experiment['_id'] ? experiment : exp
@@ -213,8 +207,6 @@ class ExperimentsPage extends Component {
             )
         );
       }
-
-      return false;
     });
   };
 

@@ -14,9 +14,7 @@ export const parseCSV = (string, startTime, adjustTime) => {
     if (obj[content[0]] === undefined) {
       obj[content[0]] = content[1];
     } else {
-      obj.message = `The metadata field ${
-        content[0]
-      } is defined more than once in the csv.`;
+      obj.message = `The metadata field ${content[0]} is defined more than once in the csv.`;
       return obj;
     }
 
@@ -132,12 +130,12 @@ export const parseCSV = (string, startTime, adjustTime) => {
 };
 
 export const getServerTime = () => {
-  let xmlHttp;
-
-  xmlHttp = new XMLHttpRequest();
-  xmlHttp.open('HEAD', window.location.href.toString(), false);
-  xmlHttp.setRequestHeader('Content-Type', 'text/html');
-  xmlHttp.send('');
-
-  return new Date(xmlHttp.getResponseHeader('Date'));
+  const ax = require('axios');
+  const axios = ax.create();
+  return new Promise((resolve, reject) => {
+    axios
+      .get(window.location.href.toString())
+      .then(data => resolve(data.headers.date))
+      .catch(err => reject(err));
+  });
 };

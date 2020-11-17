@@ -1,27 +1,20 @@
 import React, { Component } from 'react';
 import { Col, Row, Fade, Button } from 'reactstrap';
-import { view } from 'react-easy-state';
 import Highcharts from 'highcharts/highstock';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
-import TagsPanel from '../components/TagsPanel/TagsPanel';
 import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
 import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
-import InteractionControlPanel from '../components/InteractionControlPanel/InteractionControlPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
-import ApiPanel from '../components/ApiPanel/ApiPanel';
 import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
 
+import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
-  subscribeDataset,
-  unsubscribeDataset,
   updateDataset,
   deleteDataset,
-  subscribeLabelingsAndLabels,
-  unsubscribeLabelingsAndLabels
-} from '../services/SocketService';
-import { generateRandomColor } from '../services/ColorService';
+  getDataset
+} from '../services/ApiServices/DatasetServices';
 import Loader from '../modules/loader';
 import VideoPanel from '../components/VideoPanel/VideoPanel';
 
@@ -67,8 +60,9 @@ class DatasetPage extends Component {
       fuseTimeSeriesModalState: {
         isOpen: false
       },
-      videoEnabled: false,
-      playButtonEnabled: false
+      videoEnabled: this.props.getVideoOptions().videoEnabled,
+      playButtonEnabled: this.props.getVideoOptions().playButtonEnabled,
+      modalOpen: false
     };
 
     this.onSelectedLabelingIdChanged = this.onSelectedLabelingIdChanged.bind(
@@ -102,6 +96,8 @@ class DatasetPage extends Component {
     this.setCrosshairInterval = this.setCrosshairInterval.bind(this);
     this.clearCrosshairInterval = this.clearCrosshairInterval.bind(this);
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
+    this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
+    this.setModalOpen = this.setModalOpen.bind(this);
 
     this.pressedKeys = {
       num: [],
@@ -112,23 +108,27 @@ class DatasetPage extends Component {
     this.videoPanel = React.createRef();
   }
 
+  setModalOpen(isOpen) {
+    this.setState({
+      modalOpen: isOpen
+    });
+  }
+
   componentDidMount() {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
-    subscribeDataset(this.props.match.params.id, this.onDatasetChanged);
-
-    //this.state.dataset.fusedSeries = this.state.dataset.fusedSeries.filter(
-    //  fused => fused.timeSeries.length > 1
-    //);
-
-    //this.onLabelingsAndLabelsChanged(this.state.labelings, this.state.labels);
+    getDataset(this.props.match.params.id).then(this.onDatasetChanged);
   }
 
   componentWillUnmount() {
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('keydown', this.onKeyDown);
-    unsubscribeLabelingsAndLabels();
-    unsubscribeDataset(this.props.match.params.id);
+  }
+
+  onDatasetUpdated() {
+    getDataset(this.props.match.params.id).then(dataset =>
+      this.onDatasetChanged(dataset)
+    );
   }
 
   onDatasetChanged(dataset) {
@@ -138,7 +138,9 @@ class DatasetPage extends Component {
       fused => fused.timeSeries.length > 1
     );
     this.setState({ dataset }, () =>
-      subscribeLabelingsAndLabels(this.onLabelingsAndLabelsChanged)
+      subscribeLabelingsAndLabels().then(result => {
+        this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
+      })
     );
   }
 
@@ -161,6 +163,9 @@ class DatasetPage extends Component {
   }
 
   onKeyDown(e) {
+    if (this.state.modalOpen) {
+      return;
+    }
     let keyCode = e.keyCode ? e.keyCode : e.which;
 
     if ((e.ctrlKey || e.shiftKey) && keyCode > 47 && keyCode < 58) {
@@ -343,7 +348,7 @@ class DatasetPage extends Component {
             window.alert(
               `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
             );
-            return;
+            return null;
           }
 
           for (let i = 0; i < dataset.labelings.length; i++) {
@@ -359,6 +364,7 @@ class DatasetPage extends Component {
           break;
         }
       }
+      return null;
     });
 
     if (labels.length !== 0) {
@@ -374,7 +380,7 @@ class DatasetPage extends Component {
     );
     dataset.start = Math.min(obj.data[0].timestamp, dataset.start);
 
-    updateDataset(dataset, dataset => {
+    updateDataset(dataset).then(dataset => {
       this.setState({ dataset });
     });
   }
@@ -417,7 +423,7 @@ class DatasetPage extends Component {
       timeSeries: seriesIds
     });
 
-    updateDataset(dataset, dataset => {
+    updateDataset(dataset).then(dataset => {
       this.setState({
         dataset,
         fuseTimeSeriesModalState: { isOpen: false }
@@ -763,7 +769,7 @@ class DatasetPage extends Component {
     }
 
     if (labelingOrLabelAdded) {
-      updateDataset(dataset, newDataset => {
+      updateDataset(dataset).then(newDataset => {
         let labeling = newDataset.labelings.filter(
           labeling =>
             labeling.labelingId === this.state.controlStates.selectedLabelingId
@@ -795,7 +801,7 @@ class DatasetPage extends Component {
         label => label['_id'] !== this.state.controlStates.selectedLabelId
       );
 
-      updateDataset(dataset, () => {
+      updateDataset(dataset).then(() => {
         this.setState({
           dataset,
           controlStates: {
@@ -857,7 +863,6 @@ class DatasetPage extends Component {
 
     let isDrawingIntervalActive = this.drawingInterval ? true : false;
     let isCrosshairIntervalActive = this.crosshairInterval ? true : false;
-
     return (
       <Fade in={this.state.fadeIn}>
         <div className="pb-5">
@@ -914,24 +919,11 @@ class DatasetPage extends Component {
               </div>
             </Col>
             <Col xs={12} lg={3}>
-              <div>
-                <VideoPanel ref={this.videoPanel} />
-              </div>
-              {/**
               {this.state.videoEnabled ? (
                 <div>
                   <VideoPanel ref={this.videoPanel} />
                 </div>
               ) : null}
-              <div className="mt-0">
-                <InteractionControlPanel
-                  isPublished={this.state.dataset.isPublished}
-                />
-              </div>
-              */}
-              <div className="mt-0">
-                <TagsPanel events={this.state.dataset.events} />
-              </div>
               <div className="mt-2">
                 <MetadataPanel
                   id={this.state.dataset['_id']}
@@ -940,22 +932,15 @@ class DatasetPage extends Component {
                   user={this.state.dataset.userId}
                 />
               </div>
-              <div className="mt-2">
-                {/**
-                (
-                  <ApiPanel
-                    onUpload={obj => this.addTimeSeries(obj)}
-                    onFuse={this.onFuseTimeSeries}
-                    startTime={this.state.dataset.start}
-                  />
-                )
-              */}
-              </div>
+              <div className="mt-2" />
               <div className="mt-2" style={{ marginBottom: '230px' }}>
                 <ManagementPanel
                   onUpload={obj => this.addTimeSeries(obj)}
                   startTime={this.state.dataset.start}
                   onDeleteDataset={this.onDeleteDataset}
+                  dataset={this.state.dataset}
+                  onDatasetComplete={this.onDatasetUpdated}
+                  setModalOpen={this.setModalOpen}
                 />
               </div>
             </Col>
@@ -994,4 +979,4 @@ class DatasetPage extends Component {
   }
 }
 
-export default view(DatasetPage);
+export default DatasetPage;

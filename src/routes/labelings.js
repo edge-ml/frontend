@@ -6,13 +6,12 @@ import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
 
 import {
+  updateLabelingAndLabels,
+  updateLabeling,
   subscribeLabelingsAndLabels,
   addLabeling,
-  updateLabeling,
-  deleteLabeling,
-  updateLabelingAndLabels,
-  unsubscribeLabelingsAndLabels
-} from '../services/SocketService';
+  deleteLabeling
+} from '../services/ApiServices/LabelingServices';
 
 class LabelingsPage extends Component {
   constructor(props) {
@@ -42,9 +41,8 @@ class LabelingsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelingsAndLabels((labelings, labels) => {
-      this.onLabelingsAndLabelsChanged(labelings, labels);
-
+    subscribeLabelingsAndLabels().then(result => {
+      this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
       if (this.props.location.pathname === '/labelings/new') {
         this.onModalAddLabeling();
       } else {
@@ -58,34 +56,22 @@ class LabelingsPage extends Component {
           let labels = this.state.labels.filter(label =>
             labeling.labels.includes(label['_id'])
           );
-
           this.toggleModal(labeling, labels, false);
         }
       }
     });
   }
 
-  componentWillUnmount() {
-    unsubscribeLabelingsAndLabels();
-  }
-
   onLabelingsAndLabelsChanged(labelings, labels) {
     if (labelings === undefined) labelings = this.state.labelings;
-    if (labels === undefined) labels = this.state.labels;
 
-    this.setState({
-      labelings: labelings,
-      labels: labels,
-      isReady: true
-    });
+    if (labels === undefined) labels = this.state.labels;
+    this.setState({ labelings: labelings, labels: labels, isReady: true });
   }
 
   toggleModal(labeling, labels, isNewLabeling) {
     if (isNewLabeling) {
-      this.props.history.replace({
-        pathname: '/labelings/new',
-        search: null
-      });
+      this.props.history.replace({ pathname: '/labelings/new', search: null });
     } else {
       this.props.history.replace({
         pathname: '/labelings',
@@ -129,33 +115,41 @@ class LabelingsPage extends Component {
 
   onDeleteLabeling(labelingId) {
     this.onCloseModal();
-    deleteLabeling(labelingId);
+    deleteLabeling(labelingId).then(result =>
+      this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
+    );
   }
 
-  onSave(labeling, labels, deletedLabels) {
+  async onSave(labeling, labels, deletedLabels) {
     if (!labeling || !labels) return;
 
     if (this.state.modal.isNewLabeling && labels.length === 0) {
-      addLabeling(labeling);
+      await addLabeling(labeling).then(result =>
+        this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
+      );
     } else if (
       !this.state.modal.isNewLabeling &&
       labeling.updated &&
       deletedLabels.length === 0 &&
       !labels.some(label => label.updated || label.isNewLabel)
     ) {
-      updateLabeling(labeling);
+      await updateLabeling(labeling).then(newLabelings =>
+        this.onLabelingsAndLabelsChanged(newLabelings, undefined)
+      );
     } else {
-      updateLabelingAndLabels(labeling, labels, deletedLabels);
+      await updateLabelingAndLabels(
+        labeling,
+        labels,
+        deletedLabels
+      ).then(result =>
+        this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
+      );
     }
-
     this.onCloseModal();
   }
 
   resetURL() {
-    this.props.history.replace({
-      pathname: '/labelings',
-      search: null
-    });
+    this.props.history.replace({ pathname: '/labelings', search: null });
   }
 
   render() {
@@ -177,7 +171,7 @@ class LabelingsPage extends Component {
                   {this.state.labelings.map((labeling, index) => (
                     <tr key={index}>
                       <th className="labelings-column" scope="row">
-                        {labeling['_id']}
+                        {labeling['_id']}{' '}
                       </th>
                       <td
                         className={
@@ -186,16 +180,14 @@ class LabelingsPage extends Component {
                             : 'labelings-column font-italic'
                         }
                       >
-                        {labeling.name !== '' ? labeling.name : 'Untitled'}
+                        {labeling.name !== '' ? labeling.name : 'Untitled'}{' '}
                       </td>
                       <td className="labelings-column">
                         {labeling.labels.map((labelId, index) => {
                           let label = this.state.labels.filter(
                             label => label['_id'] === labelId
                           )[0];
-
-                          if (!label) return;
-
+                          if (!label) return null;
                           return (
                             <Badge
                               key={index}
@@ -204,14 +196,12 @@ class LabelingsPage extends Component {
                                   ? 'm-1 font-italic font-weight-normal'
                                   : 'm-1'
                               }
-                              style={{
-                                backgroundColor: label.color
-                              }}
+                              style={{ backgroundColor: label.color }}
                             >
-                              {label.name !== '' ? label.name : 'Untitled'}
+                              {label.name !== '' ? label.name : 'Untitled'}{' '}
                             </Badge>
                           );
-                        })}
+                        })}{' '}
                       </td>
                       <td>
                         <Button
@@ -260,4 +250,4 @@ class LabelingsPage extends Component {
   }
 }
 
-export default view(LabelingsPage);
+export default LabelingsPage;

@@ -8,18 +8,15 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Input,
-  FormGroup,
-  Label
+  Input
 } from 'reactstrap';
 
-import {
-  isValidColor,
-  hexToForegroundColor,
-  generateRandomColor
-} from '../../services/ColorService';
-
 import './EditUserModal.css';
+
+import {
+  deleteUser,
+  editUser
+} from '../../services/ApiServices/AuthentificationServices';
 
 class EditUserModal extends Component {
   constructor(props) {
@@ -31,6 +28,7 @@ class EditUserModal extends Component {
       onCloseModal: props.onCloseModal,
       inputVariables: {
         name: props.user ? props.user.username : '',
+        email: '',
         newPassword: '',
         passwordConfirm: '',
         currentPassword: '',
@@ -39,14 +37,11 @@ class EditUserModal extends Component {
       modalState: {
         isOpen: props.isOpen
       },
-      onSave: props.onSave,
-      onDeleteUser: props.onDeleteUser,
       onAddUser: props.onAddUser,
       onReset2FA: props.onReset2FA
     };
 
     this.onCloseModal = this.onCloseModal.bind(this);
-    this.onNameChanged = this.onNameChanged.bind(this);
     this.onPasswordChanged = this.onPasswordChanged.bind(this);
     this.onPasswordConfirmChanged = this.onPasswordConfirmChanged.bind(this);
     this.onCurrentPasswordChanged = this.onCurrentPasswordChanged.bind(this);
@@ -65,8 +60,6 @@ class EditUserModal extends Component {
       modalState: {
         isOpen: props.isOpen
       },
-      onSave: props.onSave,
-      onDeleteUser: props.onDeleteUser,
       onAddUser: props.onAddUser,
       onReset2FA: props.onReset2FA,
       inputVariables: {
@@ -79,9 +72,9 @@ class EditUserModal extends Component {
     }));
   }
 
-  onNameChanged(name) {
+  onEMailChanged(email) {
     let inputVariables = { ...this.state.inputVariables };
-    inputVariables.name = name;
+    inputVariables.email = email;
     this.setState({ inputVariables });
   }
 
@@ -109,17 +102,19 @@ class EditUserModal extends Component {
     this.setState({ inputVariables });
   }
 
+  // TODO: Adapt this to the new api
   onDeleteUser() {
-    if (!this.state.inputVariables.currentPassword) {
-      window.alert('Current password is required.');
-      return;
-    }
-
     if (window.confirm('Are you sure to delete this user?')) {
-      this.state.onDeleteUser(
-        this.state.user.username,
-        this.state.inputVariables.currentPassword
-      );
+      deleteUser(this.state.user.email)
+        .then(() => {
+          if (this.props.getCurrentUserMail() === this.state.user.email) {
+            this.props.onLogout();
+          }
+        })
+        .catch(err => {
+          window.alert(err);
+          return;
+        });
       this.onCloseModal();
     }
   }
@@ -155,14 +150,13 @@ class EditUserModal extends Component {
         currentPassword: '',
         isAdmin: false
       },
-      onSave: undefined,
       onDeleteUser: undefined
     });
   }
 
   onSave() {
-    if (!this.state.inputVariables.name) {
-      window.alert('Username cannot be empty.');
+    if (!this.state.inputVariables.email) {
+      window.alert('E-mail cannot be empty.');
       return;
     }
 
@@ -184,9 +178,9 @@ class EditUserModal extends Component {
         window.alert('Password cannot be empty.');
         return;
       }
-
       this.state.onAddUser(
         this.state.inputVariables.name,
+        this.state.inputVariables.email,
         this.state.inputVariables.newPassword,
         this.state.inputVariables.isAdmin,
         this.state.inputVariables.currentPassword
@@ -205,7 +199,7 @@ class EditUserModal extends Component {
   }
 
   render() {
-    let username = this.state.user ? this.state.user.username : '';
+    let username = this.state.user ? this.state.user.email : '';
 
     return (
       <Modal isOpen={this.state.modalState.isOpen}>
@@ -213,14 +207,14 @@ class EditUserModal extends Component {
           {this.state.isNewUser ? 'Add User' : 'Edit User: ' + username}
         </ModalHeader>
         <ModalBody>
-          <InputGroup className="m-0">
+          <InputGroup>
             <InputGroupAddon addonType="prepend">
-              <InputGroupText>{'Username'}</InputGroupText>
+              <InputGroupText>{'E-Mail'}</InputGroupText>
             </InputGroupAddon>
             <Input
-              placeholder={'Username'}
-              value={this.state.inputVariables.name}
-              onChange={e => this.onNameChanged(e.target.value)}
+              placeholder={'E-Mail'}
+              value={this.state.inputVariables.email}
+              onChange={e => this.onEMailChanged(e.target.value)}
             />
           </InputGroup>
 
