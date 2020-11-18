@@ -1,6 +1,8 @@
 module.exports = {
-  AUTH_URI: window.location.host + '/auth/',
-  API_URI: window.location.host + '/api/',
+  AUTH_URI:
+    process.env.NODE_ENV === 'production' ? '/auth/' : 'http://localhost/auth/',
+  API_URI:
+    process.env.NODE_ENV === 'production' ? '/api/' : 'http://localhost/api/',
 
   HTTP_METHODS: {
     GET: 'GET',
