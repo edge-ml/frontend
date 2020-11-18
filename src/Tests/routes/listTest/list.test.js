@@ -1,18 +1,18 @@
-import ListPage from '../../routes/list';
+import ListPage from '../../../routes/list';
 import { mount } from 'enzyme';
 import { configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
-import { fakeDataset_One } from '../fakeData/fakeDatasets';
+import { fakeDataset_One } from '../../fakeData/fakeDatasets';
 
 import {
   deleteDatasets,
   getDatasets
-} from '../../services/ApiServices/DatasetServices';
-import ErrorPage from '../../components/ErrorPage/ErrorPage';
+} from '../../../services/ApiServices/DatasetServices';
+import ErrorPage from '../../../components/ErrorPage/ErrorPage';
 
-jest.mock('../../services/ApiServices/DatasetServices');
-jest.mock('../../components/ErrorPage/ErrorPage', () => {
+jest.mock('../../../services/ApiServices/DatasetServices');
+jest.mock('../../../components/ErrorPage/ErrorPage', () => {
   const mockErrorPage = () => <div id="mockErrorPage">ErrorPage</div>;
   return mockErrorPage;
 });

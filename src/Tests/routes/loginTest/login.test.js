@@ -1,23 +1,23 @@
-import AuthWall from '../../routes/login';
+import AuthWall from '../../../routes/login';
 import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import {
   login_twoFAEnabled_twoFAVerified,
   loginReturn_twoFAVerified
-} from '../fakeData/fakeLoginData';
+} from '../../fakeData/fakeLoginData';
 
 import {
   loginUser,
   verify2FA
-} from '../../services/ApiServices/AuthentificationServices';
+} from '../../../services/ApiServices/AuthentificationServices';
 
-import { jwtValidForever, jwtNeverValid } from '../fakeData/fakeJwtTokens';
+import { jwtValidForever, jwtNeverValid } from '../../fakeData/fakeJwtTokens';
 
-import { getAccessToken } from '../../services/LocalStorageService';
+import { getAccessToken } from '../../../services/LocalStorageService';
 
-jest.mock('../../services/ApiServices/AuthentificationServices');
-jest.mock('../../services/LocalStorageService');
+jest.mock('../../../services/ApiServices/AuthentificationServices');
+jest.mock('../../../services/LocalStorageService');
 
 configure({ adapter: new Adapter() });
 
