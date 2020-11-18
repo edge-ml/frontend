@@ -45,9 +45,7 @@ class ExperimentsPage extends Component {
         labelTypes: labels || []
       },
       () => {
-        subscribeExperiments(experiments => {
-          this.onExperimentsChanged(experiments);
-        });
+        subscribeExperiments().then(this.onExperimentsChanged);
       }
     );
   };
@@ -124,15 +122,15 @@ class ExperimentsPage extends Component {
     this.onCloseModal();
 
     /*
-    let experiments = this.state.experiments.filter(
-      experiment => experiment['_id'] !== experimentId
-    );
-    this.setState({
-      experiments,
-      selectedExperimentId: experiments[0]['_id']
-    });
-    */
-    deleteExperiment(experimentId, this.onExperimentsChanged);
+  let experiments = this.state.experiments.filter(
+    experiment => experiment['_id'] !== experimentId
+  );
+  this.setState({
+    experiments,
+    selectedExperimentId: experiments[0]['_id']
+  });
+  */
+    deleteExperiment(experimentId).then(this.onExperimentsChanged);
   };
 
   onSave = experiment => {
@@ -155,12 +153,12 @@ class ExperimentsPage extends Component {
     }
 
     if (this.state.modal.isNewExperiment) {
-      addExperiment(experiment, this.onExperimentsChanged);
+      addExperiment(experiment).then(this.onExperimentsChanged);
       //this.setState({
       //  experiments: [...this.state.experiments, experiment]
       //});
     } else {
-      updateExperiment(experiment, this.onExperimentsChanged);
+      updateExperiment(experiment).then(this.onExperimentsChanged);
       //this.setState({
       //  experiments: this.state.experiments.map(exp =>
       //    exp['_id'] === experiment['_id'] ? experiment : exp
@@ -278,6 +276,7 @@ class ExperimentsPage extends Component {
             className="mb-5"
             color="secondary"
             outline
+            disabled={!experiment}
             onClick={e => this.toggleModal(experiment, false)}
           >
             Edit Experiment
