@@ -54,7 +54,7 @@ module.exports.registerNewUser = function(userEMail, password) {
       apiConsts.generateRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
-        apiConsts.API_ENDPOINTS.REGISTER,
+        apiConsts.AUTH_ENDPOINTS.REGISTER,
         {
           email: userEMail,
           password: password

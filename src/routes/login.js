@@ -371,6 +371,17 @@ class LoginPage extends Component {
                             Login
                           </Button>
                         </Col>
+                        <Col className="my-2">
+                          <div style={{ display: 'inline-block' }}>
+                            Have no account? Register{' '}
+                            <a
+                              style={{ display: 'inline-block' }}
+                              href="/register"
+                            >
+                              here
+                            </a>
+                          </div>
+                        </Col>
                       </Col>
                     </Row>
                   </CardBody>
