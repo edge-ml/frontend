@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Container, Col, Row, Button, Table, Badge } from 'reactstrap';
-import { view } from 'react-easy-state';
 
 import Loader from '../modules/loader';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
@@ -33,9 +32,13 @@ class ExperimentsPage extends Component {
   }
 
   componentDidMount() {
-    subscribeLabelingsAndLabels().then(result =>
-      this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
-    );
+    subscribeLabelingsAndLabels()
+      .then(result =>
+        this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
+      )
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   onLabelingsAndLabelsChanged = (labelings, labels) => {
@@ -121,15 +124,6 @@ class ExperimentsPage extends Component {
   onDeleteExperiment = experimentId => {
     this.onCloseModal();
 
-    /*
-  let experiments = this.state.experiments.filter(
-    experiment => experiment['_id'] !== experimentId
-  );
-  this.setState({
-    experiments,
-    selectedExperimentId: experiments[0]['_id']
-  });
-  */
     deleteExperiment(experimentId).then(this.onExperimentsChanged);
   };
 
@@ -154,16 +148,8 @@ class ExperimentsPage extends Component {
 
     if (this.state.modal.isNewExperiment) {
       addExperiment(experiment).then(this.onExperimentsChanged);
-      //this.setState({
-      //  experiments: [...this.state.experiments, experiment]
-      //});
     } else {
       updateExperiment(experiment).then(this.onExperimentsChanged);
-      //this.setState({
-      //  experiments: this.state.experiments.map(exp =>
-      //    exp['_id'] === experiment['_id'] ? experiment : exp
-      //  )
-      //});
     }
 
     this.onCloseModal();
@@ -297,4 +283,4 @@ class ExperimentsPage extends Component {
   }
 }
 
-export default view(ExperimentsPage);
+export default ExperimentsPage;

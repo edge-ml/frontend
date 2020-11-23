@@ -61,6 +61,7 @@ class LabelingSelectionPanel extends Component {
 
     return (
       <Card
+        id="labelingSelectionPanel"
         className={
           !this.state.uiState.isSticky
             ? 'LabelingSelectionPanel'
@@ -94,6 +95,7 @@ class LabelingSelectionPanel extends Component {
           <Button
             className="m-1"
             color="secondary"
+            id="btnAddExperiment"
             onClick={this.onAddLabeling}
           >
             + Add
