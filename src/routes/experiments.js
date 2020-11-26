@@ -129,12 +129,10 @@ class ExperimentsPage extends Component {
 
   onSave = experiment => {
     if (!experiment) return;
-
     if (!experiment.name || experiment.name === '') {
       window.alert('Please enter a valid name.');
       return;
     }
-
     if (
       !experiment.instructions ||
       experiment.instructions.length === 0 ||
@@ -205,10 +203,9 @@ class ExperimentsPage extends Component {
         modalExperiment.instructions
       );
     }
-
     return (
       <Loader loading={!this.state.isReady}>
-        <Container>
+        <Container id="experimentPageContent">
           <Row className="mt-3 text-left">
             <Col>
               <LabelingSelectionPanel
@@ -228,7 +225,7 @@ class ExperimentsPage extends Component {
                 <th>Duration</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="labelTable">
               {experiment &&
                 experiment.instructions.map((instruction, index) => {
                   let types = this.state.labelTypes.filter(

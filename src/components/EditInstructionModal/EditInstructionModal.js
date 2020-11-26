@@ -327,6 +327,7 @@ class EditInstructionModal extends Component {
           <Button
             color="primary"
             className="m-1 mr-auto"
+            id="onSaveExperiment"
             onClick={e => {
               this.state.onSave(this.state.experiment);
             }}
