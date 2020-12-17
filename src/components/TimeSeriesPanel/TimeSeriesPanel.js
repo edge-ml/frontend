@@ -128,10 +128,8 @@ class TimeSeriesPanel extends Component {
                     }
                   },
                   data: props.data.map((point, index) => [
-                    (props.start + (1 / props.samplingRate) * (index + 1)) *
-                      1000 +
-                      props.offset,
-                    point
+                    point.timestamp * 1000 + props.offset,
+                    point.datapoint
                   ])
                 }
               ]
@@ -141,10 +139,8 @@ class TimeSeriesPanel extends Component {
                   showInLegend: !props.isEmpty,
                   name: props.name + ' (' + props.unit + ')',
                   data: props.data.map((point, index) => [
-                    (props.start + (1 / props.samplingRate) * (index + 1)) *
-                      1000 +
-                      props.offset,
-                    point
+                    point.timestamp * 1000 + props.offset,
+                    point.datapoint
                   ]),
                   lineWidth: 1
                 }
@@ -157,11 +153,8 @@ class TimeSeriesPanel extends Component {
                     props.unit[indexOuter] +
                     ')',
                   data: dataItem.map((point, index) => [
-                    (props.start +
-                      (1 / props.samplingRate[indexOuter]) * (index + 1)) *
-                      1000 +
-                      props.offset[indexOuter],
-                    point
+                    point.timestamp * 1000 + props.offset[indexOuter],
+                    point.datapoint
                   ]),
                   lineWidth: 1
                 };

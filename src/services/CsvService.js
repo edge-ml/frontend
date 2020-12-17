@@ -1,4 +1,5 @@
 module.exports.generateTimeSeries = (timeData, names, units) => {
+  console.log(timeData);
   var timeSeries = [];
   var i = 0;
   var obj = {};
@@ -12,7 +13,7 @@ module.exports.generateTimeSeries = (timeData, names, units) => {
       end: timeData[i][timeData[i].length - 1][0]
     };
     var j = 0;
-    var samplingRate = timeData[i][1][0] - timeData[i][0][0];
+    //var samplingRate = timeData[i][1][0] - timeData[i][0][0];
     var data = [];
     var errFound = false;
     for (j = 0; j < timeData[i].length; j++) {
@@ -24,12 +25,9 @@ module.exports.generateTimeSeries = (timeData, names, units) => {
         errFound = true;
         break;
       }
-      data.push(timeData[i][j][1]);
-      if (
-        j !== 0 &&
-        timeData[i][j][0] - timeData[i][j - 1][0] !== samplingRate
-      ) {
-        errMsgs.push('The sampling rate of the dataset is not consistent');
+      data.push({ timestamp: timeData[i][j][0], datapoint: timeData[i][j][1] });
+      if (j !== 0 && timeData[i][j][0] <= timeData[i][j - 1][0]) {
+        errMsgs.push('The timeseries must be ordered');
         errFound = true;
         break;
       }
@@ -37,7 +35,6 @@ module.exports.generateTimeSeries = (timeData, names, units) => {
     if (!errFound) {
       errMsgs.push(undefined);
     }
-    obj.samplingRate = samplingRate;
     obj.data = data;
     timeSeries.push(obj);
   }
