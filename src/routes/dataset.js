@@ -155,7 +155,9 @@ class DatasetPage extends Component {
       labels: labels || [],
       controlStates: {
         ...this.state.controlStates,
-        selectedLabelingId: selectedLabeling['_id'],
+        selectedLabelingId: selectedLabeling
+          ? selectedLabeling['_id']
+          : undefined,
         selectedLabelTypes: selectedLabelTypes
       },
       isReady: true

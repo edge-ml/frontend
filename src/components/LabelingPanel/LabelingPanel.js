@@ -186,41 +186,43 @@ class LabelingPanel extends Component {
             >
               + Add
             </Button>
-            {this.state.labeling.labels
-              .slice(0)
-              .reverse()
-              .map((labelId, index, array) => {
-                let label = this.state.labels.filter(
-                  label => label['_id'] === labelId
-                )[0];
-                return (
-                  <Button
-                    className="btn-light m-1 labelingButton"
-                    disabled={
-                      this.state.selectedLabelTypeId === undefined ||
-                      !this.state.canEdit
-                    }
-                    style={{
-                      backgroundColor:
-                        labelId === this.state.selectedLabelTypeId
-                          ? label.color
-                          : null,
-                      borderColor:
-                        labelId === this.state.selectedLabelTypeId
-                          ? null
-                          : label.color,
-                      color:
-                        labelId === this.state.selectedLabelTypeId
-                          ? null
-                          : label.color
-                    }}
-                    onClick={e => this.handleLabelTypeClicked(e, labelId)}
-                    key={index}
-                  >
-                    {label.name} {'(' + (array.length - index) + ')'}
-                  </Button>
-                );
-              })}
+            {this.state.labeling
+              ? this.state.labeling.labels
+                  .slice(0)
+                  .reverse()
+                  .map((labelId, index, array) => {
+                    let label = this.state.labels.filter(
+                      label => label['_id'] === labelId
+                    )[0];
+                    return (
+                      <Button
+                        className="btn-light m-1 labelingButton"
+                        disabled={
+                          this.state.selectedLabelTypeId === undefined ||
+                          !this.state.canEdit
+                        }
+                        style={{
+                          backgroundColor:
+                            labelId === this.state.selectedLabelTypeId
+                              ? label.color
+                              : null,
+                          borderColor:
+                            labelId === this.state.selectedLabelTypeId
+                              ? null
+                              : label.color,
+                          color:
+                            labelId === this.state.selectedLabelTypeId
+                              ? null
+                              : label.color
+                        }}
+                        onClick={e => this.handleLabelTypeClicked(e, labelId)}
+                        key={index}
+                      >
+                        {label.name} {'(' + (array.length - index) + ')'}
+                      </Button>
+                    );
+                  })
+              : null}
           </div>
         </CardBody>
       </Card>
