@@ -9,7 +9,8 @@ import {
   InputGroupAddon,
   InputGroupText,
   Input,
-  Table
+  Table,
+  FormGroup
 } from 'reactstrap';
 
 import { updateProject } from './../../services/ApiServices/ProjectService';
@@ -19,10 +20,29 @@ class EditProjectModal extends Component {
     super(props);
     this.state = {
       originalProject: undefined,
-      project: undefined
+      project: undefined,
+      originalUsers: []
     };
     this.onNameChanged = this.onNameChanged.bind(this);
     this.onSave = this.onSave.bind(this);
+    this.onAddUser = this.onAddUser.bind(this);
+    this.onDeleteUser = this.onDeleteUser.bind(this);
+    this.onCancel = this.onCancel.bind(this);
+  }
+
+  onDeleteUser(user) {
+    var idx = this.state.originalUsers.findIndex(elm => elm === user);
+    var tmpOriginalUsers = [...this.state.originalUsers];
+    if (idx !== -1) {
+      tmpOriginalUsers.splice(idx, 1);
+    }
+    var tmpProject = { ...this.state.project };
+    var idxPrj = tmpProject.users.findIndex(elm => elm === user);
+    tmpProject.users.splice(idxPrj, 1);
+    this.setState({
+      originalUsers: tmpOriginalUsers,
+      project: tmpProject
+    });
   }
 
   onSave() {
@@ -33,19 +53,21 @@ class EditProjectModal extends Component {
       .catch(err => {});
   }
 
-  componentDidMount() {
-    this.setState({
-      originalProject: this.props.project,
-      project: this.props.project,
-      ready: true
-    });
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState({
-      project: props.project,
-      originalProject: props.project
-    });
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props === prevProps) return;
+    if (!this.props.isNewProject) {
+      this.setState({
+        project: this.props.project,
+        originalProject: this.props.project,
+        originalUsers: this.props.project.users
+      });
+    } else {
+      const newProject = { name: '', users: [] };
+      this.setState({
+        project: newProject,
+        originalUsers: this.props.project.users
+      });
+    }
   }
 
   onNameChanged(newName) {
@@ -56,12 +78,37 @@ class EditProjectModal extends Component {
     });
   }
 
+  onAddUser() {
+    var tmpProject = { ...this.state.project };
+    tmpProject.users.push('');
+    this.setState({
+      project: tmpProject
+    });
+  }
+
+  onCancel() {
+    this.setState(
+      {
+        originalProject: undefined,
+        project: undefined,
+        originalUsers: []
+      },
+      () => {
+        console.log(this.state);
+        this.props.onClose();
+      }
+    );
+  }
+
   render() {
+    console.log(this.state);
     if (!this.state.project) return null;
     return (
       <Modal isOpen={this.props.isOpen}>
         <ModalHeader>
-          Edit Project: {this.state.originalProject.name}
+          {this.props.isNewProject
+            ? 'Create new Project'
+            : 'Edit Project: ' + this.state.originalProject.name}
         </ModalHeader>
         <ModalBody>
           <InputGroup>
@@ -86,11 +133,26 @@ class EditProjectModal extends Component {
             <tbody>
               {this.state.project.users.map((user, index) => {
                 return (
-                  <tr key={user._id + index}>
+                  <tr key={user + index}>
                     <th scope="row">{index}</th>
-                    <td>{user}</td>
                     <td>
-                      <Button className="btn-sm" color="danger">
+                      {this.state.originalUsers.includes(user) &&
+                      user !== '' ? (
+                        user
+                      ) : (
+                        <Input
+                          type="text"
+                          name="User ID"
+                          placeholder="Enter user_id"
+                        />
+                      )}
+                    </td>
+                    <td>
+                      <Button
+                        className="btn-sm"
+                        color="danger"
+                        onClick={() => this.onDeleteUser(user)}
+                      >
                         Delete
                       </Button>
                     </td>
@@ -99,16 +161,15 @@ class EditProjectModal extends Component {
               })}
             </tbody>
           </Table>
+          <Button color="primary" className="btn-sm" onClick={this.onAddUser}>
+            Add +
+          </Button>
         </ModalBody>
         <ModalFooter>
           <Button color="primary" className="m-1 mr-auto" onClick={this.onSave}>
             Save
           </Button>{' '}
-          <Button
-            color="secondary"
-            className="m-1"
-            onClick={this.props.onClose}
-          >
+          <Button color="secondary" className="m-1" onClick={this.onCancel}>
             Cancel
           </Button>
         </ModalFooter>

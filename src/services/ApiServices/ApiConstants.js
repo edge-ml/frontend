@@ -1,3 +1,5 @@
+const localStorageService = require('./../LocalStorageService');
+
 module.exports = {
   /*AUTH_URI:
     process.env.NODE_ENV === 'production' ? '/auth/' : 'http://localhost/auth/',
@@ -31,12 +33,12 @@ module.exports = {
     LABEL_TYPES: 'labelTypes',
     EXPERIMENTS: 'experiments',
     PROJECTS: 'projects'
-  },
+  }
 
-  generateRequest: generateRequest
+  //generateRequest: generateRequest
 };
 
-function generateRequest(
+/*function generateRequest(
   method = this.HTTP_METHODS.GET,
   baseUri = this.API_URI,
   endpoint = this.API_ENDPOINTS.DEFAULT,
@@ -50,7 +52,7 @@ function generateRequest(
       'Content-Type': 'application/json'
     }
   };
-}
+}*/
 
 module.exports.generateApiRequest = (
   method = this.HTTP_METHODS.GET,
@@ -63,7 +65,8 @@ module.exports.generateApiRequest = (
     url: baseUri + endpoint,
     data: body,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      project: localStorageService.getProject()
     }
   };
 };

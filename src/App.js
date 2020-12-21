@@ -21,7 +21,7 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
@@ -37,8 +37,11 @@ import {
   updateProject
 } from './services/ApiServices/ProjectService';
 import EditProjectModal from './components/EditProjectModal/EditProjectModal';
-
-const clearToken = require('./services/LocalStorageService').clearToken;
+import {
+  setProject,
+  getProject,
+  clearToken
+} from './services/LocalStorageService';
 
 class App extends Component {
   constructor(props) {
@@ -58,7 +61,8 @@ class App extends Component {
       projects: [],
       currentproject: undefined,
       projectsOpen: false,
-      projectEditModalOpen: false
+      projectEditModalOpen: false,
+      projectEditModalNew: false
     };
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
@@ -93,13 +97,15 @@ class App extends Component {
     });
   }
 
-  onProjectEditModal() {
+  onProjectEditModal(isNew) {
     this.setState({
-      projectEditModalOpen: true
+      projectEditModalOpen: true,
+      projectEditModalNew: isNew
     });
   }
 
   onProjectClick(index) {
+    setProject(this.state.projects[index]._id);
     this.setState({
       currentProject: index
     });
@@ -114,9 +120,15 @@ class App extends Component {
   componentDidMount() {
     getProjects().then(projects => {
       if (projects.length === 0) return;
+      var currentProject = projects.findIndex(elm => elm._id === getProject());
+      if (currentProject === -1) {
+        currentProject = 0;
+      } else {
+        setProject(projects[currentProject]._id);
+      }
       this.setState({
         projects: projects,
-        currentProject: 0
+        currentProject: currentProject
       });
     });
   }
@@ -207,6 +219,7 @@ class App extends Component {
           <EditProjectModal
             project={this.state.projects[this.state.currentProject]}
             isOpen={this.state.projectEditModalOpen}
+            isNewProject={this.state.projectEditModalNew}
             onClose={this.onProjectModalClose}
             projectChanged={this.onProjectChanged}
           ></EditProjectModal>
@@ -229,21 +242,40 @@ class App extends Component {
             on2FA={this.on2FA}
           >
             {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
-            {this.state.isLoggedIn ? (
+            {this.state.isLoggedIn && this.state.projects ? (
               <div>
                 <Navbar color="light" light expand="md">
-                  <NavbarBrand>Explorer</NavbarBrand>
+                  <NavbarBrand style={{ marginRight: '8px' }}>
+                    Explorer
+                  </NavbarBrand>
                   <NavbarToggler onClick={this.toggleNavbar} />
                   <Collapse isOpen={this.state.navbarState.isOpen} navbar>
                     <Nav navbar className="mr-auto">
                       <NavItem
-                        style={{ borderRight: '1px solid #000j' }}
+                        style={{
+                          borderRight: '1px solid',
+                          borderColor: 'gray',
+                          marginRight: '5px'
+                        }}
                       ></NavItem>
                       <NavItem>
                         <div style={{ display: 'flex' }}>
                           <div style={{ display: 'block', margin: 'auto' }}>
                             <FontAwesomeIcon
-                              onClick={this.onProjectEditModal}
+                              onClick={() => this.onProjectEditModal(true)}
+                              style={{
+                                color: '#8b8d8f',
+                                float: 'left',
+                                margin: 'auto',
+                                cursor: 'pointer'
+                              }}
+                              icon={faPlus}
+                              className="mr-2 fa-s"
+                            />
+                          </div>
+                          <div style={{ display: 'block', margin: 'auto' }}>
+                            <FontAwesomeIcon
+                              onClick={() => this.onProjectEditModal(false)}
                               style={{
                                 color: '#8b8d8f',
                                 float: 'left',
