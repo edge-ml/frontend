@@ -8,13 +8,20 @@ import {
   Button,
   Form,
   Collapse,
-  NavbarToggler
+  NavbarToggler,
+  DropdownItem,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu
 } from 'reactstrap';
 import { Route, Link } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
@@ -25,6 +32,11 @@ import SettingsPage from './routes/settings';
 import ExperimentsPage from './routes/experiments';
 import ErrorPage from './components/ErrorPage/ErrorPage';
 import ApiConstants from './services/ApiServices/ApiConstants';
+import {
+  getProjects,
+  updateProject
+} from './services/ApiServices/ProjectService';
+import EditProjectModal from './components/EditProjectModal/EditProjectModal';
 
 const clearToken = require('./services/LocalStorageService').clearToken;
 
@@ -42,7 +54,11 @@ class App extends Component {
       },
       videoEnaled: false,
       playButtonEnabled: false,
-      currentUserMail: undefined
+      currentUserMail: undefined,
+      projects: [],
+      currentproject: undefined,
+      projectsOpen: false,
+      projectEditModalOpen: false
     };
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
@@ -54,6 +70,55 @@ class App extends Component {
     this.getCurrentUserMail = this.getCurrentUserMail.bind(this);
     this.setCurrentUserMail = this.setCurrentUserMail.bind(this);
     this.setUser = this.setUser.bind(this);
+    this.toggleProjects = this.toggleProjects.bind(this);
+    this.onProjectClick = this.onProjectClick.bind(this);
+    this.onProjectEditModal = this.onProjectEditModal.bind(this);
+    this.onProjectModalClose = this.onProjectModalClose.bind(this);
+    this.onProjectChanged = this.onProjectChanged.bind(this);
+  }
+
+  onProjectChanged(project) {
+    var projects = [...this.state.projects];
+    var idx = projects.findIndex(elm => elm._id === project._id);
+    projects[idx] = project;
+    this.setState({
+      projects: projects,
+      projectEditModalOpen: false
+    });
+  }
+
+  onProjectModalClose() {
+    this.setState({
+      projectEditModalOpen: false
+    });
+  }
+
+  onProjectEditModal() {
+    this.setState({
+      projectEditModalOpen: true
+    });
+  }
+
+  onProjectClick(index) {
+    this.setState({
+      currentProject: index
+    });
+  }
+
+  toggleProjects() {
+    this.setState({
+      projectsOpen: !this.state.projectsOpen
+    });
+  }
+
+  componentDidMount() {
+    getProjects().then(projects => {
+      if (projects.length === 0) return;
+      this.setState({
+        projects: projects,
+        currentProject: 0
+      });
+    });
   }
 
   setUser(currentUser, callback) {
@@ -138,6 +203,14 @@ class App extends Component {
   render() {
     return (
       <div>
+        {this.state.projects[this.state.currentProject] ? (
+          <EditProjectModal
+            project={this.state.projects[this.state.currentProject]}
+            isOpen={this.state.projectEditModalOpen}
+            onClose={this.onProjectModalClose}
+            projectChanged={this.onProjectChanged}
+          ></EditProjectModal>
+        ) : null}
         <Route
           exact
           path="/register"
@@ -162,7 +235,56 @@ class App extends Component {
                   <NavbarBrand>Explorer</NavbarBrand>
                   <NavbarToggler onClick={this.toggleNavbar} />
                   <Collapse isOpen={this.state.navbarState.isOpen} navbar>
-                    <Nav className="ml-auto" navbar>
+                    <Nav navbar className="mr-auto">
+                      <NavItem
+                        style={{ borderRight: '1px solid #000j' }}
+                      ></NavItem>
+                      <NavItem>
+                        <div style={{ display: 'flex' }}>
+                          <div style={{ display: 'block', margin: 'auto' }}>
+                            <FontAwesomeIcon
+                              onClick={this.onProjectEditModal}
+                              style={{
+                                color: '#8b8d8f',
+                                float: 'left',
+                                margin: 'auto',
+                                cursor: 'pointer'
+                              }}
+                              icon={faCog}
+                              className="mr-2 fa-s"
+                            />
+                          </div>
+                          <Dropdown
+                            className="navbar-dropdown"
+                            style={{ float: 'right' }}
+                            nav
+                            inNavbar
+                            isOpen={this.state.projectsOpen}
+                            toggle={this.toggleProjects}
+                          >
+                            <DropdownToggle nav caret>
+                              {this.state.projects[this.state.currentProject]
+                                ? this.state.projects[this.state.currentProject]
+                                    .name
+                                : 'Loading'}
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              {this.state.projects.map((project, index) => {
+                                return (
+                                  <DropdownItem
+                                    onClick={() => this.onProjectClick(index)}
+                                    key={project._id}
+                                  >
+                                    {project.name}
+                                  </DropdownItem>
+                                );
+                              })}
+                            </DropdownMenu>
+                          </Dropdown>
+                        </div>
+                      </NavItem>
+                    </Nav>
+                    <Nav navbar className="ml-auto">
                       <NavItem>
                         <Link className="nav-link" to="/list">
                           Datasets
@@ -183,21 +305,23 @@ class App extends Component {
                           Settings
                         </Link>
                       </NavItem>
-                      <Form className="form-inline my-2 my-lg-0">
-                        <Link
-                          className="nav-link m-0 p-0 ml-3"
-                          to="/"
-                          onClick={this.logoutHandler}
-                        >
-                          <Button className="m-0 my-2 my-sm-0" outline>
-                            Logout
-                          </Button>
-                        </Link>
-                      </Form>
-                      <NavItem />
+                      <NavItem>
+                        <Form className="form-inline my-2 my-lg-0">
+                          <Link
+                            className="nav-link m-0 p-0 ml-3"
+                            to="/"
+                            onClick={this.logoutHandler}
+                          >
+                            <Button className="m-0 my-2 my-sm-0" outline>
+                              Logout
+                            </Button>
+                          </Link>
+                        </Form>
+                      </NavItem>
                     </Nav>
                   </Collapse>
                 </Navbar>
+
                 <Container>
                   <Route
                     exact

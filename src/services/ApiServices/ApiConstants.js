@@ -1,8 +1,12 @@
 module.exports = {
-  AUTH_URI:
+  /*AUTH_URI:
     process.env.NODE_ENV === 'production' ? '/auth/' : 'http://localhost/auth/',
   API_URI:
     process.env.NODE_ENV === 'production' ? '/api/' : 'http://localhost/api/',
+*/
+
+  AUTH_URI: 'http://localhost:3002/auth/',
+  API_URI: 'http://localhost:3000/api/',
 
   HTTP_METHODS: {
     GET: 'GET',
@@ -25,7 +29,8 @@ module.exports = {
     DATASETS: 'datasets',
     LABEL_DEFINITIONS: 'labelDefinitions',
     LABEL_TYPES: 'labelTypes',
-    EXPERIMENTS: 'experiments'
+    EXPERIMENTS: 'experiments',
+    PROJECTS: 'projects'
   },
 
   generateRequest: generateRequest

@@ -198,6 +198,12 @@ div.card {
   margin-top: 1rem;
 }
 
+.navbar-dropdown {
+  position: inherit !important;
+  right: 0px !important;
+  padding: 0px !important;
+}
+
 @media (min-width: 1200px) {
   .container {
     max-width: 100%;
