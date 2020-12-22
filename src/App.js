@@ -58,8 +58,8 @@ class App extends Component {
       videoEnaled: false,
       playButtonEnabled: false,
       currentUserMail: undefined,
-      projects: [],
-      currentproject: undefined,
+      projects: undefined,
+      currentProject: undefined,
       projectsOpen: false,
       projectEditModalOpen: false,
       projectEditModalNew: false
@@ -79,6 +79,7 @@ class App extends Component {
     this.onProjectEditModal = this.onProjectEditModal.bind(this);
     this.onProjectModalClose = this.onProjectModalClose.bind(this);
     this.onProjectChanged = this.onProjectChanged.bind(this);
+    this.refreshProjects = this.refreshProjects.bind(this);
   }
 
   onProjectChanged(project) {
@@ -117,12 +118,18 @@ class App extends Component {
     });
   }
 
-  componentDidMount() {
+  refreshProjects() {
     getProjects().then(projects => {
-      if (projects.length === 0) return;
+      if (projects.length === 0) {
+        this.setState({
+          projects: []
+        });
+        return;
+      }
       var currentProject = projects.findIndex(elm => elm._id === getProject());
       if (currentProject === -1) {
         currentProject = 0;
+        setProject(projects[0]._id);
       } else {
         setProject(projects[currentProject]._id);
       }
@@ -134,6 +141,7 @@ class App extends Component {
   }
 
   setUser(currentUser, callback) {
+    this.refreshProjects();
     this.setState(
       {
         user: { ...this.state.user, ...currentUser },
@@ -215,15 +223,17 @@ class App extends Component {
   render() {
     return (
       <div>
-        {this.state.projects[this.state.currentProject] ? (
-          <EditProjectModal
-            project={this.state.projects[this.state.currentProject]}
-            isOpen={this.state.projectEditModalOpen}
-            isNewProject={this.state.projectEditModalNew}
-            onClose={this.onProjectModalClose}
-            projectChanged={this.onProjectChanged}
-          ></EditProjectModal>
-        ) : null}
+        <EditProjectModal
+          project={
+            this.state.projects
+              ? this.state.projects[this.state.currentProject]
+              : undefined
+          }
+          isOpen={this.state.projectEditModalOpen}
+          isNewProject={this.state.projectEditModalNew}
+          onClose={this.onProjectModalClose}
+          projectChanged={this.onProjectChanged}
+        ></EditProjectModal>
         <Route
           exact
           path="/register"
@@ -255,11 +265,13 @@ class App extends Component {
                         style={{
                           borderRight: '1px solid',
                           borderColor: 'gray',
-                          marginRight: '5px'
+                          marginRight: '5px',
+                          marginRight: '8px',
+                          marginLeft: '8px'
                         }}
                       ></NavItem>
                       <NavItem>
-                        <div style={{ display: 'flex' }}>
+                        <div style={{ display: 'flex', marginLeft: '8px' }}>
                           <div style={{ display: 'block', margin: 'auto' }}>
                             <FontAwesomeIcon
                               onClick={() => this.onProjectEditModal(true)}
@@ -294,7 +306,11 @@ class App extends Component {
                             isOpen={this.state.projectsOpen}
                             toggle={this.toggleProjects}
                           >
-                            <DropdownToggle nav caret>
+                            <DropdownToggle
+                              nav
+                              caret
+                              style={{ paddingLeft: '0px' }}
+                            >
                               {this.state.projects[this.state.currentProject]
                                 ? this.state.projects[this.state.currentProject]
                                     .name
@@ -316,7 +332,11 @@ class App extends Component {
                         </div>
                       </NavItem>
                     </Nav>
-                    <Nav navbar className="ml-auto">
+                    <Nav
+                      navbar
+                      className="ml-auto"
+                      style={{ alignItems: 'center' }}
+                    >
                       <NavItem>
                         <Link className="nav-link" to="/list">
                           Datasets
@@ -358,7 +378,12 @@ class App extends Component {
                   <Route
                     exact
                     path="/list"
-                    render={props => <ListPage {...props} />}
+                    render={props => (
+                      <ListPage
+                        {...props}
+                        project={this.state.projects[this.state.currentProject]}
+                      />
+                    )}
                   />
                   <Route
                     exact
@@ -373,7 +398,12 @@ class App extends Component {
                   <Route
                     exact
                     path="/"
-                    render={props => <ListPage {...props} />}
+                    render={props => (
+                      <ListPage
+                        {...props}
+                        project={this.state.projects[this.state.currentProject]}
+                      />
+                    )}
                   />
                   <Route
                     path="/datasets/:id"

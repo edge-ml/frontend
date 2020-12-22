@@ -53,13 +53,14 @@ class EditProjectModal extends Component {
       .catch(err => {});
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props === prevProps) return;
+  componentWillReceiveProps() {
+    if (!this.props.project) return;
     if (!this.props.isNewProject) {
+      var objectCopy = JSON.parse(JSON.stringify(this.props.project));
       this.setState({
-        project: this.props.project,
-        originalProject: this.props.project,
-        originalUsers: this.props.project.users
+        project: objectCopy,
+        originalProject: objectCopy,
+        originalUsers: objectCopy.users
       });
     } else {
       const newProject = { name: '', users: [] };
@@ -94,14 +95,12 @@ class EditProjectModal extends Component {
         originalUsers: []
       },
       () => {
-        console.log(this.state);
         this.props.onClose();
       }
     );
   }
 
   render() {
-    console.log(this.state);
     if (!this.state.project) return null;
     return (
       <Modal isOpen={this.props.isOpen}>
@@ -121,7 +120,13 @@ class EditProjectModal extends Component {
               onChange={e => this.onNameChanged(e.target.value)}
             />
           </InputGroup>
-          <h5>Users</h5>
+          <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>{'Admin'}</InputGroupText>
+            </InputGroupAddon>
+            <Input value={this.state.project.admin} readOnly />
+          </InputGroup>
+          <h5 style={{ paddingTop: '16px' }}>Users</h5>
           <Table striped>
             <thead>
               <tr>
@@ -147,7 +152,7 @@ class EditProjectModal extends Component {
                         />
                       )}
                     </td>
-                    <td>
+                    <td style={{ textAlign: 'right' }}>
                       <Button
                         className="btn-sm"
                         color="danger"

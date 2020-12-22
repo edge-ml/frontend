@@ -13,10 +13,9 @@ axios.interceptors.request.use(config => {
 });
 
 module.exports.loginUser = function(userEMail, password) {
-  console.log('Logging in user');
   return new Promise((resolve, reject) => {
     axiosNoToken(
-      apiConsts.generateRequest(
+      apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.LOGIN,

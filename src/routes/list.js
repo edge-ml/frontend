@@ -20,6 +20,8 @@ import {
   deleteDatasets
 } from '../services/ApiServices/DatasetServices';
 
+import { getProject } from '../services/LocalStorageService';
+
 class ListPage extends Component {
   constructor(props) {
     super(props);
@@ -29,6 +31,7 @@ class ListPage extends Component {
       datasets: [],
       datasetsToDelete: [],
       loading: true,
+      project: undefined,
       CreateNewDatasetToggle: false,
       gotToken: false
     };
@@ -44,6 +47,9 @@ class ListPage extends Component {
   }
 
   componentDidMount() {
+    this.setState({
+      project: this.props.project
+    });
     getDatasets()
       .then(this.onDatasetsChanged)
       .catch(err => {
@@ -52,9 +58,9 @@ class ListPage extends Component {
   }
 
   loadErrorPage(status, error, statusText) {
-    this.props.history.push({
+    /*this.props.history.push({
       pathname: '/errorpage/' + status + '/' + error + '/' + statusText
-    });
+    });*/
   }
 
   onDatasetsChanged(datasets) {
@@ -125,7 +131,7 @@ class ListPage extends Component {
         });
       })
       .catch(err => {
-        this.loadErrorPage(err.status, err.data.error, err.statusText);
+        //this.loadErrorPage(err.status, err.data.error, err.statusText);
         this.setState({
           modal: false
         });
@@ -138,6 +144,9 @@ class ListPage extends Component {
   }
 
   render() {
+    if (!this.props.project || this.props.project.length === 0) {
+      return <h1>Create new Project</h1>;
+    }
     return (
       <div id="dataList">
         <Loader loading={!this.state.ready}>

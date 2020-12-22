@@ -45,7 +45,6 @@ module.exports.getDataset = (id, callback) => {
 
 module.exports.deleteDatasets = ids => {
   return new Promise((resolve, reject) => {
-    console.log(ids);
     let promises = [];
     for (let id of ids) {
       promises = [
@@ -105,7 +104,6 @@ module.exports.updateDataset = dataset => {
 };
 
 module.exports.createDataset = dataset => {
-  console.log(dataset);
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
