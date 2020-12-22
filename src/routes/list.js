@@ -31,7 +31,6 @@ class ListPage extends Component {
       datasets: [],
       datasetsToDelete: [],
       loading: true,
-      project: undefined,
       CreateNewDatasetToggle: false,
       gotToken: false
     };
@@ -50,6 +49,15 @@ class ListPage extends Component {
     this.setState({
       project: this.props.project
     });
+    getDatasets()
+      .then(this.onDatasetsChanged)
+      .catch(err => {
+        this.loadErrorPage(err.status, err.data.error, err.statusText);
+      });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.project._id === this.props.project._id) return;
     getDatasets()
       .then(this.onDatasetsChanged)
       .catch(err => {

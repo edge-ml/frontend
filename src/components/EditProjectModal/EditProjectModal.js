@@ -53,10 +53,10 @@ class EditProjectModal extends Component {
       .catch(err => {});
   }
 
-  componentWillReceiveProps() {
-    if (!this.props.project) return;
-    if (!this.props.isNewProject) {
-      var objectCopy = JSON.parse(JSON.stringify(this.props.project));
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.project) return;
+    if (!nextProps.isNewProject) {
+      var objectCopy = JSON.parse(JSON.stringify(nextProps.project));
       this.setState({
         project: objectCopy,
         originalProject: objectCopy,
@@ -66,7 +66,7 @@ class EditProjectModal extends Component {
       const newProject = { name: '', users: [] };
       this.setState({
         project: newProject,
-        originalUsers: this.props.project.users
+        originalUsers: nextProps.project.users
       });
     }
   }
