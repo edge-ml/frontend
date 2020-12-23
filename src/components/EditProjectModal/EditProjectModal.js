@@ -101,7 +101,7 @@ class EditProjectModal extends Component {
   }
 
   render() {
-    if (!this.state.project) return null;
+    if (!this.state.project || !this.state.project.users) return null;
     return (
       <Modal isOpen={this.props.isOpen}>
         <ModalHeader>

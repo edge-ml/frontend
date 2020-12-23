@@ -285,19 +285,22 @@ class App extends Component {
                               className="mr-2 fa-s"
                             />
                           </div>
-                          <div style={{ display: 'block', margin: 'auto' }}>
-                            <FontAwesomeIcon
-                              onClick={() => this.onProjectEditModal(false)}
-                              style={{
-                                color: '#8b8d8f',
-                                float: 'left',
-                                margin: 'auto',
-                                cursor: 'pointer'
-                              }}
-                              icon={faCog}
-                              className="mr-2 fa-s"
-                            />
-                          </div>
+                          {this.state.projects[this.state.currentProject]
+                            .users ? (
+                            <div style={{ display: 'block', margin: 'auto' }}>
+                              <FontAwesomeIcon
+                                onClick={() => this.onProjectEditModal(false)}
+                                style={{
+                                  color: '#8b8d8f',
+                                  float: 'left',
+                                  margin: 'auto',
+                                  cursor: 'pointer'
+                                }}
+                                icon={faCog}
+                                className="mr-2 fa-s"
+                              />
+                            </div>
+                          ) : null}
                           <Dropdown
                             className="navbar-dropdown"
                             style={{ float: 'right' }}
