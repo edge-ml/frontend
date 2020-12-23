@@ -11,6 +11,27 @@ axios.interceptors.request.use(config => {
   return config;
 });
 
+function getUserMails(project) {
+  const userList = [project.admin, ...project.users];
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.MAIL,
+        userList
+      )
+    )
+      .then(result => {
+        project.admin = result.data[0];
+        result.data.slice(0, 1);
+        project.users = result.data;
+        resolve(project);
+      })
+      .catch(err => reject(err.response));
+  });
+}
+
 module.exports.getProjects = () => {
   return new Promise((resolve, reject) => {
     axios(
@@ -20,9 +41,15 @@ module.exports.getProjects = () => {
         apiConsts.API_ENDPOINTS.PROJECTS
       )
     )
-      .then(result => resolve(result.data))
+      .then(result => {
+        var promises = result.data.map(elm => {
+          return elm.users ? getUserMails(elm) : Promise.resolve(elm);
+        });
+        Promise.all(promises).then(result => {
+          resolve(result);
+        });
+      })
       .catch(err => {
-        console.log(err.response);
         reject(err.response);
       });
   });
@@ -46,7 +73,6 @@ module.exports.updateProject = project => {
             apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}`
           )
         ).then(data => {
-          console.log(data);
           resolve(data.data);
         });
       })

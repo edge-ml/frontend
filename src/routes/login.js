@@ -18,6 +18,8 @@ import update from 'immutability-helper';
 import { FadeInUp } from 'animate-components';
 import { getServerTime } from '../services/helpers.js';
 import {
+  getUserMail,
+  getUserMails,
   loginUser,
   verify2FA
 } from '../services/ApiServices/AuthentificationServices';
@@ -86,7 +88,10 @@ class LoginPage extends Component {
         decoded.exp * 1000 >= Date.now() &&
         !(decoded.twoFactorEnabled && !decoded.twoFactorVerified)
       ) {
-        this.props.setUser(this.state.user);
+        getUserMail([decoded.id]).then(mail => {
+          console.log(mail);
+          this.props.setUser({ ...this.state.user, email: mail.email });
+        });
         this.setState({
           isLoggedIn: true
         });

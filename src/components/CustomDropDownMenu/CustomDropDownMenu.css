@@ -1,0 +1,22 @@
+.dropDown {
+  display: flex;
+  position: absolute;
+  right: 0;
+  left: auto;
+  flex-direction: column;
+  margin-right: 16px;
+
+  z-index: 1000;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  color: #212529;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+}
+
+.customDropDownItem {
+  padding: 0 8px 0 8px;
+}

@@ -120,12 +120,14 @@ class EditProjectModal extends Component {
               onChange={e => this.onNameChanged(e.target.value)}
             />
           </InputGroup>
-          <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText>{'Admin'}</InputGroupText>
-            </InputGroupAddon>
-            <Input value={this.state.project.admin} readOnly />
-          </InputGroup>
+          {this.props.isNewProject ? null : (
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>{'Admin'}</InputGroupText>
+              </InputGroupAddon>
+              <Input value={this.state.project.admin.email} readOnly />
+            </InputGroup>
+          )}
           <h5 style={{ paddingTop: '16px' }}>Users</h5>
           <Table striped>
             <thead>
@@ -138,12 +140,13 @@ class EditProjectModal extends Component {
             <tbody>
               {this.state.project.users.map((user, index) => {
                 return (
-                  <tr key={user + index}>
+                  <tr key={user._id + index}>
                     <th scope="row">{index}</th>
                     <td>
-                      {this.state.originalUsers.includes(user) &&
-                      user !== '' ? (
-                        user
+                      {this.state.originalUsers
+                        .map(elm => elm._id)
+                        .includes(user._id) && user._id !== '' ? (
+                        user.email
                       ) : (
                         <Input
                           type="text"
@@ -156,7 +159,7 @@ class EditProjectModal extends Component {
                       <Button
                         className="btn-sm"
                         color="danger"
-                        onClick={() => this.onDeleteUser(user)}
+                        onClick={() => this.onDeleteUser(user._id)}
                       >
                         Delete
                       </Button>

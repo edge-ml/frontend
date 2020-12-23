@@ -25,7 +25,8 @@ module.exports = {
     USERS: 'USERS',
     INIT2FA: '2fa/init',
     VERIFY2FA: '2fa/verify',
-    RESET2FA: '2fa/reset'
+    RESET2FA: '2fa/reset',
+    MAIL: 'mail'
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',

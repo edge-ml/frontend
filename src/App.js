@@ -12,16 +12,17 @@ import {
   DropdownItem,
   Dropdown,
   DropdownToggle,
-  DropdownMenu
+  DropdownMenu,
+  UncontrolledDropdown
 } from 'reactstrap';
 import { Route, Link } from 'react-router-dom';
-
+import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMenu';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
@@ -142,6 +143,7 @@ class App extends Component {
 
   setUser(currentUser, callback) {
     this.refreshProjects();
+
     this.setState(
       {
         user: { ...this.state.user, ...currentUser },
@@ -372,6 +374,33 @@ class App extends Component {
                             </Button>
                           </Link>
                         </Form>
+                      </NavItem>
+                      <NavItem style={{ paddingLeft: '8px' }}>
+                        <CustomDropDownMenu
+                          content={
+                            <FontAwesomeIcon
+                              style={{
+                                color: '#8b8d8f',
+                                float: 'left',
+                                margin: 'auto',
+                                cursor: 'pointer'
+                              }}
+                              icon={faUser}
+                              className="mr-2 fa-s"
+                            />
+                          }
+                          items={[
+                            <div>
+                              Signed in as <b>{this.state.user.email}</b>
+                            </div>,
+                            <Button
+                              className="dropdown-item"
+                              style={{ padding: '0px' }}
+                            >
+                              User settings
+                            </Button>
+                          ]}
+                        ></CustomDropDownMenu>
                       </NavItem>
                     </Nav>
                   </Collapse>

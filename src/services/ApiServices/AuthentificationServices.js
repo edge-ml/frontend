@@ -116,3 +116,16 @@ module.exports.reset2FA = callback => {
     .then(res => callback(res.data))
     .catch(err => callback(err));
 };
+
+module.exports.getUserMail = userID => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.MAIL,
+        [userID]
+      )
+    ).then(res => resolve(res.data[0]));
+  });
+};
