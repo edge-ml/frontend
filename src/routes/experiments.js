@@ -29,9 +29,21 @@ class ExperimentsPage extends Component {
         isNewExperiment: false
       }
     };
+    this.initComponent = this.initComponent.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.project) return;
+    if (this.props.project && nextProps.project._id === this.props.project._id)
+      return;
+    this.initComponent();
   }
 
   componentDidMount() {
+    this.initComponent();
+  }
+
+  initComponent() {
     subscribeLabelingsAndLabels()
       .then(result =>
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels)

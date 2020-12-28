@@ -78,7 +78,6 @@ module.exports.subscribeUsers = callback => {
 };
 
 module.exports.init2FA = callback => {
-  console.log('init 2FA');
   axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
@@ -124,7 +123,7 @@ module.exports.getUserMail = userID => {
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.MAIL,
-        [userID]
+        userID
       )
     ).then(res => resolve(res.data[0]));
   });

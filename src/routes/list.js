@@ -76,7 +76,6 @@ class ListPage extends Component {
 
   onDatasetsChanged(datasets) {
     if (!datasets) return;
-
     this.setState({
       modalID: null,
       modal: false,

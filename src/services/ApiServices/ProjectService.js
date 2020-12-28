@@ -24,7 +24,7 @@ function getUserMails(project) {
     )
       .then(result => {
         project.admin = result.data[0];
-        result.data.slice(0, 1);
+        result.data.shift();
         project.users = result.data;
         resolve(project);
       })
@@ -82,6 +82,7 @@ module.exports.createProject = project => {
 };
 
 module.exports.updateProject = project => {
+  console.log(project);
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(

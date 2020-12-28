@@ -38,9 +38,24 @@ class LabelingsPage extends Component {
       this
     );
     this.resetURL = this.resetURL.bind(this);
+    this.initComponent = this.initComponent.bind(this);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.project) return;
+    if (this.props.project && nextProps.project._id === this.props.project._id)
+      return;
+    this.initComponent();
   }
 
   componentDidMount() {
+    if (!this.props.project) {
+      return;
+    }
+    this.initComponent();
+  }
+
+  initComponent() {
     subscribeLabelingsAndLabels().then(result => {
       this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
       if (this.props.location.pathname === '/labelings/new') {

@@ -41,6 +41,8 @@ class ProjectSettings extends Component {
     this.onAddUser = this.onAddUser.bind(this);
     this.onNameChanged = this.onNameChanged.bind(this);
     this.onDeleteUser = this.onDeleteUser.bind(this);
+    this.onUserIDChange = this.onUserIDChange.bind(this);
+    this.onSave = this.onSave.bind(this);
   }
 
   initState(project, isNewProject) {
@@ -61,9 +63,22 @@ class ProjectSettings extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.project._id !== this.props.project._id) {
+    if (!nextProps.project) {
+      this.setState({
+        project: undefined
+      });
+      return;
+    }
+    if (
+      (nextProps.project && !this.props.project) ||
+      nextProps.project._id !== this.props.project._id
+    ) {
       this.initState(nextProps.project, nextProps.isNewProject);
     }
+  }
+
+  onSave() {
+    updateProject(this.state.project).then(data => console.log(data));
   }
 
   onDeleteUser(user) {
@@ -89,7 +104,7 @@ class ProjectSettings extends Component {
     });
   }
 
-  onAddUser() {
+  onAddUser(e) {
     var tmpProject = { ...this.state.project };
     tmpProject.users.push({ _id: '', email: undefined });
     this.setState({
@@ -106,6 +121,15 @@ class ProjectSettings extends Component {
     }
   }
 
+  onUserIDChange(index, e) {
+    e.preventDefault();
+    const project = { ...this.state.project };
+    project.users[index]._id = e.target.value;
+    this.setState({
+      project: project
+    });
+  }
+
   render() {
     if (!this.state.project) {
       return <NoProjectPage></NoProjectPage>;
@@ -120,7 +144,7 @@ class ProjectSettings extends Component {
             {'Edit Project: ' + this.state.originalProject.name}
           </h3>
           <Button onClick={this.onDeleteProject} color="danger">
-            Delete dataset
+            Delete project
           </Button>
         </div>
         <hr></hr>
@@ -166,6 +190,8 @@ class ProjectSettings extends Component {
                         type="text"
                         name="User ID"
                         placeholder="Enter user_id"
+                        value={user._id}
+                        onChange={e => this.onUserIDChange(index, e)}
                       />
                     )}
                   </td>

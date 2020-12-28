@@ -95,8 +95,12 @@ class App extends Component {
   }*/
 
   onProjectChanged(projects) {
+    if (projects.length !== 0) {
+      setProject(projects[0]._id);
+    }
     this.setState({
       projects: projects,
+      currentProject: 0,
       projectEditModalOpen: false
     });
   }
@@ -236,6 +240,9 @@ class App extends Component {
   }
 
   render() {
+    const projectAvailable = this.state.projects
+      ? this.state.projects[this.state.currentProject]
+      : undefined;
     return (
       <div>
         <EditProjectModal
@@ -319,9 +326,11 @@ class App extends Component {
                               caret
                               style={{ paddingLeft: '0px' }}
                             >
-                              {this.state.projects[this.state.currentProject]
+                              {projectAvailable
                                 ? this.state.projects[this.state.currentProject]
                                     .name
+                                : this.state.projects.length === 0
+                                ? 'No projects'
                                 : 'Loading'}
                             </DropdownToggle>
                             {this.state.projects.length === 0 ? null : (
@@ -464,12 +473,22 @@ class App extends Component {
                   <Route
                     exact
                     path="/experiments"
-                    render={props => <ExperimentsPage {...props} />}
+                    render={props => (
+                      <ExperimentsPage
+                        {...props}
+                        project={this.state.projects[this.state.currentProject]}
+                      />
+                    )}
                   />
                   <Route
                     exact
                     path="/experiments/new"
-                    render={props => <ExperimentsPage {...props} />}
+                    render={props => (
+                      <ExperimentsPage
+                        {...props}
+                        project={this.state.projects[this.state.currentProject]}
+                      />
+                    )}
                   />
                   <Route
                     exact

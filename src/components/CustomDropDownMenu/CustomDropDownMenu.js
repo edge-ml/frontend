@@ -32,7 +32,6 @@ class CustomDropDownMenu extends Component {
   }
 
   render() {
-    console.log('This');
     return (
       <div>
         <div style={{ display: 'inline-block' }} onClick={this.showMenu}>
