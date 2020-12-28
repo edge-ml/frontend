@@ -13,7 +13,10 @@ import {
   FormGroup
 } from 'reactstrap';
 
-import { updateProject } from './../../services/ApiServices/ProjectService';
+import {
+  updateProject,
+  createProject
+} from './../../services/ApiServices/ProjectService';
 
 class EditProjectModal extends Component {
   constructor(props) {
@@ -46,16 +49,23 @@ class EditProjectModal extends Component {
   }
 
   onSave() {
-    updateProject(this.state.project)
-      .then(data => {
+    if (this.props.isNewProject) {
+      createProject(this.state.project).then(data => {
         this.props.projectChanged(data);
-      })
-      .catch(err => {});
+      });
+    } else {
+      updateProject(this.state.project)
+        .then(data => {
+          this.props.projectChanged(data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.project) return;
-    if (!nextProps.isNewProject) {
+    if (nextProps.project && !nextProps.isNewProject) {
       var objectCopy = JSON.parse(JSON.stringify(nextProps.project));
       this.setState({
         project: objectCopy,
@@ -65,8 +75,7 @@ class EditProjectModal extends Component {
     } else {
       const newProject = { name: '', users: [] };
       this.setState({
-        project: newProject,
-        originalUsers: nextProps.project.users
+        project: newProject
       });
     }
   }
@@ -101,7 +110,12 @@ class EditProjectModal extends Component {
   }
 
   render() {
-    if (!this.state.project || !this.state.project.users) return null;
+    if (
+      !this.state.project ||
+      !this.state.project.users ||
+      !this.props.isNewProject
+    )
+      return null;
     return (
       <Modal isOpen={this.props.isOpen}>
         <ModalHeader>

@@ -43,6 +43,7 @@ import {
   getProject,
   clearToken
 } from './services/LocalStorageService';
+import ProjectSettings from './routes/projectSettings';
 
 class App extends Component {
   constructor(props) {
@@ -83,10 +84,17 @@ class App extends Component {
     this.refreshProjects = this.refreshProjects.bind(this);
   }
 
-  onProjectChanged(project) {
+  /*onProjectChanged(project) {
     var projects = [...this.state.projects];
     var idx = projects.findIndex(elm => elm._id === project._id);
     projects[idx] = project;
+    this.setState({
+      projects: projects,
+      projectEditModalOpen: false
+    });
+  }*/
+
+  onProjectChanged(projects) {
     this.setState({
       projects: projects,
       projectEditModalOpen: false
@@ -107,6 +115,11 @@ class App extends Component {
   }
 
   onProjectClick(index) {
+    //Check if a page needs to be redirected
+    if (this.props.location.pathname.includes('datasets')) {
+      this.props.history.push('/');
+    }
+
     setProject(this.state.projects[index]._id);
     this.setState({
       currentProject: index
@@ -287,22 +300,7 @@ class App extends Component {
                               className="mr-2 fa-s"
                             />
                           </div>
-                          {this.state.projects[this.state.currentProject]
-                            .users ? (
-                            <div style={{ display: 'block', margin: 'auto' }}>
-                              <FontAwesomeIcon
-                                onClick={() => this.onProjectEditModal(false)}
-                                style={{
-                                  color: '#8b8d8f',
-                                  float: 'left',
-                                  margin: 'auto',
-                                  cursor: 'pointer'
-                                }}
-                                icon={faCog}
-                                className="mr-2 fa-s"
-                              />
-                            </div>
-                          ) : null}
+
                           <Dropdown
                             className="navbar-dropdown"
                             style={{ float: 'right' }}
@@ -312,6 +310,11 @@ class App extends Component {
                             toggle={this.toggleProjects}
                           >
                             <DropdownToggle
+                              className={
+                                this.state.projects.length === 0
+                                  ? 'disabled'
+                                  : ''
+                              }
                               nav
                               caret
                               style={{ paddingLeft: '0px' }}
@@ -321,18 +324,20 @@ class App extends Component {
                                     .name
                                 : 'Loading'}
                             </DropdownToggle>
-                            <DropdownMenu>
-                              {this.state.projects.map((project, index) => {
-                                return (
-                                  <DropdownItem
-                                    onClick={() => this.onProjectClick(index)}
-                                    key={project._id}
-                                  >
-                                    {project.name}
-                                  </DropdownItem>
-                                );
-                              })}
-                            </DropdownMenu>
+                            {this.state.projects.length === 0 ? null : (
+                              <DropdownMenu>
+                                {this.state.projects.map((project, index) => {
+                                  return (
+                                    <DropdownItem
+                                      onClick={() => this.onProjectClick(index)}
+                                      key={project._id}
+                                    >
+                                      {project.name}
+                                    </DropdownItem>
+                                  );
+                                })}
+                              </DropdownMenu>
+                            )}
                           </Dropdown>
                         </div>
                       </NavItem>
@@ -420,12 +425,22 @@ class App extends Component {
                   <Route
                     exact
                     path="/labelings"
-                    render={props => <LabelingsPage {...props} />}
+                    render={props => (
+                      <LabelingsPage
+                        {...props}
+                        project={this.state.projects[this.state.currentProject]}
+                      />
+                    )}
                   />
                   <Route
                     exact
                     path="/labelings/new"
-                    render={props => <LabelingsPage {...props} />}
+                    render={props => (
+                      <LabelingsPage
+                        {...props}
+                        project={this.state.projects[this.state.currentProject]}
+                      />
+                    )}
                   />
                   <Route
                     exact
@@ -460,7 +475,7 @@ class App extends Component {
                     exact
                     path="/settings"
                     render={props => (
-                      <SettingsPage
+                      /*<SettingsPage
                         {...props}
                         getCurrentUserMail={this.getCurrentUserMail}
                         onLogout={this.logoutHandler}
@@ -469,7 +484,11 @@ class App extends Component {
                         user={this.state.user}
                         setAccessToken={this.setAccessToken}
                         twoFactorEnabled={this.state.user.twoFactorEnabled}
-                      />
+                      />*/
+                      <ProjectSettings
+                        project={this.state.projects[this.state.currentProject]}
+                        projectChanged={this.onProjectChanged}
+                      ></ProjectSettings>
                     )}
                   />
                   <Route

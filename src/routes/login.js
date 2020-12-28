@@ -89,7 +89,6 @@ class LoginPage extends Component {
         !(decoded.twoFactorEnabled && !decoded.twoFactorVerified)
       ) {
         getUserMail([decoded.id]).then(mail => {
-          console.log(mail);
           this.props.setUser({ ...this.state.user, email: mail.email });
         });
         this.setState({
@@ -228,7 +227,10 @@ class LoginPage extends Component {
             },
             () => {
               this.check2FALogin();
-              this.props.setUser(data);
+              var decoded = jwt_decode(data.access_token);
+              getUserMail([decoded.id]).then(mail => {
+                this.props.setUser({ ...data, email: mail.email });
+              });
             }
           );
         });

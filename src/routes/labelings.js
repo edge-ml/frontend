@@ -4,7 +4,7 @@ import { view } from 'react-easy-state';
 
 import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
-
+import NoProjectPage from '../components/NoProjectPage/NoProjectPage';
 import {
   updateLabelingAndLabels,
   updateLabeling,
@@ -153,6 +153,9 @@ class LabelingsPage extends Component {
   }
 
   render() {
+    if (!this.props.project || this.props.project.length === 0) {
+      return <NoProjectPage></NoProjectPage>;
+    }
     return (
       <Loader loading={!this.state.isReady}>
         <Container>

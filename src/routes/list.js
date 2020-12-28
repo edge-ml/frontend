@@ -12,6 +12,7 @@ import {
   ModalFooter
 } from 'reactstrap';
 import CreateNewDatasetModal from '../components/CreateNewDatasetModal/CreateNewDatasetModal';
+import NoProjectPage from '../components/NoProjectPage/NoProjectPage';
 
 import Loader from '../modules/loader';
 
@@ -57,7 +58,9 @@ class ListPage extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.project._id === this.props.project._id) return;
+    if (!nextProps.project) return;
+    if (this.props.project && nextProps.project._id === this.props.project._id)
+      return;
     getDatasets()
       .then(this.onDatasetsChanged)
       .catch(err => {
@@ -153,7 +156,7 @@ class ListPage extends Component {
 
   render() {
     if (!this.props.project || this.props.project.length === 0) {
-      return <h1>Create new Project</h1>;
+      return <NoProjectPage></NoProjectPage>;
     }
     return (
       <div id="dataList">
