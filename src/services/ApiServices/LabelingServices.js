@@ -191,7 +191,6 @@ module.exports.updateLabelingAndLabels = (labeling, labels, deletedLabels) => {
             )
           ];
         }
-
         return Promise.all(promises);
       })
       .then(() => {

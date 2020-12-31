@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   InputGroup,
   InputGroupAddon,
   InputGroupText,
   Input,
-  Table,
-  FormGroup
+  Table
 } from 'reactstrap';
 
 import {

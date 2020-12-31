@@ -50,7 +50,7 @@ module.exports.deleteUser = userEMail => {
 module.exports.registerNewUser = function(userEMail, password) {
   return new Promise((resolve, reject) => {
     axiosNoToken(
-      apiConsts.generateRequest(
+      apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.REGISTER,
@@ -123,8 +123,10 @@ module.exports.getUserMail = userID => {
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.MAIL,
-        userID
+        [userID]
       )
-    ).then(res => resolve(res.data[0]));
+    ).then(res => {
+      resolve(res.data[0]);
+    });
   });
 };

@@ -21,8 +21,6 @@ import {
   deleteDatasets
 } from '../services/ApiServices/DatasetServices';
 
-import { getProject } from '../services/LocalStorageService';
-
 class ListPage extends Component {
   constructor(props) {
     super(props);

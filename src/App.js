@@ -12,8 +12,7 @@ import {
   DropdownItem,
   Dropdown,
   DropdownToggle,
-  DropdownMenu,
-  UncontrolledDropdown
+  DropdownMenu
 } from 'reactstrap';
 import { Route, Link } from 'react-router-dom';
 import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMenu';
@@ -22,21 +21,16 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCog, faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
 import ListPage from './routes/list';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labelings';
-import SettingsPage from './routes/settings';
 import ExperimentsPage from './routes/experiments';
 import ErrorPage from './components/ErrorPage/ErrorPage';
-import ApiConstants from './services/ApiServices/ApiConstants';
-import {
-  getProjects,
-  updateProject
-} from './services/ApiServices/ProjectService';
+import { getProjects } from './services/ApiServices/ProjectService';
 import EditProjectModal from './components/EditProjectModal/EditProjectModal';
 import {
   setProject,
@@ -83,16 +77,6 @@ class App extends Component {
     this.onProjectChanged = this.onProjectChanged.bind(this);
     this.refreshProjects = this.refreshProjects.bind(this);
   }
-
-  /*onProjectChanged(project) {
-    var projects = [...this.state.projects];
-    var idx = projects.findIndex(elm => elm._id === project._id);
-    projects[idx] = project;
-    this.setState({
-      projects: projects,
-      projectEditModalOpen: false
-    });
-  }*/
 
   onProjectChanged(projects) {
     if (projects.length !== 0) {
@@ -287,7 +271,6 @@ class App extends Component {
                         style={{
                           borderRight: '1px solid',
                           borderColor: 'gray',
-                          marginRight: '5px',
                           marginRight: '8px',
                           marginLeft: '8px'
                         }}

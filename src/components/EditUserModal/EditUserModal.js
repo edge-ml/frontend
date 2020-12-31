@@ -13,10 +13,7 @@ import {
 
 import './EditUserModal.css';
 
-import {
-  deleteUser,
-  editUser
-} from '../../services/ApiServices/AuthentificationServices';
+import { deleteUser } from '../../services/ApiServices/AuthentificationServices';
 
 class EditUserModal extends Component {
   constructor(props) {

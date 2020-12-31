@@ -10,8 +10,7 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
-  Alert
+  CardHeader
 } from 'reactstrap';
 import { MailIcon, ShieldIcon } from 'react-octicons';
 import { FadeInUp } from 'animate-components';
@@ -89,6 +88,7 @@ class RegisterPage extends Component {
           });
         })
         .catch(err => {
+          console.log(err);
           this.onError(err.response.data.error);
         });
     }

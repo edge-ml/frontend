@@ -9,8 +9,7 @@ import {
   InputGroupAddon,
   InputGroupText,
   Input,
-  Table,
-  FormGroup
+  Table
 } from 'reactstrap';
 
 import {

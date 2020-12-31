@@ -1,7 +1,6 @@
 const getAccessToken = require('../LocalStorageService').getAccessToken;
 var apiConsts = require('./ApiConstants');
 const ax = require('axios');
-const { resolve } = require('path');
 const axios = ax.create();
 
 axios.interceptors.request.use(config => {
