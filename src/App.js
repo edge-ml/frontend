@@ -60,7 +60,7 @@ class App extends Component {
       projectsOpen: false,
       projectEditModalOpen: false,
       projectEditModalNew: false,
-      userSettingsModalOpen: true
+      userSettingsModalOpen: false
     };
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
@@ -267,7 +267,7 @@ class App extends Component {
             on2FA={this.on2FA}
           >
             {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
-            {this.state.isLoggedIn && this.state.projects && getProject() ? (
+            {this.state.isLoggedIn && this.state.projects ? (
               <div>
                 <Navbar color="light" light expand="md">
                   <NavbarBrand style={{ marginRight: '8px' }}>
