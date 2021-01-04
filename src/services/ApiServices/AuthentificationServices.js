@@ -130,3 +130,33 @@ module.exports.getUserMail = userID => {
     });
   });
 };
+
+module.exports.changeUserMail = newUserMail => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.PUT,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.CHANGE_MAIL,
+        { email: newUserMail }
+      )
+    )
+      .then(res => resolve(res.data))
+      .catch(err => reject(err));
+  });
+};
+
+module.exports.changeUserPassword = (currentPassword, newPassword) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.PUT,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.CHANGE_PASSWORD,
+        { password: currentPassword, newPassword: newPassword }
+      )
+    )
+      .then(res => resolve(res.data))
+      .catch(err => reject(err));
+  });
+};

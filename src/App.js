@@ -38,6 +38,7 @@ import {
   clearToken
 } from './services/LocalStorageService';
 import ProjectSettings from './routes/projectSettings';
+import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal';
 
 class App extends Component {
   constructor(props) {
@@ -58,7 +59,8 @@ class App extends Component {
       currentProject: undefined,
       projectsOpen: false,
       projectEditModalOpen: false,
-      projectEditModalNew: false
+      projectEditModalNew: false,
+      userSettingsModalOpen: true
     };
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
@@ -76,6 +78,13 @@ class App extends Component {
     this.onProjectModalClose = this.onProjectModalClose.bind(this);
     this.onProjectChanged = this.onProjectChanged.bind(this);
     this.refreshProjects = this.refreshProjects.bind(this);
+    this.toggleUserSettingsModal = this.toggleUserSettingsModal.bind(this);
+  }
+
+  toggleUserSettingsModal() {
+    this.setState({
+      userSettingsModalOpen: !this.state.userSettingsModalOpen
+    });
   }
 
   onProjectChanged(projects) {
@@ -390,7 +399,9 @@ class App extends Component {
                             <div>
                               Signed in as <b>{this.state.user.email}</b>
                             </div>,
+                            <hr></hr>,
                             <Button
+                              onClick={this.toggleUserSettingsModal}
                               className="dropdown-item"
                               style={{ padding: '0px' }}
                             >
@@ -398,6 +409,10 @@ class App extends Component {
                             </Button>
                           ]}
                         ></CustomDropDownMenu>
+                        <UserSettingsModal
+                          isOpen={this.state.userSettingsModalOpen}
+                          onClose={this.toggleUserSettingsModal}
+                        ></UserSettingsModal>
                       </NavItem>
                     </Nav>
                   </Collapse>
