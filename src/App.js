@@ -188,6 +188,7 @@ class App extends Component {
   onLogout(didSucceed) {
     if (didSucceed) {
       clearToken();
+      this.props.history.push('/');
       this.setState({
         user: {
           access_token: undefined
@@ -368,19 +369,6 @@ class App extends Component {
                           Settings
                         </Link>
                       </NavItem>
-                      <NavItem>
-                        <Form className="form-inline my-2 my-lg-0">
-                          <Link
-                            className="nav-link m-0 p-0 ml-3"
-                            to="/"
-                            onClick={this.logoutHandler}
-                          >
-                            <Button className="m-0 my-2 my-sm-0" outline>
-                              Logout
-                            </Button>
-                          </Link>
-                        </Form>
-                      </NavItem>
                       <NavItem style={{ paddingLeft: '8px' }}>
                         <CustomDropDownMenu
                           content={
@@ -399,11 +387,18 @@ class App extends Component {
                             <div>
                               Signed in as <b>{this.state.user.email}</b>
                             </div>,
-                            <hr></hr>,
                             <Button
+                              className="m-0 my-2 my-sm-0"
+                              outline
+                              color="danger"
+                              onClick={this.logoutHandler}
+                            >
+                              Logout
+                            </Button>,
+                            <hr style={{ margin: '8px' }}></hr>,
+                            <Button
+                              outline
                               onClick={this.toggleUserSettingsModal}
-                              className="dropdown-item"
-                              style={{ padding: '0px' }}
                             >
                               User settings
                             </Button>

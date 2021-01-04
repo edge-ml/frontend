@@ -55,9 +55,9 @@ class ListPage extends Component {
       });
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.project) return;
-    if (this.props.project && nextProps.project._id === this.props.project._id)
+  componentDidUpdate(prevProps) {
+    if (!this.props.project) return;
+    if (prevProps.project && prevProps.project._id === this.props.project._id)
       return;
     getDatasets()
       .then(this.onDatasetsChanged)
