@@ -3,14 +3,6 @@ const apiConsts = require('./ApiConstants');
 const ax = require('axios');
 const axios = ax.create();
 
-axios.interceptors.request.use(config => {
-  const token = getAccessToken();
-  if (token) {
-    config.headers['Authorization'] = token;
-  }
-  return config;
-});
-
 function getUserMails(project) {
   const userList = [project.admin, ...project.users];
   return new Promise((resolve, reject) => {
