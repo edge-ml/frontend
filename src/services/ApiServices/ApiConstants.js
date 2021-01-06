@@ -44,13 +44,14 @@ module.exports.generateApiRequest = (
   endpoint = this.API_ENDPOINTS.DEFAULT,
   body = {}
 ) => {
+  const project = localStorageService.getProject();
   return {
     method: method,
     url: baseUri + endpoint,
     data: body,
     headers: {
       'Content-Type': 'application/json',
-      project: localStorageService.getProject(),
+      ...(project && { project: project }),
       Authorization: localStorageService.getAccessToken()
     }
   };

@@ -130,7 +130,9 @@ class ProjectSettings extends Component {
       return <NoProjectPage></NoProjectPage>;
     }
     if (!this.state.project.users) {
-      return <h1>You need admin rights</h1>;
+      return (
+        <NoProjectPage text="You need admin rights to edit the project"></NoProjectPage>
+      );
     }
     return (
       <div style={{ marginTop: '16px' }}>

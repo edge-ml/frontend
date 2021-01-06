@@ -9,7 +9,11 @@ class NoProjectPage extends Component {
   render() {
     return (
       <div className="center">
-        <h2>Join or create a project to get started!</h2>
+        <h2>
+          {this.props.text
+            ? this.props.text
+            : 'Join or create a project to get started!'}
+        </h2>
       </div>
     );
   }
