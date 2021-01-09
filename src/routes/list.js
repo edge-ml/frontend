@@ -12,7 +12,6 @@ import {
   ModalFooter
 } from 'reactstrap';
 import CreateNewDatasetModal from '../components/CreateNewDatasetModal/CreateNewDatasetModal';
-import NoProjectPage from '../components/NoProjectPage/NoProjectPage';
 
 import Loader from '../modules/loader';
 
@@ -48,21 +47,6 @@ class ListPage extends Component {
     this.setState({
       project: this.props.project
     });
-    getDatasets()
-      .then(this.onDatasetsChanged)
-      .catch(err => {
-        this.loadErrorPage(err.status, err.data.error, err.statusText);
-      });
-  }
-
-  componentDidUpdate(prevProps) {
-    if (!this.props.project) return;
-    if (
-      prevProps.project &&
-      prevProps.project._id === this.props.project._i &&
-      this.state.datasets.length !== 0
-    )
-      return;
     getDatasets()
       .then(this.onDatasetsChanged)
       .catch(err => {
@@ -156,9 +140,6 @@ class ListPage extends Component {
   }
 
   render() {
-    if (!this.props.project || this.props.project.length === 0) {
-      return <NoProjectPage></NoProjectPage>;
-    }
     return (
       <div id="dataList">
         <Loader loading={!this.state.ready}>

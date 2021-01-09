@@ -40,6 +40,7 @@ import {
 } from './services/LocalStorageService';
 import ProjectSettings from './routes/projectSettings';
 import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal';
+import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
 
 class App extends Component {
   constructor(props) {
@@ -413,42 +414,24 @@ class App extends Component {
                 <Container>
                   <Route
                     exact
-                    path="/list"
+                    path={['/list', '/']}
                     render={props => (
-                      <ListPage
-                        {...props}
+                      <ProjectRefresh
                         project={this.state.projects[this.state.currentProject]}
-                      />
+                      >
+                        <ListPage {...props} />{' '}
+                      </ProjectRefresh>
                     )}
                   />
                   <Route
                     exact
-                    path="/labelings"
+                    path={['/labelings', '/labelings/new']}
                     render={props => (
-                      <LabelingsPage
-                        {...props}
+                      <ProjectRefresh
                         project={this.state.projects[this.state.currentProject]}
-                      />
-                    )}
-                  />
-                  <Route
-                    exact
-                    path="/labelings/new"
-                    render={props => (
-                      <LabelingsPage
-                        {...props}
-                        project={this.state.projects[this.state.currentProject]}
-                      />
-                    )}
-                  />
-                  <Route
-                    exact
-                    path="/"
-                    render={props => (
-                      <ListPage
-                        {...props}
-                        project={this.state.projects[this.state.currentProject]}
-                      />
+                      >
+                        <LabelingsPage {...props} />
+                      </ProjectRefresh>
                     )}
                   />
                   <Route
@@ -462,38 +445,19 @@ class App extends Component {
                   />
                   <Route
                     exact
-                    path="/experiments"
+                    path={['/experiments', '/experiments/new']}
                     render={props => (
-                      <ExperimentsPage
-                        {...props}
+                      <ProjectRefresh
                         project={this.state.projects[this.state.currentProject]}
-                      />
-                    )}
-                  />
-                  <Route
-                    exact
-                    path="/experiments/new"
-                    render={props => (
-                      <ExperimentsPage
-                        {...props}
-                        project={this.state.projects[this.state.currentProject]}
-                      />
+                      >
+                        <ExperimentsPage {...props} />
+                      </ProjectRefresh>
                     )}
                   />
                   <Route
                     exact
                     path="/settings"
                     render={props => (
-                      /*<SettingsPage
-                        {...props}
-                        getCurrentUserMail={this.getCurrentUserMail}
-                        onLogout={this.logoutHandler}
-                        onVideoOptionsChange={this.toggleVideoOptions}
-                        getVideoOptions={this.getVideoOptions}
-                        user={this.state.user}
-                        setAccessToken={this.setAccessToken}
-                        twoFactorEnabled={this.state.user.twoFactorEnabled}
-                      />*/
                       <ProjectSettings
                         project={this.state.projects[this.state.currentProject]}
                         projectChanged={this.onProjectChanged}

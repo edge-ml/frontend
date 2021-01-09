@@ -40,17 +40,7 @@ class LabelingsPage extends Component {
     this.initComponent = this.initComponent.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.project) return;
-    if (this.props.project && nextProps.project._id === this.props.project._id)
-      return;
-    this.initComponent();
-  }
-
   componentDidMount() {
-    if (!this.props.project) {
-      return;
-    }
     this.initComponent();
   }
 
@@ -137,7 +127,6 @@ class LabelingsPage extends Component {
   async onSave(labeling, labels, deletedLabels) {
     if (!labeling || !labels) return;
     if (this.state.modal.isNewLabeling && labels.length === 0) {
-      console.log('Cond_1');
       await addLabeling(labeling).then(result =>
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
       );
@@ -147,12 +136,10 @@ class LabelingsPage extends Component {
       deletedLabels.length === 0 &&
       !labels.some(label => label.updated || label.isNewLabel)
     ) {
-      console.log('Cond_2');
       await updateLabeling(labeling).then(newLabelings =>
         this.onLabelingsAndLabelsChanged(newLabelings, undefined)
       );
     } else {
-      console.log('Cond_3');
       await updateLabelingAndLabels(
         labeling,
         labels,
@@ -169,9 +156,6 @@ class LabelingsPage extends Component {
   }
 
   render() {
-    if (!this.props.project || this.props.project.length === 0) {
-      return <NoProjectPage></NoProjectPage>;
-    }
     return (
       <Loader loading={!this.state.isReady}>
         <Container>

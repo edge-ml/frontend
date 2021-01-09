@@ -33,13 +33,6 @@ class ExperimentsPage extends Component {
     this.initComponent = this.initComponent.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
-    if (!this.props.project) return;
-    if (prevProps.project && prevProps.project._id === this.props.project._id)
-      return;
-    this.initComponent();
-  }
-
   componentDidMount() {
     this.initComponent();
   }
@@ -206,9 +199,6 @@ class ExperimentsPage extends Component {
   };
 
   render() {
-    if (!this.props.project || this.props.project.length === 0) {
-      return <NoProjectPage></NoProjectPage>;
-    }
     let experiment = this.state.experiments.filter(
       experiment => experiment['_id'] === this.state.selectedExperimentId
     )[0];
