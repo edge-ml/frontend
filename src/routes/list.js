@@ -57,7 +57,11 @@ class ListPage extends Component {
 
   componentDidUpdate(prevProps) {
     if (!this.props.project) return;
-    if (prevProps.project && prevProps.project._id === this.props.project._id)
+    if (
+      prevProps.project &&
+      prevProps.project._id === this.props.project._i &&
+      this.state.datasets.length !== 0
+    )
       return;
     getDatasets()
       .then(this.onDatasetsChanged)

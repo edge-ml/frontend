@@ -45,8 +45,10 @@ class CustomDropDownMenu extends Component {
               this.dropdownMenu = element;
             }}
           >
-            {this.props.items.map(item => (
-              <div className="customDropDownItem">{item}</div>
+            {this.props.items.map((item, index) => (
+              <div key={index} className="customDropDownItem">
+                {item}
+              </div>
             ))}
           </div>
         ) : null}

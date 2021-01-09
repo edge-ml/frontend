@@ -58,27 +58,31 @@ module.exports.registerNewUser = function(userEMail, password) {
 };
 
 module.exports.subscribeUsers = callback => {
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.GET,
-      apiConsts.AUTH_URI,
-      apiConsts.AUTH_ENDPOINTS.USERS
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.USERS
+      )
     )
-  )
-    .then(res => callback(res.data))
-    .catch(() => callback([]));
+      .then(res => callback(res.data))
+      .catch(() => callback([]));
+  });
 };
 
-module.exports.init2FA = callback => {
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.POST,
-      apiConsts.AUTH_URI,
-      apiConsts.AUTH_ENDPOINTS.INIT2FA
+module.exports.init2FA = () => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.INIT2FA
+      )
     )
-  )
-    .then(res => callback(res.data))
-    .catch(err => callback(err));
+      .then(res => resolve(res.data))
+      .catch(err => reject(err));
+  });
 };
 
 module.exports.verify2FA = token => {
@@ -96,16 +100,18 @@ module.exports.verify2FA = token => {
   });
 };
 
-module.exports.reset2FA = callback => {
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.POST,
-      apiConsts.AUTH_URI,
-      apiConsts.AUTH_ENDPOINTS.RESET2FA
+module.exports.reset2FA = () => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.RESET2FA
+      )
     )
-  )
-    .then(res => callback(res.data))
-    .catch(err => callback(err));
+      .then(res => resolve(res.data))
+      .catch(err => reject(err));
+  });
 };
 
 module.exports.getUserMail = userID => {

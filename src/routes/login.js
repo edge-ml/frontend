@@ -34,35 +34,23 @@ class LoginPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      usermail: '',
+      userMail: '',
       password: '',
       buttonDisabled: false,
       isLoggedIn: props.isLoggedIn,
-      isTwoFactorAuthenticated: props.isTwoFactorAuthenticated,
-      twoFactorEnabled: props.twoFactorEnabled,
-      authenticationHandlers: {
-        didLoginFail: false,
-        onCancelLogin: props.onCancelLogin
-      },
-      twoFactorAuthentication: {
-        qrCode: undefined,
-        token: undefined,
-        tokenFailed: false
-      },
       time: undefined,
-
-      user: {}
+      loginFailed: false,
+      show2FA: false
     };
-    this.emailchange = this.emailchange.bind(this);
+    this.emailChange = this.emailChange.bind(this);
     this.passChange = this.passChange.bind(this);
     this.submit = this.submit.bind(this);
     this.onTokenChanged = this.onTokenChanged.bind(this);
-    this.onVerified = this.onVerified.bind(this);
     this.onLoginCanceled = this.onLoginCanceled.bind(this);
-    this.onDidRestoreSession = this.onDidRestoreSession.bind(this);
     this.passHandleKey = this.passHandleKey.bind(this);
     this.tick = this.tick.bind(this);
     this.checkLoggedInStatus = this.checkLoggedInStatus.bind(this);
+    this.onLoginError = this.onLoginError.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -79,17 +67,17 @@ class LoginPage extends Component {
   }
 
   checkLoggedInStatus() {
-    var accessToken = getAccessToken();
-    var refreshToken = getRefreshToken();
+    const accessToken = getAccessToken();
+    const refreshToken = getRefreshToken();
     if (accessToken) {
-      var decoded = jwt_decode(accessToken);
+      const decoded = jwt_decode(accessToken);
       if (
         decoded.exp * 1000 >= Date.now() &&
         !(decoded.twoFactorEnabled && !decoded.twoFactorVerified)
       ) {
         getUserMail([decoded.id])
           .then(mail => {
-            this.props.setUser({ ...this.state.user, email: mail.email });
+            this.props.onUserLoggedIn(accessToken, refreshToken, mail.email);
           })
           .catch(err => {});
         this.setState({
@@ -103,11 +91,11 @@ class LoginPage extends Component {
     }
   }
 
-  emailchange(event) {
+  emailChange(event) {
     this.setState(
       update(this.state, {
         $merge: {
-          usermail: event.target.value
+          userMail: event.target.value
         }
       })
     );
@@ -130,70 +118,24 @@ class LoginPage extends Component {
   }
 
   onTokenChanged(e) {
+    this.setState({
+      token: e.target.value
+    });
     if (!e.target || !e.target.value) return;
-    //if (e.target.value.length > 6) return;
-    else if (e.target.value.length === 6) {
+    if (e.target.value.length === 6) {
       verify2FA(e.target.value)
         .then(data => {
-          if (data) {
-            if (data && data.status && data.status !== 200) {
-              window.alert(data.data.error);
-            } else {
-              this.setState(
-                {
-                  tokenFailed: false,
-                  user: data
-                },
-                () => {
-                  this.props.setUser(data, () => {
-                    this.props.onLogin(true);
-                  });
-                }
-              );
-            }
+          if (data.isTwoFactorAuthenticated) {
+            this.props.onUserLoggedIn(data.access_token, data.refresh_token);
+            this.setState({
+              isLoggedIn: true
+            });
           }
         })
         .catch(err => {
-          var tmp = this.state.twoFactorAuthentication;
-          tmp.tokenFailed = true;
-          this.setState(
-            {
-              twoFactorAuthentication: tmp
-            },
-            () => {
-              setTimeout(() => {
-                document.getElementById('tokenInput').value = '';
-                tmp.tokenFailed = false;
-                this.setState({ twoFactorAuthentication: tmp });
-              }, 300);
-            }
-          );
+          this.onLoginError();
         });
     }
-  }
-
-  onVerified(success) {
-    if (!success) {
-      this.setState({
-        twoFactorAuthentication: {
-          token: this.state.twoFactorAuthentication.token,
-          qrCode: this.state.twoFactorAuthentication.qrCode,
-          tokenFailed: true
-        }
-      });
-    } else {
-      this.setState({
-        twoFactorAuthentication: {
-          token: undefined,
-          qrCode: undefined,
-          tokenFailed: false
-        }
-      });
-    }
-  }
-
-  onDidRestoreSession() {
-    this.onVerified(true);
   }
 
   onLoginCanceled() {
@@ -207,69 +149,60 @@ class LoginPage extends Component {
     this.setState({
       authenticationHandlers: tmpAuth,
       twoFactorAuthentication: tmp2FA,
-      usermail: '',
+      userMail: '',
       password: ''
     });
   }
 
   submit() {
+    const user = undefined;
     this.setState({ buttonDisabled: true });
-    loginUser(this.state.usermail, this.state.password)
+    loginUser(this.state.userMail, this.state.password)
       .then(data => {
+        const decoded = jwt_decode(data.access_token);
         setToken(data.access_token, data.refresh_token);
-        this.setState({ buttonDisabled: false }, () => {
-          this.setState(
-            {
-              user: data,
+        getUserMail([decoded.id]).then(mail => {
+          if (!data.twoFactorEnabled) {
+            this.props.onUserLoggedIn(
+              data.access_token,
+              data.refresh_token,
+              mail.email
+            );
+            this.setState({
               isLoggedIn: true,
-              isTwoFactorAuthenticated: false,
-              usermail: '',
-              password: ''
-            },
-            () => {
-              this.check2FALogin();
-              var decoded = jwt_decode(data.access_token);
-              getUserMail(decoded.id)
-                .then(mail => {
-                  this.props.setUser({ ...data, email: mail.email });
-                })
-                .catch(err => {
-                  console.log(err);
-                });
-            }
-          );
+              buttonDisabled: false,
+              password: '',
+              userMail: ''
+            });
+          } else {
+            this.setState({
+              show2FA: true
+            });
+          }
         });
       })
       .catch(err => {
-        var tmp = this.state.authenticationHandlers;
-        tmp.didLoginFail = true;
-        this.setState(
-          {
-            authenticationHandlers: tmp
-          },
-          () => {
-            //Wait for animation to stop then reset page
-            setTimeout(() => {
-              tmp.didLoginFail = false;
-              this.setState({
-                authenticationHandlers: tmp,
-                buttonDisabled: false,
-                password: ''
-              });
-            }, 300);
-          }
-        );
+        this.onLoginError();
       });
   }
 
-  check2FALogin() {
-    if (!this.state.user.twoFactorEnabled) {
-      this.props.setUser(this.state.user, () => {
-        this.setState({
-          isLoggedIn: true
-        });
-      });
-    }
+  onLoginError() {
+    this.setState(
+      {
+        loginFailed: true
+      },
+      () => {
+        //Wait for animation to stop then reset page
+        setTimeout(() => {
+          this.setState({
+            loginFailed: false,
+            buttonDisabled: false,
+            password: '',
+            token: ''
+          });
+        }, 300);
+      }
+    );
   }
 
   componentDidMount() {
@@ -294,10 +227,7 @@ class LoginPage extends Component {
   }
 
   render() {
-    if (
-      (this.state.isLoggedIn && !this.state.user.twoFactorEnabled) ||
-      (this.state.user.twoFactorAuthentication && this.state.isLoggedIn)
-    ) {
+    if (this.state.isLoggedIn) {
       return this.props.children;
     } else {
       return (
@@ -308,12 +238,7 @@ class LoginPage extends Component {
             paddingRight: 0
           }}
         >
-          <Alert
-            color="info"
-            hidden={
-              !(this.state.isLoggedIn && !this.state.user.twoFactorVerified)
-            }
-          >
+          <Alert color="info" hidden={!this.state.show2FA}>
             Your device's time must be synchronized with the server time or
             otherwise your token might be rejected. The current server time is:{' '}
             <b>{this.state.time ? this.state.time.toLocaleString() : ''}</b>
@@ -323,18 +248,17 @@ class LoginPage extends Component {
               <FadeInUp duration="0.3s" playState="running">
                 <Card
                   style={
-                    this.state.authenticationHandlers.didLoginFail ||
-                    this.state.twoFactorAuthentication.tokenFailed
+                    this.state.loginFailed
                       ? {
                           animation: 'hzejgT 0.3s ease 0s 1 normal none running'
                         }
                       : null
                   }
                 >
-                  <CardHeader hidden={this.state.isLoggedIn}>
+                  <CardHeader hidden={this.state.show2FA}>
                     <b>Explorer Login</b>
                   </CardHeader>
-                  <CardBody hidden={this.state.isLoggedIn}>
+                  <CardBody hidden={this.state.show2FA}>
                     <Row>
                       <Col>
                         <Col>
@@ -349,8 +273,8 @@ class LoginPage extends Component {
                               name="email"
                               id="email"
                               placeholder="email"
-                              value={this.state.usermail}
-                              onChange={this.emailchange}
+                              value={this.state.userMail}
+                              onChange={this.emailChange}
                             />
                           </InputGroup>
                         </Col>
@@ -398,44 +322,21 @@ class LoginPage extends Component {
                     </Row>
                   </CardBody>
                   <CardHeader
-                    hidden={
-                      !(
-                        this.state.isLoggedIn &&
-                        !this.state.user.twoFactorVerified &&
-                        this.state.user.twoFactorEnabled
-                      )
-                    }
+                    hidden={!this.state.show2FA}
                     style={{ alignContent: 'center' }}
                   >
-                    {this.state.twoFactorAuthentication.qrCode ? (
-                      <b>Two Factor Authentication Setup</b>
-                    ) : (
-                      <b>Two Factor Authentication</b>
-                    )}{' '}
+                    <b>Two Factor Authentication</b>
                   </CardHeader>
                   <CardBody
-                    hidden={
-                      !(
-                        this.state.isLoggedIn &&
-                        !this.state.user.twoFactorVerified &&
-                        this.state.user.twoFactorEnabled
-                      )
-                    }
+                    hidden={!this.state.show2FA}
                     style={{ margin: 'auto' }}
                   >
-                    {this.state.twoFactorAuthentication.qrCode ? (
-                      <img
-                        width="100%"
-                        alt="2FA QR Code"
-                        src={this.state.twoFactorAuthentication.qrCode}
-                      />
-                    ) : null}
                     <Input
                       autoFocus
                       className={'mt-1'}
                       id="tokenInput"
                       placeholder="Token"
-                      value={this.state.twoFactorAuthentication.token}
+                      value={this.state.token}
                       style={{ textAlign: 'center' }}
                       onChange={this.onTokenChanged}
                     />

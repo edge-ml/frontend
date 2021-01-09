@@ -35,7 +35,8 @@ import EditProjectModal from './components/EditProjectModal/EditProjectModal';
 import {
   setProject,
   getProject,
-  clearToken
+  clearToken,
+  setToken
 } from './services/LocalStorageService';
 import ProjectSettings from './routes/projectSettings';
 import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal';
@@ -44,9 +45,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {
-        access_token: undefined
-      },
+      userMail: undefined,
       isLoggedIn: false,
       isTwoFactorAuthenticated: false,
       navbarState: {
@@ -71,7 +70,6 @@ class App extends Component {
     this.setAccessToken = this.setAccessToken.bind(this);
     this.getCurrentUserMail = this.getCurrentUserMail.bind(this);
     this.setCurrentUserMail = this.setCurrentUserMail.bind(this);
-    this.setUser = this.setUser.bind(this);
     this.toggleProjects = this.toggleProjects.bind(this);
     this.onProjectClick = this.onProjectClick.bind(this);
     this.onProjectEditModal = this.onProjectEditModal.bind(this);
@@ -79,6 +77,7 @@ class App extends Component {
     this.onProjectChanged = this.onProjectChanged.bind(this);
     this.refreshProjects = this.refreshProjects.bind(this);
     this.toggleUserSettingsModal = this.toggleUserSettingsModal.bind(this);
+    this.onUserLoggedIn = this.onUserLoggedIn.bind(this);
   }
 
   toggleUserSettingsModal() {
@@ -151,20 +150,19 @@ class App extends Component {
     });
   }
 
-  setUser(currentUser, callback) {
-    this.refreshProjects();
-
-    this.setState(
-      {
-        user: { ...this.state.user, ...currentUser },
+  onUserLoggedIn(accessToken, refreshToken, userMail) {
+    setToken(accessToken, refreshToken);
+    if (userMail) {
+      this.setState({
+        userMail: userMail,
         isLoggedIn: true
-      },
-      () => {
-        if (callback) {
-          callback();
-        }
-      }
-    );
+      });
+    } else {
+      this.setState({
+        isLoggedIn: true
+      });
+    }
+    this.refreshProjects();
   }
 
   getCurrentUserMail() {
@@ -264,7 +262,7 @@ class App extends Component {
             setAccessToken={this.setAccessToken}
             setCurrentUserMail={this.setCurrentUserMail}
             setUser={this.setUser}
-            twoFactorEnabled={this.state.user.twoFactorEnabled}
+            onUserLoggedIn={this.onUserLoggedIn}
             on2FA={this.on2FA}
           >
             {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
@@ -385,7 +383,7 @@ class App extends Component {
                           }
                           items={[
                             <div>
-                              Signed in as <b>{this.state.user.email}</b>
+                              Signed in as <b>{this.state.userMail}</b>
                             </div>,
                             <Button
                               className="m-0 my-2 my-sm-0"
