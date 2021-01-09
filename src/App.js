@@ -395,7 +395,6 @@ class App extends Component {
                             >
                               Logout
                             </Button>,
-                            <hr style={{ margin: '8px' }}></hr>,
                             <Button
                               outline
                               onClick={this.toggleUserSettingsModal}

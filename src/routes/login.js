@@ -133,7 +133,7 @@ class LoginPage extends Component {
     if (!e.target || !e.target.value) return;
     //if (e.target.value.length > 6) return;
     else if (e.target.value.length === 6) {
-      verify2FA(this.state.user.access_token, e.target.value)
+      verify2FA(e.target.value)
         .then(data => {
           if (data) {
             if (data && data.status && data.status !== 200) {

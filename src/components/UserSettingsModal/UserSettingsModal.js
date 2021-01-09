@@ -7,63 +7,28 @@ import {
   Button,
   NavItem,
   NavLink,
-  Nav,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText
+  Nav
 } from 'reactstrap';
 import classnames from 'classnames';
-import {
-  changeUserMail,
-  changeUserPassword
-} from '../../services/ApiServices/AuthentificationServices';
-import { validateEmail } from '../../services/helpers';
+import MailSettings from './MailSettings';
+import PasswordSettings from './PasswordSettings';
+import TwoFaSettings from './TwoFaSettings';
 
 class UserSettingsModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      newEmail: undefined,
-      confirmationEmail: undefined,
-      emailError: undefined,
-      activeTab: 'mailChange',
-      newPassword: undefined,
-      newConfirmationPassword: undefined,
-      currentPassword: undefined,
-      passwordError: undefined
+      activeTab: 'mailChange'
     };
     this.baseState = this.state;
     this.onCloseModal = this.onCloseModal.bind(this);
-    this.onNewEmailChange = this.onNewEmailChange.bind(this);
-    this.onConfirmationEmailChange = this.onConfirmationEmailChange.bind(this);
     this.toggleTab = this.toggleTab.bind(this);
-    this.onNewPasswordChange = this.onNewPasswordChange.bind(this);
-    this.onConfirmationPasswordChange = this.onConfirmationPasswordChange.bind(
-      this
-    );
-    this.onCurrentPasswordChanged = this.onCurrentPasswordChanged.bind(this);
-    this.onEmailChangeSubmit = this.onEmailChangeSubmit.bind(this);
-    this.onPasswordChangeSubmit = this.onPasswordChangeSubmit.bind(this);
   }
 
   toggleTab(e) {
-    if (e === 'mailChange') {
-      this.setState({
-        passwordError: undefined,
-        currentPassword: undefined,
-        newConfirmationPassword: undefined,
-        newPassword: undefined,
-        activeTab: e
-      });
-    } else if (e === 'passwordChange') {
-      this.setState({
-        newEmail: undefined,
-        confirmationEmail: undefined,
-        emailError: undefined,
-        activeTab: e
-      });
-    }
+    this.setState({
+      activeTab: e
+    });
   }
 
   onCloseModal() {
@@ -71,84 +36,17 @@ class UserSettingsModal extends Component {
     this.props.onClose();
   }
 
-  onNewEmailChange(e) {
-    this.setState({
-      newEmail: e.target.value
-    });
-  }
-  onConfirmationEmailChange(e) {
-    this.setState({
-      confirmationEmail: e.target.value
-    });
-  }
-
-  onNewPasswordChange(e) {
-    this.setState({
-      newPassword: e.target.value
-    });
-  }
-
-  onConfirmationPasswordChange(e) {
-    this.setState({
-      newConfirmationPassword: e.target.value
-    });
-  }
-
-  onCurrentPasswordChanged(e) {
-    this.setState({
-      currentPassword: e.target.value
-    });
-  }
-
-  onEmailChangeSubmit() {
-    if (!this.state.newEmail && !this.state.confirmationEmail) return;
-    if (this.state.newEmail !== this.state.confirmationEmail) {
-      this.setState({
-        emailError: 'E-mails do not match'
-      });
-    } else if (!validateEmail(this.state.newEmail)) {
-      this.setState({
-        emailError: 'Not a valid e-mail format'
-      });
-    } else {
-      changeUserMail(this.state.newEmail).then(data => window.alert(data));
-    }
-  }
-
-  onPasswordChangeSubmit() {
-    if (
-      !this.state.newPassword &&
-      !this.state.newConfirmationPassword &&
-      !this.state.currentPassword
-    ) {
-      return;
-    }
-    if (this.state.newPassword !== this.state.newConfirmationPassword) {
-      this.setState({
-        passwordError: 'Passwords do not match'
-      });
-    } else {
-      changeUserPassword(this.state.currentPassword, this.state.newPassword)
-        .then(data => window.alert(data))
-        .catch(err =>
-          this.setState({
-            passwordError: err.response.data
-          })
-        );
-    }
-  }
-
   render() {
     return (
       <Modal isOpen={this.props.isOpen}>
-        <ModalHeader>
-          <h2>User Settings</h2>
-        </ModalHeader>
+        <ModalHeader>User Settings</ModalHeader>
         <ModalBody>
           <Nav tabs>
             <NavItem style={{ cursor: 'pointer' }}>
               <NavLink
-                className={classnames({ active: this.state.activeTab === '1' })}
+                className={classnames({
+                  active: this.state.activeTab === 'mailChange'
+                })}
                 onClick={() => {
                   this.toggleTab('mailChange');
                 }}
@@ -158,7 +56,9 @@ class UserSettingsModal extends Component {
             </NavItem>
             <NavItem style={{ cursor: 'pointer' }}>
               <NavLink
-                className={classnames({ active: this.state.activeTab === '2' })}
+                className={classnames({
+                  active: this.state.activeTab === 'passwordChange'
+                })}
                 onClick={() => {
                   this.toggleTab('passwordChange');
                 }}
@@ -166,99 +66,28 @@ class UserSettingsModal extends Component {
                 Change Password
               </NavLink>
             </NavItem>
+            <NavItem style={{ cursor: 'pointer' }}>
+              <NavLink
+                className={classnames({
+                  active: this.state.activeTab === '2FA'
+                })}
+                onClick={() => {
+                  this.toggleTab('2FA');
+                }}
+              >
+                2FA
+              </NavLink>
+            </NavItem>
           </Nav>
           {this.state.activeTab === 'mailChange' ? (
-            <div>
-              <InputGroup>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>E-Mail</InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  placeholder="New e-mail"
-                  onChange={this.onNewEmailChange}
-                />
-              </InputGroup>
-              <InputGroup>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>E-Mail</InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  placeholder="Retype new e-mail"
-                  onChange={this.onConfirmationEmailChange}
-                />
-              </InputGroup>
-              <Button
-                color="primary"
-                className="m-1 mr-auto"
-                onClick={this.onEmailChangeSubmit}
-              >
-                Save new e-mail
-              </Button>
-              {this.state.emailError ? (
-                <div
-                  style={{
-                    display: 'inline',
-                    color: 'red',
-                    marginLeft: '16px'
-                  }}
-                >
-                  {this.state.emailError}
-                </div>
-              ) : null}
-            </div>
+            <MailSettings></MailSettings>
           ) : null}
 
           {this.state.activeTab === 'passwordChange' ? (
-            <div>
-              <InputGroup>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>Password</InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  type="password"
-                  placeholder="New password"
-                  onChange={this.onNewPasswordChange}
-                />
-              </InputGroup>
-              <InputGroup>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>Password</InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  type="password"
-                  placeholder="Retype new password"
-                  onChange={this.onConfirmationPasswordChange}
-                />
-              </InputGroup>
-              <InputGroup>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>Password</InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  type="password"
-                  placeholder="Current password"
-                  onChange={this.onCurrentPasswordChanged}
-                />
-              </InputGroup>
-              <Button
-                color="primary"
-                className="m-1 mr-auto"
-                onClick={this.onPasswordChangeSubmit}
-              >
-                Save new password
-              </Button>
-              {this.state.passwordError ? (
-                <div
-                  style={{
-                    display: 'inline',
-                    color: 'red',
-                    marginLeft: '16px'
-                  }}
-                >
-                  {this.state.passwordError}
-                </div>
-              ) : null}
-            </div>
+            <PasswordSettings></PasswordSettings>
+          ) : null}
+          {this.state.activeTab === '2FA' ? (
+            <TwoFaSettings></TwoFaSettings>
           ) : null}
         </ModalBody>
         <ModalFooter>
