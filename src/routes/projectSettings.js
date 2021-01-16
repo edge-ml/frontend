@@ -36,7 +36,7 @@ class ProjectSettings extends Component {
     this.onAddUser = this.onAddUser.bind(this);
     this.onNameChanged = this.onNameChanged.bind(this);
     this.onDeleteUser = this.onDeleteUser.bind(this);
-    this.onUserIDChange = this.onUserIDChange.bind(this);
+    this.onUserMailChange = this.onUserMailChange.bind(this);
     this.onSave = this.onSave.bind(this);
   }
 
@@ -101,7 +101,7 @@ class ProjectSettings extends Component {
 
   onAddUser(e) {
     var tmpProject = { ...this.state.project };
-    tmpProject.users.push({ _id: '', email: undefined });
+    tmpProject.users.push({ _id: undefined, email: '' });
     this.setState({
       project: tmpProject
     });
@@ -116,10 +116,10 @@ class ProjectSettings extends Component {
     }
   }
 
-  onUserIDChange(index, e) {
+  onUserMailChange(index, e) {
     e.preventDefault();
     const project = { ...this.state.project };
-    project.users[index]._id = e.target.value;
+    project.users[index].email = e.target.value;
     this.setState({
       project: project
     });
@@ -180,15 +180,15 @@ class ProjectSettings extends Component {
                   <td>
                     {this.state.originalUsers
                       .map(elm => elm._id)
-                      .includes(user._id) && user._id !== '' ? (
+                      .includes(user._id) && user._id !== undefined ? (
                       user.email
                     ) : (
                       <Input
                         type="text"
                         name="User ID"
-                        placeholder="Enter user_id"
-                        value={user._id}
-                        onChange={e => this.onUserIDChange(index, e)}
+                        value={user.email}
+                        placeholder="Enter user e-mail"
+                        onChange={e => this.onUserMailChange(index, e)}
                       />
                     )}
                   </td>

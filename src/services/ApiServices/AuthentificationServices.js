@@ -114,18 +114,23 @@ module.exports.reset2FA = () => {
   });
 };
 
-module.exports.getUserMail = userID => {
+module.exports.getUserMail = userIDs => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.MAIL,
-        [userID]
+        userIDs
       )
-    ).then(res => {
-      resolve(res.data[0]);
-    });
+    )
+      .then(res => {
+        resolve(res.data[0]);
+      })
+      .catch(err => {
+        console.log(err.response);
+        reject(err);
+      });
   });
 };
 
@@ -158,3 +163,40 @@ module.exports.changeUserPassword = (currentPassword, newPassword) => {
       .catch(err => reject(err));
   });
 };
+
+module.exports.getUserIds = userMails => {
+  return new Promise((resolve, reject) => {
+    const promises = userMails.map(elm => {
+      return axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.POST,
+          apiConsts.AUTH_URI,
+          apiConsts.AUTH_ENDPOINTS.ID,
+          { email: elm }
+        )
+      );
+    });
+    Promise.all(promises)
+      .then(data => {
+        resolve(data.map(elm => elm.data));
+      })
+      .catch(err => reject(err));
+  });
+};
+
+/*function getUserId(userMail) {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConst.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.ID,
+        { email: userMail }
+      )
+    )
+      .then((data) => {
+        resolve(data.data);
+      })
+      .catch(reject(err));
+  });
+}*/

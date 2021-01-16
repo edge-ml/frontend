@@ -79,7 +79,7 @@ class LoginPage extends Component {
           .then(mail => {
             this.props.onUserLoggedIn(accessToken, refreshToken, mail.email);
           })
-          .catch(err => {});
+          .catch(err => console.log(err));
         this.setState({
           isLoggedIn: true
         });
@@ -161,25 +161,27 @@ class LoginPage extends Component {
       .then(data => {
         const decoded = jwt_decode(data.access_token);
         setToken(data.access_token, data.refresh_token);
-        getUserMail([decoded.id]).then(mail => {
-          if (!data.twoFactorEnabled) {
-            this.props.onUserLoggedIn(
-              data.access_token,
-              data.refresh_token,
-              mail.email
-            );
-            this.setState({
-              isLoggedIn: true,
-              buttonDisabled: false,
-              password: '',
-              userMail: ''
-            });
-          } else {
-            this.setState({
-              show2FA: true
-            });
-          }
-        });
+        getUserMail([decoded.id])
+          .then(mail => {
+            if (!data.twoFactorEnabled) {
+              this.props.onUserLoggedIn(
+                data.access_token,
+                data.refresh_token,
+                mail.email
+              );
+              this.setState({
+                isLoggedIn: true,
+                buttonDisabled: false,
+                password: '',
+                userMail: ''
+              });
+            } else {
+              this.setState({
+                show2FA: true
+              });
+            }
+          })
+          .catch(err => console.log(err.response));
       })
       .catch(err => {
         this.onLoginError();

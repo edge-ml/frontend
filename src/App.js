@@ -130,25 +130,29 @@ class App extends Component {
   }
 
   refreshProjects() {
-    getProjects().then(projects => {
-      if (projects.length === 0) {
+    getProjects()
+      .then(projects => {
+        if (projects.length === 0) {
+          this.setState({
+            projects: []
+          });
+          return;
+        }
+        var currentProject = projects.findIndex(
+          elm => elm._id === getProject()
+        );
+        if (currentProject === -1) {
+          currentProject = 0;
+          setProject(projects[0]._id);
+        } else {
+          setProject(projects[currentProject]._id);
+        }
         this.setState({
-          projects: []
+          projects: projects,
+          currentProject: currentProject
         });
-        return;
-      }
-      var currentProject = projects.findIndex(elm => elm._id === getProject());
-      if (currentProject === -1) {
-        currentProject = 0;
-        setProject(projects[0]._id);
-      } else {
-        setProject(projects[currentProject]._id);
-      }
-      this.setState({
-        projects: projects,
-        currentProject: currentProject
-      });
-    });
+      })
+      .catch(err => console.log(err));
   }
 
   onUserLoggedIn(accessToken, refreshToken, userMail) {

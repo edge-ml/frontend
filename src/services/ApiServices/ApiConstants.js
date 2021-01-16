@@ -27,7 +27,8 @@ module.exports = {
     RESET2FA: '2fa/reset',
     MAIL: 'mail',
     CHANGE_MAIL: 'changeMail',
-    CHANGE_PASSWORD: 'changePassword'
+    CHANGE_PASSWORD: 'changePassword',
+    ID: 'id'
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',
