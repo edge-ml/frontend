@@ -37,6 +37,12 @@ class ExperimentsPage extends Component {
     this.initComponent();
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.location.pathname !== this.props.location.pathname) {
+      this.initComponent();
+    }
+  }
+
   initComponent() {
     subscribeLabelingsAndLabels()
       .then(result =>
@@ -66,7 +72,6 @@ class ExperimentsPage extends Component {
       selectedExperimentId: experiments[0] ? experiments[0]['_id'] : undefined,
       isReady: true
     });
-
     if (this.props.location.pathname === '/experiments/new') {
       this.onModalAddExperiment();
     } else {

@@ -73,7 +73,9 @@ class ProjectSettings extends Component {
   }
 
   onSave() {
-    updateProject(this.state.project).then(data => console.log(data));
+    updateProject(this.state.project).then(data =>
+      this.props.onProjectsChanged(data)
+    );
   }
 
   onDeleteUser(user) {

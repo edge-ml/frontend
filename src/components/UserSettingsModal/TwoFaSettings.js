@@ -30,7 +30,7 @@ class TwoFaSettings extends Component {
   }
 
   componentDidMount() {
-    init2FA(qrCode => {
+    init2FA().then(qrCode => {
       this.setState({
         qrCode: qrCode
       });

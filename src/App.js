@@ -75,7 +75,7 @@ class App extends Component {
     this.onProjectClick = this.onProjectClick.bind(this);
     this.onProjectEditModal = this.onProjectEditModal.bind(this);
     this.onProjectModalClose = this.onProjectModalClose.bind(this);
-    this.onProjectChanged = this.onProjectChanged.bind(this);
+    this.onProjectsChanged = this.onProjectsChanged.bind(this);
     this.refreshProjects = this.refreshProjects.bind(this);
     this.toggleUserSettingsModal = this.toggleUserSettingsModal.bind(this);
     this.onUserLoggedIn = this.onUserLoggedIn.bind(this);
@@ -87,7 +87,7 @@ class App extends Component {
     });
   }
 
-  onProjectChanged(projects) {
+  onProjectsChanged(projects) {
     if (projects.length !== 0) {
       setProject(projects[0]._id);
     }
@@ -251,7 +251,7 @@ class App extends Component {
           isOpen={this.state.projectEditModalOpen}
           isNewProject={this.state.projectEditModalNew}
           onClose={this.onProjectModalClose}
-          projectChanged={this.onProjectChanged}
+          projectChanged={this.onProjectsChanged}
         ></EditProjectModal>
         <Route
           exact
@@ -464,7 +464,7 @@ class App extends Component {
                     render={props => (
                       <ProjectSettings
                         project={this.state.projects[this.state.currentProject]}
-                        projectChanged={this.onProjectChanged}
+                        onProjectsChanged={this.onProjectsChanged}
                       ></ProjectSettings>
                     )}
                   />

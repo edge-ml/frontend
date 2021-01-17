@@ -84,7 +84,7 @@ class RegisterPage extends Component {
           });
         })
         .catch(err => {
-          console.log(err);
+          console.log(err.response);
           this.onError(err.response.data.error);
         });
     }

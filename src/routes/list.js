@@ -65,7 +65,6 @@ class ListPage extends Component {
     this.setState({
       modalID: null,
       modal: false,
-      rows: this.state.rows,
       datasets: datasets,
       ready: true,
       isCreateNewDatasetOpen: false
@@ -253,7 +252,6 @@ class ListPage extends Component {
           <CreateNewDatasetModal
             isOpen={this.state.isCreateNewDatasetOpen}
             onCloseModal={this.toggleCreateNewDatasetModal}
-            onDatasetsChanged={this.onDatasetsChanged}
             onDatasetComplete={this.onDatasetsChanged}
           />
         </Loader>

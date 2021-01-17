@@ -105,11 +105,11 @@ module.exports.createDataset = dataset => {
         dataset
       )
     )
-      .then(
+      .then(() => {
         this.getDatasets().then(datasets => {
           resolve(datasets);
-        })
-      )
+        });
+      })
       .catch(err => reject(err.response));
   });
 };
