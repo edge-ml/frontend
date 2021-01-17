@@ -2,6 +2,8 @@ const getAccessToken = require('../LocalStorageService').getAccessToken;
 const apiConsts = require('./ApiConstants');
 const ax = require('axios');
 const axios = ax.create();
+const getUserIds = require('../ApiServices/AuthentificationServices')
+  .getUserIds;
 
 function getUserMails(project) {
   const userList = [project.admin, ...project.users];
@@ -68,35 +70,37 @@ module.exports.createProject = project => {
           resolve(data.data);
         });
       })
-
       .catch(err => reject(err.response));
   });
 };
 
 module.exports.updateProject = project => {
-  console.log(project);
   return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.PUT,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}`,
-        project
+    const tmpProject = project;
+    getUserIds(project.users.map(elm => elm.email)).then(userData => {
+      tmpProject.users = userData;
+      axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.PUT,
+          apiConsts.API_URI,
+          apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}`,
+          project
+        )
       )
-    )
-      .then(() => {
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.GET,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.PROJECTS
-          )
-        ).then(data => {
-          resolve(data.data);
-        });
-      })
+        .then(() => {
+          axios(
+            apiConsts.generateApiRequest(
+              apiConsts.HTTP_METHODS.GET,
+              apiConsts.API_URI,
+              apiConsts.API_ENDPOINTS.PROJECTS
+            )
+          ).then(data => {
+            resolve(data.data);
+          });
+        })
 
-      .catch(err => reject(err.response));
+        .catch(err => reject(err.response));
+    });
   });
 };
 
