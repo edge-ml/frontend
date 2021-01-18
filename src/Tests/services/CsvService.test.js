@@ -73,7 +73,7 @@ const twoTestFilesTimeSeries = {
   ]
 };
 
-describe('Tests for generateTimeSeries', () => {
+describe.skip('Tests for generateTimeSeries', () => {
   it('Correct data from single file', () => {
     expect(
       generateTimeSeries(

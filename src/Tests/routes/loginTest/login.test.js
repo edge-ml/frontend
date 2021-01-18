@@ -1,5 +1,5 @@
 import AuthWall from '../../../routes/login';
-import { configure, mount } from 'enzyme';
+import { configure, mount, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import {
@@ -9,7 +9,8 @@ import {
 
 import {
   loginUser,
-  verify2FA
+  verify2FA,
+  getUserMail
 } from '../../../services/ApiServices/AuthentificationServices';
 
 import { jwtValidForever, jwtNeverValid } from '../../fakeData/fakeJwtTokens';
@@ -27,7 +28,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe('Login tests', () => {
+describe('Success cases', () => {
   it('Explorer Login rendering', () => {
     const wrapper = mount(<AuthWall />);
     const header = 'Explorer Login';
@@ -35,16 +36,12 @@ describe('Login tests', () => {
   });
 
   it('Login with 2FA disabled', async () => {
-    const fakeLoginData = {
-      access_token: 'fakeAccessToken',
-      refresh_token: 'fakeRefreshToken',
-      twoFactorEnabled: false,
-      twoFactorVerified: false
-    };
-    loginUser.mockReturnValue(Promise.resolve(fakeLoginData));
-
+    loginUser.mockReturnValue(
+      Promise.resolve({ access_token: jwtValidForever })
+    );
+    getUserMail.mockReturnValue(Promise.resolve('fakeUserMail@teco.edu'));
     const result = mount(
-      <AuthWall setUser={() => {}}>
+      <AuthWall onUserLoggedIn={() => {}}>
         <h1>WebsiteContent</h1>
       </AuthWall>
     );
@@ -66,17 +63,16 @@ describe('Login tests', () => {
   });
 
   it('Login with 2FA enabled', async () => {
-    const fakeLoginData = {
-      access_token: 'fakeAccessToken',
-      refresh_token: 'fakeRefreshToken',
-      twoFactorEnabled: true,
-      twoFactorVerified: false
-    };
-
-    loginUser.mockReturnValue(Promise.resolve(fakeLoginData));
+    loginUser.mockReturnValue(
+      Promise.resolve({
+        access_token: jwtValidForever,
+        twoFactorEnabled: true,
+        twoFactorVerified: false
+      })
+    );
 
     const result = mount(
-      <AuthWall setUser={() => {}}>
+      <AuthWall onUserLoggedIn={() => {}}>
         <h1>WebsiteContent</h1>
       </AuthWall>
     );
@@ -101,12 +97,21 @@ describe('Login tests', () => {
 
   it('Login with 2FA enabled and token input', async () => {
     loginUser.mockReturnValue(
-      Promise.resolve(login_twoFAEnabled_twoFAVerified)
+      Promise.resolve({
+        access_token: jwtValidForever,
+        twoFactorEnabled: true,
+        twoFactorVerified: false
+      })
     );
-    verify2FA.mockReturnValue(Promise.resolve(loginReturn_twoFAVerified));
+    verify2FA.mockReturnValue(
+      Promise.resolve({
+        access_token: jwtValidForever,
+        isTwoFactorAuthenticated: true
+      })
+    );
 
     const result = mount(
-      <AuthWall setUser={() => {}}>
+      <AuthWall onUserLoggedIn={() => {}}>
         <h1>WebsiteContent</h1>
       </AuthWall>
     );
@@ -131,66 +136,76 @@ describe('Login tests', () => {
     expect(result.html().includes('<h1>WebsiteContent</h1>')).toEqual(true);
   });
 
-  it('Clear input fields after entering wrong login information', async () => {
-    const loginError = {
-      error: 'Password not correct!'
-    };
-
-    loginUser.mockReturnValue(Promise.reject(loginError));
-
-    const result = mount(
-      <AuthWall setUser={() => {}}>
-        <h1>WebsiteContent</h1>
-      </AuthWall>
-    );
-
-    jest.useFakeTimers();
-    await result
-      .find('#email')
-      .first()
-      .simulate('change', { target: { value: 'someMail@teco.edu' } });
-    await result
-      .find('#password')
-      .first()
-      .simulate('change', { target: { value: 'wrongPassword' } });
-    expect(result.state().usermail).toBe('someMail@teco.edu');
-    expect(result.state().password).toBe('wrongPassword');
-    await result
-      .find('#login-button')
-      .first()
-      .simulate('click');
-    //Don't know why this is necessary
-    await flushPromises();
-    jest.runAllTimers();
-    await flushPromises();
-    expect(result.state().usermail).toBe('someMail@teco.edu');
-    expect(result.state().password).toBe('');
-    expect(
-      result
-        .find('#password')
-        .first()
-        .text()
-    ).toBe('');
-
-    expect(result.state().authenticationHandlers.didLoginFail).toBe(false);
-  });
-});
-
-describe('Login with data from localstorage', () => {
   it('Login with token from localstorage', () => {
     getAccessToken.mockReturnValue(jwtValidForever);
-    const wrapper = mount(
-      <AuthWall setUser={() => {}}>WebsiteContent</AuthWall>
+    const result = mount(
+      <AuthWall onUserLoggedIn={() => {}}>WebsiteContent</AuthWall>
     );
-    expect(wrapper.html()).toBe('WebsiteContent');
+    expect(result.html()).toBe('WebsiteContent');
     expect(getAccessToken).toHaveBeenCalledTimes(1);
     expect(loginUser).not.toBeCalled();
   });
 
+  it('Login with 2FA enabled but click on cancel instead', async () => {
+    loginUser.mockReturnValue(
+      Promise.resolve({
+        access_token: jwtValidForever,
+        twoFactorEnabled: false,
+        twoFactorVerified: false
+      })
+    );
+    getAccessToken.mockReturnValue(jwtNeverValid);
+    const result = mount(
+      <AuthWall onUserLoggedIn={() => {}}>
+        <h1>WebsiteContent</h1>
+      </AuthWall>
+    );
+    result
+      .find('#email')
+      .first()
+      .simulate('change', { target: { value: 'no1@teco.edu' } });
+    result
+      .find('#password')
+      .first()
+      .simulate('change', { target: { value: 'admin' } });
+    expect(
+      result
+        .find('#email')
+        .first()
+        .props().value
+    ).toEqual('no1@teco.edu');
+    expect(
+      result
+        .find('#password')
+        .first()
+        .props().value
+    ).toEqual('admin');
+    result
+      .find('#loginCancelBtn')
+      .first()
+      .simulate('click');
+    await tick();
+    result.update();
+    expect(
+      result
+        .find('#email')
+        .first()
+        .props().value
+    ).toEqual('');
+    expect(
+      result
+        .find('#password')
+        .first()
+        .props().value
+    ).toEqual('');
+  });
+});
+
+describe('Failure cases', () => {
   it('Login with expired token from localstorage', () => {
     getAccessToken.mockReturnValue(jwtNeverValid);
     const wrapper = mount(
-      <AuthWall setUser={() => {}}>WebsiteContent</AuthWall>
+      <AuthWall onUserLoggedIn={() => {}}>WebsiteContent</AuthWall>
     );
     expect(wrapper.html()).not.toBe('WebsiteContent');
     expect(getAccessToken).toHaveBeenCalledTimes(1);
