@@ -61,6 +61,7 @@ class App extends Component {
       projectEditModalNew: false,
       userSettingsModalOpen: false
     };
+    this.baseState = JSON.parse(JSON.stringify(this.state));
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);
@@ -186,12 +187,7 @@ class App extends Component {
     if (didSucceed) {
       clearToken();
       this.props.history.push('/');
-      this.setState({
-        user: {
-          access_token: undefined
-        },
-        isLoggedIn: false
-      });
+      this.setState(this.baseState);
     }
   }
 

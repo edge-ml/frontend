@@ -36,12 +36,14 @@ class LoginPage extends Component {
     this.state = {
       userMail: '',
       password: '',
+      token: '',
       buttonDisabled: false,
-      isLoggedIn: props.isLoggedIn,
+      isLoggedIn: false,
       time: undefined,
       loginFailed: false,
       show2FA: false
     };
+    this.baseState = JSON.parse(JSON.stringify(this.state));
     this.emailChange = this.emailChange.bind(this);
     this.passChange = this.passChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -53,14 +55,10 @@ class LoginPage extends Component {
     this.onLoginError = this.onLoginError.bind(this);
   }
 
-  componentWillReceiveProps(props) {
-    this.setState(
-      update(this.state, {
-        isLoggedIn: {
-          $set: props.isLoggedIn
-        }
-      })
-    );
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.isLoggedIn !== this.props.isLoggedIn) {
+      this.setState(this.baseState);
+    }
   }
 
   checkLoggedInStatus() {
@@ -141,23 +139,10 @@ class LoginPage extends Component {
   }
 
   onLoginCanceled() {
-    this.state.authenticationHandlers.onCancelLogin();
-    var tmpAuth = this.state.authenticationHandlers;
-    var tmp2FA = this.state.twoFactorAuthentication;
-    tmpAuth.didLoginFail = false;
-    tmp2FA.qrCode = undefined;
-    tmp2FA.token = undefined;
-    tmp2FA.tokenFailed = false;
-    this.setState({
-      authenticationHandlers: tmpAuth,
-      twoFactorAuthentication: tmp2FA,
-      userMail: '',
-      password: ''
-    });
+    this.setState(this.baseState);
   }
 
   submit() {
-    const user = undefined;
     this.setState({ buttonDisabled: true });
     loginUser(this.state.userMail, this.state.password)
       .then(data => {
@@ -184,9 +169,14 @@ class LoginPage extends Component {
               });
             }
           })
-          .catch(err => console.log(err.response));
+          .catch(err => {
+            console.log('Error');
+            console.log(err.response);
+          });
       })
       .catch(err => {
+        console.log('Error');
+        console.log(err);
         this.onLoginError();
       });
   }
@@ -346,6 +336,7 @@ class LoginPage extends Component {
                       onChange={this.onTokenChanged}
                     />
                     <Button
+                      id="loginCancelBtn"
                       block
                       onClick={this.onLoginCanceled}
                       className={'mt-2'}
