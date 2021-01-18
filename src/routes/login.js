@@ -58,9 +58,6 @@ class LoginPage extends Component {
       update(this.state, {
         isLoggedIn: {
           $set: props.isLoggedIn
-        },
-        isTwoFactorAuthenticated: {
-          $set: props.isTwoFactorAuthenticated
         }
       })
     );
@@ -77,7 +74,12 @@ class LoginPage extends Component {
       ) {
         getUserMail([decoded.id])
           .then(mail => {
-            this.props.onUserLoggedIn(accessToken, refreshToken, mail.email);
+            this.props.onUserLoggedIn(
+              accessToken,
+              refreshToken,
+              mail.email,
+              decoded.twoFactorEnabled
+            );
           })
           .catch(err => console.log(err));
         this.setState({
@@ -167,7 +169,8 @@ class LoginPage extends Component {
               this.props.onUserLoggedIn(
                 data.access_token,
                 data.refresh_token,
-                mail.email
+                mail.email,
+                decoded.twoFactorEnabled
               );
               this.setState({
                 isLoggedIn: true,

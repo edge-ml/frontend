@@ -6,7 +6,6 @@ import {
   Nav,
   NavItem,
   Button,
-  Form,
   Collapse,
   NavbarToggler,
   DropdownItem,
@@ -48,7 +47,7 @@ class App extends Component {
     this.state = {
       userMail: undefined,
       isLoggedIn: false,
-      isTwoFactorAuthenticated: false,
+      twoFAEnabled: false,
       navbarState: {
         isOpen: false
       },
@@ -155,18 +154,13 @@ class App extends Component {
       .catch(err => console.log(err));
   }
 
-  onUserLoggedIn(accessToken, refreshToken, userMail) {
+  onUserLoggedIn(accessToken, refreshToken, userMail, twoFAEnabled) {
     setToken(accessToken, refreshToken);
-    if (userMail) {
-      this.setState({
-        userMail: userMail,
-        isLoggedIn: true
-      });
-    } else {
-      this.setState({
-        isLoggedIn: true
-      });
-    }
+    this.setState({
+      userMail: userMail ? userMail : this.state.userMail,
+      twoFAEnabled: twoFAEnabled ? twoFAEnabled : this.state.twoFAEnabled,
+      isLoggedIn: true
+    });
     this.refreshProjects();
   }
 
@@ -196,8 +190,7 @@ class App extends Component {
         user: {
           access_token: undefined
         },
-        isLoggedIn: false,
-        isTwoFactorAuthenticated: false
+        isLoggedIn: false
       });
     }
   }
@@ -261,7 +254,6 @@ class App extends Component {
         {this.props.history.location.pathname !== '/register' ? (
           <AuthWall
             isLoggedIn={this.state.isLoggedIn}
-            isTwoFactorAuthenticated={this.state.isTwoFactorAuthenticated}
             onLogin={this.onLogin}
             onCancelLogin={this.logoutHandler}
             setAccessToken={this.setAccessToken}
@@ -409,6 +401,8 @@ class App extends Component {
                         <UserSettingsModal
                           isOpen={this.state.userSettingsModalOpen}
                           onClose={this.toggleUserSettingsModal}
+                          twoFAEnabled={this.state.twoFAEnabled}
+                          onLogout={this.onLogout}
                         ></UserSettingsModal>
                       </NavItem>
                     </Nav>

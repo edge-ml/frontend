@@ -87,7 +87,10 @@ class UserSettingsModal extends Component {
             <PasswordSettings></PasswordSettings>
           ) : null}
           {this.state.activeTab === '2FA' ? (
-            <TwoFaSettings></TwoFaSettings>
+            <TwoFaSettings
+              twoFAEnabled={this.props.twoFAEnabled}
+              onLogout={this.onLogout}
+            ></TwoFaSettings>
           ) : null}
         </ModalBody>
         <ModalFooter>
