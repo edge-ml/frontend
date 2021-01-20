@@ -137,7 +137,7 @@ class ProjectSettings extends Component {
     var doDelete = window.confirm('Do you want to delete this project?');
     if (doDelete) {
       deleteProject(this.state.project).then(data =>
-        this.props.projectChanged(data)
+        this.props.projectsChanged(data)
       );
     }
   }

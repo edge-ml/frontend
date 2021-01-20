@@ -470,7 +470,7 @@ class App extends Component {
                     render={props => (
                       <ProjectSettings
                         project={this.state.projects[this.state.currentProject]}
-                        onProjectsChanged={this.onProjectsChanged}
+                        projectsChanged={this.onProjectsChanged}
                       ></ProjectSettings>
                     )}
                   />
