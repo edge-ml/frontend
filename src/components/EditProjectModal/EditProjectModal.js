@@ -30,6 +30,16 @@ class EditProjectModal extends Component {
     this.onAddUser = this.onAddUser.bind(this);
     this.onDeleteUser = this.onDeleteUser.bind(this);
     this.onCancel = this.onCancel.bind(this);
+    this.onUserMailChange = this.onUserMailChange.bind(this);
+  }
+
+  onUserMailChange(e, index) {
+    e.preventDefault();
+    const project = { ...this.state.project };
+    project.users[index].email = e.target.value;
+    this.setState({
+      project: project
+    });
   }
 
   onDeleteUser(user) {
@@ -48,6 +58,7 @@ class EditProjectModal extends Component {
   }
 
   onSave() {
+    console.log(this.state.project);
     if (this.props.isNewProject) {
       createProject(this.state.project).then(data => {
         this.props.projectChanged(data);
@@ -89,7 +100,7 @@ class EditProjectModal extends Component {
 
   onAddUser() {
     var tmpProject = { ...this.state.project };
-    tmpProject.users.push('');
+    tmpProject.users.push({ _id: undefined, email: '' });
     this.setState({
       project: tmpProject
     });
@@ -164,7 +175,8 @@ class EditProjectModal extends Component {
                         <Input
                           type="text"
                           name="User ID"
-                          placeholder="Enter user_id"
+                          placeholder="Enter user e-mail"
+                          onChange={e => this.onUserMailChange(e, index)}
                         />
                       )}
                     </td>

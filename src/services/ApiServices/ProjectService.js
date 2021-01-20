@@ -51,26 +51,22 @@ module.exports.getProjects = () => {
 
 module.exports.createProject = project => {
   return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.POST,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PROJECTS,
-        project
+    const tmpProject = project;
+    getUserIds(project.users.map(elm => elm.email)).then(userData => {
+      tmpProject.users = userData;
+      axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.POST,
+          apiConsts.API_URI,
+          apiConsts.API_ENDPOINTS.PROJECTS,
+          project
+        )
       )
-    )
-      .then(() => {
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.GET,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.PROJECTS
-          )
-        ).then(data => {
-          resolve(data.data);
-        });
-      })
-      .catch(err => reject(err.response));
+        .then(() => {
+          this.getProjects().then(data => resolve(data));
+        })
+        .catch(err => reject(err.response));
+    });
   });
 };
 
@@ -88,17 +84,8 @@ module.exports.updateProject = project => {
         )
       )
         .then(() => {
-          axios(
-            apiConsts.generateApiRequest(
-              apiConsts.HTTP_METHODS.GET,
-              apiConsts.API_URI,
-              apiConsts.API_ENDPOINTS.PROJECTS
-            )
-          ).then(data => {
-            resolve(data.data);
-          });
+          this.getProjects().then(data => resolve(data));
         })
-
         .catch(err => reject(err.response));
     });
   });
@@ -114,17 +101,8 @@ module.exports.deleteProject = project => {
       )
     )
       .then(() => {
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.GET,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.PROJECTS
-          )
-        ).then(data => {
-          resolve(data.data);
-        });
+        this.getProjects().then(data => resolve(data));
       })
-
       .catch(err => reject(err.response));
   });
 };

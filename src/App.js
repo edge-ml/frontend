@@ -266,7 +266,7 @@ class App extends Component {
             on2FA={this.on2FA}
           >
             {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
-            {this.state.isLoggedIn && this.state.projects ? (
+            {this.state.isLoggedIn && this.state.projects && getProject() ? (
               <div>
                 <Navbar color="light" light expand="md">
                   <NavbarBrand style={{ marginRight: '8px' }}>

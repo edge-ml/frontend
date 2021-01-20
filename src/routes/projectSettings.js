@@ -22,7 +22,8 @@ class ProjectSettings extends Component {
       this.state = {
         project: objectCopy,
         originalProject: objectCopy,
-        originalUsers: objectCopy.users
+        originalUsers: objectCopy.users,
+        usersToDelete: []
       };
     } else {
       this.state = {
@@ -38,6 +39,19 @@ class ProjectSettings extends Component {
     this.onDeleteUser = this.onDeleteUser.bind(this);
     this.onUserMailChange = this.onUserMailChange.bind(this);
     this.onSave = this.onSave.bind(this);
+    this.toggleCheck = this.toggleCheck.bind(this);
+  }
+
+  toggleCheck(e, user) {
+    if (!this.state.usersToDelete.includes(user)) {
+      this.setState({
+        usersToDelete: [...this.state.usersToDelete, user]
+      });
+    } else {
+      this.setState({
+        usersToDelete: this.state.usersToDelete.filter(elm => elm !== user)
+      });
+    }
   }
 
   initState(project, isNewProject) {
@@ -53,6 +67,16 @@ class ProjectSettings extends Component {
       this.setState({
         project: newProject,
         originalUsers: project.users
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (
+      JSON.stringify(prevProps.project) !== JSON.stringify(this.props.project)
+    ) {
+      this.setState({
+        project: this.props.project
       });
     }
   }
@@ -73,23 +97,23 @@ class ProjectSettings extends Component {
   }
 
   onSave() {
-    updateProject(this.state.project).then(data =>
-      this.props.onProjectsChanged(data)
+    const tmpUsers = this.state.project.users.filter(
+      elm => !this.state.usersToDelete.includes(elm)
     );
+    updateProject({ ...this.state.project, users: tmpUsers }).then(data => {
+      this.props.onProjectsChanged(data);
+    });
   }
 
-  onDeleteUser(user) {
-    var idx = this.state.originalUsers.findIndex(elm => elm === user);
-    var tmpOriginalUsers = [...this.state.originalUsers];
-    if (idx !== -1) {
-      tmpOriginalUsers.splice(idx, 1);
-    }
-    var tmpProject = { ...this.state.project };
-    var idxPrj = tmpProject.users.findIndex(elm => elm === user);
-    tmpProject.users.splice(idxPrj, 1);
+  onDeleteUser(index) {
+    const tmpUsers = this.state.project.users.filter(
+      (elm, idx) => idx !== index
+    );
     this.setState({
-      originalUsers: tmpOriginalUsers,
-      project: tmpProject
+      project: {
+        ...this.state.project,
+        users: tmpUsers
+      }
     });
   }
 
@@ -110,7 +134,7 @@ class ProjectSettings extends Component {
   }
 
   onDeleteProject() {
-    var doDelete = window.confirm('Do you want to delete this dataset?');
+    var doDelete = window.confirm('Do you want to delete this project?');
     if (doDelete) {
       deleteProject(this.state.project).then(data =>
         this.props.projectChanged(data)
@@ -169,20 +193,30 @@ class ProjectSettings extends Component {
         <Table striped>
           <thead>
             <tr>
-              <th>#</th>
+              <th>Delete</th>
               <th>User</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {this.state.project.users.map((user, index) => {
+              const oldUser =
+                this.state.originalUsers
+                  .map(elm => elm._id)
+                  .includes(user._id) && user._id !== undefined;
               return (
-                <tr key={user._id + index}>
-                  <th scope="row">{index}</th>
+                <tr>
+                  <td className="datasets-column">
+                    <Input
+                      style={{ visibility: !oldUser ? 'hidden' : '' }}
+                      className="datasets-check"
+                      type="checkbox"
+                      checked={this.state.usersToDelete.includes(user)}
+                      onChange={e => this.toggleCheck(e, user)}
+                    />
+                  </td>
                   <td>
-                    {this.state.originalUsers
-                      .map(elm => elm._id)
-                      .includes(user._id) && user._id !== undefined ? (
+                    {oldUser ? (
                       user.email
                     ) : (
                       <Input
@@ -196,11 +230,12 @@ class ProjectSettings extends Component {
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     <Button
+                      style={{ visibility: oldUser ? 'hidden' : '' }}
                       className="btn-sm"
-                      color="danger"
-                      onClick={() => this.onDeleteUser(user._id)}
+                      color="secondary"
+                      onClick={() => this.onDeleteUser(index)}
                     >
-                      Delete
+                      Remove
                     </Button>
                   </td>
                 </tr>
@@ -216,9 +251,6 @@ class ProjectSettings extends Component {
           <Button color="primary" className="m-1 mr-auto" onClick={this.onSave}>
             Save
           </Button>{' '}
-          <Button color="secondary" className="m-1" onClick={this.onCancel}>
-            Cancel
-          </Button>
         </div>
       </div>
     );
