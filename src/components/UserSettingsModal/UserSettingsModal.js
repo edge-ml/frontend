@@ -90,12 +90,13 @@ class UserSettingsModal extends Component {
             <TwoFaSettings
               twoFAEnabled={this.props.twoFAEnabled}
               onLogout={this.onLogout}
+              enable2FA={this.props.enable2FA}
             ></TwoFaSettings>
           ) : null}
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" className="m-1" onClick={this.onCloseModal}>
-            Cancel
+            Close Settings
           </Button>
         </ModalFooter>
       </Modal>

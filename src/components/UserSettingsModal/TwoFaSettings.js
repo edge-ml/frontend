@@ -22,11 +22,11 @@ class TwoFaSettings extends Component {
     else if (e.target.value.length === 6) {
       verify2FA(e.target.value)
         .then(data => {
-          window.alert('2FA has been activated');
+          this.props.enable2FA();
         })
         .catch(err => {
           console.log(err);
-          window.alert(err.data.error);
+          window.alert(err);
         });
     }
   }
@@ -79,7 +79,7 @@ class TwoFaSettings extends Component {
           <div style={{ marginTop: '8px' }}>
             <Row>
               <Col>
-                <h5 className="text-center">2FA is already activated</h5>
+                <h5 className="text-center">2FA is activated</h5>
               </Col>
             </Row>
             <Row>

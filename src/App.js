@@ -79,6 +79,13 @@ class App extends Component {
     this.refreshProjects = this.refreshProjects.bind(this);
     this.toggleUserSettingsModal = this.toggleUserSettingsModal.bind(this);
     this.onUserLoggedIn = this.onUserLoggedIn.bind(this);
+    this.enable2FA = this.enable2FA.bind(this);
+  }
+
+  enable2FA() {
+    this.setState({
+      twoFAEnabled: true
+    });
   }
 
   toggleUserSettingsModal() {
@@ -407,6 +414,7 @@ class App extends Component {
                           onClose={this.toggleUserSettingsModal}
                           twoFAEnabled={this.state.twoFAEnabled}
                           onLogout={this.onLogout}
+                          enable2FA={this.enable2FA}
                         ></UserSettingsModal>
                       </NavItem>
                     </Nav>
