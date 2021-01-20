@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { getProject } from '../../services/LocalStorageService';
 import NoProjectPage from './../NoProjectPage/NoProjectPage';
 
 class ProjectRefresh extends Component {

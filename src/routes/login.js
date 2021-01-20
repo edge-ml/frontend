@@ -57,7 +57,9 @@ class LoginPage extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.isLoggedIn !== this.props.isLoggedIn) {
-      this.setState(this.baseState);
+      const tmpBase = this.baseState;
+      tmpBase.isLoggedIn = this.props.isLoggedIn;
+      this.setState(tmpBase);
     }
   }
 

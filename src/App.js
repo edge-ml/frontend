@@ -278,20 +278,6 @@ class App extends Component {
                       ></NavItem>
                       <NavItem>
                         <div style={{ display: 'flex', marginLeft: '8px' }}>
-                          <div style={{ display: 'block', margin: 'auto' }}>
-                            <FontAwesomeIcon
-                              onClick={() => this.onProjectEditModal(true)}
-                              style={{
-                                color: '#8b8d8f',
-                                float: 'left',
-                                margin: 'auto',
-                                cursor: 'pointer'
-                              }}
-                              icon={faPlus}
-                              className="mr-2 fa-s"
-                            />
-                          </div>
-
                           <Dropdown
                             className="navbar-dropdown"
                             style={{ float: 'right' }}
@@ -332,14 +318,23 @@ class App extends Component {
                               </DropdownMenu>
                             )}
                           </Dropdown>
+                          <div style={{ display: 'block', margin: 'auto' }}>
+                            <FontAwesomeIcon
+                              onClick={() => this.onProjectEditModal(true)}
+                              style={{
+                                color: '#8b8d8f',
+                                float: 'left',
+                                margin: 'auto',
+                                cursor: 'pointer'
+                              }}
+                              icon={faPlus}
+                              className="mr-2 fa-s"
+                            />
+                          </div>
                         </div>
                       </NavItem>
                     </Nav>
-                    <Nav
-                      navbar
-                      className="ml-auto"
-                      style={{ alignItems: 'center' }}
-                    >
+                    <Nav navbar className="ml-auto">
                       <NavItem>
                         <Link className="nav-link" to="/list">
                           Datasets
@@ -360,7 +355,20 @@ class App extends Component {
                           Settings
                         </Link>
                       </NavItem>
-                      <NavItem style={{ paddingLeft: '8px' }}>
+                      <NavItem
+                        style={{
+                          borderRight: '1px solid',
+                          borderColor: 'gray',
+                          marginRight: '8px',
+                          marginLeft: '8px'
+                        }}
+                      >
+                        {' '}
+                      </NavItem>
+                      <NavItem
+                        className="my-auto"
+                        style={{ paddingLeft: '8px' }}
+                      >
                         <CustomDropDownMenu
                           content={
                             <FontAwesomeIcon
