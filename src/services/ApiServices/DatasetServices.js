@@ -113,3 +113,25 @@ module.exports.createDataset = dataset => {
       .catch(err => reject(err.response));
   });
 };
+
+module.exports.createDatasets = datasets => {
+  return new Promise((resolve, reject) => {
+    const promises = datasets.map(dataset =>
+      axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.POST,
+          apiConsts.API_URI,
+          apiConsts.API_ENDPOINTS.DATASETS,
+          dataset
+        )
+      )
+    );
+    Promise.all(promises)
+      .then(() => {
+        this.getDatasets().then(datasets => {
+          resolve(datasets);
+        });
+      })
+      .catch(err => reject(err.response));
+  });
+};

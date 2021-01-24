@@ -144,3 +144,5 @@ export const getServerTime = () => {
       .catch(err => reject(err));
   });
 };
+
+export const isNumber = val => /^\d+$/.test(val);

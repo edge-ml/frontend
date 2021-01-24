@@ -1,9 +1,13 @@
 import {
   generateTimeSeries,
   calculateStartEndTimes,
-  processCSV
+  processCSV,
+  generateDataset
 } from '../../services/CsvService';
 
+const fs = require('fs');
+const path = require('path');
+const util = require('util');
 const singleTestFileTimeSeries = {
   names: ['testName'],
   units: ['testUnit'],
@@ -125,4 +129,108 @@ describe.skip('Tests for generateTimeSeries', () => {
       ).err
     ).not.toEqual(undefined);
   });
+});
+
+describe.skip('ProcessCSV', () => {
+  it('success case 1', () => {
+    const csv_dataset_1 = path.join(
+      __dirname,
+      '..',
+      'fakeData',
+      'testData.csv'
+    );
+    const file = new File([''], csv_dataset_1);
+    console.log(file);
+    console.log(fs.readFileSync(csv_dataset_1, 'utf-8'));
+    processCSV([file]).then(data => {
+      console.log(data);
+      expect(data).not.toEqual(undefined);
+    });
+  });
+});
+
+const fakeCSVDataNoHeader = [
+  [
+    ['1', '1', '1', '1'],
+    ['2', '3', '1', '2'],
+    ['3', '1', '1', '1'],
+    ['4', '1', '1', '5']
+  ]
+];
+
+const dataSet = [
+  {
+    start: 1,
+    end: 4,
+    timeSeries: [
+      {
+        name: '',
+        unit: '',
+        start: 1,
+        end: 4,
+        data: [
+          { timestamp: 1, datapoint: 1 },
+          { timestamp: 2, datapoint: 3 },
+          { timestamp: 3, datapoint: 1 },
+          { timestamp: 4, datapoint: 1 }
+        ]
+      },
+      {
+        name: '',
+        unit: '',
+        start: 1,
+        end: 4,
+        data: [
+          { timestamp: 1, datapoint: 1 },
+          { timestamp: 2, datapoint: 1 },
+          { timestamp: 3, datapoint: 1 },
+          { timestamp: 4, datapoint: 1 }
+        ]
+      },
+      {
+        name: '',
+        unit: '',
+        start: 1,
+        end: 4,
+        data: [
+          { timestamp: 1, datapoint: 1 },
+          { timestamp: 2, datapoint: 2 },
+          { timestamp: 3, datapoint: 1 },
+          { timestamp: 4, datapoint: 5 }
+        ]
+      }
+    ]
+  }
+];
+
+describe('generateDataset', () => {
+  it('Get dataset without header', () => {
+    const result = generateDataset(fakeCSVDataNoHeader);
+    //console.log(util.inspect(result, { showHidden: false, depth: null }))
+    expect(result).toEqual(dataSet);
+  });
+
+  it('Get dataset with header', () => {
+    const timeSeriesObjWithNames = JSON.parse(JSON.stringify(dataSet));
+    const fakeCSVDatasetWithHeader = [
+      [['time', 'accX', 'accY', 'accZ'], ...fakeCSVDataNoHeader[0]]
+    ];
+    const result = generateDataset(fakeCSVDatasetWithHeader);
+    //console.log(util.inspect(result, { showHidden: false, depth: null }))
+    timeSeriesObjWithNames[0].timeSeries[0].name = 'accX';
+    timeSeriesObjWithNames[0].timeSeries[1].name = 'accY';
+    timeSeriesObjWithNames[0].timeSeries[2].name = 'accZ';
+    expect(result).toEqual(timeSeriesObjWithNames);
+  });
+
+  it('Missing unix timestamp', () => {
+    const invalidTimeSeries = JSON.parse(JSON.stringify(dataSet));
+    const invalidCSVData = JSON.parse(JSON.stringify(fakeCSVDataNoHeader));
+    invalidCSVData[0][2][0] = '';
+    const result = generateDataset(invalidCSVData);
+    //console.log(util.inspect(result, { showHidden: false, depth: null }))
+    expect(result.error);
+  });
+
+  it('');
 });

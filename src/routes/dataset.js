@@ -98,7 +98,6 @@ class DatasetPage extends Component {
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
     this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
     this.setModalOpen = this.setModalOpen.bind(this);
-
     this.pressedKeys = {
       num: [],
       ctrl: false,
@@ -837,9 +836,7 @@ class DatasetPage extends Component {
       if (err) {
         window.alert(err);
       } else {
-        this.props.history.push({
-          pathname: '/list'
-        });
+        this.props.history.push('/list');
       }
     });
   }

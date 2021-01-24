@@ -13,15 +13,15 @@ import ReactTooltip from 'react-tooltip';
 
 import {
   updateDataset,
-  createDataset
+  createDatasets
 } from '../../services/ApiServices/DatasetServices';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import {
-  generateTimeSeries,
-  calculateStartEndTimes,
-  processCSV
+  processCSV,
+  generateDataset,
+  extendExistingDataset
 } from '../../services/CsvService';
 
 class CreateNewDatasetModal extends Component {
@@ -107,42 +107,25 @@ class CreateNewDatasetModal extends Component {
   }
 
   processNewDataset(timeData) {
-    var timeSeries = generateTimeSeries(
-      timeData,
-      this.state.names,
-      this.state.units
-    );
-    if (timeSeries.err) {
-      this.onError(timeSeries.err);
+    var timeSeries = generateDataset(timeData);
+    if (timeSeries.error) {
+      this.onError(timeSeries.error);
       return;
     }
-    if (timeSeries === undefined) {
-      return;
-    }
-    var startEnd = calculateStartEndTimes(timeSeries);
-    var datasetObj = {
-      start: startEnd.start,
-      end: startEnd.end,
-      timeSeries: timeSeries
-    };
-    createDataset(datasetObj).then(data => {
+
+    // Implement possibility to upload many datasets
+    createDatasets(timeSeries).then(data => {
       this.resetState();
       this.props.onDatasetComplete(data);
     });
   }
 
   extendDataset(timeData) {
-    var timeSeries = generateTimeSeries(
-      timeData,
-      this.state.names,
-      this.state.units
-    );
-    if (timeSeries.err) {
-      this.onError(timeSeries.err);
+    var dataset = extendExistingDataset(timeData, this.props.dataset);
+    if (dataset.error) {
+      this.onError(dataset.error);
       return;
     }
-    var dataset = this.props.dataset;
-    dataset.timeSeries.push(...timeSeries);
     updateDataset(dataset).then(data => {
       this.resetState();
       this.props.onDatasetComplete(data);
