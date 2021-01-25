@@ -6,7 +6,10 @@ import {
   ModalFooter,
   Button,
   Input,
-  Table
+  Table,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText
 } from 'reactstrap';
 
 import ReactTooltip from 'react-tooltip';
@@ -23,6 +26,7 @@ import {
   generateDataset,
   extendExistingDataset
 } from '../../services/CsvService';
+import { extend } from 'highcharts';
 
 class CreateNewDatasetModal extends Component {
   constructor(props) {
@@ -30,19 +34,31 @@ class CreateNewDatasetModal extends Component {
 
     this.state = {
       files: [],
-      units: [],
-      names: [],
-      error: undefined
+      datasets: [],
+      errors: undefined
     };
+    this.baseState = this.state;
     this.onUpload = this.onUpload.bind(this);
     this.onDeleteFile = this.onDeleteFile.bind(this);
     this.onUnitChange = this.onUnitChange.bind(this);
     this.onNameChange = this.onNameChange.bind(this);
-    this.processNewDataset = this.processNewDataset.bind(this);
-    this.extendDataset = this.extendDataset.bind(this);
     this.onCloseModal = this.onCloseModal.bind(this);
     this.resetState = this.resetState.bind(this);
     this.onError = this.onError.bind(this);
+    this.onFileInput = this.onFileInput.bind(this);
+    this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
+  }
+
+  onFileInput(e) {
+    const files = e.target.files;
+    var datasets;
+    processCSV(files).then(timeData => {
+      datasets = generateDataset(timeData);
+      this.setState({
+        files: [...this.state.files, ...files],
+        datasets: [...this.state.datasets, ...datasets]
+      });
+    });
   }
 
   onError(errorMsgs) {
@@ -60,84 +76,73 @@ class CreateNewDatasetModal extends Component {
     });
   }
 
-  onUnitChange(e, index) {
-    var array = [...this.state.units];
-    array[index] = e.target.value;
+  onUnitChange(e, fileIndex, seriesIndex) {
+    const datasets = this.state.datasets;
+    datasets[fileIndex].timeSeries[seriesIndex].unit = e.target.value;
     this.setState({
-      units: array
+      datasets: datasets
     });
   }
 
-  onNameChange(e, index) {
-    var array = [...this.state.names];
-    array[index] = e.target.value;
+  onNameChange(e, fileIndex, seriesIndex) {
+    const datasets = this.state.datasets;
+    datasets[fileIndex].timeSeries[seriesIndex].name = e.target.value;
     this.setState({
-      names: array
+      datasets: datasets
     });
   }
 
   onDeleteFile(index) {
     var files = [...this.state.files];
-    var names = [...this.state.names];
-    var units = [...this.state.units];
+    var datasets = [...this.state.datasets];
     files.splice(index, 1);
-    names.splice(index, 1);
-    units.splice(index, 1);
-    if (this.state.error) {
-      var error = [...this.state.error];
-      error.splice(index, 1);
-      if (error.join('') === '') {
-        error = undefined;
-      }
-    }
+    datasets.splice(index, 1);
     this.setState({
       files: files,
-      names: names,
-      units: units,
-      error: error
+      datasets: datasets
+    });
+  }
+
+  onDeleteTimeSeries(fileIndex, seriesIndex) {
+    if (this.state.datasets[fileIndex].timeSeries.length === 1) {
+      this.onDeleteFile(fileIndex);
+      return;
+    }
+    var timeSeries = [...this.state.datasets[fileIndex].timeSeries];
+    timeSeries.splice(seriesIndex, 1);
+
+    const datasets = this.state.datasets;
+    datasets[fileIndex].timeSeries = timeSeries;
+    this.setState({
+      datasets: datasets
     });
   }
 
   resetState() {
-    this.setState({
-      files: [],
-      names: [],
-      units: []
-    });
-  }
-
-  processNewDataset(timeData) {
-    var timeSeries = generateDataset(timeData);
-    if (timeSeries.error) {
-      this.onError(timeSeries.error);
-      return;
-    }
-
-    // Implement possibility to upload many datasets
-    createDatasets(timeSeries).then(data => {
-      this.resetState();
-      this.props.onDatasetComplete(data);
-    });
-  }
-
-  extendDataset(timeData) {
-    var dataset = extendExistingDataset(timeData, this.props.dataset);
-    if (dataset.error) {
-      this.onError(dataset.error);
-      return;
-    }
-    updateDataset(dataset).then(data => {
-      this.resetState();
-      this.props.onDatasetComplete(data);
-    });
+    this.setState(this.baseState);
   }
 
   onUpload() {
+    const valid = this.state.datasets.every(elm => !elm.error);
+    if (!valid) {
+      window.alert('Fix the errors to upload the dataset');
+      return;
+    }
     processCSV(this.state.files).then(timeData => {
       if (!this.props.dataset) {
-        this.processNewDataset(timeData);
+        createDatasets(this.state.datasets).then(data => {
+          this.resetState();
+          this.props.onDatasetComplete(data);
+        });
       } else {
-        this.extendDataset(timeData);
+        const fusedDataset = extendExistingDataset(
+          this.props.dataset,
+          this.state.datasets
+        );
+        updateDataset(fusedDataset).then(data => {
+          this.resetState();
+          this.props.onDatasetComplete(data);
+        });
       }
     });
   }
@@ -157,13 +162,7 @@ class CreateNewDatasetModal extends Component {
                 id="fileInput"
                 data-testid="fileInput"
                 accept=".csv"
-                onChange={e =>
-                  this.setState({
-                    files: [...this.state.files, ...e.target.files],
-                    names: new Array(e.target.files.length),
-                    units: new Array(e.target.files.length)
-                  })
-                }
+                onChange={this.onFileInput}
                 type="file"
                 multiple
                 className="custom-file-input"
@@ -175,79 +174,119 @@ class CreateNewDatasetModal extends Component {
               </label>
             </div>
           </div>
-          {this.state.files.length === 0 ? null : (
-            <Table responsive>
-              <thead>
-                <tr className="bg-light">
-                  <th>FileName</th>
-                  <th>TimeSeries Name</th>
-                  <th>TimeSeries Unit</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {this.state.files.map((file, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>
-                        <b>
-                          {file.name.substring(0, 14) +
-                            (file.name.length <= 14 ? '' : '...')}
-                        </b>
-                        {this.state.error && this.state.error[index] ? (
-                          <div>
-                            <FontAwesomeIcon
-                              style={{ color: 'red' }}
-                              icon={faExclamationTriangle}
-                              className="mr-2 fa-xs"
-                              data-tip="Error"
-                              data-for={'tooltip' + index}
-                            />
-                            <ReactTooltip
-                              id={'tooltip' + index}
-                              getContent={() => {
-                                return this.state.error[index];
-                              }}
-                            />
-                          </div>
-                        ) : null}
-                      </td>
-                      <td>
-                        <Input
-                          id={'nameInput' + index}
-                          data-testid="nameInput"
-                          type="text"
-                          placeholder="Name"
-                          bsSize="sm"
-                          onChange={e => this.onNameChange(e, index)}
-                        />
-                      </td>
-                      <td>
-                        <Input
-                          id={'unitInput' + index}
-                          data-testid="unitInput"
-                          tpye="text"
-                          placeholder="Unit"
-                          bsSize="sm"
-                          onChange={e => this.onUnitChange(e, index)}
-                        />
-                      </td>
-                      <td>
-                        <Button
-                          id="deleteButton"
-                          color="danger"
-                          size="sm"
-                          onClick={() => this.onDeleteFile(index)}
-                        >
-                          Delete
-                        </Button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-          )}
+          {this.state.files.length === 0
+            ? null
+            : this.state.files.map((file, fileIndex) => {
+                return (
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th colSpan="2">
+                          <b>{file.name}</b>
+                        </th>
+                        <th style={{ textAlign: 'end' }}>
+                          <Button
+                            id="deleteButton"
+                            color="danger"
+                            size="sm"
+                            onClick={() => this.onDeleteFile(fileIndex)}
+                          >
+                            Delete
+                          </Button>
+                        </th>
+                      </tr>
+                    </thead>
+                    {this.state.datasets[fileIndex].error ? (
+                      <tbody>
+                        <tr>
+                          <td colSpan="3" style={{ color: 'red' }}>
+                            Error: {this.state.datasets[fileIndex].error}
+                          </td>
+                        </tr>
+                      </tbody>
+                    ) : (
+                      <tbody>
+                        {this.state.datasets[fileIndex].timeSeries.map(
+                          (timeSeries, seriesIndex) => {
+                            return (
+                              <tr>
+                                <td style={{ paddingTop: 0, paddingBottom: 0 }}>
+                                  <InputGroup size="sm">
+                                    <InputGroupAddon addonType="prepend">
+                                      <InputGroupText>Name</InputGroupText>
+                                    </InputGroupAddon>
+                                    <Input
+                                      id={
+                                        'nameInput' +
+                                        String(fileIndex) +
+                                        String(seriesIndex)
+                                      }
+                                      data-testid="nameInput"
+                                      type="text"
+                                      placeholder="Name"
+                                      value={
+                                        this.state.datasets[fileIndex]
+                                          .timeSeries[seriesIndex].name
+                                      }
+                                      onChange={e =>
+                                        this.onNameChange(
+                                          e,
+                                          fileIndex,
+                                          seriesIndex
+                                        )
+                                      }
+                                    />
+                                  </InputGroup>
+                                </td>
+                                <td style={{ paddingTop: 0, paddingBottom: 0 }}>
+                                  <InputGroup size="sm">
+                                    <InputGroupAddon addonType="prepend">
+                                      <InputGroupText>Unit</InputGroupText>
+                                    </InputGroupAddon>
+                                    <Input
+                                      id={
+                                        'unitInput' +
+                                        String(fileIndex) +
+                                        String(seriesIndex)
+                                      }
+                                      data-testid="unitInput"
+                                      tpye="text"
+                                      placeholder="Unit"
+                                      bsSize="sm"
+                                      onChange={e =>
+                                        this.onUnitChange(
+                                          e,
+                                          fileIndex,
+                                          seriesIndex
+                                        )
+                                      }
+                                    />
+                                  </InputGroup>
+                                </td>
+                                <td>
+                                  <Button
+                                    id="deleteButton"
+                                    color="danger"
+                                    size="sm"
+                                    onClick={() =>
+                                      this.onDeleteTimeSeries(
+                                        fileIndex,
+                                        seriesIndex
+                                      )
+                                    }
+                                  >
+                                    Delete
+                                  </Button>
+                                </td>
+                              </tr>
+                            );
+                          }
+                        )}
+                      </tbody>
+                    )}
+                  </Table>
+                );
+              })}
         </ModalBody>
         <ModalFooter>
           <Button

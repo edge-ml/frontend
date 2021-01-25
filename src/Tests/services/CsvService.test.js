@@ -224,13 +224,10 @@ describe('generateDataset', () => {
   });
 
   it('Missing unix timestamp', () => {
-    const invalidTimeSeries = JSON.parse(JSON.stringify(dataSet));
     const invalidCSVData = JSON.parse(JSON.stringify(fakeCSVDataNoHeader));
     invalidCSVData[0][2][0] = '';
     const result = generateDataset(invalidCSVData);
     //console.log(util.inspect(result, { showHidden: false, depth: null }))
     expect(result.error);
   });
-
-  it('');
 });
