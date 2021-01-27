@@ -831,14 +831,14 @@ class DatasetPage extends Component {
 
   onDeleteDataset() {
     if (!this.state.dataset || !this.state.dataset['_id']) return;
-
-    deleteDataset(this.state.dataset['_id'], err => {
-      if (err) {
-        window.alert(err);
-      } else {
+    console.log('Deleting');
+    deleteDataset(this.state.dataset['_id'])
+      .then(() => {
         this.props.history.push('/list');
-      }
-    });
+      })
+      .catch(err => {
+        window.alert(err);
+      });
   }
 
   render() {

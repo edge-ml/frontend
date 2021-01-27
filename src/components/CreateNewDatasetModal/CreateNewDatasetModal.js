@@ -34,8 +34,7 @@ class CreateNewDatasetModal extends Component {
 
     this.state = {
       files: [],
-      datasets: [],
-      errors: undefined
+      datasets: []
     };
     this.baseState = this.state;
     this.onUpload = this.onUpload.bind(this);
@@ -148,6 +147,7 @@ class CreateNewDatasetModal extends Component {
   }
 
   render() {
+    console.log(this.state);
     return (
       <Modal data-testid="modal" isOpen={this.props.isOpen}>
         <ModalHeader>
@@ -298,11 +298,6 @@ class CreateNewDatasetModal extends Component {
           >
             Upload
           </Button>
-          {this.state.error ? (
-            <div className="m - 1 mr-auto" style={{ color: 'red' }}>
-              {'Fix errors to upload data'}
-            </div>
-          ) : null}
 
           <Button
             id="cancelButton"
