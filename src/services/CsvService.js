@@ -61,10 +61,12 @@ function generateSingleTimeSeries(timeData) {
         if (!isNumber(timeData[j][0])) {
           throw 'Timestamps cannot be missing';
         }
-        timeSeries[i - 1].data.push({
-          timestamp: parseInt(timeData[j][0], 10),
-          datapoint: parseInt(timeData[j][i], 10)
-        });
+        if (isNumber(timeData[j][i])) {
+          timeSeries[i - 1].data.push({
+            timestamp: parseInt(timeData[j][0], 10),
+            datapoint: parseInt(timeData[j][i], 10)
+          });
+        }
       }
     }
     const result = {

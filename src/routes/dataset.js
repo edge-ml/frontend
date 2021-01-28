@@ -842,6 +842,7 @@ class DatasetPage extends Component {
   }
 
   render() {
+    console.log(this.state.dataset);
     if (!this.state.isReady) return <Loader loading={true} />;
 
     let selectedLabeling = this.state.labelings.filter(

@@ -25,11 +25,13 @@ class MailSettings extends Component {
 
   onNewEmailChange(e) {
     this.setState({
+      emailError: undefined,
       newEmail: e.target.value
     });
   }
   onConfirmationEmailChange(e) {
     this.setState({
+      emailError: undefined,
       confirmationEmail: e.target.value
     });
   }
@@ -45,7 +47,13 @@ class MailSettings extends Component {
         emailError: 'Not a valid e-mail format'
       });
     } else {
-      changeUserMail(this.state.newEmail).then(data => window.alert(data));
+      changeUserMail(this.state.newEmail)
+        .then(data => window.alert(data))
+        .catch(err => {
+          this.setState({
+            emailError: err.data
+          });
+        });
     }
   }
 
@@ -56,18 +64,24 @@ class MailSettings extends Component {
           <InputGroupAddon addonType="prepend">
             <InputGroupText>E-Mail</InputGroupText>
           </InputGroupAddon>
-          <Input placeholder="New e-mail" onChange={this.onNewEmailChange} />
+          <Input
+            id="inputNewMail"
+            placeholder="New e-mail"
+            onChange={this.onNewEmailChange}
+          />
         </InputGroup>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>E-Mail</InputGroupText>
           </InputGroupAddon>
           <Input
+            id="inputNewMailConfirm"
             placeholder="Retype new e-mail"
             onChange={this.onConfirmationEmailChange}
           />
         </InputGroup>
         <Button
+          id="buttonSaveNewMail"
           color="primary"
           className="m-1 mr-auto"
           onClick={this.onEmailChangeSubmit}
@@ -76,6 +90,7 @@ class MailSettings extends Component {
         </Button>
         {this.state.emailError ? (
           <div
+            id="emailError"
             style={{
               display: 'inline',
               color: 'red',

@@ -1,6 +1,5 @@
 import {
   generateTimeSeries,
-  calculateStartEndTimes,
   processCSV,
   generateDataset
 } from '../../services/CsvService';
@@ -229,5 +228,14 @@ describe('generateDataset', () => {
     const result = generateDataset(invalidCSVData);
     //console.log(util.inspect(result, { showHidden: false, depth: null }))
     expect(result.error);
+  });
+
+  it('Missing value at one point in time for one sensor', () => {
+    const csvWithMissingValue = JSON.parse(JSON.stringify(fakeCSVDataNoHeader));
+    csvWithMissingValue[0][2][1] = '';
+    const result = generateDataset(csvWithMissingValue);
+    const expectedResult = dataSet;
+    delete expectedResult[0].timeSeries[0].data.splice(2, 1);
+    expect(result).toEqual(expectedResult);
   });
 });

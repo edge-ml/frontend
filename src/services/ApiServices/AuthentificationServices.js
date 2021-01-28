@@ -145,7 +145,7 @@ module.exports.changeUserMail = newUserMail => {
       )
     )
       .then(res => resolve(res.data))
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
@@ -160,7 +160,7 @@ module.exports.changeUserPassword = (currentPassword, newPassword) => {
       )
     )
       .then(res => resolve(res.data))
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 

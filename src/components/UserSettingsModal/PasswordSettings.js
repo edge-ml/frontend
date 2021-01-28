@@ -23,23 +23,27 @@ class PasswordSettings extends Component {
       this
     );
     this.onCurrentPasswordChanged = this.onCurrentPasswordChanged.bind(this);
+    this.onPasswordChangeSubmit = this.onPasswordChangeSubmit.bind(this);
   }
 
   onNewPasswordChange(e) {
     this.setState({
-      newPassword: e.target.value
+      newPassword: e.target.value,
+      passwordError: undefined
     });
   }
 
   onConfirmationPasswordChange(e) {
     this.setState({
-      newConfirmationPassword: e.target.value
+      newConfirmationPassword: e.target.value,
+      passwordError: undefined
     });
   }
 
   onCurrentPasswordChanged(e) {
     this.setState({
-      currentPassword: e.target.value
+      currentPassword: e.target.value,
+      passwordError: undefined
     });
   }
 
@@ -55,15 +59,15 @@ class PasswordSettings extends Component {
       this.setState({
         passwordError: 'Passwords do not match'
       });
-    } else {
-      changeUserPassword(this.state.currentPassword, this.state.newPassword)
-        .then(data => window.alert(data))
-        .catch(err =>
-          this.setState({
-            passwordError: err.response.data
-          })
-        );
+      return;
     }
+    changeUserPassword(this.state.currentPassword, this.state.newPassword)
+      .then(data => window.alert(data))
+      .catch(err => {
+        this.setState({
+          passwordError: err.data
+        });
+      });
   }
 
   render() {
@@ -74,6 +78,7 @@ class PasswordSettings extends Component {
             <InputGroupText>Password</InputGroupText>
           </InputGroupAddon>
           <Input
+            id="inputNewPassword"
             type="password"
             placeholder="New password"
             onChange={this.onNewPasswordChange}
@@ -84,6 +89,7 @@ class PasswordSettings extends Component {
             <InputGroupText>Password</InputGroupText>
           </InputGroupAddon>
           <Input
+            id="inputNewPasswordConfirm"
             type="password"
             placeholder="Retype new password"
             onChange={this.onConfirmationPasswordChange}
@@ -94,20 +100,23 @@ class PasswordSettings extends Component {
             <InputGroupText>Password</InputGroupText>
           </InputGroupAddon>
           <Input
+            id="inputCurrentPassword"
             type="password"
             placeholder="Current password"
             onChange={this.onCurrentPasswordChanged}
           />
         </InputGroup>
         <Button
+          id="buttonSaveNewPassword"
           color="primary"
           className="m-1 mr-auto"
-          onClick={this.props.onPasswordChangeSubmit}
+          onClick={this.onPasswordChangeSubmit}
         >
           Save new password
         </Button>
         {this.state.passwordError ? (
           <div
+            id="passwordError"
             style={{
               display: 'inline',
               color: 'red',
