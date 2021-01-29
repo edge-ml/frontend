@@ -18,17 +18,14 @@ class TwoFaSettings extends Component {
   }
 
   onTokenChanged(e) {
-    if (e.target.value.length > 6) return;
-    else if (e.target.value.length === 6) {
-      verify2FA(e.target.value)
-        .then(data => {
-          this.props.enable2FA();
-        })
-        .catch(err => {
-          console.log(err);
-          window.alert(err);
-        });
-    }
+    if (e.target.value.length !== 6) return;
+    verify2FA(e.target.value)
+      .then(data => {
+        this.props.enable2FA();
+      })
+      .catch(err => {
+        window.alert(err.data);
+      });
   }
 
   componentDidMount() {
@@ -48,7 +45,7 @@ class TwoFaSettings extends Component {
         .then(() => {
           this.props.onLogout();
         })
-        .catch(err => console.log(err));
+        .catch(err => window.alert(err.data));
     }
   }
 
@@ -65,6 +62,7 @@ class TwoFaSettings extends Component {
               the app in order to activate two-factor authentication
               <Input
                 autoFocus
+                id="inputTwoFAToken"
                 className={'mt-1'}
                 placeholder="Token"
                 style={{ textAlign: 'center' }}
@@ -84,7 +82,12 @@ class TwoFaSettings extends Component {
             </Row>
             <Row>
               <Col className="text-center">
-                <Button color="danger" outline onClick={this.on2FADisable}>
+                <Button
+                  id="buttonDisableTwoFA"
+                  color="danger"
+                  outline
+                  onClick={this.on2FADisable}
+                >
                   Disable
                 </Button>
               </Col>

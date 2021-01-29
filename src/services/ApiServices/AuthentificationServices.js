@@ -18,7 +18,7 @@ module.exports.loginUser = function(userEMail, password) {
       )
     )
       .then(data => resolve(data.data))
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
@@ -35,7 +35,7 @@ module.exports.deleteUser = userEMail => {
       )
     )
       .then(data => resolve(data.data))
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
@@ -53,7 +53,7 @@ module.exports.registerNewUser = function(userEMail, password) {
       )
     )
       .then(data => resolve(data.data))
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
@@ -81,7 +81,7 @@ module.exports.init2FA = () => {
       )
     )
       .then(res => resolve(res.data))
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
@@ -110,7 +110,7 @@ module.exports.reset2FA = () => {
       )
     )
       .then(res => resolve(res.data))
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
@@ -129,7 +129,7 @@ module.exports.getUserMail = userIDs => {
       })
       .catch(err => {
         console.log(err.response);
-        reject(err);
+        reject(err.response);
       });
   });
 };
@@ -180,7 +180,7 @@ module.exports.getUserIds = userMails => {
       .then(data => {
         resolve(data.map(elm => elm.data));
       })
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
