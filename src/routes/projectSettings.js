@@ -33,7 +33,6 @@ class ProjectSettings extends Component {
       };
     }
     this.onDeleteProject = this.onDeleteProject.bind(this);
-    this.initState = this.initState.bind(this);
     this.onAddUser = this.onAddUser.bind(this);
     this.onNameChanged = this.onNameChanged.bind(this);
     this.onDeleteUser = this.onDeleteUser.bind(this);
@@ -54,23 +53,6 @@ class ProjectSettings extends Component {
     }
   }
 
-  initState(project, isNewProject) {
-    if (!isNewProject) {
-      var objectCopy = JSON.parse(JSON.stringify(project));
-      this.setState({
-        project: objectCopy,
-        originalProject: objectCopy,
-        originalUsers: objectCopy.users
-      });
-    } else {
-      const newProject = { name: '', users: [] };
-      this.setState({
-        project: newProject,
-        originalUsers: project.users
-      });
-    }
-  }
-
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (
       JSON.stringify(prevProps.project) !== JSON.stringify(this.props.project)
@@ -78,21 +60,6 @@ class ProjectSettings extends Component {
       this.setState({
         project: this.props.project
       });
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.project) {
-      this.setState({
-        project: undefined
-      });
-      return;
-    }
-    if (
-      (nextProps.project && !this.props.project) ||
-      nextProps.project._id !== this.props.project._id
-    ) {
-      this.initState(nextProps.project, nextProps.isNewProject);
     }
   }
 
@@ -137,13 +104,12 @@ class ProjectSettings extends Component {
     var doDelete = window.confirm('Do you want to delete this project?');
     if (doDelete) {
       deleteProject(this.state.project).then(data =>
-        this.props.projectsChanged(data)
+        this.props.onProjectsChanged(data)
       );
     }
   }
 
   onUserMailChange(index, e) {
-    e.preventDefault();
     const project = { ...this.state.project };
     project.users[index].email = e.target.value;
     this.setState({
@@ -161,12 +127,16 @@ class ProjectSettings extends Component {
       );
     }
     return (
-      <div style={{ marginTop: '16px' }}>
+      <div id="projectSettings" style={{ marginTop: '16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <h3 style={{ marginBottom: '0px' }}>
             {'Edit Project: ' + this.state.originalProject.name}
           </h3>
-          <Button onClick={this.onDeleteProject} color="danger">
+          <Button
+            id="buttonDeleteProject"
+            onClick={this.onDeleteProject}
+            color="danger"
+          >
             Delete project
           </Button>
         </div>
@@ -176,19 +146,18 @@ class ProjectSettings extends Component {
             <InputGroupText>{'Name'}</InputGroupText>
           </InputGroupAddon>
           <Input
+            id="projectName"
             placeholder={'Name'}
             value={this.state.project.name}
             onChange={e => this.onNameChanged(e.target.value)}
           />
         </InputGroup>
-        {this.props.isNewProject ? null : (
-          <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText>{'Admin'}</InputGroupText>
-            </InputGroupAddon>
-            <Input value={this.props.project.admin.email} readOnly />
-          </InputGroup>
-        )}
+        <InputGroup>
+          <InputGroupAddon addonType="prepend">
+            <InputGroupText>{'Admin'}</InputGroupText>
+          </InputGroupAddon>
+          <Input value={this.props.project.admin.email} readOnly />
+        </InputGroup>
         <h5 style={{ paddingTop: '16px' }}>Users</h5>
         <Table striped>
           <thead>
@@ -205,9 +174,10 @@ class ProjectSettings extends Component {
                   .map(elm => elm._id)
                   .includes(user._id) && user._id !== undefined;
               return (
-                <tr>
+                <tr key={oldUser}>
                   <td className="datasets-column">
                     <Input
+                      id={'checkboxDeleteUser' + index}
                       style={{ visibility: !oldUser ? 'hidden' : '' }}
                       className="datasets-check"
                       type="checkbox"
@@ -220,8 +190,8 @@ class ProjectSettings extends Component {
                       user.email
                     ) : (
                       <Input
+                        id={'inputUserMail' + index}
                         type="text"
-                        name="User ID"
                         value={user.email}
                         placeholder="Enter user e-mail"
                         onChange={e => this.onUserMailChange(index, e)}
@@ -230,6 +200,7 @@ class ProjectSettings extends Component {
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     <Button
+                      id={'buttonUserMail' + index}
                       style={{ visibility: oldUser ? 'hidden' : '' }}
                       className="btn-sm"
                       color="secondary"
@@ -243,12 +214,22 @@ class ProjectSettings extends Component {
             })}
           </tbody>
         </Table>
-        <Button color="primary" className="btn-sm" onClick={this.onAddUser}>
+        <Button
+          id="buttonAddUser"
+          color="primary"
+          className="btn-sm"
+          onClick={this.onAddUser}
+        >
           Add +
         </Button>
         <hr></hr>
         <div style={{ display: 'flex' }}>
-          <Button color="primary" className="m-1 mr-auto" onClick={this.onSave}>
+          <Button
+            id="buttonSaveProject"
+            color="primary"
+            className="m-1 mr-auto"
+            onClick={this.onSave}
+          >
             Save
           </Button>{' '}
         </div>
