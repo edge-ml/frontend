@@ -29,7 +29,7 @@ class ProjectRefresh extends Component {
       }
       return child;
     });
-    return <div>{childrenWithProps}</div>;
+    return childrenWithProps;
   }
 }
 
