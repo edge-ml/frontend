@@ -80,14 +80,15 @@ class UserSettingsModal extends Component {
             </NavItem>
           </Nav>
           {this.state.activeTab === 'mailChange' ? (
-            <MailSettings></MailSettings>
+            <MailSettings id="mailSettings"></MailSettings>
           ) : null}
 
           {this.state.activeTab === 'passwordChange' ? (
-            <PasswordSettings></PasswordSettings>
+            <PasswordSettings id="passwordSettings"></PasswordSettings>
           ) : null}
           {this.state.activeTab === '2FA' ? (
             <TwoFaSettings
+              id="twoFaSettings"
               twoFAEnabled={this.props.twoFAEnabled}
               onLogout={this.onLogout}
               enable2FA={this.props.enable2FA}
@@ -95,7 +96,12 @@ class UserSettingsModal extends Component {
           ) : null}
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" className="m-1" onClick={this.onCloseModal}>
+          <Button
+            id="buttonCloseSettings"
+            color="secondary"
+            className="m-1"
+            onClick={this.onCloseModal}
+          >
             Close Settings
           </Button>
         </ModalFooter>
