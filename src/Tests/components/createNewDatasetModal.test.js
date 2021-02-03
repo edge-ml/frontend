@@ -68,7 +68,7 @@ function mockSecondFile() {
   });
 }
 
-describe('Create a new dataset', () => {
+describe.skip('Create a new dataset', () => {
   it('Clear input after dataset upload', async () => {
     var f = new File([''], csv_dataset_2);
     createDataset.mockReturnValue(Promise.resolve(fakeDataset_One));

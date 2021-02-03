@@ -1,54 +1,4 @@
-module.exports.generateTimeSeries = (timeData, names, units) => {
-  console.log(timeData);
-  var timeSeries = [];
-  var i = 0;
-  var obj = {};
-  var errMsgs = [];
-  for (i = 0; i < timeData.length; i++) {
-    obj = {
-      name: names[i],
-      unit: units[i],
-      offset: 0,
-      start: timeData[i][0][0],
-      end: timeData[i][timeData[i].length - 1][0]
-    };
-    var j = 0;
-    //var samplingRate = timeData[i][1][0] - timeData[i][0][0];
-    var data = [];
-    var errFound = false;
-    for (j = 0; j < timeData[i].length; j++) {
-      if (errFound) {
-        break;
-      }
-      if (isNaN(timeData[i][j][0]) || isNaN(timeData[i][j][1])) {
-        errMsgs.push('Only numbers are allowed');
-        errFound = true;
-        break;
-      }
-      data.push({ timestamp: timeData[i][j][0], datapoint: timeData[i][j][1] });
-      if (j !== 0 && timeData[i][j][0] <= timeData[i][j - 1][0]) {
-        errMsgs.push('The timeseries must be ordered');
-        errFound = true;
-        break;
-      }
-    }
-    if (!errFound) {
-      errMsgs.push(undefined);
-    }
-    obj.data = data;
-    timeSeries.push(obj);
-  }
-  if (errMsgs.join('') === '') {
-    return timeSeries;
-  }
-  return { err: errMsgs };
-};
-
-module.exports.calculateStartEndTimes = timeSeries => {
-  var min = timeSeries[0].start;
-  var max = timeSeries[0].end;
-  return { start: min, end: max };
-};
+const { isNumber } = require('./helpers');
 
 module.exports.processCSV = files => {
   return new Promise((resolve, reject) => {
@@ -66,11 +16,7 @@ module.exports.processCSV = files => {
         var lines = [];
         for (var i = 0; i < allTextLines.length; i++) {
           var data = allTextLines[i].split(',');
-          var tarr = [];
-          for (var j = 0; j < data.length; j++) {
-            tarr.push(parseInt(data[j], 10));
-          }
-          lines.push(tarr);
+          lines.push(data);
         }
         timeData.push(lines);
         if (timeData.length === files.length) {
@@ -80,4 +26,70 @@ module.exports.processCSV = files => {
       reader.readAsText(file);
     }
   });
+};
+
+module.exports.generateDataset = (timeData, dataset) => {
+  if (!dataset) {
+    const datasets = [];
+    for (var i = 0; i < timeData.length; i++) {
+      datasets.push(generateSingleTimeSeries(timeData[i]));
+    }
+    return datasets;
+  }
+};
+
+function generateSingleTimeSeries(timeData) {
+  try {
+    const timeSeries = [];
+    const numDatasets = timeData[0].length - 1;
+    for (var i = 1; i <= numDatasets; i++) {
+      timeSeries.push({
+        name: '',
+        unit: '',
+        end: parseInt(timeData[timeData.length - 1][0], 10),
+        start: parseInt(timeData[0][0], 10),
+        data: []
+      });
+
+      var start = 0;
+      if (!isNumber(timeData[0][0])) {
+        start = 1;
+        timeSeries[i - 1].name = timeData[0][i];
+        timeSeries[i - 1].start = parseInt(timeData[1][0], 10);
+      }
+      for (var j = start; j < timeData.length; j++) {
+        if (!isNumber(timeData[j][0])) {
+          throw 'Timestamps cannot be missing';
+        }
+        if (isNumber(timeData[j][i])) {
+          timeSeries[i - 1].data.push({
+            timestamp: parseInt(timeData[j][0], 10),
+            datapoint: parseInt(timeData[j][i], 10)
+          });
+        }
+      }
+    }
+    const result = {
+      start: timeSeries[0].start,
+      end: parseInt(timeData[timeData.length - 1][0], 10),
+      timeSeries: timeSeries
+    };
+    return result;
+  } catch (err) {
+    return { error: err };
+  }
+}
+
+module.exports.extendExistingDataset = (dataset, newDatasets) => {
+  const fusedDataset = dataset;
+  for (var i = 0; i < newDatasets.length; i++) {
+    fusedDataset.timeSeries.push(...newDatasets[i].timeSeries);
+    if (fusedDataset.start < newDatasets[i].start) {
+      fusedDataset.start = newDatasets[i].start;
+    }
+    if (fusedDataset.end > newDatasets[i].end) {
+      fusedDataset.end = newDatasets[i].end;
+    }
+  }
+  return fusedDataset;
 };

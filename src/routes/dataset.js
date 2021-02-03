@@ -98,7 +98,6 @@ class DatasetPage extends Component {
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
     this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
     this.setModalOpen = this.setModalOpen.bind(this);
-
     this.pressedKeys = {
       num: [],
       ctrl: false,
@@ -832,19 +831,18 @@ class DatasetPage extends Component {
 
   onDeleteDataset() {
     if (!this.state.dataset || !this.state.dataset['_id']) return;
-
-    deleteDataset(this.state.dataset['_id'], err => {
-      if (err) {
+    console.log('Deleting');
+    deleteDataset(this.state.dataset['_id'])
+      .then(() => {
+        this.props.history.push('/list');
+      })
+      .catch(err => {
         window.alert(err);
-      } else {
-        this.props.history.push({
-          pathname: '/list'
-        });
-      }
-    });
+      });
   }
 
   render() {
+    console.log(this.state.dataset);
     if (!this.state.isReady) return <Loader loading={true} />;
 
     let selectedLabeling = this.state.labelings.filter(

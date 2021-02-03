@@ -44,6 +44,9 @@ class ListPage extends Component {
   }
 
   componentDidMount() {
+    this.setState({
+      project: this.props.project
+    });
     getDatasets()
       .then(this.onDatasetsChanged)
       .catch(err => {
@@ -52,18 +55,16 @@ class ListPage extends Component {
   }
 
   loadErrorPage(status, error, statusText) {
-    this.props.history.push({
+    /*this.props.history.push({
       pathname: '/errorpage/' + status + '/' + error + '/' + statusText
-    });
+    });*/
   }
 
   onDatasetsChanged(datasets) {
     if (!datasets) return;
-
     this.setState({
       modalID: null,
       modal: false,
-      rows: this.state.rows,
       datasets: datasets,
       ready: true,
       isCreateNewDatasetOpen: false
@@ -125,7 +126,7 @@ class ListPage extends Component {
         });
       })
       .catch(err => {
-        this.loadErrorPage(err.status, err.data.error, err.statusText);
+        //this.loadErrorPage(err.status, err.data.error, err.statusText);
         this.setState({
           modal: false
         });
@@ -251,7 +252,6 @@ class ListPage extends Component {
           <CreateNewDatasetModal
             isOpen={this.state.isCreateNewDatasetOpen}
             onCloseModal={this.toggleCreateNewDatasetModal}
-            onDatasetsChanged={this.onDatasetsChanged}
             onDatasetComplete={this.onDatasetsChanged}
           />
         </Loader>

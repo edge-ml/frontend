@@ -4,14 +4,6 @@ const apiConsts = require('./ApiConstants');
 const ax = require('axios');
 const axios = ax.create();
 
-axios.interceptors.request.use(config => {
-  const token = getAccessToken();
-  if (token) {
-    config.headers['Authorization'] = token;
-  }
-  return config;
-});
-
 module.exports.getDatasets = () => {
   return new Promise((resolve, reject) => {
     axios(
@@ -45,7 +37,6 @@ module.exports.getDataset = (id, callback) => {
 
 module.exports.deleteDatasets = ids => {
   return new Promise((resolve, reject) => {
-    console.log(ids);
     let promises = [];
     for (let id of ids) {
       promises = [
@@ -105,7 +96,6 @@ module.exports.updateDataset = dataset => {
 };
 
 module.exports.createDataset = dataset => {
-  console.log(dataset);
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -115,11 +105,33 @@ module.exports.createDataset = dataset => {
         dataset
       )
     )
-      .then(
+      .then(() => {
         this.getDatasets().then(datasets => {
           resolve(datasets);
-        })
+        });
+      })
+      .catch(err => reject(err.response));
+  });
+};
+
+module.exports.createDatasets = datasets => {
+  return new Promise((resolve, reject) => {
+    const promises = datasets.map(dataset =>
+      axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.POST,
+          apiConsts.API_URI,
+          apiConsts.API_ENDPOINTS.DATASETS,
+          dataset
+        )
       )
+    );
+    Promise.all(promises)
+      .then(() => {
+        this.getDatasets().then(datasets => {
+          resolve(datasets);
+        });
+      })
       .catch(err => reject(err.response));
   });
 };

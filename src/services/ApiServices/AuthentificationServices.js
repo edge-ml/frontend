@@ -4,19 +4,10 @@ const ax = require('axios');
 const axios = ax.create();
 const axiosNoToken = ax.create();
 
-axios.interceptors.request.use(config => {
-  const token = getAccessToken();
-  if (token) {
-    config.headers['Authorization'] = token;
-  }
-  return config;
-});
-
 module.exports.loginUser = function(userEMail, password) {
-  console.log('Logging in user');
   return new Promise((resolve, reject) => {
     axiosNoToken(
-      apiConsts.generateRequest(
+      apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.LOGIN,
@@ -27,7 +18,7 @@ module.exports.loginUser = function(userEMail, password) {
       )
     )
       .then(data => resolve(data.data))
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
@@ -44,14 +35,14 @@ module.exports.deleteUser = userEMail => {
       )
     )
       .then(data => resolve(data.data))
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
 module.exports.registerNewUser = function(userEMail, password) {
   return new Promise((resolve, reject) => {
     axiosNoToken(
-      apiConsts.generateRequest(
+      apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.REGISTER,
@@ -62,33 +53,36 @@ module.exports.registerNewUser = function(userEMail, password) {
       )
     )
       .then(data => resolve(data.data))
-      .catch(err => reject(err));
+      .catch(err => reject(err.response));
   });
 };
 
 module.exports.subscribeUsers = callback => {
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.GET,
-      apiConsts.AUTH_URI,
-      apiConsts.AUTH_ENDPOINTS.USERS
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.USERS
+      )
     )
-  )
-    .then(res => callback(res.data))
-    .catch(() => callback([]));
+      .then(res => callback(res.data))
+      .catch(() => callback([]));
+  });
 };
 
-module.exports.init2FA = callback => {
-  console.log('init 2FA');
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.POST,
-      apiConsts.AUTH_URI,
-      apiConsts.AUTH_ENDPOINTS.INIT2FA
+module.exports.init2FA = () => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.INIT2FA
+      )
     )
-  )
-    .then(res => callback(res.data))
-    .catch(err => callback(err));
+      .then(res => resolve(res.data))
+      .catch(err => reject(err.response));
+  });
 };
 
 module.exports.verify2FA = token => {
@@ -106,14 +100,103 @@ module.exports.verify2FA = token => {
   });
 };
 
-module.exports.reset2FA = callback => {
-  axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.POST,
-      apiConsts.AUTH_URI,
-      apiConsts.AUTH_ENDPOINTS.RESET2FA
+module.exports.reset2FA = () => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.RESET2FA
+      )
     )
-  )
-    .then(res => callback(res.data))
-    .catch(err => callback(err));
+      .then(res => resolve(res.data))
+      .catch(err => reject(err.response));
+  });
 };
+
+module.exports.getUserMail = userIDs => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.MAIL,
+        userIDs
+      )
+    )
+      .then(res => {
+        resolve(res.data[0]);
+      })
+      .catch(err => {
+        console.log(err.response);
+        reject(err.response);
+      });
+  });
+};
+
+module.exports.changeUserMail = newUserMail => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.PUT,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.CHANGE_MAIL,
+        { email: newUserMail }
+      )
+    )
+      .then(res => resolve(res.data))
+      .catch(err => reject(err.response));
+  });
+};
+
+module.exports.changeUserPassword = (currentPassword, newPassword) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.PUT,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.CHANGE_PASSWORD,
+        { password: currentPassword, newPassword: newPassword }
+      )
+    )
+      .then(res => resolve(res.data))
+      .catch(err => reject(err.response));
+  });
+};
+
+module.exports.getUserIds = userMails => {
+  return new Promise((resolve, reject) => {
+    const promises = userMails.map(elm => {
+      return axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.POST,
+          apiConsts.AUTH_URI,
+          apiConsts.AUTH_ENDPOINTS.ID,
+          { email: elm }
+        )
+      );
+    });
+    Promise.all(promises)
+      .then(data => {
+        resolve(data.map(elm => elm.data));
+      })
+      .catch(err => reject(err.response));
+  });
+};
+
+/*function getUserId(userMail) {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConst.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.ID,
+        { email: userMail }
+      )
+    )
+      .then((data) => {
+        resolve(data.data);
+      })
+      .catch(reject(err));
+  });
+}*/

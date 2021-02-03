@@ -1,6 +1,5 @@
-# name,VOC
-# unit,kOhm
-time,data
-1234,5
-1235,6
-1236,8
+time,accX,accY,accZ
+1,1,1,1
+2,1,2,4
+3,1,3,8
+4,1,4,16

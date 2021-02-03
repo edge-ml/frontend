@@ -10,8 +10,7 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
-  Alert
+  CardHeader
 } from 'reactstrap';
 import { MailIcon, ShieldIcon } from 'react-octicons';
 import { FadeInUp } from 'animate-components';
@@ -20,6 +19,7 @@ import { clearToken } from '../services/LocalStorageService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { validateEmail } from '../services/helpers';
 
 class RegisterPage extends Component {
   constructor(props) {
@@ -64,13 +64,8 @@ class RegisterPage extends Component {
     });
   }
 
-  validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-  }
-
   onRegisterClick() {
-    if (!this.validateEmail(this.state.email)) {
+    if (!validateEmail(this.state.email)) {
       this.onError('Enter a valid E-mail');
     } else if (this.state.password === '') {
       this.onError('Enter a password');
@@ -89,6 +84,7 @@ class RegisterPage extends Component {
           });
         })
         .catch(err => {
+          console.log(err.response);
           this.onError(err.response.data.error);
         });
     }

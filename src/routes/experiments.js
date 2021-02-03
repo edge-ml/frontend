@@ -6,6 +6,7 @@ import LabelingSelectionPanel from '../components/LabelingSelectionPanel/Labelin
 import EditInstructionModal from '../components/EditInstructionModal/EditInstructionModal';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
+import NoProjectPage from '../components/NoProjectPage/NoProjectPage';
 import {
   deleteExperiment,
   addExperiment,
@@ -29,9 +30,20 @@ class ExperimentsPage extends Component {
         isNewExperiment: false
       }
     };
+    this.initComponent = this.initComponent.bind(this);
   }
 
   componentDidMount() {
+    this.initComponent();
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.location.pathname !== this.props.location.pathname) {
+      this.initComponent();
+    }
+  }
+
+  initComponent() {
     subscribeLabelingsAndLabels()
       .then(result =>
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
@@ -60,7 +72,6 @@ class ExperimentsPage extends Component {
       selectedExperimentId: experiments[0] ? experiments[0]['_id'] : undefined,
       isReady: true
     });
-
     if (this.props.location.pathname === '/experiments/new') {
       this.onModalAddExperiment();
     } else {

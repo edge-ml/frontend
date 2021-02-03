@@ -47,8 +47,6 @@ class LabelingSelectionPanel extends Component {
   }
 
   onScroll() {
-    //console.log(window.pageYOffset);
-
     if (window.pageYOffset > 56) {
       this.setState({ uiState: { isSticky: true } });
     } else if (window.pageYOffset < 56) {

@@ -1,16 +1,7 @@
 const getAccessToken = require('../LocalStorageService').getAccessToken;
 var apiConsts = require('./ApiConstants');
 const ax = require('axios');
-const { resolve } = require('path');
 const axios = ax.create();
-
-axios.interceptors.request.use(config => {
-  const token = getAccessToken();
-  if (token) {
-    config.headers['Authorization'] = token;
-  }
-  return config;
-});
 
 module.exports.subscribeExperiments = () => {
   return new Promise((resolve, reject) => {

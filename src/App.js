@@ -6,44 +6,62 @@ import {
   Nav,
   NavItem,
   Button,
-  Form,
   Collapse,
-  NavbarToggler
+  NavbarToggler,
+  DropdownItem,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu
 } from 'reactstrap';
 import { Route, Link } from 'react-router-dom';
-
+import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMenu';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
 import ListPage from './routes/list';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labelings';
-import SettingsPage from './routes/settings';
 import ExperimentsPage from './routes/experiments';
 import ErrorPage from './components/ErrorPage/ErrorPage';
-import ApiConstants from './services/ApiServices/ApiConstants';
-
-const clearToken = require('./services/LocalStorageService').clearToken;
+import { getProjects } from './services/ApiServices/ProjectService';
+import EditProjectModal from './components/EditProjectModal/EditProjectModal';
+import {
+  setProject,
+  getProject,
+  clearToken,
+  setToken
+} from './services/LocalStorageService';
+import ProjectSettings from './routes/projectSettings';
+import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal';
+import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {
-        access_token: undefined
-      },
+      userMail: undefined,
       isLoggedIn: false,
-      isTwoFactorAuthenticated: false,
+      twoFAEnabled: false,
       navbarState: {
         isOpen: false
       },
       videoEnaled: false,
       playButtonEnabled: false,
-      currentUserMail: undefined
+      currentUserMail: undefined,
+      projects: undefined,
+      currentProject: undefined,
+      projectsOpen: false,
+      projectEditModalOpen: false,
+      projectEditModalNew: false,
+      userSettingsModalOpen: false
     };
+    this.baseState = JSON.parse(JSON.stringify(this.state));
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);
@@ -53,21 +71,105 @@ class App extends Component {
     this.setAccessToken = this.setAccessToken.bind(this);
     this.getCurrentUserMail = this.getCurrentUserMail.bind(this);
     this.setCurrentUserMail = this.setCurrentUserMail.bind(this);
-    this.setUser = this.setUser.bind(this);
+    this.toggleProjects = this.toggleProjects.bind(this);
+    this.onProjectClick = this.onProjectClick.bind(this);
+    this.onProjectEditModal = this.onProjectEditModal.bind(this);
+    this.onProjectModalClose = this.onProjectModalClose.bind(this);
+    this.onProjectsChanged = this.onProjectsChanged.bind(this);
+    this.refreshProjects = this.refreshProjects.bind(this);
+    this.toggleUserSettingsModal = this.toggleUserSettingsModal.bind(this);
+    this.onUserLoggedIn = this.onUserLoggedIn.bind(this);
+    this.enable2FA = this.enable2FA.bind(this);
   }
 
-  setUser(currentUser, callback) {
-    this.setState(
-      {
-        user: { ...this.state.user, ...currentUser },
-        isLoggedIn: true
-      },
-      () => {
-        if (callback) {
-          callback();
+  enable2FA() {
+    this.setState({
+      twoFAEnabled: true
+    });
+  }
+
+  toggleUserSettingsModal() {
+    this.setState({
+      userSettingsModalOpen: !this.state.userSettingsModalOpen
+    });
+  }
+
+  onProjectsChanged(projects) {
+    if (projects.length !== 0) {
+      setProject(projects[0]._id);
+    }
+    this.setState({
+      projects: projects,
+      currentProject: 0,
+      projectEditModalOpen: false
+    });
+  }
+
+  onProjectModalClose() {
+    this.setState({
+      projectEditModalOpen: false
+    });
+  }
+
+  onProjectEditModal(isNew) {
+    this.setState({
+      projectEditModalOpen: true,
+      projectEditModalNew: isNew
+    });
+  }
+
+  onProjectClick(index) {
+    //Check if a page needs to be redirected
+    if (this.props.location.pathname.includes('datasets')) {
+      this.props.history.push('/');
+    }
+
+    setProject(this.state.projects[index]._id);
+    this.setState({
+      currentProject: index
+    });
+  }
+
+  toggleProjects() {
+    this.setState({
+      projectsOpen: !this.state.projectsOpen
+    });
+  }
+
+  refreshProjects() {
+    getProjects()
+      .then(projects => {
+        if (projects.length === 0) {
+          this.setState({
+            projects: []
+          });
+          return;
         }
-      }
-    );
+        var currentProject = projects.findIndex(
+          elm => elm._id === getProject()
+        );
+        if (currentProject === -1) {
+          currentProject = 0;
+          setProject(projects[0]._id);
+        } else {
+          setProject(projects[currentProject]._id);
+        }
+        this.setState({
+          projects: projects,
+          currentProject: currentProject
+        });
+      })
+      .catch(err => console.log(err));
+  }
+
+  onUserLoggedIn(accessToken, refreshToken, userMail, twoFAEnabled) {
+    setToken(accessToken, refreshToken);
+    this.setState({
+      userMail: userMail ? userMail : this.state.userMail,
+      twoFAEnabled: twoFAEnabled ? twoFAEnabled : this.state.twoFAEnabled,
+      isLoggedIn: true
+    });
+    this.refreshProjects();
   }
 
   getCurrentUserMail() {
@@ -91,13 +193,8 @@ class App extends Component {
   onLogout(didSucceed) {
     if (didSucceed) {
       clearToken();
-      this.setState({
-        user: {
-          access_token: undefined
-        },
-        isLoggedIn: false,
-        isTwoFactorAuthenticated: false
-      });
+      this.props.history.push('/');
+      this.setState(this.baseState);
     }
   }
 
@@ -136,8 +233,22 @@ class App extends Component {
   }
 
   render() {
+    const projectAvailable = this.state.projects
+      ? this.state.projects[this.state.currentProject]
+      : undefined;
     return (
       <div>
+        <EditProjectModal
+          project={
+            this.state.projects
+              ? this.state.projects[this.state.currentProject]
+              : undefined
+          }
+          isOpen={this.state.projectEditModalOpen}
+          isNewProject={this.state.projectEditModalNew}
+          onClose={this.onProjectModalClose}
+          projectChanged={this.onProjectsChanged}
+        ></EditProjectModal>
         <Route
           exact
           path="/register"
@@ -146,23 +257,91 @@ class App extends Component {
         {this.props.history.location.pathname !== '/register' ? (
           <AuthWall
             isLoggedIn={this.state.isLoggedIn}
-            isTwoFactorAuthenticated={this.state.isTwoFactorAuthenticated}
             onLogin={this.onLogin}
             onCancelLogin={this.logoutHandler}
             setAccessToken={this.setAccessToken}
             setCurrentUserMail={this.setCurrentUserMail}
             setUser={this.setUser}
-            twoFactorEnabled={this.state.user.twoFactorEnabled}
+            onUserLoggedIn={this.onUserLoggedIn}
             on2FA={this.on2FA}
           >
             {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
-            {this.state.isLoggedIn ? (
+            {this.state.isLoggedIn && this.state.projects ? (
               <div>
                 <Navbar color="light" light expand="md">
-                  <NavbarBrand>Explorer</NavbarBrand>
+                  <NavbarBrand style={{ marginRight: '8px' }}>
+                    Explorer
+                  </NavbarBrand>
                   <NavbarToggler onClick={this.toggleNavbar} />
                   <Collapse isOpen={this.state.navbarState.isOpen} navbar>
-                    <Nav className="ml-auto" navbar>
+                    <Nav navbar className="mr-auto">
+                      <NavItem
+                        style={{
+                          borderRight: '1px solid',
+                          borderColor: 'gray',
+                          marginRight: '8px',
+                          marginLeft: '8px'
+                        }}
+                      ></NavItem>
+                      <NavItem>
+                        <div style={{ display: 'flex', marginLeft: '8px' }}>
+                          <Dropdown
+                            className="navbar-dropdown"
+                            style={{ float: 'right' }}
+                            nav
+                            inNavbar
+                            isOpen={this.state.projectsOpen}
+                            toggle={this.toggleProjects}
+                          >
+                            <DropdownToggle
+                              className={
+                                this.state.projects.length === 0
+                                  ? 'disabled'
+                                  : ''
+                              }
+                              nav
+                              caret
+                              style={{ paddingLeft: '0px' }}
+                            >
+                              {projectAvailable
+                                ? this.state.projects[this.state.currentProject]
+                                    .name
+                                : this.state.projects.length === 0
+                                ? 'No projects'
+                                : 'Loading'}
+                            </DropdownToggle>
+                            {this.state.projects.length === 0 ? null : (
+                              <DropdownMenu>
+                                {this.state.projects.map((project, index) => {
+                                  return (
+                                    <DropdownItem
+                                      onClick={() => this.onProjectClick(index)}
+                                      key={project._id}
+                                    >
+                                      {project.name}
+                                    </DropdownItem>
+                                  );
+                                })}
+                              </DropdownMenu>
+                            )}
+                          </Dropdown>
+                          <div style={{ display: 'block', margin: 'auto' }}>
+                            <FontAwesomeIcon
+                              onClick={() => this.onProjectEditModal(true)}
+                              style={{
+                                color: '#8b8d8f',
+                                float: 'left',
+                                margin: 'auto',
+                                cursor: 'pointer'
+                              }}
+                              icon={faPlus}
+                              className="mr-2 fa-s"
+                            />
+                          </div>
+                        </div>
+                      </NavItem>
+                    </Nav>
+                    <Nav navbar className="ml-auto">
                       <NavItem>
                         <Link className="nav-link" to="/list">
                           Datasets
@@ -183,41 +362,87 @@ class App extends Component {
                           Settings
                         </Link>
                       </NavItem>
-                      <Form className="form-inline my-2 my-lg-0">
-                        <Link
-                          className="nav-link m-0 p-0 ml-3"
-                          to="/"
-                          onClick={this.logoutHandler}
-                        >
-                          <Button className="m-0 my-2 my-sm-0" outline>
-                            Logout
-                          </Button>
-                        </Link>
-                      </Form>
-                      <NavItem />
+                      <NavItem
+                        style={{
+                          borderRight: '1px solid',
+                          borderColor: 'gray',
+                          marginRight: '8px',
+                          marginLeft: '8px'
+                        }}
+                      >
+                        {' '}
+                      </NavItem>
+                      <NavItem
+                        className="my-auto"
+                        style={{ paddingLeft: '8px' }}
+                      >
+                        <CustomDropDownMenu
+                          content={
+                            <FontAwesomeIcon
+                              style={{
+                                color: '#8b8d8f',
+                                float: 'left',
+                                margin: 'auto',
+                                cursor: 'pointer'
+                              }}
+                              icon={faUser}
+                              className="mr-2 fa-s"
+                            />
+                          }
+                          items={[
+                            <div>
+                              Signed in as <b>{this.state.userMail}</b>
+                            </div>,
+                            <Button
+                              className="m-0 my-2 my-sm-0"
+                              outline
+                              color="danger"
+                              onClick={this.logoutHandler}
+                            >
+                              Logout
+                            </Button>,
+                            <Button
+                              outline
+                              onClick={this.toggleUserSettingsModal}
+                            >
+                              User settings
+                            </Button>
+                          ]}
+                        ></CustomDropDownMenu>
+                        <UserSettingsModal
+                          isOpen={this.state.userSettingsModalOpen}
+                          onClose={this.toggleUserSettingsModal}
+                          twoFAEnabled={this.state.twoFAEnabled}
+                          onLogout={this.onLogout}
+                          enable2FA={this.enable2FA}
+                        ></UserSettingsModal>
+                      </NavItem>
                     </Nav>
                   </Collapse>
                 </Navbar>
+
                 <Container>
                   <Route
                     exact
-                    path="/list"
-                    render={props => <ListPage {...props} />}
+                    path={['/list', '/']}
+                    render={props => (
+                      <ProjectRefresh
+                        project={this.state.projects[this.state.currentProject]}
+                      >
+                        <ListPage {...props} />{' '}
+                      </ProjectRefresh>
+                    )}
                   />
                   <Route
                     exact
-                    path="/labelings"
-                    render={props => <LabelingsPage {...props} />}
-                  />
-                  <Route
-                    exact
-                    path="/labelings/new"
-                    render={props => <LabelingsPage {...props} />}
-                  />
-                  <Route
-                    exact
-                    path="/"
-                    render={props => <ListPage {...props} />}
+                    path={['/labelings', '/labelings/new']}
+                    render={props => (
+                      <ProjectRefresh
+                        project={this.state.projects[this.state.currentProject]}
+                      >
+                        <LabelingsPage {...props} />
+                      </ProjectRefresh>
+                    )}
                   />
                   <Route
                     path="/datasets/:id"
@@ -230,28 +455,23 @@ class App extends Component {
                   />
                   <Route
                     exact
-                    path="/experiments"
-                    render={props => <ExperimentsPage {...props} />}
-                  />
-                  <Route
-                    exact
-                    path="/experiments/new"
-                    render={props => <ExperimentsPage {...props} />}
+                    path={['/experiments', '/experiments/new']}
+                    render={props => (
+                      <ProjectRefresh
+                        project={this.state.projects[this.state.currentProject]}
+                      >
+                        <ExperimentsPage {...props} />
+                      </ProjectRefresh>
+                    )}
                   />
                   <Route
                     exact
                     path="/settings"
                     render={props => (
-                      <SettingsPage
-                        {...props}
-                        getCurrentUserMail={this.getCurrentUserMail}
-                        onLogout={this.logoutHandler}
-                        onVideoOptionsChange={this.toggleVideoOptions}
-                        getVideoOptions={this.getVideoOptions}
-                        user={this.state.user}
-                        setAccessToken={this.setAccessToken}
-                        twoFactorEnabled={this.state.user.twoFactorEnabled}
-                      />
+                      <ProjectSettings
+                        project={this.state.projects[this.state.currentProject]}
+                        onProjectsChanged={this.onProjectsChanged}
+                      ></ProjectSettings>
                     )}
                   />
                   <Route

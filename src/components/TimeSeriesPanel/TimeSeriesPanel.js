@@ -137,7 +137,10 @@ class TimeSeriesPanel extends Component {
             ? [
                 {
                   showInLegend: !props.isEmpty,
-                  name: props.name + ' (' + props.unit + ')',
+                  name:
+                    props.unit === ''
+                      ? props.name
+                      : props.name + ' (' + props.unit + ')',
                   data: props.data.map((point, index) => [
                     point.timestamp * 1000 + props.offset,
                     point.datapoint

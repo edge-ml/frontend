@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
-import { view } from 'react-easy-state';
 
 import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
-
+import NoProjectPage from '../components/NoProjectPage/NoProjectPage';
 import {
   updateLabelingAndLabels,
   updateLabeling,
@@ -38,9 +37,14 @@ class LabelingsPage extends Component {
       this
     );
     this.resetURL = this.resetURL.bind(this);
+    this.initComponent = this.initComponent.bind(this);
   }
 
   componentDidMount() {
+    this.initComponent();
+  }
+
+  initComponent() {
     subscribeLabelingsAndLabels().then(result => {
       this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
       if (this.props.location.pathname === '/labelings/new') {
@@ -122,7 +126,6 @@ class LabelingsPage extends Component {
 
   async onSave(labeling, labels, deletedLabels) {
     if (!labeling || !labels) return;
-
     if (this.state.modal.isNewLabeling && labels.length === 0) {
       await addLabeling(labeling).then(result =>
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
