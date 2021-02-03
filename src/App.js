@@ -468,10 +468,13 @@ class App extends Component {
                     exact
                     path="/settings"
                     render={props => (
-                      <ProjectSettings
+                      <ProjectRefresh
                         project={this.state.projects[this.state.currentProject]}
-                        onProjectsChanged={this.onProjectsChanged}
-                      ></ProjectSettings>
+                      >
+                        <ProjectSettings
+                          onProjectsChanged={this.onProjectsChanged}
+                        />
+                      </ProjectRefresh>
                     )}
                   />
                   <Route

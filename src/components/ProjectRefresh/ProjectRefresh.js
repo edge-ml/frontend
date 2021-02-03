@@ -25,7 +25,10 @@ class ProjectRefresh extends Component {
         return <NoProjectPage></NoProjectPage>;
       }
       if (React.isValidElement(child)) {
-        return React.cloneElement(child, { key: this.props.project._id });
+        return React.cloneElement(child, {
+          key: this.props.project._id,
+          project: this.props.project
+        });
       }
       return child;
     });
