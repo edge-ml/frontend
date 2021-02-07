@@ -13,7 +13,7 @@ import {
   DropdownToggle,
   DropdownMenu
 } from 'reactstrap';
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, NavLink } from 'react-router-dom';
 import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMenu';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -342,26 +342,20 @@ class App extends Component {
                       </NavItem>
                     </Nav>
                     <Nav navbar className="ml-auto">
-                      <NavItem>
-                        <Link className="nav-link" to="/list">
-                          Datasets
-                        </Link>
-                      </NavItem>
-                      <NavItem>
-                        <Link className="nav-link" to="/labelings">
-                          Labelings
-                        </Link>
-                      </NavItem>
-                      <NavItem>
-                        <Link className="nav-link" to="/experiments">
-                          Experiments
-                        </Link>
-                      </NavItem>
-                      <NavItem>
-                        <Link className="nav-link" to="/settings">
-                          Settings
-                        </Link>
-                      </NavItem>
+                      <NavLink Link className="nav-link" to="/list">
+                        Datasets
+                      </NavLink>
+                      <NavLink className="nav-link" to="/labelings">
+                        Labelings
+                      </NavLink>
+
+                      <NavLink className="nav-link" to="/experiments">
+                        Experiments
+                      </NavLink>
+
+                      <NavLink className="nav-link" to="/settings">
+                        Settings
+                      </NavLink>
                       <NavItem
                         style={{
                           borderRight: '1px solid',
@@ -394,18 +388,18 @@ class App extends Component {
                               Signed in as <b>{this.state.userMail}</b>
                             </div>,
                             <Button
+                              outline
+                              onClick={this.toggleUserSettingsModal}
+                            >
+                              User settings
+                            </Button>,
+                            <Button
                               className="m-0 my-2 my-sm-0"
                               outline
                               color="danger"
                               onClick={this.logoutHandler}
                             >
                               Logout
-                            </Button>,
-                            <Button
-                              outline
-                              onClick={this.toggleUserSettingsModal}
-                            >
-                              User settings
                             </Button>
                           ]}
                         ></CustomDropDownMenu>
