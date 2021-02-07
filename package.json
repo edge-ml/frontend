@@ -73,7 +73,7 @@
         "start:backend": "node backend-src/server.js",
         "start:backend-dev": "$(npm bin)/nodemon backend-src/server.js",
         "build": "react-scripts build",
-        "test": "react-scripts test --env=jsdom",
+        "test": "react-scripts test --env=jsdom --collectCoverage",
         "eject": "react-scripts eject",
         "docker:build": "docker build . -t registry.aura.rest/explorer",
         "docker:push": "docker push registry.aura.rest/explorer",
@@ -84,6 +84,16 @@
             "pre-commit": "lint-staged"
         }
     },
+
+    "jest": {
+        "collectCoverageFrom": [
+            "src/components/**/*.{js}",
+            "src/routes/**/*.{js}",
+            "src/services/**/*.{js}",
+            "src/App.js"
+        ]
+    },
+
     "devDependencies": {
         "@babel/core": "^7.4.0",
         "@testing-library/react": "^11.0.4",

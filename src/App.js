@@ -11,7 +11,8 @@ import {
   DropdownItem,
   Dropdown,
   DropdownToggle,
-  DropdownMenu
+  DropdownMenu,
+  UncontrolledDropdown
 } from 'reactstrap';
 import { Route, Link, NavLink } from 'react-router-dom';
 import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMenu';
@@ -283,63 +284,57 @@ class App extends Component {
                           marginLeft: '8px'
                         }}
                       ></NavItem>
-                      <NavItem>
-                        <div style={{ display: 'flex', marginLeft: '8px' }}>
-                          <Dropdown
-                            className="navbar-dropdown"
-                            style={{ float: 'right' }}
-                            nav
-                            inNavbar
-                            isOpen={this.state.projectsOpen}
-                            toggle={this.toggleProjects}
-                          >
-                            <DropdownToggle
-                              className={
-                                this.state.projects.length === 0
-                                  ? 'disabled'
-                                  : ''
-                              }
-                              nav
-                              caret
-                              style={{ paddingLeft: '0px' }}
-                            >
-                              {projectAvailable
-                                ? this.state.projects[this.state.currentProject]
-                                    .name
-                                : this.state.projects.length === 0
-                                ? 'No projects'
-                                : 'Loading'}
-                            </DropdownToggle>
-                            {this.state.projects.length === 0 ? null : (
-                              <DropdownMenu>
-                                {this.state.projects.map((project, index) => {
-                                  return (
-                                    <DropdownItem
-                                      onClick={() => this.onProjectClick(index)}
-                                      key={project._id}
-                                    >
-                                      {project.name}
-                                    </DropdownItem>
-                                  );
-                                })}
-                              </DropdownMenu>
-                            )}
-                          </Dropdown>
-                          <div style={{ display: 'block', margin: 'auto' }}>
-                            <FontAwesomeIcon
-                              onClick={() => this.onProjectEditModal(true)}
-                              style={{
-                                color: '#8b8d8f',
-                                float: 'left',
-                                margin: 'auto',
-                                cursor: 'pointer'
-                              }}
-                              icon={faPlus}
-                              className="mr-2 fa-s"
-                            />
-                          </div>
-                        </div>
-                      </NavItem>
+                      <Dropdown
+                        className="navbar-dropdown"
+                        style={{ float: 'right' }}
+                        nav
+                        inNavbar
+                        isOpen={this.state.projectsOpen}
+                        toggle={this.toggleProjects}
+                      >
+                        <DropdownToggle
+                          className={
+                            this.state.projects.length === 0 ? 'disabled' : ''
+                          }
+                          nav
+                          caret
+                          style={{ paddingLeft: '0px' }}
+                        >
+                          {projectAvailable
+                            ? this.state.projects[this.state.currentProject]
+                                .name
+                            : this.state.projects.length === 0
+                            ? 'No projects'
+                            : 'Loading'}
+                        </DropdownToggle>
+                        {this.state.projects.length === 0 ? null : (
+                          <DropdownMenu>
+                            {this.state.projects.map((project, index) => {
+                              return (
+                                <DropdownItem
+                                  onClick={() => this.onProjectClick(index)}
+                                  key={project._id}
+                                >
+                                  {project.name}
+                                </DropdownItem>
+                              );
+                            })}
+                          </DropdownMenu>
+                        )}
+                      </Dropdown>
+                      <div style={{ display: 'block', margin: 'auto' }}>
+                        <FontAwesomeIcon
+                          onClick={() => this.onProjectEditModal(true)}
+                          style={{
+                            color: '#8b8d8f',
+                            float: 'left',
+                            margin: 'auto',
+                            cursor: 'pointer'
+                          }}
+                          icon={faPlus}
+                          className="mr-2 fa-s"
+                        />
+                      </div>
                     </Nav>
                     <Nav navbar className="ml-auto">
                       <NavLink Link className="nav-link" to="/list">
@@ -383,26 +378,25 @@ class App extends Component {
                               className="mr-2 fa-s"
                             />
                           }
-                          items={[
-                            <div>
-                              Signed in as <b>{this.state.userMail}</b>
-                            </div>,
-                            <Button
-                              outline
-                              onClick={this.toggleUserSettingsModal}
-                            >
-                              User settings
-                            </Button>,
-                            <Button
-                              className="m-0 my-2 my-sm-0"
-                              outline
-                              color="danger"
-                              onClick={this.logoutHandler}
-                            >
-                              Logout
-                            </Button>
-                          ]}
-                        ></CustomDropDownMenu>
+                        >
+                          <div>
+                            Signed in as <b>{this.state.userMail}</b>
+                          </div>
+                          <Button
+                            outline
+                            onClick={this.toggleUserSettingsModal}
+                          >
+                            User settings
+                          </Button>
+                          <Button
+                            className="m-0 my-2 my-sm-0"
+                            outline
+                            color="danger"
+                            onClick={this.logoutHandler}
+                          >
+                            Logout
+                          </Button>
+                        </CustomDropDownMenu>
                         <UserSettingsModal
                           isOpen={this.state.userSettingsModalOpen}
                           onClose={this.toggleUserSettingsModal}

@@ -31,13 +31,14 @@ class CustomDropDownMenu extends Component {
   }
 
   render() {
+    console.log(this.props.children);
     return (
       <div>
         <div style={{ display: 'inline-block' }} onClick={this.showMenu}>
           {this.props.content}
         </div>
 
-        {this.state.showMenu && this.props.items ? (
+        {this.state.showMenu && this.props.children ? (
           <div
             style={{ position: 'absolute', zIndex: 100 }}
             className="menu dropDown"
@@ -45,7 +46,7 @@ class CustomDropDownMenu extends Component {
               this.dropdownMenu = element;
             }}
           >
-            {this.props.items.map((item, index) => (
+            {this.props.children.map((item, index) => (
               <div key={index} className="customDropDownItem">
                 {item}
               </div>
