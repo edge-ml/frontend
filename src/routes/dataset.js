@@ -60,8 +60,6 @@ class DatasetPage extends Component {
       fuseTimeSeriesModalState: {
         isOpen: false
       },
-      videoEnabled: this.props.getVideoOptions().videoEnabled,
-      playButtonEnabled: this.props.getVideoOptions().playButtonEnabled,
       modalOpen: false
     };
 
@@ -103,8 +101,6 @@ class DatasetPage extends Component {
       ctrl: false,
       shift: false
     };
-
-    this.videoPanel = React.createRef();
   }
 
   setModalOpen(isOpen) {
@@ -823,15 +819,10 @@ class DatasetPage extends Component {
     }
   }
 
-  onScrubbed(position) {
-    if (!this.state.videoEnabled || !this.videoPanel.current) return;
-
-    this.videoPanel.current.onSetTime(position);
-  }
+  onScrubbed(position) {}
 
   onDeleteDataset() {
     if (!this.state.dataset || !this.state.dataset['_id']) return;
-    console.log('Deleting');
     deleteDataset(this.state.dataset['_id'])
       .then(() => {
         this.props.history.push('/list');
@@ -842,7 +833,6 @@ class DatasetPage extends Component {
   }
 
   render() {
-    console.log(this.state.dataset);
     if (!this.state.isReady) return <Loader loading={true} />;
 
     let selectedLabeling = this.state.labelings.filter(

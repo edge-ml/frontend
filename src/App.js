@@ -41,6 +41,7 @@ import {
 import ProjectSettings from './routes/projectSettings';
 import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal';
 import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
+import AppContent from './AppContent';
 
 class App extends Component {
   constructor(props) {
@@ -68,7 +69,6 @@ class App extends Component {
     this.onLogin = this.onLogin.bind(this);
     this.toggleNavbar = this.toggleNavbar.bind(this);
     this.toggleVideoOptions = this.toggleVideoOptions.bind(this);
-    this.getVideoOptions = this.getVideoOptions.bind(this);
     this.setAccessToken = this.setAccessToken.bind(this);
     this.getCurrentUserMail = this.getCurrentUserMail.bind(this);
     this.setCurrentUserMail = this.setCurrentUserMail.bind(this);
@@ -120,15 +120,18 @@ class App extends Component {
   }
 
   onProjectClick(index) {
-    //Check if a page needs to be redirected
-    if (this.props.location.pathname.includes('datasets')) {
-      this.props.history.push('/');
-    }
-
     setProject(this.state.projects[index]._id);
     this.setState({
       currentProject: index
     });
+    const restUrl = this.props.history.location.pathname.split('/');
+    console.log(restUrl);
+    const newUrl =
+      '/' +
+      this.state.projects[index]._id +
+      '/' +
+      (restUrl[2] ? restUrl[2] : '');
+    this.props.history.push(newUrl);
   }
 
   toggleProjects() {
@@ -146,6 +149,23 @@ class App extends Component {
           });
           return;
         }
+
+        //Check if url contains useful information
+        const params = this.props.history.location.pathname.split('/');
+        if (params !== '') {
+          const projectIndex = projects.findIndex(elm => elm._id === params[1]);
+          if (projectIndex !== -1) {
+            this.setState({
+              projects: projects,
+              currentProject: projectIndex
+            });
+            this.props.history.push(
+              '/' + projects[projectIndex]._id + '/' + params.slice(2).join('/')
+            );
+            return;
+          }
+        }
+
         var currentProject = projects.findIndex(
           elm => elm._id === getProject()
         );
@@ -159,6 +179,7 @@ class App extends Component {
           projects: projects,
           currentProject: currentProject
         });
+        this.props.history.push('/' + projects[currentProject]._id);
       })
       .catch(err => console.log(err));
   }
@@ -224,13 +245,6 @@ class App extends Component {
       videoEnaled: videoStatus,
       playButtonEnabled: playButtonStatus
     });
-  }
-
-  getVideoOptions() {
-    return {
-      videoEnabled: this.state.videoEnaled,
-      playButtonEnabled: this.state.playButtonEnabled
-    };
   }
 
   render() {
@@ -307,7 +321,8 @@ class App extends Component {
                             ? 'No projects'
                             : 'Loading'}
                         </DropdownToggle>
-                        {this.state.projects.length === 0 ? null : (
+                        {this.state.projects &&
+                        this.state.projects.length === 0 ? null : (
                           <DropdownMenu>
                             {this.state.projects.map((project, index) => {
                               return (
@@ -337,18 +352,31 @@ class App extends Component {
                       </div>
                     </Nav>
                     <Nav navbar className="ml-auto">
-                      <NavLink Link className="nav-link" to="/list">
+                      <NavLink
+                        Link
+                        className="nav-link"
+                        to={'/' + projectAvailable._id + '/list'}
+                      >
                         Datasets
                       </NavLink>
-                      <NavLink className="nav-link" to="/labelings">
+                      <NavLink
+                        className="nav-link"
+                        to={'/' + projectAvailable._id + '/labelings'}
+                      >
                         Labelings
                       </NavLink>
 
-                      <NavLink className="nav-link" to="/experiments">
+                      <NavLink
+                        className="nav-link"
+                        to={'/' + projectAvailable._id + '/experiments'}
+                      >
                         Experiments
                       </NavLink>
 
-                      <NavLink className="nav-link" to="/settings">
+                      <NavLink
+                        className="nav-link"
+                        to={'/' + projectAvailable._id + '/settings'}
+                      >
                         Settings
                       </NavLink>
                       <NavItem
@@ -408,69 +436,19 @@ class App extends Component {
                     </Nav>
                   </Collapse>
                 </Navbar>
-
-                <Container>
-                  <Route
-                    exact
-                    path={['/list', '/']}
-                    render={props => (
-                      <ProjectRefresh
-                        project={this.state.projects[this.state.currentProject]}
-                      >
-                        <ListPage {...props} />{' '}
-                      </ProjectRefresh>
-                    )}
-                  />
-                  <Route
-                    exact
-                    path={['/labelings', '/labelings/new']}
-                    render={props => (
-                      <ProjectRefresh
-                        project={this.state.projects[this.state.currentProject]}
-                      >
-                        <LabelingsPage {...props} />
-                      </ProjectRefresh>
-                    )}
-                  />
-                  <Route
-                    path="/datasets/:id"
-                    render={props => (
-                      <DatasetPage
-                        {...props}
-                        getVideoOptions={this.getVideoOptions}
-                      />
-                    )}
-                  />
-                  <Route
-                    exact
-                    path={['/experiments', '/experiments/new']}
-                    render={props => (
-                      <ProjectRefresh
-                        project={this.state.projects[this.state.currentProject]}
-                      >
-                        <ExperimentsPage {...props} />
-                      </ProjectRefresh>
-                    )}
-                  />
-                  <Route
-                    exact
-                    path="/settings"
-                    render={props => (
-                      <ProjectRefresh
-                        project={this.state.projects[this.state.currentProject]}
-                      >
-                        <ProjectSettings
-                          onProjectsChanged={this.onProjectsChanged}
-                        />
-                      </ProjectRefresh>
-                    )}
-                  />
-                  <Route
-                    exact
-                    path="/errorpage/:error/:errorText/:statusText"
-                    render={props => <ErrorPage {...props} />}
-                  />
-                </Container>
+                <Route
+                  path="/:projectID"
+                  render={props => (
+                    <AppContent
+                      {...props}
+                      project={this.state.projects[this.state.currentProject]}
+                    />
+                  )}
+                >
+                  <AppContent
+                    project={this.state.projects[this.state.currentProject]}
+                  ></AppContent>
+                </Route>
               </div>
             ) : null}
           </AuthWall>

@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
-
 import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
-import NoProjectPage from '../components/NoProjectPage/NoProjectPage';
 import {
   updateLabelingAndLabels,
   updateLabeling,
@@ -47,7 +45,7 @@ class LabelingsPage extends Component {
   initComponent() {
     subscribeLabelingsAndLabels().then(result => {
       this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
-      if (this.props.location.pathname === '/labelings/new') {
+      if (this.props.location.pathname.includes('/labelings/new')) {
         this.onModalAddLabeling();
       } else {
         const searchParams = new URLSearchParams(this.props.location.search);
@@ -75,10 +73,19 @@ class LabelingsPage extends Component {
 
   toggleModal(labeling, labels, isNewLabeling) {
     if (isNewLabeling) {
-      this.props.history.replace({ pathname: '/labelings/new', search: null });
+      if (!this.props.history.location.pathname.includes('labelings/new')) {
+        this.props.history.replace({
+          pathname: this.props.history.location.pathname + '/new',
+          search: null
+        });
+      }
     } else {
+      const pName = this.props.history.location.pathname
+        .split('/')
+        .splice(-1, 1)
+        .join('/');
       this.props.history.replace({
-        pathname: '/labelings',
+        pathname: pName,
         search: '?id=' + labeling['_id']
       });
     }
@@ -152,7 +159,11 @@ class LabelingsPage extends Component {
   }
 
   resetURL() {
-    this.props.history.replace({ pathname: '/labelings', search: null });
+    const newPath = this.props.history.location.pathname.split('/');
+    if (newPath[newPath.length - 1] !== 'labelings') {
+      newPath.pop();
+    }
+    this.props.history.replace({ pathname: newPath.join('/'), search: null });
   }
 
   render() {

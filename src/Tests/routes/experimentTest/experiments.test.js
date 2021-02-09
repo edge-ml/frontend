@@ -79,7 +79,7 @@ describe('Correct renders without functionality', () => {
   });
 });
 
-describe('Functions on the page work as expected', () => {
+describe.skip('Functions on the page work as expected', () => {
   it('Add button opens modal to create new experiment', async () => {
     EditInstructionModal.mockImplementation(() => (
       <div id="fakeEditInstructionModal"></div>
@@ -105,7 +105,7 @@ describe('Functions on the page work as expected', () => {
   });
 
   // Not working jet
-  it.skip('Update dataset with modal', async () => {
+  it('Update dataset with modal', async () => {
     const exp = { ...fakeExperiment1[0] };
     exp.name = 'newExperimentName';
     /*EditInstructionModal.mockImplementation((props) => {

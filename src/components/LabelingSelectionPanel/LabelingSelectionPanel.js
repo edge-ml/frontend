@@ -41,8 +41,9 @@ class LabelingSelectionPanel extends Component {
   }
 
   onAddLabeling() {
+    console.log('Setting new here');
     this.props.history.push({
-      pathname: '/' + this.state.objectType + '/new'
+      pathname: this.props.history.location.pathname + '/new'
     });
   }
 
@@ -94,7 +95,7 @@ class LabelingSelectionPanel extends Component {
             className="m-1"
             color="secondary"
             id="btnAddExperiment"
-            onClick={this.onAddLabeling}
+            onClick={this.props.onAddLabeling}
           >
             + Add
           </Button>

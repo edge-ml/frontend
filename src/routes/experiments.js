@@ -72,9 +72,7 @@ class ExperimentsPage extends Component {
       selectedExperimentId: experiments[0] ? experiments[0]['_id'] : undefined,
       isReady: true
     });
-    if (this.props.location.pathname === '/experiments/new') {
-      this.onModalAddExperiment();
-    } else {
+    if (!this.props.location.pathname.includes('/experiments/new')) {
       const searchParams = new URLSearchParams(this.props.location.search);
       const id = searchParams.get('id');
 
@@ -90,13 +88,19 @@ class ExperimentsPage extends Component {
 
   toggleModal = (experiment, isNewExperiment) => {
     if (isNewExperiment) {
-      this.props.history.replace({
-        pathname: '/experiments/new',
-        search: null
-      });
+      if (!this.props.history.location.pathname.includes('experiments/new')) {
+        this.props.history.replace({
+          pathname: this.props.history.location.pathname + '/new',
+          search: null
+        });
+      }
     } else {
+      const pName = this.props.history.location.pathname
+        .split('/')
+        .splice(-1, 1)
+        .join('/');
       this.props.history.replace({
-        pathname: '/experiments',
+        pathname: pName,
         search: '?id=' + experiment['_id']
       });
     }
@@ -165,8 +169,13 @@ class ExperimentsPage extends Component {
   };
 
   resetURL = () => {
+    const newPath = this.props.history.location.pathname.split('/');
+    console.log(newPath);
+    if (newPath[newPath.length - 1] !== 'experiments') {
+      newPath.pop();
+    }
     this.props.history.replace({
-      pathname: '/experiments',
+      pathname: newPath.join('/'),
       search: null
     });
   };
@@ -225,6 +234,7 @@ class ExperimentsPage extends Component {
                 labelings={this.state.experiments}
                 selectedLabelingId={this.state.selectedExperimentId}
                 onSelectedLabelingIdChanged={this.onSelectedExperimentIdChanged}
+                onAddLabeling={this.onModalAddExperiment}
               />
             </Col>
           </Row>
