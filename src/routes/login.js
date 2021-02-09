@@ -13,7 +13,7 @@ import {
   CardHeader,
   Alert
 } from 'reactstrap';
-import { MailIcon, ShieldIcon } from 'react-octicons';
+import { MailIcon, PersonIcon, ShieldIcon } from 'react-octicons';
 import update from 'immutability-helper';
 import { FadeInUp } from 'animate-components';
 import { getServerTime } from '../services/helpers.js';
@@ -262,14 +262,14 @@ class LoginPage extends Component {
                           <InputGroup>
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
-                                <MailIcon />
+                                <PersonIcon />
                               </InputGroupText>
                             </InputGroupAddon>
                             <Input
                               type="email"
                               name="email"
                               id="email"
-                              placeholder="email"
+                              placeholder="Email or username"
                               value={this.state.userMail}
                               onChange={this.emailChange}
                             />
@@ -286,7 +286,7 @@ class LoginPage extends Component {
                               type="password"
                               name="password"
                               id="password"
-                              placeholder="password"
+                              placeholder="Password"
                               value={this.state.password}
                               onChange={this.passChange}
                               onKeyDown={this.passHandleKey}

@@ -39,7 +39,7 @@ module.exports.deleteUser = userEMail => {
   });
 };
 
-module.exports.registerNewUser = function(userEMail, password) {
+module.exports.registerNewUser = function(userEMail, password, userName) {
   return new Promise((resolve, reject) => {
     axiosNoToken(
       apiConsts.generateApiRequest(
@@ -48,12 +48,13 @@ module.exports.registerNewUser = function(userEMail, password) {
         apiConsts.AUTH_ENDPOINTS.REGISTER,
         {
           email: userEMail,
-          password: password
+          password: password,
+          userName: userName
         }
       )
     )
       .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .catch(err => reject(err.response.data.error));
   });
 };
 

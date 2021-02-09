@@ -12,13 +12,16 @@ import {
   CardBody,
   CardHeader
 } from 'reactstrap';
-import { MailIcon, ShieldIcon } from 'react-octicons';
+import { MailIcon, PersonIcon, ShieldIcon } from 'react-octicons';
 import { FadeInUp } from 'animate-components';
 import { registerNewUser } from '../services/ApiServices/AuthentificationServices';
 import { clearToken } from '../services/LocalStorageService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faExclamationTriangle,
+  faUser
+} from '@fortawesome/free-solid-svg-icons';
 import { validateEmail } from '../services/helpers';
 
 class RegisterPage extends Component {
@@ -28,6 +31,7 @@ class RegisterPage extends Component {
       email: '',
       password: '',
       passwordRepeat: '',
+      userName: '',
       error: ''
     };
     this.onEMailChanged = this.onEMailChanged.bind(this);
@@ -35,6 +39,13 @@ class RegisterPage extends Component {
     this.onPasswordRepeatChanged = this.onPasswordRepeatChanged.bind(this);
     this.onError = this.onError.bind(this);
     this.onRegisterClick = this.onRegisterClick.bind(this);
+    this.onUserNameChanged = this.onUserNameChanged.bind(this);
+  }
+
+  onUserNameChanged(e) {
+    this.setState({
+      userName: e.target.value
+    });
   }
 
   onEMailChanged(e) {
@@ -56,9 +67,14 @@ class RegisterPage extends Component {
   }
 
   onError(err) {
-    if (err.includes('E11000 duplicate key error collection')) {
+    if (err.includes('email_1 dup key')) {
       err = 'E-Mail already exists';
     }
+
+    if (err.includes('userName_1 dup key')) {
+      err = 'Username already exists';
+    }
+
     this.setState({
       error: err
     });
@@ -72,7 +88,11 @@ class RegisterPage extends Component {
     } else if (this.state.password !== this.state.passwordRepeat) {
       this.onError('The passwords have to match');
     } else {
-      registerNewUser(this.state.email, this.state.password)
+      registerNewUser(
+        this.state.email,
+        this.state.password,
+        this.state.userName
+      )
         .then(() => {
           clearToken();
           this.setState({
@@ -84,8 +104,7 @@ class RegisterPage extends Component {
           });
         })
         .catch(err => {
-          console.log(err.response);
-          this.onError(err.response.data.error);
+          this.onError(err);
         });
     }
   }
@@ -120,7 +139,7 @@ class RegisterPage extends Component {
                             type="email"
                             name="email"
                             id="email"
-                            placeholder="email"
+                            placeholder="Email"
                             onChange={this.onEMailChanged}
                           />
                         </InputGroup>
@@ -136,7 +155,7 @@ class RegisterPage extends Component {
                             type="password"
                             name="password"
                             id="password"
-                            placeholder="password"
+                            placeholder="Password"
                             onChange={this.onPasswordChanged}
                           />
                         </InputGroup>
@@ -154,6 +173,22 @@ class RegisterPage extends Component {
                             id="passwordRepeat"
                             placeholder="Repeat password"
                             onChange={this.onPasswordRepeatChanged}
+                          />
+                        </InputGroup>
+                      </Col>
+                      <Col>
+                        <InputGroup>
+                          <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                              <PersonIcon />
+                            </InputGroupText>
+                          </InputGroupAddon>
+                          <Input
+                            type="text"
+                            name="username"
+                            id="username"
+                            placeholder="Username"
+                            onChange={this.onUserNameChanged}
                           />
                         </InputGroup>
                       </Col>

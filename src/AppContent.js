@@ -19,7 +19,6 @@ class AppContent extends Component {
   render() {
     return (
       <Container>
-        <div>{this.state.ctr}</div>
         <Switch>
           <Route
             exact
@@ -47,9 +46,7 @@ class AppContent extends Component {
           />
           <Route
             path={this.props.match.path + '/datasets/:id'}
-            render={props => (
-              <DatasetPage {...props} getVideoOptions={this.getVideoOptions} />
-            )}
+            render={props => <DatasetPage {...props} />}
           />
           <Route
             exact
@@ -68,7 +65,9 @@ class AppContent extends Component {
             path={this.props.match.path + '/settings'}
             render={props => (
               <ProjectRefresh project={this.props.project}>
-                <ProjectSettings onProjectsChanged={this.onProjectsChanged} />
+                <ProjectSettings
+                  onProjectsChanged={this.props.onProjectsChanged}
+                />
               </ProjectRefresh>
             )}
           />

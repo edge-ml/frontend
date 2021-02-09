@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  Container,
   Navbar,
   NavbarBrand,
   Nav,
@@ -11,10 +10,9 @@ import {
   DropdownItem,
   Dropdown,
   DropdownToggle,
-  DropdownMenu,
-  UncontrolledDropdown
+  DropdownMenu
 } from 'reactstrap';
-import { Route, Link, NavLink } from 'react-router-dom';
+import { Route, NavLink } from 'react-router-dom';
 import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMenu';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -25,11 +23,6 @@ import { faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
-import ListPage from './routes/list';
-import DatasetPage from './routes/dataset';
-import LabelingsPage from './routes/labelings';
-import ExperimentsPage from './routes/experiments';
-import ErrorPage from './components/ErrorPage/ErrorPage';
 import { getProjects } from './services/ApiServices/ProjectService';
 import EditProjectModal from './components/EditProjectModal/EditProjectModal';
 import {
@@ -38,10 +31,9 @@ import {
   clearToken,
   setToken
 } from './services/LocalStorageService';
-import ProjectSettings from './routes/projectSettings';
 import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal';
-import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
 import AppContent from './AppContent';
+import NoProjectPage from './components/NoProjectPage/NoProjectPage';
 
 class App extends Component {
   constructor(props) {
@@ -96,6 +88,7 @@ class App extends Component {
   }
 
   onProjectsChanged(projects) {
+    // TODO: Need to modify url here
     if (projects.length !== 0) {
       setProject(projects[0]._id);
     }
@@ -125,7 +118,6 @@ class App extends Component {
       currentProject: index
     });
     const restUrl = this.props.history.location.pathname.split('/');
-    console.log(restUrl);
     const newUrl =
       '/' +
       this.state.projects[index]._id +
@@ -352,43 +344,47 @@ class App extends Component {
                       </div>
                     </Nav>
                     <Nav navbar className="ml-auto">
-                      <NavLink
-                        Link
-                        className="nav-link"
-                        to={'/' + projectAvailable._id + '/list'}
-                      >
-                        Datasets
-                      </NavLink>
-                      <NavLink
-                        className="nav-link"
-                        to={'/' + projectAvailable._id + '/labelings'}
-                      >
-                        Labelings
-                      </NavLink>
+                      {projectAvailable ? (
+                        <div style={{ display: 'inherit' }}>
+                          <NavLink
+                            Link
+                            className="nav-link"
+                            to={'/' + projectAvailable._id + '/list'}
+                          >
+                            Datasets
+                          </NavLink>
+                          <NavLink
+                            className="nav-link"
+                            to={'/' + projectAvailable._id + '/labelings'}
+                          >
+                            Labelings
+                          </NavLink>
 
-                      <NavLink
-                        className="nav-link"
-                        to={'/' + projectAvailable._id + '/experiments'}
-                      >
-                        Experiments
-                      </NavLink>
+                          <NavLink
+                            className="nav-link"
+                            to={'/' + projectAvailable._id + '/experiments'}
+                          >
+                            Experiments
+                          </NavLink>
 
-                      <NavLink
-                        className="nav-link"
-                        to={'/' + projectAvailable._id + '/settings'}
-                      >
-                        Settings
-                      </NavLink>
-                      <NavItem
-                        style={{
-                          borderRight: '1px solid',
-                          borderColor: 'gray',
-                          marginRight: '8px',
-                          marginLeft: '8px'
-                        }}
-                      >
-                        {' '}
-                      </NavItem>
+                          <NavLink
+                            className="nav-link"
+                            to={'/' + projectAvailable._id + '/settings'}
+                          >
+                            Settings
+                          </NavLink>
+                          <NavItem
+                            style={{
+                              borderRight: '1px solid',
+                              borderColor: 'gray',
+                              marginRight: '8px',
+                              marginLeft: '8px'
+                            }}
+                          >
+                            {' '}
+                          </NavItem>
+                        </div>
+                      ) : null}
                       <NavItem
                         className="my-auto"
                         style={{ paddingLeft: '8px' }}
@@ -436,19 +432,18 @@ class App extends Component {
                     </Nav>
                   </Collapse>
                 </Navbar>
+                {projectAvailable ? null : <NoProjectPage></NoProjectPage>}
                 <Route
+                  {...this.props}
                   path="/:projectID"
                   render={props => (
                     <AppContent
                       {...props}
                       project={this.state.projects[this.state.currentProject]}
+                      onProjectsChanged={this.onProjectsChanged}
                     />
                   )}
-                >
-                  <AppContent
-                    project={this.state.projects[this.state.currentProject]}
-                  ></AppContent>
-                </Route>
+                ></Route>
               </div>
             ) : null}
           </AuthWall>
