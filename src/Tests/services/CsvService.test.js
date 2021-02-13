@@ -1,8 +1,15 @@
 import {
   generateTimeSeries,
   processCSV,
-  generateDataset
+  generateDataset,
+  extendExistingDataset
 } from '../../services/CsvService';
+
+import {
+  fakeDataset_One,
+  fakeDataset_Two,
+  bothCombined
+} from '../fakeData/fakeDatasets';
 
 const fs = require('fs');
 const path = require('path');
@@ -237,4 +244,12 @@ describe('generateDataset', () => {
     delete expectedResult[0].timeSeries[0].data.splice(2, 1);
     expect(result).toEqual(expectedResult);
   });
+});
+
+describe.skip('ExtendExistingDataset', () => {
+  const fusedDataset = extendExistingDataset(
+    fakeDataset_One[0],
+    fakeDataset_Two[0]
+  );
+  expect(fusedDataset).toEqual(bothCombined[0]);
 });

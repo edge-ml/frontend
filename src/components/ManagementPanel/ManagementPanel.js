@@ -34,11 +34,11 @@ class ManagementPanel extends Component {
     this.setState({ isHelpModalOpen: !this.state.isHelpModalOpen });
   }
 
-  async downloadDataSet() {
+  downloadDataSet() {
     const fileName = this.props.dataset['_id'];
     const json = JSON.stringify(this.props.dataset, undefined, 4);
     const blob = new Blob([json], { type: 'application/json' });
-    const href = await URL.createObjectURL(blob);
+    const href = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = href;
     link.download = fileName + '.json';
@@ -55,6 +55,7 @@ class ManagementPanel extends Component {
         </CardHeader>
         <CardBody>
           <Button
+            id="buttonUploadCSV"
             block
             outline
             color="primary"
@@ -63,10 +64,17 @@ class ManagementPanel extends Component {
             Upload CSV
           </Button>
           <hr />
-          <Button block outline color="primary" onClick={this.downloadDataSet}>
+          <Button
+            id="buttonDownloadDataset"
+            block
+            outline
+            color="primary"
+            onClick={this.downloadDataSet}
+          >
             Download as JSON
           </Button>
           <Button
+            id="buttonDeleteDataset"
             block
             outline
             color="danger"
@@ -80,6 +88,7 @@ class ManagementPanel extends Component {
           </Button>
           <hr />
           <Button
+            id="buttonOpenHelpModal"
             block
             outline
             color="secondary"
