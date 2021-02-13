@@ -72,16 +72,13 @@ class LoginPage extends Component {
         decoded.exp * 1000 >= Date.now() &&
         !(decoded.twoFactorEnabled && !decoded.twoFactorVerified)
       ) {
-        getUserMail([decoded.id])
-          .then(mail => {
-            this.props.onUserLoggedIn(
-              accessToken,
-              refreshToken,
-              mail.email,
-              decoded.twoFactorEnabled
-            );
-          })
-          .catch(err => console.log(err));
+        this.props.onUserLoggedIn(
+          accessToken,
+          refreshToken,
+          decoded.email,
+          decoded.twoFactorEnabled,
+          decoded.userName
+        );
         this.setState({
           isLoggedIn: true
         });
@@ -150,31 +147,25 @@ class LoginPage extends Component {
       .then(data => {
         const decoded = jwt_decode(data.access_token);
         setToken(data.access_token, data.refresh_token);
-        getUserMail([decoded.id])
-          .then(mail => {
-            if (!data.twoFactorEnabled) {
-              this.props.onUserLoggedIn(
-                data.access_token,
-                data.refresh_token,
-                mail.email,
-                decoded.twoFactorEnabled
-              );
-              this.setState({
-                isLoggedIn: true,
-                buttonDisabled: false,
-                password: '',
-                userMail: ''
-              });
-            } else {
-              this.setState({
-                show2FA: true
-              });
-            }
-          })
-          .catch(err => {
-            console.log('Error');
-            console.log(err.response);
+        if (!data.twoFactorEnabled) {
+          this.props.onUserLoggedIn(
+            data.access_token,
+            data.refresh_token,
+            decoded.email,
+            decoded.twoFactorEnabled,
+            decoded.userName
+          );
+          this.setState({
+            isLoggedIn: true,
+            buttonDisabled: false,
+            password: '',
+            userMail: ''
           });
+        } else {
+          this.setState({
+            show2FA: true
+          });
+        }
       })
       .catch(err => {
         console.log('Error');

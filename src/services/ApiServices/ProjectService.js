@@ -65,7 +65,7 @@ module.exports.createProject = project => {
         .then(() => {
           this.getProjects().then(data => resolve(data));
         })
-        .catch(err => reject(err.response));
+        .catch(err => reject(err.response.data.error));
     });
   });
 };
@@ -86,7 +86,9 @@ module.exports.updateProject = project => {
         .then(() => {
           this.getProjects().then(data => resolve(data));
         })
-        .catch(err => reject(err.response));
+        .catch(err => {
+          reject(err.response.data.error);
+        });
     });
   });
 };

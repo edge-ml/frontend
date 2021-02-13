@@ -12,14 +12,10 @@ import {
   InputGroupText
 } from 'reactstrap';
 
-import ReactTooltip from 'react-tooltip';
-
 import {
   updateDataset,
   createDatasets
 } from '../../services/ApiServices/DatasetServices';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 
 import {
   processCSV,

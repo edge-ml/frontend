@@ -40,6 +40,7 @@ class App extends Component {
     super(props);
     this.state = {
       userMail: undefined,
+      userName: undefined,
       isLoggedIn: false,
       twoFAEnabled: false,
       navbarState: {
@@ -73,6 +74,13 @@ class App extends Component {
     this.toggleUserSettingsModal = this.toggleUserSettingsModal.bind(this);
     this.onUserLoggedIn = this.onUserLoggedIn.bind(this);
     this.enable2FA = this.enable2FA.bind(this);
+    this.changeURL = this.changeURL.bind(this);
+  }
+
+  changeURL(projectID, userName) {
+    const restUrl = this.props.history.location.pathname.split('/');
+    restUrl[2] = projectID;
+    this.props.history.push(restUrl.join('/'));
   }
 
   enable2FA() {
@@ -97,6 +105,9 @@ class App extends Component {
       currentProject: 0,
       projectEditModalOpen: false
     });
+    if (projects.length !== 0) {
+      this.changeURL(this.state.projects[0]._id, this.state.userName);
+    }
   }
 
   onProjectModalClose() {
@@ -117,13 +128,8 @@ class App extends Component {
     this.setState({
       currentProject: index
     });
-    const restUrl = this.props.history.location.pathname.split('/');
-    const newUrl =
-      '/' +
-      this.state.projects[index]._id +
-      '/' +
-      (restUrl[2] ? restUrl[2] : '');
-    this.props.history.push(newUrl);
+
+    this.changeURL(this.state.projects[index]._id, this.state.userName);
   }
 
   toggleProjects() {
@@ -145,14 +151,20 @@ class App extends Component {
         //Check if url contains useful information
         const params = this.props.history.location.pathname.split('/');
         if (params !== '') {
-          const projectIndex = projects.findIndex(elm => elm._id === params[1]);
+          const projectIndex = projects.findIndex(elm => elm._id === params[2]);
           if (projectIndex !== -1) {
             this.setState({
               projects: projects,
               currentProject: projectIndex
             });
+            console.log('Pushing here');
             this.props.history.push(
-              '/' + projects[projectIndex]._id + '/' + params.slice(2).join('/')
+              '/' +
+                this.state.userName +
+                '/' +
+                projects[projectIndex]._id +
+                '/' +
+                params.slice(3).join('/')
             );
             return;
           }
@@ -171,15 +183,23 @@ class App extends Component {
           projects: projects,
           currentProject: currentProject
         });
-        this.props.history.push('/' + projects[currentProject]._id);
+        console.log('No useful information');
+        this.props.history.push(
+          '/' +
+            this.state.userName +
+            '/' +
+            projects[currentProject]._id +
+            '/list'
+        );
       })
       .catch(err => console.log(err));
   }
 
-  onUserLoggedIn(accessToken, refreshToken, userMail, twoFAEnabled) {
+  onUserLoggedIn(accessToken, refreshToken, userMail, twoFAEnabled, userName) {
     setToken(accessToken, refreshToken);
     this.setState({
       userMail: userMail ? userMail : this.state.userMail,
+      userName: userName ? userName : this.state.userName,
       twoFAEnabled: twoFAEnabled ? twoFAEnabled : this.state.twoFAEnabled,
       isLoggedIn: true
     });
@@ -349,27 +369,52 @@ class App extends Component {
                           <NavLink
                             Link
                             className="nav-link"
-                            to={'/' + projectAvailable._id + '/list'}
+                            exact={true}
+                            to={
+                              '/' +
+                              this.state.userName +
+                              '/' +
+                              projectAvailable._id +
+                              '/list'
+                            }
                           >
                             Datasets
                           </NavLink>
                           <NavLink
                             className="nav-link"
-                            to={'/' + projectAvailable._id + '/labelings'}
+                            to={
+                              '/' +
+                              this.state.userName +
+                              '/' +
+                              projectAvailable._id +
+                              '/labelings'
+                            }
                           >
                             Labelings
                           </NavLink>
 
                           <NavLink
                             className="nav-link"
-                            to={'/' + projectAvailable._id + '/experiments'}
+                            to={
+                              '/' +
+                              this.state.userName +
+                              '/' +
+                              projectAvailable._id +
+                              '/experiments'
+                            }
                           >
                             Experiments
                           </NavLink>
 
                           <NavLink
                             className="nav-link"
-                            to={'/' + projectAvailable._id + '/settings'}
+                            to={
+                              '/' +
+                              this.state.userName +
+                              '/' +
+                              projectAvailable._id +
+                              '/settings'
+                            }
                           >
                             Settings
                           </NavLink>
@@ -435,7 +480,7 @@ class App extends Component {
                 {projectAvailable ? null : <NoProjectPage></NoProjectPage>}
                 <Route
                   {...this.props}
-                  path="/:projectID"
+                  path="/:userName/:projectID"
                   render={props => (
                     <AppContent
                       {...props}
