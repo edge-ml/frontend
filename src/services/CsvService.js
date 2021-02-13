@@ -83,11 +83,13 @@ function generateSingleTimeSeries(timeData) {
 module.exports.extendExistingDataset = (dataset, newDatasets) => {
   const fusedDataset = dataset;
   for (var i = 0; i < newDatasets.length; i++) {
+    console.log(fusedDataset.timeSeries);
     fusedDataset.timeSeries.push(...newDatasets[i].timeSeries);
-    if (fusedDataset.start < newDatasets[i].start) {
+    if (fusedDataset.start > newDatasets[i].start) {
       fusedDataset.start = newDatasets[i].start;
     }
-    if (fusedDataset.end > newDatasets[i].end) {
+    if (fusedDataset.end < newDatasets[i].end) {
+      console.log('Modifing end');
       fusedDataset.end = newDatasets[i].end;
     }
   }
