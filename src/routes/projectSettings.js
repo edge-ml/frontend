@@ -20,6 +20,7 @@ class ProjectSettings extends Component {
     if (props.project) {
       var objectCopy = JSON.parse(JSON.stringify(props.project));
       this.state = {
+        error: undefined,
         project: objectCopy,
         originalProject: objectCopy,
         originalUsers: objectCopy.users,
@@ -27,6 +28,7 @@ class ProjectSettings extends Component {
       };
     } else {
       this.state = {
+        error: undefined,
         originalProject: undefined,
         project: undefined,
         originalUsers: []
@@ -67,9 +69,15 @@ class ProjectSettings extends Component {
     const tmpUsers = this.state.project.users.filter(
       elm => !this.state.usersToDelete.includes(elm)
     );
-    updateProject({ ...this.state.project, users: tmpUsers }).then(data => {
-      this.props.onProjectsChanged(data);
-    });
+    updateProject({ ...this.state.project, users: tmpUsers })
+      .then(data => {
+        this.props.onProjectsChanged(data);
+      })
+      .catch(err => {
+        this.setState({
+          error: err
+        });
+      });
   }
 
   onDeleteUser(index) {
@@ -80,7 +88,8 @@ class ProjectSettings extends Component {
       project: {
         ...this.state.project,
         users: tmpUsers
-      }
+      },
+      error: undefined
     });
   }
 
@@ -88,7 +97,8 @@ class ProjectSettings extends Component {
     var tmpProject = { ...this.state.project };
     tmpProject.name = newName;
     this.setState({
-      project: tmpProject
+      project: tmpProject,
+      error: undefined
     });
   }
 
@@ -96,7 +106,8 @@ class ProjectSettings extends Component {
     var tmpProject = { ...this.state.project };
     tmpProject.users.push({ _id: undefined, email: '' });
     this.setState({
-      project: tmpProject
+      project: tmpProject,
+      error: undefined
     });
   }
 
@@ -113,7 +124,8 @@ class ProjectSettings extends Component {
     const project = { ...this.state.project };
     project.users[index].email = e.target.value;
     this.setState({
-      project: project
+      project: project,
+      error: undefined
     });
   }
 
@@ -227,11 +239,21 @@ class ProjectSettings extends Component {
           <Button
             id="buttonSaveProject"
             color="primary"
-            className="m-1 mr-auto"
+            className="m-1"
             onClick={this.onSave}
           >
             Save
           </Button>{' '}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: 'red',
+              marginLeft: '16px'
+            }}
+          >
+            {this.state.error}
+          </div>
         </div>
       </div>
     );

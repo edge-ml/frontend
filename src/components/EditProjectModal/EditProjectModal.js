@@ -21,6 +21,7 @@ class EditProjectModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      error: undefined,
       originalProject: undefined,
       project: undefined,
       originalUsers: []
@@ -60,9 +61,15 @@ class EditProjectModal extends Component {
   onSave() {
     console.log(this.state.project);
     if (this.props.isNewProject) {
-      createProject(this.state.project).then(data => {
-        this.props.projectChanged(data);
-      });
+      createProject(this.state.project)
+        .then(data => {
+          this.props.projectChanged(data);
+        })
+        .catch(err => {
+          this.setState({
+            error: err
+          });
+        });
     } else {
       updateProject(this.state.project)
         .then(data => {
@@ -109,6 +116,7 @@ class EditProjectModal extends Component {
   onCancel() {
     this.setState(
       {
+        error: undefined,
         originalProject: undefined,
         project: undefined,
         originalUsers: []
@@ -198,10 +206,11 @@ class EditProjectModal extends Component {
             Add +
           </Button>
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" className="m-1 mr-auto" onClick={this.onSave}>
+        <ModalFooter style={{ justifyContent: 'space-between' }}>
+          <Button color="primary" className="m-1" onClick={this.onSave}>
             Save
           </Button>{' '}
+          <div className="error-text"> {this.state.error}</div>
           <Button color="secondary" className="m-1" onClick={this.onCancel}>
             Cancel
           </Button>

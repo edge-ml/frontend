@@ -1,13 +1,12 @@
 .login {
   text-align: center;
-  margin: auto;
-  margin-top: 10%;
+  margin: 10% auto auto;
 }
 
 .input-group {
   margin-bottom: 10px;
   margin-top: 10px;
-  border-radius: 0px;
+  border-radius: 0;
 }
 
 .octicon-trashcan {
@@ -200,8 +199,12 @@ div.card {
 
 .navbar-dropdown {
   position: inherit !important;
-  right: 0px !important;
-  padding: 0px !important;
+  right: 0 !important;
+  padding: 0 !important;
+}
+
+.error-text {
+  color: red;
 }
 
 @media (min-width: 1200px) {
