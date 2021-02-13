@@ -13,21 +13,7 @@ import './MetadataPanel.css';
 class MetadataPanel extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      id: props.id,
-      start: props.start,
-      end: props.end,
-      user: props.user
-    };
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState(state => ({
-      id: props.id,
-      start: props.start,
-      end: props.end,
-      user: props.user
-    }));
+    this.state = {};
   }
 
   render() {
@@ -44,7 +30,7 @@ class MetadataPanel extends Component {
                   Id
                 </InputGroupText>
               </InputGroupAddon>
-              <Input className="text-right" value={this.state.id} readOnly />
+              <Input className="text-right" value={this.props.id} readOnly />
             </InputGroup>
           </div>
           <div>
@@ -57,8 +43,8 @@ class MetadataPanel extends Component {
               <Input
                 className="text-right"
                 value={
-                  this.state.start
-                    ? new Date(this.state.start).toUTCString().split(' ')[4]
+                  this.props.start
+                    ? new Date(this.props.start).toUTCString().split(' ')[4]
                     : ''
                 }
                 readOnly
@@ -75,8 +61,8 @@ class MetadataPanel extends Component {
               <Input
                 className="text-right"
                 value={
-                  this.state.end
-                    ? new Date(this.state.end).toUTCString().split(' ')[4]
+                  this.props.end
+                    ? new Date(this.props.end).toUTCString().split(' ')[4]
                     : ''
                 }
                 readOnly
@@ -90,7 +76,7 @@ class MetadataPanel extends Component {
                   User
                 </InputGroupText>
               </InputGroupAddon>
-              <Input className="text-right" value={this.state.user} readOnly />
+              <Input className="text-right" value={this.props.user} readOnly />
             </InputGroup>
           </div>
         </CardBody>
