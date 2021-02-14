@@ -42,7 +42,7 @@ it('Download dataset', () => {
   global.URL.createObjectURL = jest.fn();
   global.URL.createObjectURL.mockReturnValue('fakeURL');
   const wrapper = shallow(
-    <ManagementPanel dataset={fakeDataset_One[0]}></ManagementPanel>
+    <ManagementPanel dataset={[fakeDataset_One]}></ManagementPanel>
   );
   wrapper.find('#buttonDownloadDataset').simulate('click');
   expect(dummyElement.click).toHaveBeenCalled();

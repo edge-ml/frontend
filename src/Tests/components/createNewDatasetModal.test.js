@@ -71,7 +71,7 @@ function mockSecondFile() {
 describe.skip('Create a new dataset', () => {
   it('Clear input after dataset upload', async () => {
     var f = new File([''], csv_dataset_2);
-    createDataset.mockReturnValue(Promise.resolve(fakeDataset_One));
+    createDataset.mockReturnValue(Promise.resolve([fakeDataset_One]));
 
     mockSecondFile();
 
@@ -121,7 +121,7 @@ describe.skip('Create a new dataset', () => {
     const closeModalFunc = jest.fn();
 
     var f = new File([''], csv_dataset_1);
-    createDataset.mockReturnValue(Promise.resolve(fakeDataset_One));
+    createDataset.mockReturnValue(Promise.resolve([fakeDataset_One]));
     const result = mount(
       <CreateNewDatasetModal
         isOpen={true}
@@ -167,7 +167,7 @@ describe.skip('Create a new dataset', () => {
 
   it('First select file then click delete', async () => {
     var f = new File([''], csv_dataset_1);
-    createDataset.mockReturnValue(Promise.resolve(fakeDataset_One));
+    createDataset.mockReturnValue(Promise.resolve([fakeDataset_One]));
     const result = mount(
       <CreateNewDatasetModal
         isOpen={true}

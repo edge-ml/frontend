@@ -6,7 +6,6 @@ import ListPage from './routes/list';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labelings';
 import ExperimentsPage from './routes/experiments';
-import ErrorPage from './components/ErrorPage/ErrorPage';
 import ProjectSettings from './routes/projectSettings';
 import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
 
@@ -34,10 +33,7 @@ class AppContent extends Component {
             )}
           />
           <Route
-            path={[
-              this.props.match.path + '/labelings'
-              /*this.props.match.path + "/labelings/new",*/
-            ]}
+            path={[this.props.match.path + '/labelings']}
             render={props => (
               <ProjectRefresh project={this.props.project}>
                 <LabelingsPage {...props} />
@@ -70,13 +66,6 @@ class AppContent extends Component {
                 />
               </ProjectRefresh>
             )}
-          />
-          <Route
-            exact
-            path={
-              this.props.match.path + '/errorpage/:error/:errorText/:statusText'
-            }
-            render={props => <ErrorPage {...props} />}
           />
         </Switch>
       </Container>

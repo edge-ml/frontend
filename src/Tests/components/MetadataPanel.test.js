@@ -20,15 +20,15 @@ it('Render page', () => {
 it('Show values of dataset', () => {
   const wrapper = shallow(
     <MetadataPanel
-      id={fakeDataset_One[0]._id}
-      start={fakeDataset_One[0].start * 1000}
-      end={fakeDataset_One[0].end * 1000}
-      user={fakeDataset_One[0].userId}
+      id={fakeDataset_One._id}
+      start={fakeDataset_One.start * 1000}
+      end={fakeDataset_One.end * 1000}
+      user={fakeDataset_One.userId}
     ></MetadataPanel>
   );
   const data = wrapper.find('Input');
-  expect(data.get(0).props.value).toEqual(fakeDataset_One[0]._id);
+  expect(data.get(0).props.value).toEqual(fakeDataset_One._id);
   expect(data.get(1).props.value).toEqual('12:11:56');
   expect(data.get(2).props.value).toEqual('12:11:59');
-  expect(data.get(3).props.value).toEqual(fakeDataset_One[0].userId);
+  expect(data.get(3).props.value).toEqual(fakeDataset_One.userId);
 });

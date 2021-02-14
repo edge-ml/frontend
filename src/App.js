@@ -34,6 +34,7 @@ import {
 import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal';
 import AppContent from './AppContent';
 import NoProjectPage from './components/NoProjectPage/NoProjectPage';
+import ErrorPage from './components/ErrorPage/ErrorPage';
 
 class App extends Component {
   constructor(props) {
@@ -157,7 +158,6 @@ class App extends Component {
               projects: projects,
               currentProject: projectIndex
             });
-            console.log('Pushing here');
             this.props.history.push(
               '/' +
                 this.state.userName +
@@ -183,7 +183,6 @@ class App extends Component {
           projects: projects,
           currentProject: currentProject
         });
-        console.log('No useful information');
         this.props.history.push(
           '/' +
             this.state.userName +
@@ -192,7 +191,9 @@ class App extends Component {
             '/list'
         );
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        this.props.history.push('/errorpage/Could not connect to Backend');
+      });
   }
 
   onUserLoggedIn(accessToken, refreshToken, userMail, twoFAEnabled, userName) {
@@ -280,6 +281,10 @@ class App extends Component {
           exact
           path="/register"
           render={props => <RegisterPage {...props} />}
+        />
+        <Route
+          path={'/errorpage/:error/:errorText?/:statusText?'}
+          render={props => <ErrorPage {...props} />}
         />
         {this.props.history.location.pathname !== '/register' ? (
           <AuthWall

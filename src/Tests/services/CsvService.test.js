@@ -247,9 +247,6 @@ describe('generateDataset', () => {
 });
 
 describe.skip('ExtendExistingDataset', () => {
-  const fusedDataset = extendExistingDataset(
-    fakeDataset_One[0],
-    fakeDataset_Two[0]
-  );
+  const fusedDataset = extendExistingDataset(fakeDataset_One, fakeDataset_Two);
   expect(fusedDataset).toEqual(bothCombined[0]);
 });
