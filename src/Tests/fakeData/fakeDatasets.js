@@ -91,41 +91,39 @@ module.exports.fakeDataset_Two = {
   __v: 0
 };
 
-module.exports.bothCombined = [
-  {
-    isPublished: false,
-    device: null,
-    experiments: null,
-    _id: '5f8058d10509a30012b357fd',
-    start: 1595506316,
-    end: 1595506319,
-    timeSeries: [
-      {
-        data: [1, 2, 3, 4],
-        offset: 0,
-        _id: '5f8058d10509a30012b357fe',
-        name: 'f1',
-        unit: 'u1',
-        start: 1595506316,
-        end: 1595506319,
-        samplingRate: 1
-      },
-      {
-        data: [1, 2, 4, 8, 8, 8, 8, 8, 12, 16],
-        offset: 0,
-        _id: '5f8071120509a30012b35801',
-        name: 'n2',
-        unit: 'u2',
-        start: 1595506316,
-        end: 1595506325,
-        samplingRate: 1
-      }
-    ],
-    userId: '5f7dde3dfe99230012ae2af4',
-    events: [],
-    fusedSeries: [],
-    labelings: [],
-    results: [],
-    __v: 0
-  }
-];
+module.exports.fakeDatasetCombination_one_two = {
+  isPublished: false,
+  device: null,
+  experiments: null,
+  _id: '5f8058d10509a30012b357fd',
+  start: 1595506316,
+  end: 1595506319,
+  timeSeries: [
+    {
+      data: [1, 2, 3, 4],
+      offset: 0,
+      _id: '5f8058d10509a30012b357fe',
+      name: 'f1',
+      unit: 'u1',
+      start: 1595506316,
+      end: 1595506319,
+      samplingRate: 1
+    },
+    {
+      data: [1, 2, 4, 8, 8, 8, 8, 8, 12, 16],
+      offset: 0,
+      _id: '5f8071120509a30012b35801',
+      name: 'n2',
+      unit: 'u2',
+      start: 1595506316,
+      end: 1595506325,
+      samplingRate: 1
+    }
+  ],
+  userId: '5f7dde3dfe99230012ae2af4',
+  events: [],
+  fusedSeries: [],
+  labelings: [],
+  results: [],
+  __v: 0
+};

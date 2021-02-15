@@ -219,6 +219,7 @@ class LabelingsPage extends Component {
                       </td>
                       <td>
                         <Button
+                          id="buttonEditLabeling"
                           className="btn-secondary mt-0 btn-edit"
                           block
                           onClick={e => {
@@ -239,6 +240,7 @@ class LabelingsPage extends Component {
                 </tbody>
               </Table>
               <Button
+                id="buttonAddLabeling"
                 block
                 className="mb-5"
                 color="secondary"

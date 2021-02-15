@@ -96,11 +96,21 @@ class DatasetPage extends Component {
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
     this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
     this.setModalOpen = this.setModalOpen.bind(this);
+    this.onAddLabeling = this.onAddLabeling.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false
     };
+  }
+
+  onAddLabeling() {
+    const newHistory = this.props.history.location.pathname.split('/');
+    newHistory.length -= 2;
+
+    this.props.history.push({
+      pathname: newHistory.join('/') + '/labelings/new'
+    });
   }
 
   setModalOpen(isOpen) {
@@ -872,6 +882,7 @@ class DatasetPage extends Component {
                   objectType={'labelings'}
                   history={this.props.history}
                   labelings={this.state.labelings}
+                  onAddLabeling={this.onAddLabeling}
                   selectedLabelingId={
                     this.state.controlStates.selectedLabelingId
                   }

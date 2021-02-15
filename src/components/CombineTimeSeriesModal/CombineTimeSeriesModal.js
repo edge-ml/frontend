@@ -17,14 +17,9 @@ class CombineTimeSeriesModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      timeSeries: props.timeSeries ? props.timeSeries : [],
       selectedTimeSeries: [],
       modalState: {
         isOpen: false
-      },
-      eventHandlers: {
-        onFuse: props.onFuse,
-        onFuseCanceled: props.onFuseCanceled
       }
     };
 
@@ -32,34 +27,20 @@ class CombineTimeSeriesModal extends Component {
     this.onFuse = this.onFuse.bind(this);
   }
 
-  componentWillReceiveProps(props) {
-    this.setState(state => ({
-      timeSeries: props.timeSeries ? props.timeSeries : [],
-      selectedTimeSeries: [],
-      modalState: {
-        isOpen: props.isOpen
-      },
-      eventHandlers: {
-        onFuse: props.onFuse,
-        onFuseCanceled: props.onFuseCanceled
-      }
-    }));
-  }
-
   onCloseModal() {
     this.setState(state => ({
-      timeSeries: this.state.timeSeries,
+      timeSeries: this.props.timeSeries,
       selectedTimeSeries: [],
       modalState: {
         isOpen: false
       }
     }));
-    this.state.eventHandlers.onFuseCanceled();
+    this.props.onFuseCanceled();
   }
 
   onTimeSeriesSelectedChanged(isChecked, id) {
     this.setState(state => ({
-      timeSeries: this.state.timeSeries,
+      timeSeries: this.props.timeSeries,
       selectedTimeSeries: isChecked
         ? [...this.state.selectedTimeSeries, id]
         : this.state.selectedTimeSeries.filter(seriesId => seriesId !== id)
@@ -68,69 +49,77 @@ class CombineTimeSeriesModal extends Component {
 
   onFuse() {
     if (this.state.selectedTimeSeries.length < 2) return;
-
+    this.props.onFuse(this.state.selectedTimeSeries);
     this.setState(state => ({
-      timeSeries: this.state.timeSeries,
+      timeSeries: this.props.timeSeries,
       selectedTimeSeries: [],
       modalState: {
         isOpen: false
       }
     }));
-    this.state.eventHandlers.onFuse(this.state.selectedTimeSeries);
   }
 
   render() {
     return (
-      <Modal isOpen={this.state.modalState.isOpen}>
+      <Modal isOpen={this.props.isOpen}>
         <ModalHeader>Fuse Multiple Time Series</ModalHeader>
         <ModalBody>
-          {this.state.timeSeries.length === 0 ? (
-            <p class="text-muted m-1">No time series available.</p>
+          {!this.props.timeSeries || this.props.timeSeries.length === 0 ? (
+            <p className="text-muted m-1">No time series available.</p>
           ) : null}
-          {this.state.timeSeries.map((series, key) => (
-            <InputGroup key={series['_id']} style={{ margin: '10px 0px' }}>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
+          {this.props.timeSeries
+            ? this.props.timeSeries.map((series, key) => (
+                <InputGroup key={series['_id']} style={{ margin: '10px 0px' }}>
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <Input
+                        id="checkboxTimeSeries"
+                        addon
+                        type="checkbox"
+                        checked={
+                          this.state.selectedTimeSeries.filter(
+                            filteredSeries => filteredSeries === series['_id']
+                          ).length !== 0
+                        }
+                        onChange={e =>
+                          this.onTimeSeriesSelectedChanged(
+                            e.target.checked,
+                            series['_id']
+                          )
+                        }
+                      />
+                    </InputGroupText>
+                  </InputGroupAddon>
                   <Input
-                    addon
-                    type="checkbox"
-                    checked={
+                    defaultValue={series.name}
+                    className={
                       this.state.selectedTimeSeries.filter(
                         filteredSeries => filteredSeries === series['_id']
                       ).length !== 0
-                    }
-                    onChange={e =>
-                      this.onTimeSeriesSelectedChanged(
-                        e.target.checked,
-                        series['_id']
-                      )
+                        ? 'inputChecked'
+                        : 'inputNotChecked'
                     }
                   />
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                defaultValue={series.name}
-                className={
-                  this.state.selectedTimeSeries.filter(
-                    filteredSeries => filteredSeries === series['_id']
-                  ).length !== 0
-                    ? 'inputChecked'
-                    : 'inputNotChecked'
-                }
-              />
-            </InputGroup>
-          ))}
+                </InputGroup>
+              ))
+            : null}
         </ModalBody>
         <ModalFooter>
           <Button
-            active={this.state.selectedTimeSeries.length <= 1}
+            id="buttonFuseTimeSeries"
+            disabled={this.state.selectedTimeSeries.length <= 1}
             color="primary"
             className="m-1 mr-auto"
             onClick={this.onFuse}
           >
             Fuse
           </Button>{' '}
-          <Button color="secondary" className="m-1" onClick={this.onCloseModal}>
+          <Button
+            id="buttonCancelFuse"
+            color="secondary"
+            className="m-1"
+            onClick={this.onCloseModal}
+          >
             Cancel
           </Button>
         </ModalFooter>

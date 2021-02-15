@@ -1,9 +1,8 @@
-import { mount } from 'enzyme';
-import { configure } from 'enzyme';
+import LabelingsPage from './../../../routes/labelings';
+import { configure, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 
-import LabelingsPage from './../../../routes/labelings';
 import { fakeLabelingData } from './fakeLabelingData';
 
 import { subscribeLabelingsAndLabels } from '../../../services/ApiServices/LabelingServices';
@@ -17,28 +16,86 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe.skip('Success cases', () => {
-  it('Render labeling page with content', async () => {
-    const labelings = fakeLabelingData.labelings;
-    const labels = fakeLabelingData.labels;
+const labelings = fakeLabelingData.labelings;
+const labels = fakeLabelingData.labels;
 
+it('Render without content', () => {
+  delete window.location;
+  const fakeLocation = new URL(
+    'http://localhost:3001/fakeUserName/fakePRojectID/labelings'
+  );
+  global.URLSearchParams = jest.fn(x => ({
+    get: jest.fn(() => undefined)
+  }));
+  subscribeLabelingsAndLabels.mockReturnValue(
+    Promise.resolve(labelings, labels)
+  );
+  const wrapper = shallow(
+    <LabelingsPage location={fakeLocation}></LabelingsPage>
+  );
+  expect(true);
+});
+
+describe('Success cases', () => {
+  delete window.location;
+  const location = new URL(
+    'http://localhost:3001/fakeUserName/fakePRojectID/labelings'
+  );
+  global.URLSearchParams = jest.fn(x => ({
+    get: jest.fn(() => undefined)
+  }));
+
+  const fakeHistory = {
+    replace: jest.fn(),
+    location: { pathname: location.pathname }
+  };
+
+  it('Render page with content', async () => {
     subscribeLabelingsAndLabels.mockReturnValue(
-      Promise.resolve(labelings, labels)
+      Promise.resolve({ labelings: labelings, labels: labels })
     );
-
-    delete window.location;
-    const location = new URL('http://localhost:3001/labelings');
-    global.URLSearchParams = jest.fn(x => ({
-      get: jest.fn(() => undefined)
-    }));
-
-    const wrapper = mount(
-      <LabelingsPage location={location} history=""></LabelingsPage>
+    const wrapper = shallow(
+      <LabelingsPage location={location} history={fakeHistory}></LabelingsPage>
     );
     await flushPromises();
     wrapper.update();
-    labelings.map(labeling => {
-      expect(wrapper.contains(labeling['_id']));
+    labelings.forEach(labeling =>
+      expect(wrapper.html().includes(labeling['_id'])).toBe(true)
+    );
+  });
+
+  it('Click on edit button should open modal to edit labeling', async () => {
+    subscribeLabelingsAndLabels.mockReturnValue(
+      Promise.resolve({ labelings: labelings, labels: labels })
+    );
+    const wrapper = shallow(
+      <LabelingsPage location={location} history={fakeHistory}></LabelingsPage>
+    );
+    await flushPromises();
+    wrapper.update();
+    wrapper
+      .find('#buttonEditLabeling')
+      .first()
+      .simulate('click');
+    expect(fakeHistory.replace).toHaveBeenCalledWith({
+      pathname: 'labelings',
+      search: '?id=' + labelings[0]._id
+    });
+  });
+
+  it('Click on add button should open modal to add labeling', async () => {
+    subscribeLabelingsAndLabels.mockReturnValue(
+      Promise.resolve({ labelings: labelings, labels: labels })
+    );
+    const wrapper = shallow(
+      <LabelingsPage location={location} history={fakeHistory}></LabelingsPage>
+    );
+    await flushPromises();
+    wrapper.update();
+    wrapper.find('#buttonAddLabeling').simulate('click');
+    expect(fakeHistory.replace).toHaveBeenCalledWith({
+      pathname: fakeHistory.location.pathname + '/new',
+      search: null
     });
   });
 });

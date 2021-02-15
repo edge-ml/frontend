@@ -210,26 +210,6 @@ describe.skip('Create a new dataset', () => {
   });
 });
 
-/*describe("Extend an existing dataset", () => {
-  it("Upload new dataset to existing one", async () => {
-    var f = new File([''], csv_dataset_2);
-    updateDataset.mockReturnValue(Promise.resolve(bothCombined));
-
-    const onCloseModalFunc = jest.fn();
-    const onDatasetCompleteFunc = jest.fn();
-
-    const result = mount(<CreateNewDatasetModal dataset={fakeDataset_One} isOpen={true} onDatasetComplete={onDatasetCompleteFunc} onCloseModal={onCloseModalFunc}></CreateNewDatasetModal>)
-    result.find('#fileInput').first().simulate('change', { target: { files: [f] } });
-    result.find('#nameInput').first().simulate('change', { target: { value: "n2" } })
-    result.find('#unitInput').first().simulate('change', { target: { value: "u2" } })
-    result.find('#uploadButton').first().simulate('click');
-    await flushPromises();
-    console.log(result.state())
-    //expect(onCloseModalFunc).toHaveBeenCalledTimes(1);
-    expect(onDatasetCompleteFunc).toBeCalledWith(bothCombined);
-  })
-})*/
-
 function flushPromises() {
   return new Promise(resolve => setImmediate(resolve));
 }

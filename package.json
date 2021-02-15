@@ -90,7 +90,8 @@
             "src/components/**/*.{js}",
             "src/routes/**/*.{js}",
             "src/services/**/*.{js}",
-            "src/App.js"
+            "src/App.js",
+            "src/AppContent.js"
         ]
     },
 

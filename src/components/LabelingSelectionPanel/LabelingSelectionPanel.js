@@ -6,25 +6,11 @@ class LabelingSelectionPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      objectType: props.objectType,
-      labelings: props.labelings,
-      selectedLabelingId: props.selectedLabelingId,
-      onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged,
       uiState: {
         isSticky: false
       }
     };
-
-    this.onAddLabeling = this.onAddLabeling.bind(this);
     this.onScroll = this.onScroll.bind(this);
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState(state => ({
-      labelings: props.labelings,
-      selectedLabelingId: props.selectedLabelingId,
-      onSelectedLabelingIdChanged: props.onSelectedLabelingIdChanged
-    }));
   }
 
   componentDidMount() {
@@ -37,14 +23,7 @@ class LabelingSelectionPanel extends Component {
 
   handleLabelingClicked(e, id) {
     e.preventDefault();
-    this.state.onSelectedLabelingIdChanged(id);
-  }
-
-  onAddLabeling() {
-    console.log('Setting new here');
-    this.props.history.push({
-      pathname: this.props.history.location.pathname + '/new'
-    });
+    this.props.onSelectedLabelingIdChanged(id);
   }
 
   onScroll() {
@@ -68,33 +47,34 @@ class LabelingSelectionPanel extends Component {
         }
       >
         <CardBody className="text-left p-1">
-          {this.state.labelings.map((labeling, index) => (
+          {this.props.labelings.map((labeling, index) => (
             <Button
+              id="buttonLabeling"
               className={classNames(
                 'm-1',
                 {
                   'btn-primary':
-                    labeling['_id'] === this.state.selectedLabelingId
+                    labeling['_id'] === this.props.selectedLabelingId
                 },
                 {
-                  'btn-light': labeling['_id'] !== this.state.selectedLabelingId
+                  'btn-light': labeling['_id'] !== this.props.selectedLabelingId
                 }
               )}
               onClick={e => this.handleLabelingClicked(e, labeling['_id'])}
               color={
-                labeling['_id'] === this.state.selectedLabelingId
+                labeling['_id'] === this.props.selectedLabelingId
                   ? 'primary'
                   : ''
               }
               key={index}
             >
-              {labeling.name} {'(' + (index + 1) + ')'}
+              {labeling.name + '(' + (index + 1) + ')'}
             </Button>
           ))}
           <Button
+            id="buttonAddLabeling"
             className="m-1"
             color="secondary"
-            id="btnAddExperiment"
             onClick={this.props.onAddLabeling}
           >
             + Add

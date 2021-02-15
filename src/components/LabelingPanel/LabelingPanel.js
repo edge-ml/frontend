@@ -76,9 +76,12 @@ class LabelingPanel extends Component {
   }
 
   onAddLabel() {
+    const newHistory = this.props.history.location.pathname.split('/');
+    newHistory.length -= 2;
     this.props.history.push({
-      pathname: '/labelings',
-      search: '?id=' + this.state.labeling['_id']
+      pathname: newHistory.join('/') + '/labelings',
+      search: '?id=' + this.state.labeling['_id'],
+      state: this.props.history.location.pathname
     });
   }
 
@@ -184,7 +187,7 @@ class LabelingPanel extends Component {
               color="secondary"
               onClick={this.onAddLabel}
             >
-              + Add
+              + Edit
             </Button>
             {this.state.labeling
               ? this.state.labeling.labels

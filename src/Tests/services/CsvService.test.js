@@ -8,7 +8,7 @@ import {
 import {
   fakeDataset_One,
   fakeDataset_Two,
-  bothCombined
+  fakeDatasetCombination_one_two
 } from '../fakeData/fakeDatasets';
 
 const fs = require('fs');
@@ -248,5 +248,5 @@ describe('generateDataset', () => {
 
 describe.skip('ExtendExistingDataset', () => {
   const fusedDataset = extendExistingDataset(fakeDataset_One, fakeDataset_Two);
-  expect(fusedDataset).toEqual(bothCombined[0]);
+  expect(fusedDataset).toEqual(fakeDatasetCombination_one_two);
 });
