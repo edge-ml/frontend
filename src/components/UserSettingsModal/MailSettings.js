@@ -51,7 +51,7 @@ class MailSettings extends Component {
         .then(data => window.alert(data))
         .catch(err => {
           this.setState({
-            emailError: err.data
+            emailError: err.error
           });
         });
     }
@@ -82,6 +82,10 @@ class MailSettings extends Component {
         </InputGroup>
         <Button
           id="buttonSaveNewMail"
+          disabled={
+            !this.state.newEmail ||
+            this.state.newEmail !== this.state.confirmationEmail
+          }
           color="primary"
           className="m-1 mr-auto"
           onClick={this.onEmailChangeSubmit}

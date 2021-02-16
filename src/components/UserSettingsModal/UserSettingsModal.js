@@ -13,6 +13,7 @@ import classnames from 'classnames';
 import MailSettings from './MailSettings';
 import PasswordSettings from './PasswordSettings';
 import TwoFaSettings from './TwoFaSettings';
+import UserNameSettings from './UserNameSettings';
 
 class UserSettingsModal extends Component {
   constructor(props) {
@@ -38,7 +39,7 @@ class UserSettingsModal extends Component {
 
   render() {
     return (
-      <Modal isOpen={this.props.isOpen}>
+      <Modal size="lg" isOpen={this.props.isOpen}>
         <ModalHeader>User Settings</ModalHeader>
         <ModalBody>
           <Nav tabs>
@@ -78,6 +79,18 @@ class UserSettingsModal extends Component {
                 2FA
               </NavLink>
             </NavItem>
+            <NavItem style={{ cursor: 'pointer' }}>
+              <NavLink
+                className={classnames({
+                  active: this.state.activeTab === 'userName'
+                })}
+                onClick={() => {
+                  this.toggleTab('userName');
+                }}
+              >
+                Change user name
+              </NavLink>
+            </NavItem>
           </Nav>
           {this.state.activeTab === 'mailChange' ? (
             <MailSettings id="mailSettings"></MailSettings>
@@ -93,6 +106,9 @@ class UserSettingsModal extends Component {
               onLogout={this.onLogout}
               enable2FA={this.props.enable2FA}
             ></TwoFaSettings>
+          ) : null}
+          {this.state.activeTab === 'userName' ? (
+            <UserNameSettings id="userNameSettings"></UserNameSettings>
           ) : null}
         </ModalBody>
         <ModalFooter>

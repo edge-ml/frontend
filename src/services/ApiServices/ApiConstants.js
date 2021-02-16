@@ -28,7 +28,8 @@ module.exports = {
     MAIL: 'mail',
     CHANGE_MAIL: 'changeMail',
     CHANGE_PASSWORD: 'changePassword',
-    ID: 'id'
+    ID: 'id',
+    CHANGE_USERNAME: 'changeUserName'
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',

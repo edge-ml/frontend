@@ -129,7 +129,6 @@ module.exports.getUserMail = userIDs => {
         resolve(res.data[0]);
       })
       .catch(err => {
-        console.log(err.response);
         reject(err.response);
       });
   });
@@ -146,7 +145,26 @@ module.exports.changeUserMail = newUserMail => {
       )
     )
       .then(res => resolve(res.data))
-      .catch(err => reject(err.response));
+      .catch(err => reject(err.response.data));
+  });
+};
+
+module.exports.changeUserName = newUserName => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.PUT,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.CHANGE_USERNAME,
+        { userName: newUserName }
+      )
+    )
+      .then(data => {
+        resolve(data.data);
+      })
+      .catch(err => {
+        reject(err.response.data);
+      });
   });
 };
 
@@ -161,7 +179,7 @@ module.exports.changeUserPassword = (currentPassword, newPassword) => {
       )
     )
       .then(res => resolve(res.data))
-      .catch(err => reject(err.response));
+      .catch(err => reject(err.response.data));
   });
 };
 

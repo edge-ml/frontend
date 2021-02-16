@@ -3,12 +3,7 @@ import { mount, configure, shallow } from 'enzyme';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Adapter from 'enzyme-adapter-react-16';
-import { NavLink } from 'reactstrap';
-import {
-  reset2FA,
-  init2FA,
-  verify2FA
-} from '../../../services/ApiServices/AuthentificationServices';
+import { init2FA } from '../../../services/ApiServices/AuthentificationServices';
 
 configure({ adapter: new Adapter() });
 jest.mock('../../../services/ApiServices/AuthentificationServices');
@@ -45,12 +40,11 @@ describe('Click though tabs', () => {
     expect(wrapper.find('#passwordSettings').exists()).toBe(true);
   });
 
-  it.skip('Click on twoFaSettings', () => {
-    const wrapper = shallow(
+  it('Click on twoFaSettings', () => {
+    init2FA.mockReturnValue(Promise.resolve(undefined));
+    const wrapper = mount(
       <UserSettingsModal isOpen={true}></UserSettingsModal>
     );
-    console.log(wrapper.html());
-    console.log(wrapper.find('.nav-link').map(elm => elm.html()));
     wrapper
       .find('.nav-link')
       .at(2)
@@ -58,7 +52,19 @@ describe('Click though tabs', () => {
     expect(wrapper.find('#twoFaSettings').exists()).toBe(true);
   });
 
-  it.skip('Click on twoFaSettings, then on mailSettings', () => {
+  it('Click on change username', () => {
+    const wrapper = mount(
+      <UserSettingsModal isOpen={true}></UserSettingsModal>
+    );
+    wrapper
+      .find('.nav-link')
+      .at(3)
+      .simulate('click');
+    expect(wrapper.find('#userNameSettings').exists()).toBe(true);
+  });
+
+  it('Click on twoFaSettings, then on mailSettings', () => {
+    init2FA.mockReturnValue(Promise.resolve(undefined));
     const wrapper = mount(
       <UserSettingsModal isOpen={true}></UserSettingsModal>
     );

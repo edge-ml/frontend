@@ -454,7 +454,17 @@ class App extends Component {
                           }
                         >
                           <div>
-                            Signed in as <b>{this.state.userMail}</b>
+                            <div>
+                              Signed in as <b>{this.state.userName}</b>
+                            </div>
+                            <div
+                              style={{
+                                textAlign: 'right',
+                                fontSize: 'smaller'
+                              }}
+                            >
+                              {this.state.userMail}
+                            </div>
                           </div>
                           <Button
                             outline

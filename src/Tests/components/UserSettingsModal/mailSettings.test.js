@@ -46,7 +46,7 @@ it('E-mails do not match', () => {
     .find('#buttonSaveNewMail')
     .first()
     .simulate('click');
-  expect(wrapper.find('#emailError').exists()).toBe(true);
+  expect(changeUserMail).not.toBeCalled();
 });
 
 it('Input is not an e-mail address', () => {
@@ -68,7 +68,7 @@ it('Input is not an e-mail address', () => {
 
 it('Backend rejects e-mail change request', async () => {
   changeUserMail.mockImplementation(() =>
-    Promise.reject({ data: 'Backend error message' })
+    Promise.reject({ error: 'Backend error message' })
   );
   const wrapper = mount(<MailSettings></MailSettings>);
   wrapper
