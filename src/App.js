@@ -96,18 +96,22 @@ class App extends Component {
     });
   }
 
-  onProjectsChanged(projects) {
+  onProjectsChanged(projects, index) {
     // TODO: Need to modify url here
     if (projects.length !== 0) {
       setProject(projects[0]._id);
     }
+    const projectIndex = index <= projects.length && index >= 0 ? index : 0;
     this.setState({
       projects: projects,
-      currentProject: 0,
+      currentProject: projectIndex,
       projectEditModalOpen: false
     });
     if (projects.length !== 0) {
-      this.changeURL(this.state.projects[0]._id, this.state.userName);
+      this.changeURL(
+        this.state.projects[projectIndex].name,
+        this.state.userName
+      );
     }
   }
 
@@ -130,7 +134,7 @@ class App extends Component {
       currentProject: index
     });
 
-    this.changeURL(this.state.projects[index]._id, this.state.userName);
+    this.changeURL(this.state.projects[index].name, this.state.userName);
   }
 
   toggleProjects() {
@@ -142,6 +146,7 @@ class App extends Component {
   refreshProjects() {
     getProjects()
       .then(projects => {
+        console.log(projects);
         if (projects.length === 0) {
           this.setState({
             projects: []
@@ -162,7 +167,7 @@ class App extends Component {
               '/' +
                 this.state.userName +
                 '/' +
-                projects[projectIndex]._id +
+                projects[projectIndex].name +
                 '/' +
                 params.slice(3).join('/')
             );
@@ -187,7 +192,7 @@ class App extends Component {
           '/' +
             this.state.userName +
             '/' +
-            projects[currentProject]._id +
+            projects[currentProject].name +
             '/list'
         );
       })
@@ -379,7 +384,7 @@ class App extends Component {
                               '/' +
                               this.state.userName +
                               '/' +
-                              projectAvailable._id +
+                              projectAvailable.name +
                               '/list'
                             }
                           >
@@ -391,7 +396,7 @@ class App extends Component {
                               '/' +
                               this.state.userName +
                               '/' +
-                              projectAvailable._id +
+                              projectAvailable.name +
                               '/labelings'
                             }
                           >
@@ -404,7 +409,7 @@ class App extends Component {
                               '/' +
                               this.state.userName +
                               '/' +
-                              projectAvailable._id +
+                              projectAvailable.name +
                               '/experiments'
                             }
                           >
@@ -417,7 +422,7 @@ class App extends Component {
                               '/' +
                               this.state.userName +
                               '/' +
-                              projectAvailable._id +
+                              projectAvailable.name +
                               '/settings'
                             }
                           >

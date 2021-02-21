@@ -59,11 +59,13 @@ class EditProjectModal extends Component {
   }
 
   onSave() {
-    console.log(this.state.project);
     if (this.props.isNewProject) {
       createProject(this.state.project)
         .then(data => {
-          this.props.projectChanged(data);
+          const projectIndex = data.findIndex(
+            elm => elm.name === this.state.project.name
+          );
+          this.props.projectChanged(data, projectIndex);
         })
         .catch(err => {
           this.setState({

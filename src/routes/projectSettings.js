@@ -71,7 +71,10 @@ class ProjectSettings extends Component {
     );
     updateProject({ ...this.state.project, users: tmpUsers })
       .then(data => {
-        this.props.onProjectsChanged(data);
+        const projectIndex = data.findIndex(
+          elm => elm._id === this.state.project._id
+        );
+        this.props.onProjectsChanged(data, projectIndex);
       })
       .catch(err => {
         this.setState({
