@@ -24,7 +24,12 @@ class CustomDropDownMenu extends Component {
   }
 
   closeMenu(event) {
-    if (this.dropdownMenu && !this.dropdownMenu.contains(event.target)) {
+    event.preventDefault();
+    if (
+      this.state.showMenu &&
+      this.dropdownMenu &&
+      !this.dropdownMenu.contains(event.target)
+    ) {
       this.setState({ showMenu: false }, () => {
         document.removeEventListener('click', this.closeMenu);
       });
@@ -32,9 +37,15 @@ class CustomDropDownMenu extends Component {
   }
 
   onItemClick(e) {
-    this.setState({
-      showMenu: !this.state.showMenu
-    });
+    e.preventDefault();
+    this.setState(
+      {
+        showMenu: !this.state.showMenu
+      },
+      () => {
+        document.removeEventListener('click', this.closeMenu);
+      }
+    );
   }
 
   render() {
