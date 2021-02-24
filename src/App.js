@@ -19,7 +19,7 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCaretDown, faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
@@ -326,45 +326,49 @@ class App extends Component {
                           marginLeft: '8px'
                         }}
                       ></NavItem>
-                      <Dropdown
-                        className="navbar-dropdown"
-                        style={{ float: 'right' }}
-                        nav
-                        inNavbar
-                        isOpen={this.state.projectsOpen}
-                        toggle={this.toggleProjects}
-                      >
-                        <DropdownToggle
-                          className={
-                            this.state.projects.length === 0 ? 'disabled' : ''
+                      <NavItem>
+                        <CustomDropDownMenu
+                          left
+                          content={
+                            <div style={{ display: 'inline-flex' }}>
+                              <div>
+                                {projectAvailable
+                                  ? this.state.projects[
+                                      this.state.currentProject
+                                    ].name
+                                  : this.state.projects.length === 0
+                                  ? 'No projects'
+                                  : 'Loading'}
+                              </div>{' '}
+                              <div
+                                style={{ display: 'flex', marginLeft: '4px' }}
+                              >
+                                <FontAwesomeIcon
+                                  style={{
+                                    color: '#8b8d8f',
+                                    float: 'left',
+                                    margin: 'auto',
+                                    cursor: 'pointer'
+                                  }}
+                                  icon={faCaretDown}
+                                  className="mr-2 fa-s"
+                                ></FontAwesomeIcon>
+                              </div>
+                            </div>
                           }
-                          nav
-                          caret
-                          style={{ paddingLeft: '0px' }}
                         >
-                          {projectAvailable
-                            ? this.state.projects[this.state.currentProject]
-                                .name
-                            : this.state.projects.length === 0
-                            ? 'No projects'
-                            : 'Loading'}
-                        </DropdownToggle>
-                        {this.state.projects &&
-                        this.state.projects.length === 0 ? null : (
-                          <DropdownMenu>
-                            {this.state.projects.map((project, index) => {
-                              return (
-                                <DropdownItem
-                                  onClick={() => this.onProjectClick(index)}
-                                  key={project._id}
-                                >
-                                  {project.name}
-                                </DropdownItem>
-                              );
-                            })}
-                          </DropdownMenu>
-                        )}
-                      </Dropdown>
+                          {this.state.projects.map((project, index) => {
+                            return (
+                              <div
+                                onClick={() => this.onProjectClick(index)}
+                                key={project._id}
+                              >
+                                {project.name}
+                              </div>
+                            );
+                          })}
+                        </CustomDropDownMenu>
+                      </NavItem>
                       <div style={{ display: 'block', margin: 'auto' }}>
                         <FontAwesomeIcon
                           onClick={() => this.onProjectEditModal(true)}
@@ -451,6 +455,7 @@ class App extends Component {
                         style={{ paddingLeft: '8px' }}
                       >
                         <CustomDropDownMenu
+                          right
                           content={
                             <FontAwesomeIcon
                               style={{

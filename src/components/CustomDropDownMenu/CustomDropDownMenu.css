@@ -1,10 +1,7 @@
 .dropDown {
   display: flex;
   position: absolute;
-  right: 0;
-  left: auto;
   flex-direction: column;
-  margin-right: 16px;
 
   z-index: 1000;
   min-width: 10rem;
@@ -19,4 +16,14 @@
 .customDropDownItem {
   padding: 8px;
   display: inline-grid;
+}
+
+.dropDown-right {
+  right: 0;
+  left: auto;
+}
+
+.dropDown-legt {
+  right: auto;
+  left: 0;
 }
