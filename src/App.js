@@ -78,10 +78,16 @@ class App extends Component {
     this.changeURL = this.changeURL.bind(this);
   }
 
-  changeURL(projectID, userName) {
+  changeURL(projectName) {
     const restUrl = this.props.history.location.pathname.split('/');
-    restUrl[2] = projectID;
-    this.props.history.push(restUrl.join('/'));
+    this.props.history.push(
+      '/' +
+        this.state.userName +
+        '/' +
+        projectName +
+        '/' +
+        restUrl[restUrl.length - 1]
+    );
   }
 
   enable2FA() {
@@ -97,7 +103,6 @@ class App extends Component {
   }
 
   onProjectsChanged(projects, index) {
-    // TODO: Need to modify url here
     if (projects.length !== 0) {
       setProject(projects[0]._id);
     }
@@ -108,10 +113,7 @@ class App extends Component {
       projectEditModalOpen: false
     });
     if (projects.length !== 0) {
-      this.changeURL(
-        this.state.projects[projectIndex].name,
-        this.state.userName
-      );
+      this.changeURL(this.state.projects[projectIndex].name);
     }
   }
 
@@ -146,11 +148,11 @@ class App extends Component {
   refreshProjects() {
     getProjects()
       .then(projects => {
-        console.log(projects);
         if (projects.length === 0) {
           this.setState({
             projects: []
           });
+          this.props.history.push('/');
           return;
         }
 
@@ -196,8 +198,12 @@ class App extends Component {
             '/list'
         );
       })
-      .catch(err => {
-        this.props.history.push('/errorpage/Could not connect to Backend');
+      .catch(errorStatus => {
+        if (errorStatus) {
+          this.onLogout(true);
+        } else {
+          this.props.history.push('/errorpage/Could not connect to Backend');
+        }
       });
   }
 
@@ -291,7 +297,7 @@ class App extends Component {
           path={'/errorpage/:error/:errorText?/:statusText?'}
           render={props => <ErrorPage {...props} />}
         />
-        {this.props.history.location.pathname !== '/register' ? (
+        {!this.props.history.location.pathname.includes('/register') ? (
           <AuthWall
             isLoggedIn={this.state.isLoggedIn}
             onLogin={this.onLogin}
@@ -459,7 +465,7 @@ class App extends Component {
                           }
                         >
                           <div>
-                            <div>
+                            <div style={{ textAlign: 'right' }}>
                               Signed in as <b>{this.state.userName}</b>
                             </div>
                             <div

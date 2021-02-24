@@ -44,7 +44,7 @@ module.exports.getProjects = () => {
         });
       })
       .catch(err => {
-        reject(err.response);
+        reject(err.response ? err.response.status : undefined);
       });
   });
 };
