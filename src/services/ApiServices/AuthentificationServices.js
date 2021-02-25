@@ -203,19 +203,17 @@ module.exports.getUserIds = userMails => {
   });
 };
 
-/*function getUserId(userMail) {
+module.exports.getMailSuggestions = userMail => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
-        apiConst.HTTP_METHODS.POST,
+        apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
-        apiConsts.AUTH_ENDPOINTS.ID,
+        apiConsts.AUTH_ENDPOINTS.MAILSUGGEST,
         { email: userMail }
       )
     )
-      .then((data) => {
-        resolve(data.data);
-      })
-      .catch(reject(err));
+      .then(data => resolve(data.data))
+      .catch(err => reject(err.response.data.error));
   });
-}*/
+};

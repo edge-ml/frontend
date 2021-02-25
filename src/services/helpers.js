@@ -15,3 +15,7 @@ export const getServerTime = () => {
 };
 
 export const isNumber = val => /^\d+$/.test(val);
+
+export const betterModulo = (x, n) => {
+  return ((x % n) + n) % n;
+};

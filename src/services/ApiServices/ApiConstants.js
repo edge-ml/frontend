@@ -27,6 +27,7 @@ module.exports = {
     RESET2FA: '2fa/reset',
     MAIL: 'mail',
     CHANGE_MAIL: 'changeMail',
+    MAILSUGGEST: 'mailsuggest',
     CHANGE_PASSWORD: 'changePassword',
     ID: 'id',
     CHANGE_USERNAME: 'changeUserName'

@@ -13,6 +13,8 @@ import {
   updateProject
 } from './../services/ApiServices/ProjectService';
 import NoProjectPage from './../components/NoProjectPage/NoProjectPage';
+import AutocompleteInput from '../components/AutoCompleteInput/AutocompleteInput';
+import { getMailSuggestions } from '../services/ApiServices/AuthentificationServices';
 
 class ProjectSettings extends Component {
   constructor(props) {
@@ -60,7 +62,9 @@ class ProjectSettings extends Component {
       JSON.stringify(prevProps.project) !== JSON.stringify(this.props.project)
     ) {
       this.setState({
-        project: this.props.project
+        project: this.props.project,
+        originalProject: this.props.project,
+        originalUsers: this.props.project.users
       });
     }
   }
@@ -189,7 +193,7 @@ class ProjectSettings extends Component {
                   .map(elm => elm._id)
                   .includes(user._id) && user._id !== undefined;
               return (
-                <tr key={oldUser}>
+                <tr key={user + index}>
                   <td className="datasets-column">
                     <Input
                       id={'checkboxDeleteUser' + index}
@@ -204,13 +208,18 @@ class ProjectSettings extends Component {
                     {oldUser ? (
                       user.email
                     ) : (
-                      <Input
+                      <AutocompleteInput
+                        getSuggestions={getMailSuggestions}
+                        filter={[
+                          ...this.state.project.users.map(elm => elm.email),
+                          this.state.project.admin.email
+                        ]}
                         id={'inputUserMail' + index}
                         type="text"
                         value={user.email}
                         placeholder="Enter user e-mail"
                         onChange={e => this.onUserMailChange(index, e)}
-                      />
+                      ></AutocompleteInput>
                     )}
                   </td>
                   <td style={{ textAlign: 'right' }}>

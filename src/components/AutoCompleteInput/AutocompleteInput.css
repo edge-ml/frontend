@@ -1,0 +1,28 @@
+.autocomplete-menu {
+  color: #212529;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  width: 100%;
+}
+
+.autocomplete-wrapper {
+  position: relative;
+}
+
+.autocomplete-button {
+  background-color: #fff;
+  border: none;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  padding: 3px 12px 3px 12px;
+}
+
+.select {
+  background-color: #007bff;
+  color: #fff;
+}
