@@ -76,7 +76,9 @@ class CustomDropDownMenu extends Component {
                 style={{ cursor: 'pointer' }}
                 onClick={this.onItemClick}
                 key={index}
-                className="customDropDownItem"
+                className={classNames('customDropDownItem', {
+                  noHover: this.props.noHover
+                })}
               >
                 {item}
               </div>

@@ -14,7 +14,7 @@ import {
 } from './../services/ApiServices/ProjectService';
 import NoProjectPage from './../components/NoProjectPage/NoProjectPage';
 import AutocompleteInput from '../components/AutoCompleteInput/AutocompleteInput';
-import { getMailSuggestions } from '../services/ApiServices/AuthentificationServices';
+import { getUserNameSuggestions } from '../services/ApiServices/AuthentificationServices';
 
 class ProjectSettings extends Component {
   constructor(props) {
@@ -40,7 +40,7 @@ class ProjectSettings extends Component {
     this.onAddUser = this.onAddUser.bind(this);
     this.onNameChanged = this.onNameChanged.bind(this);
     this.onDeleteUser = this.onDeleteUser.bind(this);
-    this.onUserMailChange = this.onUserMailChange.bind(this);
+    this.onUserNameChange = this.onUserNameChange.bind(this);
     this.onSave = this.onSave.bind(this);
     this.toggleCheck = this.toggleCheck.bind(this);
   }
@@ -111,7 +111,7 @@ class ProjectSettings extends Component {
 
   onAddUser(e) {
     var tmpProject = { ...this.state.project };
-    tmpProject.users.push({ _id: undefined, email: '' });
+    tmpProject.users.push({ _id: undefined, userName: '' });
     this.setState({
       project: tmpProject,
       error: undefined
@@ -127,9 +127,9 @@ class ProjectSettings extends Component {
     }
   }
 
-  onUserMailChange(index, e) {
+  onUserNameChange(index, e) {
     const project = { ...this.state.project };
-    project.users[index].email = e.target.value;
+    project.users[index].userName = e.target.value;
     this.setState({
       project: project,
       error: undefined
@@ -175,7 +175,7 @@ class ProjectSettings extends Component {
           <InputGroupAddon addonType="prepend">
             <InputGroupText>{'Admin'}</InputGroupText>
           </InputGroupAddon>
-          <Input value={this.props.project.admin.email} readOnly />
+          <Input value={this.props.project.admin.userName} readOnly />
         </InputGroup>
         <h5 style={{ paddingTop: '16px' }}>Users</h5>
         <Table striped>
@@ -206,19 +206,19 @@ class ProjectSettings extends Component {
                   </td>
                   <td>
                     {oldUser ? (
-                      user.email
+                      user.userName
                     ) : (
                       <AutocompleteInput
-                        getSuggestions={getMailSuggestions}
+                        getSuggestions={getUserNameSuggestions}
                         filter={[
-                          ...this.state.project.users.map(elm => elm.email),
-                          this.state.project.admin.email
+                          ...this.state.project.users.map(elm => elm.userName),
+                          this.state.project.admin.userName
                         ]}
                         id={'inputUserMail' + index}
                         type="text"
-                        value={user.email}
-                        placeholder="Enter user e-mail"
-                        onChange={e => this.onUserMailChange(index, e)}
+                        value={user.userName}
+                        placeholder="Enter username"
+                        onChange={e => this.onUserNameChange(index, e)}
                       ></AutocompleteInput>
                     )}
                   </td>

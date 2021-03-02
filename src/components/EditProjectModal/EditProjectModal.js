@@ -17,6 +17,9 @@ import {
   createProject
 } from './../../services/ApiServices/ProjectService';
 
+import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteInput';
+import { getUserNameSuggestions } from '../../services/ApiServices/AuthentificationServices';
+
 class EditProjectModal extends Component {
   constructor(props) {
     super(props);
@@ -31,13 +34,13 @@ class EditProjectModal extends Component {
     this.onAddUser = this.onAddUser.bind(this);
     this.onDeleteUser = this.onDeleteUser.bind(this);
     this.onCancel = this.onCancel.bind(this);
-    this.onUserMailChange = this.onUserMailChange.bind(this);
+    this.onUserNameChange = this.onUserNameChange.bind(this);
   }
 
-  onUserMailChange(e, index) {
+  onUserNameChange(e, index) {
     e.preventDefault();
     const project = { ...this.state.project };
-    project.users[index].email = e.target.value;
+    project.users[index].userName = e.target.value;
     this.setState({
       project: project
     });
@@ -84,19 +87,10 @@ class EditProjectModal extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.project && !nextProps.isNewProject) {
-      var objectCopy = JSON.parse(JSON.stringify(nextProps.project));
-      this.setState({
-        project: objectCopy,
-        originalProject: objectCopy,
-        originalUsers: objectCopy.users
-      });
-    } else {
-      const newProject = { name: '', users: [] };
-      this.setState({
-        project: newProject
-      });
-    }
+    const newProject = { name: '', users: [] };
+    this.setState({
+      project: newProject
+    });
   }
 
   onNameChanged(newName) {
@@ -109,7 +103,7 @@ class EditProjectModal extends Component {
 
   onAddUser() {
     var tmpProject = { ...this.state.project };
-    tmpProject.users.push({ _id: undefined, email: '' });
+    tmpProject.users.push({ _id: undefined, userName: '' });
     this.setState({
       project: tmpProject
     });
@@ -159,7 +153,7 @@ class EditProjectModal extends Component {
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>{'Admin'}</InputGroupText>
               </InputGroupAddon>
-              <Input value={this.state.project.admin.email} readOnly />
+              <Input value={this.state.project.admin.userName} readOnly />
             </InputGroup>
           )}
           <h5 style={{ paddingTop: '16px' }}>Users</h5>
@@ -180,14 +174,22 @@ class EditProjectModal extends Component {
                       {this.state.originalUsers
                         .map(elm => elm._id)
                         .includes(user._id) && user._id !== '' ? (
-                        user.email
+                        user.userName
                       ) : (
-                        <Input
+                        <AutoCompleteInput
                           type="text"
                           name="User ID"
-                          placeholder="Enter user e-mail"
-                          onChange={e => this.onUserMailChange(e, index)}
-                        />
+                          placeholder="Enter username"
+                          onChange={e => this.onUserNameChange(e, index)}
+                          value={user.userName}
+                          getSuggestions={getUserNameSuggestions}
+                          filter={[
+                            ...this.state.project.users.map(
+                              elm => elm.userName
+                            ),
+                            this.props.userName
+                          ]}
+                        ></AutoCompleteInput>
                       )}
                     </td>
                     <td style={{ textAlign: 'right' }}>

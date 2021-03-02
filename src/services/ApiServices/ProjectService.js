@@ -6,24 +6,42 @@ const getUserIds = require('../ApiServices/AuthentificationServices')
   .getUserIds;
 
 function getUserMails(project) {
-  const userList = [project.admin, ...project.users];
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.POST,
-        apiConsts.AUTH_URI,
-        apiConsts.AUTH_ENDPOINTS.MAIL,
-        userList
+  if (project.users) {
+    const userList = [project.admin, ...project.users];
+    return new Promise((resolve, reject) => {
+      axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.POST,
+          apiConsts.AUTH_URI,
+          apiConsts.AUTH_ENDPOINTS.USERNAME,
+          userList
+        )
       )
-    )
-      .then(result => {
-        project.admin = result.data[0];
-        result.data.shift();
-        project.users = result.data;
-        resolve(project);
-      })
-      .catch(err => reject(err.response));
-  });
+        .then(result => {
+          project.admin = result.data[0];
+          result.data.shift();
+          project.users = result.data;
+          resolve(project);
+        })
+        .catch(err => reject(err.response));
+    });
+  } else {
+    return new Promise((resolve, reject) => {
+      axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.POST,
+          apiConsts.AUTH_URI,
+          apiConsts.AUTH_ENDPOINTS.USERNAME,
+          [project.admin]
+        )
+      )
+        .then(result => {
+          project.admin = result.data[0];
+          resolve(project);
+        })
+        .catch(err => reject(err.response));
+    });
+  }
 }
 
 module.exports.getProjects = () => {
@@ -37,7 +55,7 @@ module.exports.getProjects = () => {
     )
       .then(result => {
         var promises = result.data.map(elm => {
-          return elm.users ? getUserMails(elm) : Promise.resolve(elm);
+          return getUserMails(elm);
         });
         Promise.all(promises).then(result => {
           resolve(result);
@@ -52,7 +70,7 @@ module.exports.getProjects = () => {
 module.exports.createProject = project => {
   return new Promise((resolve, reject) => {
     const tmpProject = project;
-    getUserIds(project.users.map(elm => elm.email)).then(userData => {
+    getUserIds(project.users.map(elm => elm.userName)).then(userData => {
       tmpProject.users = userData;
       axios(
         apiConsts.generateApiRequest(
@@ -73,7 +91,7 @@ module.exports.createProject = project => {
 module.exports.updateProject = project => {
   return new Promise((resolve, reject) => {
     const tmpProject = project;
-    getUserIds(project.users.map(elm => elm.email)).then(userData => {
+    getUserIds(project.users.map(elm => elm.userName)).then(userData => {
       tmpProject.users = userData;
       axios(
         apiConsts.generateApiRequest(

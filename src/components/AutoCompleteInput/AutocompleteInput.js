@@ -20,6 +20,9 @@ class AutocompleteInput extends Component {
   }
 
   onInputChange(e) {
+    if (e.target.value === '') {
+      this.closeMenu();
+    }
     if (this.props.getSuggestions && e.target.value !== '') {
       this.props.getSuggestions(e.target.value).then(data => {
         let newData = data;

@@ -18,6 +18,11 @@
   display: inline-grid;
 }
 
+.customDropDownItem:not(.noHover):hover {
+  color: white;
+  background-color: #007bff;
+}
+
 .dropDown-right {
   right: 0;
   left: auto;

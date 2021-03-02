@@ -27,10 +27,11 @@ module.exports = {
     RESET2FA: '2fa/reset',
     MAIL: 'mail',
     CHANGE_MAIL: 'changeMail',
-    MAILSUGGEST: 'mailsuggest',
+    USERNAMESUGGEST: 'userNameSuggest',
     CHANGE_PASSWORD: 'changePassword',
     ID: 'id',
-    CHANGE_USERNAME: 'changeUserName'
+    CHANGE_USERNAME: 'changeUserName',
+    USERNAME: 'userName'
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',

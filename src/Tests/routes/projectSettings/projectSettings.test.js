@@ -68,11 +68,11 @@ describe('Editing users', () => {
     wrapper.find('#buttonAddUser').simulate('click');
     wrapper
       .find('#inputUserMail0')
-      .simulate('change', { target: { value: 'testMail@teco.edu' } });
+      .simulate('change', { target: { value: 'testUserName' } });
     wrapper.find('#buttonSaveProject').simulate('click');
     const users = [
       ...adminProject.users,
-      { _id: undefined, email: 'testMail@teco.edu' }
+      { _id: undefined, userName: 'testUserName' }
     ];
     expect(updateProject).toBeCalledWith({ ...adminProject, users: users });
   });

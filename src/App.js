@@ -78,13 +78,13 @@ class App extends Component {
     this.changeURL = this.changeURL.bind(this);
   }
 
-  changeURL(projectName) {
+  changeURL(project) {
     const restUrl = this.props.history.location.pathname.split('/');
     this.props.history.push(
       '/' +
-        this.state.userName +
+        project.admin.userName +
         '/' +
-        projectName +
+        project.name +
         '/' +
         restUrl[restUrl.length - 1]
     );
@@ -113,7 +113,7 @@ class App extends Component {
       projectEditModalOpen: false
     });
     if (projects.length !== 0) {
-      this.changeURL(this.state.projects[projectIndex].name);
+      this.changeURL(this.state.projects[projectIndex]);
     }
   }
 
@@ -136,7 +136,7 @@ class App extends Component {
       currentProject: index
     });
 
-    this.changeURL(this.state.projects[index].name, this.state.userName);
+    this.changeURL(this.state.projects[index]);
   }
 
   toggleProjects() {
@@ -167,7 +167,7 @@ class App extends Component {
             });
             this.props.history.push(
               '/' +
-                this.state.userName +
+                projects[projectIndex].admin.userName +
                 '/' +
                 projects[projectIndex].name +
                 '/' +
@@ -192,7 +192,7 @@ class App extends Component {
         });
         this.props.history.push(
           '/' +
-            this.state.userName +
+            projects[currentProject].admin.userName +
             '/' +
             projects[currentProject].name +
             '/list'
@@ -285,6 +285,7 @@ class App extends Component {
           }
           isOpen={this.state.projectEditModalOpen}
           isNewProject={this.state.projectEditModalNew}
+          userName={this.state.userName}
           onClose={this.onProjectModalClose}
           projectChanged={this.onProjectsChanged}
         ></EditProjectModal>
@@ -360,6 +361,7 @@ class App extends Component {
                           {this.state.projects.map((project, index) => {
                             return (
                               <div
+                                className="dropDownItem"
                                 onClick={() => this.onProjectClick(index)}
                                 key={project._id}
                               >
@@ -456,6 +458,7 @@ class App extends Component {
                       >
                         <CustomDropDownMenu
                           right
+                          noHover
                           content={
                             <FontAwesomeIcon
                               style={{
@@ -470,7 +473,12 @@ class App extends Component {
                           }
                         >
                           <div>
-                            <div style={{ textAlign: 'right' }}>
+                            <div
+                              style={{
+                                textAlign: 'right',
+                                width: 'max-content'
+                              }}
+                            >
                               Signed in as <b>{this.state.userName}</b>
                             </div>
                             <div

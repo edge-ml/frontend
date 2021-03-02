@@ -183,34 +183,31 @@ module.exports.changeUserPassword = (currentPassword, newPassword) => {
   });
 };
 
-module.exports.getUserIds = userMails => {
-  return new Promise((resolve, reject) => {
-    const promises = userMails.map(elm => {
-      return axios(
-        apiConsts.generateApiRequest(
-          apiConsts.HTTP_METHODS.POST,
-          apiConsts.AUTH_URI,
-          apiConsts.AUTH_ENDPOINTS.ID,
-          { email: elm }
-        )
-      );
-    });
-    Promise.all(promises)
-      .then(data => {
-        resolve(data.map(elm => elm.data));
-      })
-      .catch(err => reject(err.response));
-  });
-};
-
-module.exports.getMailSuggestions = userMail => {
+module.exports.getUserIds = userNames => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.AUTH_URI,
-        apiConsts.AUTH_ENDPOINTS.MAILSUGGEST,
-        { email: userMail }
+        apiConsts.AUTH_ENDPOINTS.ID,
+        userNames
+      )
+    )
+      .then(data => {
+        resolve(data.data);
+      })
+      .catch(err => reject(err.response));
+  });
+};
+
+module.exports.getUserNameSuggestions = userName => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.USERNAMESUGGEST,
+        { userName: userName }
       )
     )
       .then(data => resolve(data.data))
