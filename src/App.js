@@ -155,26 +155,23 @@ class App extends Component {
           this.props.history.push('/');
           return;
         }
-
         //Check if url contains useful information
         const params = this.props.history.location.pathname.split('/');
-        if (params !== '') {
-          const projectIndex = projects.findIndex(elm => elm._id === params[2]);
-          if (projectIndex !== -1) {
-            this.setState({
-              projects: projects,
-              currentProject: projectIndex
-            });
-            this.props.history.push(
+        const projectIndex = projects.findIndex(elm => elm.name === params[2]);
+        if (projectIndex !== -1) {
+          this.setState({
+            projects: projects,
+            currentProject: projectIndex
+          });
+          this.props.history.push(
+            '/' +
+              projects[projectIndex].admin.userName +
               '/' +
-                projects[projectIndex].admin.userName +
-                '/' +
-                projects[projectIndex].name +
-                '/' +
-                params.slice(3).join('/')
-            );
-            return;
-          }
+              projects[projectIndex].name +
+              '/' +
+              params.slice(3).join('/')
+          );
+          return;
         }
 
         var currentProject = projects.findIndex(
@@ -394,7 +391,7 @@ class App extends Component {
                             exact={true}
                             to={
                               '/' +
-                              this.state.userName +
+                              projectAvailable.admin.userName +
                               '/' +
                               projectAvailable.name +
                               '/list'
@@ -406,7 +403,7 @@ class App extends Component {
                             className="nav-link"
                             to={
                               '/' +
-                              this.state.userName +
+                              projectAvailable.admin.userName +
                               '/' +
                               projectAvailable.name +
                               '/labelings'
@@ -419,7 +416,7 @@ class App extends Component {
                             className="nav-link"
                             to={
                               '/' +
-                              this.state.userName +
+                              projectAvailable.admin.userName +
                               '/' +
                               projectAvailable.name +
                               '/experiments'
@@ -432,7 +429,7 @@ class App extends Component {
                             className="nav-link"
                             to={
                               '/' +
-                              this.state.userName +
+                              projectAvailable.admin.userName +
                               '/' +
                               projectAvailable.name +
                               '/settings'

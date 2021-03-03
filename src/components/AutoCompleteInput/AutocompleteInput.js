@@ -60,21 +60,32 @@ class AutocompleteInput extends Component {
 
   onKeyDown(e) {
     var selectedIndex = 0;
-    if (e.key === 'ArrowDown') {
-      selectedIndex = betterModulo(
-        this.state.selectedIndex + 1,
-        this.state.suggestions.length
-      );
-    } else if (e.key === 'ArrowUp') {
-      selectedIndex = betterModulo(
-        this.state.selectedIndex - 1,
-        this.state.suggestions.length
-      );
-    } else if (e.key === 'Enter') {
-      const newEvent = e;
-      newEvent.target.value = this.state.suggestions[this.state.selectedIndex];
-      this.props.onChange(newEvent);
-      this.closeMenu();
+    switch (e.key) {
+      case 'ArrowDown':
+        selectedIndex = betterModulo(
+          this.state.selectedIndex + 1,
+          this.state.suggestions.length
+        );
+        break;
+      case 'ArrowUp':
+        selectedIndex = betterModulo(
+          this.state.selectedIndex - 1,
+          this.state.suggestions.length
+        );
+        break;
+      case 'Enter':
+        const newEvent = e;
+        newEvent.target.value = this.state.suggestions[
+          this.state.selectedIndex
+        ];
+        this.props.onChange(newEvent);
+        this.closeMenu();
+        break;
+      case 'Escape':
+        this.closeMenu();
+        break;
+      default:
+        return;
     }
     this.setState({
       selectedIndex: selectedIndex
