@@ -6,7 +6,6 @@ import LabelingSelectionPanel from '../components/LabelingSelectionPanel/Labelin
 import EditInstructionModal from '../components/EditInstructionModal/EditInstructionModal';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
-import NoProjectPage from '../components/NoProjectPage/NoProjectPage';
 import {
   deleteExperiment,
   addExperiment,

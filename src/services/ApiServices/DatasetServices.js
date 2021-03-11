@@ -1,5 +1,3 @@
-//import { getAccessToken} from '../LocalStorageService';
-const getAccessToken = require('../LocalStorageService').getAccessToken;
 const apiConsts = require('./ApiConstants');
 const ax = require('axios');
 const axios = ax.create();

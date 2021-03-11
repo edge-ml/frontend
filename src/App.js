@@ -6,11 +6,7 @@ import {
   NavItem,
   Button,
   Collapse,
-  NavbarToggler,
-  DropdownItem,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu
+  NavbarToggler
 } from 'reactstrap';
 import { Route, NavLink } from 'react-router-dom';
 import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMenu';
@@ -82,11 +78,11 @@ class App extends Component {
     const restUrl = this.props.history.location.pathname.split('/');
     this.props.history.push(
       '/' +
-        project.admin.userName +
-        '/' +
-        project.name +
-        '/' +
-        restUrl[restUrl.length - 1]
+      project.admin.userName +
+      '/' +
+      project.name +
+      '/' +
+      restUrl[restUrl.length - 1]
     );
   }
 
@@ -165,11 +161,11 @@ class App extends Component {
           });
           this.props.history.push(
             '/' +
-              projects[projectIndex].admin.userName +
-              '/' +
-              projects[projectIndex].name +
-              '/' +
-              params.slice(3).join('/')
+            projects[projectIndex].admin.userName +
+            '/' +
+            projects[projectIndex].name +
+            '/' +
+            params.slice(3).join('/')
           );
           return;
         }
@@ -189,10 +185,10 @@ class App extends Component {
         });
         this.props.history.push(
           '/' +
-            projects[currentProject].admin.userName +
-            '/' +
-            projects[currentProject].name +
-            '/list'
+          projects[currentProject].admin.userName +
+          '/' +
+          projects[currentProject].name +
+          '/list'
         );
       })
       .catch(errorStatus => {
@@ -332,11 +328,11 @@ class App extends Component {
                               <div>
                                 {projectAvailable
                                   ? this.state.projects[
-                                      this.state.currentProject
-                                    ].name
+                                    this.state.currentProject
+                                  ].name
                                   : this.state.projects.length === 0
-                                  ? 'No projects'
-                                  : 'Loading'}
+                                    ? 'No projects'
+                                    : 'Loading'}
                               </div>{' '}
                               <div
                                 style={{ display: 'flex', marginLeft: '4px' }}
@@ -386,7 +382,6 @@ class App extends Component {
                       {projectAvailable ? (
                         <div style={{ display: 'inherit' }}>
                           <NavLink
-                            Link
                             className="nav-link"
                             exact={true}
                             to={

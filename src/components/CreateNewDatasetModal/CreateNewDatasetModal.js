@@ -22,7 +22,6 @@ import {
   generateDataset,
   extendExistingDataset
 } from '../../services/CsvService';
-import { extend } from 'highcharts';
 
 class CreateNewDatasetModal extends Component {
   constructor(props) {
@@ -172,34 +171,34 @@ class CreateNewDatasetModal extends Component {
           {this.state.files.length === 0
             ? null
             : this.state.files.map((file, fileIndex) => {
-                return (
-                  <Table>
-                    <thead>
-                      <tr>
-                        <th colSpan="2">
-                          <b>{file.name}</b>
-                        </th>
-                        <th style={{ textAlign: 'end' }}>
-                          <Button
-                            id="deleteButton"
-                            color="danger"
-                            size="sm"
-                            onClick={() => this.onDeleteFile(fileIndex)}
-                          >
-                            Delete
+              return (
+                <Table>
+                  <thead>
+                    <tr>
+                      <th colSpan="2">
+                        <b>{file.name}</b>
+                      </th>
+                      <th style={{ textAlign: 'end' }}>
+                        <Button
+                          id="deleteButton"
+                          color="danger"
+                          size="sm"
+                          onClick={() => this.onDeleteFile(fileIndex)}
+                        >
+                          Delete
                           </Button>
-                        </th>
+                      </th>
+                    </tr>
+                  </thead>
+                  {this.state.datasets[fileIndex].error ? (
+                    <tbody>
+                      <tr>
+                        <td colSpan="3" style={{ color: 'red' }}>
+                          Error: {this.state.datasets[fileIndex].error}
+                        </td>
                       </tr>
-                    </thead>
-                    {this.state.datasets[fileIndex].error ? (
-                      <tbody>
-                        <tr>
-                          <td colSpan="3" style={{ color: 'red' }}>
-                            Error: {this.state.datasets[fileIndex].error}
-                          </td>
-                        </tr>
-                      </tbody>
-                    ) : (
+                    </tbody>
+                  ) : (
                       <tbody>
                         {this.state.datasets[fileIndex].timeSeries.map(
                           (timeSeries, seriesIndex) => {
@@ -279,9 +278,9 @@ class CreateNewDatasetModal extends Component {
                         )}
                       </tbody>
                     )}
-                  </Table>
-                );
-              })}
+                </Table>
+              );
+            })}
         </ModalBody>
         <ModalFooter>
           <Button

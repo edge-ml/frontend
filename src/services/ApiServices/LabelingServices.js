@@ -1,4 +1,3 @@
-const getAccessToken = require('../LocalStorageService').getAccessToken;
 var apiConsts = require('./ApiConstants');
 const ax = require('axios');
 const axios = ax.create();
@@ -158,7 +157,7 @@ module.exports.updateLabelingAndLabels = (labeling, labels, deletedLabels) => {
                 apiConsts.HTTP_METHODS.PUT,
                 apiConsts.API_URI,
                 apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS +
-                  `/${labeling['_id']}`,
+                `/${labeling['_id']}`,
                 labeling
               )
             ),

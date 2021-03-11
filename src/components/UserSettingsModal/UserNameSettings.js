@@ -7,7 +7,6 @@ import {
   InputGroupText
 } from 'reactstrap';
 
-import { validateEmail } from '../../services/helpers';
 import { changeUserName } from '../../services/ApiServices/AuthentificationServices';
 
 class UserNameSettings extends Component {

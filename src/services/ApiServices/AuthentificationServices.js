@@ -1,10 +1,9 @@
-const getAccessToken = require('../LocalStorageService').getAccessToken;
 var apiConsts = require('./ApiConstants');
 const ax = require('axios');
 const axios = ax.create();
 const axiosNoToken = ax.create();
 
-module.exports.loginUser = function(userEMail, password) {
+module.exports.loginUser = function (userEMail, password) {
   return new Promise((resolve, reject) => {
     axiosNoToken(
       apiConsts.generateApiRequest(
@@ -39,7 +38,7 @@ module.exports.deleteUser = userEMail => {
   });
 };
 
-module.exports.registerNewUser = function(userEMail, password, userName) {
+module.exports.registerNewUser = function (userEMail, password, userName) {
   return new Promise((resolve, reject) => {
     axiosNoToken(
       apiConsts.generateApiRequest(

@@ -19,8 +19,7 @@ import { clearToken } from '../services/LocalStorageService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faExclamationTriangle,
-  faUser
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
 import { validateEmail } from '../services/helpers';
 
