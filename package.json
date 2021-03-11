@@ -66,10 +66,7 @@
         "zingchart-react": "^1.0.8"
     },
     "lint-staged": {
-        "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-            "prettier --single-quote --write",
-            "git add"
-        ]
+        "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": ["prettier --single-quote --write"]
     },
     "scripts": {
         "start": "react-scripts start",
@@ -112,8 +109,6 @@
         "nodemon": "^1.19.4"
     },
     "nodemonConfig": {
-        "ignore": [
-            "config/"
-        ]
+        "ignore": ["config/"]
     }
 }
