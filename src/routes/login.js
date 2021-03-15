@@ -196,7 +196,7 @@ class LoginPage extends Component {
     this.checkLoggedInStatus();
     getServerTime()
       .then(serverTime => this.setState({ time: serverTime }))
-      .catch(err => { });
+      .catch(err => {});
     this.interval = setInterval(this.tick, 1000);
   }
 
@@ -237,8 +237,8 @@ class LoginPage extends Component {
                   style={
                     this.state.loginFailed
                       ? {
-                        animation: 'hzejgT 0.3s ease 0s 1 normal none running'
-                      }
+                          animation: 'hzejgT 0.3s ease 0s 1 normal none running'
+                        }
                       : null
                   }
                 >
@@ -298,6 +298,7 @@ class LoginPage extends Component {
                           <div style={{ display: 'inline-block' }}>
                             Have no account? Register{' '}
                             <a
+                              id="btnRegisterNewUser"
                               style={{ display: 'inline-block' }}
                               href="/register"
                             >
