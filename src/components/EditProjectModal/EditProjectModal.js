@@ -143,6 +143,7 @@ class EditProjectModal extends Component {
               <InputGroupText>{'Name'}</InputGroupText>
             </InputGroupAddon>
             <Input
+              id="inputProjectName"
               placeholder={'Name'}
               value={this.state.project.name}
               onChange={e => this.onNameChanged(e.target.value)}
@@ -206,16 +207,31 @@ class EditProjectModal extends Component {
               })}
             </tbody>
           </Table>
-          <Button color="primary" className="btn-sm" onClick={this.onAddUser}>
+          <Button
+            id="btnAddUser"
+            color="primary"
+            className="btn-sm"
+            onClick={this.onAddUser}
+          >
             Add +
           </Button>
         </ModalBody>
         <ModalFooter style={{ justifyContent: 'space-between' }}>
-          <Button color="primary" className="m-1" onClick={this.onSave}>
+          <Button
+            id="btnSaveProject"
+            color="primary"
+            className="m-1"
+            onClick={this.onSave}
+          >
             Save
           </Button>{' '}
           <div className="error-text"> {this.state.error}</div>
-          <Button color="secondary" className="m-1" onClick={this.onCancel}>
+          <Button
+            id="btnSaveProjectCancel"
+            color="secondary"
+            className="m-1"
+            onClick={this.onCancel}
+          >
             Cancel
           </Button>
         </ModalFooter>

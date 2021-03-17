@@ -188,7 +188,7 @@ class App extends Component {
             projects[currentProject].admin.userName +
             '/' +
             projects[currentProject].name +
-            '/list'
+            '/datasets'
         );
       })
       .catch(errorStatus => {
@@ -325,7 +325,7 @@ class App extends Component {
                           left
                           content={
                             <div style={{ display: 'inline-flex' }}>
-                              <div>
+                              <div id="currentProjectName">
                                 {projectAvailable
                                   ? this.state.projects[
                                       this.state.currentProject
@@ -366,6 +366,7 @@ class App extends Component {
                       </NavItem>
                       <div style={{ display: 'block', margin: 'auto' }}>
                         <FontAwesomeIcon
+                          id="btnAddProject"
                           onClick={() => this.onProjectEditModal(true)}
                           style={{
                             color: '#8b8d8f',
@@ -389,7 +390,7 @@ class App extends Component {
                               projectAvailable.admin.userName +
                               '/' +
                               projectAvailable.name +
-                              '/list'
+                              '/datasets'
                             }
                           >
                             Datasets
@@ -421,6 +422,7 @@ class App extends Component {
                           </NavLink>
 
                           <NavLink
+                            id="pageSettings"
                             className="nav-link"
                             to={
                               '/' +

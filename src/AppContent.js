@@ -23,7 +23,7 @@ class AppContent extends Component {
             exact
             forceRefresh
             path={[
-              this.props.match.path + '/list',
+              this.props.match.path + '/datasets',
               this.props.match.path + '/'
             ]}
             render={props => (
