@@ -64,9 +64,7 @@ class CreateNewDatasetModal extends Component {
   onCloseModal() {
     this.props.onCloseModal();
     this.setState({
-      files: [],
-      units: [],
-      names: []
+      datasets: []
     });
   }
 
@@ -117,6 +115,14 @@ class CreateNewDatasetModal extends Component {
   }
 
   onUpload() {
+    const nameValid = this.state.datasets.every(elm =>
+      elm.timeSeries.every(timeElm => timeElm.name !== '')
+    );
+    if (!nameValid) {
+      window.alert('Every timeSeries needs a name');
+      return;
+    }
+
     const valid = this.state.datasets.every(elm => !elm.error);
     if (!valid) {
       window.alert('Fix the errors to upload the dataset');
@@ -171,34 +177,34 @@ class CreateNewDatasetModal extends Component {
           {this.state.files.length === 0
             ? null
             : this.state.files.map((file, fileIndex) => {
-              return (
-                <Table>
-                  <thead>
-                    <tr>
-                      <th colSpan="2">
-                        <b>{file.name}</b>
-                      </th>
-                      <th style={{ textAlign: 'end' }}>
-                        <Button
-                          id="deleteButton"
-                          color="danger"
-                          size="sm"
-                          onClick={() => this.onDeleteFile(fileIndex)}
-                        >
-                          Delete
-                          </Button>
-                      </th>
-                    </tr>
-                  </thead>
-                  {this.state.datasets[fileIndex].error ? (
-                    <tbody>
+                return (
+                  <Table>
+                    <thead>
                       <tr>
-                        <td colSpan="3" style={{ color: 'red' }}>
-                          Error: {this.state.datasets[fileIndex].error}
-                        </td>
+                        <th colSpan="2">
+                          <b>{file.name}</b>
+                        </th>
+                        <th style={{ textAlign: 'end' }}>
+                          <Button
+                            id="deleteButton"
+                            color="danger"
+                            size="sm"
+                            onClick={() => this.onDeleteFile(fileIndex)}
+                          >
+                            Delete
+                          </Button>
+                        </th>
                       </tr>
-                    </tbody>
-                  ) : (
+                    </thead>
+                    {this.state.datasets[fileIndex].error ? (
+                      <tbody>
+                        <tr>
+                          <td colSpan="3" style={{ color: 'red' }}>
+                            Error: {this.state.datasets[fileIndex].error}
+                          </td>
+                        </tr>
+                      </tbody>
+                    ) : (
                       <tbody>
                         {this.state.datasets[fileIndex].timeSeries.map(
                           (timeSeries, seriesIndex) => {
@@ -278,9 +284,9 @@ class CreateNewDatasetModal extends Component {
                         )}
                       </tbody>
                     )}
-                </Table>
-              );
-            })}
+                  </Table>
+                );
+              })}
         </ModalBody>
         <ModalFooter>
           <Button
