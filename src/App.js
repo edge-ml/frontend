@@ -99,10 +99,8 @@ class App extends Component {
   }
 
   onProjectsChanged(projects, index) {
-    if (projects.length !== 0) {
-      setProject(projects[0]._id);
-    }
     const projectIndex = index <= projects.length && index >= 0 ? index : 0;
+    setProject(projects[projectIndex]._id);
     this.setState({
       projects: projects,
       currentProject: projectIndex,
@@ -383,6 +381,7 @@ class App extends Component {
                       {projectAvailable ? (
                         <div style={{ display: 'inherit' }}>
                           <NavLink
+                            id="navLinkDatasets"
                             className="nav-link"
                             exact={true}
                             to={
@@ -396,6 +395,7 @@ class App extends Component {
                             Datasets
                           </NavLink>
                           <NavLink
+                            id="navLinkLabelings"
                             className="nav-link"
                             to={
                               '/' +
@@ -409,6 +409,7 @@ class App extends Component {
                           </NavLink>
 
                           <NavLink
+                            id="navLinkExperiments"
                             className="nav-link"
                             to={
                               '/' +
@@ -422,7 +423,7 @@ class App extends Component {
                           </NavLink>
 
                           <NavLink
-                            id="pageSettings"
+                            id="navLinkSettings"
                             className="nav-link"
                             to={
                               '/' +

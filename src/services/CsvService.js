@@ -15,7 +15,7 @@ module.exports.processCSV = files => {
         }
         var lines = [];
         for (var i = 0; i < allTextLines.length; i++) {
-          var data = allTextLines[i].split(',');
+          var data = allTextLines[i].replace(/\s/g, '').split(',');
           lines.push(data);
         }
         timeData.push(lines);
@@ -59,7 +59,7 @@ function generateSingleTimeSeries(timeData) {
       }
       for (var j = start; j < timeData.length; j++) {
         if (!isNumber(timeData[j][0])) {
-          throw 'Timestamps cannot be missing';
+          throw { error: 'Timestamps cannot be missing' };
         }
         if (isNumber(timeData[j][i])) {
           timeSeries[i - 1].data.push({
@@ -76,7 +76,7 @@ function generateSingleTimeSeries(timeData) {
     };
     return result;
   } catch (err) {
-    return { error: err };
+    return { error: err.error };
   }
 }
 
