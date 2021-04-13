@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { Input } from 'reactstrap';
-import { betterModulo } from '../../services/helpers';
+import React, { Component } from "react";
+import { Input } from "reactstrap";
+import { betterModulo } from "../../services/helpers";
 
-import './AutocompleteInput.css';
+import "./AutocompleteInput.css";
 
 class AutocompleteInput extends Component {
   constructor(props) {
@@ -10,7 +10,7 @@ class AutocompleteInput extends Component {
     this.state = {
       suggestions: [],
       menuOpen: false,
-      selectedIndex: -1
+      selectedIndex: -1,
     };
     this.onInputChange = this.onInputChange.bind(this);
     this.onItemClick = this.onItemClick.bind(this);
@@ -20,17 +20,17 @@ class AutocompleteInput extends Component {
   }
 
   onInputChange(e) {
-    if (e.target.value === '') {
+    if (e.target.value === "") {
       this.closeMenu();
     }
-    if (this.props.getSuggestions && e.target.value !== '') {
-      this.props.getSuggestions(e.target.value).then(data => {
+    if (this.props.getSuggestions && e.target.value !== "") {
+      this.props.getSuggestions(e.target.value).then((data) => {
         let newData = data;
         if (this.props.filter) {
-          newData = data.filter(elm => !this.props.filter.includes(elm));
+          newData = data.filter((elm) => !this.props.filter.includes(elm));
         }
         this.setState({
-          suggestions: newData
+          suggestions: newData,
         });
         this.openMenu();
       });
@@ -40,40 +40,41 @@ class AutocompleteInput extends Component {
 
   openMenu() {
     this.setState({ menuOpen: true }, () => {
-      document.addEventListener('click', this.closeMenu);
-      document.addEventListener('keydown', this.onKeyDown);
+      document.addEventListener("click", this.closeMenu);
+      document.addEventListener("keydown", this.onKeyDown);
     });
   }
 
   closeMenu() {
     this.setState({ menuOpen: false }, () => {
-      document.removeEventListener('click', this.closeMenu);
-      document.removeEventListener('keydown', this.onKeyDown);
+      document.removeEventListener("click", this.closeMenu);
+      document.removeEventListener("keydown", this.onKeyDown);
     });
   }
 
   onMouseOver(e, index) {
     this.setState({
-      selectedIndex: index
+      selectedIndex: index,
     });
   }
 
   onKeyDown(e) {
+    console.log("Keydown")
     var selectedIndex = 0;
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         selectedIndex = betterModulo(
           this.state.selectedIndex + 1,
           this.state.suggestions.length
         );
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         selectedIndex = betterModulo(
           this.state.selectedIndex - 1,
           this.state.suggestions.length
         );
         break;
-      case 'Enter':
+      case "Enter":
         const newEvent = e;
         newEvent.target.value = this.state.suggestions[
           this.state.selectedIndex
@@ -81,14 +82,14 @@ class AutocompleteInput extends Component {
         this.props.onChange(newEvent);
         this.closeMenu();
         break;
-      case 'Escape':
+      case "Escape":
         this.closeMenu();
         break;
       default:
         return;
     }
     this.setState({
-      selectedIndex: selectedIndex
+      selectedIndex: selectedIndex,
     });
   }
 
@@ -104,22 +105,24 @@ class AutocompleteInput extends Component {
     return (
       <div className="autocomplete-wrapper">
         <Input
+          id="autoCompleteInput"
           {...inputProps}
           autoComplete="off"
           onChange={this.onInputChange}
         ></Input>
         {this.state.menuOpen ? (
-          <div className="autocomplete-menu">
+          <div className="autocomplete-menu" id="autocomplete-menu">
             {this.state.suggestions.map((item, index) => {
               return (
                 <div
+                  id={item}
                   key={item}
-                  onMouseEnter={e => this.onMouseOver(e, index)}
-                  onClick={e => this.onItemClick(e, index)}
+                  onMouseEnter={(e) => this.onMouseOver(e, index)}
+                  onClick={(e) => this.onItemClick(e, index)}
                   className={
                     index === this.state.selectedIndex
-                      ? 'autocomplete-button select'
-                      : 'autocomplete-button'
+                      ? "autocomplete-button select"
+                      : "autocomplete-button"
                   }
                 >
                   {item}
