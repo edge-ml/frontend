@@ -40,7 +40,8 @@ module.exports = {
     LABEL_TYPES: 'labelTypes',
     EXPERIMENTS: 'experiments',
     PROJECTS: 'projects',
-    DATASETAPI: 'datasets/deviceApi'
+    ENABLEDEVICEAPI: 'projects/enableDeviceApi',
+    DISABLEDEVICEAPI: 'projects/disableDeviceApi'
   }
 };
 

@@ -10,7 +10,9 @@ import {
 
 import {
   deleteProject,
-  updateProject
+  updateProject,
+  createApiKey,
+  disableDeviceApi
 } from './../services/ApiServices/ProjectService';
 import NoProjectPage from './../components/NoProjectPage/NoProjectPage';
 import AutocompleteInput from '../components/AutoCompleteInput/AutocompleteInput';
@@ -43,6 +45,20 @@ class ProjectSettings extends Component {
     this.onUserNameChange = this.onUserNameChange.bind(this);
     this.onSave = this.onSave.bind(this);
     this.toggleCheck = this.toggleCheck.bind(this);
+    this.onEnableDeviceApi = this.onEnableDeviceApi.bind(this);
+    this.onDisableDeviceApi = this.onDisableDeviceApi.bind(this);
+  }
+
+  onEnableDeviceApi() {
+    createApiKey(this.props.project).then(data =>
+      this.props.onProjectsChanged(data)
+    );
+  }
+
+  onDisableDeviceApi() {
+    disableDeviceApi(this.props.project).then(data => {
+      this.props.onProjectsChanged(data);
+    });
   }
 
   toggleCheck(e, user) {
@@ -177,6 +193,36 @@ class ProjectSettings extends Component {
           </InputGroupAddon>
           <Input value={this.props.project.admin.userName} readOnly />
         </InputGroup>
+
+        <hr />
+        <h5 style={{ paddingTop: '16px' }}>Device-API</h5>
+        <InputGroup>
+          <InputGroupAddon addonType="prepend">
+            <InputGroupText>{'Key'}</InputGroupText>
+          </InputGroupAddon>
+          <Input
+            value={
+              this.props.project.deviceApiKey
+                ? this.props.project.deviceApiKey
+                : 'Device-API is disabled'
+            }
+            readOnly
+          />
+        </InputGroup>
+        <div>
+          <Button
+            className="mr-2"
+            color="primary"
+            onClick={this.onEnableDeviceApi}
+          >
+            {this.props.project.deviceApiKey ? 'Change Key' : 'Enable'}
+          </Button>
+          <Button color="danger" onClick={this.onDisableDeviceApi}>
+            Disable
+          </Button>
+        </div>
+        <hr />
+
         <h5 style={{ paddingTop: '16px' }}>Users</h5>
         <Table striped>
           <thead>
