@@ -2,9 +2,13 @@ const localStorageService = require('./../LocalStorageService');
 
 module.exports = {
   AUTH_URI:
-    process.env.NODE_ENV === 'production' ? '/auth/' : 'http://localhost:3002/auth/',
+    process.env.NODE_ENV === 'production'
+      ? '/auth/'
+      : 'http://localhost:3002/auth/',
   API_URI:
-    process.env.NODE_ENV === 'production' ? '/api/' : 'http://localhost:3000/api/',
+    process.env.NODE_ENV === 'production'
+      ? '/api/'
+      : 'http://localhost:3000/api/',
 
   HTTP_METHODS: {
     GET: 'GET',
@@ -35,7 +39,8 @@ module.exports = {
     LABEL_DEFINITIONS: 'labelDefinitions',
     LABEL_TYPES: 'labelTypes',
     EXPERIMENTS: 'experiments',
-    PROJECTS: 'projects'
+    PROJECTS: 'projects',
+    DATASETAPI: 'datasets/deviceApi'
   }
 };
 

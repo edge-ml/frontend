@@ -13,7 +13,8 @@ import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingSer
 import {
   updateDataset,
   deleteDataset,
-  getDataset
+  getDataset,
+  createApiKey
 } from '../services/ApiServices/DatasetServices';
 import Loader from '../modules/loader';
 import VideoPanel from '../components/VideoPanel/VideoPanel';
@@ -97,11 +98,18 @@ class DatasetPage extends Component {
     this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
     this.setModalOpen = this.setModalOpen.bind(this);
     this.onAddLabeling = this.onAddLabeling.bind(this);
+    this.createDeviceApiKey = this.createDeviceApiKey.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false
     };
+  }
+
+  createDeviceApiKey() {
+    createApiKey(this.state.dataset).then(dataset =>
+      this.onDatasetChanged(dataset)
+    );
   }
 
   onAddLabeling() {
@@ -942,6 +950,7 @@ class DatasetPage extends Component {
                   dataset={this.state.dataset}
                   onDatasetComplete={this.onDatasetUpdated}
                   setModalOpen={this.setModalOpen}
+                  createDeviceApiKey={this.createDeviceApiKey}
                 />
               </div>
             </Col>

@@ -3,19 +3,22 @@ import { Button, Card, CardHeader, CardBody } from 'reactstrap';
 import './ManagementPanel.css';
 import HelpModal from './HelpModal';
 import CreateNewDatasetModal from '../CreateNewDatasetModal/CreateNewDatasetModal';
+import ApiModal from './ApiModal';
 
 class ManagementPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isUploadModalOpen: false,
-      isHelpModalOpen: false
+      isHelpModalOpen: false,
+      isApiModalOpen: true
     };
 
     this.toggleUploadModal = this.toggleUploadModal.bind(this);
     this.toggleHelpModal = this.toggleHelpModal.bind(this);
     this.downloadDataSet = this.downloadDataSet.bind(this);
     this.onDatasetComplete = this.onDatasetComplete.bind(this);
+    this.toggleApiModal = this.toggleApiModal.bind(this);
   }
 
   onDatasetComplete() {
@@ -32,6 +35,10 @@ class ManagementPanel extends Component {
 
   toggleHelpModal() {
     this.setState({ isHelpModalOpen: !this.state.isHelpModalOpen });
+  }
+
+  toggleApiModal() {
+    this.setState({ isApiModalOpen: !this.state.isApiModalOpen });
   }
 
   downloadDataSet() {
@@ -63,7 +70,6 @@ class ManagementPanel extends Component {
           >
             Upload CSV
           </Button>
-          <hr />
           <Button
             id="buttonDownloadDataset"
             block
@@ -88,6 +94,16 @@ class ManagementPanel extends Component {
           </Button>
           <hr />
           <Button
+            it="buttonOpenApiModal"
+            block
+            outline
+            color="primary"
+            onClick={this.toggleApiModal}
+          >
+            Device-API
+          </Button>
+          <hr />
+          <Button
             id="buttonOpenHelpModal"
             block
             outline
@@ -107,6 +123,12 @@ class ManagementPanel extends Component {
           isOpen={this.state.isHelpModalOpen}
           onCloseModal={this.toggleHelpModal}
         />
+        <ApiModal
+          isOpen={this.state.isApiModalOpen}
+          onCloseModal={this.toggleApiModal}
+          dataset={this.props.dataset}
+          createDeviceApiKey={this.props.createDeviceApiKey}
+        ></ApiModal>
       </Card>
     );
   }

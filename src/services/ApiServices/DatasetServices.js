@@ -133,3 +133,19 @@ module.exports.createDatasets = datasets => {
       .catch(err => reject(err.response));
   });
 };
+
+module.exports.createApiKey = dataset => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DATASETAPI + `/${dataset['_id']}`
+      )
+    )
+      .then(() => {
+        this.getDataset(dataset._id).then(newDataset => resolve(newDataset));
+      })
+      .catch(err => reject(err.response));
+  });
+};
