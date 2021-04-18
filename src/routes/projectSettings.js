@@ -243,33 +243,43 @@ class ProjectSettings extends Component {
             </FormGroup>
           ) : null}
         </div>
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>{'Key'}</InputGroupText>
-          </InputGroupAddon>
-          <Input
-            value={
-              this.state.deviceKey
-                ? this.state.deviceKey
-                : 'Device-API is disabled for your user'
-            }
-            readOnly
-          />
-        </InputGroup>
-        <div>
-          <Button
-            className="mr-2"
-            color="primary"
-            onClick={this.onEnableDeviceApi}
-          >
-            {this.state.deviceKey ? 'Change Key' : 'Enable'}
-          </Button>
-          <Button color="danger" onClick={this.onDisableDeviceApi}>
-            Remove key
-          </Button>
-        </div>
-        <hr />
-
+        {this.props.project.enableDeviceApi || this.props.project.users ? (
+          <div>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>{'Key'}</InputGroupText>
+              </InputGroupAddon>
+              <Input
+                value={
+                  this.state.deviceKey
+                    ? this.state.deviceKey
+                    : 'Device-API is disabled for your user'
+                }
+                readOnly
+              />
+            </InputGroup>
+            <div>
+              <Button
+                disabled={!this.props.project.enableDeviceApi}
+                className="mr-2"
+                color="primary"
+                onClick={this.onEnableDeviceApi}
+              >
+                {this.state.deviceKey ? 'Change Key' : 'Enable'}
+              </Button>
+              <Button
+                color="danger"
+                disabled={!this.props.project.enableDeviceApi}
+                onClick={this.onDisableDeviceApi}
+              >
+                Remove key
+              </Button>
+            </div>
+            <hr />
+          </div>
+        ) : (
+          <h6>Feature disabled by project admin</h6>
+        )}
         {this.state.project.users ? (
           <div>
             <h5 style={{ paddingTop: '16px' }}>Users</h5>
@@ -335,24 +345,19 @@ class ProjectSettings extends Component {
                 })}
               </tbody>
             </Table>
-            <Button
-              id="buttonAddUser"
-              color="primary"
-              className="btn-sm"
-              onClick={this.onAddUser}
-            >
+            <Button id="buttonAddUser" color="primary" onClick={this.onAddUser}>
               Add +
             </Button>
+            <Button
+              id="buttonSaveProject"
+              color="primary"
+              className="m-1"
+              onClick={this.onSave}
+            >
+              Save
+            </Button>{' '}
             <hr></hr>
             <div style={{ display: 'flex' }}>
-              <Button
-                id="buttonSaveProject"
-                color="primary"
-                className="m-1"
-                onClick={this.onSave}
-              >
-                Save
-              </Button>{' '}
               <div
                 style={{
                   display: 'flex',
