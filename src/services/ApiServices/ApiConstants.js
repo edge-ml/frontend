@@ -40,8 +40,10 @@ module.exports = {
     LABEL_TYPES: 'labelTypes',
     EXPERIMENTS: 'experiments',
     PROJECTS: 'projects',
-    ENABLEDEVICEAPI: 'projects/enableDeviceApi',
-    DISABLEDEVICEAPI: 'projects/disableDeviceApi'
+    SETDEVICEAPIKEY: 'deviceApi/setkey',
+    GETDEVICEAPIKEY: 'deviceApi/getkey',
+    REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
+    SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive'
   }
 };
 

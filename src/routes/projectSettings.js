@@ -5,18 +5,24 @@ import {
   InputGroupAddon,
   InputGroupText,
   Input,
-  Table
+  Table,
+  CustomInput
 } from 'reactstrap';
 
 import {
   deleteProject,
-  updateProject,
-  createApiKey,
-  disableDeviceApi
+  updateProject
 } from './../services/ApiServices/ProjectService';
+import {
+  switchDeviceApiActive,
+  getDeviceApiKey,
+  setDeviceApiKey,
+  deleteDeviceApiKey
+} from '../services/ApiServices/DeviceApiService';
 import NoProjectPage from './../components/NoProjectPage/NoProjectPage';
 import AutocompleteInput from '../components/AutoCompleteInput/AutocompleteInput';
 import { getUserNameSuggestions } from '../services/ApiServices/AuthentificationServices';
+import { FormGroup } from 'react-bootstrap';
 
 class ProjectSettings extends Component {
   constructor(props) {
@@ -28,7 +34,8 @@ class ProjectSettings extends Component {
         project: objectCopy,
         originalProject: objectCopy,
         originalUsers: objectCopy.users,
-        usersToDelete: []
+        usersToDelete: [],
+        deviceKey: undefined
       };
     } else {
       this.state = {
@@ -47,17 +54,39 @@ class ProjectSettings extends Component {
     this.toggleCheck = this.toggleCheck.bind(this);
     this.onEnableDeviceApi = this.onEnableDeviceApi.bind(this);
     this.onDisableDeviceApi = this.onDisableDeviceApi.bind(this);
+    this.onDeviceApiSwitch = this.onDeviceApiSwitch.bind(this);
+    this.init = this.init.bind(this);
+    this.init();
+  }
+
+  async init() {
+    const apiKey = await getDeviceApiKey();
+    this.setState({
+      deviceKey: apiKey.deviceApiKey
+    });
+  }
+
+  onDeviceApiSwitch(e) {
+    switchDeviceApiActive(e.target.checked)
+      .then(data => {
+        this.props.onProjectsChanged(data);
+      })
+      .catch(err => console.log(err));
   }
 
   onEnableDeviceApi() {
-    createApiKey(this.props.project).then(data =>
-      this.props.onProjectsChanged(data)
-    );
+    setDeviceApiKey().then(data => {
+      this.setState({
+        deviceKey: data.deviceApiKey
+      });
+    });
   }
 
   onDisableDeviceApi() {
-    disableDeviceApi(this.props.project).then(data => {
-      this.props.onProjectsChanged(data);
+    deleteDeviceApiKey().then(data => {
+      this.setState({
+        deviceKey: undefined
+      });
     });
   }
 
@@ -77,6 +106,7 @@ class ProjectSettings extends Component {
     if (
       JSON.stringify(prevProps.project) !== JSON.stringify(this.props.project)
     ) {
+      this.init();
       this.setState({
         project: this.props.project,
         originalProject: this.props.project,
@@ -156,55 +186,72 @@ class ProjectSettings extends Component {
     if (!this.state.project) {
       return <NoProjectPage></NoProjectPage>;
     }
-    if (!this.state.project.users) {
+    /*if (!this.state.project.users) {
       return (
         <NoProjectPage text="You need admin rights to edit the project"></NoProjectPage>
       );
-    }
+    }*/
     return (
       <div id="projectSettings" style={{ marginTop: '16px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <h3 style={{ marginBottom: '0px' }}>
-            {'Edit Project: ' + this.state.originalProject.name}
-          </h3>
-          <Button
-            id="buttonDeleteProject"
-            onClick={this.onDeleteProject}
-            color="danger"
-          >
-            Delete project
-          </Button>
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <h3 style={{ marginBottom: '0px' }}>
+              {'Edit Project: ' + this.state.originalProject.name}
+            </h3>
+            {this.state.project.users ? (
+              <Button
+                id="buttonDeleteProject"
+                onClick={this.onDeleteProject}
+                color="danger"
+              >
+                Delete project
+              </Button>
+            ) : null}
+          </div>
+          <hr></hr>
+          <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>{'Name'}</InputGroupText>
+            </InputGroupAddon>
+            <Input
+              id="projectName"
+              placeholder={'Name'}
+              value={this.state.project.name}
+              onChange={e => this.onNameChanged(e.target.value)}
+            />
+          </InputGroup>
+          <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>{'Admin'}</InputGroupText>
+            </InputGroupAddon>
+            <Input value={this.props.project.admin.userName} readOnly />
+          </InputGroup>
         </div>
-        <hr></hr>
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>{'Name'}</InputGroupText>
-          </InputGroupAddon>
-          <Input
-            id="projectName"
-            placeholder={'Name'}
-            value={this.state.project.name}
-            onChange={e => this.onNameChanged(e.target.value)}
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>{'Admin'}</InputGroupText>
-          </InputGroupAddon>
-          <Input value={this.props.project.admin.userName} readOnly />
-        </InputGroup>
-
         <hr />
-        <h5 style={{ paddingTop: '16px' }}>Device-API</h5>
+        <div style={{ paddingTop: '16px', display: 'flex' }}>
+          <h5 style={{ display: 'inline' }}>Device-API</h5>
+          {this.state.project.users ? (
+            <FormGroup>
+              <CustomInput
+                className="ml-2"
+                inline
+                type="switch"
+                id="exampleCustomSwitch"
+                checked={this.props.project.enableDeviceApi}
+                onClick={this.onDeviceApiSwitch}
+              />
+            </FormGroup>
+          ) : null}
+        </div>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>{'Key'}</InputGroupText>
           </InputGroupAddon>
           <Input
             value={
-              this.props.project.deviceApiKey
-                ? this.props.project.deviceApiKey
-                : 'Device-API is disabled'
+              this.state.deviceKey
+                ? this.state.deviceKey
+                : 'Device-API is disabled for your user'
             }
             readOnly
           />
@@ -215,104 +262,110 @@ class ProjectSettings extends Component {
             color="primary"
             onClick={this.onEnableDeviceApi}
           >
-            {this.props.project.deviceApiKey ? 'Change Key' : 'Enable'}
+            {this.state.deviceKey ? 'Change Key' : 'Enable'}
           </Button>
           <Button color="danger" onClick={this.onDisableDeviceApi}>
-            Disable
+            Remove key
           </Button>
         </div>
         <hr />
 
-        <h5 style={{ paddingTop: '16px' }}>Users</h5>
-        <Table striped>
-          <thead>
-            <tr>
-              <th>Delete</th>
-              <th>User</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.state.project.users.map((user, index) => {
-              const oldUser =
-                this.state.originalUsers
-                  .map(elm => elm._id)
-                  .includes(user._id) && user._id !== undefined;
-              return (
-                <tr key={user + index}>
-                  <td className="datasets-column">
-                    <Input
-                      id={'checkboxDeleteUser' + index}
-                      style={{ visibility: !oldUser ? 'hidden' : '' }}
-                      className="datasets-check"
-                      type="checkbox"
-                      checked={this.state.usersToDelete.includes(user)}
-                      onChange={e => this.toggleCheck(e, user)}
-                    />
-                  </td>
-                  <td>
-                    {oldUser ? (
-                      user.userName
-                    ) : (
-                      <AutocompleteInput
-                        getSuggestions={getUserNameSuggestions}
-                        filter={[
-                          ...this.state.project.users.map(elm => elm.userName),
-                          this.state.project.admin.userName
-                        ]}
-                        id={'inputUserMail' + index}
-                        type="text"
-                        value={user.userName}
-                        placeholder="Enter username"
-                        onChange={e => this.onUserNameChange(index, e)}
-                      ></AutocompleteInput>
-                    )}
-                  </td>
-                  <td style={{ textAlign: 'right' }}>
-                    <Button
-                      id={'buttonUserMail' + index}
-                      style={{ visibility: oldUser ? 'hidden' : '' }}
-                      className="btn-sm"
-                      color="secondary"
-                      onClick={() => this.onDeleteUser(index)}
-                    >
-                      Remove
-                    </Button>
-                  </td>
+        {this.state.project.users ? (
+          <div>
+            <h5 style={{ paddingTop: '16px' }}>Users</h5>
+            <Table striped>
+              <thead>
+                <tr>
+                  <th>Delete</th>
+                  <th>User</th>
+                  <th></th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </Table>
-        <Button
-          id="buttonAddUser"
-          color="primary"
-          className="btn-sm"
-          onClick={this.onAddUser}
-        >
-          Add +
-        </Button>
-        <hr></hr>
-        <div style={{ display: 'flex' }}>
-          <Button
-            id="buttonSaveProject"
-            color="primary"
-            className="m-1"
-            onClick={this.onSave}
-          >
-            Save
-          </Button>{' '}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              color: 'red',
-              marginLeft: '16px'
-            }}
-          >
-            {this.state.error}
+              </thead>
+              <tbody>
+                {this.state.project.users.map((user, index) => {
+                  const oldUser =
+                    this.state.originalUsers
+                      .map(elm => elm._id)
+                      .includes(user._id) && user._id !== undefined;
+                  return (
+                    <tr key={user + index}>
+                      <td className="datasets-column">
+                        <Input
+                          id={'checkboxDeleteUser' + index}
+                          style={{ visibility: !oldUser ? 'hidden' : '' }}
+                          className="datasets-check"
+                          type="checkbox"
+                          checked={this.state.usersToDelete.includes(user)}
+                          onChange={e => this.toggleCheck(e, user)}
+                        />
+                      </td>
+                      <td>
+                        {oldUser ? (
+                          user.userName
+                        ) : (
+                          <AutocompleteInput
+                            getSuggestions={getUserNameSuggestions}
+                            filter={[
+                              ...this.state.project.users.map(
+                                elm => elm.userName
+                              ),
+                              this.state.project.admin.userName
+                            ]}
+                            id={'inputUserMail' + index}
+                            type="text"
+                            value={user.userName}
+                            placeholder="Enter username"
+                            onChange={e => this.onUserNameChange(index, e)}
+                          ></AutocompleteInput>
+                        )}
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <Button
+                          id={'buttonUserMail' + index}
+                          style={{ visibility: oldUser ? 'hidden' : '' }}
+                          className="btn-sm"
+                          color="secondary"
+                          onClick={() => this.onDeleteUser(index)}
+                        >
+                          Remove
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+            <Button
+              id="buttonAddUser"
+              color="primary"
+              className="btn-sm"
+              onClick={this.onAddUser}
+            >
+              Add +
+            </Button>
+            <hr></hr>
+            <div style={{ display: 'flex' }}>
+              <Button
+                id="buttonSaveProject"
+                color="primary"
+                className="m-1"
+                onClick={this.onSave}
+              >
+                Save
+              </Button>{' '}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: 'red',
+                  marginLeft: '16px'
+                }}
+              >
+                {this.state.error}
+              </div>
+            </div>
           </div>
-        </div>
+        ) : null}
       </div>
     );
   }

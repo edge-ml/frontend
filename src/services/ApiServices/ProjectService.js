@@ -125,35 +125,3 @@ module.exports.deleteProject = project => {
       .catch(err => reject(err.response));
   });
 };
-
-module.exports.createApiKey = project => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.POST,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.ENABLEDEVICEAPI + `/${project['_id']}`
-      )
-    )
-      .then(() => {
-        this.getProjects().then(data => resolve(data));
-      })
-      .catch(err => reject(err.response));
-  });
-};
-
-module.exports.disableDeviceApi = project => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.POST,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.DISABLEDEVICEAPI + `/${project['_id']}`
-      )
-    )
-      .then(() => {
-        this.getProjects().then(data => resolve(data));
-      })
-      .catch(err => reject(err.response));
-  });
-};
