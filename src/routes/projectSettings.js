@@ -19,6 +19,8 @@ import {
   setDeviceApiKey,
   deleteDeviceApiKey
 } from '../services/ApiServices/DeviceApiService';
+import { API_URI } from './../services/ApiServices/ApiConstants';
+
 import NoProjectPage from './../components/NoProjectPage/NoProjectPage';
 import AutocompleteInput from '../components/AutoCompleteInput/AutocompleteInput';
 import { getUserNameSuggestions } from '../services/ApiServices/AuthentificationServices';
@@ -191,6 +193,7 @@ class ProjectSettings extends Component {
         <NoProjectPage text="You need admin rights to edit the project"></NoProjectPage>
       );
     }*/
+    console.log(this.props.project);
     return (
       <div id="projectSettings" style={{ marginTop: '16px' }}>
         <div>
@@ -231,7 +234,7 @@ class ProjectSettings extends Component {
         <div style={{ paddingTop: '16px', display: 'flex' }}>
           <h5 style={{ display: 'inline' }}>Device-API</h5>
           {this.state.project.users ? (
-            <FormGroup>
+            <FormGroup style={{ margin: 0 }}>
               <CustomInput
                 className="ml-2"
                 inline
@@ -245,6 +248,12 @@ class ProjectSettings extends Component {
         </div>
         {this.props.project.enableDeviceApi || this.props.project.users ? (
           <div>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>{'Backend-URL'}</InputGroupText>
+              </InputGroupAddon>
+              <Input value={API_URI.replace('api/', '')} readOnly />
+            </InputGroup>
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>{'Key'}</InputGroupText>

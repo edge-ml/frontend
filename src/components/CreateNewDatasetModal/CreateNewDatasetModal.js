@@ -64,7 +64,8 @@ class CreateNewDatasetModal extends Component {
   onCloseModal() {
     this.props.onCloseModal();
     this.setState({
-      datasets: []
+      datasets: [],
+      files: []
     });
   }
 
@@ -287,6 +288,13 @@ class CreateNewDatasetModal extends Component {
                   </Table>
                 );
               })}
+          {this.state.files.length === 0 ? (
+            <div>
+              {' '}
+              <a href="/example_file.csv">Click here</a> to download an example
+              CSV file.
+            </div>
+          ) : null}
         </ModalBody>
         <ModalFooter>
           <Button
