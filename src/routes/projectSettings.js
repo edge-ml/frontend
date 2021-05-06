@@ -188,12 +188,6 @@ class ProjectSettings extends Component {
     if (!this.state.project) {
       return <NoProjectPage></NoProjectPage>;
     }
-    /*if (!this.state.project.users) {
-      return (
-        <NoProjectPage text="You need admin rights to edit the project"></NoProjectPage>
-      );
-    }*/
-    console.log(this.props.project);
     return (
       <div id="projectSettings" style={{ marginTop: '16px' }}>
         <div>
@@ -240,7 +234,7 @@ class ProjectSettings extends Component {
                 inline
                 type="switch"
                 id="exampleCustomSwitch"
-                checked={this.props.project.enableDeviceApi}
+                defaultChecked={this.props.project.enableDeviceApi}
                 onClick={this.onDeviceApiSwitch}
               />
             </FormGroup>
@@ -252,7 +246,14 @@ class ProjectSettings extends Component {
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>{'Backend-URL'}</InputGroupText>
               </InputGroupAddon>
-              <Input value={API_URI.replace('api/', '')} readOnly />
+              <Input
+                value={
+                  API_URI.replace('/api/', '') === '/'
+                    ? window.location.origin
+                    : API_URI.replace('/api/', '')
+                }
+                readOnly
+              />
             </InputGroup>
             <InputGroup>
               <InputGroupAddon addonType="prepend">
