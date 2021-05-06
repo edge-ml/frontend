@@ -11,30 +11,32 @@ class HelpModal extends Component {
           <div className="py-2">
             <h6>Shortcuts</h6>
             <table>
-              <tr>
-                <td>
-                  <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[Number]</kbd>
-                </td>
-                <td>Set active labeling</td>
-              </tr>
-              <tr>
-                <td>
-                  <kbd>Ctrl</kbd> + <kbd>[Number]</kbd>
-                </td>
-                <td>Set active label type</td>
-              </tr>
-              <tr>
-                <td>
-                  <kbd>L</kbd> / <kbd>l</kbd>
-                </td>
-                <td>Lock or unlock active label editing</td>
-              </tr>
-              <tr>
-                <td>
-                  <kbd>Backspace</kbd> / <kbd>Delete</kbd>
-                </td>
-                <td>Delete current label</td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td>
+                    <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>[Number]</kbd>
+                  </td>
+                  <td>Set active labeling</td>
+                </tr>
+                <tr>
+                  <td>
+                    <kbd>Ctrl</kbd> + <kbd>[Number]</kbd>
+                  </td>
+                  <td>Set active label type</td>
+                </tr>
+                <tr>
+                  <td>
+                    <kbd>L</kbd> / <kbd>l</kbd>
+                  </td>
+                  <td>Lock or unlock active label editing</td>
+                </tr>
+                <tr>
+                  <td>
+                    <kbd>Backspace</kbd> / <kbd>Delete</kbd>
+                  </td>
+                  <td>Delete current label</td>
+                </tr>
+              </tbody>
             </table>
           </div>
           <hr />
