@@ -14,7 +14,8 @@ afterEach(() => {
 });
 
 it('Render page', () => {
-  const wrapper = shallow(<ManagementPanel></ManagementPanel>);
+  const root = document.createElement('div');
+  const wrapper = mount(<ManagementPanel></ManagementPanel>, root);
   expect(wrapper.html()).not.toBe('');
 });
 

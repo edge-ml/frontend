@@ -64,7 +64,8 @@ class CreateNewDatasetModal extends Component {
   onCloseModal() {
     this.props.onCloseModal();
     this.setState({
-      datasets: []
+      datasets: [],
+      files: []
     });
   }
 
@@ -178,7 +179,7 @@ class CreateNewDatasetModal extends Component {
             ? null
             : this.state.files.map((file, fileIndex) => {
                 return (
-                  <Table>
+                  <Table key={file + fileIndex}>
                     <thead>
                       <tr>
                         <th colSpan="2">
@@ -209,7 +210,7 @@ class CreateNewDatasetModal extends Component {
                         {this.state.datasets[fileIndex].timeSeries.map(
                           (timeSeries, seriesIndex) => {
                             return (
-                              <tr>
+                              <tr key={timeSeries.name + timeSeries.unit}>
                                 <td style={{ paddingTop: 0, paddingBottom: 0 }}>
                                   <InputGroup size="sm">
                                     <InputGroupAddon addonType="prepend">
@@ -287,6 +288,13 @@ class CreateNewDatasetModal extends Component {
                   </Table>
                 );
               })}
+          {this.state.files.length === 0 ? (
+            <div>
+              {' '}
+              <a href="/example_file.csv">Click here</a> to download an example
+              CSV file.
+            </div>
+          ) : null}
         </ModalBody>
         <ModalFooter>
           <Button

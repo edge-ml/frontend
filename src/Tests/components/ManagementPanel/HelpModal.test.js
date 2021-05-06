@@ -12,8 +12,13 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-it('Render page', () => {
-  ReactDOM.createPortal = jest.fn(modal => modal);
-  const wrapper = shallow(<HelpModal isOpen={true}></HelpModal>);
+it('Render page', async () => {
+  const root = document.createElement('div');
+  const wrapper = mount(<HelpModal isOpen={true}></HelpModal>, root);
+  await flushPromises();
   expect(wrapper.html()).not.toBe('');
 });
+
+function flushPromises() {
+  return new Promise(resolve => setImmediate(resolve));
+}

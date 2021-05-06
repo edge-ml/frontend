@@ -63,7 +63,6 @@ class ManagementPanel extends Component {
           >
             Upload CSV
           </Button>
-          <hr />
           <Button
             id="buttonDownloadDataset"
             block

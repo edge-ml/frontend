@@ -131,7 +131,7 @@ class EditProjectModal extends Component {
     )
       return null;
     return (
-      <Modal isOpen={this.props.isOpen}>
+      <Modal id="editProjectModal" isOpen={this.props.isOpen}>
         <ModalHeader>
           {this.props.isNewProject
             ? 'Create new Project'
