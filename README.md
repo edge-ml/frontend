@@ -1,6 +1,9 @@
 # Explorer Frontend
 The frontend part of the explorer project which can be found [here](https://github.com/teco-kit/explorer/blob/master/README.md).
 
+[![Tests](https://github.com/teco-kit/explorer-frontend/actions/workflows/tests.yml/badge.svg)](https://github.com/teco-kit/explorer-frontend/actions/workflows/tests.yml)
+[![Publish Docker image](https://github.com/teco-kit/explorer-frontend/actions/workflows/publishDocker.yml/badge.svg)](https://github.com/teco-kit/explorer-frontend/actions/workflows/publishDocker.yml)
+
 ## Setup
 git submodule update --init --recursive
 yarn install    or     npm install
