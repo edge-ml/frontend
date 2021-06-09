@@ -149,6 +149,7 @@ class CreateNewDatasetModal extends Component {
   }
 
   render() {
+    console.log(this.state);
     return (
       <Modal data-testid="modal" isOpen={this.props.isOpen}>
         <ModalHeader>
