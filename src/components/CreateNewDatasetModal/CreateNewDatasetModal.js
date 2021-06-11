@@ -213,7 +213,7 @@ class CreateNewDatasetModal extends Component {
                         {this.state.datasets[fileIndex].timeSeries.map(
                           (timeSeries, seriesIndex) => {
                             return (
-                              <tr key={timeSeries.name + timeSeries.unit}>
+                              <tr>
                                 <td style={{ paddingTop: 0, paddingBottom: 0 }}>
                                   <InputGroup size="sm">
                                     <InputGroupAddon addonType="prepend">

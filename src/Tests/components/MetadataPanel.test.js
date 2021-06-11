@@ -21,8 +21,8 @@ it('Show values of dataset', () => {
   const wrapper = shallow(
     <MetadataPanel
       id={fakeDataset_One._id}
-      start={fakeDataset_One.start * 1000}
-      end={fakeDataset_One.end * 1000}
+      start={fakeDataset_One.start}
+      end={fakeDataset_One.end}
       user={fakeDataset_One.userId}
     ></MetadataPanel>
   );

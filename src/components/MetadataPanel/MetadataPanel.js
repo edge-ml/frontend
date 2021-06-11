@@ -8,6 +8,7 @@ import {
   CardBody,
   CardHeader
 } from 'reactstrap';
+import { unixTimeToString } from '../../services/helpers';
 import './MetadataPanel.css';
 
 class MetadataPanel extends Component {
@@ -43,9 +44,7 @@ class MetadataPanel extends Component {
               <Input
                 className="text-right"
                 value={
-                  this.props.start
-                    ? new Date(this.props.start).toUTCString().split(' ')[4]
-                    : ''
+                  this.props.start ? unixTimeToString(this.props.start) : ''
                 }
                 readOnly
               />
@@ -60,11 +59,7 @@ class MetadataPanel extends Component {
               </InputGroupAddon>
               <Input
                 className="text-right"
-                value={
-                  this.props.end
-                    ? new Date(this.props.end).toUTCString().split(' ')[4]
-                    : ''
-                }
+                value={this.props.end ? unixTimeToString(this.props.end) : ''}
                 readOnly
               />
             </InputGroup>

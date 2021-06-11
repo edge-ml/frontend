@@ -417,8 +417,7 @@ class DatasetPage extends Component {
   onShiftTimeSeries(index, timestamp) {
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
 
-    let diff =
-      timestamp - (dataset.start * 1000 + dataset.timeSeries[index].offset);
+    let diff = timestamp - (dataset.start + dataset.timeSeries[index].offset);
     dataset.timeSeries[index].offset += diff;
 
     updateDataset(dataset).then(newDataset => {
@@ -930,8 +929,8 @@ class DatasetPage extends Component {
               <div className="mt-2">
                 <MetadataPanel
                   id={this.state.dataset['_id']}
-                  start={this.state.dataset.start * 1000}
-                  end={this.state.dataset.end * 1000}
+                  start={this.state.dataset.start}
+                  end={this.state.dataset.end}
                   user={this.state.dataset.userId}
                 />
               </div>

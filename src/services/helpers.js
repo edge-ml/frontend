@@ -19,3 +19,16 @@ export const isNumber = val => /^\d+$/.test(val);
 export const betterModulo = (x, n) => {
   return ((x % n) + n) % n;
 };
+
+export const unixTimeToString = unixTime => {
+  const date = new Date(unixTime);
+  return (
+    date.getUTCHours() +
+    ':' +
+    date.getUTCMinutes() +
+    ':' +
+    date.getUTCSeconds() +
+    ':' +
+    date.getUTCMilliseconds()
+  );
+};

@@ -128,7 +128,7 @@ class TimeSeriesPanel extends Component {
                     }
                   },
                   data: props.data.map((point, index) => [
-                    point.timestamp * 1000 + props.offset,
+                    point.timestamp + props.offset,
                     point.datapoint
                   ])
                 }
@@ -142,7 +142,7 @@ class TimeSeriesPanel extends Component {
                       ? props.name
                       : props.name + ' (' + props.unit + ')',
                   data: props.data.map((point, index) => [
-                    point.timestamp * 1000 + props.offset,
+                    point.timestamp + props.offset,
                     point.datapoint
                   ]),
                   lineWidth: 1
@@ -156,7 +156,7 @@ class TimeSeriesPanel extends Component {
                     props.unit[indexOuter] +
                     ')',
                   data: dataItem.map((point, index) => [
-                    point.timestamp * 1000 + props.offset[indexOuter],
+                    point.timestamp + props.offset[indexOuter],
                     point.datapoint
                   ]),
                   lineWidth: 1
@@ -190,8 +190,8 @@ class TimeSeriesPanel extends Component {
           crosshair: {
             snap: false
           },
-          min: props.start * 1000,
-          max: props.end * 1000,
+          min: props.start,
+          max: props.end,
           startOnTick: false,
           endOnTick: false,
           events: {
