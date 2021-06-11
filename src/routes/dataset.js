@@ -13,8 +13,7 @@ import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingSer
 import {
   updateDataset,
   deleteDataset,
-  getDataset,
-  createApiKey
+  getDataset
 } from '../services/ApiServices/DatasetServices';
 import Loader from '../modules/loader';
 import VideoPanel from '../components/VideoPanel/VideoPanel';
@@ -98,18 +97,11 @@ class DatasetPage extends Component {
     this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
     this.setModalOpen = this.setModalOpen.bind(this);
     this.onAddLabeling = this.onAddLabeling.bind(this);
-    this.createDeviceApiKey = this.createDeviceApiKey.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false
     };
-  }
-
-  createDeviceApiKey() {
-    createApiKey(this.state.dataset).then(dataset =>
-      this.onDatasetChanged(dataset)
-    );
   }
 
   onAddLabeling() {
@@ -139,9 +131,7 @@ class DatasetPage extends Component {
   }
 
   onDatasetUpdated() {
-    getDataset(this.props.match.params.id).then(dataset =>
-      this.onDatasetChanged(dataset)
-    );
+    getDataset(this.props.match.params.id).then(this.onDatasetChanged);
   }
 
   onDatasetChanged(dataset) {
@@ -696,7 +686,6 @@ class DatasetPage extends Component {
   }
 
   onSelectedLabelTypeIdChanged(selectedLabelTypeId) {
-    console.log('onSelectedLabelTypeIdChanged');
     if (this.state.controlStates.selectedLabelId === undefined) return;
 
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
@@ -739,7 +728,6 @@ class DatasetPage extends Component {
   }
 
   onLabelChanged(labelId, start, end, callback) {
-    console.log('onLabelChanged');
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
     let labeling = dataset.labelings.filter(
       labeling =>
@@ -797,7 +785,6 @@ class DatasetPage extends Component {
           labeling =>
             labeling.labelingId === this.state.controlStates.selectedLabelingId
         )[0];
-
         this.setState({
           dataset: newDataset,
           controlStates: {
@@ -807,9 +794,8 @@ class DatasetPage extends Component {
         });
       });
     } else {
-      updateDataset(dataset).then(newDataset => {
-        this.setState({ dataset: newDataset });
-      });
+      updateDataset(dataset);
+      this.setState({ dataset });
     }
   }
 
@@ -825,15 +811,14 @@ class DatasetPage extends Component {
         label => label['_id'] !== this.state.controlStates.selectedLabelId
       );
 
-      updateDataset(dataset).then(() => {
-        this.setState({
-          dataset,
-          controlStates: {
-            ...this.state.controlStates,
-            selectedLabelId: undefined,
-            selectedLabelTypeId: undefined
-          }
-        });
+      updateDataset(dataset);
+      this.setState({
+        dataset,
+        controlStates: {
+          ...this.state.controlStates,
+          selectedLabelId: undefined,
+          selectedLabelTypeId: undefined
+        }
       });
     }
   }
@@ -959,7 +944,6 @@ class DatasetPage extends Component {
                   dataset={this.state.dataset}
                   onDatasetComplete={this.onDatasetUpdated}
                   setModalOpen={this.setModalOpen}
-                  createDeviceApiKey={this.createDeviceApiKey}
                 />
               </div>
             </Col>

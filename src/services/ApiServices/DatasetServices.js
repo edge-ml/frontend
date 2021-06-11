@@ -78,7 +78,7 @@ module.exports.updateDataset = dataset => {
         dataset
       )
     )
-      .then(
+      .then(() =>
         axios(
           apiConsts.generateApiRequest(
             apiConsts.HTTP_METHODS.GET,
