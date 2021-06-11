@@ -20,7 +20,6 @@ module.exports.processCSV = files => {
         }
         timeData.push(lines);
         if (timeData.length === files.length) {
-          console.log(timeData.length);
           resolve(timeData);
         }
       };
@@ -43,7 +42,6 @@ function generateSingleTimeSeries(timeData) {
   try {
     const timeSeries = [];
     const numDatasets = timeData[0].length - 1;
-    console.log('numdatasets:' + numDatasets);
     for (var i = 1; i <= numDatasets; i++) {
       timeSeries.push({
         name: '',
@@ -78,7 +76,6 @@ function generateSingleTimeSeries(timeData) {
     };
     return result;
   } catch (err) {
-    console.log(err);
     return { error: err.error };
   }
 }
@@ -86,13 +83,11 @@ function generateSingleTimeSeries(timeData) {
 module.exports.extendExistingDataset = (dataset, newDatasets) => {
   const fusedDataset = dataset;
   for (var i = 0; i < newDatasets.length; i++) {
-    console.log(fusedDataset.timeSeries);
     fusedDataset.timeSeries.push(...newDatasets[i].timeSeries);
     if (fusedDataset.start > newDatasets[i].start) {
       fusedDataset.start = newDatasets[i].start;
     }
     if (fusedDataset.end < newDatasets[i].end) {
-      console.log('Modifing end');
       fusedDataset.end = newDatasets[i].end;
     }
   }

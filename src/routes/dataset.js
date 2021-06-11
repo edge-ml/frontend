@@ -417,8 +417,11 @@ class DatasetPage extends Component {
       dataset.fusedSeries.splice(index, 1);
     }
 
-    this.setState({ dataset });
-    updateDataset(dataset);
+    updateDataset(dataset).then(newDataset => {
+      this.setState({
+        dataset: newDataset
+      });
+    });
   }
 
   onShiftTimeSeries(index, timestamp) {
@@ -428,8 +431,11 @@ class DatasetPage extends Component {
       timestamp - (dataset.start * 1000 + dataset.timeSeries[index].offset);
     dataset.timeSeries[index].offset += diff;
 
-    this.setState({ dataset });
-    updateDataset(dataset);
+    updateDataset(dataset).then(newDataset => {
+      this.setState({
+        dataset: newDataset
+      });
+    });
   }
 
   onFuseTimeSeries(seriesIds) {
@@ -690,6 +696,7 @@ class DatasetPage extends Component {
   }
 
   onSelectedLabelTypeIdChanged(selectedLabelTypeId) {
+    console.log('onSelectedLabelTypeIdChanged');
     if (this.state.controlStates.selectedLabelId === undefined) return;
 
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
@@ -702,15 +709,15 @@ class DatasetPage extends Component {
     )[0];
     label.type = selectedLabelTypeId;
 
-    this.setState({
-      dataset,
-      controlStates: {
-        ...this.state.controlStates,
-        selectedLabelTypeId: selectedLabelTypeId
-      }
+    updateDataset(dataset).then(newDataset => {
+      this.setState({
+        dataset: newDataset,
+        controlStates: {
+          ...this.state.controlStates,
+          selectedLabelTypeId: selectedLabelTypeId
+        }
+      });
     });
-
-    updateDataset(dataset);
   }
 
   onSelectedLabelChanged(selectedLabelId) {
@@ -732,6 +739,7 @@ class DatasetPage extends Component {
   }
 
   onLabelChanged(labelId, start, end, callback) {
+    console.log('onLabelChanged');
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
     let labeling = dataset.labelings.filter(
       labeling =>
@@ -799,8 +807,9 @@ class DatasetPage extends Component {
         });
       });
     } else {
-      this.setState({ dataset });
-      updateDataset(dataset);
+      updateDataset(dataset).then(newDataset => {
+        this.setState({ dataset: newDataset });
+      });
     }
   }
 
