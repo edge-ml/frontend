@@ -3,8 +3,8 @@ module.exports.fakeDataset_One = {
   device: null,
   experiments: null,
   _id: '5f45114480d85700190a9ec4',
-  start: 1595506316,
-  end: 1595506319,
+  start: 1595506316000,
+  end: 1595506319000,
   timeSeries: [
     {
       data: [1, 2, 3, 4],
@@ -12,8 +12,8 @@ module.exports.fakeDataset_One = {
       _id: '5f45114480d85700190a9ec5',
       name: 'u1',
       unit: 't1',
-      start: 1595506316,
-      end: 1595506319,
+      start: 1595506316000,
+      end: 1595506319000,
       samplingRate: 1
     }
   ],
