@@ -41,7 +41,7 @@ describe('Success cases', () => {
     const wrapper = shallow(<ListPage></ListPage>);
     await flushPromises();
     expect(wrapper.exists('#dataList')).toEqual(true);
-    expect(wrapper.html().includes(fakeDataset_One._id)).toEqual(true);
+    expect(wrapper.html().includes(fakeDataset_One.name)).toEqual(true);
   });
 
   it('Display data from api call', async done => {
@@ -49,7 +49,7 @@ describe('Success cases', () => {
     const wrapper = mount(<ListPage></ListPage>);
     await flushPromises();
     wrapper.update();
-    expect(wrapper.contains('5f45114480d85700190a9ec4')).toBe(true);
+    expect(wrapper.contains(fakeDataset_One.name)).toBe(true);
     done();
   });
 

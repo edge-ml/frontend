@@ -5,6 +5,7 @@ module.exports.fakeDataset_One = {
   _id: '5f45114480d85700190a9ec4',
   start: 1595506316000,
   end: 1595506319000,
+  name: 'fakeDAtaset_One',
   timeSeries: [
     {
       data: [1, 2, 3, 4],
