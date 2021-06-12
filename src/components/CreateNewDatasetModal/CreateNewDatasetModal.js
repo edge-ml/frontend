@@ -41,13 +41,23 @@ class CreateNewDatasetModal extends Component {
     this.onError = this.onError.bind(this);
     this.onFileInput = this.onFileInput.bind(this);
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
+    this.onDatasetNameChange = this.onDatasetNameChange.bind(this);
   }
+
+  onDatasetNameChange(e, fileIndex) {}
 
   onFileInput(e) {
     const files = e.target.files;
     var datasets;
     processCSV(files).then(timeData => {
       datasets = generateDataset(timeData);
+      datasets = datasets.map((dataset, idx) => {
+        const fileName = files[idx].name;
+        dataset.name = fileName.endsWith('.csv')
+          ? fileName.substring(0, fileName.length - 4)
+          : fileName;
+        return dataset;
+      });
       this.setState({
         files: [...this.state.files, ...files],
         datasets: [...this.state.datasets, ...datasets]
@@ -153,7 +163,11 @@ class CreateNewDatasetModal extends Component {
       return null;
     }
     return (
-      <Modal data-testid="modal" isOpen={this.props.isOpen}>
+      <Modal
+        className="modal-xl"
+        data-testid="modal"
+        isOpen={this.props.isOpen}
+      >
         <ModalHeader>
           {this.props.dataset
             ? 'Add timeseries to dataset'
@@ -185,14 +199,30 @@ class CreateNewDatasetModal extends Component {
                   <Table key={file + fileIndex}>
                     <thead>
                       <tr>
-                        <th colSpan="2">
-                          <b>{file.name}</b>
+                        <th colSpan="2" style={{ padding: 0 }}>
+                          <InputGroup size="md">
+                            <InputGroupAddon addonType="prepend">
+                              <InputGroupText>
+                                <b>Dataset-name</b>
+                              </InputGroupText>
+                            </InputGroupAddon>
+                            <Input
+                              className="font-weight-bold"
+                              id={'datasetName' + String(fileIndex)}
+                              type="text"
+                              placeholder="Name"
+                              value={this.state.datasets[fileIndex].name}
+                              onChange={e =>
+                                this.onDatasetNameChange(e, fileIndex)
+                              }
+                            />
+                          </InputGroup>
                         </th>
                         <th style={{ textAlign: 'end' }}>
                           <Button
                             id="deleteButton"
                             color="danger"
-                            size="sm"
+                            size="md"
                             onClick={() => this.onDeleteFile(fileIndex)}
                           >
                             Delete
@@ -217,7 +247,7 @@ class CreateNewDatasetModal extends Component {
                                 <td style={{ paddingTop: 0, paddingBottom: 0 }}>
                                   <InputGroup size="sm">
                                     <InputGroupAddon addonType="prepend">
-                                      <InputGroupText>Name</InputGroupText>
+                                      <InputGroupText>name</InputGroupText>
                                     </InputGroupAddon>
                                     <Input
                                       id={
@@ -267,7 +297,7 @@ class CreateNewDatasetModal extends Component {
                                     />
                                   </InputGroup>
                                 </td>
-                                <td>
+                                <td style={{ textAlign: 'right' }}>
                                   <Button
                                     id="deleteButton"
                                     color="danger"

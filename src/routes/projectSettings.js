@@ -275,7 +275,7 @@ class ProjectSettings extends Component {
                 color="primary"
                 onClick={this.onEnableDeviceApi}
               >
-                {this.state.deviceKey ? 'Change Key' : 'Enable'}
+                {this.state.deviceKey ? 'Change key' : 'Generate key'}
               </Button>
               <Button
                 color="danger"

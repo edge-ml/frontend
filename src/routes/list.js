@@ -132,7 +132,7 @@ class ListPage extends Component {
                 <thead>
                   <tr className="bg-light">
                     <th />
-                    <th>ID</th>
+                    <th>Name</th>
                     <th>Start Time</th>
                     <th>User ID</th>
                     <th />
@@ -152,7 +152,7 @@ class ListPage extends Component {
                             onChange={e => this.toggleCheck(e, dataset['_id'])}
                           />
                         </td>
-                        <th className="datasets-column">{dataset['_id']}</th>
+                        <th className="datasets-column">{dataset.name}</th>
                         <td className="datasets-column">
                           {this.displayTime(dataset.start)}
                         </td>
