@@ -21,6 +21,10 @@ module.exports.setProject = function(project_id) {
   localStorage.setItem('project_id', project_id);
 };
 
+module.exports.clearProject = function() {
+  localStorage.removeItem('project_id');
+};
+
 module.exports.getProject = function() {
   return localStorage.getItem('project_id');
 };

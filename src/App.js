@@ -25,7 +25,8 @@ import {
   setProject,
   getProject,
   clearToken,
-  setToken
+  setToken,
+  clearProject
 } from './services/LocalStorageService';
 import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal';
 import AppContent from './AppContent';
@@ -99,6 +100,16 @@ class App extends Component {
   }
 
   onProjectsChanged(projects, index) {
+    if (projects.length === 0) {
+      this.props.history.push('/');
+      this.setState({
+        projects: [],
+        currentProject: -1,
+        projectEditModalOpen: false
+      });
+      clearProject();
+      return;
+    }
     const projectIndex = index <= projects.length && index >= 0 ? index : 0;
     setProject(projects[projectIndex]._id);
     this.setState({
@@ -106,9 +117,7 @@ class App extends Component {
       currentProject: projectIndex,
       projectEditModalOpen: false
     });
-    if (projects.length !== 0) {
-      this.changeURL(this.state.projects[projectIndex]);
-    }
+    this.changeURL(this.state.projects[projectIndex]);
   }
 
   onProjectModalClose() {
