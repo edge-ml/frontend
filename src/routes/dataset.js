@@ -932,6 +932,7 @@ class DatasetPage extends Component {
                   start={this.state.dataset.start}
                   end={this.state.dataset.end}
                   user={this.state.dataset.userId}
+                  name={this.state.dataset.name}
                 />
               </div>
               <div className="mt-2" />

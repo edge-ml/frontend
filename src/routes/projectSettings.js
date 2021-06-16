@@ -248,7 +248,7 @@ class ProjectSettings extends Component {
               </InputGroupAddon>
               <Input
                 value={
-                  API_URI.replace('/api/', '') === '/'
+                  API_URI.replace('/api/', '') === ''
                     ? window.location.origin
                     : API_URI.replace('/api/', '')
                 }
