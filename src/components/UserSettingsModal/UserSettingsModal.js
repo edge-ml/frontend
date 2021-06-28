@@ -14,6 +14,8 @@ import MailSettings from './MailSettings';
 import PasswordSettings from './PasswordSettings';
 import TwoFaSettings from './TwoFaSettings';
 import UserNameSettings from './UserNameSettings';
+import DeleteUser from './DeleteUser';
+import UserSettingsProvider from './UserSettingsProvider';
 
 class UserSettingsModal extends Component {
   constructor(props) {
@@ -91,6 +93,19 @@ class UserSettingsModal extends Component {
                 Change user name
               </NavLink>
             </NavItem>
+
+            <NavItem style={{ cursor: 'pointer' }}>
+              <NavLink
+                className={classnames({
+                  active: this.state.activeTab === 'deleteUser'
+                })}
+                onClick={() => {
+                  this.toggleTab('deleteUser');
+                }}
+              >
+                Delete user
+              </NavLink>
+            </NavItem>
           </Nav>
           {this.state.activeTab === 'mailChange' ? (
             <MailSettings id="mailSettings"></MailSettings>
@@ -103,12 +118,17 @@ class UserSettingsModal extends Component {
             <TwoFaSettings
               id="twoFaSettings"
               twoFAEnabled={this.props.twoFAEnabled}
-              onLogout={this.onLogout}
+              onLogout={this.props.onLogout}
               enable2FA={this.props.enable2FA}
             ></TwoFaSettings>
           ) : null}
           {this.state.activeTab === 'userName' ? (
             <UserNameSettings id="userNameSettings"></UserNameSettings>
+          ) : null}
+          {this.state.activeTab === 'deleteUser' ? (
+            <UserSettingsProvider onLogout={this.props.onLogout}>
+              <DeleteUser></DeleteUser>
+            </UserSettingsProvider>
           ) : null}
         </ModalBody>
         <ModalFooter>
