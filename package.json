@@ -36,6 +36,7 @@
         "lint-staged": "^10.5.4",
         "password-hash": "^1.2.2",
         "prettier": "^1.19.1",
+        "prismjs": "^1.24.0",
         "protobufjs": "^6.10.2",
         "qrcode": "^1.4.4",
         "react": "^16.14.0",

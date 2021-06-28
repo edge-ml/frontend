@@ -24,6 +24,7 @@ import { API_URI } from './../services/ApiServices/ApiConstants';
 import NoProjectPage from './../components/NoProjectPage/NoProjectPage';
 import AutocompleteInput from '../components/AutoCompleteInput/AutocompleteInput';
 import { getUserNameSuggestions } from '../services/ApiServices/AuthentificationServices';
+import CodeSnippetModal from '../components/ApiSnippetsModal/CodeSnippetModal';
 import { FormGroup } from 'react-bootstrap';
 
 class ProjectSettings extends Component {
@@ -37,7 +38,8 @@ class ProjectSettings extends Component {
         originalProject: objectCopy,
         originalUsers: objectCopy.users,
         usersToDelete: [],
-        deviceKey: undefined
+        deviceKey: undefined,
+        codeSnippetModalOpen: true
       };
     } else {
       this.state = {
@@ -57,6 +59,7 @@ class ProjectSettings extends Component {
     this.onEnableDeviceApi = this.onEnableDeviceApi.bind(this);
     this.onDisableDeviceApi = this.onDisableDeviceApi.bind(this);
     this.onDeviceApiSwitch = this.onDeviceApiSwitch.bind(this);
+    this.toggleCodeSnippetModal = this.toggleCodeSnippetModal.bind(this);
     this.init = this.init.bind(this);
     this.init();
   }
@@ -184,7 +187,18 @@ class ProjectSettings extends Component {
     });
   }
 
+  toggleCodeSnippetModal(open) {
+    this.setState({
+      codeSnippetModalOpen: open
+    });
+  }
+
   render() {
+    const backendUrl =
+      API_URI.replace('/api/', '') === ''
+        ? window.location.origin
+        : API_URI.replace('/api/', '');
+
     if (!this.state.project) {
       return <NoProjectPage></NoProjectPage>;
     }
@@ -246,14 +260,7 @@ class ProjectSettings extends Component {
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>{'Backend-URL'}</InputGroupText>
               </InputGroupAddon>
-              <Input
-                value={
-                  API_URI.replace('/api/', '') === ''
-                    ? window.location.origin
-                    : API_URI.replace('/api/', '')
-                }
-                readOnly
-              />
+              <Input value={backendUrl} readOnly />
             </InputGroup>
             <InputGroup>
               <InputGroupAddon addonType="prepend">
@@ -271,18 +278,27 @@ class ProjectSettings extends Component {
             <div>
               <Button
                 disabled={!this.props.project.enableDeviceApi}
-                className="mr-2"
                 color="primary"
                 onClick={this.onEnableDeviceApi}
               >
                 {this.state.deviceKey ? 'Change key' : 'Generate key'}
               </Button>
               <Button
+                className="mx-2"
                 color="danger"
                 disabled={!this.props.project.enableDeviceApi}
                 onClick={this.onDisableDeviceApi}
               >
                 Remove key
+              </Button>
+              <Button
+                color="primary"
+                disabled={
+                  !this.props.project.enableDeviceApi || !this.state.deviceKey
+                }
+                onClick={() => this.toggleCodeSnippetModal(true)}
+              >
+                Get code
               </Button>
             </div>
             <hr />
@@ -381,6 +397,12 @@ class ProjectSettings extends Component {
             </div>
           </div>
         ) : null}
+        <CodeSnippetModal
+          isOpen={this.state.codeSnippetModalOpen}
+          onCancel={() => this.toggleCodeSnippetModal(false)}
+          backendUrl={backendUrl}
+          deviceApiKey={this.state.deviceKey}
+        ></CodeSnippetModal>
       </div>
     );
   }
