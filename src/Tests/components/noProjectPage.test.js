@@ -10,9 +10,7 @@ beforeEach(() => {});
 
 it('Render standard text', () => {
   const wrapper = mount(<NoProjectPage></NoProjectPage>);
-  expect(wrapper.contains('Join or create a project to get started!')).toBe(
-    true
-  );
+  expect(wrapper.find('#noProjectPageStandardText').exists()).toBe(true);
 });
 
 it('Render custom text', () => {
