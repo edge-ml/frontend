@@ -515,14 +515,21 @@ class App extends Component {
                           isOpen={this.state.userSettingsModalOpen}
                           onClose={this.toggleUserSettingsModal}
                           twoFAEnabled={this.state.twoFAEnabled}
-                          onLogout={this.onLogout}
+                          onLogout={() => this.onLogout(true)}
                           enable2FA={this.enable2FA}
                         ></UserSettingsModal>
                       </NavItem>
                     </Nav>
                   </Collapse>
                 </Navbar>
-                {projectAvailable ? null : <NoProjectPage></NoProjectPage>}
+                {projectAvailable ? null : (
+                  <NoProjectPage
+                    onCreateProject={e => {
+                      e.preventDefault();
+                      this.onProjectEditModal(this);
+                    }}
+                  ></NoProjectPage>
+                )}
                 <Route
                   {...this.props}
                   path="/:userName/:projectID"

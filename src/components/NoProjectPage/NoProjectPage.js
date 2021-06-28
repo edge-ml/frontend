@@ -10,9 +10,17 @@ class NoProjectPage extends Component {
     return (
       <div className="center">
         <h2>
-          {this.props.text
-            ? this.props.text
-            : 'Join or create a project to get started!'}
+          {this.props.text ? (
+            this.props.text
+          ) : (
+            <div>
+              Join or{' '}
+              <a onClick={this.props.onCreateProject} href="">
+                create
+              </a>{' '}
+              a project to get started!
+            </div>
+          )}
         </h2>
       </div>
     );
