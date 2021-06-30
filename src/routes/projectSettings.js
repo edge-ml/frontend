@@ -39,7 +39,7 @@ class ProjectSettings extends Component {
         originalUsers: objectCopy.users,
         usersToDelete: [],
         deviceKey: undefined,
-        codeSnippetModalOpen: true
+        codeSnippetModalOpen: false
       };
     } else {
       this.state = {

@@ -517,6 +517,7 @@ class App extends Component {
                           twoFAEnabled={this.state.twoFAEnabled}
                           onLogout={() => this.onLogout(true)}
                           enable2FA={this.enable2FA}
+                          userMail={this.state.userMail}
                         ></UserSettingsModal>
                       </NavItem>
                     </Nav>

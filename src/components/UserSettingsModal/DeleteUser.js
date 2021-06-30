@@ -41,6 +41,7 @@ class DeleteUser extends Component {
           id="buttonSaveNewMail"
           color="danger"
           className="m-1 mr-auto"
+          disabled={this.state.confirmationMail !== this.props.userMail}
           onClick={() => this.props.deleteUser(this.state.confirmationMail)}
         >
           Delete user

@@ -32,7 +32,7 @@ const generateCode = (
   "explorerBackendUrl",
   "deviceApiKey"
   );
-  IncrementalRecorder incRecorder = recorder.getIncrementalDataset("datasetName", false);
+  IncrementalRecorder incRecorder = recorder.getIncrementalDataset("datasetName", useServerTimeJava);
   
   // This is an example
   boolean res = incRecorder.addDataPoint("accX", 123, 1595506316000);`;
@@ -49,10 +49,13 @@ const generateCode = (
         `incRecorder.addDataPoint("accX", 123, 1595506316000);`,
         `incRecorder.addDataPoint("accX", 123);`
       )
+      .replace('useServerTimeJava', 'false')
       .replace(
         `collector(timeSeriesName="sensorName", datapoint=1.23, timestamp=1618760114)`,
         `collector(timeSeriesName="sensorName", datapoint=1.23)`
       );
+  } else {
+    templateCode = templateCode.replace('useServerTimeJava', 'true');
   }
 
   return { language: language, code: templateCode };

@@ -127,7 +127,7 @@ class UserSettingsModal extends Component {
           ) : null}
           {this.state.activeTab === 'deleteUser' ? (
             <UserSettingsProvider onLogout={this.props.onLogout}>
-              <DeleteUser></DeleteUser>
+              <DeleteUser userMail={this.props.userMail}></DeleteUser>
             </UserSettingsProvider>
           ) : null}
         </ModalBody>
