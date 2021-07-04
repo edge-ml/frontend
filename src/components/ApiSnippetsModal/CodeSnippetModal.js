@@ -10,9 +10,12 @@ import {
   InputGroupAddon,
   InputGroupText,
   FormGroup,
-  Label
+  Label,
+  Row,
+  Col
 } from 'reactstrap';
 import CodeSnippet from './CodeSnippet';
+import CodeSettings from './CodeSettings';
 
 class CodeSnippetModal extends Component {
   constructor(props) {
@@ -62,63 +65,12 @@ class CodeSnippetModal extends Component {
               onChange={this.onDatasetNameChanged}
             />
           </InputGroup>
-
-          <div style={{ display: 'flex' }}>
-            <Label for="platformCheck" className="mr-sm-2">
-              Platform:
-            </Label>
-            <FormGroup className="mr-2" id="platformCheck" check>
-              <Label check>
-                <Input
-                  value="java"
-                  type="radio"
-                  checked={this.state.platform === 'java'}
-                  onChange={this.onPlatformChange}
-                />
-                Java
-              </Label>
-            </FormGroup>
-            <FormGroup check>
-              <Label check>
-                <Input
-                  type="radio"
-                  value="node"
-                  checked={this.state.platform === 'node'}
-                  onChange={this.onPlatformChange}
-                />
-                Node.js
-              </Label>
-            </FormGroup>
-          </div>
-
-          <div style={{ display: 'flex' }}>
-            <Label for="serverTimeCheck" className="mr-sm-2">
-              Use servertime:
-            </Label>
-            <FormGroup className="mr-2" id="serverTimeCheck" check>
-              <Label check>
-                <Input
-                  type="radio"
-                  value="Yes"
-                  checked={this.state.servertime}
-                  onChange={this.onServerTimeChange}
-                />
-                Yes
-              </Label>
-            </FormGroup>
-            <FormGroup check>
-              <Label check>
-                <Input
-                  type="radio"
-                  value="No"
-                  checked={!this.state.servertime}
-                  onChange={this.onServerTimeChange}
-                />
-                No
-              </Label>
-            </FormGroup>
-          </div>
-
+          <CodeSettings
+            platform={this.state.platform}
+            servertime={this.state.servertime}
+            onPlatformChange={this.onPlatformChange}
+            onServerTimeChange={this.onServerTimeChange}
+          />
           <CodeSnippet
             backendUrl={this.props.backendUrl}
             platform={this.state.platform}

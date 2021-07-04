@@ -39,7 +39,7 @@ class ProjectSettings extends Component {
         originalUsers: objectCopy.users,
         usersToDelete: [],
         deviceKey: undefined,
-        codeSnippetModalOpen: false
+        codeSnippetModalOpen: props.codeSnippetModalOpen || false
       };
     } else {
       this.state = {
@@ -62,6 +62,18 @@ class ProjectSettings extends Component {
     this.toggleCodeSnippetModal = this.toggleCodeSnippetModal.bind(this);
     this.init = this.init.bind(this);
     this.init();
+    if (this.props.codeSnippetModalOpen) {
+      getDeviceApiKey.apply().then(key => {
+        if (!key.deviceApiKey || !props.project.enableDeviceApi) {
+          if (!key.deviceApiKey) {
+            this.onEnableDeviceApi();
+          }
+          if (!props.project.enableDeviceApi) {
+            this.onDeviceApiSwitch(true);
+          }
+        }
+      });
+    }
   }
 
   async init() {
@@ -71,8 +83,8 @@ class ProjectSettings extends Component {
     });
   }
 
-  onDeviceApiSwitch(e) {
-    switchDeviceApiActive(e.target.checked)
+  onDeviceApiSwitch(checked) {
+    switchDeviceApiActive(checked)
       .then(data => {
         this.props.onProjectsChanged(data);
       })
@@ -191,6 +203,17 @@ class ProjectSettings extends Component {
     this.setState({
       codeSnippetModalOpen: open
     });
+    let newPath;
+    if (!open) {
+      //newPath = this.props.location.pathname.replace("/getCode", "");
+      newPath = '.';
+    } else {
+      newPath = this.props.location.pathname.replace(
+        new RegExp('settings/?'),
+        'settings/getCode'
+      );
+    }
+    this.props.history.push(newPath);
   }
 
   render() {
@@ -248,8 +271,8 @@ class ProjectSettings extends Component {
                 inline
                 type="switch"
                 id="exampleCustomSwitch"
-                defaultChecked={this.props.project.enableDeviceApi}
-                onClick={this.onDeviceApiSwitch}
+                checked={this.props.project.enableDeviceApi}
+                onChange={e => this.onDeviceApiSwitch(e.target.checked)}
               />
             </FormGroup>
           ) : null}

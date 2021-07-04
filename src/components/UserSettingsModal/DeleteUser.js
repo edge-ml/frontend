@@ -23,9 +23,14 @@ class DeleteUser extends Component {
   }
 
   render() {
-    console.log(this.props);
     return (
       <div>
+        <div>
+          <h6>
+            Please type <b>{this.props.userMail}</b> to confirm
+          </h6>
+          <div>All projects where you are admin will be deleted</div>
+        </div>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>E-Mail</InputGroupText>
