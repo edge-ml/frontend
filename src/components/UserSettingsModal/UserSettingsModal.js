@@ -42,71 +42,73 @@ class UserSettingsModal extends Component {
   render() {
     return (
       <Modal size="lg" isOpen={this.props.isOpen}>
-        <ModalHeader>User Settings</ModalHeader>
-        <ModalBody>
-          <Nav tabs>
-            <NavItem style={{ cursor: 'pointer' }}>
-              <NavLink
-                className={classnames({
-                  active: this.state.activeTab === 'mailChange'
-                })}
-                onClick={() => {
-                  this.toggleTab('mailChange');
-                }}
-              >
-                Change E-Mail
-              </NavLink>
-            </NavItem>
-            <NavItem style={{ cursor: 'pointer' }}>
-              <NavLink
-                className={classnames({
-                  active: this.state.activeTab === 'passwordChange'
-                })}
-                onClick={() => {
-                  this.toggleTab('passwordChange');
-                }}
-              >
-                Change Password
-              </NavLink>
-            </NavItem>
-            <NavItem style={{ cursor: 'pointer' }}>
-              <NavLink
-                className={classnames({
-                  active: this.state.activeTab === '2FA'
-                })}
-                onClick={() => {
-                  this.toggleTab('2FA');
-                }}
-              >
-                2FA
-              </NavLink>
-            </NavItem>
-            <NavItem style={{ cursor: 'pointer' }}>
-              <NavLink
-                className={classnames({
-                  active: this.state.activeTab === 'userName'
-                })}
-                onClick={() => {
-                  this.toggleTab('userName');
-                }}
-              >
-                Change user name
-              </NavLink>
-            </NavItem>
+        <ModalHeader style={{ borderBottom: 'None' }}>
+          User Settings
+        </ModalHeader>
+        <Nav tabs>
+          <NavItem style={{ cursor: 'pointer' }}>
+            <NavLink
+              className={classnames({
+                active: this.state.activeTab === 'mailChange'
+              })}
+              onClick={() => {
+                this.toggleTab('mailChange');
+              }}
+            >
+              Change E-Mail
+            </NavLink>
+          </NavItem>
+          <NavItem style={{ cursor: 'pointer' }}>
+            <NavLink
+              className={classnames({
+                active: this.state.activeTab === 'passwordChange'
+              })}
+              onClick={() => {
+                this.toggleTab('passwordChange');
+              }}
+            >
+              Change Password
+            </NavLink>
+          </NavItem>
+          <NavItem style={{ cursor: 'pointer' }}>
+            <NavLink
+              className={classnames({
+                active: this.state.activeTab === '2FA'
+              })}
+              onClick={() => {
+                this.toggleTab('2FA');
+              }}
+            >
+              2FA
+            </NavLink>
+          </NavItem>
+          <NavItem style={{ cursor: 'pointer' }}>
+            <NavLink
+              className={classnames({
+                active: this.state.activeTab === 'userName'
+              })}
+              onClick={() => {
+                this.toggleTab('userName');
+              }}
+            >
+              Change Username
+            </NavLink>
+          </NavItem>
 
-            <NavItem style={{ cursor: 'pointer' }}>
-              <NavLink
-                className={classnames({
-                  active: this.state.activeTab === 'deleteUser'
-                })}
-                onClick={() => {
-                  this.toggleTab('deleteUser');
-                }}
-              >
-                Delete user
-              </NavLink>
-            </NavItem>
-          </Nav>
+          <NavItem style={{ cursor: 'pointer' }}>
+            <NavLink
+              className={classnames({
+                active: this.state.activeTab === 'deleteUser'
+              })}
+              onClick={() => {
+                this.toggleTab('deleteUser');
+              }}
+            >
+              Delete user
+            </NavLink>
+          </NavItem>
+        </Nav>
+        <ModalBody>
           {this.state.activeTab === 'mailChange' ? (
             <MailSettings id="mailSettings"></MailSettings>
           ) : null}

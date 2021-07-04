@@ -73,6 +73,20 @@ class AppContent extends Component {
               <ProjectRefresh project={this.props.project}>
                 <ProjectSettings
                   onProjectsChanged={this.props.onProjectsChanged}
+                  {...props}
+                />
+              </ProjectRefresh>
+            )}
+          />
+          <Route
+            exact
+            path={this.props.match.path + '/settings/getCode'}
+            render={props => (
+              <ProjectRefresh project={this.props.project}>
+                <ProjectSettings
+                  onProjectsChanged={this.props.onProjectsChanged}
+                  codeSnippetModalOpen={true}
+                  {...props}
                 />
               </ProjectRefresh>
             )}

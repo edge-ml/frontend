@@ -35,6 +35,7 @@ class ListPage extends Component {
     this.onDatasetsChanged = this.onDatasetsChanged.bind(this);
     this.toggleCheck = this.toggleCheck.bind(this);
     this.openDeleteModal = this.openDeleteModal.bind(this);
+    this.onUploadFromCode = this.onUploadFromCode.bind(this);
     this.toggleCreateNewDatasetModal = this.toggleCreateNewDatasetModal.bind(
       this
     );
@@ -57,6 +58,10 @@ class ListPage extends Component {
       ready: true,
       isCreateNewDatasetOpen: false
     });
+  }
+
+  onUploadFromCode() {
+    this.props.history.push('./settings/getCode');
   }
 
   toggleCheck(e, datasetId) {
@@ -131,7 +136,19 @@ class ListPage extends Component {
               <Table responsive>
                 <thead>
                   <tr className="bg-light">
-                    <th />
+                    <th>
+                      {' '}
+                      <Button
+                        id="deleteDatasetsButton"
+                        size="sm"
+                        color="danger"
+                        outline
+                        disabled={this.state.datasetsToDelete.length === 0}
+                        onClick={this.openDeleteModal}
+                      >
+                        Delete
+                      </Button>
+                    </th>
                     <th>Name</th>
                     <th>Start Time</th>
                     <th>User ID</th>
@@ -177,27 +194,28 @@ class ListPage extends Component {
                   })}
                 </tbody>
               </Table>
-              <Button
-                id="deleteDatasetsButton"
-                block
-                className="mb-5"
-                color="danger"
-                outline
-                disabled={this.state.datasetsToDelete.length === 0}
-                onClick={this.openDeleteModal}
-              >
-                Delete
-              </Button>
-              <Button
-                id="buttonCreateDatasets"
-                block
-                className="mb-5"
-                color="secondary"
-                outline
-                onClick={this.toggleCreateNewDatasetModal}
-              >
-                + Add
-              </Button>
+              <div style={{ display: 'flex' }}>
+                <Button
+                  id="buttonCreateDatasets"
+                  block
+                  className="mb-5 mr-2"
+                  color="secondary"
+                  outline
+                  onClick={this.toggleCreateNewDatasetModal}
+                >
+                  + Add
+                </Button>
+                <Button
+                  id="buttonUploadFromCode"
+                  block
+                  className="mb-5 ml-2 mt-0"
+                  color="secondary"
+                  outline
+                  onClick={this.onUploadFromCode}
+                >
+                  + Upload from Code
+                </Button>
+              </div>
             </Col>
           </Row>
         </Container>

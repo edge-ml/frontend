@@ -76,15 +76,13 @@ class App extends Component {
   }
 
   changeURL(project) {
-    const restUrl = this.props.history.location.pathname.split('/');
-    this.props.history.push(
-      '/' +
-        project.admin.userName +
-        '/' +
-        project.name +
-        '/' +
-        restUrl[restUrl.length - 1]
-    );
+    const splitUrl = this.props.history.location.pathname
+      .split('/')
+      .filter(elm => elm !== '');
+    console.log(splitUrl);
+    splitUrl[0] = project.admin.userName;
+    splitUrl[1] = project.name;
+    this.props.history.push('/' + splitUrl.join('/'));
   }
 
   enable2FA() {
