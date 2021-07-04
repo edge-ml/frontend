@@ -30,7 +30,7 @@ it('Show values of dataset', () => {
   const data = wrapper.find('Input');
   expect(data.get(0).props.value).toEqual(fakeDataset_One.name);
   expect(data.get(1).props.value).toEqual(fakeDataset_One._id);
-  expect(data.get(2).props.value).toEqual('12:11:56:0');
-  expect(data.get(3).props.value).toEqual('12:11:59:0');
+  expect(data.get(2).props.value).toEqual('12:11:56:000');
+  expect(data.get(3).props.value).toEqual('12:11:59:000');
   expect(data.get(4).props.value).toEqual(fakeDataset_One.userId);
 });
