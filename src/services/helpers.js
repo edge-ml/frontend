@@ -20,15 +20,20 @@ export const betterModulo = (x, n) => {
   return ((x % n) + n) % n;
 };
 
-export const unixTimeToString = unixTime => {
-  const date = new Date(unixTime);
-  return (
-    date.getUTCHours() +
-    ':' +
-    date.getUTCMinutes() +
-    ':' +
-    date.getUTCSeconds() +
-    ':' +
-    date.getUTCMilliseconds()
-  );
+export const unixTimeToString = ms => {
+  var milliseconds = parseInt((ms % 1000) / 100),
+    seconds = parseInt((ms / 1000) % 60),
+    minutes = parseInt((ms / (1000 * 60)) % 60),
+    hours = parseInt((ms / (1000 * 60 * 60)) % 24);
+
+  hours = hours < 10 ? '0' + hours : hours;
+  minutes = minutes < 10 ? '0' + minutes : minutes;
+  seconds = seconds < 10 ? '0' + seconds : seconds;
+  if (milliseconds < 10) {
+    milliseconds = '00' + milliseconds;
+  } else if (milliseconds < 100) {
+    milliseconds = '0' + milliseconds;
+  }
+
+  return hours + ':' + minutes + ':' + seconds + ':' + milliseconds;
 };

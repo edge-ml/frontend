@@ -417,7 +417,7 @@ class App extends Component {
                             Labelings
                           </NavLink>
 
-                          <NavLink
+                          {/*<NavLink
                             id="navLinkExperiments"
                             className="nav-link"
                             to={
@@ -429,6 +429,20 @@ class App extends Component {
                             }
                           >
                             Experiments
+                          </NavLink>
+                          */}
+                          <NavLink
+                            id="navLinkExperiments"
+                            className="nav-link"
+                            to={
+                              '/' +
+                              projectAvailable.admin.userName +
+                              '/' +
+                              projectAvailable.name +
+                              '/ml'
+                            }
+                          >
+                            ML
                           </NavLink>
 
                           <NavLink
