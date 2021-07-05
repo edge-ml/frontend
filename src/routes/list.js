@@ -203,7 +203,7 @@ class ListPage extends Component {
                   outline
                   onClick={this.toggleCreateNewDatasetModal}
                 >
-                  + Add
+                  + Upload CSV
                 </Button>
                 <Button
                   id="buttonUploadFromCode"

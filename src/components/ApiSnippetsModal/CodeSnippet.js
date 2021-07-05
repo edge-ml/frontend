@@ -10,55 +10,49 @@ const generateCode = (
   deviceApiKey,
   useServerTime
 ) => {
+  const javaTime = useServerTime ? '' : '1618760114000L, ';
+  const nodeTime = useServerTime ? '' : 'time = 1618760114000, ';
   const language = platform === 'java' ? 'java' : 'javascript';
   const codeNode = `const datasetCollector = require("explorer-node").datasetCollector;
 
   // Generate collector function
   const collector = await datasetCollector(
-  url="explorerBackendUrl", 
-  key="deviceApiKey", 
-  name="datasetName",
-  useServerTime=false
+    (url = "explorerBackendUrl"),
+    (key = "${deviceApiKey}"),
+    (name = "${datasetName}"),
+    (useDeviceTime = ${useServerTime})
   );
   if (collector.error) {
+    // Error occurred, cannot use the collector as a function to upload datasetincrements
     console.log(collector.error);
     return;
   }
-
-  // This is an example
-  await collector(timeSeriesName="sensorName", datapoint=1.23, timestamp=1618760114)`;
-
-  const codeJava = `Recorder recorder = new Recorder(
-  "explorerBackendUrl",
-  "deviceApiKey"
-  );
-  IncrementalRecorder incRecorder = recorder.getIncrementalDataset("datasetName", useServerTimeJava);
   
-  // This is an example
-  boolean res = incRecorder.addDataPoint("accX", 123, 1595506316000);`;
+  try {
+    // time should be a unix timestamp
+    collector.addDataPoint(${nodeTime}sensorName = "sensorName", value = 1.23);
+  
+    // Tells the libarary that all data has been recorded.
+    // Uploads all remaining datapoints to the server
+    collector.onComplete();
+  } catch (e) {
+    console.log(e);
+  }`;
+
+  const codeJava = `Recorder recorder = new Recorder("explorerBackendUrl", "deviceApiKey");
+  try {
+    IncrementalRecorder incRecorder = recorder.getIncrementalDataset("${datasetName}", ${useServerTime}); // true to use deviceTime
+  
+    incRecorder.addDataPoint(${javaTime}"accX", 123);
+  
+    // Wait until all values have been send
+    incRecorder.onComplete();
+  } catch (Exception e) {
+      e.printStackTrace();
+  }`;
 
   const code = platform === 'java' ? codeJava : codeNode;
-  var templateCode = code
-    .replace('explorerBackendUrl', backendUrl)
-    .replace('datasetName', datasetName)
-    .replace('deviceApiKey', deviceApiKey)
-    .replace('useServerTime=false', 'useServerTime=' + useServerTime);
-  if (!useServerTime) {
-    templateCode = templateCode
-      .replace(
-        `incRecorder.addDataPoint("accX", 123, 1595506316000);`,
-        `incRecorder.addDataPoint("accX", 123);`
-      )
-      .replace('useServerTimeJava', 'false')
-      .replace(
-        `collector(timeSeriesName="sensorName", datapoint=1.23, timestamp=1618760114)`,
-        `collector(timeSeriesName="sensorName", datapoint=1.23)`
-      );
-  } else {
-    templateCode = templateCode.replace('useServerTimeJava', 'true');
-  }
-
-  return { language: language, code: templateCode };
+  return { language: language, code: code };
 };
 
 const CodeSnippet = props => {
