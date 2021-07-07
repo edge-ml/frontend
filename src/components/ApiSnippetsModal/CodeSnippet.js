@@ -17,7 +17,7 @@ const generateCode = (
 
   // Generate collector function
   const collector = await datasetCollector(
-    (url = "explorerBackendUrl"),
+    (url = "${backendUrl}"),
     (key = "${deviceApiKey}"),
     (name = "${datasetName}"),
     (useDeviceTime = ${useServerTime})
@@ -39,7 +39,7 @@ const generateCode = (
     console.log(e);
   }`;
 
-  const codeJava = `Recorder recorder = new Recorder("explorerBackendUrl", "deviceApiKey");
+  const codeJava = `Recorder recorder = new Recorder("${backendUrl}", "${deviceApiKey}");
   try {
     IncrementalRecorder incRecorder = recorder.getIncrementalDataset("${datasetName}", ${useServerTime}); // true to use deviceTime
   
