@@ -280,6 +280,10 @@ class CreateNewDatasetModal extends Component {
                                       tpye="text"
                                       placeholder="Unit"
                                       bsSize="sm"
+                                      value={
+                                        this.state.datasets[fileIndex]
+                                          .timeSeries[seriesIndex].unit
+                                      }
                                       onChange={e =>
                                         this.onUnitChange(
                                           e,

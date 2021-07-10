@@ -54,7 +54,11 @@ function generateSingleTimeSeries(timeData) {
       var start = 0;
       if (!isNumber(timeData[0][0])) {
         start = 1;
-        timeSeries[i - 1].name = timeData[0][i];
+        var metaData = timeData[0][i].split(';');
+        if (metaData.length == 2) {
+          timeSeries[i - 1].unit = timeData[0][i].split(';')[1];
+        }
+        timeSeries[i - 1].name = timeData[0][i].split(';')[0];
         timeSeries[i - 1].start = parseInt(timeData[1][0], 10);
       }
       for (var j = start; j < timeData.length; j++) {
