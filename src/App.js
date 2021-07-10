@@ -73,6 +73,7 @@ class App extends Component {
     this.onUserLoggedIn = this.onUserLoggedIn.bind(this);
     this.enable2FA = this.enable2FA.bind(this);
     this.changeURL = this.changeURL.bind(this);
+    this.navigateTo = this.navigateTo.bind(this);
   }
 
   changeURL(project) {
@@ -83,6 +84,13 @@ class App extends Component {
     splitUrl[0] = project.admin.userName;
     splitUrl[1] = project.name;
     this.props.history.push('/' + splitUrl.join('/'));
+  }
+
+  navigateTo(location) {
+    const project = this.state.projects[this.state.currentProject];
+    this.props.history.push(
+      '/' + project.admin.userName + '/' + project.name + '/' + location
+    );
   }
 
   enable2FA() {
@@ -551,6 +559,7 @@ class App extends Component {
                       {...props}
                       project={this.state.projects[this.state.currentProject]}
                       onProjectsChanged={this.onProjectsChanged}
+                      navigateTo={this.navigateTo}
                     />
                   )}
                 ></Route>

@@ -11,7 +11,7 @@ import {
   InputGroupAddon,
   InputGroupText
 } from 'reactstrap';
-
+import DragDrop from '../Common/DragDrop';
 import {
   updateDataset,
   createDatasets
@@ -44,10 +44,15 @@ class CreateNewDatasetModal extends Component {
     this.onDatasetNameChange = this.onDatasetNameChange.bind(this);
   }
 
-  onDatasetNameChange(e, fileIndex) {}
+  onDatasetNameChange(e, fileIndex) {
+    const datasets = this.state.datasets;
+    datasets[fileIndex].name = e.target.value;
+    this.setState({
+      datasets: datasets
+    });
+  }
 
-  onFileInput(e) {
-    const files = e.target.files;
+  onFileInput(files) {
     var datasets;
     processCSV(files).then(timeData => {
       datasets = generateDataset(timeData);
@@ -58,6 +63,7 @@ class CreateNewDatasetModal extends Component {
           : fileName;
         return dataset;
       });
+      console.log(files);
       this.setState({
         files: [...this.state.files, ...files],
         datasets: [...this.state.datasets, ...datasets]
@@ -174,24 +180,11 @@ class CreateNewDatasetModal extends Component {
             : 'Create new dataset'}
         </ModalHeader>
         <ModalBody>
-          <div className="input-group">
-            <div className="custom-file">
-              <input
-                id="fileInput"
-                data-testid="fileInput"
-                accept=".csv"
-                onChange={this.onFileInput}
-                type="file"
-                multiple
-                className="custom-file-input"
-              />
-              <label className="custom-file-label">
-                {this.state.files.length === 0
-                  ? 'Choose File'
-                  : this.state.files.length + ' files selected'}
-              </label>
-            </div>
-          </div>
+          <DragDrop
+            style={{ height: '100px' }}
+            className="my-2"
+            onFileInput={this.onFileInput}
+          ></DragDrop>
           {this.state.files.length === 0
             ? null
             : this.state.files.map((file, fileIndex) => {
@@ -243,7 +236,7 @@ class CreateNewDatasetModal extends Component {
                         {this.state.datasets[fileIndex].timeSeries.map(
                           (timeSeries, seriesIndex) => {
                             return (
-                              <tr>
+                              <tr key={file + seriesIndex}>
                                 <td style={{ paddingTop: 0, paddingBottom: 0 }}>
                                   <InputGroup size="sm">
                                     <InputGroupAddon addonType="prepend">

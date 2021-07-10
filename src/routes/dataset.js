@@ -836,7 +836,7 @@ class DatasetPage extends Component {
     if (!this.state.dataset || !this.state.dataset['_id']) return;
     deleteDataset(this.state.dataset['_id'])
       .then(() => {
-        this.props.history.push('/datasets');
+        this.props.navigateTo('datasets');
       })
       .catch(err => {
         window.alert(err);

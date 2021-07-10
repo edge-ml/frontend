@@ -43,7 +43,9 @@ class AppContent extends Component {
           />
           <Route
             path={this.props.match.path + '/datasets/:id'}
-            render={props => <DatasetPage {...props} />}
+            render={props => (
+              <DatasetPage {...props} navigateTo={this.props.navigateTo} />
+            )}
           />
           <Route
             exact
