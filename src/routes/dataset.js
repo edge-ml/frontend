@@ -864,6 +864,15 @@ class DatasetPage extends Component {
 
     let isDrawingIntervalActive = this.drawingInterval ? true : false;
     let isCrosshairIntervalActive = this.crosshairInterval ? true : false;
+
+    const startOffset = Math.min(
+      ...this.state.dataset.timeSeries.map(elm => elm.offset),
+      0
+    );
+    const endOffset = Math.max(
+      ...this.state.dataset.timeSeries.map(elm => elm.offset),
+      0
+    );
     return (
       <Fade in={this.state.fadeIn}>
         <div className="pb-5">
@@ -896,8 +905,8 @@ class DatasetPage extends Component {
                   labelTypes={this.state.controlStates.selectedLabelTypes}
                   onLabelClicked={this.onSelectedLabelChanged}
                   selectedLabelId={this.state.controlStates.selectedLabelId}
-                  start={this.state.dataset.start}
-                  end={this.state.dataset.end}
+                  start={this.state.dataset.start + startOffset}
+                  end={this.state.dataset.end + endOffset}
                   onLabelChanged={this.onLabelChanged}
                   canEdit={this.state.controlStates.canEdit}
                   onScrubbed={this.onScrubbed}

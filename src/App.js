@@ -398,7 +398,7 @@ class App extends Component {
                           <NavLink
                             id="navLinkDatasets"
                             className="nav-link"
-                            exact={true}
+                            exact={false}
                             to={
                               '/' +
                               projectAvailable.admin.userName +

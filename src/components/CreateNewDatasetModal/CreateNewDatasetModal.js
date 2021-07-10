@@ -319,7 +319,7 @@ class CreateNewDatasetModal extends Component {
                 );
               })}
           {this.state.files.length === 0 ? (
-            <div>
+            <div className="mt-2">
               {' '}
               <a href="/example_file.csv">Click here</a> to download an example
               CSV file.
