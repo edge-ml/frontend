@@ -42,6 +42,7 @@ class CreateNewDatasetModal extends Component {
     this.onFileInput = this.onFileInput.bind(this);
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
     this.onDatasetNameChange = this.onDatasetNameChange.bind(this);
+    this.onSetAll = this.onSetAll.bind(this);
   }
 
   onDatasetNameChange(e, fileIndex) {
@@ -63,7 +64,6 @@ class CreateNewDatasetModal extends Component {
           : fileName;
         return dataset;
       });
-      console.log(files);
       this.setState({
         files: [...this.state.files, ...files],
         datasets: [...this.state.datasets, ...datasets]
@@ -108,6 +108,21 @@ class CreateNewDatasetModal extends Component {
     datasets.splice(index, 1);
     this.setState({
       files: files,
+      datasets: datasets
+    });
+  }
+
+  onSetAll(fileIndex, seriesIndex) {
+    const unit = this.state.datasets[fileIndex].timeSeries[seriesIndex].unit;
+    const name = this.state.datasets[fileIndex].timeSeries[seriesIndex].name;
+    const datasets = this.state.datasets;
+    datasets.forEach(elm => {
+      if (elm.timeSeries.length > seriesIndex) {
+        elm.timeSeries[seriesIndex].unit = unit;
+        elm.timeSeries[seriesIndex].name = name;
+      }
+    });
+    this.setState({
       datasets: datasets
     });
   }
@@ -192,7 +207,7 @@ class CreateNewDatasetModal extends Component {
                   <Table key={file + fileIndex}>
                     <thead>
                       <tr>
-                        <th colSpan="2" style={{ padding: 0 }}>
+                        <th colSpan="2" style={{ padding: '0 12px 0 0' }}>
                           <InputGroup size="md">
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText>
@@ -211,7 +226,7 @@ class CreateNewDatasetModal extends Component {
                             />
                           </InputGroup>
                         </th>
-                        <th style={{ textAlign: 'end' }}>
+                        <th colSpan="2" style={{ textAlign: 'end' }}>
                           <Button
                             id="deleteButton"
                             color="danger"
@@ -293,6 +308,18 @@ class CreateNewDatasetModal extends Component {
                                       }
                                     />
                                   </InputGroup>
+                                </td>
+                                <td style={{ textAlign: 'right' }}>
+                                  <Button
+                                    id="deleteButton"
+                                    color="primary"
+                                    size="sm"
+                                    onClick={() =>
+                                      this.onSetAll(fileIndex, seriesIndex)
+                                    }
+                                  >
+                                    Set all
+                                  </Button>
                                 </td>
                                 <td style={{ textAlign: 'right' }}>
                                   <Button
