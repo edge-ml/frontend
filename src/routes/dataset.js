@@ -97,11 +97,59 @@ class DatasetPage extends Component {
     this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
     this.setModalOpen = this.setModalOpen.bind(this);
     this.onAddLabeling = this.onAddLabeling.bind(this);
+    this.onSetName = this.onSetName.bind(this);
+    this.onSetUnit = this.onSetUnit.bind(this);
+    this.onSetAllUnit = this.onSetAllUnit.bind(this);
+    this.onSetAllName = this.onSetAllName.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false
     };
+  }
+
+  onSetName(index, newName) {
+    const dataset = this.state.dataset;
+    dataset.timeSeries[index - 1].name = newName;
+    updateDataset(dataset).then(newDataset => {
+      this.setState({
+        dataset: newDataset
+      });
+    });
+  }
+
+  onSetUnit(index, newUnit) {
+    const dataset = this.state.dataset;
+    dataset.timeSeries[index - 1].unit = newUnit;
+    updateDataset(dataset).then(newDataset => {
+      this.setState({
+        dataset: newDataset
+      });
+    });
+  }
+
+  onSetAllName(newName) {
+    const dataset = this.state.dataset;
+    for (var i = 0; i < dataset.timeSeries.length; i++) {
+      dataset.timeSeries[i].name = newName;
+    }
+    updateDataset(dataset).then(newDataset => {
+      this.setState({
+        dataset: newDataset
+      });
+    });
+  }
+
+  onSetAllUnit(newUnit) {
+    const dataset = this.state.dataset;
+    for (var i = 0; i < dataset.timeSeries.length; i++) {
+      dataset.timeSeries[i].unit = newUnit;
+    }
+    updateDataset(dataset).then(newDataset => {
+      this.setState({
+        dataset: newDataset
+      });
+    });
   }
 
   onAddLabeling() {
@@ -149,9 +197,12 @@ class DatasetPage extends Component {
 
   onLabelingsAndLabelsChanged(labelings, labels) {
     let selectedLabeling = labelings[0];
-    let selectedLabelTypes = labels.filter(label =>
-      selectedLabeling.labels.includes(label['_id'])
-    );
+    let selectedLabelTypes = undefined;
+    if (labels) {
+      selectedLabelTypes = labels.filter(label =>
+        selectedLabeling.labels.includes(label['_id'])
+      );
+    }
 
     this.setState({
       labelings: labelings || [],
@@ -899,6 +950,10 @@ class DatasetPage extends Component {
                   onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
                 />
                 <TimeSeriesCollectionPanel
+                  onSetName={this.onSetName}
+                  onSetUnit={this.onSetUnit}
+                  onSetAllUnit={this.onSetAllUnit}
+                  onSetAllName={this.onSetAllName}
                   timeSeries={this.state.dataset.timeSeries}
                   fusedSeries={this.state.dataset.fusedSeries}
                   labeling={selectedDatasetlabeling}

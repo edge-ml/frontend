@@ -1,4 +1,6 @@
 const { isNumber } = require('./helpers');
+const { generateRandomColor } = require('./ColorService');
+const { addLabeling } = require('./ApiServices/LabelingServices');
 
 module.exports.processCSV = files => {
   return new Promise((resolve, reject) => {
@@ -31,54 +33,101 @@ module.exports.processCSV = files => {
 module.exports.generateDataset = (timeData, dataset) => {
   if (!dataset) {
     const datasets = [];
+    const labelings = [];
     for (var i = 0; i < timeData.length; i++) {
-      datasets.push(generateSingleTimeSeries(timeData[i]));
+      dataset = generateSingleTimeSeries(timeData[i]);
+      datasets.push(dataset.dataset);
+      labelings.push(dataset.labeling);
     }
-    return datasets;
+    return { datasets: datasets, labelings: labelings };
   }
 };
+
+function extractTimeSeries(timeData, i) {
+  const timeSeries = {
+    name: timeData[0][i].replace('sensor_', '').split('[')[0],
+    unit: timeData[0][i].match(/\[(.*)\]/).pop(),
+    end: parseInt(timeData[timeData.length - 1][0], 10),
+    start: parseInt(timeData[1][0], 10),
+    data: []
+  };
+  for (var j = 1; j < timeData.length; j++) {
+    if (!isNumber(timeData[j][0])) {
+      throw { error: 'Timestamps cannot be missing' };
+    }
+    if (isNumber(timeData[j][i])) {
+      timeSeries.data.push({
+        timestamp: parseInt(timeData[j][0], 10),
+        datapoint: parseInt(timeData[j][i], 10)
+      });
+    }
+  }
+  return timeSeries;
+}
+
+function extractLabel(timeData, i) {
+  const labelNames = [];
+  const labeling = {
+    name: timeData[0][i].replace('label_', '')
+  };
+
+  for (var j = 1; j < timeData.length; j++) {
+    const label = timeData[j][i];
+    if (!labelNames.includes(label) && label !== '') {
+      labelNames.push(label);
+    }
+  }
+
+  const labels = labelNames.map(label => {
+    return {
+      name: label,
+      color: generateRandomColor(),
+      isNewLabel: true
+    };
+  });
+
+  const datasetLabel = {
+    name: timeData[0][i].replace('label_', ''),
+    labels: []
+  };
+
+  for (var j = 1; j < timeData.length; j++) {
+    if (timeData[j][i] !== '') {
+      var found = timeData[j][i];
+      var start = timeData[j][0];
+      while (j < timeData.length && found === timeData[j][i]) {
+        j++;
+      }
+      datasetLabel.labels.push({
+        start: start,
+        end: timeData[j - 1][0],
+        name: found
+      });
+      j--;
+    }
+  }
+  return { datasetLabel: datasetLabel, labeling: labeling, labels: labels };
+}
 
 function generateSingleTimeSeries(timeData) {
   try {
     const timeSeries = [];
+    const labelings = [];
     const numDatasets = timeData[0].length - 1;
     for (var i = 1; i <= numDatasets; i++) {
-      timeSeries.push({
-        name: '',
-        unit: '',
-        end: parseInt(timeData[timeData.length - 1][0], 10),
-        start: parseInt(timeData[0][0], 10),
-        data: []
-      });
-
-      var start = 0;
-      if (!isNumber(timeData[0][0])) {
-        start = 1;
-        var metaData = timeData[0][i].split(';');
-        if (metaData.length == 2) {
-          timeSeries[i - 1].unit = timeData[0][i].split(';')[1];
-        }
-        timeSeries[i - 1].name = timeData[0][i].split(';')[0];
-        timeSeries[i - 1].start = parseInt(timeData[1][0], 10);
-      }
-      for (var j = start; j < timeData.length; j++) {
-        if (!isNumber(timeData[j][0])) {
-          throw { error: 'Timestamps cannot be missing' };
-        }
-        if (isNumber(timeData[j][i])) {
-          timeSeries[i - 1].data.push({
-            timestamp: parseInt(timeData[j][0], 10),
-            datapoint: parseInt(timeData[j][i], 10)
-          });
-        }
+      if (timeData[0][i].startsWith('sensor_')) {
+        timeSeries.push(extractTimeSeries(timeData, i));
+      } else if (timeData[0][i].startsWith('label_')) {
+        labelings.push(extractLabel(timeData, i));
       }
     }
+
     const result = {
       start: timeSeries[0].start,
       end: parseInt(timeData[timeData.length - 1][0], 10),
       timeSeries: timeSeries
     };
-    return result;
+    return { dataset: result, labeling: labelings };
   } catch (err) {
     return { error: err.error };
   }
