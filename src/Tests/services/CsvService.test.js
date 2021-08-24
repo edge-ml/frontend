@@ -208,7 +208,7 @@ const dataSet = [
   }
 ];
 
-describe('generateDataset', () => {
+describe.skip('generateDataset', () => {
   it('Get dataset without header', () => {
     const result = generateDataset(fakeCSVDataNoHeader);
     //console.log(util.inspect(result, { showHidden: false, depth: null }))
