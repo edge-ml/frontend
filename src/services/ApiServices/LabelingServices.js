@@ -4,30 +4,24 @@ const axios = ax.create();
 
 module.exports.subscribeLabelingsAndLabels = () => {
   return new Promise((resolve, reject) => {
-    Promise.all([
-      axios(
-        apiConsts.generateApiRequest(
-          apiConsts.HTTP_METHODS.GET,
-          apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS
-        )
-      ),
-      axios(
-        apiConsts.generateApiRequest(
-          apiConsts.HTTP_METHODS.GET,
-          apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.LABEL_TYPES
-        )
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS
       )
-    ])
-      .then(results =>
-        resolve({ labelings: results[0].data, labels: results[1].data })
-      )
-      .catch(err => reject(err.response));
+    )
+      .then(result => {
+        resolve({
+          labelings: result.data.labelDefinitions,
+          labels: result.data.labelTypes
+        });
+      })
+      .catch(err => console.log(err));
   });
 };
 
-module.exports.addLabeling = (newLabeling, callback) => {
+module.exports.addLabeling = newLabeling => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -37,22 +31,10 @@ module.exports.addLabeling = (newLabeling, callback) => {
         newLabeling
       )
     )
-      .then(
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.GET,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS
-          )
-        )
-          .then(lableings => {
-            if (callback) {
-              resolve({ labelings: lableings.data, labels: undefined });
-            }
-          })
-          .catch(err => window.alert(err))
-      )
-      .catch(err => window.alert(err));
+      .then(() => {
+        this.subscribeLabelingsAndLabels().then(data => resolve(data));
+      })
+      .catch(err => console.log(err));
   });
 };
 
@@ -65,26 +47,9 @@ module.exports.deleteLabeling = labelingId => {
         apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS + `/${labelingId}`
       )
     ).then(() => {
-      Promise.all([
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.GET,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS
-          )
-        ),
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.GET,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.LABEL_TYPES
-          )
-        )
-      ])
-        .then(results => {
-          resolve({ labelings: results[0].data, labels: results[1].data });
-        })
-        .catch(err => window.alert(err));
+      this.subscribeLabelingsAndLabels()
+        .then(data => resolve(data))
+        .catch(err => console.log(err));
     });
   });
 };
@@ -99,19 +64,50 @@ module.exports.updateLabeling = labeling => {
         labeling
       )
     )
-      .then(() =>
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.GET,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS
-          )
-        )
-      )
-      .then(labelings => {
-        resolve(labelings.data, undefined);
+      .then(() => {
+        this.subscribeLabelingsAndLabels()
+          .then(data => resolve(data))
+          .catch(err => console.log(err));
       })
       .catch(err => window.alert(err));
+  });
+};
+
+module.exports.addLabelTypesToLabeling = (labeling, labels) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS +
+          `/${labeling['_id']}` +
+          '/createlabeltypes',
+        labels.filter(elm => elm.isNewLabel)
+      )
+    ).then(() => {
+      this.subscribeLabelingsAndLabels()
+        .then(data => resolve(data))
+        .catch(err => console.log(err));
+    });
+  });
+};
+
+module.exports.deleteLabelTypesFromLabeling = (labeling, labels) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS +
+          `/${labeling['_id']}` +
+          '/deletelabeltypes',
+        labels
+      )
+    ).then(() => {
+      this.subscribeLabelingsAndLabels()
+        .then(data => resolve(data))
+        .catch(err => console.log(err));
+    });
   });
 };
 
@@ -130,81 +126,6 @@ module.exports.updateLabelingAndLabels = (labeling, labels, deletedLabels) => {
             )
           )
         )
-    )
-      .then(newLabels => {
-        let newLabelsId = newLabels.map(label => label.data['_id']);
-        labeling.labels = [...labeling.labels, ...newLabelsId];
-        let promises = [];
-        if (!labeling['_id']) {
-          promises = [
-            ...promises,
-            axios(
-              apiConsts.generateApiRequest(
-                apiConsts.HTTP_METHODS.POST,
-                apiConsts.API_URI,
-                apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS,
-                labeling
-              )
-            )
-          ];
-        } else {
-          let updatedLabels = labels.filter(label => label.updated);
-
-          promises = [
-            ...promises,
-            axios(
-              apiConsts.generateApiRequest(
-                apiConsts.HTTP_METHODS.PUT,
-                apiConsts.API_URI,
-                apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS +
-                `/${labeling['_id']}`,
-                labeling
-              )
-            ),
-            ...updatedLabels.map(label =>
-              axios(
-                apiConsts.generateApiRequest(
-                  apiConsts.HTTP_METHODS.PUT,
-                  apiConsts.API_URI,
-                  apiConsts.API_ENDPOINTS.LABEL_TYPES + `/${label['_id']}`,
-                  label
-                )
-              )
-            ),
-            ...deletedLabels.map(labelId =>
-              axios(
-                apiConsts.generateApiRequest(
-                  apiConsts.HTTP_METHODS.DELETE,
-                  apiConsts.API_URI,
-                  apiConsts.API_ENDPOINTS.LABEL_TYPES + `/${labelId}`
-                )
-              )
-            )
-          ];
-        }
-        return Promise.all(promises);
-      })
-      .then(() => {
-        return Promise.all([
-          axios(
-            apiConsts.generateApiRequest(
-              apiConsts.HTTP_METHODS.GET,
-              apiConsts.API_URI,
-              apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS
-            )
-          ),
-          axios(
-            apiConsts.generateApiRequest(
-              apiConsts.HTTP_METHODS.GET,
-              apiConsts.API_URI,
-              apiConsts.API_ENDPOINTS.LABEL_TYPES
-            )
-          )
-        ]);
-      })
-      .then(results => {
-        resolve({ labelings: results[0].data, labels: results[1].data });
-      })
-      .catch(err => window.alert(err));
+    );
   });
 };

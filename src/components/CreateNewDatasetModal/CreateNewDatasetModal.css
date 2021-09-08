@@ -1,0 +1,8 @@
+.labelInfo {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.labelBorder {
+  border-left: black solid 1px;
+}

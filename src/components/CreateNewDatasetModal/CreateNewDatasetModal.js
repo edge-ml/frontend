@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import classnames from 'classnames';
 import {
   Modal,
   ModalHeader,
@@ -23,13 +24,22 @@ import {
   extendExistingDataset
 } from '../../services/CsvService';
 
+import './CreateNewDatasetModal.css';
+
+import {
+  addLabeling,
+  subscribeLabelingsAndLabels,
+  updateLabelingAndLabels
+} from '../../services/ApiServices/LabelingServices';
+
 class CreateNewDatasetModal extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       files: [],
-      datasets: []
+      datasets: [],
+      labelings: []
     };
     this.baseState = this.state;
     this.onUpload = this.onUpload.bind(this);
@@ -43,6 +53,7 @@ class CreateNewDatasetModal extends Component {
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
     this.onDatasetNameChange = this.onDatasetNameChange.bind(this);
     this.onSetAll = this.onSetAll.bind(this);
+    this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
   }
 
   onDatasetNameChange(e, fileIndex) {
@@ -54,9 +65,9 @@ class CreateNewDatasetModal extends Component {
   }
 
   onFileInput(files) {
-    var datasets;
     processCSV(files).then(timeData => {
-      datasets = generateDataset(timeData);
+      const result = generateDataset(timeData);
+      var datasets = result.datasets;
       datasets = datasets.map((dataset, idx) => {
         const fileName = files[idx].name;
         dataset.name = fileName.endsWith('.csv')
@@ -66,7 +77,11 @@ class CreateNewDatasetModal extends Component {
       });
       this.setState({
         files: [...this.state.files, ...files],
-        datasets: [...this.state.datasets, ...datasets]
+        datasets: [...this.state.datasets, ...datasets],
+        labelings: [
+          ...this.state.labelings,
+          ...result.labelings.map(elm => elm.map(innerElm => innerElm))
+        ]
       });
     });
   }
@@ -104,11 +119,14 @@ class CreateNewDatasetModal extends Component {
   onDeleteFile(index) {
     var files = [...this.state.files];
     var datasets = [...this.state.datasets];
+    var labelings = [...this.state.labelings];
     files.splice(index, 1);
     datasets.splice(index, 1);
+    labelings.splice(index, 1);
     this.setState({
       files: files,
-      datasets: datasets
+      datasets: datasets,
+      labelings: labelings
     });
   }
 
@@ -142,6 +160,16 @@ class CreateNewDatasetModal extends Component {
     });
   }
 
+  onDeleteLabeling(fileIndex, labelingIndex) {
+    const label = [...this.state.labelings[fileIndex]];
+    label.splice(labelingIndex, 1);
+    const labelings = this.state.labelings;
+    labelings[fileIndex] = label;
+    this.setState({
+      labelings: labelings
+    });
+  }
+
   resetState() {
     this.setState(this.baseState);
   }
@@ -160,23 +188,65 @@ class CreateNewDatasetModal extends Component {
       window.alert('Fix the errors to upload the dataset');
       return;
     }
-    processCSV(this.state.files).then(timeData => {
-      if (!this.props.dataset) {
-        createDatasets(this.state.datasets).then(data => {
-          this.resetState();
-          this.props.onDatasetComplete(data);
-        });
-      } else {
-        const fusedDataset = extendExistingDataset(
-          this.props.dataset,
-          this.state.datasets
-        );
-        updateDataset(fusedDataset).then(data => {
-          this.resetState();
-          this.props.onDatasetComplete(data);
-        });
+    if (!this.props.dataset) {
+      const promises = [];
+      for (var i = 0; i < this.state.labelings.length; i++) {
+        for (var j = 0; j < this.state.labelings[i].length; j++) {
+          promises.push(
+            addLabeling({
+              ...this.state.labelings[i][j].labeling,
+              labels: this.state.labelings[i][j].labels
+            })
+          );
+        }
       }
-    });
+      Promise.all(promises).then(() => {
+        subscribeLabelingsAndLabels().then(result => {
+          const labelings = result.labelings;
+          const labels = result.labels;
+          const currentLabeling = this.state.labelings;
+          for (var i = 0; i < this.state.labelings.length; i++) {
+            for (var j = 0; j < this.state.labelings[i].length; j++) {
+              const datasetLabels = currentLabeling[i][j].datasetLabel.labels;
+              const labelName = this.state.labelings[i][j].datasetLabel.name;
+              const labelIds = labelings.find(elm => elm.name === labelName)
+                .labels;
+              currentLabeling[i][j].datasetLabel.labelingId = labelings.find(
+                elm => elm.name === labelName
+              )._id;
+              for (var h = 0; h < datasetLabels.length; h++) {
+                const labelName =
+                  currentLabeling[i][j].datasetLabel.labels[h].name;
+                const labelId = labels.find(
+                  elm => labelName === elm.name && labelIds.includes(elm._id)
+                )._id;
+                currentLabeling[i][j].datasetLabel.labels[h].type = labelId;
+              }
+            }
+          }
+          const newDatasets = [];
+          for (var i = 0; i < this.state.datasets.length; i++) {
+            newDatasets.push({
+              ...this.state.datasets[i],
+              labelings: currentLabeling[i].map(elm => elm.datasetLabel)
+            });
+          }
+          createDatasets(newDatasets).then(data => {
+            this.resetState();
+            this.props.onDatasetComplete(data);
+          });
+        });
+      });
+    } else {
+      const fusedDataset = extendExistingDataset(
+        this.props.dataset,
+        this.state.datasets
+      );
+      updateDataset(fusedDataset).then(data => {
+        this.resetState();
+        this.props.onDatasetComplete(data);
+      });
+    }
   }
 
   render() {
@@ -204,145 +274,188 @@ class CreateNewDatasetModal extends Component {
             ? null
             : this.state.files.map((file, fileIndex) => {
                 return (
-                  <Table key={file + fileIndex}>
-                    <thead>
-                      <tr>
-                        <th colSpan="2" style={{ padding: '0 12px 0 0' }}>
-                          <InputGroup size="md">
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <b>Dataset-name</b>
-                              </InputGroupText>
-                            </InputGroupAddon>
-                            <Input
-                              className="font-weight-bold"
-                              id={'datasetName' + String(fileIndex)}
-                              type="text"
-                              placeholder="Name"
-                              value={this.state.datasets[fileIndex].name}
-                              onChange={e =>
-                                this.onDatasetNameChange(e, fileIndex)
-                              }
-                            />
-                          </InputGroup>
-                        </th>
-                        <th colSpan="2" style={{ textAlign: 'end' }}>
-                          <Button
-                            id="deleteButton"
-                            color="danger"
-                            size="md"
-                            onClick={() => this.onDeleteFile(fileIndex)}
-                          >
-                            Delete
-                          </Button>
-                        </th>
-                      </tr>
-                    </thead>
-                    {this.state.datasets[fileIndex].error ? (
-                      <tbody>
+                  <div key={file}>
+                    <Table key={file + fileIndex}>
+                      <thead>
                         <tr>
-                          <td colSpan="3" style={{ color: 'red' }}>
-                            Error: {this.state.datasets[fileIndex].error}
-                          </td>
+                          <th colSpan="2" style={{ padding: '0 12px 0 0' }}>
+                            <InputGroup size="md">
+                              <InputGroupAddon addonType="prepend">
+                                <InputGroupText>
+                                  <b>Dataset-name</b>
+                                </InputGroupText>
+                              </InputGroupAddon>
+                              <Input
+                                className="font-weight-bold"
+                                id={'datasetName' + String(fileIndex)}
+                                type="text"
+                                placeholder="Name"
+                                value={this.state.datasets[fileIndex].name}
+                                onChange={e =>
+                                  this.onDatasetNameChange(e, fileIndex)
+                                }
+                              />
+                            </InputGroup>
+                          </th>
+                          <th
+                            colSpan="2"
+                            style={{ textAlign: 'end', paddingRight: '0px' }}
+                          >
+                            <Button
+                              id="deleteButton"
+                              color="danger"
+                              size="md"
+                              onClick={() => this.onDeleteFile(fileIndex)}
+                            >
+                              Delete
+                            </Button>
+                          </th>
                         </tr>
-                      </tbody>
-                    ) : (
-                      <tbody>
-                        {this.state.datasets[fileIndex].timeSeries.map(
-                          (timeSeries, seriesIndex) => {
-                            return (
-                              <tr key={file + seriesIndex}>
-                                <td style={{ paddingTop: 0, paddingBottom: 0 }}>
-                                  <InputGroup size="sm">
-                                    <InputGroupAddon addonType="prepend">
-                                      <InputGroupText>name</InputGroupText>
-                                    </InputGroupAddon>
-                                    <Input
-                                      id={
-                                        'nameInput' +
-                                        String(fileIndex) +
-                                        String(seriesIndex)
+                      </thead>
+                      {this.state.datasets[fileIndex].error ? (
+                        <tbody>
+                          <tr>
+                            <td colSpan="3" style={{ color: 'red' }}>
+                              Error: {this.state.datasets[fileIndex].error}
+                            </td>
+                          </tr>
+                        </tbody>
+                      ) : (
+                        <tbody>
+                          {this.state.datasets[fileIndex].timeSeries.map(
+                            (timeSeries, seriesIndex) => {
+                              return (
+                                <tr key={file + seriesIndex}>
+                                  <td
+                                    style={{ paddingTop: 0, paddingBottom: 0 }}
+                                  >
+                                    <InputGroup size="sm">
+                                      <InputGroupAddon addonType="prepend">
+                                        <InputGroupText>name</InputGroupText>
+                                      </InputGroupAddon>
+                                      <Input
+                                        id={
+                                          'nameInput' +
+                                          String(fileIndex) +
+                                          String(seriesIndex)
+                                        }
+                                        data-testid="nameInput"
+                                        type="text"
+                                        placeholder="Name"
+                                        value={
+                                          this.state.datasets[fileIndex]
+                                            .timeSeries[seriesIndex].name
+                                        }
+                                        onChange={e =>
+                                          this.onNameChange(
+                                            e,
+                                            fileIndex,
+                                            seriesIndex
+                                          )
+                                        }
+                                      />
+                                    </InputGroup>
+                                  </td>
+                                  <td
+                                    style={{ paddingTop: 0, paddingBottom: 0 }}
+                                  >
+                                    <InputGroup size="sm">
+                                      <InputGroupAddon addonType="prepend">
+                                        <InputGroupText>Unit</InputGroupText>
+                                      </InputGroupAddon>
+                                      <Input
+                                        id={
+                                          'unitInput' +
+                                          String(fileIndex) +
+                                          String(seriesIndex)
+                                        }
+                                        data-testid="unitInput"
+                                        tpye="text"
+                                        placeholder="Unit"
+                                        bsSize="sm"
+                                        value={
+                                          this.state.datasets[fileIndex]
+                                            .timeSeries[seriesIndex].unit
+                                        }
+                                        onChange={e =>
+                                          this.onUnitChange(
+                                            e,
+                                            fileIndex,
+                                            seriesIndex
+                                          )
+                                        }
+                                      />
+                                    </InputGroup>
+                                  </td>
+                                  <td style={{ textAlign: 'right' }}>
+                                    <Button
+                                      id="deleteButton"
+                                      color="primary"
+                                      size="sm"
+                                      onClick={() =>
+                                        this.onSetAll(fileIndex, seriesIndex)
                                       }
-                                      data-testid="nameInput"
-                                      type="text"
-                                      placeholder="Name"
-                                      value={
-                                        this.state.datasets[fileIndex]
-                                          .timeSeries[seriesIndex].name
-                                      }
-                                      onChange={e =>
-                                        this.onNameChange(
-                                          e,
+                                    >
+                                      Set all
+                                    </Button>
+                                  </td>
+                                  <td style={{ textAlign: 'right' }}>
+                                    <Button
+                                      id="deleteButton"
+                                      color="danger"
+                                      size="sm"
+                                      onClick={() =>
+                                        this.onDeleteTimeSeries(
                                           fileIndex,
                                           seriesIndex
                                         )
                                       }
-                                    />
-                                  </InputGroup>
-                                </td>
-                                <td style={{ paddingTop: 0, paddingBottom: 0 }}>
-                                  <InputGroup size="sm">
-                                    <InputGroupAddon addonType="prepend">
-                                      <InputGroupText>Unit</InputGroupText>
-                                    </InputGroupAddon>
-                                    <Input
-                                      id={
-                                        'unitInput' +
-                                        String(fileIndex) +
-                                        String(seriesIndex)
-                                      }
-                                      data-testid="unitInput"
-                                      tpye="text"
-                                      placeholder="Unit"
-                                      bsSize="sm"
-                                      value={
-                                        this.state.datasets[fileIndex]
-                                          .timeSeries[seriesIndex].unit
-                                      }
-                                      onChange={e =>
-                                        this.onUnitChange(
-                                          e,
-                                          fileIndex,
-                                          seriesIndex
-                                        )
-                                      }
-                                    />
-                                  </InputGroup>
-                                </td>
-                                <td style={{ textAlign: 'right' }}>
-                                  <Button
-                                    id="deleteButton"
-                                    color="primary"
-                                    size="sm"
-                                    onClick={() =>
-                                      this.onSetAll(fileIndex, seriesIndex)
-                                    }
-                                  >
-                                    Set all
-                                  </Button>
-                                </td>
-                                <td style={{ textAlign: 'right' }}>
-                                  <Button
-                                    id="deleteButton"
-                                    color="danger"
-                                    size="sm"
-                                    onClick={() =>
-                                      this.onDeleteTimeSeries(
-                                        fileIndex,
-                                        seriesIndex
-                                      )
-                                    }
-                                  >
-                                    Delete
-                                  </Button>
-                                </td>
-                              </tr>
-                            );
-                          }
-                        )}
-                      </tbody>
-                    )}
-                  </Table>
+                                    >
+                                      Delete
+                                    </Button>
+                                  </td>
+                                </tr>
+                              );
+                            }
+                          )}
+                        </tbody>
+                      )}
+                    </Table>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                      {this.state.labelings[fileIndex].map(
+                        (labeling, labelingIndex) => {
+                          return (
+                            <div
+                              key={labeling + labelingIndex}
+                              className={classnames('labelInfo', {
+                                labelBorder: labelingIndex !== 0
+                              })}
+                            >
+                              <div
+                                className="mx-2"
+                                style={{ display: 'inline' }}
+                              >
+                                {labeling.datasetLabel.name}
+                              </div>
+                              <Button
+                                color="danger"
+                                size="sm"
+                                className="mx-2"
+                                onClick={() =>
+                                  this.onDeleteLabeling(
+                                    fileIndex,
+                                    labelingIndex
+                                  )
+                                }
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          );
+                        }
+                      )}
+                    </div>
+                  </div>
                 );
               })}
           {this.state.files.length === 0 ? (
