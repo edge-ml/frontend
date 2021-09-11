@@ -41,8 +41,10 @@ class HelpModal extends Component {
           </div>
           <hr />
           <h6>Upload CSV</h6>
-          <a href="/example_file.csv">Click here</a> to download an example CSV
-          file.
+          <a href="/example_file.csv" download="example_file.csv">
+            Click here
+          </a>{' '}
+          to download an example CSV file.
         </ModalBody>
         <ModalFooter>
           {' '}

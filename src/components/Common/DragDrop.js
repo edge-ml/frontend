@@ -30,12 +30,13 @@ class DragDrop extends Component {
 
   render() {
     return (
-      <div>
+      <div style={this.props.style}>
         <div
           style={{
             cursor: 'pointer !important',
             border: '3px dashed black',
-            borderRadius: '0.25rem'
+            borderRadius: '0.25rem',
+            height: 'inherit'
           }}
           onDrop={this.onDrop}
           onDragOver={this.onCancel}
@@ -48,10 +49,11 @@ class DragDrop extends Component {
               e.preventDefault(), e.stopPropagation();
             }}
             style={{
-              cursor: 'pointer !important',
+              cursor: 'pointer',
               opacity: 0,
               position: 'absolute',
-              boxSizing: 'inherit'
+              boxSizing: 'inherit',
+              height: 'inherit'
             }}
             id="fileInput"
             data-testid="fileInput"
@@ -65,10 +67,23 @@ class DragDrop extends Component {
             onDrop={this.onDrop}
             onDragOver={this.onCancel}
             onDragEnter={this.onCancel}
-            style={{ textAlign: 'center', margin: '8px' }}
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 'inherit',
+              fontSize: 'larger',
+              fontWeight: 'bold'
+            }}
           >
             {' '}
-            Drag 'n' drop some files here, or click to select files
+            <div className="mt-2">
+              Drag 'n' drop some files here, or{' '}
+              <a style={{ cursor: 'pointer' }} href="#">
+                {' click here '}
+              </a>{' '}
+              to select files
+            </div>
           </div>
         </div>
       </div>

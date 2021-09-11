@@ -7,7 +7,9 @@ import {
   updateLabeling,
   subscribeLabelingsAndLabels,
   addLabeling,
-  deleteLabeling
+  deleteLabeling,
+  deleteLabelTypesFromLabeling,
+  addLabelTypesToLabeling
 } from '../services/ApiServices/LabelingServices';
 
 class LabelingsPage extends Component {
@@ -133,27 +135,32 @@ class LabelingsPage extends Component {
 
   async onSave(labeling, labels, deletedLabels) {
     if (!labeling || !labels) return;
-    if (this.state.modal.isNewLabeling && labels.length === 0) {
-      await addLabeling(labeling).then(result =>
+
+    if (labeling.updated) {
+      const result = await updateLabeling(labeling);
+      this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
+    }
+
+    if (this.state.modal.isNewLabeling) {
+      addLabeling({ ...labeling, labels: labels }).then(result =>
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
-      );
-    } else if (
-      !this.state.modal.isNewLabeling &&
-      labeling.updated &&
-      deletedLabels.length === 0 &&
-      !labels.some(label => label.updated || label.isNewLabel)
-    ) {
-      await updateLabeling(labeling).then(newLabelings =>
-        this.onLabelingsAndLabelsChanged(newLabelings, undefined)
       );
     } else {
-      await updateLabelingAndLabels(
-        labeling,
-        labels,
-        deletedLabels
-      ).then(result =>
-        this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
-      );
+      addLabelTypesToLabeling(labeling, labels).then(result => {
+        if (deletedLabels !== []) {
+          deleteLabelTypesFromLabeling(
+            labeling,
+            deletedLabels
+          ).then(newResult =>
+            this.onLabelingsAndLabelsChanged(
+              newResult.labelings,
+              newResult.labels
+            )
+          );
+        } else {
+          this.onLabelingsAndLabelsChanged(result.labeling, result.labels);
+        }
+      });
     }
     this.onCloseModal();
   }

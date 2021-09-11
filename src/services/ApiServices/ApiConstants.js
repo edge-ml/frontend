@@ -10,6 +10,11 @@ module.exports = {
       ? '/api/'
       : 'http://localhost:3000/api/',
 
+  ML_URI:
+    process.env.NODE_ENV === 'production'
+      ? '/ml/'
+      : 'http://localhost:8000/api/',
+
   HTTP_METHODS: {
     GET: 'GET',
     POST: 'POST',
@@ -44,6 +49,9 @@ module.exports = {
     GETDEVICEAPIKEY: 'deviceApi/getkey',
     REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
     SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive'
+  },
+  ML_ENDPOINTS: {
+    PARAMETERS: 'parameters'
   }
 };
 
