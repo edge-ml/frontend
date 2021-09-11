@@ -736,9 +736,15 @@ class DatasetPage extends Component {
     let labelingOrLabelAdded = false;
 
     if (!labeling) {
+      const labelingId = this.state.controlStates.selectedLabelingId;
+      const labelingName = this.state.labelings.filter(
+        obj => obj._id === labelingId
+      )[0].name;
+
       labeling = {
         labels: [],
-        labelingId: this.state.controlStates.selectedLabelingId,
+        labelingId: labelingId,
+        labelingName: labelingName,
         creator: this.state.dataset.userId
       };
 
@@ -752,6 +758,7 @@ class DatasetPage extends Component {
       label = {
         start: start,
         end: end,
+        name: this.state.controlStates.selectedLabelTypes[0]['name'],
         type: this.state.controlStates.selectedLabelTypeId
           ? this.state.controlStates.selectedLabelTypeId
           : this.state.controlStates.selectedLabelTypes[0]['_id']

@@ -45,9 +45,9 @@ module.exports.addLabeling = (newLabeling, callback) => {
             apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS
           )
         )
-          .then(lableings => {
+          .then(labelings => {
             if (callback) {
-              resolve({ labelings: lableings.data, labels: undefined });
+              resolve({ labelings: labelings.data, labels: undefined });
             }
           })
           .catch(err => window.alert(err))
@@ -157,7 +157,7 @@ module.exports.updateLabelingAndLabels = (labeling, labels, deletedLabels) => {
                 apiConsts.HTTP_METHODS.PUT,
                 apiConsts.API_URI,
                 apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS +
-                `/${labeling['_id']}`,
+                  `/${labeling['_id']}`,
                 labeling
               )
             ),

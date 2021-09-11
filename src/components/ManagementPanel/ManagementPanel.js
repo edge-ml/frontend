@@ -40,12 +40,33 @@ class ManagementPanel extends Component {
     var csv = 'time,';
     var csv_lines = Object(); // this will be used as a dictionary, with timestamps as keys, and arrays of values as values
     var timestamps = new Set([]); // this variable will hold all timestamps as an ordered array
+    var labelings = Object();
+    var labelsUsed =
+      typeof dataset.labelings !== 'undefined' && dataset.labelings.length > 0;
 
-    // TODO: labelings are not yet added to the CSV file!
+    if (labelsUsed) {
+      dataset.labelings.forEach(l => {
+        labelings[l.labelingName] = [];
+        l.labels.forEach(label => {
+          labelings[l.labelingName].push({
+            name: label.name,
+            start: Math.round(label.start),
+            end: Math.round(label.end)
+          });
+        });
+      });
+    }
 
     dataset.timeSeries.forEach(t => {
-      csv += 'sensor_' + t.name + '[' + t.unit + ']' + ',';
+      csv += 'sensor_' + t.name + '[' + t.unit + '],';
     });
+
+    if (labelsUsed) {
+      for (const [labeling, _] of Object.entries(labelings)) {
+        csv += 'label_' + labeling + ',';
+      }
+    }
+
     csv = csv.slice(0, -1); // remove the single ',' at the end
     csv += '\r\n'; // this concludes the first csv line, now append data
 
@@ -68,11 +89,41 @@ class ManagementPanel extends Component {
 
       missingTimestamps.forEach(m => {
         csv_lines[m].push(undefined); // all missing timestamps must result in empty values in the CSV (,,)
-      }); // pushing undefined and later doing .join(",") will results in this desired behavious
+      }); // pushing undefined and later doing .join(",") will results in this behaviour
     });
 
     for (const [timestamp, values] of Object.entries(csv_lines)) {
-      csv += timestamp + ',' + values.join(',') + '\r\n';
+      csv += timestamp + ',' + values.join(',');
+
+      if (labelsUsed) {
+        csv += ','; // when labels are used, they follow the values in a row, hence a colon is needed
+
+        // check for each labeling, if their labels are in the bounds of the current timestamp. If yes, add the label to the CSV line, else only add ','
+        for (const [_, labels] of Object.entries(labelings)) {
+          var label = undefined;
+
+          for (let l of labels) {
+            if (
+              l.start <= parseInt(timestamp, 10) &&
+              parseInt(timestamp, 10) <= l.end
+            ) {
+              label = l.name;
+              break;
+            }
+          }
+
+          // if a label was added, add the label name and ',' to the CSV line
+          if (typeof label !== 'undefined') {
+            csv += label + ',';
+          }
+          // if NO label was added, only add ',' to the CSV line
+          else {
+            csv += ',';
+          }
+        }
+        csv = csv.slice(0, -1); // remove the single ',' at the end
+        csv += '\r\n';
+      }
     }
 
     const blob = new Blob([csv], { type: 'application/csv' });
@@ -83,6 +134,7 @@ class ManagementPanel extends Component {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    return true;
   }
 
   render() {
