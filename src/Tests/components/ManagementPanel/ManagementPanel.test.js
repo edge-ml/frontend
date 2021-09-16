@@ -3,7 +3,7 @@ import { configure, mount, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { fakeDataset_One } from '../../fakeData/fakeDatasets';
+import { fakeDataset_One, fakeLabeling_One } from '../../fakeData/fakeDatasets';
 
 configure({ adapter: new Adapter() });
 
@@ -42,8 +42,12 @@ it('Download dataset', () => {
   jest.spyOn(document, 'createElement').mockReturnValueOnce(dummyElement);
   global.URL.createObjectURL = jest.fn();
   global.URL.createObjectURL.mockReturnValue('fakeURL');
+  console.log(fakeLabeling_One);
   const wrapper = shallow(
-    <ManagementPanel dataset={fakeDataset_One}></ManagementPanel>
+    <ManagementPanel
+      dataset={fakeDataset_One}
+      labelings={fakeLabeling_One}
+    ></ManagementPanel>
   );
   wrapper.find('#buttonDownloadDataset').simulate('click');
   expect(dummyElement.click).toHaveBeenCalled();

@@ -1009,6 +1009,7 @@ class DatasetPage extends Component {
               <div className="mt-2" />
               <div className="mt-2" style={{ marginBottom: '230px' }}>
                 <ManagementPanel
+                  labelings={this.state.labelings}
                   onUpload={obj => this.addTimeSeries(obj)}
                   startTime={this.state.dataset.start}
                   onDeleteDataset={this.onDeleteDataset}

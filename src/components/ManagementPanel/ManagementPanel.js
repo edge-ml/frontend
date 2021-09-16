@@ -46,9 +46,9 @@ class ManagementPanel extends Component {
 
     if (labelsUsed) {
       dataset.labelings.forEach(l => {
-        labelings[l.labelingName] = [];
+        labelings[l.labelingId] = [];
         l.labels.forEach(label => {
-          labelings[l.labelingName].push({
+          labelings[l.labelingId].push({
             name: label.name,
             start: Math.round(label.start),
             end: Math.round(label.end)
@@ -61,9 +61,13 @@ class ManagementPanel extends Component {
       csv += 'sensor_' + t.name + '[' + t.unit + '],';
     });
 
+    console.log(labelings);
     if (labelsUsed) {
-      for (const [labeling, _] of Object.entries(labelings)) {
-        csv += 'label_' + labeling + ',';
+      for (const [labelingId, _] of Object.entries(labelings)) {
+        const labelingName = this.props.labelings.find(
+          elm => elm._id === labelingId
+        ).name;
+        csv += 'label_' + labelingName + ',';
       }
     }
 
@@ -125,6 +129,8 @@ class ManagementPanel extends Component {
         csv += '\r\n';
       }
     }
+
+    console.log(csv);
 
     const blob = new Blob([csv], { type: 'application/csv' });
     const href = URL.createObjectURL(blob);

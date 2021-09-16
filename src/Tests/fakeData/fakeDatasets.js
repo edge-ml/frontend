@@ -65,6 +65,11 @@ module.exports.fakeDataset_One = {
   __v: 0
 };
 
+module.exports.fakeLabeling_One = [
+  { _id: '5f1dd1b837eeaa00196310bf', name: 'label1' },
+  { _id: '5f1dd1f437eeaa00196310c2', name: 'label2' }
+];
+
 module.exports.fakeDataset_Two = {
   isPublished: false,
   device: null,
