@@ -119,6 +119,8 @@ function generateSingleTimeSeries(timeData) {
         timeSeries.push(extractTimeSeries(timeData, i));
       } else if (timeData[0][i].startsWith('label_')) {
         labelings.push(extractLabel(timeData, i));
+      } else {
+        return { error: 'Wrong format' };
       }
     }
 
@@ -132,6 +134,39 @@ function generateSingleTimeSeries(timeData) {
     return { error: err.error };
   }
 }
+
+module.exports.generateLabeledDataset = (
+  labelings,
+  labels,
+  currentLabeling,
+  datasets
+) => {
+  for (var i = 0; i < currentLabeling.length; i++) {
+    for (var j = 0; j < currentLabeling[i].length; j++) {
+      const datasetLabels = currentLabeling[i][j].datasetLabel.labels;
+      const labelName = currentLabeling[i][j].datasetLabel.name;
+      const labelIds = labelings.find(elm => elm.name === labelName).labels;
+      currentLabeling[i][j].datasetLabel.labelingId = labelings.find(
+        elm => elm.name === labelName
+      )._id;
+      for (var h = 0; h < datasetLabels.length; h++) {
+        const labelName = currentLabeling[i][j].datasetLabel.labels[h].name;
+        const labelId = labels.find(
+          elm => labelName === elm.name && labelIds.includes(elm._id)
+        )._id;
+        currentLabeling[i][j].datasetLabel.labels[h].type = labelId;
+      }
+    }
+  }
+  const newDatasets = [];
+  for (var i = 0; i < datasets.length; i++) {
+    newDatasets.push({
+      ...datasets[i],
+      labelings: currentLabeling[i].map(elm => elm.datasetLabel)
+    });
+  }
+  return newDatasets;
+};
 
 module.exports.extendExistingDataset = (dataset, newDatasets) => {
   const fusedDataset = dataset;

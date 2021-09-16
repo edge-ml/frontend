@@ -21,7 +21,8 @@ import {
 import {
   processCSV,
   generateDataset,
-  extendExistingDataset
+  extendExistingDataset,
+  generateLabeledDataset
 } from '../../services/CsvService';
 
 import './CreateNewDatasetModal.css';
@@ -205,32 +206,12 @@ class CreateNewDatasetModal extends Component {
           const labelings = result.labelings;
           const labels = result.labels;
           const currentLabeling = this.state.labelings;
-          for (var i = 0; i < this.state.labelings.length; i++) {
-            for (var j = 0; j < this.state.labelings[i].length; j++) {
-              const datasetLabels = currentLabeling[i][j].datasetLabel.labels;
-              const labelName = this.state.labelings[i][j].datasetLabel.name;
-              const labelIds = labelings.find(elm => elm.name === labelName)
-                .labels;
-              currentLabeling[i][j].datasetLabel.labelingId = labelings.find(
-                elm => elm.name === labelName
-              )._id;
-              for (var h = 0; h < datasetLabels.length; h++) {
-                const labelName =
-                  currentLabeling[i][j].datasetLabel.labels[h].name;
-                const labelId = labels.find(
-                  elm => labelName === elm.name && labelIds.includes(elm._id)
-                )._id;
-                currentLabeling[i][j].datasetLabel.labels[h].type = labelId;
-              }
-            }
-          }
-          const newDatasets = [];
-          for (var i = 0; i < this.state.datasets.length; i++) {
-            newDatasets.push({
-              ...this.state.datasets[i],
-              labelings: currentLabeling[i].map(elm => elm.datasetLabel)
-            });
-          }
+          const newDatasets = generateLabeledDataset(
+            result.labelings,
+            result.labels,
+            this.state.labelings,
+            this.state.datasets
+          );
           createDatasets(newDatasets).then(data => {
             this.resetState();
             this.props.onDatasetComplete(data);
@@ -432,6 +413,7 @@ class CreateNewDatasetModal extends Component {
                               })}
                             >
                               <div
+                                id={'labelName' + labelingIndex}
                                 className="mx-2"
                                 style={{ display: 'inline' }}
                               >
