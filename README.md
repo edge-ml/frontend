@@ -5,9 +5,11 @@ The frontend part of edge-ml which can be found [here](https://github.com/edge-m
 [![Publish Docker image](https://github.com/edge-ml/frontend/actions/workflows/publishDocker.yml/badge.svg)](https://github.com/edge-ml/frontend/actions/workflows/publishDocker.yml)
 
 ## Setup
+```
 git submodule update --init --recursive
 yarn install    or     npm install
 yarn start      or     npm start
+```
 
 ## Setting up you dev environment
 1. Install Visual Studio Code
