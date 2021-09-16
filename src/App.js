@@ -320,7 +320,19 @@ class App extends Component {
               <div>
                 <Navbar color="light" light expand="md">
                   <NavbarBrand style={{ marginRight: '8px' }}>
-                    Explorer
+                    <NavLink
+                      style={{ color: 'black' }}
+                      to={
+                        '/' +
+                        projectAvailable.admin.userName +
+                        '/' +
+                        projectAvailable.name +
+                        '/' +
+                        'datasets'
+                      }
+                    >
+                      Edge-ML
+                    </NavLink>
                   </NavbarBrand>
                   <NavbarToggler onClick={this.toggleNavbar} />
                   <Collapse isOpen={this.state.navbarState.isOpen} navbar>
@@ -422,23 +434,8 @@ class App extends Component {
                           >
                             Labelings
                           </NavLink>
-
-                          {/*<NavLink
-                            id="navLinkExperiments"
-                            className="nav-link"
-                            to={
-                              '/' +
-                              projectAvailable.admin.userName +
-                              '/' +
-                              projectAvailable.name +
-                              '/experiments'
-                            }
-                          >
-                            Experiments
-                          </NavLink>
-                          */}
                           <NavLink
-                            id="navLinkExperiments"
+                            id="navLinkML"
                             className="nav-link"
                             to={
                               '/' +
