@@ -9,6 +9,7 @@ import ExperimentsPage from './routes/experiments';
 import ProjectSettings from './routes/projectSettings';
 import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
 import MlPage from './routes/ml';
+import UploadBLE from './routes/uploadBLE';
 
 class AppContent extends Component {
   constructor(props) {
@@ -90,6 +91,15 @@ class AppContent extends Component {
                   codeSnippetModalOpen={true}
                   {...props}
                 />
+              </ProjectRefresh>
+            )}
+          />
+          <Route
+            exact
+            path={this.props.match.path + '/ble'}
+            render={props => (
+              <ProjectRefresh project={this.props.project}>
+                <UploadBLE {...props}></UploadBLE>
               </ProjectRefresh>
             )}
           />
