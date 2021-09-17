@@ -16,7 +16,7 @@ import {
 } from 'reactstrap';
 import ChooseDeviceModal from '../components/BLE/ChooseDeviceModal';
 import Loader from '../modules/loader';
-
+import { createDataset } from '../services/ApiServices/DatasetServices';
 import parseScheme from '../deviceData/parse-scheme.json';
 import sensorTypeMap from '../deviceData/sensor-type-map.json';
 
@@ -119,6 +119,18 @@ class UploadBLE extends Component {
     if (this.recordInterval) {
       clearInterval(this.recordInterval);
       this.recordInterval = undefined;
+      const globalStartTime = Math.min(
+        ...this.recorderDataset.timeSeries.map(elm => elm.start)
+      );
+      const globalEndTime = Math.max(
+        ...this.recorderDataset.timeSeries.map(elm => elm.end)
+      );
+      this.recorderDataset.start = globalStartTime;
+      this.recorderDataset.end = globalEndTime;
+      console.log(this.recorderDataset);
+      createDataset(this.recorderDataset).then(() => {
+        console.log('Uploaded dataset');
+      });
       this.setState({
         recording: false
       });
@@ -136,16 +148,16 @@ class UploadBLE extends Component {
       sensorType['parse-scheme'].map(elm => {
         timeSeries.push({
           name: sensorTypeMap[key].name + '_' + elm.name,
-          start: undefined,
-          end: undefined,
+          start: new Date().getTime() + 10000000,
+          end: new Date().getTime(),
           data: []
         });
       });
     });
     this.recorderDataset = {
       name: this.state.datasetName,
-      start: undefined,
-      end: undefined,
+      start: new Date().getTime() + 10000000,
+      end: new Date().getTime(),
       timeSeries: timeSeries
     };
     this.setState({ recording: true });
@@ -156,13 +168,23 @@ class UploadBLE extends Component {
           elm => elm.id === sensor.type
         );
         sensorType['parse-scheme'].map((elm, idx) => {
-          const searchString = sensor.name + '_' + elm.name;
-          this.recorderDataset.timeSeries
-            .find(elm => elm.name === searchString)
-            .data.push({
-              dataPoint: this.recorderMap.get(key)[idx],
-              timeStamp: new Date().getTime()
+          if (this.recorderMap.get(key)[idx]) {
+            const searchString = sensor.name + '_' + elm.name;
+            const timeSeriesData = this.recorderDataset.timeSeries.find(
+              elm => elm.name === searchString
+            );
+            const addTime = new Date().getTime();
+            timeSeriesData.data.push({
+              datapoint: this.recorderMap.get(key)[idx],
+              timestamp: addTime
             });
+            if (addTime < timeSeriesData.start) {
+              timeSeriesData.start = addTime;
+            }
+            if (addTime > timeSeriesData.end) {
+              timeSeriesData.end = addTime;
+            }
+          }
         });
       });
       console.log(this.recorderDataset);
@@ -376,6 +398,9 @@ class UploadBLE extends Component {
   }
 
   connectBLEDevice() {
+    if (this.state.recording) {
+      this.onStartRecording();
+    }
     if (this.state.connectedBLEDevice) {
       this.state.connectedBLEDevice.gatt.disconnect();
       this.setState({
@@ -450,40 +475,48 @@ class UploadBLE extends Component {
                     opacity: '0.2'
                   }}
                 ></div>
-                <Table style={{ width: 'fit-content' }}>
-                  <thead>
-                    <tr className="bg-light">
-                      <th>Select</th>
-                      <th>SensorName</th>
-                      <th>SensorType</th>
-                      <th>Components</th>
-                      {/*<th>Sample rate</th>
+                <div
+                  style={
+                    this.state.recording
+                      ? { opacity: '0.4', pointerEvents: 'none' }
+                      : null
+                  }
+                >
+                  <Table style={{ width: 'fit-content' }}>
+                    <thead>
+                      <tr className="bg-light">
+                        <th>Select</th>
+                        <th>SensorName</th>
+                        <th>SensorType</th>
+                        <th>Components</th>
+                        {/*<th>Sample rate</th>
                   <th>Latency</th>*/}
-                    </tr>
-                  </thead>
-                  {Object.entries(sensorTypeMap).map((sensor, sensorIndex) => {
-                    const sensorData = sensor[1];
-                    const sensorKey = sensor[0];
-                    const typeData = parseScheme.types[sensorData.type];
-                    return (
-                      <tr>
-                        <td>
-                          {' '}
-                          <Input
-                            onChange={e => this.onToggleSensor(sensorKey)}
-                            className="datasets-check"
-                            type="checkbox"
-                          />
-                        </td>
-                        <td>{sensorData.name}</td>
-                        <td>{typeData.type}</td>
-                        <td>
-                          {typeData['parse-scheme']
-                            .map(elm => elm.name)
-                            .join('; ')}
-                        </td>
-                        <td>
-                          {/*<Input
+                      </tr>
+                    </thead>
+                    {Object.entries(sensorTypeMap).map(
+                      (sensor, sensorIndex) => {
+                        const sensorData = sensor[1];
+                        const sensorKey = sensor[0];
+                        const typeData = parseScheme.types[sensorData.type];
+                        return (
+                          <tr>
+                            <td>
+                              {' '}
+                              <Input
+                                onChange={e => this.onToggleSensor(sensorKey)}
+                                className="datasets-check"
+                                type="checkbox"
+                              />
+                            </td>
+                            <td>{sensorData.name}</td>
+                            <td>{typeData.type}</td>
+                            <td>
+                              {typeData['parse-scheme']
+                                .map(elm => elm.name)
+                                .join('; ')}
+                            </td>
+                            <td>
+                              {/*<Input
                         size="sm"
                         disabled={!this.state.sensorMap.get(sensorKey)}
                         onChange={(e) =>
@@ -509,11 +542,13 @@ class UploadBLE extends Component {
                             : ""
                         }
                       ></Input>*/}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </Table>
+                            </td>
+                          </tr>
+                        );
+                      }
+                    )}
+                  </Table>
+                </div>
               </div>
             </Col>
             <Col>
