@@ -1,252 +1,509 @@
+import { generateRandomColor } from '../../services/ColorService';
 import {
-  generateTimeSeries,
   processCSV,
   generateDataset,
-  extendExistingDataset
+  generateLabeledDataset
 } from '../../services/CsvService';
 
-import {
-  fakeDataset_One,
-  fakeDataset_Two,
-  fakeDatasetCombination_one_two
-} from '../fakeData/fakeDatasets';
-
-const fs = require('fs');
 const path = require('path');
-const singleTestFileTimeSeries = {
-  names: ['testName'],
-  units: ['testUnit'],
-  timeData: [
-    [
-      [1595506316, 1],
-      [1595506317, 2],
-      [1595506318, 3],
-      [1595506319, 4]
-    ]
-  ],
-  timeSeries: [
-    {
-      data: [1, 2, 3, 4],
-      end: 1595506319,
-      name: 'testName',
-      offset: 0,
-      samplingRate: 1,
-      start: 1595506316,
-      unit: 'testUnit'
-    }
-  ]
-};
+const fs = require('fs');
+const util = require('util');
 
-const twoTestFilesTimeSeries = {
-  names: ['testName0', 'testName1'],
-  units: ['testUnit0', 'testUnit1'],
-  timeData: [
-    [
-      [1595506316, 1],
-      [1595506317, 2],
-      [1595506318, 3],
-      [1595506319, 4]
-    ],
-    [
-      [1595506316, 1],
-      [1595506317, 2],
-      [1595506318, 4],
-      [1595506319, 8],
-      [1595506320, 8],
-      [1595506321, 8],
-      [1595506322, 8],
-      [1595506323, 8],
-      [1595506324, 12],
-      [1595506325, 16]
-    ]
-  ],
-  timeSeries: [
-    {
-      data: [1, 2, 3, 4],
-      end: 1595506319,
-      name: 'testName0',
-      offset: 0,
-      samplingRate: 1,
-      start: 1595506316,
-      unit: 'testUnit0'
-    },
-    {
-      data: [1, 2, 4, 8, 8, 8, 8, 8, 12, 16],
-      end: 1595506325,
-      name: 'testName1',
-      offset: 0,
-      samplingRate: 1,
-      start: 1595506316,
-      unit: 'testUnit1'
-    }
-  ]
-};
+jest.mock('../../services/ColorService');
 
-describe.skip('Tests for generateTimeSeries', () => {
-  it('Correct data from single file', () => {
-    expect(
-      generateTimeSeries(
-        singleTestFileTimeSeries.timeData,
-        singleTestFileTimeSeries.names,
-        singleTestFileTimeSeries.units
-      )
-    ).toEqual(singleTestFileTimeSeries.timeSeries);
-  });
+const fakeCsvPath = path.join(__dirname, '..', 'fakeData', 'data_csv');
 
-  it('Single file with inconsistent sampling rate', () => {
-    var modData = { ...singleTestFileTimeSeries };
-    modData.timeData[0][0][0] = 1595506315; //Start one time step too early
-    expect(
-      generateTimeSeries(modData.timeData, modData.names, modData.units).err
-    ).not.toEqual(undefined);
-  });
-
-  it('Correct data from multiple files', () => {
-    expect(
-      generateTimeSeries(
-        twoTestFilesTimeSeries.timeData,
-        twoTestFilesTimeSeries.names,
-        twoTestFilesTimeSeries.units
-      )
-    ).toEqual(twoTestFilesTimeSeries.timeSeries);
-  });
-
-  it('2 files, one with inconsistent sampling rate', () => {
-    var modData = { ...twoTestFilesTimeSeries };
-    modData.timeData[0][0][0] = 2; // Timestamp does not fit to the rest of the data
-    expect(
-      generateTimeSeries(
-        twoTestFilesTimeSeries.timeData,
-        twoTestFilesTimeSeries.names,
-        twoTestFilesTimeSeries.units
-      ).err
-    ).not.toEqual(undefined);
-  });
-
-  it('2 files, nun numerical number in csv file', () => {
-    var modData = { ...twoTestFilesTimeSeries };
-    modData.timeData[0][0][0] = 'NoNumber'; // Timestamp does not fit to the rest of the data
-    expect(
-      generateTimeSeries(
-        twoTestFilesTimeSeries.timeData,
-        twoTestFilesTimeSeries.names,
-        twoTestFilesTimeSeries.units
-      ).err
-    ).not.toEqual(undefined);
-  });
-});
-
-describe.skip('ProcessCSV', () => {
-  it('success case 1', () => {
-    const csv_dataset_1 = path.join(
-      __dirname,
-      '..',
-      'fakeData',
-      'testData.csv'
-    );
-    const file = new File([''], csv_dataset_1);
-    console.log(file);
-    console.log(fs.readFileSync(csv_dataset_1, 'utf-8'));
-    processCSV([file]).then(data => {
-      console.log(data);
-      expect(data).not.toEqual(undefined);
-    });
-  });
-});
-
-const fakeCSVDataNoHeader = [
+const resultProcessCsv = [
   [
-    ['1', '1', '1', '1'],
-    ['2', '3', '1', '2'],
-    ['3', '1', '1', '1'],
-    ['4', '1', '1', '5']
+    [
+      'time',
+      'sensor_accX[m/s²]',
+      'sensor_accY[m/s²]',
+      'sensor_accZ[m/s²]',
+      'label_label1',
+      'label_label2'
+    ],
+    ['1628168415000', '2', '2', '2', 'test1', 'test3'],
+    ['1628168416000', '4', '2', '4', 'test1', 'test3'],
+    ['1628168417000', '8', '3', '8', 'test2', ''],
+    ['1628168418000', '16', '4', '16', 'test2', 'test4'],
+    ['1628168419000', '16', '4', '16', 'test2', 'test4']
   ]
 ];
 
-const dataSet = [
+const resultGenerateDataset = {
+  datasets: [
+    {
+      start: 1628168415000,
+      end: 1628168419000,
+      timeSeries: [
+        {
+          name: 'accX',
+          unit: 'm/s²',
+          end: 1628168419000,
+          start: 1628168415000,
+          data: [
+            { timestamp: 1628168415000, datapoint: 2 },
+            { timestamp: 1628168416000, datapoint: 4 },
+            { timestamp: 1628168417000, datapoint: 8 },
+            { timestamp: 1628168418000, datapoint: 16 },
+            { timestamp: 1628168419000, datapoint: 16 }
+          ]
+        },
+        {
+          name: 'accY',
+          unit: 'm/s²',
+          end: 1628168419000,
+          start: 1628168415000,
+          data: [
+            { timestamp: 1628168415000, datapoint: 2 },
+            { timestamp: 1628168416000, datapoint: 2 },
+            { timestamp: 1628168417000, datapoint: 3 },
+            { timestamp: 1628168418000, datapoint: 4 },
+            { timestamp: 1628168419000, datapoint: 4 }
+          ]
+        },
+        {
+          name: 'accZ',
+          unit: 'm/s²',
+          end: 1628168419000,
+          start: 1628168415000,
+          data: [
+            { timestamp: 1628168415000, datapoint: 2 },
+            { timestamp: 1628168416000, datapoint: 4 },
+            { timestamp: 1628168417000, datapoint: 8 },
+            { timestamp: 1628168418000, datapoint: 16 },
+            { timestamp: 1628168419000, datapoint: 16 }
+          ]
+        }
+      ]
+    }
+  ],
+  labelings: [
+    [
+      {
+        datasetLabel: {
+          name: 'label1',
+          labels: [
+            {
+              start: '1628168415000',
+              end: '1628168416000',
+              name: 'test1'
+            },
+            {
+              start: '1628168417000',
+              end: '1628168419000',
+              name: 'test2'
+            }
+          ]
+        },
+        labeling: { name: 'label1' },
+        labels: [
+          { name: 'test1', color: '#fakeColor', isNewLabel: true },
+          { name: 'test2', color: '#fakeColor', isNewLabel: true }
+        ]
+      },
+      {
+        datasetLabel: {
+          name: 'label2',
+          labels: [
+            {
+              start: '1628168415000',
+              end: '1628168416000',
+              name: 'test3'
+            },
+            {
+              start: '1628168418000',
+              end: '1628168419000',
+              name: 'test4'
+            }
+          ]
+        },
+        labeling: { name: 'label2' },
+        labels: [
+          { name: 'test3', color: '#fakeColor', isNewLabel: true },
+          { name: 'test4', color: '#fakeColor', isNewLabel: true }
+        ]
+      }
+    ]
+  ]
+};
+
+const extractedLabelings = [
   {
-    start: 1,
-    end: 4,
+    labels: ['613f4e87f033ea954af38ee3', '613f4e87f033ea954af38ee4'],
+    _id: '613f4e87f033ea954af38ee7',
+    name: 'label1',
+    __v: 0
+  },
+  {
+    labels: ['613f4e87f033ea954af38ee5', '613f4e87f033ea954af38ee6'],
+    _id: '613f4e87f033ea954af38ee8',
+    name: 'label2',
+    __v: 0
+  }
+];
+
+const extractedLabels = [
+  {
+    _id: '613f4e87f033ea954af38ee3',
+    name: 'test1',
+    color: '#2361A9',
+    __v: 0
+  },
+  {
+    _id: '613f4e87f033ea954af38ee4',
+    name: 'test2',
+    color: '#D460BA',
+    __v: 0
+  },
+  {
+    _id: '613f4e87f033ea954af38ee5',
+    name: 'test3',
+    color: '#4127DB',
+    __v: 0
+  },
+  {
+    _id: '613f4e87f033ea954af38ee6',
+    name: 'test4',
+    color: '#45EEBD',
+    __v: 0
+  }
+];
+
+const currentLabelings = [
+  [
+    {
+      datasetLabel: {
+        name: 'label1',
+        labels: [
+          {
+            start: '1628168415000',
+            end: '1628168416000',
+            name: 'test1',
+            type: '613f4e87f033ea954af38ee3'
+          },
+          {
+            start: '1628168417000',
+            end: '1628168419000',
+            name: 'test2',
+            type: '613f4e87f033ea954af38ee4'
+          }
+        ],
+        labelingId: '613f4e87f033ea954af38ee7'
+      },
+      labeling: {
+        name: 'label1'
+      },
+      labels: [
+        {
+          name: 'test1',
+          color: '#2361A9',
+          isNewLabel: true
+        },
+        {
+          name: 'test2',
+          color: '#D460BA',
+          isNewLabel: true
+        }
+      ]
+    },
+    {
+      datasetLabel: {
+        name: 'label2',
+        labels: [
+          {
+            start: '1628168415000',
+            end: '1628168416000',
+            name: 'test3',
+            type: '613f4e87f033ea954af38ee5'
+          },
+          {
+            start: '1628168418000',
+            end: '1628168419000',
+            name: 'test4',
+            type: '613f4e87f033ea954af38ee6'
+          }
+        ],
+        labelingId: '613f4e87f033ea954af38ee8'
+      },
+      labeling: {
+        name: 'label2'
+      },
+      labels: [
+        {
+          name: 'test3',
+          color: '#4127DB',
+          isNewLabel: true
+        },
+        {
+          name: 'test4',
+          color: '#45EEBD',
+          isNewLabel: true
+        }
+      ]
+    }
+  ]
+];
+
+const currentDatasets = [
+  {
+    start: 1628168415000,
+    end: 1628168419000,
     timeSeries: [
       {
-        name: '',
-        unit: '',
-        start: 1,
-        end: 4,
+        name: 'accX',
+        unit: 'm/s²',
+        end: 1628168419000,
+        start: 1628168415000,
         data: [
-          { timestamp: 1, datapoint: 1 },
-          { timestamp: 2, datapoint: 3 },
-          { timestamp: 3, datapoint: 1 },
-          { timestamp: 4, datapoint: 1 }
+          {
+            timestamp: 1628168415000,
+            datapoint: 2
+          },
+          {
+            timestamp: 1628168416000,
+            datapoint: 4
+          },
+          {
+            timestamp: 1628168417000,
+            datapoint: 8
+          },
+          {
+            timestamp: 1628168418000,
+            datapoint: 16
+          },
+          {
+            timestamp: 1628168419000,
+            datapoint: 16
+          }
         ]
       },
       {
-        name: '',
-        unit: '',
-        start: 1,
-        end: 4,
+        name: 'accY',
+        unit: 'm/s²',
+        end: 1628168419000,
+        start: 1628168415000,
         data: [
-          { timestamp: 1, datapoint: 1 },
-          { timestamp: 2, datapoint: 1 },
-          { timestamp: 3, datapoint: 1 },
-          { timestamp: 4, datapoint: 1 }
+          {
+            timestamp: 1628168415000,
+            datapoint: 2
+          },
+          {
+            timestamp: 1628168416000,
+            datapoint: 2
+          },
+          {
+            timestamp: 1628168417000,
+            datapoint: 3
+          },
+          {
+            timestamp: 1628168418000,
+            datapoint: 4
+          },
+          {
+            timestamp: 1628168419000,
+            datapoint: 4
+          }
         ]
       },
       {
-        name: '',
-        unit: '',
-        start: 1,
-        end: 4,
+        name: 'accZ',
+        unit: 'm/s²',
+        end: 1628168419000,
+        start: 1628168415000,
         data: [
-          { timestamp: 1, datapoint: 1 },
-          { timestamp: 2, datapoint: 2 },
-          { timestamp: 3, datapoint: 1 },
-          { timestamp: 4, datapoint: 5 }
+          {
+            timestamp: 1628168415000,
+            datapoint: 2
+          },
+          {
+            timestamp: 1628168416000,
+            datapoint: 4
+          },
+          {
+            timestamp: 1628168417000,
+            datapoint: 8
+          },
+          {
+            timestamp: 1628168418000,
+            datapoint: 16
+          },
+          {
+            timestamp: 1628168419000,
+            datapoint: 16
+          }
         ]
+      }
+    ],
+    name: 'example_new (3)'
+  }
+];
+
+const labeledDataset = [
+  {
+    start: 1628168415000,
+    end: 1628168419000,
+    timeSeries: [
+      {
+        name: 'accX',
+        unit: 'm/s²',
+        end: 1628168419000,
+        start: 1628168415000,
+        data: [
+          {
+            timestamp: 1628168415000,
+            datapoint: 2
+          },
+          {
+            timestamp: 1628168416000,
+            datapoint: 4
+          },
+          {
+            timestamp: 1628168417000,
+            datapoint: 8
+          },
+          {
+            timestamp: 1628168418000,
+            datapoint: 16
+          },
+          {
+            timestamp: 1628168419000,
+            datapoint: 16
+          }
+        ]
+      },
+      {
+        name: 'accY',
+        unit: 'm/s²',
+        end: 1628168419000,
+        start: 1628168415000,
+        data: [
+          {
+            timestamp: 1628168415000,
+            datapoint: 2
+          },
+          {
+            timestamp: 1628168416000,
+            datapoint: 2
+          },
+          {
+            timestamp: 1628168417000,
+            datapoint: 3
+          },
+          {
+            timestamp: 1628168418000,
+            datapoint: 4
+          },
+          {
+            timestamp: 1628168419000,
+            datapoint: 4
+          }
+        ]
+      },
+      {
+        name: 'accZ',
+        unit: 'm/s²',
+        end: 1628168419000,
+        start: 1628168415000,
+        data: [
+          {
+            timestamp: 1628168415000,
+            datapoint: 2
+          },
+          {
+            timestamp: 1628168416000,
+            datapoint: 4
+          },
+          {
+            timestamp: 1628168417000,
+            datapoint: 8
+          },
+          {
+            timestamp: 1628168418000,
+            datapoint: 16
+          },
+          {
+            timestamp: 1628168419000,
+            datapoint: 16
+          }
+        ]
+      }
+    ],
+    name: 'example_new (3)',
+    labelings: [
+      {
+        name: 'label1',
+        labels: [
+          {
+            start: '1628168415000',
+            end: '1628168416000',
+            name: 'test1',
+            type: '613f4e87f033ea954af38ee3'
+          },
+          {
+            start: '1628168417000',
+            end: '1628168419000',
+            name: 'test2',
+            type: '613f4e87f033ea954af38ee4'
+          }
+        ],
+        labelingId: '613f4e87f033ea954af38ee7'
+      },
+      {
+        name: 'label2',
+        labels: [
+          {
+            start: '1628168415000',
+            end: '1628168416000',
+            name: 'test3',
+            type: '613f4e87f033ea954af38ee5'
+          },
+          {
+            start: '1628168418000',
+            end: '1628168419000',
+            name: 'test4',
+            type: '613f4e87f033ea954af38ee6'
+          }
+        ],
+        labelingId: '613f4e87f033ea954af38ee8'
       }
     ]
   }
 ];
 
-describe.skip('generateDataset', () => {
-  it('Get dataset without header', () => {
-    const result = generateDataset(fakeCSVDataNoHeader);
-    //console.log(util.inspect(result, { showHidden: false, depth: null }))
-    expect(result).toEqual(dataSet);
-  });
+function readFakeCsvFile(filePath) {
+  const csv_dataset = path.join(fakeCsvPath, filePath);
+  const fileData = fs.readFileSync(csv_dataset, 'utf-8');
+  const file = new File([fileData], csv_dataset);
+  return file;
+}
 
-  it('Get dataset with header', () => {
-    const timeSeriesObjWithNames = JSON.parse(JSON.stringify(dataSet));
-    const fakeCSVDatasetWithHeader = [
-      [['time', 'accX', 'accY', 'accZ'], ...fakeCSVDataNoHeader[0]]
-    ];
-    const result = generateDataset(fakeCSVDatasetWithHeader);
-    //console.log(util.inspect(result, { showHidden: false, depth: null }))
-    timeSeriesObjWithNames[0].timeSeries[0].name = 'accX';
-    timeSeriesObjWithNames[0].timeSeries[1].name = 'accY';
-    timeSeriesObjWithNames[0].timeSeries[2].name = 'accZ';
-    expect(result).toEqual(timeSeriesObjWithNames);
-  });
-
-  it('Missing unix timestamp', () => {
-    const invalidCSVData = JSON.parse(JSON.stringify(fakeCSVDataNoHeader));
-    invalidCSVData[0][2][0] = '';
-    const result = generateDataset(invalidCSVData);
-    //console.log(util.inspect(result, { showHidden: false, depth: null }))
-    expect(result.error);
-  });
-
-  it('Missing value at one point in time for one sensor', () => {
-    const csvWithMissingValue = JSON.parse(JSON.stringify(fakeCSVDataNoHeader));
-    csvWithMissingValue[0][2][1] = '';
-    const result = generateDataset(csvWithMissingValue);
-    const expectedResult = dataSet;
-    delete expectedResult[0].timeSeries[0].data.splice(2, 1);
-    expect(result).toEqual(expectedResult);
+describe('Testing function processCSV', () => {
+  it('Success case', () => {
+    const file = readFakeCsvFile('full_feature_working.csv');
+    processCSV([file]).then(data => {
+      expect(data).toEqual(resultProcessCsv);
+    });
   });
 });
 
-describe.skip('ExtendExistingDataset', () => {
-  const fusedDataset = extendExistingDataset(fakeDataset_One, fakeDataset_Two);
-  expect(fusedDataset).toEqual(fakeDatasetCombination_one_two);
+describe('Generate dataset and labels', () => {
+  it('Success case', () => {
+    generateRandomColor.mockReturnValue('#fakeColor');
+    const data = generateDataset(resultProcessCsv);
+    expect(data).toEqual(resultGenerateDataset);
+  });
+});
+
+describe('Generate labeld dataset', () => {
+  it('Success case', () => {
+    const resultDataset = generateLabeledDataset(
+      extractedLabelings,
+      extractedLabels,
+      currentLabelings,
+      currentDatasets
+    );
+    expect(resultDataset).toEqual(labeledDataset);
+  });
 });

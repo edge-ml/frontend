@@ -243,7 +243,7 @@ class LoginPage extends Component {
                   }
                 >
                   <CardHeader hidden={this.state.show2FA}>
-                    <b>Explorer Login</b>
+                    <b>Login</b>
                   </CardHeader>
                   <CardBody hidden={this.state.show2FA}>
                     <Row>

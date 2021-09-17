@@ -29,9 +29,9 @@ afterEach(() => {
 });
 
 describe('Success cases', () => {
-  it('Explorer Login rendering', () => {
+  it('Login rendering', () => {
     const wrapper = mount(<AuthWall />);
-    const header = 'Explorer Login';
+    const header = 'Login';
     expect(wrapper.contains(header)).toEqual(true);
   });
 
@@ -209,7 +209,7 @@ describe('Failure cases', () => {
     );
     expect(wrapper.html()).not.toBe('WebsiteContent');
     expect(getAccessToken).toHaveBeenCalledTimes(1);
-    expect(wrapper.contains('Explorer Login')).toBe(true);
+    expect(wrapper.contains('Login')).toBe(true);
   });
 });
 

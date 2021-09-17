@@ -18,9 +18,7 @@ import { registerNewUser } from '../services/ApiServices/AuthentificationService
 import { clearToken } from '../services/LocalStorageService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faExclamationTriangle
-} from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { validateEmail } from '../services/helpers';
 
 class RegisterPage extends Component {
@@ -122,7 +120,7 @@ class RegisterPage extends Component {
             <FadeInUp duration="0.3s" playState="running">
               <Card>
                 <CardHeader hidden={this.state.isLoggedIn}>
-                  <b>Explorer Registration</b>
+                  <b>Registration</b>
                 </CardHeader>
                 <CardBody hidden={this.state.isLoggedIn}>
                   <Row>

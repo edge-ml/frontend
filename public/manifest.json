@@ -1,6 +1,6 @@
 {
-  "short_name": "Aura Explorer",
-  "name": "Aura Data Explorer",
+  "short_name": "edge-ml Explorer",
+  "name": "edge-ml Data Explorer",
   "icons": [
     {
       "src": "favicon.ico",

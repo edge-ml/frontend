@@ -13,7 +13,6 @@ import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMe
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
 
@@ -32,6 +31,7 @@ import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal'
 import AppContent from './AppContent';
 import NoProjectPage from './components/NoProjectPage/NoProjectPage';
 import ErrorPage from './components/ErrorPage/ErrorPage';
+import { Right } from 'react-bootstrap/lib/Media';
 
 class App extends Component {
   constructor(props) {
@@ -318,25 +318,45 @@ class App extends Component {
             {this.state.isLoggedIn && this.state.projects ? (
               <div>
                 <Navbar color="light" light expand="md">
-                  <NavbarBrand style={{ marginRight: '8px' }}>
-                    Explorer
+                  <NavbarBrand
+                    style={{ marginRight: '8px' }}
+                    className="dark-hover"
+                  >
+                    <a
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        textDecoration: 'none'
+                      }}
+                      href={
+                        '/' +
+                        projectAvailable.admin.userName +
+                        '/' +
+                        projectAvailable.name +
+                        '/' +
+                        'datasets'
+                      }
+                    >
+                      <img
+                        style={{ marginRight: '8px', width: '32px' }}
+                        src={require('./logo.svg')}
+                      />
+                      <b>
+                        <div style={{ color: 'black' }}>edge-ml</div>
+                      </b>
+                    </a>
                   </NavbarBrand>
                   <NavbarToggler onClick={this.toggleNavbar} />
                   <Collapse isOpen={this.state.navbarState.isOpen} navbar>
                     <Nav navbar className="mr-auto">
-                      <NavItem
-                        style={{
-                          borderRight: '1px solid',
-                          borderColor: 'gray',
-                          marginRight: '8px',
-                          marginLeft: '8px'
-                        }}
-                      ></NavItem>
+                      <NavItem className="navbar-divider"></NavItem>
                       <NavItem>
                         <CustomDropDownMenu
                           left
                           content={
-                            <div style={{ display: 'inline-flex' }}>
+                            <div
+                              style={{ display: 'inline-flex', padding: '8px' }}
+                            >
                               <div id="currentProjectName">
                                 {projectAvailable
                                   ? this.state.projects[
@@ -421,23 +441,8 @@ class App extends Component {
                           >
                             Labelings
                           </NavLink>
-
-                          {/*<NavLink
-                            id="navLinkExperiments"
-                            className="nav-link"
-                            to={
-                              '/' +
-                              projectAvailable.admin.userName +
-                              '/' +
-                              projectAvailable.name +
-                              '/experiments'
-                            }
-                          >
-                            Experiments
-                          </NavLink>
-                          */}
                           <NavLink
-                            id="navLinkExperiments"
+                            id="navLinkML"
                             className="nav-link"
                             to={
                               '/' +
@@ -463,16 +468,7 @@ class App extends Component {
                           >
                             Settings
                           </NavLink>
-                          <NavItem
-                            style={{
-                              borderRight: '1px solid',
-                              borderColor: 'gray',
-                              marginRight: '8px',
-                              marginLeft: '8px'
-                            }}
-                          >
-                            {' '}
-                          </NavItem>
+                          <NavItem className="navbar-divider"> </NavItem>
                         </div>
                       ) : null}
                       <NavItem

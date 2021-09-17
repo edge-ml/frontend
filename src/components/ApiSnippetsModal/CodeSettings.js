@@ -5,69 +5,79 @@ const CodeSettings = props => {
   return (
     <div>
       <Row>
-        <Col>
+        <Col className="col-3">
           <Label for="platformCheck" className="mr-sm-2">
             Platform:
           </Label>
         </Col>
         <Col>
-          <FormGroup className="mr-2" id="platformCheck" check>
-            <Label check>
-              <Input
-                value="java"
-                type="radio"
-                checked={props.platform === 'java'}
-                onChange={props.onPlatformChange}
-              />
-              Java
-            </Label>
-          </FormGroup>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <FormGroup className="mr-2" id="platformCheck" check>
+              <Label check>
+                <Input
+                  value="Java"
+                  type="radio"
+                  checked={props.platform === 'Java'}
+                  onChange={props.onPlatformChange}
+                />
+                Java
+              </Label>
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <Input
+                  type="radio"
+                  value="Node.js"
+                  checked={props.platform === 'Node.js'}
+                  onChange={props.onPlatformChange}
+                />
+                Node.js
+              </Label>
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <Input
+                  type="radio"
+                  value="Arduino"
+                  checked={props.platform === 'Arduino'}
+                  onChange={props.onPlatformChange}
+                />
+                Arduino
+              </Label>
+            </FormGroup>
+          </div>
         </Col>
-        <Col>
-          <FormGroup check>
-            <Label check>
-              <Input
-                type="radio"
-                value="node"
-                checked={props.platform === 'node'}
-                onChange={props.onPlatformChange}
-              />
-              Node.js
-            </Label>
-          </FormGroup>
-        </Col>
-      </Row>
-      <Row>
-        <Col>
+        <div className="w-100"></div>
+        <Col className="col-3">
           <Label for="serverTimeCheck" className="mr-sm-2">
             Use deviceTime:
           </Label>
         </Col>
         <Col>
-          <FormGroup className="mr-2" id="serverTimeCheck" check>
-            <Label check>
-              <Input
-                type="radio"
-                value="Yes"
-                checked={props.servertime}
-                onChange={props.onServerTimeChange}
-              />
-              Yes
-            </Label>
-          </FormGroup>
-        </Col>
-        <Col>
-          <FormGroup check>
-            <Label check>
-              <Input
-                type="radio"
-                value="No"
-                checked={!props.servertime}
-                onChange={props.onServerTimeChange}
-              />
-              No
-            </Label>
-          </FormGroup>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <FormGroup className="mr-2" id="serverTimeCheck" check>
+              <Label check>
+                <Input
+                  type="radio"
+                  value="Yes"
+                  checked={props.servertime}
+                  onChange={props.onServerTimeChange}
+                />
+                Yes
+              </Label>
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <Input
+                  type="radio"
+                  value="No"
+                  checked={!props.servertime}
+                  onChange={props.onServerTimeChange}
+                />
+                No
+              </Label>
+            </FormGroup>
+          </div>
         </Col>
       </Row>
     </div>

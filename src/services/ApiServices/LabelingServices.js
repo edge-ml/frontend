@@ -30,8 +30,7 @@ module.exports.addLabeling = newLabeling => {
         apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS,
         newLabeling
       )
-    )
-      .then(() => {
+    ).then(() => {
         this.subscribeLabelingsAndLabels().then(data => resolve(data));
       })
       .catch(err => console.log(err));
