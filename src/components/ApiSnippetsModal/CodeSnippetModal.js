@@ -21,13 +21,23 @@ class CodeSnippetModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      platform: 'node',
+      platform: 'Java',
       datasetName: undefined,
       servertime: false
     };
     this.onPlatformChange = this.onPlatformChange.bind(this);
     this.onDatasetNameChanged = this.onDatasetNameChanged.bind(this);
     this.onServerTimeChange = this.onServerTimeChange.bind(this);
+    this.onCancel = this.onCancel.bind(this);
+  }
+
+  onCancel() {
+    this.setState({
+      platform: 'Java',
+      datasetName: undefined,
+      servertime: false
+    });
+    this.props.onCancel();
   }
 
   onServerTimeChange(e) {
@@ -84,7 +94,7 @@ class CodeSnippetModal extends Component {
             id="btnSaveProjectCancel"
             color="secondary"
             className="m-1"
-            onClick={this.props.onCancel}
+            onClick={this.onCancel}
           >
             Cancel
           </Button>

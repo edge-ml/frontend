@@ -342,7 +342,9 @@ class App extends Component {
                         style={{ marginRight: '8px', width: '32px' }}
                         src={require('./logo.svg')}
                       />
-                      <div style={{ color: 'black' }}>Edge-ML</div>
+                      <b>
+                        <div style={{ color: 'black' }}>edge-ml</div>
+                      </b>
                     </a>
                   </NavbarBrand>
                   <NavbarToggler onClick={this.toggleNavbar} />
