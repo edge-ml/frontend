@@ -330,12 +330,14 @@ class App extends Component {
                         textDecoration: 'none'
                       }}
                       href={
-                        '/' +
-                        projectAvailable.admin.userName +
-                        '/' +
-                        projectAvailable.name +
-                        '/' +
-                        'datasets'
+                        projectAvailable
+                          ? '/' +
+                            projectAvailable.admin.userName +
+                            '/' +
+                            projectAvailable.name +
+                            '/' +
+                            'datasets'
+                          : null
                       }
                     >
                       <img
