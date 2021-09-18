@@ -6,7 +6,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCaretDown,
+  faCaretRight,
+  faPlus,
+  faUser,
+  faDatabase,
+  faCogs,
+  faPen,
+  faBrain
+} from '@fortawesome/free-solid-svg-icons';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
@@ -37,7 +46,8 @@ class App extends Component {
       playButtonEnabled: false,
       currentUserMail: undefined,
       projects: undefined,
-      currentProject: undefined,
+      currentProjectId: undefined,
+      projectLocation: undefined,
       projectsOpen: false,
       projectEditModalOpen: false,
       projectEditModalNew: false,
@@ -76,10 +86,15 @@ class App extends Component {
   }
 
   navigateTo(location) {
-    const project = this.state.projects[this.state.currentProject];
+    const project = this.state.projects.filter(
+      x => x._id === this.state.currentProjectId
+    )[0];
     this.props.history.push(
       '/' + project.admin.userName + '/' + project.name + '/' + location
     );
+    this.setState({
+      projectLocation: location
+    });
   }
 
   enable2FA() {
@@ -99,7 +114,7 @@ class App extends Component {
       this.props.history.push('/');
       this.setState({
         projects: [],
-        currentProject: -1,
+        currentProjectId: -1,
         projectEditModalOpen: false
       });
       clearProject();
@@ -107,9 +122,11 @@ class App extends Component {
     }
     const projectIndex = index <= projects.length && index >= 0 ? index : 0;
     setProject(projects[projectIndex]._id);
+
+    alert(projectIndex);
     this.setState({
       projects: projects,
-      currentProject: projectIndex,
+      currentProjectId: projects[projectIndex]._id,
       projectEditModalOpen: false
     });
     this.changeURL(this.state.projects[projectIndex]);
@@ -128,13 +145,20 @@ class App extends Component {
     });
   }
 
-  onProjectClick(index) {
-    setProject(this.state.projects[index]._id);
+  onProjectClick(id) {
+    if (this.state.currentProjectId === id) {
+      this.setState({
+        currentProjectId: undefined
+      });
+      return;
+    }
+    setProject(id);
+
     this.setState({
-      currentProject: index
+      currentProjectId: id
     });
 
-    this.changeURL(this.state.projects[index]);
+    this.changeURL(this.state.projects.filter(x => x._id === id)[0]);
   }
 
   toggleProjects() {
@@ -146,6 +170,7 @@ class App extends Component {
   refreshProjects() {
     getProjects()
       .then(projects => {
+        // if no project is available
         if (projects.length === 0) {
           this.setState({
             projects: []
@@ -153,14 +178,16 @@ class App extends Component {
           this.props.history.push('/');
           return;
         }
-        //Check if url contains useful information
+
+        // if the user comes to a url parse the name of the project from it
         const params = this.props.history.location.pathname.split('/');
         const projectIndex = projects.findIndex(elm => elm.name === params[2]);
         if (projectIndex !== -1) {
           this.setState({
             projects: projects,
-            currentProject: projectIndex
+            currentProjectId: projects[projectIndex]._id
           });
+          setProject(projects[projectIndex]._id);
           this.props.history.push(
             '/' +
               projects[projectIndex].admin.userName +
@@ -172,24 +199,25 @@ class App extends Component {
           return;
         }
 
-        var currentProject = projects.findIndex(
+        // load last open project from storage
+        var storedProjectIndex = projects.findIndex(
           elm => elm._id === getProject()
         );
-        if (currentProject === -1) {
-          currentProject = 0;
-          setProject(projects[0]._id);
-        } else {
-          setProject(projects[currentProject]._id);
+
+        if (storedProjectIndex === -1) {
+          storedProjectIndex = 0;
         }
+
         this.setState({
           projects: projects,
-          currentProject: currentProject
+          currentProjectId: getProject()
         });
+
         this.props.history.push(
           '/' +
-            projects[currentProject].admin.userName +
+            projects[storedProjectIndex].admin.userName +
             '/' +
-            projects[currentProject].name +
+            projects[storedProjectIndex].name +
             '/datasets'
         );
       })
@@ -259,16 +287,19 @@ class App extends Component {
   }
 
   render() {
+    var projectIndex = this.state.projects
+      ? this.state.projects.findIndex(
+          x => x._id === this.state.currentProjectId
+        )
+      : -1;
     const projectAvailable = this.state.projects
-      ? this.state.projects[this.state.currentProject]
+      ? this.state.projects[projectIndex]
       : undefined;
     return (
       <div>
         <EditProjectModal
           project={
-            this.state.projects
-              ? this.state.projects[this.state.currentProject]
-              : undefined
+            this.state.projects ? this.state.projects[projectIndex] : undefined
           }
           isOpen={this.state.projectEditModalOpen}
           isNewProject={this.state.projectEditModalNew}
@@ -300,7 +331,7 @@ class App extends Component {
             {this.state.isLoggedIn && this.state.projects ? (
               <div className="d-flex">
                 <div
-                  className="d-flex flex-column"
+                  className="d-flex flex-column bg-light align-items-center"
                   color="light"
                   style={{
                     width: this.state.navbarWidth,
@@ -311,7 +342,7 @@ class App extends Component {
                 >
                   <NavbarBrand
                     style={{ marginRight: '8px' }}
-                    className="dark-hover"
+                    className="dark-hover mt-2"
                   >
                     <a
                       style={{
@@ -320,12 +351,14 @@ class App extends Component {
                         textDecoration: 'none'
                       }}
                       href={
-                        '/' +
-                        projectAvailable.admin.userName +
-                        '/' +
-                        projectAvailable.name +
-                        '/' +
-                        'datasets'
+                        projectAvailable
+                          ? '/' +
+                            projectAvailable.admin.userName +
+                            '/' +
+                            projectAvailable.name +
+                            '/' +
+                            'datasets'
+                          : null
                       }
                     >
                       <img
@@ -337,133 +370,143 @@ class App extends Component {
                       </b>
                     </a>
                   </NavbarBrand>
-                  <div className="d-flex flex-column">
-                    <Nav navbar className="mr-auto">
-                      <NavItem>
-                        <CustomDropDownMenu
-                          left
-                          content={
-                            <div
-                              style={{ display: 'inline-flex', padding: '8px' }}
-                            >
-                              <div id="currentProjectName">
-                                {projectAvailable
-                                  ? this.state.projects[
-                                      this.state.currentProject
-                                    ].name
-                                  : this.state.projects.length === 0
-                                  ? 'No projects'
-                                  : 'Loading'}
-                              </div>{' '}
+                  <div className="w-100">
+                    {this.state.projects.map((project, index) => {
+                      return (
+                        <div
+                          className="w-100 text-left"
+                          onClick={() => this.onProjectClick(project._id)}
+                          key={project._id}
+                        >
+                          <div className="d-flex align-items-center mt-3 mb-1 pl-2">
+                            <FontAwesomeIcon
+                              style={{
+                                color: '#8b8d8f',
+                                float: 'left',
+                                cursor: 'pointer'
+                              }}
+                              icon={
+                                this.state.currentProjectId === project._id
+                                  ? faCaretDown
+                                  : faCaretRight
+                              }
+                              className="mr-2 fa-s"
+                            ></FontAwesomeIcon>
+                            <div className="">
+                              <b>{project.name}</b>
+                            </div>
+                          </div>
+                          {this.state.currentProjectId === project._id ? (
+                            <div>
                               <div
-                                style={{ display: 'flex', marginLeft: '4px' }}
+                                onClick={() => {
+                                  this.navigateTo('datasets');
+                                }}
+                                style={
+                                  this.state.projectLocation === 'datasets'
+                                    ? {
+                                        color: 'black',
+                                        backgroundColor: '#ddd'
+                                      }
+                                    : {}
+                                }
+                                className="pt-2 pb-2 pl-4 small navbar-project-item"
                               >
                                 <FontAwesomeIcon
-                                  style={{
-                                    color: '#8b8d8f',
-                                    float: 'left',
-                                    margin: 'auto',
-                                    cursor: 'pointer'
-                                  }}
-                                  icon={faCaretDown}
-                                  className="mr-2 fa-s"
+                                  className="mr-2"
+                                  icon={faDatabase}
                                 ></FontAwesomeIcon>
+                                Datasets
+                              </div>
+                              <div
+                                onClick={() => {
+                                  this.navigateTo('labelings');
+                                }}
+                                style={
+                                  this.state.projectLocation === 'labelings'
+                                    ? {
+                                        color: 'black',
+                                        backgroundColor: '#ddd'
+                                      }
+                                    : {}
+                                }
+                                className="pt-2 pb-2 pl-4 small navbar-project-item"
+                              >
+                                <FontAwesomeIcon
+                                  className="mr-2"
+                                  icon={faPen}
+                                ></FontAwesomeIcon>
+                                Labelings
+                              </div>
+                              <div
+                                onClick={() => {
+                                  this.navigateTo('models');
+                                }}
+                                style={
+                                  this.state.projectLocation === 'models'
+                                    ? {
+                                        color: 'black',
+                                        backgroundColor: '#ddd'
+                                      }
+                                    : {}
+                                }
+                                className="pt-2 pb-2 pl-4 small navbar-project-item"
+                              >
+                                <FontAwesomeIcon
+                                  className="mr-2"
+                                  icon={faBrain}
+                                ></FontAwesomeIcon>
+                                Models
+                              </div>
+                              <div
+                                onClick={() => {
+                                  this.navigateTo('settings');
+                                }}
+                                style={
+                                  this.state.projectLocation === 'settings'
+                                    ? {
+                                        color: 'black',
+                                        backgroundColor: '#ddd'
+                                      }
+                                    : {}
+                                }
+                                className="pt-2 pb-2 pl-4 small navbar-project-item"
+                              >
+                                <FontAwesomeIcon
+                                  className="mr-2"
+                                  icon={faCogs}
+                                ></FontAwesomeIcon>
+                                Settings
                               </div>
                             </div>
-                          }
-                        >
-                          {this.state.projects.map((project, index) => {
-                            return (
-                              <div
-                                className="dropDownItem"
-                                onClick={() => this.onProjectClick(index)}
-                                key={project._id}
-                              >
-                                {project.name}
-                              </div>
-                            );
-                          })}
-                        </CustomDropDownMenu>
-                      </NavItem>
-                      <div style={{ display: 'block', margin: 'auto' }}>
+                          ) : null}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="d-flex flex-column w-100 p-3">
+                    <Nav navbar className="d-flex flex-column">
+                      <div
+                        onClick={() => this.onProjectEditModal(true)}
+                        style={{ display: 'block', margin: 'auto' }}
+                        className="btn btn-secondary mt-3"
+                        style={{
+                          backgroundColor: '#eee',
+                          border: '0px solid transparent',
+                          color: 'gray',
+                          fontSize: 'small'
+                        }}
+                      >
                         <FontAwesomeIcon
                           id="btnAddProject"
-                          onClick={() => this.onProjectEditModal(true)}
-                          style={{
-                            color: '#8b8d8f',
-                            float: 'left',
-                            margin: 'auto',
-                            cursor: 'pointer'
-                          }}
                           icon={faPlus}
-                          className="mr-2 fa-s"
+                          className="fa-s mr-1"
                         />
+                        Add Project
                       </div>
-                    </Nav>
-                    <Nav navbar className="d-flex flex-column">
-                      {projectAvailable ? (
-                        <div>
-                          <NavLink
-                            id="navLinkDatasets"
-                            className="nav-link"
-                            exact={false}
-                            to={
-                              '/' +
-                              projectAvailable.admin.userName +
-                              '/' +
-                              projectAvailable.name +
-                              '/datasets'
-                            }
-                          >
-                            Datasets
-                          </NavLink>
-                          <NavLink
-                            id="navLinkLabelings"
-                            className="nav-link"
-                            to={
-                              '/' +
-                              projectAvailable.admin.userName +
-                              '/' +
-                              projectAvailable.name +
-                              '/labelings'
-                            }
-                          >
-                            Labelings
-                          </NavLink>
-                          <NavLink
-                            id="navLinkML"
-                            className="nav-link"
-                            to={
-                              '/' +
-                              projectAvailable.admin.userName +
-                              '/' +
-                              projectAvailable.name +
-                              '/ml'
-                            }
-                          >
-                            ML
-                          </NavLink>
 
-                          <NavLink
-                            id="navLinkSettings"
-                            className="nav-link"
-                            to={
-                              '/' +
-                              projectAvailable.admin.userName +
-                              '/' +
-                              projectAvailable.name +
-                              '/settings'
-                            }
-                          >
-                            Settings
-                          </NavLink>
-                          <NavItem className="navbar-divider"> </NavItem>
-                        </div>
-                      ) : null}
-                      <NavItem
-                        className="my-auto"
-                        style={{ paddingLeft: '8px' }}
-                      >
+                      <NavItem>
                         <CustomDropDownMenu
                           right
                           noHover
@@ -536,7 +579,7 @@ class App extends Component {
                   ></NoProjectPage>
                 )}
                 <div
-                  style={{ marginLeft: this.state.navbarWidth, widht: '100%' }}
+                  style={{ marginLeft: this.state.navbarWidth, width: '100%' }}
                 >
                   <Route
                     {...this.props}
@@ -544,7 +587,11 @@ class App extends Component {
                     render={props => (
                       <AppContent
                         {...props}
-                        project={this.state.projects[this.state.currentProject]}
+                        project={
+                          this.state.projects.filter(
+                            x => x._id === this.state.currentProjectId
+                          )[0]
+                        }
                         onProjectsChanged={this.onProjectsChanged}
                         navigateTo={this.navigateTo}
                       />
