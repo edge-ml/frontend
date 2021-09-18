@@ -1,4 +1,4 @@
-time,accX;m/s²,accY;m/s²,accZ;m/s²
+time,sensor_accX;m/s²,sensor_accY;m/s²,sensor_accZ;m/s²
 1,1,1,1
 2,1,2,4
 3,1,3,8

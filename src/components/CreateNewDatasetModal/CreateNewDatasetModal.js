@@ -10,7 +10,8 @@ import {
   Table,
   InputGroup,
   InputGroupAddon,
-  InputGroupText
+  InputGroupText,
+  Alert
 } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
 import {
@@ -69,6 +70,18 @@ class CreateNewDatasetModal extends Component {
     processCSV(files).then(timeData => {
       const result = generateDataset(timeData);
       var datasets = result.datasets;
+
+      //Provide error message, if the wrong CSV format is used (no 'sensor_' and 'label_' prefixes)
+      if (
+        typeof datasets === 'undefined' ||
+        typeof datasets[0] === 'undefined'
+      ) {
+        alert(
+          "Wrong CSV format! Please ensure that the prefixes 'sensor_' and 'label_' are used. Check the example.csv for help."
+        );
+        return;
+      }
+
       datasets = datasets.map((dataset, idx) => {
         const fileName = files[idx].name;
         dataset.name = fileName.endsWith('.csv')
