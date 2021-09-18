@@ -11,14 +11,18 @@ import {
   ModalBody,
   ModalFooter,
   InputGroup,
+  Spinner,
   InputGroupAddon,
   InputGroupText
 } from 'reactstrap';
 import ChooseDeviceModal from '../components/BLE/ChooseDeviceModal';
 import Loader from '../modules/loader';
+import { createDataset } from '../services/ApiServices/DatasetServices';
 
-import parseScheme from '../deviceData/parse-scheme.json';
-import sensorTypeMap from '../deviceData/sensor-type-map.json';
+import {
+  getDevices,
+  getDeviceById
+} from '../services/ApiServices/DeviceService';
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -28,8 +32,11 @@ class UploadBLE extends Component {
       bleStatus: this.isWebBluetoothEnabled(),
       sensorMap: new Map(),
       sampleRate: 50,
-      datasetName: undefined,
-      recording: false
+      datasetName: '',
+      recording: false,
+      devices: undefined,
+      deviceInfo: undefined,
+      recordReady: true
     };
     this.connectBLEDevice = this.connectBLEDevice.bind(this);
     this.isWebBluetoothEnabled = this.isWebBluetoothEnabled.bind(this);
@@ -49,6 +56,8 @@ class UploadBLE extends Component {
     this.intToBytes = this.intToBytes.bind(this);
     this.onGlobalSampleRateChanged = this.onGlobalSampleRateChanged.bind(this);
     this.onDatasetNameChanged = this.onDatasetNameChanged.bind(this);
+    this.findSensorByKey = this.findSensorByKey.bind(this);
+    this.unSubscribeAllSensors = this.unSubscribeAllSensors.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
@@ -60,11 +69,24 @@ class UploadBLE extends Component {
     this.parseScheme = undefined;
     this.sensorConfigCharacteristic;
     this.sensorDataCharacteristic;
-    this.deviceName = 'NICLA';
     this.sensorServiceUuid = '34c2e3bb-34aa-11eb-adc1-0242ac120002';
     this.sensorConfigCharacteristicUuid =
       '34c2e3bd-34aa-11eb-adc1-0242ac120002';
     this.sensorDataCharacteristicUuid = '34c2e3bc-34aa-11eb-adc1-0242ac120002';
+  }
+
+  componentDidMount() {
+    getDevices().then(data => {
+      this.setState({
+        devices: data
+      });
+    });
+  }
+
+  async unSubscribeAllSensors() {
+    for (const sensor of this.state.deviceInfo.sensors) {
+      await this.configureSingleSensor(sensor.bleKey, 0, 0);
+    }
   }
 
   onDatasetNameChanged(e) {
@@ -115,70 +137,100 @@ class UploadBLE extends Component {
     });
   }
 
-  onStartRecording() {
+  async onStartRecording() {
     if (this.recordInterval) {
+      this.setState({ recordReady: false });
       clearInterval(this.recordInterval);
+      this.unSubscribeAllSensors();
       this.recordInterval = undefined;
+      const globalStartTime = Math.min(
+        ...this.recorderDataset.timeSeries.map(elm => elm.start)
+      );
+      const globalEndTime = Math.max(
+        ...this.recorderDataset.timeSeries.map(elm => elm.end)
+      );
+      this.recorderDataset.start = globalStartTime;
+      this.recorderDataset.end = globalEndTime;
+      console.log(this.recorderDataset);
+      createDataset(this.recorderDataset).then(() => {
+        console.log('Uploaded dataset');
+      });
       this.setState({
         recording: false
       });
+      this.setState({ recordReady: true });
       return;
     }
+    this.setState({ recordReady: false, recording: true });
+    await this.unSubscribeAllSensors();
     this.recorderMap = new Map();
-    this.state.sensorMap.forEach(async (value, key) => {
+    this.state.sensorMap;
+    for (const [key, value] of this.state.sensorMap.entries()) {
       this.recorderMap.set(key, -1);
-      await this.configureSingleSensor(key, value.sampleRate, value.latency);
-    });
+      await this.configureSingleSensor(
+        key,
+        Math.round((1000 / value.sampleRate) * 3),
+        value.latency
+      );
+      const data = await this.sensorDataCharacteristic.readValue();
+      this.receiveSensorData(data);
+    }
     const timeSeries = [];
     this.state.sensorMap.forEach((value, key) => {
-      const sensor = sensorTypeMap[key];
-      const sensorType = parseScheme.types.find(elm => elm.id === sensor.type);
-      sensorType['parse-scheme'].map(elm => {
+      const sensor = this.findSensorByKey(key);
+      const sensorType = this.state.deviceInfo.scheme.find(
+        elm => elm.id === sensor.type
+      );
+      sensorType.parseScheme.map(elm => {
         timeSeries.push({
-          name: sensorTypeMap[key].name + '_' + elm.name,
-          start: undefined,
-          end: undefined,
+          name: this.findSensorByKey(key).name + '_' + elm.name,
+          start: new Date().getTime() + 10000000,
+          end: new Date().getTime(),
           data: []
         });
       });
     });
     this.recorderDataset = {
       name: this.state.datasetName,
-      start: undefined,
-      end: undefined,
+      start: new Date().getTime() + 10000000,
+      end: new Date().getTime(),
       timeSeries: timeSeries
     };
-    this.setState({ recording: true });
+    this.setState({ recordReady: true });
     this.recordInterval = setInterval(() => {
       this.state.sensorMap.forEach((value, key) => {
-        const sensor = sensorTypeMap[key];
-        const sensorType = parseScheme.types.find(
+        const sensor = this.findSensorByKey(key);
+        const sensorType = this.state.deviceInfo.scheme.find(
           elm => elm.id === sensor.type
         );
-        sensorType['parse-scheme'].map((elm, idx) => {
-          const searchString = sensor.name + '_' + elm.name;
-          this.recorderDataset.timeSeries
-            .find(elm => elm.name === searchString)
-            .data.push({
-              dataPoint: this.recorderMap.get(key)[idx],
-              timeStamp: new Date().getTime()
+        sensorType.parseScheme.map((elm, idx) => {
+          if (this.recorderMap.get(key)[idx]) {
+            const searchString = sensor.name + '_' + elm.name;
+            const timeSeriesData = this.recorderDataset.timeSeries.find(
+              elm => elm.name === searchString
+            );
+            const addTime = new Date().getTime();
+            timeSeriesData.data.push({
+              datapoint: this.recorderMap.get(key)[idx],
+              timestamp: addTime
             });
+            if (addTime < timeSeriesData.start) {
+              timeSeriesData.start = addTime;
+            }
+            if (addTime > timeSeriesData.end) {
+              timeSeriesData.end = addTime;
+            }
+          }
         });
       });
-      console.log(this.recorderDataset);
     }, this.state.sampleRate);
   }
 
   async configureSingleSensor(sensorId, sampleRate, latency) {
-    console.log(sensorId);
-    console.log(latency);
-    console.log(sampleRate);
     var configPacket = new Uint8Array(9);
     configPacket[0] = sensorId;
     configPacket.set(this.floatToBytes(sampleRate), 1);
     configPacket.set(this.intToBytes(latency), 5);
-    console.log(configPacket);
-    console.log(this.sensorConfigCharacteristic);
     await this.sensorConfigCharacteristic.writeValue(configPacket);
   }
 
@@ -194,60 +246,27 @@ class UploadBLE extends Component {
     return new Uint8Array(tempArray.buffer);
   }
 
-  /*
-  onClickDeviceModal() {
-    if (!this.state.chooseDeviceModalOpen) {
-      navigator.bluetooth
-        .requestDevice({ filters: [{ services: ["heart_rate"] }] })
-        .then((device) => {
-          this.setState({
-            connectedBLEDevice: device,
-          });
-          return device.gatt.connect();
-        })
-        .then((server) => {
-          console.log("Getting HeartRate Service...");
-          return server.getPrimaryService("heart_rate");
-        })
-        .then((service) => {
-          console.log("Getting heart reate Characteristic...");
-          return service.getCharacteristic("heart_rate_measurement");
-        })
-        .then((characteristic) => {
-          console.log("Getting heart rate...");
-          return characteristic.readValue();
-        })
-        .then((value) => {
-          let heartRate = value.getUint8(0);
-          console.log("> heart rate is " + heartRate);
-        })
-        .catch((error) => {
-          console.log("Argh! " + error);
-        });
-    }
-  }*/
-
-  receiveSensorData(event) {
-    var value = event.target.value;
-    // Get sensor data
-    var sensor = value.getUint8(0);
-    var size = value.getUint8(1);
-    var parsedData = this.parseData(sensor, value);
-    var parsedName = parsedData[0];
-    var parsedValue = parsedData[1];
-    var rawValues = parsedData[2];
+  receiveSensorData(value) {
     if (this.recorderMap) {
-      //console.log("Setting value: " + rawValues + " (" + sensor + ")");
-      this.recorderMap.set(sensor.toString(), rawValues);
+      // Get sensor data
+      var sensor = value.getUint8(0);
+      var size = value.getUint8(1);
+      var parsedData = this.parseData(sensor, value);
+      var parsedName = parsedData[0];
+      var parsedValue = parsedData[1];
+      var rawValues = parsedData[2];
+
+      this.recorderMap.set(sensor, rawValues);
     }
-    //console.log(sensor);
-    //console.log(parsedData + ": " + parsedValue + " ---- " + rawValue);
   }
 
-  parseData(sensor, data) {
-    var type = sensorTypeMap[sensor].type;
-    var sensorName = sensorTypeMap[sensor].name;
-    var scheme = parseScheme['types'][type]['parse-scheme'];
+  parseData(sensorKey, data) {
+    const sensor = this.findSensorByKey(sensorKey);
+    var type = sensor.type;
+    var sensorName = sensor.name;
+    var scheme = this.state.deviceInfo.scheme.find(elm => elm.id === type)
+      .parseScheme;
+    //var scheme = parseScheme["types"][type]["parse-scheme"];
     var result = '';
 
     // dataIndex start from 2 because the first bytes of the packet indicate
@@ -257,8 +276,8 @@ class UploadBLE extends Component {
     var values = [];
     scheme.forEach(element => {
       var name = element['name'];
-      var valueType = element['type'];
-      var scale = element['scale-factor'];
+      var valueType = element.type;
+      var scale = element.scaleFactor;
       var size = 0;
 
       if (valueType == 'uint8') {
@@ -292,7 +311,7 @@ class UploadBLE extends Component {
 
   onDisconnection(event) {
     this.setState({
-      onnectBLEDevice: undefined
+      connectedBLEDevice: undefined
     });
   }
 
@@ -317,7 +336,7 @@ class UploadBLE extends Component {
         this.sensorDataCharacteristic.startNotifications();
         this.sensorDataCharacteristic.addEventListener(
           'characteristicvaluechanged',
-          this.receiveSensorData
+          event => this.receiveSensorData(event.target.value)
         );
       });
   }
@@ -333,16 +352,25 @@ class UploadBLE extends Component {
 
   getDeviceInfo() {
     let options = {
-      filters: [{ name: this.deviceName }],
-      optionalServices: [this.sensorServiceUuid]
+      filters: [{ services: [this.sensorServiceUuid] }]
     };
     console.log('Requesting BLE device info...');
     return navigator.bluetooth
       .requestDevice(options)
       .then(device => {
         this.bleDevice = device;
+      })
+      .then(() => {
+        return getDeviceById(
+          this.state.devices.find(
+            elm => this.bleDevice.name.toLowerCase() === elm.name.toLowerCase()
+          )._id
+        );
+      })
+      .then(deviceInfo => {
         this.setState({
-          connectedBLEDevice: device
+          connectedBLEDevice: this.bleDevice,
+          deviceInfo: deviceInfo
         });
       })
       .catch(error => {
@@ -376,6 +404,9 @@ class UploadBLE extends Component {
   }
 
   connectBLEDevice() {
+    if (this.state.recording) {
+      this.onStartRecording();
+    }
     if (this.state.connectedBLEDevice) {
       this.state.connectedBLEDevice.gatt.disconnect();
       this.setState({
@@ -392,8 +423,11 @@ class UploadBLE extends Component {
     }
   }
 
+  findSensorByKey(key) {
+    return this.state.deviceInfo.sensors.find(elm => elm.bleKey === key);
+  }
+
   render() {
-    console.log(this.state);
     if (!this.state.bleStatus) {
       return <div>Web Bluettooth is not enabled</div>;
     }
@@ -438,116 +472,150 @@ class UploadBLE extends Component {
         <div
           style={connected ? null : { opacity: '0.4', pointerEvents: 'none' }}
         >
-          <Row>
-            <Col>
-              <div className="shadow p-3 mb-5 bg-white rounded">
-                <div style={{ fontSize: 'x-large' }}>2. Configure sensors</div>
+          {this.state.deviceInfo ? (
+            <Row>
+              <Col>
+                <div className="shadow p-3 mb-5 bg-white rounded">
+                  <div
+                    style={
+                      this.state.recording
+                        ? { opacity: '0.4', pointerEvents: 'none' }
+                        : null
+                    }
+                  >
+                    <div style={{ fontSize: 'x-large' }}>
+                      2. Configure sensors
+                    </div>
+                    <div
+                      style={{
+                        borderBottom: '1px solid',
+                        marginTop: '8px',
+                        marginBottom: '8px',
+                        opacity: '0.2'
+                      }}
+                    ></div>
+
+                    <Table style={{ width: 'fit-content' }}>
+                      <thead>
+                        <tr className="bg-light">
+                          <th>Select</th>
+                          <th>SensorName</th>
+                          <th>SensorType</th>
+                          <th>Components</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.state.deviceInfo.sensors.map(
+                          (sensor, sensorIndex) => {
+                            const sensorData = sensor;
+                            const sensorKey = sensor.bleKey;
+                            const typeData = this.state.deviceInfo.scheme.find(
+                              elm => elm.id === sensorData.type
+                            );
+                            return (
+                              <tr key={sensor.bleKey}>
+                                <td>
+                                  {' '}
+                                  <Input
+                                    onChange={e =>
+                                      this.onToggleSensor(sensorKey)
+                                    }
+                                    className="datasets-check"
+                                    type="checkbox"
+                                  />
+                                </td>
+                                <td>{sensorData.name}</td>
+                                <td>{typeData.type}</td>
+                                <td>
+                                  {typeData.parseScheme
+                                    .map(elm => elm.name)
+                                    .join('; ')}
+                                </td>
+                              </tr>
+                            );
+                          }
+                        )}
+                      </tbody>
+                    </Table>
+                  </div>
+                </div>
+              </Col>
+              <Col>
                 <div
-                  style={{
-                    borderBottom: '1px solid',
-                    marginTop: '8px',
-                    marginBottom: '8px',
-                    opacity: '0.2'
-                  }}
-                ></div>
-                <Table style={{ width: 'fit-content' }}>
-                  <thead>
-                    <tr className="bg-light">
-                      <th>Select</th>
-                      <th>SensorName</th>
-                      <th>SensorType</th>
-                      <th>Components</th>
-                      {/*<th>Sample rate</th>
-                  <th>Latency</th>*/}
-                    </tr>
-                  </thead>
-                  {Object.entries(sensorTypeMap).map((sensor, sensorIndex) => {
-                    const sensorData = sensor[1];
-                    const sensorKey = sensor[0];
-                    const typeData = parseScheme.types[sensorData.type];
-                    return (
-                      <tr>
-                        <td>
-                          {' '}
-                          <Input
-                            onChange={e => this.onToggleSensor(sensorKey)}
-                            className="datasets-check"
-                            type="checkbox"
-                          />
-                        </td>
-                        <td>{sensorData.name}</td>
-                        <td>{typeData.type}</td>
-                        <td>
-                          {typeData['parse-scheme']
-                            .map(elm => elm.name)
-                            .join('; ')}
-                        </td>
-                        <td>
-                          {/*<Input
-                        size="sm"
-                        disabled={!this.state.sensorMap.get(sensorKey)}
-                        onChange={(e) =>
-                          this.onSampleRateChanged(sensorKey, e.target.value)
-                        }
-                        value={
-                          this.state.sensorMap.get(sensorKey)
-                            ? this.state.sensorMap.get(sensorKey).sampleRate
-                            : ""
-                        }
-                      ></Input>
-                    </td>
-                    <td>
-                      <Input
-                        size="sm"
-                        disabled={!this.state.sensorMap.get(sensorKey)}
-                        onChange={(e) => {
-                          this.onLatencyChanged(sensorKey, e.target.value);
-                        }}
-                        value={
-                          this.state.sensorMap.get(sensorKey)
-                            ? this.state.sensorMap.get(sensorKey).latency
-                            : ""
-                        }
-                      ></Input>*/}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </Table>
-              </div>
-            </Col>
-            <Col>
-              <div className="shadow p-3 mb-5 bg-white rounded">
-                <div style={{ fontSize: 'x-large' }}>3.Record dataset</div>
-                <InputGroup>
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>{'Dataset name'}</InputGroupText>
-                  </InputGroupAddon>
-                  <Input
-                    id="bleDatasetName"
-                    placeholder={'dataset name'}
-                    onChange={this.onDatasetNameChanged}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>{'SampleRate'}</InputGroupText>
-                  </InputGroupAddon>
-                  <Input
-                    id="bleSampleRate"
-                    placeholder={'SampleRate'}
-                    onChange={this.onGlobalSampleRateChanged}
-                  />
-                </InputGroup>
-                <Button
-                  color={this.state.recording ? 'danger' : 'primary'}
-                  onClick={this.onStartRecording}
+                  style={
+                    this.state.sensorMap.size > 0
+                      ? null
+                      : { opacity: '0.4', pointerEvents: 'none' }
+                  }
                 >
-                  {this.state.recording ? 'Stop recording' : 'Start recording'}
-                </Button>
-              </div>
-            </Col>
-          </Row>
+                  <div className="shadow p-3 mb-5 bg-white rounded">
+                    <div style={{ fontSize: 'x-large' }}>3.Record dataset</div>
+                    <div
+                      style={{
+                        borderBottom: '1px solid',
+                        marginTop: '8px',
+                        marginBottom: '8px',
+                        opacity: '0.2'
+                      }}
+                    ></div>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>{'Dataset name'}</InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        id="bleDatasetName"
+                        placeholder={'dataset name'}
+                        onChange={this.onDatasetNameChanged}
+                        value={this.state.datasetName}
+                      />
+                    </InputGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>{'SampleRate'}</InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        id="bleSampleRate"
+                        placeholder={'SampleRate'}
+                        onChange={this.onGlobalSampleRateChanged}
+                        value={this.state.sampleRate}
+                      />
+                    </InputGroup>
+                    <Button
+                      color={
+                        this.state.recording && this.state.recordReady
+                          ? 'danger'
+                          : 'primary'
+                      }
+                      onClick={this.onStartRecording}
+                      disabled={
+                        !this.state.sampleRate || !this.state.datasetName
+                      }
+                    >
+                      {this.state.recording ? (
+                        this.state.recordReady ? (
+                          'Stop recording'
+                        ) : (
+                          <div>
+                            Loading...
+                            <Spinner
+                              style={{
+                                width: '1rem',
+                                height: '1rem',
+                                marginLeft: '4px'
+                              }}
+                              color="primary"
+                            />
+                          </div>
+                        )
+                      ) : (
+                        'Start recording'
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          ) : null}
         </div>
       </div>
     );
