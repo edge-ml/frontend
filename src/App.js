@@ -123,7 +123,6 @@ class App extends Component {
     const projectIndex = index <= projects.length && index >= 0 ? index : 0;
     setProject(projects[projectIndex]._id);
 
-    alert(projectIndex);
     this.setState({
       projects: projects,
       currentProjectId: projects[projectIndex]._id,
@@ -373,12 +372,11 @@ class App extends Component {
                   <div className="w-100">
                     {this.state.projects.map((project, index) => {
                       return (
-                        <div
-                          className="w-100 text-left"
-                          onClick={() => this.onProjectClick(project._id)}
-                          key={project._id}
-                        >
-                          <div className="d-flex align-items-center mt-3 mb-1 pl-2">
+                        <div className="w-100 text-left" key={project._id}>
+                          <div
+                            className="d-flex align-items-center mt-1 pt-2 pb-2 pl-2 navbar-project"
+                            onClick={() => this.onProjectClick(project._id)}
+                          >
                             <FontAwesomeIcon
                               style={{
                                 color: '#8b8d8f',
@@ -392,7 +390,7 @@ class App extends Component {
                               }
                               className="mr-2 fa-s"
                             ></FontAwesomeIcon>
-                            <div className="">
+                            <div className="navbar-project">
                               <b>{project.name}</b>
                             </div>
                           </div>
@@ -440,10 +438,10 @@ class App extends Component {
                               </div>
                               <div
                                 onClick={() => {
-                                  this.navigateTo('models');
+                                  this.navigateTo('model');
                                 }}
                                 style={
-                                  this.state.projectLocation === 'models'
+                                  this.state.projectLocation === 'model'
                                     ? {
                                         color: 'black',
                                         backgroundColor: '#ddd'
@@ -573,8 +571,9 @@ class App extends Component {
                 {projectAvailable ? null : (
                   <NoProjectPage
                     onCreateProject={e => {
+                      alert('peder');
                       e.preventDefault();
-                      this.onProjectEditModal(this);
+                      this.onProjectEditModal(true);
                     }}
                   ></NoProjectPage>
                 )}

@@ -218,8 +218,31 @@ div.card {
   margin-left: 8px;
 }
 
+.navbar-project-item {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+}
+
 .navbar-project-item:hover {
   background-color: #ddd;
+}
+
+.navbar-project  {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+}
+
+.navbar-project:hover {
+  background-color: black;
+  color: white !important;
 }
 
 @media (min-width: 1200px) {

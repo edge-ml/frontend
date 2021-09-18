@@ -14,7 +14,7 @@ class NoProjectPage extends Component {
             this.props.text
           ) : (
             <div id="noProjectPageStandardText">
-              Join or{' '}
+              Open or{' '}
               <a onClick={this.props.onCreateProject} href="">
                 create
               </a>{' '}

@@ -8,7 +8,7 @@ import LabelingsPage from './routes/labelings';
 import ExperimentsPage from './routes/experiments';
 import ProjectSettings from './routes/projectSettings';
 import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
-import MlPage from './routes/ml';
+import ModelPage from './routes/model';
 
 class AppContent extends Component {
   constructor(props) {
@@ -18,7 +18,7 @@ class AppContent extends Component {
 
   render() {
     return (
-      <Container>
+      <Container className="h-100">
         <Switch>
           <Route
             exact
@@ -61,10 +61,10 @@ class AppContent extends Component {
           />
           <Route
             exact
-            path={this.props.match.path + '/ml'}
+            path={this.props.match.path + '/model'}
             render={props => (
               <ProjectRefresh project={this.props.project}>
-                <MlPage></MlPage>
+                <ModelPage></ModelPage>
               </ProjectRefresh>
             )}
           />
