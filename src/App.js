@@ -1,13 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Navbar,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  Button,
-  Collapse,
-  NavbarToggler
-} from 'reactstrap';
+import { NavbarBrand, Nav, NavItem, Button } from 'reactstrap';
 import { Route, NavLink } from 'react-router-dom';
 import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMenu';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -41,9 +33,6 @@ class App extends Component {
       userName: undefined,
       isLoggedIn: false,
       twoFAEnabled: false,
-      navbarState: {
-        isOpen: false
-      },
       videoEnaled: false,
       playButtonEnabled: false,
       currentUserMail: undefined,
@@ -52,13 +41,13 @@ class App extends Component {
       projectsOpen: false,
       projectEditModalOpen: false,
       projectEditModalNew: false,
-      userSettingsModalOpen: false
+      userSettingsModalOpen: false,
+      navbarWidth: '160px'
     };
     this.baseState = JSON.parse(JSON.stringify(this.state));
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);
-    this.toggleNavbar = this.toggleNavbar.bind(this);
     this.toggleVideoOptions = this.toggleVideoOptions.bind(this);
     this.setAccessToken = this.setAccessToken.bind(this);
     this.getCurrentUserMail = this.getCurrentUserMail.bind(this);
@@ -262,14 +251,6 @@ class App extends Component {
     this.onLogout(true);
   }
 
-  toggleNavbar() {
-    this.setState({
-      navbarState: {
-        isOpen: !this.state.navbarState.isOpen
-      }
-    });
-  }
-
   toggleVideoOptions(videoStatus, playButtonStatus) {
     this.setState({
       videoEnaled: videoStatus,
@@ -317,8 +298,17 @@ class App extends Component {
           >
             {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
             {this.state.isLoggedIn && this.state.projects ? (
-              <div>
-                <Navbar color="light" light expand="md">
+              <div className="d-flex">
+                <div
+                  className="d-flex flex-column"
+                  color="light"
+                  style={{
+                    width: this.state.navbarWidth,
+                    position: 'fixed',
+                    height: '100vh',
+                    zIndex: '100'
+                  }}
+                >
                   <NavbarBrand
                     style={{ marginRight: '8px' }}
                     className="dark-hover"
@@ -347,10 +337,8 @@ class App extends Component {
                       </b>
                     </a>
                   </NavbarBrand>
-                  <NavbarToggler onClick={this.toggleNavbar} />
-                  <Collapse isOpen={this.state.navbarState.isOpen} navbar>
+                  <div className="d-flex flex-column">
                     <Nav navbar className="mr-auto">
-                      <NavItem className="navbar-divider"></NavItem>
                       <NavItem>
                         <CustomDropDownMenu
                           left
@@ -412,9 +400,9 @@ class App extends Component {
                         />
                       </div>
                     </Nav>
-                    <Nav navbar className="ml-auto">
+                    <Nav navbar className="d-flex flex-column">
                       {projectAvailable ? (
-                        <div style={{ display: 'inherit' }}>
+                        <div>
                           <NavLink
                             id="navLinkDatasets"
                             className="nav-link"
@@ -537,8 +525,8 @@ class App extends Component {
                         ></UserSettingsModal>
                       </NavItem>
                     </Nav>
-                  </Collapse>
-                </Navbar>
+                  </div>
+                </div>
                 {projectAvailable ? null : (
                   <NoProjectPage
                     onCreateProject={e => {
@@ -547,18 +535,22 @@ class App extends Component {
                     }}
                   ></NoProjectPage>
                 )}
-                <Route
-                  {...this.props}
-                  path="/:userName/:projectID"
-                  render={props => (
-                    <AppContent
-                      {...props}
-                      project={this.state.projects[this.state.currentProject]}
-                      onProjectsChanged={this.onProjectsChanged}
-                      navigateTo={this.navigateTo}
-                    />
-                  )}
-                ></Route>
+                <div
+                  style={{ marginLeft: this.state.navbarWidth, widht: '100%' }}
+                >
+                  <Route
+                    {...this.props}
+                    path="/:userName/:projectID"
+                    render={props => (
+                      <AppContent
+                        {...props}
+                        project={this.state.projects[this.state.currentProject]}
+                        onProjectsChanged={this.onProjectsChanged}
+                        navigateTo={this.navigateTo}
+                      />
+                    )}
+                  ></Route>
+                </div>
               </div>
             ) : null}
           </AuthWall>
