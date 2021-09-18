@@ -10,6 +10,7 @@ import {
   Nav
 } from 'reactstrap';
 import classnames from 'classnames';
+import Logout from './Logout';
 import MailSettings from './MailSettings';
 import PasswordSettings from './PasswordSettings';
 import TwoFaSettings from './TwoFaSettings';
@@ -21,7 +22,7 @@ class UserSettingsModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: 'mailChange'
+      activeTab: 'logout'
     };
     this.baseState = this.state;
     this.onCloseModal = this.onCloseModal.bind(this);
@@ -46,6 +47,18 @@ class UserSettingsModal extends Component {
           User Settings
         </ModalHeader>
         <Nav tabs>
+          <NavItem style={{ cursor: 'pointer' }}>
+            <NavLink
+              className={classnames({
+                active: this.state.activeTab === 'logout'
+              })}
+              onClick={() => {
+                this.toggleTab('logout');
+              }}
+            >
+              Logout
+            </NavLink>
+          </NavItem>
           <NavItem style={{ cursor: 'pointer' }}>
             <NavLink
               className={classnames({
@@ -109,6 +122,9 @@ class UserSettingsModal extends Component {
           </NavItem>
         </Nav>
         <ModalBody>
+          {this.state.activeTab === 'logout' ? (
+            <Logout onLogout={this.props.onLogout} id="lgout"></Logout>
+          ) : null}
           {this.state.activeTab === 'mailChange' ? (
             <MailSettings id="mailSettings"></MailSettings>
           ) : null}

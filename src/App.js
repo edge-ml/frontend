@@ -14,7 +14,8 @@ import {
   faDatabase,
   faCogs,
   faPen,
-  faBrain
+  faBrain,
+  faLightbulb
 } from '@fortawesome/free-solid-svg-icons';
 
 import AuthWall from './routes/login';
@@ -330,7 +331,7 @@ class App extends Component {
             {this.state.isLoggedIn && this.state.projects ? (
               <div className="d-flex">
                 <div
-                  className="d-flex flex-column bg-light align-items-center"
+                  className="d-flex flex-column bg-light align-items-center justify-content-between shadow"
                   color="light"
                   style={{
                     width: this.state.navbarWidth,
@@ -339,234 +340,223 @@ class App extends Component {
                     zIndex: '100'
                   }}
                 >
-                  <NavbarBrand
-                    style={{ marginRight: '8px' }}
-                    className="dark-hover mt-2"
-                  >
-                    <a
+                  <div className="w-100 d-flex flex-column justify-content-center align-items-center">
+                    <NavbarBrand
+                      style={{ marginRight: '8px' }}
+                      className="dark-hover mt-2"
+                    >
+                      <a
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          textDecoration: 'none'
+                        }}
+                        href={
+                          projectAvailable
+                            ? '/' +
+                              projectAvailable.admin.userName +
+                              '/' +
+                              projectAvailable.name +
+                              '/' +
+                              'datasets'
+                            : null
+                        }
+                      >
+                        <img
+                          style={{ marginRight: '8px', width: '32px' }}
+                          src={require('./logo.svg')}
+                        />
+                        <b>
+                          <div style={{ color: 'black' }}>edge-ml</div>
+                        </b>
+                      </a>
+                    </NavbarBrand>
+                    <div className="w-100 mt-3">
+                      {this.state.projects.map((project, index) => {
+                        return (
+                          <div className="w-100 text-left" key={project._id}>
+                            <div
+                              className="d-flex align-items-center mt-1 pt-2 pb-2 pl-2 navbar-project"
+                              onClick={() => this.onProjectClick(project._id)}
+                            >
+                              <FontAwesomeIcon
+                                style={{
+                                  color: '#8b8d8f',
+                                  float: 'left',
+                                  cursor: 'pointer'
+                                }}
+                                icon={
+                                  this.state.currentProjectId === project._id
+                                    ? faCaretDown
+                                    : faCaretRight
+                                }
+                                className="mr-2 fa-s"
+                              ></FontAwesomeIcon>
+                              <div className="navbar-project">
+                                <b>{project.name}</b>
+                              </div>
+                            </div>
+                            {this.state.currentProjectId === project._id ? (
+                              <div>
+                                <div
+                                  onClick={() => {
+                                    this.navigateTo('datasets');
+                                  }}
+                                  style={
+                                    this.state.projectLocation === 'datasets'
+                                      ? {
+                                          color: 'black',
+                                          backgroundColor: '#ddd'
+                                        }
+                                      : {}
+                                  }
+                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                >
+                                  <FontAwesomeIcon
+                                    className="mr-2"
+                                    icon={faDatabase}
+                                  ></FontAwesomeIcon>
+                                  Datasets
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    this.navigateTo('labelings');
+                                  }}
+                                  style={
+                                    this.state.projectLocation === 'labelings'
+                                      ? {
+                                          color: 'black',
+                                          backgroundColor: '#ddd'
+                                        }
+                                      : {}
+                                  }
+                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                >
+                                  <FontAwesomeIcon
+                                    className="mr-2"
+                                    icon={faPen}
+                                  ></FontAwesomeIcon>
+                                  Labelings
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    this.navigateTo('model');
+                                  }}
+                                  style={
+                                    this.state.projectLocation === 'model'
+                                      ? {
+                                          color: 'black',
+                                          backgroundColor: '#ddd'
+                                        }
+                                      : {}
+                                  }
+                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                >
+                                  <FontAwesomeIcon
+                                    className="mr-2"
+                                    icon={faBrain}
+                                  ></FontAwesomeIcon>
+                                  Models
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    this.navigateTo('settings');
+                                  }}
+                                  style={
+                                    this.state.projectLocation === 'settings'
+                                      ? {
+                                          color: 'black',
+                                          backgroundColor: '#ddd'
+                                        }
+                                      : {}
+                                  }
+                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                >
+                                  <FontAwesomeIcon
+                                    className="mr-2"
+                                    icon={faCogs}
+                                  ></FontAwesomeIcon>
+                                  Settings
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div
+                      onClick={() => this.onProjectEditModal(true)}
+                      style={{}}
+                      className="w-100 mt-3 pt-2 pb-2 navbar-project text-center"
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        textDecoration: 'none'
+                        backgroundColor: '#eee',
+                        border: '0px solid transparent',
+                        color: '#666',
+                        fontSize: '0.9rem'
                       }}
-                      href={
-                        projectAvailable
-                          ? '/' +
-                            projectAvailable.admin.userName +
-                            '/' +
-                            projectAvailable.name +
-                            '/' +
-                            'datasets'
-                          : null
+                    >
+                      <FontAwesomeIcon
+                        id="btnAddProject"
+                        icon={faPlus}
+                        className="fa-s mr-1"
+                      />
+                      Add Project
+                    </div>
+                  </div>
+                  <div></div>
+                  <div className="d-flex flex-column footer w-100 text-light justify-content-center align-items-center">
+                    <div
+                      className="pt-3 pb-3 navbar-project-item w-100 text-center"
+                      onClick={() =>
+                        window.open('https://github.com/edge-ml/docs', '_blank')
                       }
                     >
-                      <img
-                        style={{ marginRight: '8px', width: '32px' }}
-                        src={require('./logo.svg')}
-                      />
-                      <b>
-                        <div style={{ color: 'black' }}>edge-ml</div>
-                      </b>
-                    </a>
-                  </NavbarBrand>
-                  <div className="w-100">
-                    {this.state.projects.map((project, index) => {
-                      return (
-                        <div className="w-100 text-left" key={project._id}>
-                          <div
-                            className="d-flex align-items-center mt-1 pt-2 pb-2 pl-2 navbar-project"
-                            onClick={() => this.onProjectClick(project._id)}
-                          >
-                            <FontAwesomeIcon
-                              style={{
-                                color: '#8b8d8f',
-                                float: 'left',
-                                cursor: 'pointer'
-                              }}
-                              icon={
-                                this.state.currentProjectId === project._id
-                                  ? faCaretDown
-                                  : faCaretRight
-                              }
-                              className="mr-2 fa-s"
-                            ></FontAwesomeIcon>
-                            <div className="navbar-project">
-                              <b>{project.name}</b>
-                            </div>
-                          </div>
-                          {this.state.currentProjectId === project._id ? (
-                            <div>
-                              <div
-                                onClick={() => {
-                                  this.navigateTo('datasets');
-                                }}
-                                style={
-                                  this.state.projectLocation === 'datasets'
-                                    ? {
-                                        color: 'black',
-                                        backgroundColor: '#ddd'
-                                      }
-                                    : {}
-                                }
-                                className="pt-2 pb-2 pl-4 small navbar-project-item"
-                              >
-                                <FontAwesomeIcon
-                                  className="mr-2"
-                                  icon={faDatabase}
-                                ></FontAwesomeIcon>
-                                Datasets
-                              </div>
-                              <div
-                                onClick={() => {
-                                  this.navigateTo('labelings');
-                                }}
-                                style={
-                                  this.state.projectLocation === 'labelings'
-                                    ? {
-                                        color: 'black',
-                                        backgroundColor: '#ddd'
-                                      }
-                                    : {}
-                                }
-                                className="pt-2 pb-2 pl-4 small navbar-project-item"
-                              >
-                                <FontAwesomeIcon
-                                  className="mr-2"
-                                  icon={faPen}
-                                ></FontAwesomeIcon>
-                                Labelings
-                              </div>
-                              <div
-                                onClick={() => {
-                                  this.navigateTo('model');
-                                }}
-                                style={
-                                  this.state.projectLocation === 'model'
-                                    ? {
-                                        color: 'black',
-                                        backgroundColor: '#ddd'
-                                      }
-                                    : {}
-                                }
-                                className="pt-2 pb-2 pl-4 small navbar-project-item"
-                              >
-                                <FontAwesomeIcon
-                                  className="mr-2"
-                                  icon={faBrain}
-                                ></FontAwesomeIcon>
-                                Models
-                              </div>
-                              <div
-                                onClick={() => {
-                                  this.navigateTo('settings');
-                                }}
-                                style={
-                                  this.state.projectLocation === 'settings'
-                                    ? {
-                                        color: 'black',
-                                        backgroundColor: '#ddd'
-                                      }
-                                    : {}
-                                }
-                                className="pt-2 pb-2 pl-4 small navbar-project-item"
-                              >
-                                <FontAwesomeIcon
-                                  className="mr-2"
-                                  icon={faCogs}
-                                ></FontAwesomeIcon>
-                                Settings
-                              </div>
-                            </div>
-                          ) : null}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="d-flex flex-column w-100 p-3">
-                    <Nav navbar className="d-flex flex-column">
+                      <small>
+                        <FontAwesomeIcon icon={faLightbulb} className="mr-2" />
+                        Documentation
+                      </small>
+                    </div>
+                    <div
+                      style={{
+                        height: '1px',
+                        backgroundColor: 'darkgray',
+                        opacity: '0.3',
+                        width: '95%'
+                      }}
+                    ></div>
+                    <div
+                      className="d-flex flex-row justify-content-center navbar-project-item align-items-center pt-3 pb-3 w-100"
+                      onClick={this.toggleUserSettingsModal}
+                    >
                       <div
-                        onClick={() => this.onProjectEditModal(true)}
-                        style={{ display: 'block', margin: 'auto' }}
-                        className="btn btn-secondary mt-3"
                         style={{
-                          backgroundColor: '#eee',
-                          border: '0px solid transparent',
-                          color: 'gray',
-                          fontSize: 'small'
+                          backgroundColor: 'lightgray',
+                          border: '0px solid darkgray',
+                          width: '26px',
+                          height: '26px',
+                          borderRadius: '13px',
+                          overflow: 'hidden'
                         }}
+                        className="mr-2 d-flex justify-content-center align-items-center"
                       >
                         <FontAwesomeIcon
-                          id="btnAddProject"
-                          icon={faPlus}
-                          className="fa-s mr-1"
+                          icon={faUser}
+                          style={{ fontSize: 'x-large', color: 'white' }}
+                          className="mt-2"
                         />
-                        Add Project
                       </div>
-
-                      <NavItem>
-                        <CustomDropDownMenu
-                          right
-                          noHover
-                          content={
-                            <FontAwesomeIcon
-                              id="userDropDownContent"
-                              style={{
-                                color: '#8b8d8f',
-                                float: 'left',
-                                margin: 'auto',
-                                cursor: 'pointer'
-                              }}
-                              icon={faUser}
-                              className="mr-2 fa-s"
-                            />
-                          }
-                        >
-                          <div>
-                            <div
-                              style={{
-                                textAlign: 'right',
-                                width: 'max-content'
-                              }}
-                            >
-                              Signed in as <b>{this.state.userName}</b>
-                            </div>
-                            <div
-                              style={{
-                                textAlign: 'right',
-                                fontSize: 'smaller'
-                              }}
-                            >
-                              {this.state.userMail}
-                            </div>
-                          </div>
-                          <Button
-                            outline
-                            onClick={this.toggleUserSettingsModal}
-                          >
-                            User settings
-                          </Button>
-                          <Button
-                            id="buttonLogoutUser"
-                            className="m-0 my-2 my-sm-0"
-                            outline
-                            color="danger"
-                            onClick={this.logoutHandler}
-                          >
-                            Logout
-                          </Button>
-                        </CustomDropDownMenu>
-                        <UserSettingsModal
-                          isOpen={this.state.userSettingsModalOpen}
-                          onClose={this.toggleUserSettingsModal}
-                          twoFAEnabled={this.state.twoFAEnabled}
-                          onLogout={() => this.onLogout(true)}
-                          enable2FA={this.enable2FA}
-                          userMail={this.state.userMail}
-                        ></UserSettingsModal>
-                      </NavItem>
-                    </Nav>
+                      {this.state.userName}
+                    </div>
                   </div>
+                  <UserSettingsModal
+                    isOpen={this.state.userSettingsModalOpen}
+                    onClose={this.toggleUserSettingsModal}
+                    twoFAEnabled={this.state.twoFAEnabled}
+                    onLogout={() => this.onLogout(true)}
+                    enable2FA={this.enable2FA}
+                    userMail={this.state.userMail}
+                  ></UserSettingsModal>
                 </div>
                 {projectAvailable ? null : (
                   <NoProjectPage

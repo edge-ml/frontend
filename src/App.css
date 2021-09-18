@@ -219,6 +219,7 @@ div.card {
 }
 
 .navbar-project-item {
+  color: #666;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
   -khtml-user-select: none; /* Konqueror HTML */
@@ -241,8 +242,13 @@ div.card {
 }
 
 .navbar-project:hover {
-  background-color: black;
+  background-color: black !important;
   color: white !important;
+}
+
+.footer {
+  background-color: #eeeeee;
+  color: black !important;
 }
 
 @media (min-width: 1200px) {
