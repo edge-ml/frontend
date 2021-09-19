@@ -15,7 +15,7 @@ import {
   InputGroupAddon,
   InputGroupText
 } from 'reactstrap';
-import ChooseDeviceModal from '../components/BLE/ChooseDeviceModal';
+import BleNotActivated from '../components/BLE/BleNotActivated';
 import Loader from '../modules/loader';
 import { createDataset } from '../services/ApiServices/DatasetServices';
 
@@ -429,7 +429,7 @@ class UploadBLE extends Component {
 
   render() {
     if (!this.state.bleStatus) {
-      return <div>Web Bluettooth is not enabled</div>;
+      return <BleNotActivated></BleNotActivated>;
     }
     const connected = this.state.connectedBLEDevice;
     return (
