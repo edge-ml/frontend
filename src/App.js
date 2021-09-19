@@ -89,6 +89,11 @@ class App extends Component {
   }
 
   changeURL(project) {
+    if (project === undefined) {
+      this.props.history.push('/');
+      return;
+    }
+
     const splitUrl = this.props.history.location.pathname
       .split('/')
       .filter(elm => elm !== '');
@@ -163,6 +168,7 @@ class App extends Component {
       this.setState({
         currentProjectId: undefined
       });
+      this.changeURL(undefined);
       return;
     }
     setProject(id);
@@ -228,8 +234,8 @@ class App extends Component {
 
         this.setState({
           projects: projects,
-          currentProjectId: getProject(),
-          projectLocation: 'datasets'
+          currentProjectId: undefined,
+          projectLocation: undefined
         });
 
         this.props.history.push(
@@ -590,7 +596,6 @@ class App extends Component {
                 {projectAvailable ? null : (
                   <NoProjectPage
                     onCreateProject={e => {
-                      alert('peder');
                       e.preventDefault();
                       this.onProjectEditModal(true);
                     }}
