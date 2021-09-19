@@ -80,7 +80,6 @@ class App extends Component {
     const splitUrl = this.props.history.location.pathname
       .split('/')
       .filter(elm => elm !== '');
-    console.log(splitUrl);
     splitUrl[0] = project.admin.userName;
     splitUrl[1] = project.name;
     this.props.history.push('/' + splitUrl.join('/'));
@@ -182,6 +181,11 @@ class App extends Component {
         // if the user comes to a url parse the name of the project from it
         const params = this.props.history.location.pathname.split('/');
         const projectIndex = projects.findIndex(elm => elm.name === params[2]);
+        const retrievedProjectLocation = params[3];
+        this.setState({
+          projectLocation: retrievedProjectLocation
+        });
+
         if (projectIndex !== -1) {
           this.setState({
             projects: projects,
@@ -199,7 +203,7 @@ class App extends Component {
           return;
         }
 
-        // load last open project from storage
+        // verify now project was openend last, otherwise start with first project open
         var storedProjectIndex = projects.findIndex(
           elm => elm._id === getProject()
         );
@@ -210,7 +214,8 @@ class App extends Component {
 
         this.setState({
           projects: projects,
-          currentProjectId: getProject()
+          currentProjectId: getProject(),
+          projectLocation: 'datasets'
         });
 
         this.props.history.push(

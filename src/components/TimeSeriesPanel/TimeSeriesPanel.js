@@ -284,7 +284,7 @@ class TimeSeriesPanel extends Component {
     } else {
       if (!this.props.canEdit) return;
       let position = this.chart.current.chart.xAxis[0].toValue(
-        e.pageX - this.chart.current.chart.plotBox.x * 1.5 // TODO hack hardcoded 2 pixels how to fix?
+        e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160 // TODO hack hardcoded 2 pixels how to fix?
       );
 
       if (!this.props.drawingId) {
@@ -344,7 +344,7 @@ class TimeSeriesPanel extends Component {
     let plotbandOptions = plotband.options;
     this.chart.current.chart.xAxis[0].removePlotBand(plotbandOptions.id);
     let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX - this.chart.current.chart.plotBox.x * 1.5
+      e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160
     );
     let fixedPosition = plotLine.options.isLeftPlotline
       ? plotbandOptions.to
@@ -371,7 +371,8 @@ class TimeSeriesPanel extends Component {
     let newValue = this.chart.current.chart.xAxis[0].toValue(
       e.pageX -
         this.chart.current.chart.plotBox.x * 1.5 +
-        this.chart.current.chart.plotBox.x * 0.08
+        this.chart.current.chart.plotBox.x * 0.08 -
+        160
     );
 
     let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(

@@ -41,6 +41,7 @@ module.exports = {
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',
+    DEVICE: 'devices',
     LABEL_DEFINITIONS: 'labelDefinitions',
     LABEL_TYPES: 'labelTypes',
     EXPERIMENTS: 'experiments',

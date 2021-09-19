@@ -87,7 +87,7 @@ class LabelingPanel extends Component {
 
   render() {
     return (
-      <Card className="LabelingPanel">
+      <Card className="LabelingPanel" style={{ marginLeft: '160px' }}>
         <CardBody className="p-1">
           <div className="informationBox">
             <Button

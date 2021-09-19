@@ -39,6 +39,7 @@ class ListPage extends Component {
     this.toggleCreateNewDatasetModal = this.toggleCreateNewDatasetModal.bind(
       this
     );
+    this.onUploadBLE = this.onUploadBLE.bind(this);
   }
 
   componentDidMount() {
@@ -58,6 +59,10 @@ class ListPage extends Component {
       ready: true,
       isCreateNewDatasetOpen: false
     });
+  }
+
+  onUploadBLE() {
+    this.props.history.push('./ble');
   }
 
   onUploadFromCode() {
@@ -214,6 +219,16 @@ class ListPage extends Component {
                   onClick={this.onUploadFromCode}
                 >
                   + Upload from Code
+                </Button>
+                <Button
+                  id="buttonUploadFromCode"
+                  block
+                  className="mb-5 ml-2 mt-0"
+                  color="secondary"
+                  outline
+                  onClick={this.onUploadBLE}
+                >
+                  + Upload from BLE
                 </Button>
               </div>
             </Col>
