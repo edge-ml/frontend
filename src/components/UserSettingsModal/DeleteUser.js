@@ -43,7 +43,7 @@ class DeleteUser extends Component {
           />
         </InputGroup>
         <Button
-          id="buttonSaveNewMail"
+          id="buttonLogoutUser"
           color="danger"
           className="m-1 mr-auto"
           disabled={this.state.confirmationMail !== this.props.userMail}

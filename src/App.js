@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
-import {
-  Navbar,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  Button,
-  Collapse,
-  NavbarToggler
-} from 'reactstrap';
+import { NavbarBrand, Nav, NavItem, Button } from 'reactstrap';
 import { Route, NavLink } from 'react-router-dom';
 import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMenu';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCaretDown,
+  faCaretRight,
+  faPlus,
+  faUser,
+  faDatabase,
+  faCogs,
+  faPen,
+  faBrain,
+  faLightbulb
+} from '@fortawesome/free-solid-svg-icons';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
@@ -41,24 +43,22 @@ class App extends Component {
       userName: undefined,
       isLoggedIn: false,
       twoFAEnabled: false,
-      navbarState: {
-        isOpen: false
-      },
       videoEnaled: false,
       playButtonEnabled: false,
       currentUserMail: undefined,
       projects: undefined,
-      currentProject: undefined,
+      currentProjectId: undefined,
+      projectLocation: undefined,
       projectsOpen: false,
       projectEditModalOpen: false,
       projectEditModalNew: false,
-      userSettingsModalOpen: false
+      userSettingsModalOpen: false,
+      navbarWidth: '160px'
     };
     this.baseState = JSON.parse(JSON.stringify(this.state));
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);
-    this.toggleNavbar = this.toggleNavbar.bind(this);
     this.toggleVideoOptions = this.toggleVideoOptions.bind(this);
     this.setAccessToken = this.setAccessToken.bind(this);
     this.getCurrentUserMail = this.getCurrentUserMail.bind(this);
@@ -74,23 +74,44 @@ class App extends Component {
     this.enable2FA = this.enable2FA.bind(this);
     this.changeURL = this.changeURL.bind(this);
     this.navigateTo = this.navigateTo.bind(this);
+
+    this.props.history.listen(() => {
+      const splitUrl = this.props.history.location.pathname
+        .split('/')
+        .filter(elm => elm !== '');
+
+      if (splitUrl[2] !== undefined) {
+        this.setState({
+          projectLocation: splitUrl[2] // handle changes of location from other places
+        });
+      }
+    });
   }
 
   changeURL(project) {
+    if (project === undefined) {
+      this.props.history.push('/');
+      return;
+    }
+
     const splitUrl = this.props.history.location.pathname
       .split('/')
       .filter(elm => elm !== '');
-    console.log(splitUrl);
     splitUrl[0] = project.admin.userName;
     splitUrl[1] = project.name;
     this.props.history.push('/' + splitUrl.join('/'));
   }
 
   navigateTo(location) {
-    const project = this.state.projects[this.state.currentProject];
+    const project = this.state.projects.filter(
+      x => x._id === this.state.currentProjectId
+    )[0];
     this.props.history.push(
       '/' + project.admin.userName + '/' + project.name + '/' + location
     );
+    this.setState({
+      projectLocation: location
+    });
   }
 
   enable2FA() {
@@ -105,25 +126,29 @@ class App extends Component {
     });
   }
 
-  onProjectsChanged(projects, index) {
+  onProjectsChanged(projects) {
     if (projects.length === 0) {
       this.props.history.push('/');
       this.setState({
         projects: [],
-        currentProject: -1,
+        currentProjectId: -1,
         projectEditModalOpen: false
       });
       clearProject();
       return;
     }
-    const projectIndex = index <= projects.length && index >= 0 ? index : 0;
+
+    const projectIndex = 0;
     setProject(projects[projectIndex]._id);
+
     this.setState({
       projects: projects,
-      currentProject: projectIndex,
-      projectEditModalOpen: false
+      currentProjectId: projects[projectIndex]._id,
+      projectEditModalOpen: false,
+      projectLocation: 'datasets'
     });
     this.changeURL(this.state.projects[projectIndex]);
+    this.navigateTo('datasets');
   }
 
   onProjectModalClose() {
@@ -139,13 +164,21 @@ class App extends Component {
     });
   }
 
-  onProjectClick(index) {
-    setProject(this.state.projects[index]._id);
+  onProjectClick(id) {
+    if (this.state.currentProjectId === id) {
+      this.setState({
+        currentProjectId: undefined
+      });
+      this.changeURL(undefined);
+      return;
+    }
+    setProject(id);
+
     this.setState({
-      currentProject: index
+      currentProjectId: id
     });
 
-    this.changeURL(this.state.projects[index]);
+    this.changeURL(this.state.projects.filter(x => x._id === id)[0]);
   }
 
   toggleProjects() {
@@ -157,6 +190,7 @@ class App extends Component {
   refreshProjects() {
     getProjects()
       .then(projects => {
+        // if no project is available
         if (projects.length === 0) {
           this.setState({
             projects: []
@@ -164,14 +198,21 @@ class App extends Component {
           this.props.history.push('/');
           return;
         }
-        //Check if url contains useful information
+
+        // if the user comes to a url parse the name of the project from it
         const params = this.props.history.location.pathname.split('/');
         const projectIndex = projects.findIndex(elm => elm.name === params[2]);
+        const retrievedProjectLocation = params[3];
+        this.setState({
+          projectLocation: retrievedProjectLocation
+        });
+
         if (projectIndex !== -1) {
           this.setState({
             projects: projects,
-            currentProject: projectIndex
+            currentProjectId: projects[projectIndex]._id
           });
+          setProject(projects[projectIndex]._id);
           this.props.history.push(
             '/' +
               projects[projectIndex].admin.userName +
@@ -183,24 +224,26 @@ class App extends Component {
           return;
         }
 
-        var currentProject = projects.findIndex(
+        // verify now project was openend last, otherwise start with first project open
+        var storedProjectIndex = projects.findIndex(
           elm => elm._id === getProject()
         );
-        if (currentProject === -1) {
-          currentProject = 0;
-          setProject(projects[0]._id);
-        } else {
-          setProject(projects[currentProject]._id);
+
+        if (storedProjectIndex === -1) {
+          storedProjectIndex = 0;
         }
+
         this.setState({
           projects: projects,
-          currentProject: currentProject
+          currentProjectId: undefined,
+          projectLocation: undefined
         });
+
         this.props.history.push(
           '/' +
-            projects[currentProject].admin.userName +
+            projects[storedProjectIndex].admin.userName +
             '/' +
-            projects[currentProject].name +
+            projects[storedProjectIndex].name +
             '/datasets'
         );
       })
@@ -262,14 +305,6 @@ class App extends Component {
     this.onLogout(true);
   }
 
-  toggleNavbar() {
-    this.setState({
-      navbarState: {
-        isOpen: !this.state.navbarState.isOpen
-      }
-    });
-  }
-
   toggleVideoOptions(videoStatus, playButtonStatus) {
     this.setState({
       videoEnaled: videoStatus,
@@ -278,16 +313,19 @@ class App extends Component {
   }
 
   render() {
+    var projectIndex = this.state.projects
+      ? this.state.projects.findIndex(
+          x => x._id === this.state.currentProjectId
+        )
+      : -1;
     const projectAvailable = this.state.projects
-      ? this.state.projects[this.state.currentProject]
+      ? this.state.projects[projectIndex]
       : undefined;
     return (
       <div>
         <EditProjectModal
           project={
-            this.state.projects
-              ? this.state.projects[this.state.currentProject]
-              : undefined
+            this.state.projects ? this.state.projects[projectIndex] : undefined
           }
           isOpen={this.state.projectEditModalOpen}
           isNewProject={this.state.projectEditModalNew}
@@ -317,250 +355,274 @@ class App extends Component {
           >
             {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
             {this.state.isLoggedIn && this.state.projects ? (
-              <div>
-                <Navbar color="light" light expand="md">
-                  <NavbarBrand
-                    style={{ marginRight: '8px' }}
-                    className="dark-hover"
-                  >
-                    <a
+              <div className="d-flex">
+                <div
+                  className="d-flex flex-column bg-light align-items-center justify-content-between shadow"
+                  color="light"
+                  style={{
+                    width: this.state.navbarWidth,
+                    position: 'fixed',
+                    height: '100vh',
+                    zIndex: '100'
+                  }}
+                >
+                  <div className="w-100 d-flex flex-column justify-content-center align-items-center">
+                    <NavbarBrand
+                      style={{ marginRight: '8px' }}
+                      className="dark-hover mt-2"
+                    >
+                      <a
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          textDecoration: 'none'
+                        }}
+                        href={
+                          projectAvailable
+                            ? '/' +
+                              projectAvailable.admin.userName +
+                              '/' +
+                              projectAvailable.name +
+                              '/' +
+                              'datasets'
+                            : null
+                        }
+                      >
+                        <img
+                          style={{ marginRight: '8px', width: '32px' }}
+                          src={require('./logo.svg')}
+                        />
+                        <b>
+                          <div style={{ color: 'black' }}>edge-ml</div>
+                        </b>
+                      </a>
+                    </NavbarBrand>
+                    <div className="w-100 mt-3">
+                      {this.state.projects.map((project, index) => {
+                        return (
+                          <div className="w-100 text-left" key={project._id}>
+                            <div
+                              className="d-flex align-items-center mt-1 pt-2 pb-2 pl-2 navbar-project"
+                              onClick={() => this.onProjectClick(project._id)}
+                              style={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                              }}
+                            >
+                              <FontAwesomeIcon
+                                style={{
+                                  color: '#8b8d8f',
+                                  float: 'left',
+                                  cursor: 'pointer'
+                                }}
+                                icon={
+                                  this.state.currentProjectId === project._id
+                                    ? faCaretDown
+                                    : faCaretRight
+                                }
+                                className="mr-2 fa-s"
+                              ></FontAwesomeIcon>
+                              <div
+                                className="navbar-project pr-1"
+                                style={{
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
+                                <b>{project.name}</b>
+                              </div>
+                            </div>
+                            {this.state.currentProjectId === project._id ? (
+                              <div>
+                                <div
+                                  onClick={() => {
+                                    this.navigateTo('datasets');
+                                  }}
+                                  style={
+                                    this.state.projectLocation === 'datasets'
+                                      ? {
+                                          color: 'black',
+                                          backgroundColor: '#ddd'
+                                        }
+                                      : {}
+                                  }
+                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                >
+                                  <FontAwesomeIcon
+                                    className="mr-2"
+                                    icon={faDatabase}
+                                  ></FontAwesomeIcon>
+                                  Datasets
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    this.navigateTo('labelings');
+                                  }}
+                                  style={
+                                    this.state.projectLocation === 'labelings'
+                                      ? {
+                                          color: 'black',
+                                          backgroundColor: '#ddd'
+                                        }
+                                      : {}
+                                  }
+                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                >
+                                  <FontAwesomeIcon
+                                    className="mr-2"
+                                    icon={faPen}
+                                  ></FontAwesomeIcon>
+                                  Labelings
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    this.navigateTo('model');
+                                  }}
+                                  style={
+                                    this.state.projectLocation === 'model'
+                                      ? {
+                                          color: 'black',
+                                          backgroundColor: '#ddd'
+                                        }
+                                      : {}
+                                  }
+                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                >
+                                  <FontAwesomeIcon
+                                    className="mr-2"
+                                    icon={faBrain}
+                                  ></FontAwesomeIcon>
+                                  Models
+                                </div>
+                                <div
+                                  onClick={() => {
+                                    this.navigateTo('settings');
+                                  }}
+                                  style={
+                                    this.state.projectLocation === 'settings'
+                                      ? {
+                                          color: 'black',
+                                          backgroundColor: '#ddd'
+                                        }
+                                      : {}
+                                  }
+                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                >
+                                  <FontAwesomeIcon
+                                    className="mr-2"
+                                    icon={faCogs}
+                                  ></FontAwesomeIcon>
+                                  Settings
+                                </div>
+                              </div>
+                            ) : null}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div
+                      onClick={() => this.onProjectEditModal(true)}
+                      style={{}}
+                      className="w-100 mt-3 pt-2 pb-2 navbar-project text-center"
                       style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        textDecoration: 'none'
+                        backgroundColor: '#eee',
+                        border: '0px solid transparent',
+                        color: '#666',
+                        fontSize: '0.9rem'
                       }}
-                      href={
-                        projectAvailable
-                          ? '/' +
-                            projectAvailable.admin.userName +
-                            '/' +
-                            projectAvailable.name +
-                            '/' +
-                            'datasets'
-                          : null
+                    >
+                      <FontAwesomeIcon
+                        id="btnAddProject"
+                        icon={faPlus}
+                        className="fa-s mr-1"
+                      />
+                      Add Project
+                    </div>
+                  </div>
+                  <div></div>
+                  <div className="d-flex flex-column footer w-100 text-light justify-content-center align-items-center">
+                    <div
+                      className="pt-3 pb-3 navbar-project-item w-100 text-center"
+                      onClick={() =>
+                        window.open('https://github.com/edge-ml/docs', '_blank')
                       }
                     >
-                      <img
-                        style={{ marginRight: '8px', width: '32px' }}
-                        src={require('./logo.svg')}
-                      />
-                      <b>
-                        <div style={{ color: 'black' }}>edge-ml</div>
-                      </b>
-                    </a>
-                  </NavbarBrand>
-                  <NavbarToggler onClick={this.toggleNavbar} />
-                  <Collapse isOpen={this.state.navbarState.isOpen} navbar>
-                    <Nav navbar className="mr-auto">
-                      <NavItem className="navbar-divider"></NavItem>
-                      <NavItem>
-                        <CustomDropDownMenu
-                          left
-                          content={
-                            <div
-                              style={{ display: 'inline-flex', padding: '8px' }}
-                            >
-                              <div id="currentProjectName">
-                                {projectAvailable
-                                  ? this.state.projects[
-                                      this.state.currentProject
-                                    ].name
-                                  : this.state.projects.length === 0
-                                  ? 'No projects'
-                                  : 'Loading'}
-                              </div>{' '}
-                              <div
-                                style={{ display: 'flex', marginLeft: '4px' }}
-                              >
-                                <FontAwesomeIcon
-                                  style={{
-                                    color: '#8b8d8f',
-                                    float: 'left',
-                                    margin: 'auto',
-                                    cursor: 'pointer'
-                                  }}
-                                  icon={faCaretDown}
-                                  className="mr-2 fa-s"
-                                ></FontAwesomeIcon>
-                              </div>
-                            </div>
-                          }
-                        >
-                          {this.state.projects.map((project, index) => {
-                            return (
-                              <div
-                                className="dropDownItem"
-                                onClick={() => this.onProjectClick(index)}
-                                key={project._id}
-                              >
-                                {project.name}
-                              </div>
-                            );
-                          })}
-                        </CustomDropDownMenu>
-                      </NavItem>
-                      <div style={{ display: 'block', margin: 'auto' }}>
+                      <small>
+                        <FontAwesomeIcon icon={faLightbulb} className="mr-2" />
+                        Documentation
+                      </small>
+                    </div>
+                    <div
+                      style={{
+                        height: '1px',
+                        backgroundColor: 'darkgray',
+                        opacity: '0.3',
+                        width: '95%'
+                      }}
+                    ></div>
+                    <div
+                      id="userProfileSettings"
+                      className="d-flex flex-row justify-content-center navbar-project-item align-items-center pt-3 pb-3 w-100"
+                      onClick={this.toggleUserSettingsModal}
+                    >
+                      <div
+                        style={{
+                          backgroundColor: 'lightgray',
+                          border: '0px solid darkgray',
+                          width: '26px',
+                          height: '26px',
+                          borderRadius: '13px',
+                          overflow: 'hidden'
+                        }}
+                        className="mr-2 d-flex justify-content-center align-items-center"
+                      >
                         <FontAwesomeIcon
-                          id="btnAddProject"
-                          onClick={() => this.onProjectEditModal(true)}
-                          style={{
-                            color: '#8b8d8f',
-                            float: 'left',
-                            margin: 'auto',
-                            cursor: 'pointer'
-                          }}
-                          icon={faPlus}
-                          className="mr-2 fa-s"
+                          icon={faUser}
+                          style={{ fontSize: 'x-large', color: 'white' }}
+                          className="mt-2"
                         />
                       </div>
-                    </Nav>
-                    <Nav navbar className="ml-auto">
-                      {projectAvailable ? (
-                        <div style={{ display: 'inherit' }}>
-                          <NavLink
-                            id="navLinkDatasets"
-                            className="nav-link"
-                            exact={false}
-                            to={
-                              '/' +
-                              projectAvailable.admin.userName +
-                              '/' +
-                              projectAvailable.name +
-                              '/datasets'
-                            }
-                          >
-                            Datasets
-                          </NavLink>
-                          <NavLink
-                            id="navLinkLabelings"
-                            className="nav-link"
-                            to={
-                              '/' +
-                              projectAvailable.admin.userName +
-                              '/' +
-                              projectAvailable.name +
-                              '/labelings'
-                            }
-                          >
-                            Labelings
-                          </NavLink>
-                          <NavLink
-                            id="navLinkML"
-                            className="nav-link"
-                            to={
-                              '/' +
-                              projectAvailable.admin.userName +
-                              '/' +
-                              projectAvailable.name +
-                              '/ml'
-                            }
-                          >
-                            ML
-                          </NavLink>
-
-                          <NavLink
-                            id="navLinkSettings"
-                            className="nav-link"
-                            to={
-                              '/' +
-                              projectAvailable.admin.userName +
-                              '/' +
-                              projectAvailable.name +
-                              '/settings'
-                            }
-                          >
-                            Settings
-                          </NavLink>
-                          <NavItem className="navbar-divider"> </NavItem>
-                        </div>
-                      ) : null}
-                      <NavItem
-                        className="my-auto"
-                        style={{ paddingLeft: '8px' }}
-                      >
-                        <CustomDropDownMenu
-                          right
-                          noHover
-                          content={
-                            <FontAwesomeIcon
-                              id="userDropDownContent"
-                              style={{
-                                color: '#8b8d8f',
-                                float: 'left',
-                                margin: 'auto',
-                                cursor: 'pointer'
-                              }}
-                              icon={faUser}
-                              className="mr-2 fa-s"
-                            />
-                          }
-                        >
-                          <div>
-                            <div
-                              style={{
-                                textAlign: 'right',
-                                width: 'max-content'
-                              }}
-                            >
-                              Signed in as <b>{this.state.userName}</b>
-                            </div>
-                            <div
-                              style={{
-                                textAlign: 'right',
-                                fontSize: 'smaller'
-                              }}
-                            >
-                              {this.state.userMail}
-                            </div>
-                          </div>
-                          <Button
-                            outline
-                            onClick={this.toggleUserSettingsModal}
-                          >
-                            User settings
-                          </Button>
-                          <Button
-                            id="buttonLogoutUser"
-                            className="m-0 my-2 my-sm-0"
-                            outline
-                            color="danger"
-                            onClick={this.logoutHandler}
-                          >
-                            Logout
-                          </Button>
-                        </CustomDropDownMenu>
-                        <UserSettingsModal
-                          isOpen={this.state.userSettingsModalOpen}
-                          onClose={this.toggleUserSettingsModal}
-                          twoFAEnabled={this.state.twoFAEnabled}
-                          onLogout={() => this.onLogout(true)}
-                          enable2FA={this.enable2FA}
-                          userMail={this.state.userMail}
-                        ></UserSettingsModal>
-                      </NavItem>
-                    </Nav>
-                  </Collapse>
-                </Navbar>
+                      {this.state.userName}
+                    </div>
+                  </div>
+                  <UserSettingsModal
+                    isOpen={this.state.userSettingsModalOpen}
+                    onClose={this.toggleUserSettingsModal}
+                    twoFAEnabled={this.state.twoFAEnabled}
+                    onLogout={() => this.onLogout(true)}
+                    enable2FA={this.enable2FA}
+                    userMail={this.state.userMail}
+                  ></UserSettingsModal>
+                </div>
                 {projectAvailable ? null : (
                   <NoProjectPage
                     onCreateProject={e => {
                       e.preventDefault();
-                      this.onProjectEditModal(this);
+                      this.onProjectEditModal(true);
                     }}
                   ></NoProjectPage>
                 )}
-                <Route
-                  {...this.props}
-                  path="/:userName/:projectID"
-                  render={props => (
-                    <AppContent
-                      {...props}
-                      project={this.state.projects[this.state.currentProject]}
-                      onProjectsChanged={this.onProjectsChanged}
-                      navigateTo={this.navigateTo}
-                    />
-                  )}
-                ></Route>
+                <div
+                  style={{ marginLeft: this.state.navbarWidth, width: '100%' }}
+                >
+                  <Route
+                    {...this.props}
+                    path="/:userName/:projectID"
+                    render={props => (
+                      <AppContent
+                        {...props}
+                        project={
+                          this.state.projects.filter(
+                            x => x._id === this.state.currentProjectId
+                          )[0]
+                        }
+                        onProjectsChanged={this.onProjectsChanged}
+                        navigateTo={this.navigateTo}
+                      />
+                    )}
+                  ></Route>
+                </div>
               </div>
             ) : null}
           </AuthWall>

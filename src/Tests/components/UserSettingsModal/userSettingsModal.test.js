@@ -29,13 +29,23 @@ describe('Render page', () => {
 });
 
 describe('Click though tabs', () => {
+  it('Click on logoutSettings', () => {
+    const wrapper = mount(
+      <UserSettingsModal isOpen={true}></UserSettingsModal>
+    );
+    wrapper
+      .find('.nav-link')
+      .at(0)
+      .simulate('click');
+    expect(wrapper.find('#logoutSettings').exists()).toBe(true);
+  });
   it('Click on passwordSettings', () => {
     const wrapper = mount(
       <UserSettingsModal isOpen={true}></UserSettingsModal>
     );
     wrapper
       .find('.nav-link')
-      .at(1)
+      .at(2)
       .simulate('click');
     expect(wrapper.find('#passwordSettings').exists()).toBe(true);
   });
@@ -47,7 +57,7 @@ describe('Click though tabs', () => {
     );
     wrapper
       .find('.nav-link')
-      .at(2)
+      .at(3)
       .simulate('click');
     expect(wrapper.find('#twoFaSettings').exists()).toBe(true);
   });
@@ -58,7 +68,7 @@ describe('Click though tabs', () => {
     );
     wrapper
       .find('.nav-link')
-      .at(3)
+      .at(4)
       .simulate('click');
     expect(wrapper.find('#userNameSettings').exists()).toBe(true);
   });
@@ -70,12 +80,12 @@ describe('Click though tabs', () => {
     );
     wrapper
       .find('.nav-link')
-      .at(2)
+      .at(3)
       .simulate('click');
     expect(wrapper.find('#twoFaSettings').exists()).toBe(true);
     wrapper
       .find('.nav-link')
-      .at(0)
+      .at(1)
       .simulate('click');
     expect(wrapper.find('#mailSettings').exists()).toBe(true);
   });

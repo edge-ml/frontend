@@ -45,7 +45,7 @@ it('Login user', async () => {
 it('Logout user', async () => {
   const page = await init();
   await loginUser(page);
-  await page.click('#userDropDownContent');
+  await page.click('#userProfileSettings');
   await page.click('#buttonLogoutUser');
   const localStorage = await getLocalStorage(page);
   expect(parse(page.url()).pathname).toBe('/');
