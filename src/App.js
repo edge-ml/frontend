@@ -126,9 +126,11 @@ class App extends Component {
     this.setState({
       projects: projects,
       currentProjectId: projects[projectIndex]._id,
-      projectEditModalOpen: false
+      projectEditModalOpen: false,
+      projectLocation: 'datasets'
     });
     this.changeURL(this.state.projects[projectIndex]);
+    this.navigateTo('datasets');
   }
 
   onProjectModalClose() {
@@ -383,6 +385,10 @@ class App extends Component {
                             <div
                               className="d-flex align-items-center mt-1 pt-2 pb-2 pl-2 navbar-project"
                               onClick={() => this.onProjectClick(project._id)}
+                              style={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                              }}
                             >
                               <FontAwesomeIcon
                                 style={{
@@ -397,7 +403,13 @@ class App extends Component {
                                 }
                                 className="mr-2 fa-s"
                               ></FontAwesomeIcon>
-                              <div className="navbar-project">
+                              <div
+                                className="navbar-project pr-1"
+                                style={{
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
                                 <b>{project.name}</b>
                               </div>
                             </div>
