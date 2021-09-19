@@ -126,7 +126,7 @@ class App extends Component {
     });
   }
 
-  onProjectsChanged(projects, index) {
+  onProjectsChanged(projects) {
     if (projects.length === 0) {
       this.props.history.push('/');
       this.setState({
@@ -137,7 +137,8 @@ class App extends Component {
       clearProject();
       return;
     }
-    const projectIndex = index <= projects.length && index >= 0 ? index : 0;
+
+    const projectIndex = 0;
     setProject(projects[projectIndex]._id);
 
     this.setState({
