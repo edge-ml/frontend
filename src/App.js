@@ -74,6 +74,18 @@ class App extends Component {
     this.enable2FA = this.enable2FA.bind(this);
     this.changeURL = this.changeURL.bind(this);
     this.navigateTo = this.navigateTo.bind(this);
+
+    this.props.history.listen(() => {
+      const splitUrl = this.props.history.location.pathname
+        .split('/')
+        .filter(elm => elm !== '');
+
+      if (splitUrl[2] !== undefined) {
+        this.setState({
+          projectLocation: splitUrl[2] // handle changes of location from other places
+        });
+      }
+    });
   }
 
   changeURL(project) {

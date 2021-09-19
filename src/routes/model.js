@@ -17,10 +17,7 @@ class ModelPage extends Component {
     }
     return (
       <div className="w-100 h-100 d-flex justify-content-center align-items-center">
-        <div
-          className="card mt-5 shadow-lg"
-          style={{ border: '0px solid white' }}
-        >
+        <div className="card mt-5" style={{ border: '0px solid white' }}>
           <div className="card-body d-flex justify-content-center align-items-center flex-column">
             <h4>Closed Beta</h4>
             <div>edge-ml model generation is currently invite only.</div>
