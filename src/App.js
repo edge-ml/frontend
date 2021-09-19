@@ -562,6 +562,7 @@ class App extends Component {
                       }}
                     ></div>
                     <div
+                      id="userProfileSettings"
                       className="d-flex flex-row justify-content-center navbar-project-item align-items-center pt-3 pb-3 w-100"
                       onClick={this.toggleUserSettingsModal}
                     >

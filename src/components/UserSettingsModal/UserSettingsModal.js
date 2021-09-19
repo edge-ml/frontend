@@ -123,7 +123,7 @@ class UserSettingsModal extends Component {
         </Nav>
         <ModalBody>
           {this.state.activeTab === 'logout' ? (
-            <Logout onLogout={this.props.onLogout} id="lgout"></Logout>
+            <Logout onLogout={this.props.onLogout} id="logoutSettings"></Logout>
           ) : null}
           {this.state.activeTab === 'mailChange' ? (
             <MailSettings id="mailSettings"></MailSettings>
