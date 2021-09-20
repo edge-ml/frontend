@@ -44,6 +44,9 @@ class ManagementPanel extends Component {
     var labelsUsed =
       typeof dataset.labelings !== 'undefined' && dataset.labelings.length > 0;
 
+    console.log(dataset);
+    console.log(this.props.labelings);
+
     if (labelsUsed) {
       dataset.labelings.forEach(l => {
         labelings[l.labelingId] = [];
@@ -61,7 +64,6 @@ class ManagementPanel extends Component {
       csv += 'sensor_' + t.name + '[' + t.unit + '],';
     });
 
-    console.log(labelings);
     if (labelsUsed) {
       for (const [labelingId, _] of Object.entries(labelings)) {
         const labelingName = this.props.labelings.find(

@@ -254,7 +254,7 @@ class LabelingsPage extends Component {
                 outline
                 onClick={this.onModalAddLabeling}
               >
-                + Add
+                + Add Labeling Set
               </Button>
             </Col>
           </Row>

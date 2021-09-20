@@ -145,15 +145,16 @@ class EditLabelingModal extends Component {
         <ModalHeader>
           {this.state.labeling && this.state.labeling['_id']
             ? this.state.labeling['_id']
-            : 'Add labeling'}
+            : 'Add Labeling Set'}
         </ModalHeader>
         <ModalBody>
           <InputGroup>
             <InputGroupAddon addonType="prepend">
-              <InputGroupText>Name</InputGroupText>
+              <InputGroupText>Labeling Set</InputGroupText>
             </InputGroupAddon>
             <Input
               id="labelingName"
+              placeholder="Name"
               value={
                 this.state.labeling && this.state.labeling.name
                   ? this.state.labeling.name
@@ -242,7 +243,7 @@ class EditLabelingModal extends Component {
             block
             onClick={this.onAddLabel}
           >
-            + Add
+            + Add Label
           </Button>
           {this.state.labeling && !this.state.isNewLabeling ? (
             <div>
