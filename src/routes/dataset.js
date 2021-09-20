@@ -806,6 +806,7 @@ class DatasetPage extends Component {
     let label = {};
 
     if (labelId === null) {
+      // Clicking for the first time
       label = {
         start: start,
         end: end,
@@ -818,6 +819,7 @@ class DatasetPage extends Component {
       labeling.labels = [...labeling.labels, label];
       labelingOrLabelAdded = true;
     } else {
+      // Clicking for the second time
       label = labeling.labels.filter(label => label['_id'] === labelId)[0];
       if (label !== undefined && label.start === undefined) {
         label.start = start === undefined ? start : end;
@@ -835,24 +837,31 @@ class DatasetPage extends Component {
       label.start = label.end;
       label.end = temp;
     }
-
+    label._id = 'fakeID';
     if (labelingOrLabelAdded) {
-      updateDataset(dataset).then(newDataset => {
-        let labeling = newDataset.labelings.filter(
-          labeling =>
-            labeling.labelingId === this.state.controlStates.selectedLabelingId
-        )[0];
-        this.setState({
-          dataset: newDataset,
-          controlStates: {
-            ...this.state.controlStates,
-            drawingId: labeling.labels[labeling.labels.length - 1]['_id']
+      let labeling = dataset.labelings.filter(
+        labeling =>
+          labeling.labelingId === this.state.controlStates.selectedLabelingId
+      )[0];
+      this.setState({
+        dataset: dataset,
+        controlStates: {
+          ...this.state.controlStates,
+          drawingId: labeling.labels[labeling.labels.length - 1]['_id'],
+          drawingPosition: labelId === null ? 'fakePosition' : undefined
+        }
+      });
+    } else {
+      dataset.labelings.forEach(elm => {
+        elm.labels.forEach(label => {
+          if (label._id === 'fakeID') {
+            delete label._id;
           }
         });
       });
-    } else {
-      updateDataset(dataset);
-      this.setState({ dataset });
+      updateDataset(dataset).then(newDataset => {
+        this.setState({ dataset: newDataset });
+      });
     }
   }
 

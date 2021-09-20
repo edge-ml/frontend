@@ -118,6 +118,7 @@ class TimeSeriesPanel extends Component {
           this.props.index === 0
             ? [
                 {
+                  enableMouseTracking: false,
                   lineWidth: 0,
                   marker: {
                     enabled: false,
@@ -136,6 +137,7 @@ class TimeSeriesPanel extends Component {
             : !Array.isArray(props.name)
             ? [
                 {
+                  enableMouseTracking: false,
                   showInLegend: !props.isEmpty,
                   name:
                     props.unit === ''
@@ -150,6 +152,7 @@ class TimeSeriesPanel extends Component {
               ]
             : props.data.map((dataItem, indexOuter) => {
                 return {
+                  enableMouseTracking: false,
                   name:
                     props.name[indexOuter] +
                     ' (' +
@@ -264,7 +267,7 @@ class TimeSeriesPanel extends Component {
    * Global Mouse Handlers
    */
   onMouseDown(e) {
-    if (
+    /*if (
       !(
         e.target.classList.contains('highcharts-background') ||
         e.target.classList.contains('highcharts-grid-line') ||
@@ -272,7 +275,7 @@ class TimeSeriesPanel extends Component {
       )
     )
       return;
-
+*/
     var plotBand = this.getSelectedPlotBand();
     if (plotBand) {
       this.onPlotBandMouseDown(
