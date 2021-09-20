@@ -118,7 +118,6 @@ class TimeSeriesPanel extends Component {
           this.props.index === 0
             ? [
                 {
-                  enableMouseTracking: false,
                   lineWidth: 0,
                   marker: {
                     enabled: false,
@@ -137,7 +136,6 @@ class TimeSeriesPanel extends Component {
             : !Array.isArray(props.name)
             ? [
                 {
-                  enableMouseTracking: false,
                   showInLegend: !props.isEmpty,
                   name:
                     props.unit === ''
@@ -152,7 +150,6 @@ class TimeSeriesPanel extends Component {
               ]
             : props.data.map((dataItem, indexOuter) => {
                 return {
-                  enableMouseTracking: false,
                   name:
                     props.name[indexOuter] +
                     ' (' +
@@ -289,6 +286,17 @@ class TimeSeriesPanel extends Component {
       let position = this.chart.current.chart.xAxis[0].toValue(
         e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160 // TODO hack hardcoded 2 pixels how to fix?
       );
+
+      const onLabel = this.props.labeling.labels.find(
+        elm => elm.start <= position && elm.end >= position
+      );
+      console.log(onLabel);
+      console.log(position);
+      if (onLabel) {
+        console.log(onLabel);
+        this.state.onLabelClicked(onLabel._id);
+        return;
+      }
 
       if (!this.props.drawingId) {
         this.props.updateControlStates(
