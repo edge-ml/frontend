@@ -10,7 +10,9 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader
+  CardHeader,
+  FormGroup,
+  Label
 } from 'reactstrap';
 import { MailIcon, PersonIcon, ShieldIcon } from 'react-octicons';
 import { FadeInUp } from 'animate-components';
@@ -29,12 +31,14 @@ class RegisterPage extends Component {
       password: '',
       passwordRepeat: '',
       userName: '',
+      ToS_accepted: false,
       error: ''
     };
     this.onEMailChanged = this.onEMailChanged.bind(this);
     this.onPasswordChanged = this.onPasswordChanged.bind(this);
     this.onPasswordRepeatChanged = this.onPasswordRepeatChanged.bind(this);
     this.onError = this.onError.bind(this);
+    this.onToS_checked = this.onToS_checked.bind(this);
     this.onRegisterClick = this.onRegisterClick.bind(this);
     this.onUserNameChanged = this.onUserNameChanged.bind(this);
   }
@@ -74,6 +78,12 @@ class RegisterPage extends Component {
 
     this.setState({
       error: err
+    });
+  }
+
+  onToS_checked() {
+    this.setState({
+      ToS_accepted: !this.state.ToS_accepted
     });
   }
 
@@ -189,6 +199,27 @@ class RegisterPage extends Component {
                           />
                         </InputGroup>
                       </Col>
+                      <Col
+                        style={{
+                          paddingBottom: '10px',
+                          textAlign: 'left'
+                        }}
+                      >
+                        <FormGroup check>
+                          <Label check>
+                            <Input
+                              type="checkbox"
+                              onChange={this.onToS_checked}
+                            />{' '}
+                            I have read and agree to the{' '}
+                            <a href="/terms_of_service.html">
+                              terms of service
+                            </a>{' '}
+                            and{' '}
+                            <a href="/privacy_notice.html">privacy notice</a>.
+                          </Label>
+                        </FormGroup>
+                      </Col>
                       {this.state.error ? (
                         <Col
                           className="my-1"
@@ -215,6 +246,7 @@ class RegisterPage extends Component {
                           color="primary"
                           block
                           onClick={this.onRegisterClick}
+                          disabled={!this.state.ToS_accepted}
                         >
                           Register
                         </Button>
