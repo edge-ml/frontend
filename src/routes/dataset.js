@@ -17,6 +17,7 @@ import {
 } from '../services/ApiServices/DatasetServices';
 import Loader from '../modules/loader';
 import VideoPanel from '../components/VideoPanel/VideoPanel';
+import { getRandomInt } from '../services/helpers';
 
 class DatasetPage extends Component {
   constructor(props) {
@@ -852,6 +853,7 @@ class DatasetPage extends Component {
         }
       });
     } else {
+      const dataSetCopy = JSON.parse(JSON.stringify(dataset));
       dataset.labelings.forEach(elm => {
         elm.labels.forEach(label => {
           if (label._id === 'fakeID') {
@@ -859,6 +861,7 @@ class DatasetPage extends Component {
           }
         });
       });
+      this.setState({ dataset: dataSetCopy });
       updateDataset(dataset).then(newDataset => {
         this.setState({ dataset: newDataset });
       });
