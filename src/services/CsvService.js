@@ -44,6 +44,7 @@ module.exports.generateDataset = (timeData, dataset) => {
 };
 
 function extractTimeSeries(timeData, i) {
+  console.log(timeData);
   const timeSeries = {
     name: timeData[0][i].replace('sensor_', '').split('[')[0],
     unit: timeData[0][i].match(/\[(.*)\]/).pop(),
@@ -52,10 +53,10 @@ function extractTimeSeries(timeData, i) {
     data: []
   };
   for (var j = 1; j < timeData.length; j++) {
-    if (!isNumber(timeData[j][0])) {
+    if (isNaN(timeData[j][0])) {
       throw { error: 'Timestamps cannot be missing' };
     }
-    if (isNumber(timeData[j][i])) {
+    if (!isNaN(timeData[j][i])) {
       timeSeries.data.push({
         timestamp: parseInt(timeData[j][0], 10),
         datapoint: parseInt(timeData[j][i], 10)

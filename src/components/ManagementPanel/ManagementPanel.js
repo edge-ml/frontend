@@ -128,8 +128,8 @@ class ManagementPanel extends Component {
           }
         }
         csv = csv.slice(0, -1); // remove the single ',' at the end
-        csv += '\r\n';
       }
+      csv += '\r\n';
     }
 
     const blob = new Blob([csv], { type: 'application/csv' });
