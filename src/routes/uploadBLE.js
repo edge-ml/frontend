@@ -141,7 +141,6 @@ class UploadBLE extends Component {
     if (this.recordInterval) {
       this.setState({ recordReady: false });
       clearInterval(this.recordInterval);
-      this.unSubscribeAllSensors();
       this.recordInterval = undefined;
       const globalStartTime = Math.min(
         ...this.recorderDataset.timeSeries.map(elm => elm.start)
@@ -159,6 +158,7 @@ class UploadBLE extends Component {
         recording: false
       });
       this.setState({ recordReady: true });
+      this.unSubscribeAllSensors();
       return;
     }
     this.setState({ recordReady: false, recording: true });
@@ -167,9 +167,10 @@ class UploadBLE extends Component {
     this.state.sensorMap;
     for (const [key, value] of this.state.sensorMap.entries()) {
       this.recorderMap.set(key, -1);
+      //console.log("Samplerate: " + Math.round((1000 / this.state.sampleRate) * 3))
       await this.configureSingleSensor(
         key,
-        Math.round((1000 / value.sampleRate) * 3),
+        Math.round((1000 / this.state.sampleRate) * 3),
         value.latency
       );
       const data = await this.sensorDataCharacteristic.readValue();
@@ -256,6 +257,7 @@ class UploadBLE extends Component {
       var parsedValue = parsedData[1];
       var rawValues = parsedData[2];
 
+      //console.log(sensor + ": " + rawValues + " at: " + new Date().getTime())
       this.recorderMap.set(sensor, rawValues);
     }
   }
