@@ -287,15 +287,14 @@ class TimeSeriesPanel extends Component {
         e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160 // TODO hack hardcoded 2 pixels how to fix?
       );
 
-      const onLabel = this.props.labeling.labels.find(
-        elm => elm.start <= position && elm.end >= position
-      );
-      console.log(onLabel);
-      console.log(position);
-      if (onLabel) {
-        console.log(onLabel);
-        this.state.onLabelClicked(onLabel._id);
-        return;
+      if (this.props.labeling && this.props.labeling.labels) {
+        const onLabel = this.props.labeling.labels.find(
+          elm => elm.start <= position && elm.end >= position
+        );
+        if (onLabel) {
+          this.state.onLabelClicked(onLabel._id);
+          return;
+        }
       }
 
       if (!this.props.drawingId) {
