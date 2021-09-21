@@ -748,7 +748,9 @@ class DatasetPage extends Component {
       label => label['_id'] === this.state.controlStates.selectedLabelId
     )[0];
     label.type = selectedLabelTypeId;
-
+    label.name = this.state.labels.find(elm => elm._id === selectedLabelTypeId)[
+      'name'
+    ];
     updateDataset(dataset).then(newDataset => {
       this.setState({
         dataset: newDataset,

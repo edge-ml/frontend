@@ -41,11 +41,7 @@ class ManagementPanel extends Component {
     var csv_lines = Object(); // this will be used as a dictionary, with timestamps as keys, and arrays of values as values
     var timestamps = new Set([]); // this variable will hold all timestamps as an ordered array
     var labelings = Object();
-    var labelsUsed =
-      typeof dataset.labelings !== 'undefined' && dataset.labelings.length > 0;
-
-    console.log(dataset);
-    console.log(this.props.labelings);
+    var labelsUsed = dataset.labelings && dataset.labelings.length > 0;
 
     if (labelsUsed) {
       dataset.labelings.forEach(l => {
@@ -100,14 +96,11 @@ class ManagementPanel extends Component {
 
     for (const [timestamp, values] of Object.entries(csv_lines)) {
       csv += timestamp + ',' + values.join(',');
-
       if (labelsUsed) {
         csv += ','; // when labels are used, they follow the values in a row, hence a colon is needed
-
         // check for each labeling, if their labels are in the bounds of the current timestamp. If yes, add the label to the CSV line, else only add ','
         for (const [_, labels] of Object.entries(labelings)) {
           var label = undefined;
-
           for (let l of labels) {
             if (
               l.start <= parseInt(timestamp, 10) &&
