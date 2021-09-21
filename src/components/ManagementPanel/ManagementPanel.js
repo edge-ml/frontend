@@ -44,6 +44,9 @@ class ManagementPanel extends Component {
     var labelsUsed =
       typeof dataset.labelings !== 'undefined' && dataset.labelings.length > 0;
 
+    console.log(dataset);
+    console.log(this.props.labelings);
+
     if (labelsUsed) {
       dataset.labelings.forEach(l => {
         labelings[l.labelingId] = [];

@@ -33,7 +33,8 @@ class EditLabelingModal extends Component {
       onSave: props.onSave,
       onDeleteLabeling: props.onDeleteLabeling,
       isNewLabeling: props.isNewLabeling,
-      deletedLabels: []
+      deletedLabels: [],
+      allowSaving: false
     };
     this.onAddLabel = this.onAddLabel.bind(this);
     this.onDeleteLabel = this.onDeleteLabel.bind(this);
@@ -43,29 +44,51 @@ class EditLabelingModal extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState({
-      labeling: props.labeling,
-      labels: props.labels,
-      isOpen: props.isOpen,
-      onCloseModal: props.onCloseModal,
-      onSave: props.onSave,
-      onDeleteLabeling: props.onDeleteLabeling,
-      isNewLabeling: props.isNewLabeling
-    });
+    this.setState(
+      {
+        labeling: props.labeling,
+        labels: props.labels,
+        isOpen: props.isOpen,
+        onCloseModal: props.onCloseModal,
+        onSave: props.onSave,
+        onDeleteLabeling: props.onDeleteLabeling,
+        isNewLabeling: props.isNewLabeling,
+        allowSaving: false
+      },
+      () => {
+        if (
+          typeof this.state !== 'undefined' &&
+          typeof this.state.labels !== 'undefined' &&
+          typeof this.state.labeling !== 'undefined'
+        ) {
+          this.checkAllowSaving();
+        }
+      }
+    );
   }
 
   onLabelingNameChanged(name) {
     if (this.state.isNewLabeling) {
-      this.setState({
-        labeling: Object.assign({}, this.state.labeling, { name })
-      });
+      this.setState(
+        {
+          labeling: Object.assign({}, this.state.labeling, { name })
+        },
+        () => {
+          this.checkAllowSaving();
+        }
+      );
     } else {
-      this.setState({
-        labeling: Object.assign({}, this.state.labeling, {
-          name,
-          updated: true
-        })
-      });
+      this.setState(
+        {
+          labeling: Object.assign({}, this.state.labeling, {
+            name,
+            updated: true
+          })
+        },
+        () => {
+          this.checkAllowSaving();
+        }
+      );
     }
   }
 
@@ -76,9 +99,14 @@ class EditLabelingModal extends Component {
       isNewLabel: true
     };
 
-    this.setState({
-      labels: [...this.state.labels, newLabel]
-    });
+    this.setState(
+      {
+        labels: [...this.state.labels, newLabel]
+      },
+      () => {
+        this.checkAllowSaving();
+      }
+    );
   }
 
   onDeleteLabel(labelToDelete) {
@@ -89,31 +117,48 @@ class EditLabelingModal extends Component {
     );
 
     if (labelToDelete.isNewLabel) {
-      this.setState({ labels, labeling });
-    } else {
-      this.setState({
-        labels,
-        labeling,
-        deletedLabels: [...this.state.deletedLabels, labelToDelete['_id']]
+      this.setState({ labels, labeling }, () => {
+        this.checkAllowSaving();
       });
+    } else {
+      this.setState(
+        {
+          labels,
+          labeling,
+          deletedLabels: [...this.state.deletedLabels, labelToDelete['_id']]
+        },
+        () => {
+          this.checkAllowSaving();
+        }
+      );
     }
   }
 
   onLabelNameChanged(labelToChange, name) {
     if (labelToChange.isNewLabel) {
-      this.setState({
-        labels: this.state.labels.map(label =>
-          label !== labelToChange ? label : Object.assign({}, label, { name })
-        )
-      });
+      this.setState(
+        {
+          labels: this.state.labels.map(label =>
+            label !== labelToChange ? label : Object.assign({}, label, { name })
+          )
+        },
+        () => {
+          this.checkAllowSaving();
+        }
+      );
     } else {
-      this.setState({
-        labels: this.state.labels.map(label =>
-          label !== labelToChange
-            ? label
-            : Object.assign({}, label, { name, updated: true })
-        )
-      });
+      this.setState(
+        {
+          labels: this.state.labels.map(label =>
+            label !== labelToChange
+              ? label
+              : Object.assign({}, label, { name, updated: true })
+          )
+        },
+        () => {
+          this.checkAllowSaving();
+        }
+      );
     }
   }
 
@@ -139,21 +184,38 @@ class EditLabelingModal extends Component {
     }
   }
 
+  checkAllowSaving() {
+    var allowSaving = false;
+
+    for (let i = 0; i < this.state.labels.length; i++) {
+      if (this.state.labels[i].name === '') {
+        allowSaving = false;
+        break;
+      } else {
+        allowSaving = true;
+      }
+    }
+    this.setState({
+      allowSaving: allowSaving && this.state.labeling.name !== ''
+    });
+  }
+
   render() {
     return (
       <Modal isOpen={this.state.isOpen}>
         <ModalHeader>
           {this.state.labeling && this.state.labeling['_id']
             ? this.state.labeling['_id']
-            : 'Add labeling'}
+            : 'Add Labeling Set'}
         </ModalHeader>
         <ModalBody>
           <InputGroup>
             <InputGroupAddon addonType="prepend">
-              <InputGroupText>Name</InputGroupText>
+              <InputGroupText>Labeling Set</InputGroupText>
             </InputGroupAddon>
             <Input
               id="labelingName"
+              placeholder="Name"
               value={
                 this.state.labeling && this.state.labeling.name
                   ? this.state.labeling.name
@@ -242,7 +304,7 @@ class EditLabelingModal extends Component {
             block
             onClick={this.onAddLabel}
           >
-            + Add
+            + Add Label
           </Button>
           {this.state.labeling && !this.state.isNewLabeling ? (
             <div>
@@ -276,6 +338,7 @@ class EditLabelingModal extends Component {
                 this.state.deletedLabels
               );
             }}
+            disabled={!this.state.allowSaving}
           >
             Save
           </Button>{' '}

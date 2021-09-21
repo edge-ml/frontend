@@ -77,7 +77,7 @@ class LabelingSelectionPanel extends Component {
             color="secondary"
             onClick={this.props.onAddLabeling}
           >
-            + Add
+            + Add Labeling Set
           </Button>
         </CardBody>
       </Card>
