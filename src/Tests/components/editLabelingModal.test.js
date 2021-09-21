@@ -42,7 +42,7 @@ describe('Create new labeling', () => {
     const wrapper = mount(
       <EditLabelingModal isOpen={true}></EditLabelingModal>
     );
-    expect(wrapper.contains('Add labeling')).toBe(true);
+    expect(wrapper.contains('Add Labeling Set')).toBe(true);
   });
 
   it('Create new labeling', () => {
