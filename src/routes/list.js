@@ -179,12 +179,13 @@ class ListPage extends Component {
                               Bosch Arduino Nicle Sense ME
                             </a>{' '}
                             you can connect to it directly from your browser
-                            using WebBLE. Please make sure to flash your Nicla
-                            with the{' '}
+                            using WebBLE. Simply add{' '}
                             <a href="https://docs.arduino.cc/ca179f48cffbddcae9863d07cb19054b/nicla-sense-me-libs.zip">
-                              bhy-2 tool
+                              Arduino_BHY2.zip
                             </a>{' '}
-                            before trying to connect to it using edge-ml.
+                            as library to the Arduino IDE, then flash
+                            File/Examples/Arduino_BHY2/App onto the Nicla Sense
+                            ME.
                           </small>
                         </div>
 
