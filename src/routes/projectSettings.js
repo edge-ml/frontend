@@ -60,6 +60,7 @@ class ProjectSettings extends Component {
     this.onDisableDeviceApi = this.onDisableDeviceApi.bind(this);
     this.onDeviceApiSwitch = this.onDeviceApiSwitch.bind(this);
     this.toggleCodeSnippetModal = this.toggleCodeSnippetModal.bind(this);
+    this.usersValid = this.usersValid.bind(this);
     this.init = this.init.bind(this);
     this.init();
     if (this.props.codeSnippetModalOpen) {
@@ -74,6 +75,14 @@ class ProjectSettings extends Component {
         }
       });
     }
+  }
+
+  usersValid(users) {
+    return users.every(
+      elm =>
+        elm.userName !== this.props.userName &&
+        elm.userName !== this.props.userMail
+    );
   }
 
   async init() {
@@ -133,8 +142,13 @@ class ProjectSettings extends Component {
   }
 
   onSave() {
-    const tmpUsers = this.state.project.users.filter(
+    var tmpUsers = this.state.project.users.filter(
       elm => !this.state.usersToDelete.includes(elm)
+    );
+    tmpUsers = tmpUsers.filter(
+      elm =>
+        elm.userName !== this.props.userName &&
+        elm.userName !== this.props.userMail
     );
     updateProject({ ...this.state.project, users: tmpUsers })
       .then(data => {
@@ -363,7 +377,7 @@ class ProjectSettings extends Component {
                           user.userName
                         ) : (
                           <AutocompleteInput
-                            getSuggestions={getUserNameSuggestions}
+                            getsuggestions={getUserNameSuggestions}
                             filter={[
                               ...this.state.project.users.map(
                                 elm => elm.userName
@@ -394,30 +408,34 @@ class ProjectSettings extends Component {
                 })}
               </tbody>
             </Table>
-            <Button id="buttonAddUser" color="primary" onClick={this.onAddUser}>
-              Add +
-            </Button>
-            <Button
-              id="buttonSaveProject"
-              color="primary"
-              className="m-1"
-              onClick={this.onSave}
-            >
-              Save
-            </Button>{' '}
-            <hr></hr>
-            <div style={{ display: 'flex' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  color: 'red',
-                  marginLeft: '16px'
-                }}
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Button
+                id="buttonAddUser"
+                color="primary"
+                onClick={this.onAddUser}
               >
-                {this.state.error}
+                Add +
+              </Button>
+              <div
+                style={{ color: 'red', display: 'flex', alignItems: 'center' }}
+              >
+                {this.usersValid(this.state.project.users)
+                  ? this.state.error
+                    ? 'Could not add users. Make sure they exist'
+                    : null
+                  : `${this.props.userName} is already in the project`}
               </div>
+              <Button
+                id="buttonSaveProject"
+                color="primary"
+                onClick={this.onSave}
+                disabled={!this.usersValid(this.state.project.users)}
+              >
+                Save
+              </Button>{' '}
             </div>
+            <hr></hr>
+            <div style={{ display: 'flex' }}></div>
           </div>
         ) : null}
         <CodeSnippetModal

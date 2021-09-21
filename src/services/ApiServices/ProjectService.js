@@ -90,23 +90,28 @@ module.exports.createProject = project => {
 module.exports.updateProject = project => {
   return new Promise((resolve, reject) => {
     const tmpProject = project;
-    getUserIds(project.users.map(elm => elm.userName)).then(userData => {
-      tmpProject.users = userData;
-      axios(
-        apiConsts.generateApiRequest(
-          apiConsts.HTTP_METHODS.PUT,
-          apiConsts.API_URI,
-          apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}`,
-          project
+    getUserIds(project.users.map(elm => elm.userName))
+      .then(userData => {
+        tmpProject.users = userData;
+        axios(
+          apiConsts.generateApiRequest(
+            apiConsts.HTTP_METHODS.PUT,
+            apiConsts.API_URI,
+            apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}`,
+            project
+          )
         )
-      )
-        .then(() => {
-          this.getProjects().then(data => resolve(data));
-        })
-        .catch(err => {
-          reject(err.response.data.error);
-        });
-    });
+          .then(() => {
+            this.getProjects().then(data => resolve(data));
+          })
+          .catch(err => {
+            reject(err.response.data.error);
+          });
+      })
+      .catch(err => {
+        console.log(err.data.error);
+        reject(err.data.error);
+      });
   });
 };
 

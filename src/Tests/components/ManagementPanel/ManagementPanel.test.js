@@ -42,7 +42,6 @@ it('Download dataset', () => {
   jest.spyOn(document, 'createElement').mockReturnValueOnce(dummyElement);
   global.URL.createObjectURL = jest.fn();
   global.URL.createObjectURL.mockReturnValue('fakeURL');
-  console.log(fakeLabeling_One);
   const wrapper = shallow(
     <ManagementPanel
       dataset={fakeDataset_One}

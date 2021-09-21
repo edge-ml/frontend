@@ -76,6 +76,8 @@ class AppContent extends Component {
               <ProjectRefresh project={this.props.project}>
                 <ProjectSettings
                   onProjectsChanged={this.props.onProjectsChanged}
+                  userName={this.props.userName}
+                  userMail={this.props.userMail}
                   {...props}
                 />
               </ProjectRefresh>
@@ -89,6 +91,8 @@ class AppContent extends Component {
                 <ProjectSettings
                   onProjectsChanged={this.props.onProjectsChanged}
                   codeSnippetModalOpen={true}
+                  userName={this.props.userName}
+                  userMail={this.props.userMail}
                   {...props}
                 />
               </ProjectRefresh>

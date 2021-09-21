@@ -23,8 +23,8 @@ class AutocompleteInput extends Component {
     if (e.target.value === '') {
       this.closeMenu();
     }
-    if (this.props.getSuggestions && e.target.value !== '') {
-      this.props.getSuggestions(e.target.value).then(data => {
+    if (this.props.getsuggestions && e.target.value !== '') {
+      this.props.getsuggestions(e.target.value).then(data => {
         let newData = data;
         if (this.props.filter) {
           newData = data.filter(elm => !this.props.filter.includes(elm));
@@ -101,7 +101,7 @@ class AutocompleteInput extends Component {
   }
 
   render() {
-    const inputProps = { ...this.props, getSuggestions: undefined };
+    const inputProps = { ...this.props, getsuggestions: undefined };
     return (
       <div className="autocomplete-wrapper">
         <Input

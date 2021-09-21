@@ -17,7 +17,7 @@ function options() {
 
 it('render component', () => {
   const wrapper = mount(
-    <AutoCompleteInput getSuggestions={options}></AutoCompleteInput>
+    <AutoCompleteInput getsuggestions={options}></AutoCompleteInput>
   );
   expect(wrapper.html()).not.toEqual('');
 });
@@ -26,7 +26,7 @@ it('Putting in one letter and get suggestions', async () => {
   const onChange = jest.fn();
   const wrapper = mount(
     <AutoCompleteInput
-      getSuggestions={options}
+      getsuggestions={options}
       onChange={onChange}
     ></AutoCompleteInput>
   );
@@ -44,7 +44,7 @@ it('Click on one suggestion', async () => {
   const onChange = jest.fn();
   const wrapper = mount(
     <AutoCompleteInput
-      getSuggestions={options}
+      getsuggestions={options}
       onChange={onChange}
     ></AutoCompleteInput>
   );

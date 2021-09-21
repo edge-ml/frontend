@@ -61,7 +61,6 @@ class ManagementPanel extends Component {
       csv += 'sensor_' + t.name + '[' + t.unit + '],';
     });
 
-    console.log(labelings);
     if (labelsUsed) {
       for (const [labelingId, _] of Object.entries(labelings)) {
         const labelingName = this.props.labelings.find(
@@ -129,8 +128,6 @@ class ManagementPanel extends Component {
         csv += '\r\n';
       }
     }
-
-    console.log(csv);
 
     const blob = new Blob([csv], { type: 'application/csv' });
     const href = URL.createObjectURL(blob);

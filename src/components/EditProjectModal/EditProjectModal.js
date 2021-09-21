@@ -183,7 +183,7 @@ class EditProjectModal extends Component {
                           placeholder="Enter username"
                           onChange={e => this.onUserNameChange(e, index)}
                           value={user.userName}
-                          getSuggestions={getUserNameSuggestions}
+                          getsuggestions={getUserNameSuggestions}
                           filter={[
                             ...this.state.project.users.map(
                               elm => elm.userName

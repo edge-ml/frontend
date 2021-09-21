@@ -164,7 +164,7 @@ class ListPage extends Component {
                         style={{ fontSize: 'x-large' }}
                       ></FontAwesomeIcon>
                       <div className="d-flex flex-column justify-content-between h-100">
-                        <div class="d-flex flex-column">
+                        <div className="d-flex flex-column">
                           <div>
                             <small>
                               <b>Direct Connect</b>

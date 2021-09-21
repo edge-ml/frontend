@@ -33,7 +33,6 @@ import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal'
 import AppContent from './AppContent';
 import NoProjectPage from './components/NoProjectPage/NoProjectPage';
 import ErrorPage from './components/ErrorPage/ErrorPage';
-import { Right } from 'react-bootstrap/lib/Media';
 
 class App extends Component {
   constructor(props) {
@@ -612,6 +611,8 @@ class App extends Component {
                     render={props => (
                       <AppContent
                         {...props}
+                        userName={this.state.userName}
+                        userMail={this.state.userMail}
                         project={
                           this.state.projects.filter(
                             x => x._id === this.state.currentProjectId
