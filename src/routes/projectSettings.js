@@ -155,7 +155,7 @@ class ProjectSettings extends Component {
         const projectIndex = data.findIndex(
           elm => elm._id === this.state.project._id
         );
-        this.props.onProjectsChanged(data, projectIndex);
+        this.props.onProjectsChanged(data);
       })
       .catch(err => {
         this.setState({
@@ -351,7 +351,16 @@ class ProjectSettings extends Component {
                 <tr>
                   <th>Delete</th>
                   <th>User</th>
-                  <th></th>
+                  <th className="text-right">
+                    {' '}
+                    <Button
+                      id="buttonAddUser"
+                      color="primary"
+                      onClick={this.onAddUser}
+                    >
+                      Add +
+                    </Button>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -408,14 +417,7 @@ class ProjectSettings extends Component {
                 })}
               </tbody>
             </Table>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Button
-                id="buttonAddUser"
-                color="primary"
-                onClick={this.onAddUser}
-              >
-                Add +
-              </Button>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
               <div
                 style={{ color: 'red', display: 'flex', alignItems: 'center' }}
               >
@@ -425,6 +427,14 @@ class ProjectSettings extends Component {
                     : null
                   : `${this.props.userName} is already in the project`}
               </div>
+            </div>
+            <hr></hr>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'right'
+              }}
+            >
               <Button
                 id="buttonSaveProject"
                 color="primary"
@@ -432,10 +442,8 @@ class ProjectSettings extends Component {
                 disabled={!this.usersValid(this.state.project.users)}
               >
                 Save
-              </Button>{' '}
+              </Button>
             </div>
-            <hr></hr>
-            <div style={{ display: 'flex' }}></div>
           </div>
         ) : null}
         <CodeSnippetModal

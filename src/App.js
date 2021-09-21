@@ -125,7 +125,7 @@ class App extends Component {
     });
   }
 
-  onProjectsChanged(projects) {
+  onProjectsChanged(projects, index) {
     if (projects.length === 0) {
       this.props.history.push('/');
       this.setState({
@@ -137,7 +137,19 @@ class App extends Component {
       return;
     }
 
-    const projectIndex = 0;
+    var newProject = false;
+    var projectIndex = projects.findIndex(
+      elm => elm._id === this.state.currentProjectId
+    );
+    if (projectIndex === -1) {
+      projectIndex = 0;
+      newProject = true;
+    }
+    if (index) {
+      projectIndex = index;
+      newProject = true;
+    }
+
     setProject(projects[projectIndex]._id);
 
     this.setState({
@@ -147,7 +159,9 @@ class App extends Component {
       projectLocation: 'datasets'
     });
     this.changeURL(this.state.projects[projectIndex]);
-    this.navigateTo('datasets');
+    if (newProject) {
+      this.navigateTo('datasets');
+    }
   }
 
   onProjectModalClose() {
