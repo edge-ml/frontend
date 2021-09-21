@@ -41,7 +41,8 @@ class ManagementPanel extends Component {
     var csv_lines = Object(); // this will be used as a dictionary, with timestamps as keys, and arrays of values as values
     var timestamps = new Set([]); // this variable will hold all timestamps as an ordered array
     var labelings = Object();
-    var labelsUsed = dataset.labelings && dataset.labelings.length > 0;
+    var labelsUsed =
+      dataset.labelings && dataset.labelings.some(elm => elm.labels.length > 0);
 
     if (labelsUsed) {
       dataset.labelings.forEach(l => {
