@@ -264,7 +264,7 @@ class TimeSeriesPanel extends Component {
    * Global Mouse Handlers
    */
   onMouseDown(e) {
-    if (
+    /*if (
       !(
         e.target.classList.contains('highcharts-background') ||
         e.target.classList.contains('highcharts-grid-line') ||
@@ -272,7 +272,7 @@ class TimeSeriesPanel extends Component {
       )
     )
       return;
-
+*/
     var plotBand = this.getSelectedPlotBand();
     if (plotBand) {
       this.onPlotBandMouseDown(
@@ -286,6 +286,16 @@ class TimeSeriesPanel extends Component {
       let position = this.chart.current.chart.xAxis[0].toValue(
         e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160 // TODO hack hardcoded 2 pixels how to fix?
       );
+
+      if (this.props.labeling && this.props.labeling.labels) {
+        const onLabel = this.props.labeling.labels.find(
+          elm => elm.start <= position && elm.end >= position
+        );
+        if (onLabel) {
+          this.state.onLabelClicked(onLabel._id);
+          return;
+        }
+      }
 
       if (!this.props.drawingId) {
         this.props.updateControlStates(
