@@ -375,6 +375,9 @@ class UploadBLE extends Component {
       })
       .catch(error => {
         console.log('Request device error: ' + error);
+        if (error.toString().includes('Bluetooth adapter not available')) {
+          alert('Activate bluetooth');
+        }
       });
   }
 
