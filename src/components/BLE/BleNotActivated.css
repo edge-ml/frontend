@@ -8,3 +8,28 @@
   margin-right: 24px;
   margin-top: 16px;
 }
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardHeader > * {
+  margin: 8px;
+}
+
+.headerText {
+  font-weight: bold;
+  font-size: x-large;
+}
+
+.equal {
+  display: flex;
+  display: -webkit-flex;
+  flex-wrap: wrap;
+}
+
+.heading {
+  font-weight: bold;
+}
