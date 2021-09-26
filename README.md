@@ -1,4 +1,4 @@
-# edge-ml Frontend
+# edge-ml frontend
 [![Tests](https://github.com/edge-ml/frontend/actions/workflows/tests.yml/badge.svg)](https://github.com/edge-ml/frontend/actions/workflows/tests.yml)
 [![Publish Docker Image](https://github.com/edge-ml/frontend/actions/workflows/publishDocker.yml/badge.svg)](https://github.com/edge-ml/frontend/actions/workflows/publishDocker.yml)
 
