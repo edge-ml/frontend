@@ -1,6 +1,6 @@
 # edge-ml Frontend
 [![Tests](https://github.com/edge-ml/frontend/actions/workflows/tests.yml/badge.svg)](https://github.com/edge-ml/frontend/actions/workflows/tests.yml)
-[![Publish Docker image](https://github.com/edge-ml/frontend/actions/workflows/publishDocker.yml/badge.svg)](https://github.com/edge-ml/frontend/actions/workflows/publishDocker.yml)
+[![Publish Docker Image](https://github.com/edge-ml/frontend/actions/workflows/publishDocker.yml/badge.svg)](https://github.com/edge-ml/frontend/actions/workflows/publishDocker.yml)
 
 The frontend part of edge-ml which can be found [here](https://github.com/edge-ml/).
 
