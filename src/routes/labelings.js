@@ -9,7 +9,8 @@ import {
   addLabeling,
   deleteLabeling,
   deleteLabelTypesFromLabeling,
-  addLabelTypesToLabeling
+  addLabelTypesToLabeling,
+  updateLabels
 } from '../services/ApiServices/LabelingServices';
 
 class LabelingsPage extends Component {
@@ -126,9 +127,9 @@ class LabelingsPage extends Component {
     });
   }
 
-  onDeleteLabeling(labelingId) {
+  onDeleteLabeling(labelingId, conflictingDatasetIds) {
     this.onCloseModal();
-    deleteLabeling(labelingId).then(result =>
+    deleteLabeling(labelingId, conflictingDatasetIds).then(result =>
       this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
     );
   }
@@ -146,6 +147,7 @@ class LabelingsPage extends Component {
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
       );
     } else {
+      //add new labels to labeling/delete labels from labeling
       addLabelTypesToLabeling(labeling, labels).then(result => {
         if (deletedLabels !== []) {
           deleteLabelTypesFromLabeling(
@@ -162,6 +164,13 @@ class LabelingsPage extends Component {
         }
       });
     }
+
+    const updatedLabels = labels.filter(l => l.updated);
+    if (updateLabeling.length > 0) {
+      const result = await updateLabels(updatedLabels);
+      this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
+    }
+
     this.onCloseModal();
   }
 
