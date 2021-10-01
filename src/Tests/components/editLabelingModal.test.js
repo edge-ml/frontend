@@ -4,6 +4,10 @@ import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import EditLabelingModal from '../../components/EditLabelingModal/EditLabelingModal';
 import { generateRandomColor } from '../../services/ColorService';
+import { fakeDataset_One } from '../fakeData/fakeDatasets';
+import { getDatasets } from '../../services/ApiServices/DatasetServices';
+
+jest.mock('../../services/ApiServices/DatasetServices');
 jest.mock('../../services/ColorService');
 
 configure({ adapter: new Adapter() });
@@ -39,6 +43,7 @@ const fakeLabelingData = {
 
 describe('Create new labeling', () => {
   it('Render modal to create new labeling', () => {
+    getDatasets.mockReturnValue(Promise.resolve([fakeDataset_One]));
     const wrapper = mount(
       <EditLabelingModal isOpen={true}></EditLabelingModal>
     );
@@ -61,6 +66,7 @@ describe('Create new labeling', () => {
 
     const fakeOnSave = jest.fn();
     generateRandomColor.mockReturnValue('#6E52C3');
+    getDatasets.mockReturnValue(Promise.resolve([fakeDataset_One]));
     const wrapper = mount(
       <EditLabelingModal
         isOpen={true}
@@ -117,6 +123,7 @@ describe('Create new labeling', () => {
     };
 
     const fakeOnSave = jest.fn();
+    getDatasets.mockReturnValue(Promise.resolve([fakeDataset_One]));
     const wrapper = mount(
       <EditLabelingModal
         isOpen={true}
@@ -173,6 +180,7 @@ describe('Create new labeling', () => {
 
 describe('Edit existing labeling', () => {
   it('Render modal to edit labeling', () => {
+    getDatasets.mockReturnValue(Promise.resolve([fakeDataset_One]));
     const wrapper = mount(
       <EditLabelingModal
         isOpen={true}
@@ -232,6 +240,7 @@ describe('Edit existing labeling', () => {
 
     generateRandomColor.mockReturnValue('#303ED2');
     const fakeOnSave = jest.fn();
+    getDatasets.mockReturnValue(Promise.resolve([fakeDataset_One]));
     const wrapper = mount(
       <EditLabelingModal
         isOpen={true}
@@ -261,7 +270,7 @@ describe('Edit existing labeling', () => {
 });
 
 describe('Delete labeling', () => {
-  it('Regular deletion of a labeling', () => {
+  it('Regular deletion of a labeling', async () => {
     const labelingToDelete = {
       labeling: {
         labels: ['5f7ef79da907aa0013f37a56'],
@@ -281,6 +290,7 @@ describe('Delete labeling', () => {
 
     global.confirm = jest.fn(() => true);
     const onFakeDelete = jest.fn();
+    getDatasets.mockReturnValue(Promise.resolve([fakeDataset_One]));
     const wrapper = mount(
       <EditLabelingModal
         isOpen={true}
@@ -289,11 +299,14 @@ describe('Delete labeling', () => {
         onDeleteLabeling={onFakeDelete}
       ></EditLabelingModal>
     );
+    await flushPromises();
     wrapper
       .find('#buttonDeleteLabeling')
       .first()
       .simulate('click');
     expect(global.confirm).toBeCalled();
-    expect(onFakeDelete).toBeCalledWith(labelingToDelete.labeling._id);
+    expect(onFakeDelete).toBeCalledWith(labelingToDelete.labeling._id, []);
   });
 });
+
+const flushPromises = () => new Promise(setImmediate);

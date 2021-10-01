@@ -3,14 +3,12 @@ import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
 import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
 import {
-  updateLabelingAndLabels,
   updateLabeling,
   subscribeLabelingsAndLabels,
   addLabeling,
   deleteLabeling,
   deleteLabelTypesFromLabeling,
-  addLabelTypesToLabeling,
-  updateLabels
+  addLabelTypesToLabeling
 } from '../services/ApiServices/LabelingServices';
 
 class LabelingsPage extends Component {
@@ -135,6 +133,7 @@ class LabelingsPage extends Component {
   }
 
   async onSave(labeling, labels, deletedLabels) {
+    deletedLabels = deletedLabels.map(elm => elm._id);
     if (!labeling || !labels) return;
 
     if (labeling.updated) {
@@ -163,12 +162,6 @@ class LabelingsPage extends Component {
           this.onLabelingsAndLabelsChanged(result.labeling, result.labels);
         }
       });
-    }
-
-    const updatedLabels = labels.filter(l => l.updated);
-    if (updateLabeling.length > 0) {
-      const result = await updateLabels(updatedLabels);
-      this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
     }
 
     this.onCloseModal();

@@ -46,28 +46,11 @@ module.exports.deleteLabeling = (labelingId, conflictingDatasetIds) => {
         apiConsts.API_URI,
         apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS + `/${labelingId}`
       )
-    )
-      .then(() => {
-        //If this labeling set was used in one ore more datasets, delete it from the dataset(s) too, including all of its labels
-        if (conflictingDatasetIds.length > 0) {
-          conflictingDatasetIds.forEach(c => {
-            axios(
-              apiConsts.generateApiRequest(
-                apiConsts.HTTP_METHODS.DELETE,
-                apiConsts.API_URI,
-                apiConsts.API_ENDPOINTS.DATASET_LABEL_DEFINITIONS +
-                  `/${c._id}` +
-                  `/${labelingId}`
-              )
-            );
-          });
-        }
-      })
-      .then(() => {
-        this.subscribeLabelingsAndLabels()
-          .then(data => resolve(data))
-          .catch(err => console.log(err));
-      });
+    ).then(() => {
+      this.subscribeLabelingsAndLabels()
+        .then(data => resolve(data))
+        .catch(err => console.log(err));
+    });
   });
 };
 
@@ -125,47 +108,5 @@ module.exports.deleteLabelTypesFromLabeling = (labeling, labels) => {
         .then(data => resolve(data))
         .catch(err => console.log(err));
     });
-  });
-};
-
-module.exports.updateLabels = labels => {
-  return new Promise((resolve, reject) => {
-    Promise.all(
-      labels.map(label =>
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.PUT,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS + `/${label['_id']}`,
-            label
-          )
-        )
-      )
-    )
-      .then(() => {
-        this.subscribeLabelingsAndLabels()
-          .then(data => resolve(data))
-          .catch(err => console.log(err));
-      })
-      .catch(err => window.alert(err));
-  });
-};
-
-module.exports.updateLabelingAndLabels = (labeling, labels, deletedLabels) => {
-  return new Promise((resolve, reject) => {
-    Promise.all(
-      labels
-        .filter(label => label.isNewLabel)
-        .map(label =>
-          axios(
-            apiConsts.generateApiRequest(
-              apiConsts.HTTP_METHODS.POST,
-              apiConsts.API_URI,
-              apiConsts.API_ENDPOINTS.LABEL_TYPES,
-              label
-            )
-          )
-        )
-    );
   });
 };

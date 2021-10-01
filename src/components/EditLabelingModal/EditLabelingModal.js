@@ -134,6 +134,11 @@ class EditLabelingModal extends Component {
 
       if (labelConflict && window.confirm(confirmString)) {
         //TODO label conflict and user chose to delete labels. Delete them in backend too.
+        this.state.onSave(
+          this.state.labeling,
+          this.state.labels,
+          this.state.deletedLabels
+        );
       } else if (labelConflict) {
         //label conflict, but user chose not to delete them. Restore all "deletedLabels"
         let labels = [...this.state.labels, ...this.state.deletedLabels];
