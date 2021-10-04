@@ -9,7 +9,8 @@ import {
   InputGroupAddon,
   InputGroupText,
   Input,
-  UncontrolledTooltip
+  UncontrolledTooltip,
+  FormFeedback
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
@@ -201,6 +202,10 @@ class EditLabelingModal extends Component {
   }
 
   render() {
+    const labelingNameInValid =
+      this.state.labeling &&
+      this.props.labelings.some(elm => elm.name === this.state.labeling.name);
+
     return (
       <Modal isOpen={this.state.isOpen}>
         <ModalHeader>
@@ -214,6 +219,7 @@ class EditLabelingModal extends Component {
               <InputGroupText>Labeling Set</InputGroupText>
             </InputGroupAddon>
             <Input
+              invalid={labelingNameInValid}
               id="labelingName"
               placeholder="Name"
               value={
@@ -223,6 +229,15 @@ class EditLabelingModal extends Component {
               }
               onChange={e => this.onLabelingNameChanged(e.target.value)}
             />
+            <FormFeedback
+              style={
+                labelingNameInValid
+                  ? { display: 'flex', justifyContent: 'right' }
+                  : null
+              }
+            >
+              The same name already exists
+            </FormFeedback>
           </InputGroup>
           <hr />
           {this.state.labels
@@ -338,7 +353,7 @@ class EditLabelingModal extends Component {
                 this.state.deletedLabels
               );
             }}
-            disabled={!this.state.allowSaving}
+            disabled={!this.state.allowSaving || labelingNameInValid}
           >
             Save
           </Button>{' '}

@@ -261,6 +261,7 @@ class LabelingsPage extends Component {
         </Container>
         <EditLabelingModal
           labeling={this.state.modal.labeling}
+          labelings={this.state.labelings}
           labels={this.state.modal.labels}
           isOpen={this.state.modal.isOpen}
           onCloseModal={this.onCloseModal}

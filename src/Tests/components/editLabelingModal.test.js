@@ -64,6 +64,7 @@ describe('Create new labeling', () => {
     const wrapper = mount(
       <EditLabelingModal
         isOpen={true}
+        labelings={[]}
         isNewLabeling={true}
         labels={[]}
         labeling={[]}
@@ -120,6 +121,7 @@ describe('Create new labeling', () => {
     const wrapper = mount(
       <EditLabelingModal
         isOpen={true}
+        labelings={[]}
         isNewLabeling={true}
         labels={[]}
         labeling={[]}
@@ -176,6 +178,7 @@ describe('Edit existing labeling', () => {
     const wrapper = mount(
       <EditLabelingModal
         isOpen={true}
+        labelings={[]}
         labeling={fakeLabelingData.labeling}
         labels={fakeLabelingData.labels}
       ></EditLabelingModal>
@@ -235,6 +238,7 @@ describe('Edit existing labeling', () => {
     const wrapper = mount(
       <EditLabelingModal
         isOpen={true}
+        labelings={[]}
         labeling={labelingToExtend.labeling}
         labels={labelingToExtend.labels}
         onSave={fakeOnSave}
@@ -284,6 +288,7 @@ describe('Delete labeling', () => {
     const wrapper = mount(
       <EditLabelingModal
         isOpen={true}
+        labelings={[]}
         labeling={labelingToDelete.labeling}
         labels={labelingToDelete.labels}
         onDeleteLabeling={onFakeDelete}
