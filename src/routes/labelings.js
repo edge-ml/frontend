@@ -3,7 +3,7 @@ import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
 import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
 import {
-  updateLabeling,
+  updateLabelingandLabels,
   subscribeLabelingsAndLabels,
   addLabeling,
   deleteLabeling,
@@ -136,8 +136,8 @@ class LabelingsPage extends Component {
     deletedLabels = deletedLabels.map(elm => elm._id);
     if (!labeling || !labels) return;
 
-    if (labeling.updated) {
-      const result = await updateLabeling(labeling);
+    if (labeling.updated || labels.some(elm => elm.updated)) {
+      const result = await updateLabelingandLabels(labeling, labels);
       this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
     }
 

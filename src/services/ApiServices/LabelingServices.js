@@ -54,14 +54,14 @@ module.exports.deleteLabeling = (labelingId, conflictingDatasetIds) => {
   });
 };
 
-module.exports.updateLabeling = labeling => {
+module.exports.updateLabelingandLabels = (labeling, labels) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.PUT,
         apiConsts.API_URI,
         apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS + `/${labeling['_id']}`,
-        labeling
+        { labeling: labeling, labels: labels }
       )
     )
       .then(() => {
