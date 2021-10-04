@@ -76,10 +76,22 @@ class CreateNewDatasetModal extends Component {
         typeof datasets === 'undefined' ||
         typeof datasets[0] === 'undefined'
       ) {
-        alert(
+        window.alert(
           "Wrong CSV format! Please ensure that the prefixes 'sensor_' and 'label_' are used. Check the example.csv for help."
         );
         return;
+      }
+
+      //Check if labelings without any labels are present in the dataset. This is not allowed
+      for (var i = 0; i < result.labelings.length; i++) {
+        for (var j = 0; j < result.labelings[i].length; j++) {
+          if (result.labelings[i][j].labels.length === 0) {
+            window.alert(
+              'The uploaded CSV file has labeling sets without any labels, which is not allowed.'
+            );
+            return;
+          }
+        }
       }
 
       datasets = datasets.map((dataset, idx) => {

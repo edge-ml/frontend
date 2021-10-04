@@ -200,9 +200,11 @@ class DatasetPage extends Component {
     let selectedLabeling = labelings[0];
     let selectedLabelTypes = undefined;
     if (labels) {
-      selectedLabelTypes = labels.filter(label =>
-        selectedLabeling.labels.includes(label['_id'])
-      );
+      if (selectedLabeling) {
+        selectedLabelTypes = labels.filter(label =>
+          selectedLabeling.labels.includes(label['_id'])
+        );
+      }
     }
 
     this.setState({

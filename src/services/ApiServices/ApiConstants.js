@@ -43,6 +43,7 @@ module.exports = {
     DATASETS: 'datasets',
     DEVICE: 'devices',
     LABEL_DEFINITIONS: 'labelDefinitions',
+    DATASET_LABEL_DEFINITIONS: 'datasetLabelDefinitions',
     LABEL_TYPES: 'labelTypes',
     EXPERIMENTS: 'experiments',
     PROJECTS: 'projects',

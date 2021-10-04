@@ -3,8 +3,7 @@ import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
 import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
 import {
-  updateLabelingAndLabels,
-  updateLabeling,
+  updateLabelingandLabels,
   subscribeLabelingsAndLabels,
   addLabeling,
   deleteLabeling,
@@ -126,18 +125,19 @@ class LabelingsPage extends Component {
     });
   }
 
-  onDeleteLabeling(labelingId) {
+  onDeleteLabeling(labelingId, conflictingDatasetIds) {
     this.onCloseModal();
-    deleteLabeling(labelingId).then(result =>
+    deleteLabeling(labelingId, conflictingDatasetIds).then(result =>
       this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
     );
   }
 
   async onSave(labeling, labels, deletedLabels) {
+    deletedLabels = deletedLabels.map(elm => elm._id);
     if (!labeling || !labels) return;
 
-    if (labeling.updated) {
-      const result = await updateLabeling(labeling);
+    if (labeling.updated || labels.some(elm => elm.updated)) {
+      const result = await updateLabelingandLabels(labeling, labels);
       this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
     }
 
@@ -146,6 +146,7 @@ class LabelingsPage extends Component {
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
       );
     } else {
+      //add new labels to labeling/delete labels from labeling
       addLabelTypesToLabeling(labeling, labels).then(result => {
         if (deletedLabels !== []) {
           deleteLabelTypesFromLabeling(
@@ -162,6 +163,7 @@ class LabelingsPage extends Component {
         }
       });
     }
+
     this.onCloseModal();
   }
 
