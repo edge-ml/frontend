@@ -350,9 +350,24 @@ class EditLabelingModal extends Component {
   }
 
   render() {
-    const labelingNameInValid =
-      this.state.labeling &&
-      this.props.labelings.some(elm => elm.name === this.state.labeling.name);
+    let labelingNameInValid = false;
+
+    if (this.state.labeling) {
+      if (this.state.isNewLabeling) {
+        labelingNameInValid = this.props.labelings.some(
+          elm => elm.name === this.state.labeling.name
+        );
+      } else {
+        try {
+          const oldName = this.props.labelings.find(
+            elm => elm._id === this.state.labeling._id
+          ).name;
+          labelingNameInValid = this.props.labelings
+            .filter(elm => elm.name !== oldName)
+            .some(elm => elm.name === this.state.labeling.name);
+        } catch {}
+      }
+    }
 
     return (
       <Modal isOpen={this.state.isOpen}>
