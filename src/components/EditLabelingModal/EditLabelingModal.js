@@ -317,7 +317,7 @@ class EditLabelingModal extends Component {
           elm._id != this.state.labeling._id
       );
 
-    const labelingNamesDouble = !this.state.labels
+    const labelsNamesDouble = !this.state.labels
       ? false
       : new Set(this.state.labels.map(elm => elm.name)).size !==
         this.state.labels.length;
@@ -473,7 +473,7 @@ class EditLabelingModal extends Component {
             disabled={
               !this.checkAllowSaving() ||
               labelingNameInValid ||
-              labelingNamesDouble
+              labelsNamesDouble
             }
           >
             Save
