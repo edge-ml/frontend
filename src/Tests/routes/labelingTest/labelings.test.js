@@ -1,12 +1,17 @@
 import LabelingsPage from './../../../routes/labelings';
+import EditLabelingModal from '../../../components/EditLabelingModal/EditLabelingModal';
 import { configure, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 
 import { fakeLabelingData } from './fakeLabelingData';
+import { fakeDataset_One } from '../../fakeData/fakeDatasets';
 
 import { subscribeLabelingsAndLabels } from '../../../services/ApiServices/LabelingServices';
+import { getDatasets } from '../../../services/ApiServices/DatasetServices';
+
 jest.mock('../../../services/ApiServices/LabelingServices');
+jest.mock('../../../services/ApiServices/DatasetServices');
 
 configure({ adapter: new Adapter() });
 
@@ -21,6 +26,7 @@ const labels = fakeLabelingData.labels;
 
 it('Render without content', () => {
   delete window.location;
+  getDatasets.mockReturnValue(Promise.resolve([fakeDataset_One]));
   const fakeLocation = new URL(
     'http://localhost:3001/fakeUserName/fakePRojectID/labelings'
   );
@@ -95,6 +101,23 @@ describe('Success cases', () => {
     wrapper.find('#buttonAddLabeling').simulate('click');
     expect(fakeHistory.replace).toHaveBeenCalledWith({
       pathname: fakeHistory.location.pathname + '/new',
+      search: null
+    });
+  });
+
+  it('EditModalPage closes and therefore resets url', async () => {
+    getDatasets.mockReturnValue(Promise.resolve([fakeDataset_One]));
+    const wrapper = shallow(
+      <LabelingsPage location={location} history={fakeHistory}></LabelingsPage>
+    );
+    await flushPromises();
+    wrapper.update();
+    wrapper
+      .find(EditLabelingModal)
+      .props()
+      .onCloseModal();
+    expect(fakeHistory.replace).toHaveBeenCalledWith({
+      pathname: '/fakeUserName/fakePRojectID/labelings',
       search: null
     });
   });

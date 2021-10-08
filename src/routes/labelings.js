@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
 import Loader from '../modules/loader';
 import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
+import { getDatasets } from '../services/ApiServices/DatasetServices';
 import {
   updateLabelingandLabels,
   subscribeLabelingsAndLabels,
@@ -19,6 +20,7 @@ class LabelingsPage extends Component {
       labelings: [],
       labels: [],
       isReady: false,
+      datasets: undefined,
       modal: {
         labeling: undefined,
         labels: undefined,
@@ -32,7 +34,7 @@ class LabelingsPage extends Component {
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
-    this.onLabelingsAndLabelsChanged = this.onLabelingsAndLabelsChanged.bind(
+    this.onLabelingsLabelsDatasetsChanged = this.onLabelingsLabelsDatasetsChanged.bind(
       this
     );
     this.resetURL = this.resetURL.bind(this);
@@ -44,8 +46,12 @@ class LabelingsPage extends Component {
   }
 
   initComponent() {
-    subscribeLabelingsAndLabels().then(result => {
-      this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
+    Promise.all([getDatasets(), subscribeLabelingsAndLabels()]).then(result => {
+      this.onLabelingsLabelsDatasetsChanged(
+        result[1].labelings,
+        result[1].labels,
+        result[0]
+      );
       if (this.props.location.pathname.includes('/labelings/new')) {
         this.onModalAddLabeling();
       } else {
@@ -65,11 +71,16 @@ class LabelingsPage extends Component {
     });
   }
 
-  onLabelingsAndLabelsChanged(labelings, labels) {
+  onLabelingsLabelsDatasetsChanged(labelings, labels, datasets) {
     if (labelings === undefined) labelings = this.state.labelings;
-
+    if (datasets === undefined) datasets = this.state.datasets;
     if (labels === undefined) labels = this.state.labels;
-    this.setState({ labelings: labelings, labels: labels, isReady: true });
+    this.setState({
+      labelings: labelings,
+      labels: labels,
+      datasets: datasets,
+      isReady: true
+    });
   }
 
   toggleModal(labeling, labels, isNewLabeling) {
@@ -124,11 +135,11 @@ class LabelingsPage extends Component {
       }
     });
   }
-
+  onLabelingsAndLabelsChanged;
   onDeleteLabeling(labelingId, conflictingDatasetIds) {
     this.onCloseModal();
     deleteLabeling(labelingId, conflictingDatasetIds).then(result =>
-      this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
+      this.onLabelingsLabelsDatasetsChanged(result.labelings, result.labels)
     );
   }
 
@@ -138,12 +149,12 @@ class LabelingsPage extends Component {
 
     if (labeling.updated || labels.some(elm => elm.updated)) {
       const result = await updateLabelingandLabels(labeling, labels);
-      this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
+      this.onLabelingsLabelsDatasetsChanged(result.labelings, result.labels);
     }
 
     if (this.state.modal.isNewLabeling) {
       addLabeling({ ...labeling, labels: labels }).then(result =>
-        this.onLabelingsAndLabelsChanged(result.labelings, result.labels)
+        this.onLabelingsLabelsDatasetsChanged(result.labelings, result.labels)
       );
     } else {
       //add new labels to labeling/delete labels from labeling
@@ -153,13 +164,13 @@ class LabelingsPage extends Component {
             labeling,
             deletedLabels
           ).then(newResult =>
-            this.onLabelingsAndLabelsChanged(
+            this.onLabelingsLabelsDatasetsChanged(
               newResult.labelings,
               newResult.labels
             )
           );
         } else {
-          this.onLabelingsAndLabelsChanged(result.labeling, result.labels);
+          this.onLabelingsLabelsDatasetsChanged(result.labeling, result.labels);
         }
       });
     }
@@ -262,6 +273,7 @@ class LabelingsPage extends Component {
           </Row>
         </Container>
         <EditLabelingModal
+          datasets={this.state.datasets}
           labeling={this.state.modal.labeling}
           labelings={this.state.labelings}
           labels={this.state.modal.labels}

@@ -15,7 +15,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { getDatasets } from '../../services/ApiServices/DatasetServices';
 import {
   isValidColor,
   hexToForegroundColor,
@@ -28,6 +27,7 @@ class EditLabelingModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      datasets: props.datasets,
       labeling: props.labeling,
       labels: props.labels,
       isOpen: props.isOpen,
@@ -36,8 +36,7 @@ class EditLabelingModal extends Component {
       onDeleteLabeling: props.onDeleteLabeling,
       isNewLabeling: props.isNewLabeling,
       deletedLabels: [],
-      allowSaving: false,
-      datasets: undefined
+      allowSaving: false
     };
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onAddLabel = this.onAddLabel.bind(this);
@@ -48,38 +47,43 @@ class EditLabelingModal extends Component {
     this.onLabelColorChanged = this.onLabelColorChanged.bind(this);
     this.onClickingSave = this.onClickingSave.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
+    this.onEscPresses = this.onEscPresses.bind(this);
+    this.labelNameInvalid = this.labelNameInvalid.bind(this);
+    this.checkAllowSaving = this.checkAllowSaving.bind(this);
   }
 
   componentWillReceiveProps(props) {
-    this.setState(
-      {
-        labeling: props.labeling,
-        labels: props.labels,
-        isOpen: props.isOpen,
-        onCloseModal: props.onCloseModal,
-        onSave: props.onSave,
-        onDeleteLabeling: props.onDeleteLabeling,
-        isNewLabeling: props.isNewLabeling,
-        allowSaving: false
-      },
-      () => {
-        if (
-          typeof this.state !== 'undefined' &&
-          typeof this.state.labels !== 'undefined' &&
-          typeof this.state.labeling !== 'undefined'
-        ) {
-          this.checkAllowSaving();
-        }
-      }
-    );
+    this.setState({
+      datasets: props.datasets,
+      labeling: props.labeling,
+      labels: props.labels,
+      isOpen: props.isOpen,
+      onCloseModal: props.onCloseModal,
+      onSave: props.onSave,
+      onDeleteLabeling: props.onDeleteLabeling,
+      isNewLabeling: props.isNewLabeling
+    });
   }
 
   componentDidMount() {
-    getDatasets()
-      .then(this.onDatasetsChanged)
-      .catch(err => {
-        window.alert('Could not receive datasets from server');
-      });
+    document.addEventListener('keydown', this.onEscPresses, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onEscPresses, false);
+  }
+
+  labelNameInvalid(label, labelIdx) {
+    return this.state.labels.some(
+      (elm, idx) =>
+        elm.name === label.name && idx !== labelIdx && label.name !== ''
+    );
+  }
+
+  onEscPresses(e) {
+    if (e.keyCode === 27) {
+      this.onCloseModal();
+    }
   }
 
   //separate onCloseModal required, to restore labelings deleted when "cancel" is clicked
@@ -112,8 +116,11 @@ class EditLabelingModal extends Component {
             //check if dataset contains label from state.deletedLabels
             //delLabel contains an unique identifier corresponding to the type in the dataset label
             const found = l.labels.find(e => e.type === delLabel['_id']);
-            if (typeof found !== 'undefined') {
-              labels.push(found.name);
+            if (found) {
+              const labelName = this.props.labels.find(
+                elm => elm._id === found.type
+              );
+              labels.push(labelName.name);
               labelConflict = true;
             }
           });
@@ -123,18 +130,14 @@ class EditLabelingModal extends Component {
           conflictingLabels[dset.name] = labels;
         }
       });
-
-      const conflictingLabelsString = JSON.stringify(conflictingLabels)
-        .replace(/["'{}\[\]]/g, '')
-        .replace(/[,]/g, ', ')
-        .replace(/[:]/g, ': ');
       const confirmString =
         'You are about to delete the labels that are used in the following dataset(s): ' +
-        conflictingLabelsString +
+        Object.keys(conflictingLabels)
+          .map(key => key + ': ' + conflictingLabels[key])
+          .join(', ') +
         '. \nDo you want to proceed? If you choose "Ok", all these labels will be deleted from the dataset(s).';
 
       if (labelConflict && window.confirm(confirmString)) {
-        //TODO label conflict and user chose to delete labels. Delete them in backend too.
         this.state.onSave(
           this.state.labeling,
           this.state.labels,
@@ -180,26 +183,16 @@ class EditLabelingModal extends Component {
 
   onLabelingNameChanged(name) {
     if (this.state.isNewLabeling) {
-      this.setState(
-        {
-          labeling: Object.assign({}, this.state.labeling, { name })
-        },
-        () => {
-          this.checkAllowSaving();
-        }
-      );
+      this.setState({
+        labeling: Object.assign({}, this.state.labeling, { name })
+      });
     } else {
-      this.setState(
-        {
-          labeling: Object.assign({}, this.state.labeling, {
-            name,
-            updated: true
-          })
-        },
-        () => {
-          this.checkAllowSaving();
-        }
-      );
+      this.setState({
+        labeling: Object.assign({}, this.state.labeling, {
+          name,
+          updated: true
+        })
+      });
     }
   }
 
@@ -210,48 +203,35 @@ class EditLabelingModal extends Component {
       isNewLabel: true
     };
 
-    this.setState(
-      {
-        labels: [...this.state.labels, newLabel]
-      },
-      () => {
-        this.checkAllowSaving();
-      }
-    );
+    this.setState({
+      labels: [...this.state.labels, newLabel]
+    });
   }
 
   onDeleteLabeling(id) {
-    if (this.state.datasets.length > 0) {
-      let labelConflict = false;
-      let conflictingDatasetNames = [];
-      let conflictingDatasetIds = [];
-      let labeling = this.state.labeling;
-      this.state.datasets.forEach(dset => {
-        if (dset.labelings.some(l => l.labelingId === labeling['_id'])) {
-          labelConflict = true;
-          conflictingDatasetNames.push(dset.name);
-          conflictingDatasetIds.push(dset._id);
-        }
-      });
-
-      const confirmString =
-        `You are about to delete a labeling set that is used in the following dataset(s): ` +
-        conflictingDatasetNames.join(', ') +
-        `. \nDo you want to proceed? If you choose \"Ok\", this labeling set, ` +
-        `inlcuding all its labels, will be deleted from the corresponding dataset(s).`;
-      if (labelConflict && window.confirm(confirmString)) {
-        //TODO
-        //label conflict and user chose to delete labels. Delete them in Backend too.
-        this.props.onDeleteLabeling(id, conflictingDatasetIds);
-      } else if (labelConflict) {
-        //Do nothing, user aborted the delete
-      } else {
-        //No labeling conflict, just ask for permissions to delete
-        if (window.confirm('Are you sure to delete this labeling?')) {
-          this.props.onDeleteLabeling(id, []);
-        }
+    let labelConflict = false;
+    let conflictingDatasetNames = [];
+    let conflictingDatasetIds = [];
+    this.state.datasets.forEach(dset => {
+      if (
+        dset.labelings.some(l => l.labelingId === this.state.labeling['_id'])
+      ) {
+        labelConflict = true;
+        conflictingDatasetNames.push(dset.name);
+        conflictingDatasetIds.push(dset._id);
       }
+    });
+    const confirmString =
+      `You are about to delete a labeling set that is used in the following dataset(s): ` +
+      conflictingDatasetNames.join(', ') +
+      `. \nDo you want to proceed? If you choose \"Ok\", this labeling set, ` +
+      `inlcuding all its labels, will be deleted from the corresponding dataset(s).`;
+    if (labelConflict && window.confirm(confirmString)) {
+      this.props.onDeleteLabeling(id, conflictingDatasetIds);
+    } else if (labelConflict) {
+      //Do nothing, user aborted the delete
     } else {
+      //No labeling conflict, just ask for permissions to delete
       if (window.confirm('Are you sure to delete this labeling?')) {
         this.props.onDeleteLabeling(id, []);
       }
@@ -266,48 +246,34 @@ class EditLabelingModal extends Component {
     );
 
     if (labelToDelete.isNewLabel) {
-      this.setState({ labels, labeling }, () => {
-        this.checkAllowSaving();
+      this.setState({
+        labels,
+        labeling
       });
     } else {
-      this.setState(
-        {
-          labels,
-          labeling,
-          deletedLabels: [...this.state.deletedLabels, labelToDelete]
-        },
-        () => {
-          this.checkAllowSaving();
-        }
-      );
+      this.setState({
+        labels,
+        labeling,
+        deletedLabels: [...this.state.deletedLabels, labelToDelete]
+      });
     }
   }
 
   onLabelNameChanged(labelToChange, name) {
     if (labelToChange.isNewLabel) {
-      this.setState(
-        {
-          labels: this.state.labels.map(label =>
-            label !== labelToChange ? label : Object.assign({}, label, { name })
-          )
-        },
-        () => {
-          this.checkAllowSaving();
-        }
-      );
+      this.setState({
+        labels: this.state.labels.map(label =>
+          label !== labelToChange ? label : Object.assign({}, label, { name })
+        )
+      });
     } else {
-      this.setState(
-        {
-          labels: this.state.labels.map(label =>
-            label !== labelToChange
-              ? label
-              : Object.assign({}, label, { name, updated: true })
-          )
-        },
-        () => {
-          this.checkAllowSaving();
-        }
-      );
+      this.setState({
+        labels: this.state.labels.map(label =>
+          label !== labelToChange
+            ? label
+            : Object.assign({}, label, { name, updated: true })
+        )
+      });
     }
   }
 
@@ -334,25 +300,27 @@ class EditLabelingModal extends Component {
   }
 
   checkAllowSaving() {
-    let allowSaving = false;
-
-    for (let i = 0; i < this.state.labels.length; i++) {
-      if (this.state.labels[i].name === '') {
-        allowSaving = false;
-        break;
-      } else {
-        allowSaving = true;
-      }
-    }
-    this.setState({
-      allowSaving: allowSaving && this.state.labeling.name !== ''
-    });
+    return (
+      this.state.labels &&
+      this.state.labeling &&
+      this.state.labels.every(elm => elm.name !== '') &&
+      this.state.labeling.name !== ''
+    );
   }
 
   render() {
     const labelingNameInValid =
       this.state.labeling &&
-      this.props.labelings.some(elm => elm.name === this.state.labeling.name);
+      this.props.labelings.some(
+        elm =>
+          elm.name === this.state.labeling.name &&
+          elm._id != this.state.labeling._id
+      );
+
+    const labelingNamesDouble = !this.state.labels
+      ? false
+      : new Set(this.state.labels.map(elm => elm.name)).size !==
+        this.state.labels.length;
 
     return (
       <Modal isOpen={this.state.isOpen}>
@@ -378,6 +346,7 @@ class EditLabelingModal extends Component {
               onChange={e => this.onLabelingNameChanged(e.target.value)}
             />
             <FormFeedback
+              id="labelingNameFeedback"
               style={
                 labelingNameInValid
                   ? { display: 'flex', justifyContent: 'right' }
@@ -413,6 +382,7 @@ class EditLabelingModal extends Component {
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
+                    invalid={this.labelNameInvalid(label, index)}
                     id={'labelName' + index}
                     placeholder="Name"
                     value={label.name}
@@ -424,6 +394,7 @@ class EditLabelingModal extends Component {
                     <InputGroupText>Color</InputGroupText>
                   </InputGroupAddon>
                   <Input
+                    id={'labelColor' + index}
                     placeholder="Color"
                     className={
                       isValidColor(label.color)
@@ -446,6 +417,7 @@ class EditLabelingModal extends Component {
                   />
                   <InputGroupAddon addonType="append">
                     <Button
+                      id={'buttonDeleteLabel' + index}
                       className="m-0"
                       color="danger"
                       outline
@@ -456,6 +428,11 @@ class EditLabelingModal extends Component {
                       ✕
                     </Button>
                   </InputGroupAddon>
+                  <FormFeedback id="labelFeedback">
+                    {!isValidColor(label.color)
+                      ? 'Invalid color'
+                      : 'Duplicate names are not allowed'}
+                  </FormFeedback>
                 </InputGroup>
               ))
             : null}
@@ -493,11 +470,20 @@ class EditLabelingModal extends Component {
             color="primary"
             className="m-1 mr-auto"
             onClick={this.onClickingSave}
-            disabled={!this.state.allowSaving || labelingNameInValid}
+            disabled={
+              !this.checkAllowSaving() ||
+              labelingNameInValid ||
+              labelingNamesDouble
+            }
           >
             Save
           </Button>{' '}
-          <Button color="secondary" className="m-1" onClick={this.onCloseModal}>
+          <Button
+            id="buttonClose"
+            color="secondary"
+            className="m-1"
+            onClick={this.onCloseModal}
+          >
             Cancel
           </Button>
         </ModalFooter>

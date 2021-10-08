@@ -17,7 +17,6 @@ import {
 } from '../services/ApiServices/DatasetServices';
 import Loader from '../modules/loader';
 import VideoPanel from '../components/VideoPanel/VideoPanel';
-import { getRandomInt } from '../services/helpers';
 
 class DatasetPage extends Component {
   constructor(props) {
@@ -883,6 +882,13 @@ class DatasetPage extends Component {
       labeling.labels = labeling.labels.filter(
         label => label['_id'] !== this.state.controlStates.selectedLabelId
       );
+
+      // Delete labeling when no labels are present for this labeling
+      if (labeling.labels.length === 0) {
+        dataset.labelings = dataset.labelings.filter(
+          elm => elm._id != labeling._id
+        );
+      }
 
       updateDataset(dataset);
       this.setState({
