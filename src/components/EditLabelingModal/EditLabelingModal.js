@@ -365,7 +365,9 @@ class EditLabelingModal extends Component {
           labelingNameInValid = this.props.labelings
             .filter(elm => elm.name !== oldName)
             .some(elm => elm.name === this.state.labeling.name);
-        } catch {}
+        } catch (e) {
+          labelingNameInValid = false;
+        }
       }
     }
 
