@@ -52,17 +52,19 @@ class EditLabelingModal extends Component {
     this.checkAllowSaving = this.checkAllowSaving.bind(this);
   }
 
-  componentWillReceiveProps(props) {
-    this.setState({
-      datasets: props.datasets,
-      labeling: props.labeling,
-      labels: props.labels,
-      isOpen: props.isOpen,
-      onCloseModal: props.onCloseModal,
-      onSave: props.onSave,
-      onDeleteLabeling: props.onDeleteLabeling,
-      isNewLabeling: props.isNewLabeling
-    });
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props !== prevProps) {
+      this.setState({
+        datasets: this.props.datasets,
+        labeling: this.props.labeling,
+        labels: this.props.labels,
+        isOpen: this.props.isOpen,
+        onCloseModal: this.props.onCloseModal,
+        onSave: this.props.onSave,
+        onDeleteLabeling: this.props.onDeleteLabeling,
+        isNewLabeling: this.props.isNewLabeling
+      });
+    }
   }
 
   componentDidMount() {
