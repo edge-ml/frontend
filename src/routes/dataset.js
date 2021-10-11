@@ -768,6 +768,7 @@ class DatasetPage extends Component {
       labeling =>
         labeling.labelingId === this.state.controlStates.selectedLabelingId
     )[0];
+    if (!labeling) return;
     let label = labeling.labels.filter(
       label => label['_id'] === selectedLabelId
     )[0];
@@ -847,6 +848,7 @@ class DatasetPage extends Component {
         labeling =>
           labeling.labelingId === this.state.controlStates.selectedLabelingId
       )[0];
+      this.onSelectedLabelChanged('fakeID');
       this.setState({
         dataset: dataset,
         controlStates: {
@@ -865,7 +867,20 @@ class DatasetPage extends Component {
         });
       });
       this.setState({ dataset: dataSetCopy });
+      const oldLabels = this.state.dataset.labelings
+        .find(
+          elm => elm.labelingId === this.state.controlStates.selectedLabelingId
+        )
+        .labels.map(elm1 => elm1._id);
       updateDataset(dataset).then(newDataset => {
+        const newLabels = newDataset.labelings
+          .find(
+            elm =>
+              elm.labelingId === this.state.controlStates.selectedLabelingId
+          )
+          .labels.map(elm => elm._id);
+        const newLabelId = newLabels.find(elm => !oldLabels.includes(elm));
+        this.onSelectedLabelChanged(newLabelId);
         this.setState({ dataset: newDataset });
       });
     }
