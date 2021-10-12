@@ -3,6 +3,7 @@ import { Button, Card, CardHeader, CardBody } from 'reactstrap';
 import './ManagementPanel.css';
 import HelpModal from './HelpModal';
 import CreateNewDatasetModal from '../CreateNewDatasetModal/CreateNewDatasetModal';
+import { generateCSV } from '../../services/CsvService';
 
 class ManagementPanel extends Component {
   constructor(props) {
@@ -35,97 +36,8 @@ class ManagementPanel extends Component {
   }
 
   downloadDataSet() {
-    const dataset = this.props.dataset;
-    const fileName = dataset.name;
-    var csv = 'time,';
-    var csv_lines = Object(); // this will be used as a dictionary, with timestamps as keys, and arrays of values as values
-    var timestamps = new Set([]); // this variable will hold all timestamps as an ordered array
-    var labelings = Object();
-    var labelsUsed =
-      dataset.labelings && dataset.labelings.some(elm => elm.labels.length > 0);
-
-    if (labelsUsed) {
-      dataset.labelings.forEach(l => {
-        labelings[l.labelingId] = [];
-        l.labels.forEach(label => {
-          labelings[l.labelingId].push({
-            name: label.name,
-            start: Math.round(label.start),
-            end: Math.round(label.end)
-          });
-        });
-      });
-    }
-
-    dataset.timeSeries.forEach(t => {
-      csv += 'sensor_' + t.name + '[' + t.unit + '],';
-    });
-
-    if (labelsUsed) {
-      for (const [labelingId, _] of Object.entries(labelings)) {
-        const labelingName = this.props.labelings.find(
-          elm => elm._id === labelingId
-        ).name;
-        csv += 'label_' + labelingName + ',';
-      }
-    }
-
-    csv = csv.slice(0, -1); // remove the single ',' at the end
-    csv += '\r\n'; // this concludes the first csv line, now append data
-
-    // collect all timestamp values in a set, and initialize csv_lines to contain empty arrays as values
-    dataset.timeSeries.forEach(t => {
-      t.data.forEach(d => {
-        timestamps.add(d.timestamp);
-        csv_lines[d.timestamp] = [];
-      });
-    });
-    timestamps = Array.from(timestamps).sort();
-
-    dataset.timeSeries.forEach(t => {
-      var missingTimestamps = new Set(timestamps); // in the end, this array will contain all timestamps, that do not have a value -> ,, in CSV
-
-      t.data.forEach(d => {
-        csv_lines[d.timestamp].push(d.datapoint);
-        missingTimestamps.delete(d.timestamp); // since it's not missing, delete the timestamp from the missing timestamps
-      });
-
-      missingTimestamps.forEach(m => {
-        csv_lines[m].push(undefined); // all missing timestamps must result in empty values in the CSV (,,)
-      }); // pushing undefined and later doing .join(",") will results in this behaviour
-    });
-
-    for (const [timestamp, values] of Object.entries(csv_lines)) {
-      csv += timestamp + ',' + values.join(',');
-      if (labelsUsed) {
-        csv += ','; // when labels are used, they follow the values in a row, hence a colon is needed
-        // check for each labeling, if their labels are in the bounds of the current timestamp. If yes, add the label to the CSV line, else only add ','
-        for (const [_, labels] of Object.entries(labelings)) {
-          var label = undefined;
-          for (let l of labels) {
-            if (
-              l.start <= parseInt(timestamp, 10) &&
-              parseInt(timestamp, 10) <= l.end
-            ) {
-              label = l.name;
-              break;
-            }
-          }
-
-          // if a label was added, add the label name and ',' to the CSV line
-          if (typeof label !== 'undefined') {
-            csv += label + ',';
-          }
-          // if NO label was added, only add ',' to the CSV line
-          else {
-            csv += ',';
-          }
-        }
-        csv = csv.slice(0, -1); // remove the single ',' at the end
-      }
-      csv += '\r\n';
-    }
-
+    const csv = generateCSV(this.props.dataset, this.props.labelings);
+    const fileName = this.props.dataset.name;
     const blob = new Blob([csv], { type: 'application/csv' });
     const href = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -134,7 +46,6 @@ class ManagementPanel extends Component {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    return true;
   }
 
   render() {
