@@ -22,8 +22,7 @@ function BlePanelRecorderSettings(props) {
 
   const onClickRecordButton = e => {
     const tmpNameError = props.datasetName === '';
-    const tmpSamplingRateError =
-      props.sampleRate < 0 || props.sampleRate > 1000;
+    const tmpSamplingRateError = props.sampleRate <= 0 || props.sampleRate > 50;
 
     setNameError(tmpNameError);
     setSamplingRateError(tmpSamplingRateError);

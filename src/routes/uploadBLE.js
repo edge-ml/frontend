@@ -209,11 +209,9 @@ class UploadBLE extends Component {
     this.sensorConfigCharacteristic = await primaryService.getCharacteristic(
       this.sensorConfigCharacteristicUuid
     );
-    console.log(this.sensorDataCharacteristicUuid);
     this.sensorDataCharacteristic = await primaryService.getCharacteristic(
       this.sensorDataCharacteristicUuid
     );
-    console.log(this.sensorDataCharacteristic);
     this.bleDeviceProcessor = new BleDeviceProcessor(
       bleDevice,
       this.state.deviceSensors,

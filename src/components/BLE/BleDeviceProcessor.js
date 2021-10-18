@@ -25,8 +25,9 @@ class BleDeviceProcessor {
     this.sensorDataCharacteristic = sensorDataCharacteristic;
     this.sensorData = new Map();
     this.recordInterval = undefined;
-    this.recordedData = {};
+    this.recordedData = [];
     this.newDataset = undefined;
+    this.recordingSensors = [];
   }
 
   async configureSingleSensor(sensorId, sampleRate, latency) {
@@ -50,7 +51,9 @@ class BleDeviceProcessor {
     for (const bleKey of Object.keys(this.sensors)) {
       if (sensorsToRecord.has(bleKey)) {
         await this.configureSingleSensor(bleKey, sampleRate, latency);
-        this.recordedData[bleKey] = [];
+        //this.recordedData[bleKey] = [];
+        this.recordedData = [];
+        this.recordingSensors = sensorsToRecord;
       } else {
         await this.configureSingleSensor(bleKey, 0, 0);
       }
@@ -80,24 +83,51 @@ class BleDeviceProcessor {
         )
       )
     ).filter(elm => !oldDatasets.includes(elm._id))[0];
-    console.log(this.newDataset);
     await this.prepareRecording(selectedSensors, sampleRate, latency);
     this.startCollectcollectSensorData();
+    var recordingStart = new Date().getTime();
     const dataRecorder = () => {
       const time = new Date().getTime();
       for (const [sensor, sensorData] of this.sensorData.entries()) {
-        this.recordedData[sensor].push({ time: time, data: sensorData });
+        this.recordedData.push({
+          sensor: sensor,
+          time: time,
+          data: sensorData
+        });
+      }
+      if (this.recordedData.length > 2000 || time - recordingStart > 300000) {
+        this.uploadCache(this.recordedData);
+        this.recordedData = [];
+        recordingStart = new Date().getTime();
       }
     };
-    this.recordInterval = setInterval(dataRecorder, sampleRate);
+    dataRecorder();
+    this.recordInterval = setInterval(
+      dataRecorder,
+      Math.floor(1000 / sampleRate)
+    );
+  }
+
+  async uploadCache(recordedData) {
+    recordedData = parseTimeSeriesData(
+      this.recordedData,
+      this.recordingSensors,
+      this.sensors
+    );
+    await appendToDataset(this.newDataset, recordedData);
   }
 
   async stopRecording() {
     clearInterval(this.recordInterval);
     this.unSubscribeAllSensors();
-    const recordedData = parseTimeSeriesData(this.recordedData, this.sensors);
-    console.log(recordedData);
-    appendToDataset(this.newDataset, recordedData);
+    const recordedData = parseTimeSeriesData(
+      this.recordedData,
+      this.recordingSensors,
+      this.sensors
+    );
+    await appendToDataset(this.newDataset, recordedData);
+    this.recordingSensors = [];
+    this.recordedData = [];
   }
 }
 

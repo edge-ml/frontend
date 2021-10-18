@@ -69,7 +69,6 @@ module.exports.findDeviceIdById = (devices, deviceName) => {
 };
 
 module.exports.getBaseDataset = (sensors, datasetName) => {
-  console.log(sensors);
   const timeSeries = [];
   sensors.forEach(sensor => {
     sensor.parseScheme.forEach(scheme => {
@@ -90,9 +89,18 @@ module.exports.getBaseDataset = (sensors, datasetName) => {
   };
 };
 
-module.exports.parseTimeSeriesData = (sensorData, sensors) => {
+module.exports.parseTimeSeriesData = (
+  recordedData,
+  recordingSensors,
+  sensors
+) => {
   const timeSeries = [];
-
+  const sensorData = {};
+  [...recordingSensors].forEach(sensorKey => {
+    sensorData[sensorKey] = recordedData.filter(
+      elm => elm.sensor.toString() === sensorKey.toString()
+    );
+  });
   Object.keys(sensorData).forEach(key => {
     const sensor = sensors[key];
     sensor.parseScheme.forEach((scheme, idx) => {
