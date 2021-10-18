@@ -3,19 +3,18 @@ import { Button, Spinner } from 'reactstrap';
 import PropTypes from 'prop-types';
 
 function SpinnerButton(props) {
-  console.log(props);
   return (
     <Button {...props}>
       {props.loading ? (
         <div>
-          {props.loadingText}
+          {props.loadingtext}
           <Spinner
             style={{
               width: '1rem',
               height: '1rem',
               marginLeft: '4px'
             }}
-            color={props.spinnerColor}
+            color={props.spinnercolor}
           />
         </div>
       ) : (
@@ -27,8 +26,8 @@ function SpinnerButton(props) {
 
 SpinnerButton.defaultProps = {
   loading: false,
-  loadingText: 'Loading...',
-  spinnerColor: 'white'
+  loadingtext: 'Loading...',
+  spinnercolor: 'white'
 };
 SpinnerButton.propTypes = {
   children: PropTypes.element.isRequired

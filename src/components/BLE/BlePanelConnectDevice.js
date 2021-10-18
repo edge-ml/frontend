@@ -7,6 +7,7 @@ import {
   Button,
   Spinner
 } from 'reactstrap';
+import SpinnerButton from '../Common/SpinnerButton';
 
 function BlePanelConnectDevice(props) {
   return (
@@ -30,12 +31,16 @@ function BlePanelConnectDevice(props) {
             'No device connected'
           )}
         </div>
-        <Button
+        <SpinnerButton
+          loadingtext={
+            props.connectedBLEDevice ? 'Disconnecting...' : 'Connecting...'
+          }
           color={props.connectedBLEDevice ? 'danger' : 'primary'}
+          loading={props.bleConnectionChanging}
           onClick={props.toggleBLEDeviceConnection}
         >
           {props.connectedBLEDevice ? 'Disconnect device' : 'Connect device'}
-        </Button>
+        </SpinnerButton>
       </div>
     </div>
   );

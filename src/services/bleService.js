@@ -1,19 +1,12 @@
-module.exports.parseData = (sensorKey, data) => {
-  const sensor = this.findSensorByKey(sensorKey);
-  var type = sensor.type;
-  var sensorName = sensor.name;
-  var scheme = this.state.deviceInfo.scheme.find(elm => elm.id === type)
-    .parseScheme;
-  //var scheme = parseScheme["types"][type]["parse-scheme"];
-  var result = '';
-
+module.exports.parseData = (sensor, data) => {
+  var scheme = sensor.parseScheme;
   // dataIndex start from 2 because the first bytes of the packet indicate
   // the sensor id and the data size
   var dataIndex = 0 + 2;
   var value = 0;
   var values = [];
   scheme.forEach(element => {
-    var name = element['name'];
+    //var name = element['name'];
     var valueType = element.type;
     var scale = element.scaleFactor;
     var size = 0;
@@ -40,11 +33,11 @@ module.exports.parseData = (sensorKey, data) => {
     } else {
       console.log('Error: unknown type');
     }
-    result = result + element.name + ': ' + value + '   ';
+    //result = result + element.name + ': ' + value + '   ';
     values.push(value);
     dataIndex += size;
   });
-  return [sensorName, result, values];
+  return values;
 };
 
 module.exports.floatToBytes = value => {
@@ -73,4 +66,41 @@ module.exports.findDeviceIdById = (devices, deviceName) => {
   return devices.find(
     elm => deviceName.toLowerCase() === elm.name.toLowerCase()
   )._id;
+};
+
+module.exports.getBaseDataset = (sensors, datasetName) => {
+  console.log(sensors);
+  const timeSeries = [];
+  sensors.forEach(sensor => {
+    sensor.parseScheme.forEach(scheme => {
+      timeSeries.push({
+        name: sensor.name + '_' + scheme.name,
+        start: new Date().getTime() + 10000000,
+        end: new Date().getTime(),
+        data: []
+      });
+    });
+  });
+
+  return {
+    name: datasetName,
+    start: new Date().getTime() + 10000000,
+    end: new Date().getTime(),
+    timeSeries: timeSeries
+  };
+};
+
+module.exports.parseTimeSeriesData = (sensorData, sensors) => {
+  const timeSeries = [];
+
+  Object.keys(sensorData).forEach(key => {
+    const sensor = sensors[key];
+    sensor.parseScheme.forEach((scheme, idx) => {
+      const data = sensorData[key].map(elm => {
+        return { timestamp: elm.time, datapoint: elm.data[idx] };
+      });
+      timeSeries.push({ name: sensor.name + '_' + scheme.name, data: data });
+    });
+  });
+  return timeSeries;
 };

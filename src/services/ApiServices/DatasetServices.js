@@ -133,3 +133,18 @@ module.exports.createDatasets = datasets => {
       .catch(err => reject(err.response));
   });
 };
+
+module.exports.appendToDataset = (dataset, data) => {
+  return axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.POST,
+      apiConsts.API_URI,
+      apiConsts.API_ENDPOINTS.DATASETS +
+        `/${dataset['_id']}` +
+        '/timeseries/append',
+      data
+    )
+  )
+    .then(result => result.data)
+    .catch(err => err.response);
+};

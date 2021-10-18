@@ -12,3 +12,8 @@
 .panelHeader {
   font-size: x-large;
 }
+
+.invalidFeedBack {
+  display: flex !important;
+  justify-content: end;
+}
