@@ -4,6 +4,7 @@ import HighchartsReact from 'highcharts-react-official';
 
 import './TimeSeriesPanel.css';
 import DropdownPanel from './DropdownPanel';
+import { addAbortSignal } from 'stream';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
@@ -337,32 +338,107 @@ class TimeSeriesPanel extends Component {
   }
 
   onMouseMoved(e) {
-    var plotLine = this.getActivePlotLine();
+    const activePlotLine = this.getActivePlotLine();
 
-    if (!plotLine) return;
+    if (!activePlotLine) return;
 
     e.preventDefault();
 
-    plotLine.svgElem.translate(
-      e.chartX -
-        plotLine.svgElem.getBBox().x +
-        this.chart.current.chart.plotBox.x * 0.08,
+    const allPlotLinesAndBands = this.chart.current.chart.xAxis[0]
+      .plotLinesAndBands;
+    const activeLabelId = activePlotLine.options.labelId;
+    const activeLabelName = this.props.labeling.labels.filter(
+      item => item._id === activeLabelId
+    )[0].name;
+    const activeLabelXCoords = activePlotLine.svgElem.getBBox().x;
+
+    //all label ids from same label name excluding itself, so all other label ids to the right or left
+    const allNeighbouringLabelIds = this.props.labeling.labels
+      .filter(
+        item => item.name === activeLabelName && item._id !== activeLabelId
+      )
+      .map(x => x._id);
+    //all plotbands corresponding to "allNeighbouringLabelIds"
+    const allNeighbouringLabelXCoords = allPlotLinesAndBands
+      .filter(
+        item =>
+          item.options.isPlotline &&
+          allNeighbouringLabelIds.includes(item.options.labelId)
+      )
+      .map(x => x.svgElem.getBBox().x);
+
+    //get the x coords of the nearest neighbouring plotlines in left and right. If none are present, default values are 0 and maxInt.
+
+    allNeighbouringLabelXCoords.push(activeLabelXCoords);
+    allNeighbouringLabelXCoords.sort();
+    const index = allNeighbouringLabelXCoords.indexOf(activeLabelXCoords);
+    const leftNeighbour =
+      index === 0 ? 0 : allNeighbouringLabelXCoords[index - 1];
+    const rightNeighbour =
+      index === allNeighbouringLabelXCoords.length - 1
+        ? Number.MAX_SAFE_INTEGER
+        : allNeighbouringLabelXCoords[index + 1];
+
+    /* TODO: delete
+    const clone = allNeighbouringLabelXCoords.slice(0);
+    clone.push(activeLabelXCoords);
+    clone.sort();
+    const index = clone.indexOf(activeLabelXCoords);
+    let left = index === 0 ? 0 : clone[index - 1];
+    let right = index === allNeighbouringLabelXCoords.length ? Number.MAX_SAFE_INTEGER : clone[index + 1];
+    */
+
+    //update left/right to contain the distance to the nearest neighbouring plotlines, not their x coordinate
+    const distanceToLeftNeighbour = -(activeLabelXCoords - leftNeighbour);
+    const distanceToRightNeighbour = rightNeighbour - activeLabelXCoords;
+    const offsetTranslatePlotLine =
+      -activePlotLine.svgElem.getBBox().x +
+      this.chart.current.chart.plotBox.x * 0.08;
+
+    activePlotLine.svgElem.translate(
+      Math.max(
+        distanceToLeftNeighbour,
+        Math.min(e.chartX + offsetTranslatePlotLine, distanceToRightNeighbour)
+      ),
       0
     );
 
-    let plotband = this.getPlotbandByLabelId(plotLine.options.labelId);
+    let plotband = this.getPlotbandByLabelId(activeLabelId);
     let plotbandOptions = plotband.options;
     this.chart.current.chart.xAxis[0].removePlotBand(plotbandOptions.id);
-    let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160
+    const offsetTranslatePlotBand =
+      -this.chart.current.chart.plotBox.x * 1.5 - 160;
+
+    //TODO: delete logs
+    console.log('cur pos ' + (e.pageX + offsetTranslatePlotBand));
+    console.log('left ' + leftNeighbour + ', right ' + rightNeighbour);
+    console.log(
+      'translate ' +
+        (e.pageX + offsetTranslatePlotBand) +
+        ', corrected ' +
+        Math.max(
+          leftNeighbour,
+          Math.min(e.pageX + offsetTranslatePlotBand, rightNeighbour)
+        )
     );
-    let fixedPosition = plotLine.options.isLeftPlotline
+
+    let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
+      Math.max(
+        leftNeighbour,
+        Math.min(e.pageX + offsetTranslatePlotBand, rightNeighbour)
+      )
+    );
+    let fixedPosition = activePlotLine.options.isLeftPlotline
       ? plotbandOptions.to
       : plotbandOptions.from; // TODO
 
     this.chart.current.chart.xAxis[0].addPlotBand({
-      from: plotLine.options.isLeftPlotline ? draggedPosition : fixedPosition,
-      to: plotLine.options.isLeftPlotline ? fixedPosition : draggedPosition,
+      from: activePlotLine.options.isLeftPlotline
+        ? draggedPosition
+        : fixedPosition,
+      to: activePlotLine.options.isLeftPlotline
+        ? fixedPosition
+        : draggedPosition,
       color: plotbandOptions.color,
       className: plotbandOptions.className,
       id: plotbandOptions.id,

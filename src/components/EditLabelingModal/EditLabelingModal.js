@@ -133,7 +133,7 @@ class EditLabelingModal extends Component {
         '. \nDo you want to proceed? If you choose "Ok", all these labels will be deleted from the dataset(s).';
 
       if (labelConflict && window.confirm(confirmString)) {
-        //TODO label conflict and user chose to delete labels. Delete them in backend too.
+        //label conflict and user chose to delete labels. Deletes them in the backend as well.
         this.state.onSave(
           this.state.labeling,
           this.state.labels,
@@ -239,8 +239,7 @@ class EditLabelingModal extends Component {
         `. \nDo you want to proceed? If you choose \"Ok\", this labeling set, ` +
         `inlcuding all its labels, will be deleted from the corresponding dataset(s).`;
       if (labelConflict && window.confirm(confirmString)) {
-        //TODO
-        //label conflict and user chose to delete labels. Delete them in Backend too.
+        //label conflict and user chose to delete labels. Deletes them in the backend too.
         this.props.onDeleteLabeling(id, conflictingDatasetIds);
       } else if (labelConflict) {
         //Do nothing, user aborted the delete
