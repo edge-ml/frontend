@@ -1,12 +1,4 @@
 import React from 'react';
-import {
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Button,
-  Spinner
-} from 'reactstrap';
 import SpinnerButton from '../Common/SpinnerButton';
 
 function BlePanelConnectDevice(props) {

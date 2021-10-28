@@ -1,22 +1,10 @@
 import React, { Component } from 'react';
-import {
-  Col,
-  Row,
-  Table,
-  Input,
-  Button,
-  InputGroup,
-  Spinner,
-  InputGroupAddon,
-  InputGroupText
-} from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 
 import BleNotActivated from '../components/BLE/BleNotActivated';
 import BlePanelSensorList from '../components/BLE/BlePanelSensorList';
 import BlePanelRecorderSettings from '../components/BLE/BlePanelRecorderSettings';
 import BlePanelConnectDevice from '../components/BLE/BlePanelConnectDevice';
-
-import { createDataset } from '../services/ApiServices/DatasetServices';
 
 import {
   getDevices,
@@ -24,11 +12,8 @@ import {
 } from '../services/ApiServices/DeviceService';
 
 import {
-  floatToBytes,
-  intToBytes,
   prepareSensorBleObject,
-  findDeviceIdById,
-  parseTimeSeriesData
+  findDeviceIdById
 } from '../services/bleService';
 
 import BleDeviceProcessor from '../components/BLE/BleDeviceProcessor';
@@ -177,11 +162,9 @@ class UploadBLE extends Component {
         filters: [{ services: [this.sensorServiceUuid] }]
       };
       const bleDevice = await navigator.bluetooth.requestDevice(options);
-      console.log('After device');
       const deviceInfo = await getDeviceById(
         findDeviceIdById(this.state.devices, bleDevice.name)
       );
-      console.log('AFter server');
       this.setState({
         connectedDeviceData: deviceInfo.device,
         deviceSensors: prepareSensorBleObject(deviceInfo.sensors)

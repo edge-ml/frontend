@@ -1,6 +1,5 @@
 import React from 'react';
 import { Table, Input } from 'reactstrap';
-import PropTypes from 'prop-types';
 
 function BlePanelSensorList(props) {
   if (!props.sensors || props.sensors === []) {

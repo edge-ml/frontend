@@ -4,8 +4,6 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Button,
-  Spinner,
   FormFeedback
 } from 'reactstrap';
 import SpinnerButton from '../Common/SpinnerButton';
