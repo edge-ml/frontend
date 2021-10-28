@@ -1,19 +1,5 @@
 import React, { Component } from 'react';
-import classnames from 'classnames';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Input,
-  Table,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Row,
-  Col
-} from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import './BleNotActivated.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChrome, faEdge } from '@fortawesome/free-brands-svg-icons';

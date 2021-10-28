@@ -1,0 +1,19 @@
+.bleActivatedContainer {
+  margin: 8px;
+}
+
+.panelDivider {
+  border-bottom: 1px solid;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  opacity: 0.2;
+}
+
+.panelHeader {
+  font-size: x-large;
+}
+
+.invalidFeedBack {
+  display: flex !important;
+  justify-content: end;
+}
