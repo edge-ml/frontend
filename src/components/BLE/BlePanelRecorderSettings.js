@@ -73,6 +73,7 @@ function BlePanelRecorderSettings(props) {
             A dataset needs a name
           </FormFeedback>
         </InputGroup>
+        {/* TODO reenable this when sample rate issues have been resolved
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>{'SampleRate'}</InputGroupText>
@@ -93,7 +94,7 @@ function BlePanelRecorderSettings(props) {
           >
             Samplerate must be between 0 and 50
           </FormFeedback>
-        </InputGroup>
+        </InputGroup>*/}
         <div className="panelDivider"></div>
         <div
           style={{
