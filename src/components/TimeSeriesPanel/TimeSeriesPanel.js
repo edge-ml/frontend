@@ -4,7 +4,6 @@ import HighchartsReact from 'highcharts-react-official';
 
 import './TimeSeriesPanel.css';
 import DropdownPanel from './DropdownPanel';
-import { addAbortSignal } from 'stream';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
@@ -35,12 +34,15 @@ class TimeSeriesPanel extends Component {
 
     this.getPlotLineById = this.getPlotLineById.bind(this);
     this.getActivePlotLine = this.getActivePlotLine.bind(this);
+    this.getActivePlotBand = this.getActivePlotBand.bind(this);
     this.labelingToPlotLines = this.labelingToPlotLines.bind(this);
     this.generatePlotLine = this.generatePlotLine.bind(this);
 
     this.getSecondBoundaryByPlotLineIdAndLabelId = this.getSecondBoundaryByPlotLineIdAndLabelId.bind(
       this
     );
+
+    this.calcBounds = this.calcBounds.bind(this);
 
     // state
     this.generateState = this.generateState.bind(this);
@@ -337,29 +339,60 @@ class TimeSeriesPanel extends Component {
     e.stopPropagation();
   }
 
-  onMouseMoved(e) {
-    const activePlotLine = this.getActivePlotLine();
-
-    if (!activePlotLine) return;
-
-    e.preventDefault();
-
+  /***
+   * We want to prevent that labels of the same id (with the same name) of a labelling can be moved into
+   * each other, and in general, we want to prevent labels being moved outside the visible timeline.
+   * To do this, we need to limit the translation to either the x-coordinate of the neirest neigbhbouring labels
+   * with the same name, or the x-coords of the timeline bounds.
+   * This functions calculates the relative timeline x-coordinates of all these needed parameters
+   *
+   * The minimum and maximum x-coordinates of the timeline (bounds) are selected in such a way,
+   * that positioning a label (plotline) there ist just visible, one value further left/right would
+   * make it dissapear.
+   *
+   * The min/max x-coordinates of the timeseries timesteps do not correspond to the timeline x-coords showing the labels.
+   * The minimum timeline x-coordinate is simple: 0. '10' is used instead, because plotlines with coordinates < 10 are invisible.
+   *
+   * Finding the max x-coordinate though is not straightforward. I ended up using following hack:
+   * - insert an invisible dummy plotline (id: -1) with the maximum possible timeseries timestep value into to chart
+   * - highcharts automatically translates all timeseries values in relative timeline x-coordinates
+   * - retrieve the dummy plotline and access the timelines max x-coord with dummyPlotline.svgElem.getBBox().x
+   *
+   * TODO: please find a simpler way to get the max timeline x-coordinate
+   *
+   * @param e MouseMoved/MouseUp event handler
+   *
+   * @returns (object) {
+   *    leftNeighbour:              x-coordinates of lefthand neighbouring plotline, left bound if none,
+   *    distanceToLeftNeighbour:    distance to left bound if no leftNeighbour present,
+   *    rightNeighbour:             x-coordinates of righthand neighbouring plotline, right bound if none,
+   *    distanceToRightNeighbour:   distance to right bound if no rightNeighbour present
+   *  }
+   */
+  calcBounds(e) {
     const allPlotLinesAndBands = this.chart.current.chart.xAxis[0]
       .plotLinesAndBands;
+    const activePlotLine = this.getActivePlotLine();
     const activeLabelId = activePlotLine.options.labelId;
     const activeLabelName = this.props.labeling.labels.filter(
       item => item._id === activeLabelId
     )[0].name;
-    const activeLabelXCoords = activePlotLine.svgElem.getBBox().x;
+    const activePlotLine_x = activePlotLine.svgElem.getBBox().x;
+    const rightBoundInvisibleDummyPlotline = allPlotLinesAndBands.filter(
+      item => item.options.isPlotline && item.id === -1
+    )[0];
+    const maxTimelinesXCoord = rightBoundInvisibleDummyPlotline.svgElem.getBBox()
+      .x;
 
-    //all label ids from same label name excluding itself, so all other label ids to the right or left
+    // all label ids from same label name excluding itself, so all other label ids to the right or left
     const allNeighbouringLabelIds = this.props.labeling.labels
       .filter(
         item => item.name === activeLabelName && item._id !== activeLabelId
       )
       .map(x => x._id);
-    //all plotbands corresponding to "allNeighbouringLabelIds"
-    const allNeighbouringLabelXCoords = allPlotLinesAndBands
+
+    // all plotlines/bands corresponding to "allNeighbouringLabelIds". Only Plotlines are of interest here
+    let neighbouringPlotLines_x = allPlotLinesAndBands
       .filter(
         item =>
           item.options.isPlotline &&
@@ -367,71 +400,77 @@ class TimeSeriesPanel extends Component {
       )
       .map(x => x.svgElem.getBBox().x);
 
-    //get the x coords of the nearest neighbouring plotlines in left and right. If none are present, default values are 0 and maxInt.
+    // get the x-coordinates of the nearest neighbouring plotlines left and right. If none are present, default values are 10 and maxTimelinesXCoord.
+    neighbouringPlotLines_x.push(activePlotLine_x);
+    neighbouringPlotLines_x = neighbouringPlotLines_x.sort((a, b) => a - b);
+    const index = neighbouringPlotLines_x.indexOf(activePlotLine_x);
 
-    allNeighbouringLabelXCoords.push(activeLabelXCoords);
-    allNeighbouringLabelXCoords.sort();
-    const index = allNeighbouringLabelXCoords.indexOf(activeLabelXCoords);
-    const leftNeighbour =
-      index === 0 ? 0 : allNeighbouringLabelXCoords[index - 1];
+    // if there's no left neigbour, set the left bound to 10, to prevent positioning the label outside the timeline
+    const leftNeighbour = index === 0 ? 10 : neighbouringPlotLines_x[index - 1];
     const rightNeighbour =
-      index === allNeighbouringLabelXCoords.length - 1
-        ? Number.MAX_SAFE_INTEGER
-        : allNeighbouringLabelXCoords[index + 1];
+      index === neighbouringPlotLines_x.length - 1
+        ? maxTimelinesXCoord
+        : neighbouringPlotLines_x[index + 1];
+    const distanceToLeftNeighbour = activePlotLine_x - leftNeighbour;
+    const distanceToRightNeighbour = rightNeighbour - activePlotLine_x;
 
-    /* TODO: delete
-    const clone = allNeighbouringLabelXCoords.slice(0);
-    clone.push(activeLabelXCoords);
-    clone.sort();
-    const index = clone.indexOf(activeLabelXCoords);
-    let left = index === 0 ? 0 : clone[index - 1];
-    let right = index === allNeighbouringLabelXCoords.length ? Number.MAX_SAFE_INTEGER : clone[index + 1];
+    /* 
+    e.chartX is the x-coordinate of the mouspointer in the timeline, it changes with the plotline x coordinate when dragged
+    if e.chartX is undefined, the plotline is dragged outside the timeline
+    e.chartX is then set to the bounds of the timeline to prevent weird visual behaviour 
+     
+    e.pageX is the x-coordinate of the mouspointer in window coordinates (?),
+    if <= 200 the mousepointer is in the left half of the window
     */
+    if (!e.chartX) e.chartX = e.pageX <= 200 ? 10 : maxTimelinesXCoord;
 
-    //update left/right to contain the distance to the nearest neighbouring plotlines, not their x coordinate
-    const distanceToLeftNeighbour = -(activeLabelXCoords - leftNeighbour);
-    const distanceToRightNeighbour = rightNeighbour - activeLabelXCoords;
-    const offsetTranslatePlotLine =
+    return {
+      leftNeighbour: leftNeighbour,
+      distanceToLeftNeighbour: distanceToLeftNeighbour,
+      rightNeighbour: rightNeighbour,
+      distanceToRightNeighbour: distanceToRightNeighbour
+    };
+  }
+
+  onMouseMoved(e) {
+    const activePlotLine = this.getActivePlotLine();
+    if (!activePlotLine) return;
+
+    e.preventDefault();
+
+    const bounds = this.calcBounds(e);
+    const leftNeighbour = bounds.leftNeighbour;
+    const distanceToLeftNeighbour = bounds.distanceToLeftNeighbour;
+    const rightNeighbour = bounds.rightNeighbour;
+    const distanceToRightNeighbour = bounds.distanceToRightNeighbour;
+    const activePlotbandOptions = this.getActivePlotBand().options;
+    const offset_translatePlotLine =
       -activePlotLine.svgElem.getBBox().x +
       this.chart.current.chart.plotBox.x * 0.08;
+    const offset_translatePlotBand =
+      -this.chart.current.chart.plotBox.x * 1.5 - 160;
 
+    // move the currencly active plotline with the mousepointer
     activePlotLine.svgElem.translate(
       Math.max(
-        distanceToLeftNeighbour,
-        Math.min(e.chartX + offsetTranslatePlotLine, distanceToRightNeighbour)
+        -distanceToLeftNeighbour,
+        Math.min(e.chartX + offset_translatePlotLine, distanceToRightNeighbour)
       ),
       0
     );
 
-    let plotband = this.getPlotbandByLabelId(activeLabelId);
-    let plotbandOptions = plotband.options;
-    this.chart.current.chart.xAxis[0].removePlotBand(plotbandOptions.id);
-    const offsetTranslatePlotBand =
-      -this.chart.current.chart.plotBox.x * 1.5 - 160;
-
-    //TODO: delete logs
-    console.log('cur pos ' + (e.pageX + offsetTranslatePlotBand));
-    console.log('left ' + leftNeighbour + ', right ' + rightNeighbour);
-    console.log(
-      'translate ' +
-        (e.pageX + offsetTranslatePlotBand) +
-        ', corrected ' +
-        Math.max(
-          leftNeighbour,
-          Math.min(e.pageX + offsetTranslatePlotBand, rightNeighbour)
-        )
-    );
-
+    // instead of moving the plotband along with the plotline, it is deleted and redrawn with the new mousepointer coordinates
+    let fixedPosition = activePlotLine.options.isLeftPlotline
+      ? activePlotbandOptions.to
+      : activePlotbandOptions.from;
     let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
       Math.max(
         leftNeighbour,
-        Math.min(e.pageX + offsetTranslatePlotBand, rightNeighbour)
+        Math.min(e.pageX + offset_translatePlotBand, rightNeighbour)
       )
     );
-    let fixedPosition = activePlotLine.options.isLeftPlotline
-      ? plotbandOptions.to
-      : plotbandOptions.from; // TODO
 
+    this.chart.current.chart.xAxis[0].removePlotBand(activePlotbandOptions.id);
     this.chart.current.chart.xAxis[0].addPlotBand({
       from: activePlotLine.options.isLeftPlotline
         ? draggedPosition
@@ -439,35 +478,46 @@ class TimeSeriesPanel extends Component {
       to: activePlotLine.options.isLeftPlotline
         ? fixedPosition
         : draggedPosition,
-      color: plotbandOptions.color,
-      className: plotbandOptions.className,
-      id: plotbandOptions.id,
-      labelId: plotbandOptions.labelId,
-      label: plotbandOptions.label,
-      zIndex: plotbandOptions.zIndex,
-      isSelected: plotbandOptions.isSelected
+      color: activePlotbandOptions.color,
+      className: activePlotbandOptions.className,
+      id: activePlotbandOptions.id,
+      labelId: activePlotbandOptions.labelId,
+      label: activePlotbandOptions.label,
+      zIndex: activePlotbandOptions.zIndex,
+      isSelected: activePlotbandOptions.isSelected
     });
   }
 
   onMouseUp(e, id) {
-    const plotLine = this.getActivePlotLine();
-    if (!plotLine) return;
+    const activePlotLine = this.getActivePlotLine();
+    if (!activePlotLine) return;
 
-    plotLine.options.isActive = false;
+    const bounds = this.calcBounds(e, activePlotLine);
+    const leftNeighbour = bounds.leftNeighbour;
+    const rightNeighbour = bounds.rightNeighbour;
+    const offset =
+      -this.chart.current.chart.plotBox.x * 1.5 +
+      this.chart.current.chart.plotBox.x * 0.08 -
+      160;
+
+    activePlotLine.options.isActive = false;
+
+    // add + 1 to the distance so that the plotlines do not directly overlap
+    // if they were to overlap, one could not drag both labels again, but had to drag one a bit away first and then move the other
     let newValue = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX -
-        this.chart.current.chart.plotBox.x * 1.5 +
-        this.chart.current.chart.plotBox.x * 0.08 -
-        160
+      Math.max(
+        leftNeighbour + 1,
+        Math.min(e.pageX + offset, rightNeighbour - 1)
+      )
     );
 
     let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(
-      plotLine.options.id,
-      plotLine.options.labelId
+      activePlotLine.options.id,
+      activePlotLine.options.labelId
     ).options.value;
 
     this.state.onLabelChanged(
-      plotLine.options.labelId,
+      activePlotLine.options.labelId,
       newValue,
       remainingValue
     );
@@ -634,6 +684,30 @@ class TimeSeriesPanel extends Component {
       []
     );
 
+    /*
+    (in depth explanation can be found in the docs of "this.calcBounds(e)")
+    This is a hacky way to get the righthand bounds x-coordinates of the timeline . 
+    The min/max x-coordinates of the timeseries timesteps do not correspond to the timeline x-coords showing the labels.
+    The minimum timeline x-coordinate is simple: 0. But we need the max values as well
+    The max x-coord can be obtained by inserting a dummy plotline with the max timeseries timestep at the very end,
+    and letting highcharts automatcally calculate its relative timeline x-coords. 
+    */
+    const rightBoundInvisibleDummyPlotline = {
+      id: -1,
+      labelId: -1,
+      value: this.props.end,
+      className: 'plotline',
+      zIndex: 3,
+      width: 0,
+      color: '#fff',
+      isActive: false,
+      isSelected: false,
+      isPlotline: true,
+      isLeftPlotline: false,
+      isInvisible: true
+    };
+    plotLines.push(rightBoundInvisibleDummyPlotline);
+
     return plotLines;
   }
 
@@ -700,6 +774,13 @@ class TimeSeriesPanel extends Component {
     )[0];
 
     return plotLine;
+  }
+
+  getActivePlotBand() {
+    const activePlotLine = this.getActivePlotLine();
+    if (!activePlotLine) return;
+
+    return this.getPlotbandByLabelId(activePlotLine.options.labelId);
   }
 
   getSecondBoundaryByPlotLineIdAndLabelId(id, labelId) {
