@@ -35,7 +35,7 @@ module.exports.generateDataset = (timeData, dataset) => {
     const datasets = [];
     const labelings = [];
     for (var i = 0; i < timeData.length; i++) {
-      dataset = generateSingleTimeSeries(timeData[i]);
+      dataset = processCSVColumn(timeData[i]);
       datasets.push(dataset.dataset);
       labelings.push(dataset.labeling);
     }
@@ -157,11 +157,28 @@ function extractTimeSeries(timeData, i) {
 
 function extractLabel(timeData, i) {
   const labelNames = [];
+
+  const labelingName = timeData[0][i].split('_')[1];
+  const labelName = timeData[0][i].split('_')[2];
+
   const labeling = {
-    name: timeData[0][i].replace('label_', '')
+    name: labelingName
   };
 
-  for (var j = 1; j < timeData.length; j++) {
+  const labels = [
+    {
+      name: labelName,
+      color: generateRandomColor(),
+      isNewLabel: true
+    }
+  ];
+
+  const datasetLabel = {
+    name: labelingName,
+    labels: []
+  };
+
+  /*for (var j = 1; j < timeData.length; j++) {
     const label = timeData[j][i];
     if (!labelNames.includes(label) && label !== '') {
       labelNames.push(label);
@@ -179,9 +196,9 @@ function extractLabel(timeData, i) {
   const datasetLabel = {
     name: timeData[0][i].replace('label_', ''),
     labels: []
-  };
+  };*/
 
-  for (var j = 1; j < timeData.length; j++) {
+  /*for (var j = 1; j < timeData.length; j++) {
     if (timeData[j][i] !== '') {
       var found = timeData[j][i];
       var start = timeData[j][0];
@@ -195,11 +212,26 @@ function extractLabel(timeData, i) {
       });
       j--;
     }
+  }*/
+
+  for (var j = 1; j < timeData.length; j++) {
+    if (timeData[j][i] !== '') {
+      var start = timeData[j][0];
+      while (j < timeData.length && '' !== timeData[j][i]) {
+        j++;
+      }
+      datasetLabel.labels.push({
+        start: start,
+        end: timeData[j - 1][0],
+        name: labelName
+      });
+      j--;
+    }
   }
   return { datasetLabel: datasetLabel, labeling: labeling, labels: labels };
 }
 
-function generateSingleTimeSeries(timeData) {
+function processCSVColumn(timeData) {
   try {
     const timeSeries = [];
     const labelings = [];
@@ -214,13 +246,37 @@ function generateSingleTimeSeries(timeData) {
       }
     }
 
+    const uniquelabelingNames = new Set(
+      labelings.map(elm => elm.labeling.name)
+    );
+    const resultingLabelings = [];
+    uniquelabelingNames.forEach(labelingName => {
+      const labelingToAppend = {
+        datasetLabel: { name: labelingName, labels: [] },
+        labeling: { name: labelingName },
+        labels: []
+      };
+      labelingToAppend.labels.push(
+        ...labelings
+          .filter(elm => elm.labeling.name === labelingName)
+          .map(data => data.labels)
+          .flat(1)
+      );
+      labelingToAppend.datasetLabel.labels = labelings
+        .filter(elm => elm.labeling.name === labelingName)
+        .map(data => data.datasetLabel.labels)
+        .flat(1);
+      resultingLabelings.push(labelingToAppend);
+    });
+
     const result = {
       start: timeSeries[0].start,
       end: parseInt(timeData[timeData.length - 1][0], 10),
       timeSeries: timeSeries
     };
-    return { dataset: result, labeling: labelings };
+    return { dataset: result, labeling: resultingLabelings };
   } catch (err) {
+    console.log(err);
     return { error: err.error };
   }
 }
