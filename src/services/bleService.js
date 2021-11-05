@@ -64,8 +64,8 @@ module.exports.prepareSensorBleObject = sensorArray => {
 
 module.exports.findDeviceIdById = (devices, deviceName) => {
   if (deviceName === 'Arduino') deviceName = 'nicla';
-  return devices.find(
-    elm => deviceName.toLowerCase() === elm.name.toLowerCase()
+  return devices.find(elm =>
+    deviceName.toLowerCase().includes(elm.name.toLowerCase())
   )._id;
 };
 
