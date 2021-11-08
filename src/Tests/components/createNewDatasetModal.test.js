@@ -103,13 +103,7 @@ describe('Sucess cases', () => {
         .find('#labelName0')
         .first()
         .text()
-    ).toEqual('label1');
-    expect(
-      wrapper
-        .find('#labelName1')
-        .first()
-        .text()
-    ).toEqual('label2');
+    ).toEqual('labeling1');
   });
 });
 

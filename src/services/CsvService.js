@@ -31,16 +31,27 @@ module.exports.processCSV = files => {
 };
 
 module.exports.generateDataset = (timeData, dataset) => {
-  if (!dataset) {
-    const datasets = [];
-    const labelings = [];
-    for (var i = 0; i < timeData.length; i++) {
-      dataset = processCSVColumn(timeData[i]);
+  const headerErrors = checkHeaders(timeData);
+  if (headerErrors.some(elm => elm.length > 0)) {
+    return headerErrors;
+  }
+  const datasets = [];
+  const labelings = [];
+  const errors = [];
+  for (var i = 0; i < timeData.length; i++) {
+    dataset = processCSVColumn(timeData[i]);
+    if (!Array.isArray(dataset)) {
       datasets.push(dataset.dataset);
       labelings.push(dataset.labeling);
+      errors.push([]);
+    } else {
+      errors.push(dataset);
     }
-    return { datasets: datasets, labelings: labelings };
   }
+  if (errors.some(elm => elm.length > 0)) {
+    return errors;
+  }
+  return { datasets: datasets, labelings: labelings };
 };
 
 module.exports.generateCSV = (dataset, props_labelings) => {
@@ -133,7 +144,6 @@ module.exports.generateCSV = (dataset, props_labelings) => {
 };
 
 function extractTimeSeries(timeData, i) {
-  console.log(timeData);
   const timeSeries = {
     name: timeData[0][i].replace('sensor_', '').split('[')[0],
     unit: timeData[0][i].match(/\[(.*)\]/).pop(),
@@ -142,15 +152,16 @@ function extractTimeSeries(timeData, i) {
     data: []
   };
   for (var j = 1; j < timeData.length; j++) {
-    if (isNaN(timeData[j][0])) {
-      throw { error: 'Timestamps cannot be missing' };
+    if (timeData[j][0] === '') {
+      throw { error: 'Timestamp missing in line ' + j };
     }
-    if (!isNaN(timeData[j][i])) {
-      timeSeries.data.push({
-        timestamp: parseInt(timeData[j][0], 10),
-        datapoint: parseInt(timeData[j][i], 10)
-      });
+    if (!isNumber(timeData[j][0])) {
+      throw { error: 'Timestamp is not a number in line ' + j };
     }
+    timeSeries.data.push({
+      timestamp: parseInt(timeData[j][0], 10),
+      datapoint: parseInt(timeData[j][i], 10)
+    });
   }
   return timeSeries;
 }
@@ -178,42 +189,6 @@ function extractLabel(timeData, i) {
     labels: []
   };
 
-  /*for (var j = 1; j < timeData.length; j++) {
-    const label = timeData[j][i];
-    if (!labelNames.includes(label) && label !== '') {
-      labelNames.push(label);
-    }
-  }
-
-  const labels = labelNames.map(label => {
-    return {
-      name: label,
-      color: generateRandomColor(),
-      isNewLabel: true
-    };
-  });
-
-  const datasetLabel = {
-    name: timeData[0][i].replace('label_', ''),
-    labels: []
-  };*/
-
-  /*for (var j = 1; j < timeData.length; j++) {
-    if (timeData[j][i] !== '') {
-      var found = timeData[j][i];
-      var start = timeData[j][0];
-      while (j < timeData.length && found === timeData[j][i]) {
-        j++;
-      }
-      datasetLabel.labels.push({
-        start: start,
-        end: timeData[j - 1][0],
-        name: found
-      });
-      j--;
-    }
-  }*/
-
   for (var j = 1; j < timeData.length; j++) {
     if (timeData[j][i] !== '') {
       var start = timeData[j][0];
@@ -237,6 +212,10 @@ function processCSVColumn(timeData) {
     const labelings = [];
     const numDatasets = timeData[0].length - 1;
     for (var i = 1; i <= numDatasets; i++) {
+      const csvLength = timeData[0].length;
+      if (timeData.some(elm => elm.length !== csvLength)) {
+        throw { error: 'Csv file is missing elements' };
+      }
       if (timeData[0][i].startsWith('sensor_')) {
         timeSeries.push(extractTimeSeries(timeData, i));
       } else if (timeData[0][i].startsWith('label_')) {
@@ -276,8 +255,7 @@ function processCSVColumn(timeData) {
     };
     return { dataset: result, labeling: resultingLabelings };
   } catch (err) {
-    console.log(err);
-    return { error: err.error };
+    return [{ error: err.error }];
   }
 }
 
@@ -327,3 +305,32 @@ module.exports.extendExistingDataset = (dataset, newDatasets) => {
   }
   return fusedDataset;
 };
+
+function checkHeaders(timeData) {
+  const errors = [];
+  for (var i = 0; i < timeData.length; i++) {
+    const currentErrors = [];
+    const header = timeData[i][0];
+    if (header[0] !== 'time') {
+      currentErrors.push({ error: "Header must start with 'time'" });
+      errors.push(currentErrors);
+      continue;
+    }
+    for (var j = 1; j < header.length; j++) {
+      if (
+        !/label_.+_.+/gm.test(header[j]) &&
+        !/sensor_[^\[\]]+(\[.*\])?/gm.test(header[j])
+      ) {
+        currentErrors.push({
+          error:
+            "Wrong header format: Must start with 'sensor_' or 'label_' in colum " +
+            j
+        });
+      }
+    }
+    errors.push(currentErrors);
+  }
+  return errors;
+}
+
+module.exports.checkHeaders = checkHeaders;
