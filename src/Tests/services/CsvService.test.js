@@ -3,7 +3,8 @@ import {
   processCSV,
   generateDataset,
   generateLabeledDataset,
-  checkHeaders
+  checkHeaders,
+  extendExistingDataset
 } from '../../services/CsvService';
 
 import { readFakeCsvFile } from '../testUtils';
@@ -16,7 +17,12 @@ import {
   processedCsvNoLabels,
   proccessedCsvLabels,
   generatedDatasetNoLabels,
-  generatedDatasetLabels
+  generatedDatasetLabels,
+  extractedLabelings,
+  extractedLabels,
+  currentLabelings,
+  currentDatasets,
+  labeledDataset
 } from '../fakeData/data_csv/processedCSVData';
 
 jest.mock('../../services/ColorService');
@@ -39,7 +45,6 @@ describe('Testing function processCSV', () => {
 
 describe('Generate dataset and labels', () => {
   it('Success case without labels', () => {
-    generateRandomColor.mockReturnValue('#ff00ff');
     const data = generateDataset(processedCsvNoLabels);
     expect(data).toEqual(generatedDatasetNoLabels);
   });
@@ -50,30 +55,52 @@ describe('Generate dataset and labels', () => {
     expect(data).toEqual(generatedDatasetLabels);
   });
 
-  it('Missing timestamp with no labels', () => {
-    generateRandomColor.mockReturnValue('#ff00ff');
-    const resultProcessCsvMissingTimestamp = JSON.parse(
-      JSON.stringify(processedCsvNoLabels)
-    );
-    resultProcessCsvMissingTimestamp[0][2][0] = '';
-    const data = generateDataset(resultProcessCsvMissingTimestamp);
-    expect(data).toMatchObject([[{ error: 'Timestamp missing in line 2' }]]);
+  it('Missing timestamp', async () => {
+    const file = readFakeCsvFile('full_timestampMissing.csv');
+    const rawData = await processCSV([file]);
+    const data = generateDataset(rawData);
+    expect(data).toMatchObject([[{ error: 'Timestamp missing in row 3' }]]);
   });
 
-  it('Timestamp is not a number', () => {
-    generateRandomColor.mockReturnValue('#ff00ff');
-    const resultProcessCsvMissingTimestamp = JSON.parse(
-      JSON.stringify(processedCsvNoLabels)
-    );
-    resultProcessCsvMissingTimestamp[0][2][0] = 'abc';
-    const data = generateDataset(resultProcessCsvMissingTimestamp);
+  it('Timestamp is not a number', async () => {
+    const file = readFakeCsvFile('full_timestampNotNumeric.csv');
+    const rawData = await processCSV([file]);
+    const data = generateDataset(rawData);
     expect(data).toMatchObject([
-      [{ error: 'Timestamp is not a number in line 2' }]
+      [{ error: 'Timestamp is not a number in row 3' }]
     ]);
   });
-});
 
-describe('Check for header errors', () => {
+  it('label header missing', async () => {
+    const file = readFakeCsvFile('full_headerMissing.csv');
+    const rawData = await processCSV([file]);
+    const data = generateDataset(rawData);
+    expect(data).toMatchObject([[{ error: "Header must start with 'time'" }]]);
+  });
+
+  it('Sensor value is not a number', async () => {
+    const file = readFakeCsvFile('full_sensorValue_notNumber.csv');
+    const rawData = await processCSV([file]);
+    const data = generateDataset(rawData);
+    expect(data).toMatchObject([
+      [{ error: 'Sensor value is not a number in row 3, column 2' }]
+    ]);
+  });
+
+  it('Just header not data in csv file', async () => {
+    const file = readFakeCsvFile('full_noData_justHeader.csv');
+    const rawData = await processCSV([file]);
+    const data = generateDataset(rawData);
+    expect(data).toMatchObject([[{ error: 'No data in csv file' }]]);
+  });
+
+  it('Just data not header in csv file', async () => {
+    const file = readFakeCsvFile('full_headerMissing.csv');
+    const rawData = await processCSV([file]);
+    const data = generateDataset(rawData);
+    expect(data).toMatchObject([[{ error: "Header must start with 'time'" }]]);
+  });
+
   it('No header errors', () => {
     const checkResult = checkHeaders(processedCsvNoLabels);
     expect(checkResult).toEqual([[]]);
@@ -98,14 +125,14 @@ describe('Check for header errors', () => {
       [
         {
           error:
-            "Wrong header format: Must start with 'sensor_' or 'label_' in colum 1"
+            "Wrong header format: Must start with 'sensor_' or 'label_' in colum 2"
         }
       ]
     ]);
   });
 });
 
-describe.skip('Generate labeled dataset', () => {
+describe('Generate labeled dataset', () => {
   it('Success case', () => {
     const resultDataset = generateLabeledDataset(
       extractedLabelings,

@@ -153,10 +153,15 @@ function extractTimeSeries(timeData, i) {
   };
   for (var j = 1; j < timeData.length; j++) {
     if (timeData[j][0] === '') {
-      throw { error: 'Timestamp missing in line ' + j };
+      throw { error: `Timestamp missing in row ${j + 1}` };
     }
     if (!isNumber(timeData[j][0])) {
-      throw { error: 'Timestamp is not a number in line ' + j };
+      throw { error: `Timestamp is not a number in row ${j + 1}` };
+    }
+    if (!isNumber(timeData[j][i])) {
+      throw {
+        error: `Sensor value is not a number in row ${j + 1}, column ${i + 1}`
+      };
     }
     timeSeries.data.push({
       timestamp: parseInt(timeData[j][0], 10),
@@ -214,7 +219,10 @@ function processCSVColumn(timeData) {
     for (var i = 1; i <= numDatasets; i++) {
       const csvLength = timeData[0].length;
       if (timeData.some(elm => elm.length !== csvLength)) {
-        throw { error: 'Csv file is missing elements' };
+        throw { error: 'Each row needs the same number of elements' };
+      }
+      if (timeData.length < 2) {
+        throw { error: 'No data in csv file' };
       }
       if (timeData[0][i].startsWith('sensor_')) {
         timeSeries.push(extractTimeSeries(timeData, i));
@@ -322,9 +330,8 @@ function checkHeaders(timeData) {
         !/sensor_[^\[\]]+(\[.*\])?/gm.test(header[j])
       ) {
         currentErrors.push({
-          error:
-            "Wrong header format: Must start with 'sensor_' or 'label_' in colum " +
-            j
+          error: `Wrong header format: Must start with 'sensor_' or 'label_' in colum ${j +
+            1}`
         });
       }
     }
