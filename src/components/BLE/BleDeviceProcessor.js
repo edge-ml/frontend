@@ -60,14 +60,6 @@ class BleDeviceProcessor {
     }
   }
 
-  startCollectcollectSensorData() {
-    const cacheData = value => {
-      var sensor = value.getUint8(0);
-      var parsedData = parseData(this.sensors[sensor], value);
-      this.sensorData.set(sensor, parsedData);
-    };
-  }
-
   async startRecording(selectedSensors, sampleRate, latency, datasetName) {
     var oldDatasets = (await getDatasets()).map(elm => elm._id);
     this.newDataset = (
@@ -79,24 +71,27 @@ class BleDeviceProcessor {
       )
     ).filter(elm => !oldDatasets.includes(elm._id))[0];
     await this.prepareRecording(selectedSensors, sampleRate, latency);
-    this.startCollectcollectSensorData();
     var recordingStart = new Date().getTime();
+    var adjustedTime = false;
     const recordData = value => {
       var sensor = value.getUint8(0);
       var timestamp = value.getUint32(2, true);
+      if (!adjustedTime) {
+        adjustedTime = true;
+        recordingStart -= timestamp;
+      }
       var parsedData = parseData(this.sensors[sensor], value);
       this.recordedData.push({
         sensor: sensor,
-        time: timestamp,
+        time: timestamp + recordingStart,
         data: parsedData
       });
       if (
-        this.recordedData.length > 2000 ||
+        this.recordedData.length > 1000 ||
         timestamp - recordingStart > 300000
       ) {
         this.uploadCache(this.recordedData);
         this.recordedData = [];
-        recordingStart = new Date().getTime();
       }
     };
     this.sensorDataCharacteristic.startNotifications();
