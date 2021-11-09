@@ -66,11 +66,6 @@ class BleDeviceProcessor {
       var parsedData = parseData(this.sensors[sensor], value);
       this.sensorData.set(sensor, parsedData);
     };
-    this.sensorDataCharacteristic.startNotifications();
-    this.sensorDataCharacteristic.addEventListener(
-      'characteristicvaluechanged',
-      event => cacheData(event.target.value)
-    );
   }
 
   async startRecording(selectedSensors, sampleRate, latency, datasetName) {
@@ -86,25 +81,28 @@ class BleDeviceProcessor {
     await this.prepareRecording(selectedSensors, sampleRate, latency);
     this.startCollectcollectSensorData();
     var recordingStart = new Date().getTime();
-    const dataRecorder = () => {
-      const time = new Date().getTime();
-      for (const [sensor, sensorData] of this.sensorData.entries()) {
-        this.recordedData.push({
-          sensor: sensor,
-          time: time,
-          data: sensorData
-        });
-      }
-      if (this.recordedData.length > 2000 || time - recordingStart > 300000) {
+    const recordData = value => {
+      var sensor = value.getUint8(0);
+      var timestamp = value.getUint32(2, true);
+      var parsedData = parseData(this.sensors[sensor], value);
+      this.recordedData.push({
+        sensor: sensor,
+        time: timestamp,
+        data: parsedData
+      });
+      if (
+        this.recordedData.length > 2000 ||
+        timestamp - recordingStart > 300000
+      ) {
         this.uploadCache(this.recordedData);
         this.recordedData = [];
         recordingStart = new Date().getTime();
       }
     };
-    dataRecorder();
-    this.recordInterval = setInterval(
-      dataRecorder,
-      Math.floor(1000 / sampleRate)
+    this.sensorDataCharacteristic.startNotifications();
+    this.sensorDataCharacteristic.addEventListener(
+      'characteristicvaluechanged',
+      event => recordData(event.target.value)
     );
   }
 
