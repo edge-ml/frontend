@@ -221,13 +221,18 @@ class ListPage extends Component {
                           <small>
                             If you have already collected data you can upload it
                             to edge-ml by following our{' '}
+                            <a href="https://github.com/edge-ml/edge-ml/wiki#CSV-Header-Format">
+                              pre-defined CSV format
+                            </a>
+                            . Click{' '}
                             <a
                               href="/example_file.csv"
                               download="example_file.csv"
                             >
-                              pre-defined CSV format
-                            </a>
-                            . You can also upload pre-labeled data.
+                              here
+                            </a>{' '}
+                            to download an example CSV file. You can also upload
+                            pre-labeled data.
                           </small>
                         </div>
                         <Button

@@ -558,7 +558,10 @@ class App extends Component {
                     <div
                       className="pt-3 pb-3 navbar-project-item w-100 text-center"
                       onClick={() =>
-                        window.open('https://github.com/edge-ml/docs', '_blank')
+                        window.open(
+                          'https://github.com/edge-ml/edge-ml/wiki',
+                          '_blank'
+                        )
                       }
                     >
                       <small>
