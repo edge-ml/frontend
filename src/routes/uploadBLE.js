@@ -8,7 +8,8 @@ import BlePanelConnectDevice from '../components/BLE/BlePanelConnectDevice';
 
 import {
   getDevices,
-  getDeviceById
+  getDeviceById,
+  getDeviceByNameAndGeneration
 } from '../services/ApiServices/DeviceService';
 
 import {
@@ -62,7 +63,11 @@ class UploadBLE extends Component {
     this.sensorConfigCharacteristicUuid =
       '34c2e3bd-34aa-11eb-adc1-0242ac120002';
     this.sensorDataCharacteristicUuid = '34c2e3bc-34aa-11eb-adc1-0242ac120002';
+    this.deviceInfoServiceUuid = '45622510-6468-465a-b141-0b9b0f96b468';
+    this.deviceIdentifierUuid = '45622511-6468-465a-b141-0b9b0f96b468';
+    this.deviceGenerationUuid = '45622512-6468-465a-b141-0b9b0f96b468';
     this.bleDeviceProcessor = undefined;
+    this.textEncoder = new TextDecoder('utf-8');
   }
 
   componentDidMount() {
@@ -159,16 +164,14 @@ class UploadBLE extends Component {
   async getDeviceInfo() {
     try {
       let options = {
-        filters: [{ services: [this.sensorServiceUuid] }]
+        filters: [{ services: [this.deviceInfoServiceUuid] }]
       };
-      const bleDevice = await navigator.bluetooth.requestDevice(options);
-      const deviceInfo = await getDeviceById(
-        findDeviceIdById(this.state.devices, bleDevice.name)
-      );
-      this.setState({
-        connectedDeviceData: deviceInfo.device,
-        deviceSensors: prepareSensorBleObject(deviceInfo.sensors)
-      });
+      let newOptions = {
+        acceptAllDevices: true,
+        optionalServices: [this.deviceInfoServiceUuid, this.sensorServiceUuid]
+      };
+      //const bleDevice = await navigator.bluetooth.requestDevice(options);
+      const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
       return bleDevice;
     } catch (error) {
       console.log('Request device error: ' + error);
@@ -182,6 +185,30 @@ class UploadBLE extends Component {
     bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
     const primaryService = await bleDevice.gatt.connect().then(server => {
       return server.getPrimaryService(this.sensorServiceUuid);
+    });
+    const deviceInfoService = await bleDevice.gatt.connect().then(server => {
+      return server.getPrimaryService(this.deviceInfoServiceUuid);
+    });
+    const deviceIdentifierCharacteristic = await deviceInfoService.getCharacteristic(
+      this.deviceIdentifierUuid
+    );
+    const deviceGenerationCharacteristic = await deviceInfoService.getCharacteristic(
+      this.deviceGenerationUuid
+    );
+    const deviceIdentifierArrayBuffer = await deviceIdentifierCharacteristic.readValue();
+    const deviceGenerationArrayBuffer = await deviceGenerationCharacteristic.readValue();
+    const deviceName = this.textEncoder.decode(deviceIdentifierArrayBuffer);
+    const deviceGeneration = this.textEncoder.decode(
+      deviceGenerationArrayBuffer
+    );
+    const deviceInfo = await getDeviceByNameAndGeneration(
+      deviceName,
+      deviceGeneration
+    );
+    console.log(deviceInfo);
+    this.setState({
+      connectedDeviceData: deviceInfo.device,
+      deviceSensors: prepareSensorBleObject(deviceInfo.sensors)
     });
     return [bleDevice, primaryService];
   }
