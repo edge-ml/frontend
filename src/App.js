@@ -334,6 +334,12 @@ class App extends Component {
     const projectAvailable = this.state.projects
       ? this.state.projects[projectIndex]
       : undefined;
+
+    const modalOpen =
+      this.state.userSettingsModalOpen ||
+      this.state.projectEditModalOpen ||
+      this.state.userSettingsModalOpen;
+
     return (
       <div>
         <EditProjectModal
@@ -630,6 +636,7 @@ class App extends Component {
                         {...props}
                         userName={this.state.userName}
                         userMail={this.state.userMail}
+                        modalOpen={modalOpen}
                         project={
                           this.state.projects.filter(
                             x => x._id === this.state.currentProjectId

@@ -221,7 +221,7 @@ class DatasetPage extends Component {
   }
 
   onKeyDown(e) {
-    if (this.state.modalOpen) {
+    if (this.state.modalOpen || this.props.modalOpen) {
       return;
     }
     let keyCode = e.keyCode ? e.keyCode : e.which;
