@@ -60,19 +60,6 @@ class BleDeviceProcessor {
     }
   }
 
-  startCollectcollectSensorData() {
-    const cacheData = value => {
-      var sensor = value.getUint8(0);
-      var parsedData = parseData(this.sensors[sensor], value);
-      this.sensorData.set(sensor, parsedData);
-    };
-    this.sensorDataCharacteristic.startNotifications();
-    this.sensorDataCharacteristic.addEventListener(
-      'characteristicvaluechanged',
-      event => cacheData(event.target.value)
-    );
-  }
-
   async startRecording(selectedSensors, sampleRate, latency, datasetName) {
     var oldDatasets = (await getDatasets()).map(elm => elm._id);
     this.newDataset = (
@@ -84,27 +71,33 @@ class BleDeviceProcessor {
       )
     ).filter(elm => !oldDatasets.includes(elm._id))[0];
     await this.prepareRecording(selectedSensors, sampleRate, latency);
-    this.startCollectcollectSensorData();
     var recordingStart = new Date().getTime();
-    const dataRecorder = () => {
-      const time = new Date().getTime();
-      for (const [sensor, sensorData] of this.sensorData.entries()) {
-        this.recordedData.push({
-          sensor: sensor,
-          time: time,
-          data: sensorData
-        });
+    var adjustedTime = false;
+    const recordData = value => {
+      var sensor = value.getUint8(0);
+      var timestamp = value.getUint32(2, true);
+      if (!adjustedTime) {
+        adjustedTime = true;
+        recordingStart -= timestamp;
       }
-      if (this.recordedData.length > 2000 || time - recordingStart > 300000) {
+      var parsedData = parseData(this.sensors[sensor], value);
+      this.recordedData.push({
+        sensor: sensor,
+        time: timestamp + recordingStart,
+        data: parsedData
+      });
+      if (
+        this.recordedData.length > 1000 ||
+        timestamp - recordingStart > 300000
+      ) {
         this.uploadCache(this.recordedData);
         this.recordedData = [];
-        recordingStart = new Date().getTime();
       }
     };
-    dataRecorder();
-    this.recordInterval = setInterval(
-      dataRecorder,
-      Math.floor(1000 / sampleRate)
+    this.sensorDataCharacteristic.startNotifications();
+    this.sensorDataCharacteristic.addEventListener(
+      'characteristicvaluechanged',
+      event => recordData(event.target.value)
     );
   }
 

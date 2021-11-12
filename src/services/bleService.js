@@ -1,8 +1,7 @@
 module.exports.parseData = (sensor, data) => {
   var scheme = sensor.parseScheme;
-  // dataIndex start from 2 because the first bytes of the packet indicate
-  // the sensor id and the data size
-  var dataIndex = 0 + 2;
+  // 1 byte sensor, 1 byte size, 4 bytes timestamp in milliseconds, the the data starting from 6th byte
+  var dataIndex = 6;
   var value = 0;
   var values = [];
   scheme.forEach(element => {
@@ -62,12 +61,13 @@ module.exports.prepareSensorBleObject = sensorArray => {
   return result;
 };
 
+/*
 module.exports.findDeviceIdById = (devices, deviceName) => {
   if (deviceName === 'Arduino') deviceName = 'nicla';
   return devices.find(elm =>
     deviceName.toLowerCase().includes(elm.name.toLowerCase())
   )._id;
-};
+};*/
 
 module.exports.getBaseDataset = (sensors, datasetName) => {
   const timeSeries = [];

@@ -17,7 +17,8 @@ module.exports.getDevices = () => {
   });
 };
 
-module.exports.getDeviceById = deviceId => {
+/*
+module.exports.getDeviceById = (deviceId) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -26,8 +27,24 @@ module.exports.getDeviceById = deviceId => {
         apiConsts.API_ENDPOINTS.DEVICE + `/${deviceId}`
       )
     )
-      .then(data => {
+      .then((data) => {
         console.log(data.data);
+        resolve(data.data);
+      })
+      .catch((err) => reject(err.response));
+  });
+};*/
+
+module.exports.getDeviceByNameAndGeneration = (name, generation) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DEVICE + `/${name}` + `/${generation}`
+      )
+    )
+      .then(data => {
         resolve(data.data);
       })
       .catch(err => reject(err.response));
