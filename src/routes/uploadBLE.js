@@ -32,7 +32,6 @@ class UploadBLE extends Component {
       latency: 0,
       datasetName: '',
       recorderState: 'ready', // ready, startup, recording, finalizing
-      devices: undefined,
       deviceSensors: undefined,
       selectedSensors: new Set()
     };
@@ -68,14 +67,6 @@ class UploadBLE extends Component {
     this.deviceGenerationUuid = '45622512-6468-465a-b141-0b9b0f96b468';
     this.bleDeviceProcessor = undefined;
     this.textEncoder = new TextDecoder('utf-8');
-  }
-
-  componentDidMount() {
-    getDevices().then(data => {
-      this.setState({
-        devices: data
-      });
-    });
   }
 
   onDatasetNameChanged(e) {
@@ -152,8 +143,7 @@ class UploadBLE extends Component {
     }
     this.state.connectedBLEDevice.gatt.disconnect();
     this.setState({
-      ...this.baseState,
-      devices: this.state.devices
+      ...this.baseState
     });
   }
 
@@ -170,8 +160,8 @@ class UploadBLE extends Component {
         acceptAllDevices: true,
         optionalServices: [this.deviceInfoServiceUuid, this.sensorServiceUuid]
       };
-      //const bleDevice = await navigator.bluetooth.requestDevice(options);
-      const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
+      const bleDevice = await navigator.bluetooth.requestDevice(options);
+      //const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
       return bleDevice;
     } catch (error) {
       console.log('Request device error: ' + error);
