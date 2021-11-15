@@ -275,3 +275,12 @@ div.card {
     max-width: 100%;
   }
 }
+
+/* Highcart stuff */
+.highcharts-plot-band {
+  cursor: pointer;
+}
+
+.highcharts-plot-band:hover {
+  opacity: 0.3;
+}

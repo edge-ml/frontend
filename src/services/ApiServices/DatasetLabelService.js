@@ -19,12 +19,13 @@ module.exports.createDatasetLabel = (datasetId, labelingId, label) => {
   });
 };
 
-module.exports.changeDatasetLabel = (datasetId, labelingId) => {
+module.exports.changeDatasetLabel = (datasetId, labelingId, changedLabel) => {
   return axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.PUT,
       apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS + `/${datasetId}/labels/${labelingId}`
+      apiConsts.API_ENDPOINTS.DATASETS + `/${datasetId}/labels/${labelingId}`,
+      changedLabel
     )
   );
 };

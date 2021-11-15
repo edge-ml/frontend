@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Col, Row, Fade, Button } from 'reactstrap';
-import Highcharts from 'highcharts/highstock';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
 import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
@@ -17,13 +16,12 @@ import {
 } from '../services/ApiServices/DatasetServices';
 
 import {
+  changeDatasetLabel,
   createDatasetLabel,
-  createLabel,
   deleteDatasetLabel
 } from '../services/ApiServices/DatasetLabelService';
 
 import Loader from '../modules/loader';
-import VideoPanel from '../components/VideoPanel/VideoPanel';
 
 import crypto from 'crypto';
 
@@ -648,6 +646,7 @@ class DatasetPage extends Component {
     const newLabel = newLabeling.labels.find(label => label._id === labelId);
     newLabel.start = Math.min(start, end);
     newLabel.end = Math.max(start, end);
+    changeDatasetLabel(newDataset._id, newLabeling.labelingId, newLabel);
   }
 
   onDeleteSelectedLabel() {
