@@ -219,6 +219,7 @@ div.card {
 }
 
 .navbar-project-item {
+  cursor: pointer;
   color: #666;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */

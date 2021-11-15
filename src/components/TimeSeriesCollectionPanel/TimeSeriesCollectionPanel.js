@@ -97,6 +97,8 @@ class TimeSeriesCollectionPanel extends Component {
           numSeries={
             this.state.timeSeries.length + this.state.fusedSeries.length + 1
           }
+          onClickPosition={this.props.onClickPosition}
+          onLabelPositionUpdate={this.props.onLabelPositionUpdate}
         />
 
         {this.state.timeSeries.length === 0 ? (
@@ -122,8 +124,8 @@ class TimeSeriesCollectionPanel extends Component {
             drawingPosition={this.props.drawingPosition}
             newPosition={this.props.newPosition}
             updateControlStates={this.props.updateControlStates}
-            clearDrawingInterval={this.props.clearDrawingInterval}
-            drawingInterval={this.props.drawingInterval}
+            onClickPosition={this.props.onClickPosition}
+            onLabelPositionUpdate={this.props.onLabelPositionUpdate}
           />
         ) : null}
 
@@ -154,8 +156,8 @@ class TimeSeriesCollectionPanel extends Component {
             drawingPosition={this.props.drawingPosition}
             newPosition={this.props.newPosition}
             updateControlStates={this.props.updateControlStates}
-            clearDrawingInterval={this.props.clearDrawingInterval}
-            drawingInterval={this.props.drawingInterval}
+            onClickPosition={this.props.onClickPosition}
+            onLabelPositionUpdate={this.props.onLabelPositionUpdate}
           />
         ))}
         {this.state.fusedSeries
@@ -198,8 +200,8 @@ class TimeSeriesCollectionPanel extends Component {
                 drawingPosition={this.props.drawingPosition}
                 newPosition={this.props.newPosition}
                 updateControlStates={this.props.updateControlStates}
-                clearDrawingInterval={this.props.clearDrawingInterval}
-                drawingInterval={this.props.drawingInterval}
+                onClickPosition={this.props.onClickPosition}
+                onLabelPositionUpdate={this.props.onLabelPositionUpdate}
               />
             );
           })}

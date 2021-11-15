@@ -42,8 +42,6 @@ class App extends Component {
       userName: undefined,
       isLoggedIn: false,
       twoFAEnabled: false,
-      videoEnaled: false,
-      playButtonEnabled: false,
       currentUserMail: undefined,
       projects: undefined,
       currentProjectId: undefined,
@@ -58,7 +56,6 @@ class App extends Component {
     this.logoutHandler = this.logoutHandler.bind(this);
     this.onLogout = this.onLogout.bind(this);
     this.onLogin = this.onLogin.bind(this);
-    this.toggleVideoOptions = this.toggleVideoOptions.bind(this);
     this.setAccessToken = this.setAccessToken.bind(this);
     this.getCurrentUserMail = this.getCurrentUserMail.bind(this);
     this.setCurrentUserMail = this.setCurrentUserMail.bind(this);
@@ -318,13 +315,6 @@ class App extends Component {
     this.onLogout(true);
   }
 
-  toggleVideoOptions(videoStatus, playButtonStatus) {
-    this.setState({
-      videoEnaled: videoStatus,
-      playButtonEnabled: playButtonStatus
-    });
-  }
-
   render() {
     var projectIndex = this.state.projects
       ? this.state.projects.findIndex(
@@ -445,7 +435,8 @@ class App extends Component {
                                 className="navbar-project pr-1"
                                 style={{
                                   overflow: 'hidden',
-                                  textOverflow: 'ellipsis'
+                                  textOverflow: 'ellipsis',
+                                  cursor: 'pointer'
                                 }}
                               >
                                 <b>{project.name}</b>
@@ -548,7 +539,8 @@ class App extends Component {
                         backgroundColor: '#eee',
                         border: '0px solid transparent',
                         color: '#666',
-                        fontSize: '0.9rem'
+                        fontSize: '0.9rem',
+                        cursor: 'pointer'
                       }}
                     >
                       <FontAwesomeIcon

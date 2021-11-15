@@ -15,34 +15,23 @@ import {
   deleteDataset,
   getDataset
 } from '../services/ApiServices/DatasetServices';
+
+import {
+  createDatasetLabel,
+  createLabel,
+  deleteDatasetLabel
+} from '../services/ApiServices/DatasetLabelService';
+
 import Loader from '../modules/loader';
 import VideoPanel from '../components/VideoPanel/VideoPanel';
 
+import crypto from 'crypto';
+
 class DatasetPage extends Component {
   constructor(props) {
-    let isSandbox = props.location.pathname === '/datasets/sandbox';
-
-    var now = new Date().getTime();
-    const dataset = isSandbox
-      ? {
-          id: 'sandbox',
-          userId: 'sandboxUser',
-          email: 'sand@box.com',
-          start: now - 500000,
-          end: now - 80000,
-          tags: ['Sandbox Tag'],
-          isPublished: false,
-          timeSeries: [],
-          labelings: [],
-          fusedSeries: []
-        }
-      : null;
-
     super(props);
     this.state = {
-      dataset: this.props.location.state
-        ? this.props.location.state.dataset
-        : dataset,
+      dataset: undefined,
       labelings: [],
       labels: [],
       isReady: false,
@@ -70,7 +59,6 @@ class DatasetPage extends Component {
       this
     );
     this.onSelectedLabelChanged = this.onSelectedLabelChanged.bind(this);
-    this.onLabelChanged = this.onLabelChanged.bind(this);
     this.onDeleteSelectedLabel = this.onDeleteSelectedLabel.bind(this);
     this.onCanEditChanged = this.onCanEditChanged.bind(this);
     this.addTimeSeries = this.addTimeSeries.bind(this);
@@ -87,12 +75,7 @@ class DatasetPage extends Component {
     this.onScrubbed = this.onScrubbed.bind(this);
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
     this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
-    this.onPlay = this.onPlay.bind(this);
     this.updateControlStates = this.updateControlStates.bind(this);
-    this.setDrawingInterval = this.setDrawingInterval.bind(this);
-    this.clearDrawingInterval = this.clearDrawingInterval.bind(this);
-    this.setCrosshairInterval = this.setCrosshairInterval.bind(this);
-    this.clearCrosshairInterval = this.clearCrosshairInterval.bind(this);
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
     this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
     this.setModalOpen = this.setModalOpen.bind(this);
@@ -101,6 +84,8 @@ class DatasetPage extends Component {
     this.onSetUnit = this.onSetUnit.bind(this);
     this.onSetAllUnit = this.onSetAllUnit.bind(this);
     this.onSetAllName = this.onSetAllName.bind(this);
+    this.onClickPosition = this.onClickPosition.bind(this);
+    this.onLabelPositionUpdate = this.onLabelPositionUpdate.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
@@ -345,13 +330,6 @@ class DatasetPage extends Component {
           window.alert('Editing not unlocked. Press "L" to unlock.');
         }
       }
-
-      // space
-    } else if (keyCode === 32) {
-      if (this.state.playButtonEnabled) {
-        e.preventDefault();
-        this.onPlay();
-      }
     }
   }
 
@@ -521,203 +499,6 @@ class DatasetPage extends Component {
     });
   }
 
-  onPlay() {
-    if (!this.state.controlStates.canEdit) return;
-
-    if (this.drawingInterval) {
-      this.clearDrawingInterval();
-      return;
-    }
-
-    let charts = Highcharts.charts;
-    if (charts.length < 2) return;
-
-    if (this.state.controlStates.selectedLabelId) {
-      let labeling = this.state.dataset.labelings.filter(
-        labeling =>
-          labeling.labelingId === this.state.controlStates.selectedLabelingId
-      )[0];
-
-      let label = labeling.labels.filter(
-        label => label['_id'] === this.state.controlStates.selectedLabelId
-      )[0];
-
-      this.updateControlStates(
-        this.state.controlStates.selectedLabelId,
-        label.start,
-        label.end,
-        this.state.controlStates.canEdit,
-        false
-      );
-      this.setDrawingInterval();
-    } else if (
-      this.state.controlStates.drawingId &&
-      this.state.controlStates.drawingPosition
-    ) {
-      this.setDrawingInterval();
-    } else if (
-      this.state.controlStates.drawingId &&
-      !this.state.controlStates.drawingPosition
-    ) {
-      let id = this.state.controlStates.drawingId;
-
-      let plotLinesAndBands = charts[1].xAxis[0].plotLinesAndBands;
-      let plotLines = plotLinesAndBands.filter(item => item.options.isPlotline);
-      if (plotLines.length === 0) return;
-
-      let plotLine = plotLines[plotLines.length - 1];
-      if (!plotLine.options.isLeftPlotline) return;
-      let position = plotLine.options.value;
-
-      this.updateControlStates(id, position, undefined, true, false);
-      this.setDrawingInterval();
-    } else if (!this.state.controlStates.drawingId) {
-      let charts = Highcharts.charts;
-      if (charts.length < 2) return;
-
-      if (this.crosshairInterval) {
-        let drawingPosition = this.state.controlStates.drawingPosition;
-        this.clearCrosshairInterval();
-
-        this.updateControlStates(null, drawingPosition, undefined, true, true);
-        this.setDrawingInterval();
-      } else if (
-        !charts[1].xAxis[0].plotLinesAndBands.some(
-          plotline => plotline.id === 'plotline_cursor'
-        )
-      ) {
-        let position;
-        if (this.state.controlStates.drawingPosition) {
-          position = this.state.controlStates.drawingPosition;
-        } else {
-          position = this.state.dataset.start;
-        }
-
-        charts.forEach((chart, index) => {
-          if (index !== 0) {
-            chart.xAxis[0].addPlotLine({
-              value: position,
-              id: 'plotline_cursor',
-              dashStyle: 'ShortDot',
-              width: 2,
-              color: '#bfbfbf'
-            });
-          }
-        });
-
-        this.updateControlStates(
-          undefined,
-          position + 500,
-          undefined,
-          this.state.controlStates.canEdit,
-          true
-        );
-        this.setCrosshairInterval();
-      }
-    }
-  }
-
-  setDrawingInterval() {
-    this.drawingInterval = setInterval(() => {
-      let id = this.state.controlStates.drawingId;
-      let position = this.state.controlStates.drawingPosition;
-
-      let newPosition = this.state.controlStates.newPosition
-        ? this.state.controlStates.newPosition + 500
-        : position + 500;
-
-      if (newPosition >= this.state.dataset.end) {
-        this.clearDrawingInterval();
-        return;
-      }
-
-      this.updateControlStates(
-        id,
-        position,
-        newPosition,
-        this.state.controlStates.canEdit,
-        this.state.controlStates.fromLastPosition
-      );
-
-      let difference = newPosition - this.state.dataset.start;
-      this.onScrubbed(difference / 1000);
-
-      this.onLabelChanged(id, position, newPosition);
-    }, 10);
-  }
-
-  clearDrawingInterval() {
-    clearInterval(this.drawingInterval);
-    this.drawingInterval = false;
-
-    this.updateControlStates(
-      undefined,
-      this.state.controlStates.fromLastPosition
-        ? this.state.controlStates.newPosition
-        : undefined,
-      undefined,
-      this.state.controlStates.canEdit,
-      this.state.controlStates.fromLastPosition
-    );
-  }
-
-  setCrosshairInterval() {
-    let charts = Highcharts.charts;
-    if (charts.length < 2) return;
-
-    this.crosshairInterval = setInterval(() => {
-      let position = this.state.controlStates.drawingPosition;
-      if (position >= this.state.dataset.end) {
-        this.clearCrosshairInterval();
-        return;
-      }
-
-      charts.forEach((chart, index) => {
-        if (index !== 0) {
-          chart.xAxis[0].removePlotLine('plotline_cursor');
-          chart.xAxis[0].addPlotLine({
-            value: position,
-            id: 'plotline_cursor',
-            dashStyle: 'ShortDot',
-            width: 2,
-            color: '#bfbfbf'
-          });
-        }
-      });
-
-      this.updateControlStates(
-        undefined,
-        position + 500,
-        undefined,
-        this.state.controlStates.canEdit,
-        true
-      );
-
-      let difference = position + 500 - this.state.dataset.start;
-      this.onScrubbed(difference / 1000);
-    }, 10);
-  }
-
-  clearCrosshairInterval() {
-    clearInterval(this.crosshairInterval);
-    this.crosshairInterval = false;
-
-    this.updateControlStates(
-      undefined,
-      undefined,
-      undefined,
-      this.state.controlStates.canEdit,
-      this.state.controlStates.fromLastPosition
-    );
-
-    let charts = Highcharts.charts;
-    charts.forEach((chart, index) => {
-      if (index !== 0) {
-        chart.xAxis[0].removePlotLine('plotline_cursor');
-      }
-    });
-  }
-
   onSelectedLabelingIdChanged(selectedLabelingId) {
     let labeling = this.state.labelings.filter(
       labeling => labeling['_id'] === selectedLabelingId
@@ -782,113 +563,96 @@ class DatasetPage extends Component {
     });
   }
 
-  onLabelChanged(labelId, start, end, callback) {
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-    let labeling = dataset.labelings.filter(
-      labeling =>
-        labeling.labelingId === this.state.controlStates.selectedLabelingId
-    )[0];
+  onClickPosition(position) {
+    const labelingIdx = this.state.labelings.findIndex(
+      elm => elm._id === this.state.controlStates.selectedLabelingId
+    );
 
-    let labelingOrLabelAdded = false;
-
-    if (!labeling) {
-      const labelingId = this.state.controlStates.selectedLabelingId;
-      const labelingName = this.state.labelings.filter(
-        obj => obj._id === labelingId
-      )[0].name;
-
-      labeling = {
-        labels: [],
-        labelingId: labelingId,
-        labelingName: labelingName,
-        creator: this.state.dataset.userId
+    // First time to click
+    if (!this.state.controlStates.drawingId) {
+      const randomId = crypto.randomBytes(20).toString('hex');
+      const newLabel = {
+        start: position,
+        end: undefined,
+        _id: randomId,
+        type:
+          this.state.controlStates.selectedLabelTypeId ||
+          this.state.controlStates.selectedLabelTypes[0]['_id']
       };
-
-      dataset.labelings = [...dataset.labelings, labeling];
-      labelingOrLabelAdded = true;
-    }
-
-    let label = {};
-
-    if (labelId === null) {
-      // Clicking for the first time
-      label = {
-        start: start,
-        end: end,
-        name: this.state.controlStates.selectedLabelTypes[0]['name'],
-        type: this.state.controlStates.selectedLabelTypeId
-          ? this.state.controlStates.selectedLabelTypeId
-          : this.state.controlStates.selectedLabelTypes[0]['_id']
-      };
-
-      labeling.labels = [...labeling.labels, label];
-      labelingOrLabelAdded = true;
-    } else {
-      // Clicking for the second time
-      label = labeling.labels.filter(label => label['_id'] === labelId)[0];
-      if (label !== undefined && label.start === undefined) {
-        label.start = start === undefined ? start : end;
-      } else if (label !== undefined && label.end === undefined) {
-        label.end = start === undefined ? start : end;
+      const newDataset = this.state.dataset;
+      if (labelingIdx < 0) {
+        newDataset.labelings.push({
+          labelingId: this.state.controlStates.selectedLabelingId,
+          labels: [newLabel]
+        });
       } else {
-        label.start = start;
-        label.end = end;
+        newDataset.labelings[labelingIdx].labels.push(newLabel);
       }
-    }
-
-    let temp;
-    if (label.start > label.end) {
-      temp = label.start;
-      label.start = label.end;
-      label.end = temp;
-    }
-    label._id = 'fakeID';
-    if (labelingOrLabelAdded) {
-      let labeling = dataset.labelings.filter(
-        labeling =>
-          labeling.labelingId === this.state.controlStates.selectedLabelingId
-      )[0];
-      this.onSelectedLabelChanged('fakeID');
       this.setState({
-        dataset: dataset,
+        dataset: newDataset,
         controlStates: {
           ...this.state.controlStates,
-          drawingId: labeling.labels[labeling.labels.length - 1]['_id'],
-          drawingPosition: labelId === null ? 'fakePosition' : undefined
+          drawingPosition: position,
+          drawingId: randomId
         }
       });
     } else {
-      const dataSetCopy = JSON.parse(JSON.stringify(dataset));
-      dataset.labelings.forEach(elm => {
-        elm.labels.forEach(label => {
-          if (label._id === 'fakeID') {
-            delete label._id;
+      // Click for the second time to finish label creation
+      const newDataset = this.state.dataset;
+      const labelIdx = newDataset.labelings[labelingIdx].labels.findIndex(
+        elm => elm._id === this.state.controlStates.drawingId
+      );
+      const newLabel = newDataset.labelings[labelingIdx].labels[labelIdx];
+      newLabel.start = Math.min(newLabel.start, position);
+      newLabel.end = Math.max(newLabel.start, position);
+      this.setState({
+        dataset: newDataset,
+        controlStates: {
+          ...this.state.controlStates,
+          drawingPosition: undefined,
+          drawingId: undefined,
+          selectedLabelId: newLabel._id,
+          selectedLabelTypeId: newLabel.type
+        }
+      });
+      createDatasetLabel(
+        newDataset._id,
+        this.state.controlStates.selectedLabelingId,
+        {
+          ...newDataset.labelings[labelingIdx].labels[labelIdx],
+          _id: undefined
+        }
+      ).then(generatedLabel => {
+        const labelIdx = newDataset.labelings[labelingIdx].labels.findIndex(
+          elm => elm._id === newLabel._id
+        );
+        newDataset.labelings[labelingIdx].labels[labelIdx] = generatedLabel;
+        this.setState({
+          dataset: newDataset,
+          controlStates: {
+            ...this.state.controlStates,
+            selectedLabelId: generatedLabel._id,
+            selectedLabelTypeId: generatedLabel.type
           }
         });
-      });
-      this.setState({ dataset: dataSetCopy });
-      const oldLabels = this.state.dataset.labelings
-        .find(
-          elm => elm.labelingId === this.state.controlStates.selectedLabelingId
-        )
-        .labels.map(elm1 => elm1._id);
-      updateDataset(dataset).then(newDataset => {
-        const newLabels = newDataset.labelings
-          .find(
-            elm =>
-              elm.labelingId === this.state.controlStates.selectedLabelingId
-          )
-          .labels.map(elm => elm._id);
-        const newLabelId = newLabels.find(elm => !oldLabels.includes(elm));
-        this.onSelectedLabelChanged(newLabelId);
-        this.setState({ dataset: newDataset });
       });
     }
   }
 
+  onLabelPositionUpdate(labelId, start, end) {
+    const newDataset = this.state.dataset;
+    const newLabeling = newDataset.labelings.find(
+      labeling =>
+        labeling.labelingId === this.state.controlStates.selectedLabelingId
+    );
+    const newLabel = newLabeling.labels.find(label => label._id === labelId);
+    newLabel.start = Math.min(start, end);
+    newLabel.end = Math.max(start, end);
+  }
+
   onDeleteSelectedLabel() {
     if (window.confirm('Are you sure to delete this label?')) {
-      let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+      let dataset = this.state.dataset;
       let labeling = dataset.labelings.filter(
         labeling =>
           labeling.labelingId === this.state.controlStates.selectedLabelingId
@@ -904,8 +668,11 @@ class DatasetPage extends Component {
           elm => elm._id != labeling._id
         );
       }
-
-      updateDataset(dataset);
+      deleteDatasetLabel(
+        dataset._id,
+        this.state.controlStates.selectedLabelingId,
+        this.state.controlStates.selectedLabelId
+      );
       this.setState({
         dataset,
         controlStates: {
@@ -918,11 +685,9 @@ class DatasetPage extends Component {
   }
 
   onCanEditChanged(canEdit) {
-    if (!this.drawingInterval) {
-      this.setState({
-        controlStates: { ...this.state.controlStates, canEdit: canEdit }
-      });
-    }
+    this.setState({
+      controlStates: { ...this.state.controlStates, canEdit: canEdit }
+    });
   }
 
   onScrubbed(position) {}
@@ -949,15 +714,15 @@ class DatasetPage extends Component {
     let selectedDatasetlabeling = this.state.dataset.labelings.filter(
       labeling => selectedLabeling['_id'] === labeling.labelingId
     )[0];
+
     if (!selectedDatasetlabeling) selectedDatasetlabeling = {};
     let selectedDatasetLabel =
       selectedDatasetlabeling && selectedDatasetlabeling.labels
         ? selectedDatasetlabeling.labels.filter(
-            label => label['_id'] === this.state.controlStates.selectedLabelId
+            label => label['type'] === this.state.controlStates.selectedLabelId
           )[0]
         : null;
 
-    let isDrawingIntervalActive = this.drawingInterval ? true : false;
     let isCrosshairIntervalActive = this.crosshairInterval ? true : false;
 
     const startOffset = Math.min(
@@ -1006,7 +771,6 @@ class DatasetPage extends Component {
                   selectedLabelId={this.state.controlStates.selectedLabelId}
                   start={this.state.dataset.start + startOffset}
                   end={this.state.dataset.end + endOffset}
-                  onLabelChanged={this.onLabelChanged}
                   canEdit={this.state.controlStates.canEdit}
                   onScrubbed={this.onScrubbed}
                   onShift={this.onShiftTimeSeries}
@@ -1015,8 +779,8 @@ class DatasetPage extends Component {
                   drawingPosition={this.state.controlStates.drawingPosition}
                   newPosition={this.state.controlStates.newPosition}
                   updateControlStates={this.updateControlStates}
-                  clearDrawingInterval={this.clearDrawingInterval}
-                  drawingInterval={this.drawingInterval}
+                  onClickPosition={this.onClickPosition}
+                  onLabelPositionUpdate={this.onLabelPositionUpdate}
                 />
                 <Button
                   block
@@ -1029,11 +793,6 @@ class DatasetPage extends Component {
               </div>
             </Col>
             <Col xs={12} lg={3}>
-              {this.state.videoEnabled ? (
-                <div>
-                  <VideoPanel ref={this.videoPanel} />
-                </div>
-              ) : null}
               <div className="mt-2">
                 <MetadataPanel
                   id={this.state.dataset['_id']}
@@ -1071,10 +830,7 @@ class DatasetPage extends Component {
                 onDeleteSelectedLabel={this.onDeleteSelectedLabel}
                 onCanEditChanged={this.onCanEditChanged}
                 canEdit={this.state.controlStates.canEdit}
-                onPlay={this.onPlay}
-                isDrawingIntervalActive={isDrawingIntervalActive}
                 isCrosshairIntervalActive={isCrosshairIntervalActive}
-                playButtonEnabled={this.state.playButtonEnabled}
               />
             </Col>
             <Col />

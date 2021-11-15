@@ -264,15 +264,6 @@ class TimeSeriesPanel extends Component {
    * Global Mouse Handlers
    */
   onMouseDown(e) {
-    /*if (
-      !(
-        e.target.classList.contains('highcharts-background') ||
-        e.target.classList.contains('highcharts-grid-line') ||
-        e.target.classList.contains('highcharts-tracker-line')
-      )
-    )
-      return;
-*/
     var plotBand = this.getSelectedPlotBand();
     if (plotBand) {
       this.onPlotBandMouseDown(
@@ -281,56 +272,25 @@ class TimeSeriesPanel extends Component {
         plotBand.options.labelId
       );
       return;
-    } else {
-      if (!this.props.canEdit) return;
-      let position = this.chart.current.chart.xAxis[0].toValue(
-        e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160 // TODO hack hardcoded 2 pixels how to fix?
+    }
+    if (!this.props.canEdit) {
+      return;
+    }
+    let position = this.chart.current.chart.xAxis[0].toValue(
+      e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160 // TODO hack hardcoded 2 pixels how to fix?
+    );
+
+    // Check if a label has been clicked
+    if (this.props.labeling && this.props.labeling.labels) {
+      const onLabel = this.props.labeling.labels.find(
+        elm => elm.start <= position && elm.end >= position
       );
-
-      if (this.props.labeling && this.props.labeling.labels) {
-        const onLabel = this.props.labeling.labels.find(
-          elm => elm.start <= position && elm.end >= position
-        );
-        if (onLabel) {
-          this.state.onLabelClicked(onLabel._id);
-          return;
-        }
-      }
-
-      if (!this.props.drawingId) {
-        this.props.updateControlStates(
-          null,
-          position,
-          undefined,
-          this.props.canEdit,
-          false
-        );
-        this.state.onLabelChanged(null, position, undefined);
-      } else if (!this.props.drawingPosition) {
-        this.state.onLabelChanged(this.props.drawingId, position, undefined);
-        this.props.updateControlStates(
-          this.props.drawingId,
-          position,
-          undefined,
-          this.props.canEdit,
-          false
-        );
+      if (onLabel) {
+        // Label has been clicked
+        this.props.onLabelClicked(onLabel._id);
+        return;
       } else {
-        this.state.onLabelChanged(
-          this.props.drawingId,
-          this.props.drawingPosition,
-          position
-        );
-        this.props.updateControlStates(
-          undefined,
-          undefined,
-          undefined,
-          this.props.canEdit
-        );
-
-        if (this.props.drawingInterval) {
-          this.props.clearDrawingInterval();
-        }
+        this.props.onClickPosition(position);
       }
     }
     e.stopPropagation();
@@ -390,7 +350,12 @@ class TimeSeriesPanel extends Component {
       plotLine.options.labelId
     ).options.value;
 
-    this.state.onLabelChanged(
+    /*this.state.onLabelChanged(
+      plotLine.options.labelId,
+      newValue,
+      remainingValue
+    );*/
+    this.props.onLabelPositionUpdate(
       plotLine.options.labelId,
       newValue,
       remainingValue
