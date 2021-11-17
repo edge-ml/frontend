@@ -195,13 +195,7 @@ class ProjectSettings extends Component {
   onDeleteProject() {
     var doDelete = window.confirm('Do you want to delete this project?');
     if (doDelete) {
-      deleteProject(this.state.project)
-        .then(data => {
-          this.props.onProjectsChanged(data);
-        })
-        .catch(() => {
-          window.alert('Could not delete project');
-        });
+      this.props.onDeleteProject(this.state.project);
     }
   }
 
