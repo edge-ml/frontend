@@ -232,6 +232,11 @@ div.card {
   background-color: #ddd;
 }
 
+.navbar-project-item-active {
+  color: black;
+  background-color: #ddd;
+}
+
 .navbar-project  {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -273,4 +278,33 @@ div.card {
   .container {
     max-width: 100%;
   }
+}
+
+/* Customize modals*/
+
+.modal-header {
+  justify-content: center;
+}
+
+.modal-title {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+/* Nice spacing for tables */
+.table-record > * {
+  width: 33%;
+  vertical-align: middle !important;
+}
+
+.table-record-left {
+  text-align: left;
+}
+
+.table-record-right {
+  text-align: right;
+}
+
+.table-record-center {
+  text-align: center;
 }

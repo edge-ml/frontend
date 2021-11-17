@@ -35,7 +35,7 @@ class AutocompleteInput extends Component {
         this.openMenu();
       });
     }
-    this.props.onChange(e);
+    this.props.onChange ? this.props.onChange(e) : null;
   }
 
   openMenu() {
@@ -59,7 +59,6 @@ class AutocompleteInput extends Component {
   }
 
   onKeyDown(e) {
-    console.log('Keydown');
     var selectedIndex = 0;
     switch (e.key) {
       case 'ArrowDown':
@@ -79,7 +78,7 @@ class AutocompleteInput extends Component {
         newEvent.target.value = this.state.suggestions[
           this.state.selectedIndex
         ];
-        this.props.onChange(newEvent);
+        this.props.onClick ? this.props.onClick(newEvent) : null;
         this.closeMenu();
         break;
       case 'Escape':
@@ -96,8 +95,9 @@ class AutocompleteInput extends Component {
   onItemClick(e, index) {
     const newEvent = e;
     newEvent.target.value = this.state.suggestions[index];
-    this.props.onChange(newEvent);
+    this.props.onClick ? this.props.onClick(newEvent) : null;
     this.closeMenu();
+    e.preventDefault();
   }
 
   render() {
@@ -109,6 +109,7 @@ class AutocompleteInput extends Component {
           {...inputProps}
           autoComplete="off"
           onChange={this.onInputChange}
+          onClick={e => e.preventDefault()}
         ></Input>
         {this.state.menuOpen ? (
           <div className="autocomplete-menu" id="autocomplete-menu">
