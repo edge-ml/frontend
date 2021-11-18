@@ -587,8 +587,10 @@ class DatasetPage extends Component {
     );
 
     if (
-      !this.state.controlStates.selectedLabelTypeId ||
-      !this.state.controlStates.selectedLabelTypes.length
+      !(
+        this.state.controlStates.selectedLabelTypeId ||
+        this.state.controlStates.selectedLabelTypes.length > 0
+      )
     ) {
       this.showSnackbar('No labels available', 5000);
       return;
