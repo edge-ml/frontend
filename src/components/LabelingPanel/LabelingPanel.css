@@ -1,5 +1,4 @@
 .LabelingPanel {
-  position: fixed;
   bottom: 15px;
   left: 15px;
   width: calc(75% - 15px);
