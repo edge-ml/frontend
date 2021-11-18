@@ -17,6 +17,8 @@ import {
   faLightbulb
 } from '@fortawesome/free-solid-svg-icons';
 
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
 import { getProjects } from './services/ApiServices/ProjectService';
@@ -548,7 +550,22 @@ class App extends Component {
                     </div>
                   </div>
                   <div></div>
+
                   <div className="d-flex flex-column footer w-100 text-light justify-content-center align-items-center">
+                    <div
+                      className="pt-3 pb-3 navbar-project-item w-100 text-center"
+                      onClick={() =>
+                        window.open(
+                          'https://github.com/edge-ml/edge-ml/issues',
+                          '_blank'
+                        )
+                      }
+                    >
+                      <small>
+                        <FontAwesomeIcon icon={faGithub} className="mr-2" />
+                        Report a bug
+                      </small>
+                    </div>
                     <div
                       className="pt-3 pb-3 navbar-project-item w-100 text-center"
                       onClick={() =>
