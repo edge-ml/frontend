@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { NavbarBrand, Nav, NavItem, Button } from 'reactstrap';
-import { Route, NavLink } from 'react-router-dom';
-import CustomDropDownMenu from './components/CustomDropDownMenu/CustomDropDownMenu';
+import { NavbarBrand } from 'reactstrap';
+import { Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
@@ -33,6 +32,7 @@ import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal'
 import AppContent from './AppContent';
 import NoProjectPage from './components/NoProjectPage/NoProjectPage';
 import ErrorPage from './components/ErrorPage/ErrorPage';
+import { deleteProject } from './services/ApiServices/ProjectService';
 
 class App extends Component {
   constructor(props) {
@@ -70,6 +70,8 @@ class App extends Component {
     this.enable2FA = this.enable2FA.bind(this);
     this.changeURL = this.changeURL.bind(this);
     this.navigateTo = this.navigateTo.bind(this);
+    this.getNavBarItemClasses = this.getNavBarItemClasses.bind(this);
+    this.onDeleteProject = this.onDeleteProject.bind(this);
 
     this.props.history.listen(() => {
       const splitUrl = this.props.history.location.pathname
@@ -81,6 +83,12 @@ class App extends Component {
           projectLocation: splitUrl[2] // handle changes of location from other places
         });
       }
+    });
+  }
+
+  onDeleteProject(project) {
+    deleteProject(project).then(data => {
+      this.onProjectsChanged(data);
     });
   }
 
@@ -195,6 +203,19 @@ class App extends Component {
     this.setState({
       projectsOpen: !this.state.projectsOpen
     });
+  }
+
+  getNavBarItemClasses(location) {
+    const project = this.state.projects.filter(
+      x => x._id === this.state.currentProjectId
+    )[0];
+    const isSelected =
+      this.props.location.pathname ===
+      '/' + project.admin.userName + '/' + project.name + '/' + location;
+    return (
+      'pt-2 pb-2 pl-4 small ' +
+      (isSelected ? 'navbar-project-item-active' : 'navbar-project-item')
+    );
   }
 
   refreshProjects() {
@@ -341,6 +362,7 @@ class App extends Component {
           userName={this.state.userName}
           onClose={this.onProjectModalClose}
           projectChanged={this.onProjectsChanged}
+          userName={this.state.userName}
         ></EditProjectModal>
         <Route
           exact
@@ -448,15 +470,9 @@ class App extends Component {
                                   onClick={() => {
                                     this.navigateTo('datasets');
                                   }}
-                                  style={
-                                    this.state.projectLocation === 'datasets'
-                                      ? {
-                                          color: 'black',
-                                          backgroundColor: '#ddd'
-                                        }
-                                      : {}
-                                  }
-                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                  className={this.getNavBarItemClasses(
+                                    'datasets'
+                                  )}
                                 >
                                   <FontAwesomeIcon
                                     className="mr-2"
@@ -465,18 +481,12 @@ class App extends Component {
                                   Datasets
                                 </div>
                                 <div
+                                  className={this.getNavBarItemClasses(
+                                    'labelings'
+                                  )}
                                   onClick={() => {
                                     this.navigateTo('labelings');
                                   }}
-                                  style={
-                                    this.state.projectLocation === 'labelings'
-                                      ? {
-                                          color: 'black',
-                                          backgroundColor: '#ddd'
-                                        }
-                                      : {}
-                                  }
-                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
                                 >
                                   <FontAwesomeIcon
                                     className="mr-2"
@@ -488,15 +498,7 @@ class App extends Component {
                                   onClick={() => {
                                     this.navigateTo('model');
                                   }}
-                                  style={
-                                    this.state.projectLocation === 'model'
-                                      ? {
-                                          color: 'black',
-                                          backgroundColor: '#ddd'
-                                        }
-                                      : {}
-                                  }
-                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                  className={this.getNavBarItemClasses('model')}
                                 >
                                   <FontAwesomeIcon
                                     className="mr-2"
@@ -508,15 +510,9 @@ class App extends Component {
                                   onClick={() => {
                                     this.navigateTo('settings');
                                   }}
-                                  style={
-                                    this.state.projectLocation === 'settings'
-                                      ? {
-                                          color: 'black',
-                                          backgroundColor: '#ddd'
-                                        }
-                                      : {}
-                                  }
-                                  className="pt-2 pb-2 pl-4 small navbar-project-item"
+                                  className={this.getNavBarItemClasses(
+                                    'settings'
+                                  )}
                                 >
                                   <FontAwesomeIcon
                                     className="mr-2"
@@ -628,6 +624,7 @@ class App extends Component {
                         {...props}
                         userName={this.state.userName}
                         userMail={this.state.userMail}
+                        onDeleteProject={this.onDeleteProject}
                         modalOpen={modalOpen}
                         project={
                           this.state.projects.filter(

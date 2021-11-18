@@ -6,8 +6,12 @@ import {
   InputGroupText,
   Input,
   Table,
-  CustomInput
+  CustomInput,
+  Col,
+  Row
 } from 'reactstrap';
+
+import { Prompt } from 'react-router-dom';
 
 import {
   deleteProject,
@@ -22,23 +26,22 @@ import {
 import { API_URI } from './../services/ApiServices/ApiConstants';
 
 import NoProjectPage from './../components/NoProjectPage/NoProjectPage';
-import AutocompleteInput from '../components/AutoCompleteInput/AutocompleteInput';
 import { getUserNameSuggestions } from '../services/ApiServices/AuthentificationServices';
 import CodeSnippetModal from '../components/ApiSnippetsModal/CodeSnippetModal';
 import { FormGroup } from 'react-bootstrap';
+import AutoCompleteInput from '../components/AutoCompleteInput/AutocompleteInput';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 class ProjectSettings extends Component {
   constructor(props) {
     super(props);
     if (props.project) {
-      var objectCopy = JSON.parse(JSON.stringify(props.project));
       this.state = {
         error: undefined,
-        project: objectCopy,
-        originalProject: objectCopy,
-        originalUsers: objectCopy.users,
-        usersToDelete: [],
+        project: JSON.parse(JSON.stringify(props.project)),
         deviceKey: undefined,
+        userSearchValue: '',
         codeSnippetModalOpen: props.codeSnippetModalOpen || false
       };
     } else {
@@ -50,9 +53,7 @@ class ProjectSettings extends Component {
       };
     }
     this.onDeleteProject = this.onDeleteProject.bind(this);
-    this.onAddUser = this.onAddUser.bind(this);
     this.onNameChanged = this.onNameChanged.bind(this);
-    this.onDeleteUser = this.onDeleteUser.bind(this);
     this.onUserNameChange = this.onUserNameChange.bind(this);
     this.onSave = this.onSave.bind(this);
     this.toggleCheck = this.toggleCheck.bind(this);
@@ -61,6 +62,11 @@ class ProjectSettings extends Component {
     this.onDeviceApiSwitch = this.onDeviceApiSwitch.bind(this);
     this.toggleCodeSnippetModal = this.toggleCodeSnippetModal.bind(this);
     this.usersValid = this.usersValid.bind(this);
+    this.deleteUserName = this.deleteUserName.bind(this);
+    this.onChangeUserNameSuggestion = this.onChangeUserNameSuggestion.bind(
+      this
+    );
+    this.onAddUserName = this.onAddUserName.bind(this);
     this.init = this.init.bind(this);
     this.init();
     if (this.props.codeSnippetModalOpen) {
@@ -75,6 +81,22 @@ class ProjectSettings extends Component {
         }
       });
     }
+  }
+
+  onChangeUserNameSuggestion(e) {
+    this.setState({
+      userSearchValue: e.target.value
+    });
+  }
+
+  onAddUserName(e) {
+    e.preventDefault();
+    const project = this.state.project;
+    project.users.push({ userName: e.target.value });
+    this.setState({
+      project: project,
+      userSearchValue: ''
+    });
   }
 
   usersValid(users) {
@@ -142,19 +164,8 @@ class ProjectSettings extends Component {
   }
 
   onSave() {
-    var tmpUsers = this.state.project.users.filter(
-      elm => !this.state.usersToDelete.includes(elm)
-    );
-    tmpUsers = tmpUsers.filter(
-      elm =>
-        elm.userName !== this.props.userName &&
-        elm.userName !== this.props.userMail
-    );
-    updateProject({ ...this.state.project, users: tmpUsers })
+    updateProject(this.state.project)
       .then(data => {
-        const projectIndex = data.findIndex(
-          elm => elm._id === this.state.project._id
-        );
         this.props.onProjectsChanged(data);
       })
       .catch(err => {
@@ -164,16 +175,11 @@ class ProjectSettings extends Component {
       });
   }
 
-  onDeleteUser(index) {
-    const tmpUsers = this.state.project.users.filter(
-      (elm, idx) => idx !== index
-    );
+  deleteUserName(userName) {
+    const project = this.state.project;
+    project.users = project.users.filter(elm => elm.userName !== userName);
     this.setState({
-      project: {
-        ...this.state.project,
-        users: tmpUsers
-      },
-      error: undefined
+      project: project
     });
   }
 
@@ -186,21 +192,10 @@ class ProjectSettings extends Component {
     });
   }
 
-  onAddUser(e) {
-    var tmpProject = { ...this.state.project };
-    tmpProject.users.push({ _id: undefined, userName: '' });
-    this.setState({
-      project: tmpProject,
-      error: undefined
-    });
-  }
-
   onDeleteProject() {
     var doDelete = window.confirm('Do you want to delete this project?');
     if (doDelete) {
-      deleteProject(this.state.project).then(data =>
-        this.props.onProjectsChanged(data)
-      );
+      this.props.onDeleteProject(this.state.project);
     }
   }
 
@@ -219,7 +214,6 @@ class ProjectSettings extends Component {
     });
     let newPath;
     if (!open) {
-      //newPath = this.props.location.pathname.replace("/getCode", "");
       newPath = '.';
     } else {
       newPath = this.props.location.pathname.replace(
@@ -231,12 +225,24 @@ class ProjectSettings extends Component {
   }
 
   render() {
+    if (this.props.project && this.props.project.users) {
+      var originalUsers = this.props.project.users.map(elm => elm.userName);
+      var changes =
+        this.state.project.name !== this.props.project.name ||
+        !(
+          this.state.project.users.map(elm =>
+            originalUsers.includes(elm.user)
+          ) &&
+          this.state.project.users.length === this.props.project.users.length
+        );
+    }
+
     const backendUrl =
       API_URI.replace('/api/', '') === ''
         ? window.location.origin
         : API_URI.replace('/api/', '');
 
-    if (!this.state.project) {
+    if (!this.props.project) {
       return <NoProjectPage></NoProjectPage>;
     }
     return (
@@ -244,7 +250,7 @@ class ProjectSettings extends Component {
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <h3 style={{ marginBottom: '0px' }}>
-              {'Edit Project: ' + this.state.originalProject.name}
+              {'Edit Project: ' + this.props.project.name}
             </h3>
             {this.state.project.users ? (
               <Button
@@ -263,6 +269,7 @@ class ProjectSettings extends Component {
             </InputGroupAddon>
             <Input
               id="projectName"
+              readOnly={!this.props.project.users}
               placeholder={'Name'}
               value={this.state.project.name}
               onChange={e => this.onNameChanged(e.target.value)}
@@ -346,70 +353,49 @@ class ProjectSettings extends Component {
         {this.state.project.users ? (
           <div>
             <h5 style={{ paddingTop: '16px' }}>Users</h5>
+            <Row style={{ padding: '8px' }} className="user-search-heading">
+              <Col className="col-2 font-weight-bold">Search users: </Col>
+              <Col>
+                <AutoCompleteInput
+                  type="text"
+                  name="User ID"
+                  value={this.state.userSearchValue}
+                  placeholder="Enter username"
+                  onClick={this.onAddUserName}
+                  onChange={this.onChangeUserNameSuggestion}
+                  getsuggestions={getUserNameSuggestions}
+                  filter={[
+                    ...this.state.project.users.map(elm => elm.userName),
+                    this.props.userName
+                  ]}
+                ></AutoCompleteInput>
+              </Col>
+            </Row>
             <Table striped>
               <thead>
-                <tr>
-                  <th>Delete</th>
-                  <th>User</th>
-                  <th className="text-right">
-                    {' '}
-                    <Button
-                      id="buttonAddUser"
-                      color="primary"
-                      onClick={this.onAddUser}
-                    >
-                      Add +
-                    </Button>
-                  </th>
+                <tr className="table-record">
+                  <th className="table-record-left">#</th>
+                  <th className="table-record-center">User</th>
+                  <th className="table-record-right">Delete</th>
                 </tr>
               </thead>
               <tbody>
                 {this.state.project.users.map((user, index) => {
-                  const oldUser =
-                    this.state.originalUsers
-                      .map(elm => elm._id)
-                      .includes(user._id) && user._id !== undefined;
                   return (
-                    <tr key={user + index}>
-                      <td className="datasets-column">
-                        <Input
-                          id={'checkboxDeleteUser' + index}
-                          style={{ visibility: !oldUser ? 'hidden' : '' }}
-                          className="datasets-check"
-                          type="checkbox"
-                          checked={this.state.usersToDelete.includes(user)}
-                          onChange={e => this.toggleCheck(e, user)}
-                        />
-                      </td>
-                      <td>
-                        {oldUser ? (
-                          user.userName
-                        ) : (
-                          <AutocompleteInput
-                            getsuggestions={getUserNameSuggestions}
-                            filter={[
-                              ...this.state.project.users.map(
-                                elm => elm.userName
-                              ),
-                              this.state.project.admin.userName
-                            ]}
-                            id={'inputUserMail' + index}
-                            type="text"
-                            value={user.userName}
-                            placeholder="Enter username"
-                            onChange={e => this.onUserNameChange(index, e)}
-                          ></AutocompleteInput>
-                        )}
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
+                    <tr className="table-record" key={user + index}>
+                      <td className="table-record-left">{index + 1}</td>
+                      <td className="table-record-center">{user.userName}</td>
+                      <td className="datasets-column table-record-right">
                         <Button
-                          id={'buttonUserMail' + index}
-                          style={{ visibility: oldUser ? 'hidden' : '' }}
-                          className="btn-sm"
-                          color="secondary"
-                          onClick={() => this.onDeleteUser(index)}
+                          className="button-delete-user"
+                          color="danger"
+                          size="sm"
+                          onClick={() => this.deleteUserName(user.userName)}
                         >
-                          Remove
+                          <FontAwesomeIcon
+                            className="mr-2"
+                            icon={faTrash}
+                          ></FontAwesomeIcon>
                         </Button>
                       </td>
                     </tr>
@@ -452,8 +438,18 @@ class ProjectSettings extends Component {
           backendUrl={backendUrl}
           deviceApiKey={this.state.deviceKey}
         ></CodeSnippetModal>
+        <Prompt
+          when={changes}
+          message={(location, action) => {
+            if (this.props.location.pathname === location.pathname) {
+              return true;
+            }
+            return 'Changes have not been saved. Do you want to leave?';
+          }}
+        />
       </div>
     );
   }
 }
+
 export default ProjectSettings;

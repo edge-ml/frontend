@@ -1,0 +1,18 @@
+.user-search-heading {
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.user-search-heading > * {
+  padding: 8px;
+}
+
+.user-search-heading > div {
+  flex-shrink: 0;
+}
+
+.button-delete-user > * {
+  margin: 0 !important;
+}

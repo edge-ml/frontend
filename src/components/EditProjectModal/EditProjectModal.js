@@ -9,7 +9,9 @@ import {
   InputGroupAddon,
   InputGroupText,
   Input,
-  Table
+  Table,
+  Col,
+  Row
 } from 'reactstrap';
 
 import {
@@ -20,21 +22,55 @@ import {
 import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteInput';
 import { getUserNameSuggestions } from '../../services/ApiServices/AuthentificationServices';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+
+import './EditProjectModal.css';
+
 class EditProjectModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
       error: undefined,
+      userSearchValue: '',
       originalProject: undefined,
       project: undefined,
       originalUsers: []
     };
     this.onNameChanged = this.onNameChanged.bind(this);
     this.onSave = this.onSave.bind(this);
-    this.onAddUser = this.onAddUser.bind(this);
-    this.onDeleteUser = this.onDeleteUser.bind(this);
     this.onCancel = this.onCancel.bind(this);
     this.onUserNameChange = this.onUserNameChange.bind(this);
+    this.generateTableEntry = this.generateTableEntry.bind(this);
+    this.onAddUserName = this.onAddUserName.bind(this);
+    this.deleteUserName = this.deleteUserName.bind(this);
+    this.onChangeUserNameSuggestion = this.onChangeUserNameSuggestion.bind(
+      this
+    );
+  }
+
+  onChangeUserNameSuggestion(e) {
+    this.setState({
+      userSearchValue: e.target.value
+    });
+  }
+
+  deleteUserName(userName) {
+    const project = this.state.project;
+    project.users = project.users.filter(elm => elm.userName !== userName);
+    this.setState({
+      project: project
+    });
+  }
+
+  onAddUserName(e) {
+    e.preventDefault();
+    const project = this.state.project;
+    project.users.push({ userName: e.target.value });
+    this.setState({
+      project: project,
+      userSearchValue: ''
+    });
   }
 
   onUserNameChange(e, index) {
@@ -43,21 +79,6 @@ class EditProjectModal extends Component {
     project.users[index].userName = e.target.value;
     this.setState({
       project: project
-    });
-  }
-
-  onDeleteUser(user) {
-    var idx = this.state.originalUsers.findIndex(elm => elm === user);
-    var tmpOriginalUsers = [...this.state.originalUsers];
-    if (idx !== -1) {
-      tmpOriginalUsers.splice(idx, 1);
-    }
-    var tmpProject = { ...this.state.project };
-    var idxPrj = tmpProject.users.findIndex(elm => elm === user);
-    tmpProject.users.splice(idxPrj, 1);
-    this.setState({
-      originalUsers: tmpOriginalUsers,
-      project: tmpProject
     });
   }
 
@@ -101,14 +122,6 @@ class EditProjectModal extends Component {
     });
   }
 
-  onAddUser() {
-    var tmpProject = { ...this.state.project };
-    tmpProject.users.push({ _id: undefined, userName: '' });
-    this.setState({
-      project: tmpProject
-    });
-  }
-
   onCancel() {
     this.setState(
       {
@@ -120,6 +133,27 @@ class EditProjectModal extends Component {
       () => {
         this.props.onClose();
       }
+    );
+  }
+
+  generateTableEntry(userName, index) {
+    return (
+      <tr className="table-record" key={userName}>
+        <th scope="row" className="table-record-left">
+          {index + 1}
+        </th>
+        <td className="table-record-center">{userName}</td>
+        <td className="table-record-right">
+          <Button
+            className="button-delete-user"
+            color="danger"
+            size="sm"
+            onClick={() => this.deleteUserName(userName)}
+          >
+            <FontAwesomeIcon className="mr-2" icon={faTrash}></FontAwesomeIcon>
+          </Button>
+        </td>
+      </tr>
     );
   }
 
@@ -144,9 +178,20 @@ class EditProjectModal extends Component {
             </InputGroupAddon>
             <Input
               id="inputProjectName"
-              placeholder={'Name'}
+              placeholder={'Project-name'}
               value={this.state.project.name}
               onChange={e => this.onNameChanged(e.target.value)}
+            />
+          </InputGroup>
+          <InputGroup>
+            <InputGroupAddon addonType="prepend">
+              <InputGroupText>{'Admin'}</InputGroupText>
+            </InputGroupAddon>
+            <Input
+              readOnly
+              id="inputProjectAdmin"
+              placeholder={'Project-admin'}
+              value={this.props.userName}
             />
           </InputGroup>
           {this.props.isNewProject ? null : (
@@ -158,63 +203,39 @@ class EditProjectModal extends Component {
             </InputGroup>
           )}
           <h5 style={{ paddingTop: '16px' }}>Users</h5>
+
+          <Row className="user-search-heading">
+            <Col className="col-3">Search users: </Col>
+            <Col>
+              <AutoCompleteInput
+                type="text"
+                name="User ID"
+                value={this.state.userSearchValue}
+                placeholder="Enter username"
+                onClick={this.onAddUserName}
+                onChange={this.onChangeUserNameSuggestion}
+                getsuggestions={getUserNameSuggestions}
+                filter={[
+                  ...this.state.project.users.map(elm => elm.userName),
+                  this.props.userName
+                ]}
+              ></AutoCompleteInput>
+            </Col>
+          </Row>
           <Table striped>
             <thead>
-              <tr>
-                <th>#</th>
-                <th>User</th>
-                <th></th>
+              <tr className="table-record">
+                <th className="table-record-left">#</th>
+                <th className="table-record-center">UserName</th>
+                <th className="table-record-right">Delete</th>
               </tr>
             </thead>
             <tbody>
-              {this.state.project.users.map((user, index) => {
-                return (
-                  <tr key={user._id + index}>
-                    <th scope="row">{index}</th>
-                    <td>
-                      {this.state.originalUsers
-                        .map(elm => elm._id)
-                        .includes(user._id) && user._id !== '' ? (
-                        user.userName
-                      ) : (
-                        <AutoCompleteInput
-                          type="text"
-                          name="User ID"
-                          placeholder="Enter username"
-                          onChange={e => this.onUserNameChange(e, index)}
-                          value={user.userName}
-                          getsuggestions={getUserNameSuggestions}
-                          filter={[
-                            ...this.state.project.users.map(
-                              elm => elm.userName
-                            ),
-                            this.props.userName
-                          ]}
-                        ></AutoCompleteInput>
-                      )}
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <Button
-                        className="btn-sm"
-                        color="danger"
-                        onClick={() => this.onDeleteUser(user._id)}
-                      >
-                        Delete
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
+              {this.state.project.users.map((elm, index) =>
+                this.generateTableEntry(elm.userName, index)
+              )}
             </tbody>
           </Table>
-          <Button
-            id="btnAddUser"
-            color="primary"
-            className="btn-sm"
-            onClick={this.onAddUser}
-          >
-            Add +
-          </Button>
         </ModalBody>
         <ModalFooter style={{ justifyContent: 'space-between' }}>
           <Button

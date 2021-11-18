@@ -81,6 +81,7 @@ class AppContent extends Component {
                 <ProjectSettings
                   onProjectsChanged={this.props.onProjectsChanged}
                   userName={this.props.userName}
+                  onDeleteProject={this.props.onDeleteProject}
                   userMail={this.props.userMail}
                   {...props}
                 />
@@ -97,6 +98,7 @@ class AppContent extends Component {
                   codeSnippetModalOpen={true}
                   userName={this.props.userName}
                   userMail={this.props.userMail}
+                  onDeleteProject={this.props.onDeleteProject}
                   {...props}
                 />
               </ProjectRefresh>

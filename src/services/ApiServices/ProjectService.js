@@ -109,7 +109,6 @@ module.exports.updateProject = project => {
           });
       })
       .catch(err => {
-        console.log(err.data.error);
         reject(err.data.error);
       });
   });

@@ -32,9 +32,7 @@ describe('Render page', () => {
     getDeviceApiKey.mockReturnValue(
       Promise.resolve({ deviceApiKey: 'TestKey' })
     );
-    const wrapper = shallow(
-      <ProjectSettings project={undefined}></ProjectSettings>
-    );
+    const wrapper = shallow(<ProjectSettings></ProjectSettings>);
     expect(wrapper.find('NoProjectPage').exists()).toBe(true);
     expect(wrapper.find('NoProjectPage').props().text).toBe(undefined);
   });

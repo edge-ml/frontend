@@ -233,6 +233,11 @@ div.card {
   background-color: #ddd;
 }
 
+.navbar-project-item-active {
+  color: black;
+  background-color: #ddd;
+}
+
 .navbar-project  {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -276,6 +281,7 @@ div.card {
   }
 }
 
+
 /* Highcart stuff */
 .highcharts-plot-band {
   cursor: pointer;
@@ -300,4 +306,30 @@ div.card {
   width: calc(75% + 15px);
   display: flex;
   justify-content: center;
+
+.modal-header {
+  justify-content: center;
+}
+
+.modal-title {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+/* Nice spacing for tables */
+.table-record > * {
+  width: 33%;
+  vertical-align: middle !important;
+}
+
+.table-record-left {
+  text-align: left;
+}
+
+.table-record-right {
+  text-align: right;
+}
+
+.table-record-center {
+  text-align: center;
 }
