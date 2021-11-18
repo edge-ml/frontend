@@ -281,7 +281,6 @@ div.card {
   }
 }
 
-
 /* Highcart stuff */
 .highcharts-plot-band {
   cursor: pointer;
@@ -306,6 +305,7 @@ div.card {
   width: calc(75% + 15px);
   display: flex;
   justify-content: center;
+}
 
 .modal-header {
   justify-content: center;
