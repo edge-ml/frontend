@@ -525,7 +525,6 @@ class DatasetPage extends Component {
     let labelTypes = this.state.labels.filter(label =>
       labeling.labels.includes(label['_id'])
     );
-
     this.setState({
       controlStates: {
         ...this.state.controlStates,
@@ -587,8 +586,16 @@ class DatasetPage extends Component {
       elm => elm.labelingId === this.state.controlStates.selectedLabelingId
     );
 
-    // First time to click
+    if (
+      !this.state.controlStates.selectedLabelTypeId ||
+      !this.state.controlStates.selectedLabelTypes.length
+    ) {
+      this.showSnackbar('No labels available', 5000);
+      return;
+    }
+
     if (!this.state.controlStates.drawingId) {
+      // First time to click
       const randomId = crypto.randomBytes(20).toString('hex');
       const newLabel = {
         start: position,
