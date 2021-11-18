@@ -1,0 +1,45 @@
+.snackbar {
+  padding: 8px;
+  z-index: 100;
+  margin-bottom: 2%;
+  background-color: #6c757d;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+  bottom: 8px;
+}
+
+.snackbar > * {
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.snackbar-button {
+  background-color: transparent;
+  border-color: transparent;
+  color: white;
+  margin-left: 16px;
+  margin-right: 2px;
+  padding: 0;
+  font-weight: bold;
+}
+
+.snackbar-button:hover {
+  opacity: 0.3;
+}
+
+.snackbar-text {
+  display: flex;
+  flex-direction: row;
+}
+
+.snackbar-text > * {
+  white-space: nowrap;
+}
+
+.fontawesome-wrapper {
+  display: flex;
+  align-items: center;
+}

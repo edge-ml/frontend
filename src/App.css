@@ -284,3 +284,20 @@ div.card {
 .highcharts-plot-band:hover {
   opacity: 0.3;
 }
+
+.dataset-labelingpanel {
+  position: fixed;
+  margin-left: 160px;
+  bottom: 15px;
+  left: 15px;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dataset-snackbar-center {
+  width: calc(75% + 15px);
+  display: flex;
+  justify-content: center;
+}

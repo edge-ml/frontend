@@ -11,12 +11,7 @@ import {
 import './LabelingPanel.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faLock,
-  faUnlock,
-  faPlay,
-  faPause
-} from '@fortawesome/free-solid-svg-icons';
+import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
 
 class LabelingPanel extends Component {
   constructor(props) {
@@ -81,7 +76,7 @@ class LabelingPanel extends Component {
 
   render() {
     return (
-      <Card className="LabelingPanel" style={{ marginLeft: '160px' }}>
+      <Card className="LabelingPanel">
         <CardBody className="p-1">
           <div className="informationBox">
             <Button

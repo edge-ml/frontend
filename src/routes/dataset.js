@@ -15,6 +15,7 @@ import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
 import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
+import Snackbar from '../components/Snackbar/Snackbar';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
@@ -92,11 +93,23 @@ class DatasetPage extends Component {
     this.onSetAllName = this.onSetAllName.bind(this);
     this.onClickPosition = this.onClickPosition.bind(this);
     this.onLabelPositionUpdate = this.onLabelPositionUpdate.bind(this);
+    this.showSnackbar = this.showSnackbar.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false
     };
+  }
+
+  showSnackbar(errorText, duration) {
+    this.setState({
+      error: errorText
+    });
+    setTimeout(() => {
+      this.setState({
+        error: undefined
+      });
+    }, duration);
   }
 
   onSetName(index, newName) {
@@ -644,6 +657,7 @@ class DatasetPage extends Component {
           });
         })
         .catch(() => {
+          this.showSnackbar('Could not create label', 5000);
           // Delete label again
           newDataset.labelings[labelingIdx].labels.splice(labelIdx, 1);
           this.setState({
@@ -675,14 +689,14 @@ class DatasetPage extends Component {
       newDataset._id,
       newDataset.labelings[labelingIdx].labelingId,
       newLabel
-    )
-      .then(() => {})
-      .catch(() => {
-        newDataset.labelings[labelingIdx].labels[labelIdx] = backUpLabel;
-        this.setState({
-          dataset: newDataset
-        });
+    ).catch(() => {
+      this.showSnackbar('Could not change label', 5000);
+      // Revert changes
+      newDataset.labelings[labelingIdx].labels[labelIdx] = backUpLabel;
+      this.setState({
+        dataset: newDataset
       });
+    });
   }
 
   onDeleteSelectedLabel() {
@@ -725,6 +739,7 @@ class DatasetPage extends Component {
       deleteDatasetLabel(dataset._id, labelingIdToDelete, labelIdToDelete)
         .then(() => {})
         .catch(() => {
+          this.showSnackbar('Cannot delete label', 5000);
           // Restore label
           labeling.labels.push(labelToDelete);
           this.setState({
@@ -784,115 +799,138 @@ class DatasetPage extends Component {
       0
     );
     return (
-      <Fade in={this.state.fadeIn}>
-        <div className="pb-5">
-          <Row className="pt-3">
-            <Col
-              onMouseUp={this.mouseUpHandler}
-              xs={12}
-              lg={9}
-              className="pr-lg-0"
-            >
-              <div
-                style={{
-                  paddingBottom: '86px'
-                }}
+      <div style={{ position: 'relative' }}>
+        {' '}
+        <Fade in={this.state.fadeIn}>
+          <div className="pb-5">
+            <Row className="pt-3">
+              <Col
+                onMouseUp={this.mouseUpHandler}
+                xs={12}
+                lg={9}
+                className="pr-lg-0"
               >
-                <LabelingSelectionPanel
-                  objectType={'labelings'}
-                  history={this.props.history}
-                  labelings={this.state.labelings}
-                  onAddLabeling={this.onAddLabeling}
-                  selectedLabelingId={
-                    this.state.controlStates.selectedLabelingId
-                  }
-                  onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
-                />
-                <TimeSeriesCollectionPanel
-                  onSetName={this.onSetName}
-                  onSetUnit={this.onSetUnit}
-                  onSetAllUnit={this.onSetAllUnit}
-                  onSetAllName={this.onSetAllName}
-                  timeSeries={this.state.dataset.timeSeries}
-                  fusedSeries={this.state.dataset.fusedSeries}
-                  labeling={selectedDatasetlabeling}
-                  labelTypes={this.state.controlStates.selectedLabelTypes}
-                  onLabelClicked={this.onSelectedLabelChanged}
-                  selectedLabelId={this.state.controlStates.selectedLabelId}
-                  start={this.state.dataset.start + startOffset}
-                  end={this.state.dataset.end + endOffset}
-                  canEdit={this.state.controlStates.canEdit}
-                  onScrubbed={this.onScrubbed}
-                  onShift={this.onShiftTimeSeries}
-                  onDelete={this.onDeleteTimeSeries}
-                  drawingId={this.state.controlStates.drawingId}
-                  drawingPosition={this.state.controlStates.drawingPosition}
-                  newPosition={this.state.controlStates.newPosition}
-                  updateControlStates={this.updateControlStates}
-                  onClickPosition={this.onClickPosition}
-                  onLabelPositionUpdate={this.onLabelPositionUpdate}
-                />
-                <Button
-                  block
-                  outline
-                  onClick={this.onOpenFuseTimeSeriesModal}
-                  style={{ zIndex: 1, position: 'relative' }}
+                <div
+                  style={{
+                    paddingBottom: '86px'
+                  }}
                 >
-                  + Fuse Multiple Time Series
-                </Button>
-              </div>
-            </Col>
-            <Col xs={12} lg={3}>
-              <div className="mt-2">
-                <MetadataPanel
-                  id={this.state.dataset['_id']}
-                  start={this.state.dataset.start}
-                  end={this.state.dataset.end}
-                  user={this.state.dataset.userId}
-                  name={this.state.dataset.name}
-                />
-              </div>
-              <div className="mt-2" />
-              <div className="mt-2" style={{ marginBottom: '230px' }}>
-                <ManagementPanel
-                  labelings={this.state.labelings}
-                  onUpload={obj => this.addTimeSeries(obj)}
-                  startTime={this.state.dataset.start}
-                  onDeleteDataset={this.onDeleteDataset}
-                  dataset={this.state.dataset}
-                  onDatasetComplete={this.onDatasetUpdated}
-                  setModalOpen={this.setModalOpen}
-                />
-              </div>
-            </Col>
-            <Col xs={12}>
-              <LabelingPanel
-                history={this.props.history}
-                id={this.state.controlStates.selectedLabelId}
-                from={selectedDatasetLabel ? selectedDatasetLabel.start : null}
-                to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
-                labeling={selectedLabeling}
-                labels={this.state.controlStates.selectedLabelTypes}
-                selectedLabelTypeId={
-                  this.state.controlStates.selectedLabelTypeId
-                }
-                onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
-                onDeleteSelectedLabel={this.onDeleteSelectedLabel}
-                onCanEditChanged={this.onCanEditChanged}
-                canEdit={this.state.controlStates.canEdit}
-                isCrosshairIntervalActive={isCrosshairIntervalActive}
+                  <LabelingSelectionPanel
+                    objectType={'labelings'}
+                    history={this.props.history}
+                    labelings={this.state.labelings}
+                    onAddLabeling={this.onAddLabeling}
+                    selectedLabelingId={
+                      this.state.controlStates.selectedLabelingId
+                    }
+                    onSelectedLabelingIdChanged={
+                      this.onSelectedLabelingIdChanged
+                    }
+                  />
+                  <TimeSeriesCollectionPanel
+                    onSetName={this.onSetName}
+                    onSetUnit={this.onSetUnit}
+                    onSetAllUnit={this.onSetAllUnit}
+                    onSetAllName={this.onSetAllName}
+                    timeSeries={this.state.dataset.timeSeries}
+                    fusedSeries={this.state.dataset.fusedSeries}
+                    labeling={selectedDatasetlabeling}
+                    labelTypes={this.state.controlStates.selectedLabelTypes}
+                    onLabelClicked={this.onSelectedLabelChanged}
+                    selectedLabelId={this.state.controlStates.selectedLabelId}
+                    start={this.state.dataset.start + startOffset}
+                    end={this.state.dataset.end + endOffset}
+                    canEdit={this.state.controlStates.canEdit}
+                    onScrubbed={this.onScrubbed}
+                    onShift={this.onShiftTimeSeries}
+                    onDelete={this.onDeleteTimeSeries}
+                    drawingId={this.state.controlStates.drawingId}
+                    drawingPosition={this.state.controlStates.drawingPosition}
+                    newPosition={this.state.controlStates.newPosition}
+                    updateControlStates={this.updateControlStates}
+                    onClickPosition={this.onClickPosition}
+                    onLabelPositionUpdate={this.onLabelPositionUpdate}
+                  />
+                  <Button
+                    block
+                    outline
+                    onClick={this.onOpenFuseTimeSeriesModal}
+                    style={{ zIndex: 1, position: 'relative' }}
+                  >
+                    + Fuse Multiple Time Series
+                  </Button>
+                </div>
+              </Col>
+              <Col xs={12} lg={3}>
+                <div className="mt-2">
+                  <MetadataPanel
+                    id={this.state.dataset['_id']}
+                    start={this.state.dataset.start}
+                    end={this.state.dataset.end}
+                    user={this.state.dataset.userId}
+                    name={this.state.dataset.name}
+                  />
+                </div>
+                <div className="mt-2" />
+                <div className="mt-2" style={{ marginBottom: '230px' }}>
+                  <ManagementPanel
+                    labelings={this.state.labelings}
+                    onUpload={obj => this.addTimeSeries(obj)}
+                    startTime={this.state.dataset.start}
+                    onDeleteDataset={this.onDeleteDataset}
+                    dataset={this.state.dataset}
+                    onDatasetComplete={this.onDatasetUpdated}
+                    setModalOpen={this.setModalOpen}
+                  />
+                </div>
+              </Col>
+              <Col xs={12}>
+                <div className="dataset-labelingpanel">
+                  {this.state.error ? (
+                    <Fade>
+                      <div className="dataset-snackbar-center">
+                        <Snackbar
+                          text={this.state.error}
+                          closeSnackbar={() => {
+                            this.setState({ error: undefined });
+                          }}
+                        ></Snackbar>
+                      </div>
+                    </Fade>
+                  ) : null}
+                  <LabelingPanel
+                    history={this.props.history}
+                    id={this.state.controlStates.selectedLabelId}
+                    from={
+                      selectedDatasetLabel ? selectedDatasetLabel.start : null
+                    }
+                    to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
+                    labeling={selectedLabeling}
+                    labels={this.state.controlStates.selectedLabelTypes}
+                    selectedLabelTypeId={
+                      this.state.controlStates.selectedLabelTypeId
+                    }
+                    onSelectedLabelTypeIdChanged={
+                      this.onSelectedLabelTypeIdChanged
+                    }
+                    onDeleteSelectedLabel={this.onDeleteSelectedLabel}
+                    onCanEditChanged={this.onCanEditChanged}
+                    canEdit={this.state.controlStates.canEdit}
+                    isCrosshairIntervalActive={isCrosshairIntervalActive}
+                  />
+                </div>
+              </Col>
+              <Col />
+              <CombineTimeSeriesModal
+                timeSeries={this.state.dataset.timeSeries}
+                onFuse={this.onFuseTimeSeries}
+                onFuseCanceled={this.onFuseCanceled}
+                isOpen={this.state.fuseTimeSeriesModalState.isOpen}
               />
-            </Col>
-            <Col />
-            <CombineTimeSeriesModal
-              timeSeries={this.state.dataset.timeSeries}
-              onFuse={this.onFuseTimeSeries}
-              onFuseCanceled={this.onFuseCanceled}
-              isOpen={this.state.fuseTimeSeriesModalState.isOpen}
-            />
-          </Row>
-        </div>
-      </Fade>
+            </Row>
+          </div>
+        </Fade>
+      </div>
     );
   }
 }
