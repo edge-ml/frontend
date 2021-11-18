@@ -289,10 +289,9 @@ class TimeSeriesPanel extends Component {
         // Label has been clicked
         this.props.onLabelClicked(onLabel._id);
         return;
-      } else {
-        this.props.onClickPosition(position);
       }
     }
+    this.props.onClickPosition(position);
     e.stopPropagation();
   }
 

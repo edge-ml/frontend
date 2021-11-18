@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { Col, Row, Fade, Button } from 'reactstrap';
+import {
+  Col,
+  Row,
+  Fade,
+  Button,
+  Toast,
+  ToastBody,
+  ToastHeader
+} from 'reactstrap';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
 import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
@@ -562,8 +570,8 @@ class DatasetPage extends Component {
   }
 
   onClickPosition(position) {
-    const labelingIdx = this.state.labelings.findIndex(
-      elm => elm._id === this.state.controlStates.selectedLabelingId
+    const labelingIdx = this.state.dataset.labelings.findIndex(
+      elm => elm.labelingId === this.state.controlStates.selectedLabelingId
     );
 
     // First time to click
@@ -620,33 +628,61 @@ class DatasetPage extends Component {
           ...newDataset.labelings[labelingIdx].labels[labelIdx],
           _id: undefined
         }
-      ).then(generatedLabel => {
-        const labelIdx = newDataset.labelings[labelingIdx].labels.findIndex(
-          elm => elm._id === newLabel._id
-        );
-        newDataset.labelings[labelingIdx].labels[labelIdx] = generatedLabel;
-        this.setState({
-          dataset: newDataset,
-          controlStates: {
-            ...this.state.controlStates,
-            selectedLabelId: generatedLabel._id,
-            selectedLabelTypeId: generatedLabel.type
-          }
+      )
+        .then(generatedLabel => {
+          const labelIdx = newDataset.labelings[labelingIdx].labels.findIndex(
+            elm => elm._id === newLabel._id
+          );
+          newDataset.labelings[labelingIdx].labels[labelIdx] = generatedLabel;
+          this.setState({
+            dataset: newDataset,
+            controlStates: {
+              ...this.state.controlStates,
+              selectedLabelId: generatedLabel._id,
+              selectedLabelTypeId: generatedLabel.type
+            }
+          });
+        })
+        .catch(() => {
+          // Delete label again
+          newDataset.labelings[labelingIdx].labels.splice(labelIdx, 1);
+          this.setState({
+            dataset: newDataset,
+            controlStates: {
+              ...this.state.controlStates,
+              selectedLabelId: undefined
+            }
+          });
         });
-      });
     }
   }
 
   onLabelPositionUpdate(labelId, start, end) {
     const newDataset = this.state.dataset;
-    const newLabeling = newDataset.labelings.find(
+    const labelingIdx = newDataset.labelings.findIndex(
       labeling =>
         labeling.labelingId === this.state.controlStates.selectedLabelingId
     );
-    const newLabel = newLabeling.labels.find(label => label._id === labelId);
+    var labelIdx = newDataset.labelings[labelingIdx].labels.findIndex(
+      label => label._id === labelId
+    );
+    const newLabel = newDataset.labelings[labelingIdx].labels[labelIdx];
+    const backUpLabel = JSON.parse(JSON.stringify(newLabel));
     newLabel.start = Math.min(start, end);
     newLabel.end = Math.max(start, end);
-    changeDatasetLabel(newDataset._id, newLabeling.labelingId, newLabel);
+
+    changeDatasetLabel(
+      newDataset._id,
+      newDataset.labelings[labelingIdx].labelingId,
+      newLabel
+    )
+      .then(() => {})
+      .catch(() => {
+        newDataset.labelings[labelingIdx].labels[labelIdx] = backUpLabel;
+        this.setState({
+          dataset: newDataset
+        });
+      });
   }
 
   onDeleteSelectedLabel() {
@@ -657,9 +693,16 @@ class DatasetPage extends Component {
           labeling.labelingId === this.state.controlStates.selectedLabelingId
       )[0];
 
-      labeling.labels = labeling.labels.filter(
-        label => label['_id'] !== this.state.controlStates.selectedLabelId
+      /*labeling.labels = labeling.labels.filter(
+        (label) => label["_id"] !== this.state.controlStates.selectedLabelId
+      );*/
+      const labelIdxToDelete = labeling.labels.findIndex(
+        label => label['_id'] === this.state.controlStates.selectedLabelId
       );
+
+      const labelToDelete = labeling.labels[labelIdxToDelete];
+
+      labeling.labels.splice(labelIdxToDelete, 1);
 
       // Delete labeling when no labels are present for this labeling
       if (labeling.labels.length === 0) {
@@ -667,11 +710,10 @@ class DatasetPage extends Component {
           elm => elm._id != labeling._id
         );
       }
-      deleteDatasetLabel(
-        dataset._id,
-        this.state.controlStates.selectedLabelingId,
-        this.state.controlStates.selectedLabelId
-      );
+
+      const labelingIdToDelete = this.state.controlStates.selectedLabelingId;
+      const labelIdToDelete = this.state.controlStates.selectedLabelId;
+
       this.setState({
         dataset,
         controlStates: {
@@ -680,6 +722,15 @@ class DatasetPage extends Component {
           selectedLabelTypeId: undefined
         }
       });
+      deleteDatasetLabel(dataset._id, labelingIdToDelete, labelIdToDelete)
+        .then(() => {})
+        .catch(() => {
+          // Restore label
+          labeling.labels.push(labelToDelete);
+          this.setState({
+            dataset: dataset
+          });
+        });
     }
   }
 
