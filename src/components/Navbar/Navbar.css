@@ -1,0 +1,58 @@
+.navbar-base {
+  width: 160px;
+  position: fixed;
+  height: 100vh;
+  z-index: 100;
+}
+
+.dark-hover:hover {
+  opacity: 0.6;
+}
+
+.navbar-divider {
+  border-right: 1px solid;
+  border-color: gray;
+  margin-right: 8px;
+  margin-left: 8px;
+}
+
+.navbar-project-item {
+  cursor: pointer;
+  color: #666;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+}
+
+.navbar-project-item:hover {
+  background-color: #ddd;
+}
+
+.navbar-project-item-active {
+  color: black;
+  background-color: #ddd;
+}
+
+.navbar-project  {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+}
+
+.navbar-project:hover {
+  background-color: black !important;
+  color: white !important;
+}
+
+.home-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+}
