@@ -154,7 +154,8 @@ class UploadBLE extends Component {
   async getDeviceInfo() {
     try {
       let options = {
-        filters: [{ services: [this.deviceInfoServiceUuid] }]
+        filters: [{ services: [this.deviceInfoServiceUuid] }];
+        optionalServices: [this.sensorServiceUuid];
       };
       let newOptions = {
         acceptAllDevices: true,
