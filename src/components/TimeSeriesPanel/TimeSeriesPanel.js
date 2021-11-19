@@ -264,6 +264,7 @@ class TimeSeriesPanel extends Component {
    * Global Mouse Handlers
    */
   onMouseDown(e) {
+    if (this.props.index === 0) return;
     var plotBand = this.getSelectedPlotBand();
     if (plotBand) {
       this.onPlotBandMouseDown(
