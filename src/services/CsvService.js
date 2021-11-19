@@ -54,7 +54,7 @@ module.exports.generateDataset = (timeData, dataset) => {
   return { datasets: datasets, labelings: labelings };
 };
 
-module.exports.generateCSV = (dataset, props_labelings) => {
+module.exports.generateCSV = (dataset, props_labelings, props_labels) => {
   var csv = 'time,';
   var csv_lines = Object(); // this will be used as a dictionary, with timestamps as keys, and arrays of values as values
   var timestamps = new Set([]); // this variable will hold all timestamps as an ordered array
@@ -65,24 +65,33 @@ module.exports.generateCSV = (dataset, props_labelings) => {
   dataset.timeSeries.forEach(t => {
     csv += 'sensor_' + t.name + '[' + t.unit + '],';
   });
-
   if (labelsUsed) {
     dataset.labelings.forEach(l => {
+      const labelingName = props_labelings.find(elm => elm._id === l.labelingId)
+        .name;
       labelings[l.labelingId] = [];
       l.labels.forEach(label => {
+        const labelName = props_labels.find(elm => elm._id === label.type)[
+          'name'
+        ];
         labelings[l.labelingId].push({
-          name: label.name,
+          labelingName: labelingName,
+          name: labelName,
           start: Math.round(label.start),
           end: Math.round(label.end)
         });
       });
     });
 
+    var labelHeaderMap = [];
     for (const [labelingId, labels] of Object.entries(labelings)) {
-      const labelingName = props_labelings.find(elm => elm._id === labelingId)
-        .name;
-      labels.forEach(label => {
-        csv += 'label_' + labelingName + '_' + label.name + ',';
+      const labelNames = new Set(labels.map(elm => elm.name));
+      labelNames.forEach(elm => {
+        labelHeaderMap.push({
+          labelingName: labels[0].labelingName,
+          labelName: elm
+        });
+        csv += 'label_' + labels[0].labelingName + '_' + elm + ',';
       });
     }
   }
@@ -117,27 +126,27 @@ module.exports.generateCSV = (dataset, props_labelings) => {
     if (labelsUsed) {
       csv += ','; // when labels are used, they follow the values in a row, hence a colon is needed
       // check for each labeling, if their labels are in the bounds of the current timestamp. If yes, add 'x' for each label to the CSV line, else only add ','
-      for (const [_, labels] of Object.entries(labelings)) {
-        for (let l of labels) {
-          let labelled = false;
-          if (
-            l.start <= parseInt(timestamp, 10) &&
-            parseInt(timestamp, 10) <= l.end
-          ) {
-            labelled = true;
-          }
-          // if a label was added, add 'x' and ',' to the CSV line
-          if (labelled) {
-            csv += 'x' + ',';
-          }
-          // if NO label was added, only add ',' to the CSV line
-          else {
-            csv += ',';
+      for (let labelHeader of labelHeaderMap) {
+        var onLabel = false;
+        for (const [_, labels] of Object.entries(labelings)) {
+          for (let l of labels) {
+            if (
+              labelHeader.labelingName === l.labelingName &&
+              labelHeader.labelName === l.name &&
+              l.start <= parseInt(timestamp, 10) &&
+              parseInt(timestamp, 10) <= l.end
+            ) {
+              onLabel = true;
+              csv += 'x,';
+            }
           }
         }
+        if (!onLabel) {
+          csv += ',';
+        }
       }
-      csv = csv.slice(0, -1); // remove the single ',' at the end
     }
+    csv = csv.slice(0, -1); // remove the single ',' at the end
     csv += '\r\n';
   }
   return csv;
@@ -218,8 +227,12 @@ function processCSVColumn(timeData) {
     const numDatasets = timeData[0].length - 1;
     for (var i = 1; i <= numDatasets; i++) {
       const csvLength = timeData[0].length;
-      if (timeData.some(elm => elm.length !== csvLength)) {
-        throw { error: 'Each row needs the same number of elements' };
+      const csvLenghError = timeData.findIndex(elm => elm.length !== csvLength);
+      if (csvLenghError > 0) {
+        throw {
+          error: `Each row needs the same number of elements, at line ${csvLenghError +
+            1}`
+        };
       }
       if (timeData.length < 2) {
         throw { error: 'No data in csv file' };

@@ -36,7 +36,11 @@ class ManagementPanel extends Component {
   }
 
   downloadDataSet() {
-    const csv = generateCSV(this.props.dataset, this.props.labelings);
+    const csv = generateCSV(
+      this.props.dataset,
+      this.props.labelings,
+      this.props.labels
+    );
     const fileName = this.props.dataset.name;
     const blob = new Blob([csv], { type: 'application/csv' });
     const href = URL.createObjectURL(blob);

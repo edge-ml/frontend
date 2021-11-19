@@ -34,6 +34,7 @@ import {
   updateLabelingAndLabels
 } from '../../services/ApiServices/LabelingServices';
 import ErrorModal from './ErrorModal';
+import SpinnerButton from '../Common/SpinnerButton';
 
 class CreateNewDatasetModal extends Component {
   constructor(props) {
@@ -44,7 +45,8 @@ class CreateNewDatasetModal extends Component {
       datasets: [],
       labelings: [],
       uploadErrors: [],
-      errorFiles: []
+      errorFiles: [],
+      onUploading: false
     };
     this.baseState = this.state;
     this.onUpload = this.onUpload.bind(this);
@@ -130,10 +132,7 @@ class CreateNewDatasetModal extends Component {
 
   onCloseModal() {
     this.props.onCloseModal();
-    this.setState({
-      datasets: [],
-      files: []
-    });
+    this.setState(this.baseState);
   }
 
   onUnitChange(e, fileIndex, seriesIndex) {
@@ -207,6 +206,7 @@ class CreateNewDatasetModal extends Component {
   }
 
   async onUpload() {
+    this.setState({ onUploading: true });
     const nameValid = this.state.datasets.every(elm =>
       elm.timeSeries.every(timeElm => timeElm.name !== '')
     );
@@ -252,6 +252,7 @@ class CreateNewDatasetModal extends Component {
       this.setState(this.baseState);
       this.props.onDatasetComplete(data);
     }
+    this.setState({ onUploading: false });
   }
 
   render() {
@@ -484,15 +485,17 @@ class CreateNewDatasetModal extends Component {
             ) : null}
           </ModalBody>
           <ModalFooter>
-            <Button
+            <SpinnerButton
               id="uploadButton"
               data-testid="uploadButton"
               color="primary"
               className="m-1 mr-auto"
               onClick={this.onUpload}
+              loading={this.state.onUploading}
+              loadingtext="Upload..."
             >
               Upload
-            </Button>
+            </SpinnerButton>
 
             <Button
               id="cancelButton"
