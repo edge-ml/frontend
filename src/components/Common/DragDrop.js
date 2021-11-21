@@ -4,7 +4,7 @@ class DragDrop extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = { inputKey: 0 };
     this.onCancel = this.onCancel.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onFileInput = this.onFileInput.bind(this);
@@ -13,6 +13,7 @@ class DragDrop extends Component {
   onFileInput(e) {
     var files = e.target.files;
     this.props.onFileInput(files);
+    this.setState({ inputKey: this.state.inputKey + 1 });
   }
 
   onCancel(e) {
@@ -60,6 +61,7 @@ class DragDrop extends Component {
             accept=".csv"
             onChange={this.onFileInput}
             type="file"
+            key={this.state.inputKey}
             multiple
             className="custom-file-input"
           />

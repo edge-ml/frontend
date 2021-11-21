@@ -79,6 +79,7 @@ class DatasetPage extends Component {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onFuseCanceled = this.onFuseCanceled.bind(this);
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
+    this.onLabelChanged = this.onLabelChanged.bind(this);
     this.onScrubbed = this.onScrubbed.bind(this);
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
     this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
@@ -777,6 +778,110 @@ class DatasetPage extends Component {
       });
   }
 
+  onLabelChanged(labelId, start, end, callback) {
+    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
+    let labeling = dataset.labelings.filter(
+      labeling =>
+        labeling.labelingId === this.state.controlStates.selectedLabelingId
+    )[0];
+
+    let labelingOrLabelAdded = false;
+
+    if (!labeling) {
+      const labelingId = this.state.controlStates.selectedLabelingId;
+      const labelingName = this.state.labelings.filter(
+        obj => obj._id === labelingId
+      )[0].name;
+
+      labeling = {
+        labels: [],
+        labelingId: labelingId,
+        labelingName: labelingName,
+        creator: this.state.dataset.userId
+      };
+
+      dataset.labelings = [...dataset.labelings, labeling];
+      labelingOrLabelAdded = true;
+    }
+
+    let label = {};
+
+    if (labelId === null) {
+      // Clicking for the first time
+      label = {
+        start: start,
+        end: end,
+        name: this.state.controlStates.selectedLabelTypes[0]['name'],
+        type: this.state.controlStates.selectedLabelTypeId
+          ? this.state.controlStates.selectedLabelTypeId
+          : this.state.controlStates.selectedLabelTypes[0]['_id']
+      };
+
+      labeling.labels = [...labeling.labels, label];
+      labelingOrLabelAdded = true;
+    } else {
+      // Clicking for the second time
+      label = labeling.labels.filter(label => label['_id'] === labelId)[0];
+      if (label !== undefined && label.start === undefined) {
+        label.start = start === undefined ? start : end;
+      } else if (label !== undefined && label.end === undefined) {
+        label.end = start === undefined ? start : end;
+      } else {
+        label.start = start;
+        label.end = end;
+      }
+    }
+
+    let temp;
+    if (label.start > label.end) {
+      temp = label.start;
+      label.start = label.end;
+      label.end = temp;
+    }
+    label._id = 'fakeID';
+    if (labelingOrLabelAdded) {
+      let labeling = dataset.labelings.filter(
+        labeling =>
+          labeling.labelingId === this.state.controlStates.selectedLabelingId
+      )[0];
+      this.onSelectedLabelChanged('fakeID');
+      this.setState({
+        dataset: dataset,
+        controlStates: {
+          ...this.state.controlStates,
+          drawingId: labeling.labels[labeling.labels.length - 1]['_id'],
+          drawingPosition: labelId === null ? 'fakePosition' : undefined
+        }
+      });
+    } else {
+      const dataSetCopy = JSON.parse(JSON.stringify(dataset));
+      dataset.labelings.forEach(elm => {
+        elm.labels.forEach(label => {
+          if (label._id === 'fakeID') {
+            delete label._id;
+          }
+        });
+      });
+      this.setState({ dataset: dataSetCopy });
+      const oldLabels = this.state.dataset.labelings
+        .find(
+          elm => elm.labelingId === this.state.controlStates.selectedLabelingId
+        )
+        .labels.map(elm1 => elm1._id);
+      updateDataset(dataset).then(newDataset => {
+        const newLabels = newDataset.labelings
+          .find(
+            elm =>
+              elm.labelingId === this.state.controlStates.selectedLabelingId
+          )
+          .labels.map(elm => elm._id);
+        const newLabelId = newLabels.find(elm => !oldLabels.includes(elm));
+        this.onSelectedLabelChanged(newLabelId);
+        this.setState({ dataset: newDataset });
+      });
+    }
+  }
+
   render() {
     if (!this.state.isReady) return <Loader loading={true} />;
 
@@ -859,6 +964,7 @@ class DatasetPage extends Component {
                     updateControlStates={this.updateControlStates}
                     onClickPosition={this.onClickPosition}
                     onLabelPositionUpdate={this.onLabelPositionUpdate}
+                    onLabelChanged={this.onLabelChanged}
                   />
                   <Button
                     block
