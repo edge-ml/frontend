@@ -34,15 +34,12 @@ class TimeSeriesPanel extends Component {
 
     this.getPlotLineById = this.getPlotLineById.bind(this);
     this.getActivePlotLine = this.getActivePlotLine.bind(this);
-    this.getActivePlotBand = this.getActivePlotBand.bind(this);
     this.labelingToPlotLines = this.labelingToPlotLines.bind(this);
     this.generatePlotLine = this.generatePlotLine.bind(this);
 
     this.getSecondBoundaryByPlotLineIdAndLabelId = this.getSecondBoundaryByPlotLineIdAndLabelId.bind(
       this
     );
-
-    this.calcBounds = this.calcBounds.bind(this);
 
     // state
     this.generateState = this.generateState.bind(this);
@@ -253,7 +250,6 @@ class TimeSeriesPanel extends Component {
       labelTypes: props.labelTypes,
       selectedLabelId: props.selectedLabelId,
       onLabelClicked: props.onLabelClicked,
-      onLabelChanged: props.onLabelChanged,
       onScrubbed: props.onScrubbed,
       controlStates: {
         activePlotLineId: !this.state
@@ -476,7 +472,7 @@ class TimeSeriesPanel extends Component {
       activePlotLine.options.labelId
     ).options.value;
 
-    this.state.onLabelChanged(
+    this.props.onLabelPositionUpdate(
       activePlotLine.options.labelId,
       newValue,
       remainingValue

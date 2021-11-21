@@ -16,7 +16,6 @@ class TimeSeriesCollectionPanel extends Component {
       selectedLabelId: props.selectedLabelId,
       start: props.start,
       end: props.end,
-      onLabelChanged: props.onLabelChanged,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
       onDelete: props.onDelete
@@ -41,7 +40,6 @@ class TimeSeriesCollectionPanel extends Component {
       selectedLabelId: props.selectedLabelId,
       start: props.start,
       end: props.end,
-      onLabelChanged: props.onLabelChanged,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
       onDelete: props.onDelete
@@ -91,7 +89,6 @@ class TimeSeriesCollectionPanel extends Component {
           selectedLabelId={this.state.selectedLabelId}
           start={this.state.start}
           end={this.state.end}
-          onLabelChanged={this.state.onLabelChanged}
           canEdit={this.props.canEdit}
           onScrubbed={this.state.onScrubbed}
           numSeries={
@@ -116,7 +113,6 @@ class TimeSeriesCollectionPanel extends Component {
             selectedLabelId={this.state.selectedLabelId}
             start={this.state.start}
             end={this.state.end}
-            onLabelChanged={this.state.onLabelChanged}
             canEdit={this.props.canEdit}
             onScrubbed={this.state.onScrubbed}
             numSeries={2}
@@ -144,7 +140,6 @@ class TimeSeriesCollectionPanel extends Component {
             selectedLabelId={this.state.selectedLabelId}
             start={this.state.start}
             end={this.state.end}
-            onLabelChanged={this.state.onLabelChanged}
             canEdit={this.props.canEdit}
             onScrubbed={this.state.onScrubbed}
             numSeries={
@@ -187,7 +182,6 @@ class TimeSeriesCollectionPanel extends Component {
                 selectedLabelId={this.state.selectedLabelId}
                 start={this.state.start}
                 end={this.state.end}
-                onLabelChanged={this.state.onLabelChanged}
                 canEdit={this.props.canEdit}
                 onScrubbed={this.state.onScrubbed}
                 numSeries={
