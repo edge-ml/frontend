@@ -124,8 +124,7 @@ describe('Generate dataset and labels', () => {
     expect(checkResult).toEqual([
       [
         {
-          error:
-            "Wrong header format: Must start with 'sensor_' or 'label_' in colum 2"
+          error: 'Wrong header format in colum 2'
         }
       ]
     ]);

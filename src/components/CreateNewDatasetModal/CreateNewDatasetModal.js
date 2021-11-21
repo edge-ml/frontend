@@ -48,7 +48,7 @@ class CreateNewDatasetModal extends Component {
       errorFiles: [],
       onUploading: false
     };
-    this.baseState = this.state;
+    this.baseState = JSON.parse(JSON.stringify(this.state));
     this.onUpload = this.onUpload.bind(this);
     this.onDeleteFile = this.onDeleteFile.bind(this);
     this.onUnitChange = this.onUnitChange.bind(this);

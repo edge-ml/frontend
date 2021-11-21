@@ -343,8 +343,7 @@ function checkHeaders(timeData) {
         !/sensor_[^\[\]]+(\[.*\])?/gm.test(header[j])
       ) {
         currentErrors.push({
-          error: `Wrong header format: Must start with 'sensor_' or 'label_' in colum ${j +
-            1}`
+          error: `Wrong header format in colum ${j + 1}`
         });
       }
     }

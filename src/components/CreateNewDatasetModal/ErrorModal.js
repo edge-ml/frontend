@@ -22,6 +22,7 @@ function ErrorModal(props) {
   const renderFileError = elm => {
     return (
       <div
+        key={elm.fileName}
         style={{
           marginBottom: '4px',
           paddingBottom: '12px',
@@ -32,7 +33,9 @@ function ErrorModal(props) {
           {elm.fileName}
         </div>
         {elm.errors.map((error, index) => (
-          <div style={{ marginLeft: '8px' }}>{index + ': ' + error.error}</div>
+          <div key={elm.fileName + index} style={{ marginLeft: '8px' }}>
+            {index + ': ' + error.error}
+          </div>
         ))}
       </div>
     );
