@@ -167,6 +167,9 @@ function extractTimeSeries(timeData, i) {
     if (!isNumber(timeData[j][0])) {
       throw { error: `Timestamp is not a number in row ${j + 1}` };
     }
+    if (timeData[j][i] === '') {
+      continue;
+    }
     if (!isNumber(timeData[j][i])) {
       throw {
         error: `Sensor value is not a number in row ${j + 1}, column ${i + 1}`
