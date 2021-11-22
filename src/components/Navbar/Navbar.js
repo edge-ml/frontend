@@ -117,10 +117,10 @@ class Navbar extends Component {
                   {this.props.currentProjectId === project._id ? (
                     <div>
                       {[
-                        ['datasets', faDatabase],
-                        ['labelings', faPen],
-                        ['model', faBrain],
-                        ['settings', faCogs]
+                        ['Datasets', faDatabase],
+                        ['Labelings', faPen],
+                        ['Model', faBrain],
+                        ['Settings', faCogs]
                       ].map((elm, indx) => (
                         <div
                           onClick={() => {
@@ -132,7 +132,7 @@ class Navbar extends Component {
                             className="mr-2"
                             icon={elm[1]}
                           ></FontAwesomeIcon>
-                          Datasets
+                          {elm[0]}
                         </div>
                       ))}
                     </div>
