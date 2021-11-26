@@ -173,23 +173,27 @@ class ListPage extends Component {
                           <small>
                             If you own a{' '}
                             <a
-                              href="https://docs.arduino.cc/tutorials/nicla-sense-me/cheat-sheet"
+                              href="https://docs.arduino.cc/hardware/nicla-sense-me"
                               target="_blank"
                             >
                               Bosch Arduino Nicle Sense ME
                             </a>{' '}
-                            you can connect to it directly from your browser
-                            using WebBLE. Simply download the source code as
-                            .zip from{' '}
+                            or a{' '}
                             <a
-                              href="https://github.com/edge-ml/nicla-sense-me-fw/releases/latest"
+                              href="https://docs.arduino.cc/hardware/nano-33-ble-sense"
                               target="_blank"
                             >
-                              nicla-sense-me-fw
+                              Arduino Nano 33 BLE Sense
                             </a>{' '}
-                            and import it as a library to the Arduino IDE, then
-                            flash File/Examples/Arduino_BHY2/App onto the Nicla
-                            Sense ME.
+                            you can connect to it directly from your browser
+                            using WebBLE. Simply follow the instructions on{' '}
+                            <a
+                              href="https://github.com/edge-ml/EdgeML-Arduino"
+                              target="_blank"
+                            >
+                              EdgeML-Arduino-Github
+                            </a>{' '}
+                            to get your device ready.
                           </small>
                         </div>
 
