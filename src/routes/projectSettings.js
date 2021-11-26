@@ -11,7 +11,7 @@ import {
   Row
 } from 'reactstrap';
 
-import { Prompt } from 'react-router-dom';
+import { Prompt, withRouter } from 'react-router-dom';
 
 import {
   deleteProject,
@@ -225,9 +225,10 @@ class ProjectSettings extends Component {
   }
 
   render() {
+    var changes = false;
     if (this.props.project && this.props.project.users) {
       var originalUsers = this.props.project.users.map(elm => elm.userName);
-      var changes =
+      changes =
         this.state.project.name !== this.props.project.name ||
         !(
           this.state.project.users.map(elm =>
