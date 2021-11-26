@@ -73,15 +73,11 @@ class TimeSeriesCollectionPanel extends Component {
           offset={0}
           data={
             this.state.timeSeries.length > 0
-              ? this.state.timeSeries[0].data
+              ? this.state.timeSeries
+                  .map(ts => ts.data)
+                  .flat()
+                  .sort((elmA, elmB) => elmA.timestamp - elmB.timestamp)
               : [10, 10]
-          }
-          samplingRate={
-            this.state.timeSeries.length > 0
-              ? this.state.timeSeries[0].samplingRate
-                ? this.state.timeSeries[0].samplingRate
-                : 1
-              : 1
           }
           labeling={this.state.labeling}
           labelTypes={this.state.labelTypes}
@@ -130,7 +126,16 @@ class TimeSeriesCollectionPanel extends Component {
             key={key}
             index={key + 1}
             offset={timeSeries.offset}
-            data={timeSeries.data}
+            data={[
+              ...(timeSeries.data[0].timestamp === this.props.start
+                ? []
+                : [{ timestamp: this.props.start }]),
+              ...timeSeries.data,
+              ...(timeSeries.data[timeSeries.data.length - 1].timestamp ===
+              this.props.end
+                ? []
+                : [{ timestamp: this.props.end }])
+            ]}
             samplingRate={timeSeries.samplingRate ? timeSeries.samplingRate : 1}
             name={timeSeries.name}
             unit={timeSeries.unit}
