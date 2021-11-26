@@ -229,7 +229,10 @@ class ListPage extends Component {
                           <small>
                             If you have already collected data you can upload it
                             to edge-ml by following our{' '}
-                            <a href="https://github.com/edge-ml/edge-ml/wiki#CSV-Header-Format">
+                            <a
+                              href="https://github.com/edge-ml/edge-ml/wiki#CSV-Header-Format"
+                              target="_blank"
+                            >
                               pre-defined CSV format
                             </a>
                             . Click{' '}
@@ -275,15 +278,24 @@ class ListPage extends Component {
                             If you have built a custom device and would like to
                             upload data from it directly to edge-ml you can use
                             our dedicated libraries for{' '}
-                            <a href="https://github.com/edge-ml/arduino">
+                            <a
+                              href="https://github.com/edge-ml/arduino"
+                              target="_blank"
+                            >
                               Arduino&nbsp;(ESP32)
                             </a>
                             ,{' '}
-                            <a href="https://github.com/edge-ml/node">
+                            <a
+                              href="https://github.com/edge-ml/node"
+                              target="_blank"
+                            >
                               node.js
                             </a>
                             , and{' '}
-                            <a href="https://github.com/edge-ml/java">
+                            <a
+                              href="https://github.com/edge-ml/java"
+                              target="_blank"
+                            >
                               Java&nbsp;(Android)
                             </a>
                             .

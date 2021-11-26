@@ -55,16 +55,17 @@ module.exports.generateDataset = (timeData, dataset) => {
 };
 
 module.exports.generateCSV = (dataset, props_labelings, props_labels) => {
-  var csv = 'time,';
-  var csv_lines = Object(); // this will be used as a dictionary, with timestamps as keys, and arrays of values as values
-  var timestamps = new Set([]); // this variable will hold all timestamps as an ordered array
-  var labelings = Object();
-  var labelsUsed =
-    dataset.labelings && dataset.labelings.some(elm => elm.labels.length > 0);
+  const csv = [];
+  const labelings = {};
+  const labelHeaderMap = [];
 
+  const header = ['time'];
   dataset.timeSeries.forEach(t => {
-    csv += 'sensor_' + t.name + '[' + t.unit + '],';
+    header.push('sensor_' + t.name + '[' + t.unit + ']');
   });
+
+  const labelsUsed =
+    dataset.labelings && dataset.labelings.some(elm => elm.labels.length > 0);
   if (labelsUsed) {
     dataset.labelings.forEach(l => {
       const labelingName = props_labelings.find(elm => elm._id === l.labelingId)
@@ -83,7 +84,6 @@ module.exports.generateCSV = (dataset, props_labelings, props_labels) => {
       });
     });
 
-    var labelHeaderMap = [];
     for (const [labelingId, labels] of Object.entries(labelings)) {
       const labelNames = new Set(labels.map(elm => elm.name));
       labelNames.forEach(elm => {
@@ -91,65 +91,68 @@ module.exports.generateCSV = (dataset, props_labelings, props_labels) => {
           labelingName: labels[0].labelingName,
           labelName: elm
         });
-        csv += 'label_' + labels[0].labelingName + '_' + elm + ',';
+        header.push('label_' + labels[0].labelingName + '_' + elm);
       });
     }
   }
+  csv.push(header);
 
-  csv = csv.slice(0, -1); // remove the single ',' at the end
-  csv += '\r\n'; // this concludes the first csv line, now append data
+  const tPtr = new Array(dataset.timeSeries.length).fill(0);
 
-  // collect all timestamp values in a set, and initialize csv_lines to contain empty arrays as values
-  dataset.timeSeries.forEach(t => {
-    t.data.forEach(d => {
-      timestamps.add(d.timestamp);
-      csv_lines[d.timestamp] = [];
+  const getNextSensorData = () => {
+    const timeStamps = dataset.timeSeries.map((elm, index) => {
+      if (tPtr[index] < elm.data.length) {
+        return elm.data[tPtr[index]];
+      }
+      return { timestamp: Number.POSITIVE_INFINITY };
     });
-  });
-  timestamps = Array.from(timestamps).sort();
-
-  dataset.timeSeries.forEach(t => {
-    var missingTimestamps = new Set(timestamps); // in the end, this array will contain all timestamps, that do not have a value -> ,, in CSV
-
-    t.data.forEach(d => {
-      csv_lines[d.timestamp].push(d.datapoint);
-      missingTimestamps.delete(d.timestamp); // since it's not missing, delete the timestamp from the missing timestamps
+    const minTimeStamp = Math.min(...timeStamps.map(elm => elm.timestamp));
+    const sensorData = timeStamps.map((elm, index) => {
+      if (elm.timestamp === minTimeStamp) {
+        tPtr[index]++;
+        return elm.datapoint;
+      }
+      return '';
     });
-
-    missingTimestamps.forEach(m => {
-      csv_lines[m].push(undefined); // all missing timestamps must result in empty values in the CSV (,,)
-    }); // pushing undefined and later doing .join(",") will results in this behaviour
-  });
-
-  for (const [timestamp, values] of Object.entries(csv_lines)) {
-    csv += timestamp + ',' + values.join(',');
-    if (labelsUsed) {
-      csv += ','; // when labels are used, they follow the values in a row, hence a colon is needed
-      // check for each labeling, if their labels are in the bounds of the current timestamp. If yes, add 'x' for each label to the CSV line, else only add ','
-      for (let labelHeader of labelHeaderMap) {
-        var onLabel = false;
-        for (const [_, labels] of Object.entries(labelings)) {
-          for (let l of labels) {
-            if (
-              labelHeader.labelingName === l.labelingName &&
-              labelHeader.labelName === l.name &&
-              l.start <= parseInt(timestamp, 10) &&
-              parseInt(timestamp, 10) <= l.end
-            ) {
-              onLabel = true;
-              csv += 'x,';
-            }
+    return {
+      timeStamp: minTimeStamp,
+      data: sensorData,
+      changed: minTimeStamp !== Number.POSITIVE_INFINITY
+    };
+  };
+  const getLabelData = timestamp => {
+    return labelHeaderMap.map(labelHeader => {
+      for (const [_, labels] of Object.entries(labelings)) {
+        for (let l of labels) {
+          if (
+            labelHeader.labelingName === l.labelingName &&
+            labelHeader.labelName === l.name &&
+            l.start <= timestamp &&
+            timestamp <= l.end
+          ) {
+            return 'x';
           }
         }
-        if (!onLabel) {
-          csv += ',';
-        }
       }
-    }
-    csv = csv.slice(0, -1); // remove the single ',' at the end
-    csv += '\r\n';
+      return '';
+    });
+  };
+
+  var nextSensorLine = getNextSensorData();
+  var nextLabelLine = getLabelData(nextSensorLine.timeStamp);
+  var i = 0;
+  while (nextSensorLine.changed) {
+    csv.push([
+      nextSensorLine.timeStamp,
+      ...nextSensorLine.data,
+      ...nextLabelLine
+    ]);
+    nextSensorLine = getNextSensorData();
+    nextLabelLine = getLabelData(nextSensorLine.timeStamp);
+    i = i + 1;
   }
-  return csv;
+
+  return csv.map(elm => elm.join(',')).join('\n');
 };
 
 function extractTimeSeries(timeData, i) {
@@ -177,7 +180,7 @@ function extractTimeSeries(timeData, i) {
     }
     timeSeries.data.push({
       timestamp: parseInt(timeData[j][0], 10),
-      datapoint: parseInt(timeData[j][i], 10)
+      datapoint: parseFloat(timeData[j][i])
     });
   }
   return timeSeries;
