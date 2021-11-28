@@ -30,7 +30,7 @@ class AutocompleteInput extends Component {
           newData = data.filter(elm => !this.props.filter.includes(elm));
         }
         this.setState({
-          suggestions: newData
+          suggestions: newData.slice(0, 5) // Show top 5 results
         });
         this.openMenu();
       });

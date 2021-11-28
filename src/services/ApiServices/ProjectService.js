@@ -4,45 +4,6 @@ const axios = ax.create();
 const getUserIds = require('../ApiServices/AuthentificationServices')
   .getUserIds;
 
-function getUserMails(project) {
-  if (project.users) {
-    const userList = [project.admin, ...project.users];
-    return new Promise((resolve, reject) => {
-      axios(
-        apiConsts.generateApiRequest(
-          apiConsts.HTTP_METHODS.POST,
-          apiConsts.AUTH_URI,
-          apiConsts.AUTH_ENDPOINTS.USERNAME,
-          userList
-        )
-      )
-        .then(result => {
-          project.admin = result.data[0];
-          result.data.shift();
-          project.users = result.data;
-          resolve(project);
-        })
-        .catch(err => reject(err.response));
-    });
-  } else {
-    return new Promise((resolve, reject) => {
-      axios(
-        apiConsts.generateApiRequest(
-          apiConsts.HTTP_METHODS.POST,
-          apiConsts.AUTH_URI,
-          apiConsts.AUTH_ENDPOINTS.USERNAME,
-          [project.admin]
-        )
-      )
-        .then(result => {
-          project.admin = result.data[0];
-          resolve(project);
-        })
-        .catch(err => reject(err.response));
-    });
-  }
-}
-
 module.exports.getProjects = () => {
   return new Promise((resolve, reject) => {
     axios(
@@ -53,12 +14,7 @@ module.exports.getProjects = () => {
       )
     )
       .then(result => {
-        var promises = result.data.map(elm => {
-          return getUserMails(elm);
-        });
-        Promise.all(promises).then(result => {
-          resolve(result);
-        });
+        resolve(result.data);
       })
       .catch(err => {
         reject(err.response ? err.response.status : undefined);
