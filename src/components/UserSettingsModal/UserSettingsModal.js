@@ -83,6 +83,8 @@ class UserSettingsModal extends Component {
               Change Password
             </NavLink>
           </NavItem>
+          {/* 2FA disabled for now, because it didn't work properly. Please fix and enable again.
+          Tests in conjunction with 2FA in /userSettingsModal.test.js are also disabled, please enable them too after fixing this.
           <NavItem style={{ cursor: 'pointer' }}>
             <NavLink
               className={classnames({
@@ -95,6 +97,7 @@ class UserSettingsModal extends Component {
               2FA
             </NavLink>
           </NavItem>
+          */}
           <NavItem style={{ cursor: 'pointer' }}>
             <NavLink
               className={classnames({

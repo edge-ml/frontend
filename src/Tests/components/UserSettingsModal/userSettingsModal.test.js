@@ -50,6 +50,7 @@ describe('Click though tabs', () => {
     expect(wrapper.find('#passwordSettings').exists()).toBe(true);
   });
 
+  /* 2FA disabled for now
   it('Click on twoFaSettings', () => {
     init2FA.mockReturnValue(Promise.resolve(undefined));
     const wrapper = mount(
@@ -61,6 +62,7 @@ describe('Click though tabs', () => {
       .simulate('click');
     expect(wrapper.find('#twoFaSettings').exists()).toBe(true);
   });
+  */
 
   it('Click on change username', () => {
     const wrapper = mount(
@@ -68,7 +70,8 @@ describe('Click though tabs', () => {
     );
     wrapper
       .find('.nav-link')
-      .at(4)
+      //.at(4) 2FA disabled for now
+      .at(3)
       .simulate('click');
     expect(wrapper.find('#userNameSettings').exists()).toBe(true);
   });
@@ -78,11 +81,14 @@ describe('Click though tabs', () => {
     const wrapper = mount(
       <UserSettingsModal isOpen={true}></UserSettingsModal>
     );
+    /*
+    2FA disabled for now
     wrapper
       .find('.nav-link')
       .at(3)
       .simulate('click');
     expect(wrapper.find('#twoFaSettings').exists()).toBe(true);
+    */
     wrapper
       .find('.nav-link')
       .at(1)
