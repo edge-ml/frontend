@@ -1,14 +1,41 @@
 import React, { Component } from 'react';
 
 import Loader from '../modules/loader';
+import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
+
+import { getProjectSensorStreams } from '../services/ApiServices/ProjectService';
 
 class ModelPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       ready: true,
-      inviteRequested: false
+      inviteRequested: false,
+      labelingNames: [],
+      selectedLabeling: undefined,
+      sensorStreams: [],
+      selectedSensorStreams: []
     };
+
+    this.initComponent = this.initComponent.bind(this);
+  }
+
+  componentDidMount() {
+    this.initComponent();
+  }
+
+  initComponent() {
+    Promise.all([
+      subscribeLabelingsAndLabels(),
+      getProjectSensorStreams(this.props.project)
+    ]).then(result => {
+      var labelingNames = result[0].labelings.map(x => x.name);
+      this.setState({
+        selectedLabeling: labelingNames[0],
+        labelingNames: labelingNames,
+        sensorStreams: result[1] ? result[1] : []
+      });
+    });
   }
 
   render() {
@@ -16,36 +43,65 @@ class ModelPage extends Component {
       return <Loader loading={!this.state.ready}></Loader>;
     }
     return (
-      <div className="w-100 h-100 d-flex justify-content-center align-items-center">
+      <div className="w-100 h-100 d-flex flex-row justify-content-start pl-4 pr-4">
         <div className="card mt-5" style={{ border: '0px solid white' }}>
-          <div className="card-body d-flex justify-content-center align-items-center flex-column">
-            <h4>Closed Beta</h4>
-            <div>edge-ml model generation is currently invite only.</div>
-            <button
-              className="btn btn-secondary mt-3"
-              style={
-                !this.state.inviteRequested
-                  ? { display: 'block' }
-                  : { display: 'none' }
-              }
-              onClick={() => {
-                this.setState({
-                  inviteRequested: true
-                });
-              }}
-            >
-              Request Access
-            </button>
-            <div
-              className="mt-4 w-20 text-success"
-              style={
-                this.state.inviteRequested
-                  ? { display: 'block' }
-                  : { display: 'none' }
-              }
-            >
+          <div className="card-body d-flex flex-column justify-content-between align-items-start">
+            <h4>Target Labeling</h4>
+            <fieldset>
+              {this.state.labelingNames.map(x => {
+                return (
+                  <div className="d-flex flex-row align-items-center mt-2">
+                    <input
+                      id={x}
+                      type="radio"
+                      onClick={y => {
+                        this.setState({ selectedLabeling: x });
+                      }}
+                    ></input>
+                    <label className="mb-0 ml-1" for={x}>
+                      {x}
+                    </label>
+                  </div>
+                );
+              })}
+            </fieldset>
+            <small className="mt-4">
+              <b>
+                <i>Note:</i>
+              </b>{' '}
+              Model will classify based on target labeling.
+            </small>
+          </div>
+        </div>
+        <div className="card mt-5 ml-4" style={{ border: '0px solid white' }}>
+          <div className="card-body h-100 d-flex flex-column align-items-start flex-column justify-content-between">
+            <div>
+              <h4>Target Sensor Streams</h4>
+            </div>
+            <fieldset>
+              {this.state.sensorStreams.map(x => {
+                return (
+                  <div className="d-flex flex-row align-items-center mt-2">
+                    <input
+                      id={x}
+                      type="checkbox"
+                      onClick={y => {
+                        // TODO: add to list of selected sensors
+                      }}
+                    ></input>
+                    <label className="mb-0 ml-1" for={x}>
+                      {x}
+                    </label>
+                  </div>
+                );
+              })}
+            </fieldset>
+            <div>
               <small>
-                <i>Request sent! We'll let you know when you get access.</i>
+                <b>
+                  <i>Note:</i>
+                </b>{' '}
+                Datasets that do not have all data streams will be dropped.
               </small>
             </div>
           </div>

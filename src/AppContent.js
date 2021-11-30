@@ -69,7 +69,7 @@ class AppContent extends Component {
             path={this.props.match.path + '/model'}
             render={props => (
               <ProjectRefresh project={this.props.project}>
-                <ModelPage></ModelPage>
+                <ModelPage {...props}></ModelPage>
               </ProjectRefresh>
             )}
           />

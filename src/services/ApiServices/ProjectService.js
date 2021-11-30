@@ -85,3 +85,17 @@ module.exports.deleteProject = project => {
       .catch(err => reject(err.response));
   });
 };
+
+module.exports.getProjectSensorStreams = project => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}/sensorStreams`
+      )
+    ).then(x => {
+      resolve(x['data'].sensorStreams);
+    });
+  });
+};
