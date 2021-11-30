@@ -57,6 +57,7 @@ class ModelPage extends Component {
                       onClick={y => {
                         this.setState({ selectedLabeling: x });
                       }}
+                      checked={this.state.selectedLabeling == x}
                     ></input>
                     <label className="mb-0 ml-1" for={x}>
                       {x}
@@ -86,7 +87,19 @@ class ModelPage extends Component {
                       id={x}
                       type="checkbox"
                       onClick={y => {
-                        // TODO: add to list of selected sensors
+                        if (this.state.selectedSensorStreams.includes(x)) {
+                          this.setState({
+                            selectedSensorStreams: this.state.selectedSensorStreams.filter(
+                              z => z !== x
+                            )
+                          });
+                        } else {
+                          var tmp = this.state.selectedSensorStreams;
+                          tmp.push(x);
+                          this.setState({
+                            selectedSensorStreams: tmp
+                          });
+                        }
                       }}
                     ></input>
                     <label className="mb-0 ml-1" for={x}>
