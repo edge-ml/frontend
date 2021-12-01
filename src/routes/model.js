@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 
 import Loader from '../modules/loader';
+
+import NumberHyperparameter from '../components/Hyperparameters/NumberHyperparameter';
+
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 
 import { getProjectSensorStreams } from '../services/ApiServices/ProjectService';
@@ -172,9 +175,10 @@ class ModelPage extends Component {
                     return Object.keys(m.hyperparameters).map(h => {
                       if (m.hyperparameters[h].parameter_type === 'number') {
                         return (
-                          <div>
-                            <i>Number Hyperparameter</i>
-                          </div>
+                          <NumberHyperparameter
+                            identifier={h}
+                            parameters={m.hyperparameters[h]}
+                          ></NumberHyperparameter>
                         );
                       } else if (
                         m.hyperparameters[h].parameter_type === 'selection'
