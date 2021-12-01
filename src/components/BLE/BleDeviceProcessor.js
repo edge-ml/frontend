@@ -48,6 +48,7 @@ class BleDeviceProcessor {
   }
 
   async prepareRecording(sensorsToRecord, sampleRate, latency) {
+    console.log(sensorsToRecord);
     for (const bleKey of Object.keys(this.sensors)) {
       if (sensorsToRecord.has(bleKey)) {
         await this.configureSingleSensor(bleKey, sampleRate, latency);

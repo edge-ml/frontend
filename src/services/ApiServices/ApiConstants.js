@@ -13,7 +13,7 @@ module.exports = {
   ML_URI:
     process.env.NODE_ENV === 'production'
       ? '/ml/'
-      : 'http://localhost:8000/api/',
+      : 'http://localhost:3003/api/',
 
   HTTP_METHODS: {
     GET: 'GET',
