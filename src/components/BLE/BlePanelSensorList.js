@@ -8,6 +8,15 @@ function BlePanelSensorList(props) {
   return (
     <div>
       <div className="panelHeader">2. Configure sensors</div>
+      <small className="text-danger">
+        <strong>Warning: </strong>Selecting too many sensor may crash your
+        Arduino. If you keep experiencing problems, consider installing the
+        standalone ZIP library on your{' '}
+        <a href="https://github.com/edge-ml/nicla-sense-me-fw#install-firmware-on-nicla-sense-me">
+          Nicla
+        </a>{' '}
+        or <a href="https://github.com/edge-ml/nano-33-ble-fw">Nano</a>.
+      </small>
       <div className="panelDivider"></div>
       <div
         style={
