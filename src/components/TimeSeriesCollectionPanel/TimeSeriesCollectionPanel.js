@@ -126,16 +126,20 @@ class TimeSeriesCollectionPanel extends Component {
             key={key}
             index={key + 1}
             offset={timeSeries.offset}
-            data={[
-              ...(timeSeries.data[0].timestamp === this.props.start
+            data={
+              timeSeries.data.length === 0
                 ? []
-                : [{ timestamp: this.props.start }]),
-              ...timeSeries.data,
-              ...(timeSeries.data[timeSeries.data.length - 1].timestamp ===
-              this.props.end
-                ? []
-                : [{ timestamp: this.props.end }])
-            ]}
+                : [
+                    ...(timeSeries.data[0].timestamp === this.props.start
+                      ? []
+                      : [{ timestamp: this.props.start }]),
+                    ...timeSeries.data,
+                    ...(timeSeries.data[timeSeries.data.length - 1]
+                      .timestamp === this.props.end
+                      ? []
+                      : [{ timestamp: this.props.end }])
+                  ]
+            }
             samplingRate={timeSeries.samplingRate ? timeSeries.samplingRate : 1}
             name={timeSeries.name}
             unit={timeSeries.unit}

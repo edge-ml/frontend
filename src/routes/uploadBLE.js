@@ -141,7 +141,13 @@ class UploadBLE extends Component {
     if (this.state.recorderState === 'recording') {
       await this.bleDeviceProcessor.stopRecording();
     }
-    this.state.connectedBLEDevice.gatt.disconnect();
+    if (
+      this.state.connectedBLEDevice &&
+      this.tate.connectedBLEDevice.gatt &&
+      this.state.connectedBLEDevice.gatt.disconnect
+    ) {
+      this.state.connectedBLEDevice.gatt.disconnect();
+    }
     this.setState({
       ...this.baseState
     });

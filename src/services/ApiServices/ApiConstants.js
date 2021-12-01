@@ -4,10 +4,14 @@ module.exports = {
   AUTH_URI:
     process.env.NODE_ENV === 'production'
       ? '/auth/'
+      : window.location.host === 'edge-ml.ngrok.io'
+      ? 'http://auth.edge-ml.ngrok.io/auth/'
       : 'http://localhost:3002/auth/',
   API_URI:
     process.env.NODE_ENV === 'production'
       ? '/api/'
+      : window.location.host === 'edge-ml.ngrok.io'
+      ? 'http://backend.edge-ml.ngrok.io/api/'
       : 'http://localhost:3000/api/',
 
   ML_URI:
