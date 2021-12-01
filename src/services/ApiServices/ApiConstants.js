@@ -13,11 +13,12 @@ module.exports = {
       : window.location.host === 'edge-ml.ngrok.io'
       ? 'http://backend.edge-ml.ngrok.io/api/'
       : 'http://localhost:3000/api/',
-
   ML_URI:
     process.env.NODE_ENV === 'production'
       ? '/ml/'
-      : 'http://localhost:3003/api/',
+      : window.location.host === 'edge-ml.ngrok.io'
+      ? 'http://ml.edge-ml.ngrok.io/ml/'
+      : 'http://localhost:3003/ml/',
 
   HTTP_METHODS: {
     GET: 'GET',
@@ -57,7 +58,7 @@ module.exports = {
     SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive'
   },
   ML_ENDPOINTS: {
-    PARAMETERS: 'parameters'
+    MODELS: 'models'
   }
 };
 

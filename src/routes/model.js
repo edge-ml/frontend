@@ -5,16 +5,20 @@ import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingSer
 
 import { getProjectSensorStreams } from '../services/ApiServices/ProjectService';
 
+import { getModels } from '../services/ApiServices/MlService';
+
 class ModelPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       ready: true,
       inviteRequested: false,
-      labelingNames: [],
+      labelings: [],
       selectedLabeling: undefined,
       sensorStreams: [],
-      selectedSensorStreams: []
+      selectedSensorStreams: [],
+      models: [],
+      selectedModelId: undefined
     };
 
     this.initComponent = this.initComponent.bind(this);
@@ -27,13 +31,18 @@ class ModelPage extends Component {
   initComponent() {
     Promise.all([
       subscribeLabelingsAndLabels(),
-      getProjectSensorStreams(this.props.project)
+      getProjectSensorStreams(this.props.project),
+      getModels()
     ]).then(result => {
-      var labelingNames = result[0].labelings.map(x => x.name);
+      console.log(result[0]);
       this.setState({
-        selectedLabeling: labelingNames[0],
-        labelingNames: labelingNames,
-        sensorStreams: result[1] ? result[1] : []
+        selectedLabeling: result[0].labelings[0]
+          ? result[0].labelings[0]._id
+          : '',
+        labelings: result[0].labelings,
+        sensorStreams: result[1] ? result[1] : [],
+        models: result[2],
+        selectedModelId: result[2][0] ? result[2][0].id : ''
       });
     });
   }
@@ -50,25 +59,31 @@ class ModelPage extends Component {
               <div className="card-body d-flex flex-column justify-content-between align-items-start">
                 <h4>Target Labeling</h4>
                 <fieldset>
-                  {this.state.labelingNames.map(x => {
+                  {this.state.labelings.map(x => {
                     return (
                       <div className="d-flex flex-row align-items-center mt-2">
                         <input
-                          id={x}
+                          id={x._id}
                           type="radio"
                           onClick={y => {
-                            this.setState({ selectedLabeling: x });
+                            this.setState({ selectedLabeling: x._id });
                           }}
-                          checked={this.state.selectedLabeling == x}
+                          checked={this.state.selectedLabeling === x._id}
                         ></input>
-                        <label className="mb-0 ml-1" for={x}>
-                          {x}
+                        <label
+                          className="mb-0 ml-1"
+                          for={x._id}
+                          onClick={y => {
+                            this.setState({ selectedLabeling: x._id });
+                          }}
+                        >
+                          {x.name}
                         </label>
                       </div>
                     );
                   })}
                 </fieldset>
-                <small className="mt-3">
+                <small className="mt-3 text-left">
                   <b>
                     <i>Note:</i>
                   </b>{' '}
@@ -113,7 +128,7 @@ class ModelPage extends Component {
                     );
                   })}
                 </fieldset>
-                <div className="mt-3">
+                <div className="mt-3 text-left">
                   <small>
                     <b>
                       <i>Note:</i>
@@ -128,12 +143,20 @@ class ModelPage extends Component {
           <div className="col-12 mt-4">
             <div className="card h-100" style={{ border: '0px solid white' }}>
               <div className="card-body h-100 d-flex flex-column align-items-start flex-column justify-content-between">
-                <div>
+                <div className="d-flex flex-row justify-content-between w-100">
                   <h4>Classifier</h4>
+                  <select
+                    onChange={e => {
+                      this.setState({ selectedModelId: e.target.value });
+                    }}
+                    value={this.state.selectedModelId}
+                  >
+                    {this.state.models.map(m => {
+                      return <option value={m.id}>{m.name}</option>;
+                    })}
+                  </select>
                 </div>
-                <select>
-                  <option value="volvo">Random Forest Classifier</option>
-                </select>
+
                 <div
                   className="mt-3 mb-3"
                   style={{
@@ -143,6 +166,35 @@ class ModelPage extends Component {
                   }}
                 ></div>
                 <h6>Hyperparameters</h6>
+                {this.state.models
+                  .filter(m => m.id === this.state.selectedModelId)
+                  .map(m => {
+                    return Object.keys(m.hyperparameters).map(h => {
+                      if (m.hyperparameters[h].parameter_type === 'number') {
+                        return (
+                          <div>
+                            <i>Number Hyperparameter</i>
+                          </div>
+                        );
+                      } else if (
+                        m.hyperparameters[h].parameter_type === 'selection'
+                      ) {
+                        return (
+                          <div>
+                            <i>Selection Hyperparameter</i>
+                          </div>
+                        );
+                      } else if (
+                        m.hyperparameters[h].parameter_type === 'boolean'
+                      ) {
+                        return (
+                          <div>
+                            <i>Boolean Hyperparameter</i>
+                          </div>
+                        );
+                      }
+                    });
+                  })}
               </div>
             </div>
           </div>
