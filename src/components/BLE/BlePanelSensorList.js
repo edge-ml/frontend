@@ -42,6 +42,7 @@ function BlePanelSensorList(props) {
                     <Input
                       onChange={e => props.onToggleSensor(sensorKey)}
                       className="datasets-check"
+                      checked={props.selectedSensors.has(sensorKey)}
                       type="checkbox"
                     />
                   </td>

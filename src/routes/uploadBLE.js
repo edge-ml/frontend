@@ -48,8 +48,7 @@ class UploadBLE extends Component {
     this.onToggleSensor = this.onToggleSensor.bind(this);
     this.onGlobalSampleRateChanged = this.onGlobalSampleRateChanged.bind(this);
     this.onDatasetNameChanged = this.onDatasetNameChanged.bind(this);
-
-    this.baseState = this.state;
+    this.resetState = this.resetState.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
@@ -78,6 +77,20 @@ class UploadBLE extends Component {
   onGlobalSampleRateChanged(e) {
     this.setState({
       sampleRate: e.target.value
+    });
+  }
+
+  resetState() {
+    this.setState({
+      bleConnectionChanging: false,
+      connectedBLEDevice: undefined,
+      bleStatus: navigator.bluetooth,
+      sampleRate: 50,
+      latency: 0,
+      datasetName: '',
+      recorderState: 'ready',
+      deviceSensors: undefined,
+      selectedSensors: new Set()
     });
   }
 
@@ -143,14 +156,12 @@ class UploadBLE extends Component {
     }
     if (
       this.state.connectedBLEDevice &&
-      this.tate.connectedBLEDevice.gatt &&
+      this.state.connectedBLEDevice.gatt &&
       this.state.connectedBLEDevice.gatt.disconnect
     ) {
       this.state.connectedBLEDevice.gatt.disconnect();
     }
-    this.setState({
-      ...this.baseState
-    });
+    this.resetState();
   }
 
   onConnection() {
@@ -276,6 +287,7 @@ class UploadBLE extends Component {
             <Col>
               <div className="shadow p-3 mb-5 bg-white rounded">
                 <BlePanelSensorList
+                  selectedSensors={this.state.selectedSensors}
                   sensors={this.state.deviceSensors}
                   onToggleSensor={this.onToggleSensor}
                   disabled={this.state.recorderState !== 'ready'}
