@@ -12,7 +12,7 @@ module.exports = {
       ? '/api/'
       : window.location.host === 'edge-ml.ngrok.io'
       ? 'http://backend.edge-ml.ngrok.io/api/'
-      : 'http://localhost:3000/api/',
+      : 'http://localhost:3001/api/',
   ML_URI:
     process.env.NODE_ENV === 'production'
       ? '/ml/'
