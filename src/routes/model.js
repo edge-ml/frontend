@@ -174,22 +174,22 @@ class ModelPage extends Component {
                     m => m.id === parseInt(this.state.selectedModelId, 10)
                   )
                   .map(m => {
-                    return Object.keys(m.hyperparameters).map(h => {
+                    return Object.keys(m.hyperparameters).map((h, index) => {
                       if (m.hyperparameters[h].parameter_type === 'number') {
                         return (
-                          <div>
-                            <NumberHyperparameter />
-                          </div>
+                          <NumberHyperparameter
+                            {...m.hyperparameters[h]}
+                            id={index}
+                          />
                         );
                       } else if (
                         m.hyperparameters[h].parameter_type === 'selection'
                       ) {
                         return (
-                          <div>
-                            <SelectionHyperparameter
-                              {...m.hyperparameters[h]}
-                            />
-                          </div>
+                          <SelectionHyperparameter
+                            {...m.hyperparameters[h]}
+                            id={index}
+                          />
                         );
                       } else if (
                         m.hyperparameters[h].parameter_type === 'boolean'
