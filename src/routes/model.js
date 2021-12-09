@@ -167,7 +167,9 @@ class ModelPage extends Component {
                 ></div>
                 <h6>Hyperparameters</h6>
                 {this.state.models
-                  .filter(m => m.id === this.state.selectedModelId)
+                  .filter(
+                    m => m.id === parseInt(this.state.selectedModelId, 10)
+                  )
                   .map(m => {
                     return Object.keys(m.hyperparameters).map(h => {
                       if (m.hyperparameters[h].parameter_type === 'number') {
