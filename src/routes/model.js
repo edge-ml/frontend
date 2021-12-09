@@ -7,6 +7,9 @@ import { getProjectSensorStreams } from '../services/ApiServices/ProjectService'
 
 import { getModels } from '../services/ApiServices/MlService';
 
+import NumberHyperparameter from '../components/Hyperparameters/NumberHyperparameter';
+import SelectionHyperparameter from '../components/Hyperparameters/SelectionHyperparameter';
+
 class ModelPage extends Component {
   constructor(props) {
     super(props);
@@ -175,7 +178,7 @@ class ModelPage extends Component {
                       if (m.hyperparameters[h].parameter_type === 'number') {
                         return (
                           <div>
-                            <i>Number Hyperparameter</i>
+                            <NumberHyperparameter />
                           </div>
                         );
                       } else if (
@@ -183,7 +186,9 @@ class ModelPage extends Component {
                       ) {
                         return (
                           <div>
-                            <i>Selection Hyperparameter</i>
+                            <SelectionHyperparameter
+                              {...m.hyperparameters[h]}
+                            />
                           </div>
                         );
                       } else if (
