@@ -288,3 +288,13 @@ div.card {
 .table-record-center {
   text-align: center;
 }
+
+.hyperparameter-input-container {
+  width: 150px;
+  height: auto;
+}
+
+.hyperparameter-input-container-multi {
+  width: 350px;
+  height: auto;
+}

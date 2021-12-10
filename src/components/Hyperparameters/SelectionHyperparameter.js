@@ -33,35 +33,6 @@ class SelectionHyperparameter extends Component {
 
   render() {
     return (
-      // <div
-      //   style={{
-      //     display: 'flex',
-      //     flexDirection: 'row',
-      //     justifyContent: 'space-between',
-      //     gap: '10px',
-      //     alignSelf: 'stretch',
-      //     width: '60%'
-      //   }}
-      // >
-      //   <Label
-      //     style={{ alignSelf: 'center', marginBottom: 0, flexBasis: '10rem'}}
-      //     title={this.props.description}
-      //   >
-      //     {this.props.display_name}
-      //   </Label>
-      //   <div style={{flexGrow: 1}}>
-      //     <Select
-      //       options={this.props.options.map(e => {
-      //         return { value: e, label: e };
-      //       })}
-      //       isMulti={this.props.multi_select}
-      //       value={this.state.selectedOptions}
-      //       onChange={this.handleChange}
-      //       components={makeAnimated()}
-      //       closeMenuOnSelect={false}
-      //     />
-      //   </div>
-      // </div>
       <InputGroup style={{ display: 'flex' }}>
         <InputGroupAddon addonType="prepend">
           <InputGroupText style={{ width: '200px' }}>
@@ -93,7 +64,13 @@ class SelectionHyperparameter extends Component {
             value={this.state.selectedOptions}
             onChange={this.handleChange}
             components={makeAnimated()}
-            closeMenuOnSelect={false}
+            closeMenuOnSelect={!this.props.multi_select}
+            isSearchable={false}
+            className={
+              this.props.multi_select
+                ? 'hyperparameter-input-container-multi'
+                : 'hyperparameter-input-container'
+            }
           />
         </InputGroupAddon>
       </InputGroup>

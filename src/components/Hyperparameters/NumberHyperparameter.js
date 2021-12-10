@@ -47,7 +47,7 @@ class NumberHyperparameter extends Component {
             step={this.props.step_size}
             min={this.props.number_min}
             max={this.props.number_max}
-            style={{ width: '100px' }}
+            className="hyperparameter-input-container"
           ></Input>
         </InputGroupAddon>
       </InputGroup>

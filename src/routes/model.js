@@ -169,6 +169,13 @@ class ModelPage extends Component {
                       this.setState({ modelSelection });
                       this.setState({ selectedModelId: modelSelection.value });
                     }}
+                    isSearchable={false}
+                    styles={{
+                      valueContainer: () => ({
+                        width: 200,
+                        height: 25
+                      })
+                    }}
                   ></Select>
                 </div>
 
@@ -202,14 +209,6 @@ class ModelPage extends Component {
                             {...m.hyperparameters[h]}
                             id={index}
                           />
-                        );
-                      } else if (
-                        m.hyperparameters[h].parameter_type === 'boolean'
-                      ) {
-                        return (
-                          <div>
-                            <i>Boolean Hyperparameter</i>
-                          </div>
                         );
                       }
                     });
