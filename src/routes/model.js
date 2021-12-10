@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 
 import Loader from '../modules/loader';
 
-import NumberHyperparameter from '../components/Hyperparameters/NumberHyperparameter';
-
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 
 import { getProjectSensorStreams } from '../services/ApiServices/ProjectService';
