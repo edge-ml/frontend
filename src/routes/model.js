@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import Loader from '../modules/loader';
-
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 
 import { getProjectSensorStreams } from '../services/ApiServices/ProjectService';

@@ -18,12 +18,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 class NumberHyperparameter extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      identifier: props.identifier,
-      parameters: props.parameters,
-      selectedValue: props.parameters.default
-    };
+    this.state = {};
   }
 
   render() {
