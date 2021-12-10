@@ -10,6 +10,9 @@ import { getProjectSensorStreams } from '../services/ApiServices/ProjectService'
 
 import { getModels } from '../services/ApiServices/MlService';
 
+import NumberHyperparameter from '../components/Hyperparameters/NumberHyperparameter';
+import SelectionHyperparameter from '../components/Hyperparameters/SelectionHyperparameter';
+
 class ModelPage extends Component {
   constructor(props) {
     super(props);
@@ -170,23 +173,26 @@ class ModelPage extends Component {
                 ></div>
                 <h6>Hyperparameters</h6>
                 {this.state.models
-                  .filter(m => m.id === this.state.selectedModelId)
+                  .filter(
+                    m => m.id === parseInt(this.state.selectedModelId, 10)
+                  )
                   .map(m => {
-                    return Object.keys(m.hyperparameters).map(h => {
+                    return Object.keys(m.hyperparameters).map((h, index) => {
                       if (m.hyperparameters[h].parameter_type === 'number') {
                         return (
                           <NumberHyperparameter
-                            identifier={h}
-                            parameters={m.hyperparameters[h]}
-                          ></NumberHyperparameter>
+                            {...m.hyperparameters[h]}
+                            id={index}
+                          />
                         );
                       } else if (
                         m.hyperparameters[h].parameter_type === 'selection'
                       ) {
                         return (
-                          <div>
-                            <i>Selection Hyperparameter</i>
-                          </div>
+                          <SelectionHyperparameter
+                            {...m.hyperparameters[h]}
+                            id={index}
+                          />
                         );
                       } else if (
                         m.hyperparameters[h].parameter_type === 'boolean'
