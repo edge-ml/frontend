@@ -55,24 +55,23 @@ class SelectionHyperparameter extends Component {
             {this.props.display_name}
           </InputGroupText>
         </InputGroupAddon>
-        <InputGroupAddon addonType="append">
-          <Select
-            options={this.props.options.map(e => {
-              return { value: e, label: e };
-            })}
-            isMulti={this.props.multi_select}
-            value={this.state.selectedOptions}
-            onChange={this.handleChange}
-            components={makeAnimated()}
-            closeMenuOnSelect={!this.props.multi_select}
-            isSearchable={false}
-            className={
-              this.props.multi_select
-                ? 'hyperparameter-input-container-multi'
-                : 'hyperparameter-input-container'
-            }
-          />
-        </InputGroupAddon>
+        <Select
+          options={this.props.options.map(e => {
+            return { value: e, label: e };
+          })}
+          isMulti={this.props.multi_select}
+          value={this.state.selectedOptions}
+          onChange={this.handleChange}
+          components={makeAnimated()}
+          closeMenuOnSelect={!this.props.multi_select}
+          isSearchable={false}
+          className={
+            this.props.multi_select
+              ? 'hyperparameter-input-container-multi'
+              : 'hyperparameter-input-container'
+          }
+          classNamePrefix="hyperparameter-input"
+        />
       </InputGroup>
     );
   }

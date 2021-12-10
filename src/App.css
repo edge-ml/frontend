@@ -292,9 +292,14 @@ div.card {
 .hyperparameter-input-container {
   width: 150px;
   height: auto;
+  border-radius: 0px 4px 4px 0px;
 }
 
 .hyperparameter-input-container-multi {
   width: 350px;
   height: auto;
+}
+
+.hyperparameter-input__control {
+  border-radius: 0px 4px 4px 0px !important;
 }

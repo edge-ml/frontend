@@ -40,7 +40,7 @@ class NumberHyperparameter extends Component {
             {this.props.display_name}
           </InputGroupText>
         </InputGroupAddon>
-        <InputGroupAddon addonType="append">
+        <InputGroupAddon>
           <Input
             type="number"
             defaultValue={this.props.default}
@@ -48,7 +48,7 @@ class NumberHyperparameter extends Component {
             min={this.props.number_min}
             max={this.props.number_max}
             className="hyperparameter-input-container"
-          ></Input>
+          />
         </InputGroupAddon>
       </InputGroup>
     );
