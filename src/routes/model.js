@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Loader from '../modules/loader';
+import Select from 'react-select';
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 
 import { getProjectSensorStreams } from '../services/ApiServices/ProjectService';
@@ -45,7 +46,10 @@ class ModelPage extends Component {
         labelings: result[0].labelings,
         sensorStreams: result[1] ? result[1][0] : [],
         models: result[2],
-        selectedModelId: result[2][0] ? result[2][0].id : ''
+        selectedModelId: result[2][0] ? result[2][0].id : '',
+        modelSelection: result[2][0]
+          ? { value: result[2][0].id, label: result[2][0].name }
+          : {}
       });
     });
   }
@@ -156,16 +160,16 @@ class ModelPage extends Component {
               <div className="card-body h-100 d-flex flex-column align-items-start flex-column justify-content-between">
                 <div className="d-flex flex-row justify-content-between w-100">
                   <h4>Classifier</h4>
-                  <select
-                    onChange={e => {
-                      this.setState({ selectedModelId: e.target.value });
-                    }}
-                    value={this.state.selectedModelId}
-                  >
-                    {this.state.models.map(m => {
-                      return <option value={m.id}>{m.name}</option>;
+                  <Select
+                    options={this.state.models.map(m => {
+                      return { value: m.id, label: m.name };
                     })}
-                  </select>
+                    value={this.state.modelSelection}
+                    onChange={modelSelection => {
+                      this.setState({ modelSelection });
+                      this.setState({ selectedModelId: modelSelection.value });
+                    }}
+                  ></Select>
                 </div>
 
                 <div
