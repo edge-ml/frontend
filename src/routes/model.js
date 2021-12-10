@@ -43,7 +43,7 @@ class ModelPage extends Component {
           ? result[0].labelings[0]._id
           : '',
         labelings: result[0].labelings,
-        sensorStreams: result[1] ? result[1] : [],
+        sensorStreams: result[1] ? result[1][0] : [],
         models: result[2],
         selectedModelId: result[2][0] ? result[2][0].id : ''
       });
@@ -62,29 +62,31 @@ class ModelPage extends Component {
               <div className="card-body d-flex flex-column justify-content-between align-items-start">
                 <h4>Target Labeling</h4>
                 <fieldset>
-                  {this.state.labelings.map(x => {
-                    return (
-                      <div className="d-flex flex-row align-items-center mt-2">
-                        <input
-                          id={x._id}
-                          type="radio"
-                          onClick={y => {
-                            this.setState({ selectedLabeling: x._id });
-                          }}
-                          checked={this.state.selectedLabeling === x._id}
-                        ></input>
-                        <label
-                          className="mb-0 ml-1"
-                          for={x._id}
-                          onClick={y => {
-                            this.setState({ selectedLabeling: x._id });
-                          }}
-                        >
-                          {x.name}
-                        </label>
-                      </div>
-                    );
-                  })}
+                  {this.state.labelings.length
+                    ? this.state.labelings.map(x => {
+                        return (
+                          <div className="d-flex flex-row align-items-center mt-2">
+                            <input
+                              id={x._id}
+                              type="radio"
+                              onClick={y => {
+                                this.setState({ selectedLabeling: x._id });
+                              }}
+                              checked={this.state.selectedLabeling === x._id}
+                            ></input>
+                            <label
+                              className="mb-0 ml-1"
+                              for={x._id}
+                              onClick={y => {
+                                this.setState({ selectedLabeling: x._id });
+                              }}
+                            >
+                              {x.name}
+                            </label>
+                          </div>
+                        );
+                      })
+                    : 'There are no labelings defined'}
                 </fieldset>
                 <small className="mt-3 text-left">
                   <b>
@@ -102,34 +104,40 @@ class ModelPage extends Component {
                   <h4>Target Sensor Streams</h4>
                 </div>
                 <fieldset>
-                  {this.state.sensorStreams.map(x => {
-                    return (
-                      <div className="d-flex flex-row align-items-center mt-2">
-                        <input
-                          id={x}
-                          type="checkbox"
-                          onClick={y => {
-                            if (this.state.selectedSensorStreams.includes(x)) {
-                              this.setState({
-                                selectedSensorStreams: this.state.selectedSensorStreams.filter(
-                                  z => z !== x
-                                )
-                              });
-                            } else {
-                              var tmp = this.state.selectedSensorStreams;
-                              tmp.push(x);
-                              this.setState({
-                                selectedSensorStreams: tmp
-                              });
-                            }
-                          }}
-                        ></input>
-                        <label className="mb-0 ml-1" for={x}>
-                          {x}
-                        </label>
-                      </div>
-                    );
-                  })}
+                  {console.log('hey')}
+                  {console.log(this.state.sensorStreams)}
+                  {this.state.sensorStreams.length
+                    ? this.state.sensorStreams.map(x => {
+                        return (
+                          <div className="d-flex flex-row align-items-center mt-2">
+                            <input
+                              id={x}
+                              type="checkbox"
+                              onClick={y => {
+                                if (
+                                  this.state.selectedSensorStreams.includes(x)
+                                ) {
+                                  this.setState({
+                                    selectedSensorStreams: this.state.selectedSensorStreams.filter(
+                                      z => z !== x
+                                    )
+                                  });
+                                } else {
+                                  var tmp = this.state.selectedSensorStreams;
+                                  tmp.push(x);
+                                  this.setState({
+                                    selectedSensorStreams: tmp
+                                  });
+                                }
+                              }}
+                            ></input>
+                            <label className="mb-0 ml-1" for={x}>
+                              {x}
+                            </label>
+                          </div>
+                        );
+                      })
+                    : 'There are no sensor streams defined'}
                 </fieldset>
                 <div className="mt-3 text-left">
                   <small>
