@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
 import {
-  Button,
-  Card,
-  CardBody,
   InputGroup,
   InputGroupText,
   InputGroupAddon,
   Input,
-  Label,
-  FormGroup,
   UncontrolledTooltip
 } from 'reactstrap';
 
@@ -23,24 +18,6 @@ class NumberHyperparameter extends Component {
 
   render() {
     return (
-      // <FormGroup style={{
-      //   display: 'flex',
-      //   flexDirection: 'row',
-      //   justifyContent: 'space-between',
-      //   gap: '10px',
-      //   alignSelf: 'stretch',
-      //   width: '80%',
-      //   marginBottom: '5px'
-      // }}>
-      //   <Label style={{flexBasis: '10rem', alignSelf: 'center', marginBottom: '0px'}}
-      //     title={this.props.description}>{this.props.display_name}</Label>
-      //     <Input style={{flexGrow: 1}}
-      //       name="number"
-      //       type="number"
-      //       defaultValue={this.props.default}
-      //       step={this.props.step_size}
-      //     />
-      // </FormGroup>
       <InputGroup>
         <InputGroupAddon addonType="prepend">
           <InputGroupText style={{ width: '200px' }}>
@@ -68,6 +45,8 @@ class NumberHyperparameter extends Component {
             type="number"
             defaultValue={this.props.default}
             step={this.props.step_size}
+            min={this.props.number_min}
+            max={this.props.number_max}
             style={{ width: '100px' }}
           ></Input>
         </InputGroupAddon>
