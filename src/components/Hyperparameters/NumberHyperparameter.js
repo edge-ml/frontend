@@ -48,6 +48,7 @@ class NumberHyperparameter extends Component {
             min={this.props.number_min}
             max={this.props.number_max}
             className="hyperparameter-input-container"
+            style={{ textAlign: 'center' }}
           />
         </InputGroupAddon>
       </InputGroup>
