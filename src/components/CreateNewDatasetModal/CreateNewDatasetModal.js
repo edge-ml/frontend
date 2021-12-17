@@ -83,29 +83,6 @@ class CreateNewDatasetModal extends Component {
 
       var datasets = result.datasets;
 
-      //Provide error message, if the wrong CSV format is used (no 'sensor_' and 'label_' prefixes)
-      /*if (
-        typeof datasets === "undefined" ||
-        typeof datasets[0] === "undefined"
-      ) {
-        window.alert(
-          "Wrong CSV format! Please ensure that the prefixes 'sensor_' and 'label_' are used. Check the example.csv for help."
-        );
-        return;
-      }*/
-
-      //Check if labelings without any labels are present in the dataset. This is not allowed
-      /*for (var i = 0; i < result.labelings.length; i++) {
-        for (var j = 0; j < result.labelings[i].length; j++) {
-          if (result.labelings[i][j].labels.length === 0) {
-            window.alert(
-              "The uploaded CSV file has labeling sets without any labels, which is not allowed."
-            );
-            return;
-          }
-        }
-      }*/
-
       datasets = datasets.map((dataset, idx) => {
         const fileName = files[idx].name;
         dataset.name = fileName.endsWith('.csv')
@@ -206,53 +183,58 @@ class CreateNewDatasetModal extends Component {
   }
 
   async onUpload() {
-    this.setState({ onUploading: true });
-    const nameValid = this.state.datasets.every(elm =>
-      elm.timeSeries.every(timeElm => timeElm.name !== '')
-    );
-    if (!nameValid) {
-      window.alert('Every timeSeries needs a name');
-      return;
-    }
-
-    const valid = this.state.datasets.every(elm => !elm.error);
-    if (!valid) {
-      window.alert('Fix the errors to upload the dataset');
-      return;
-    }
-    if (!this.props.dataset) {
-      const promises = [];
-      for (var i = 0; i < this.state.labelings.length; i++) {
-        for (var j = 0; j < this.state.labelings[i].length; j++) {
-          promises.push(
-            addLabeling({
-              ...this.state.labelings[i][j].labeling,
-              labels: this.state.labelings[i][j].labels
-            })
-          );
-        }
+    try {
+      this.setState({ onUploading: true });
+      const nameValid = this.state.datasets.every(elm =>
+        elm.timeSeries.every(timeElm => timeElm.name !== '')
+      );
+      if (!nameValid) {
+        window.alert('Every timeSeries needs a name');
+        return;
       }
-      await Promise.all(promises);
-      const result = await subscribeLabelingsAndLabels();
-      const newDatasets = generateLabeledDataset(
-        result.labelings,
-        result.labels,
-        this.state.labelings,
-        this.state.datasets
-      );
-      const data = await createDatasets(newDatasets);
-      this.props.onDatasetComplete(data);
-      this.setState(this.baseState);
-    } else {
-      const fusedDataset = extendExistingDataset(
-        this.props.dataset,
-        this.state.datasets
-      );
-      const data = await updateDataset(fusedDataset);
-      this.setState(this.baseState);
-      this.props.onDatasetComplete(data);
+
+      const valid = this.state.datasets.every(elm => !elm.error);
+      if (!valid) {
+        window.alert('Fix the errors to upload the dataset');
+        return;
+      }
+      if (!this.props.dataset) {
+        const promises = [];
+        for (var i = 0; i < this.state.labelings.length; i++) {
+          for (var j = 0; j < this.state.labelings[i].length; j++) {
+            promises.push(
+              addLabeling({
+                ...this.state.labelings[i][j].labeling,
+                labels: this.state.labelings[i][j].labels
+              })
+            );
+          }
+        }
+        await Promise.all(promises);
+        const result = await subscribeLabelingsAndLabels();
+        const newDatasets = generateLabeledDataset(
+          result.labelings,
+          result.labels,
+          this.state.labelings,
+          this.state.datasets
+        );
+        const data = await createDatasets(newDatasets);
+        this.props.onDatasetComplete(data);
+        this.setState(this.baseState);
+      } else {
+        const fusedDataset = extendExistingDataset(
+          this.props.dataset,
+          this.state.datasets
+        );
+        const data = await updateDataset(fusedDataset);
+        this.setState(this.baseState);
+        this.props.onDatasetComplete(data);
+      }
+      this.setState({ onUploading: false });
+    } catch (e) {
+      this.setState({ onUploading: false });
+      window.alert('An error occurred while uploading the dataset');
     }
-    this.setState({ onUploading: false });
   }
 
   render() {
