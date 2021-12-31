@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 
 import Loader from '../modules/loader';
 import Select from 'react-select';
+import { Button } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
+import { getAccessToken } from '../services/LocalStorageService';
 
 import { getProjectSensorStreams } from '../services/ApiServices/ProjectService';
 
@@ -10,6 +12,7 @@ import { getModels } from '../services/ApiServices/MlService';
 
 import NumberHyperparameter from '../components/Hyperparameters/NumberHyperparameter';
 import SelectionHyperparameter from '../components/Hyperparameters/SelectionHyperparameter';
+import axios from 'axios';
 
 class ModelPage extends Component {
   constructor(props) {
@@ -22,10 +25,42 @@ class ModelPage extends Component {
       sensorStreams: [],
       selectedSensorStreams: [],
       models: [],
-      selectedModelId: undefined
+      selectedModelId: undefined,
+      hyperparameters: []
     };
 
     this.initComponent = this.initComponent.bind(this);
+    this.handleHyperparameterChange = this.handleHyperparameterChange.bind(
+      this
+    );
+  }
+
+  formatHyperparameters(hyperparameters) {
+    return Object.entries(hyperparameters).map(e => {
+      return {
+        parameter_name: e[0],
+        state:
+          e[1].parameter_type === 'number'
+            ? e[1].default
+            : e[1].multi_select
+            ? e[1].default.map(x => {
+                return { value: x, label: x };
+              })
+            : { value: e[1].default, label: e[1].default }
+      };
+    });
+  }
+
+  handleHyperparameterChange(hyperparameter) {
+    const newState = hyperparameter.state;
+    const parameter_name = hyperparameter.parameter_name;
+    this.setState(prevState => {
+      const params = prevState.hyperparameters;
+      params.find(e => e.parameter_name === parameter_name).state = newState;
+      return {
+        hyperparameters: params
+      };
+    });
   }
 
   componentDidMount() {
@@ -38,7 +73,6 @@ class ModelPage extends Component {
       getProjectSensorStreams(this.props.project),
       getModels()
     ]).then(result => {
-      console.log(result[0]);
       this.setState({
         selectedLabeling: result[0].labelings[0]
           ? result[0].labelings[0]._id
@@ -49,7 +83,10 @@ class ModelPage extends Component {
         selectedModelId: result[2][0] ? result[2][0].id : '',
         modelSelection: result[2][0]
           ? { value: result[2][0].id, label: result[2][0].name }
-          : {}
+          : {},
+        hyperparameters: result[2][0]
+          ? this.formatHyperparameters(result[2][0].hyperparameters)
+          : []
       });
     });
   }
@@ -108,8 +145,6 @@ class ModelPage extends Component {
                   <h4>Target Sensor Streams</h4>
                 </div>
                 <fieldset>
-                  {console.log('hey')}
-                  {console.log(this.state.sensorStreams)}
                   {this.state.sensorStreams.length
                     ? this.state.sensorStreams.map(x => {
                         return (
@@ -168,6 +203,13 @@ class ModelPage extends Component {
                     onChange={modelSelection => {
                       this.setState({ modelSelection });
                       this.setState({ selectedModelId: modelSelection.value });
+                      this.setState({
+                        hyperparameters: this.formatHyperparameters(
+                          this.state.models.find(
+                            m => m.id === parseInt(modelSelection.value, 10)
+                          ).hyperparameters
+                        )
+                      });
                     }}
                     isSearchable={false}
                     styles={{
@@ -188,6 +230,8 @@ class ModelPage extends Component {
                   }}
                 ></div>
                 <h6>Hyperparameters</h6>
+                {console.log('rendering')}
+                {console.log(this.state.hyperparameters)}
                 {this.state.models
                   .filter(
                     m => m.id === parseInt(this.state.selectedModelId, 10)
@@ -195,10 +239,27 @@ class ModelPage extends Component {
                   .map(m => {
                     return Object.keys(m.hyperparameters).map((h, index) => {
                       if (m.hyperparameters[h].parameter_type === 'number') {
+                        {
+                          console.log(
+                            this.state.hyperparameters.find(
+                              e =>
+                                e.parameter_name ===
+                                m.hyperparameters[h].parameter_name
+                            )
+                          );
+                        }
                         return (
                           <NumberHyperparameter
                             {...m.hyperparameters[h]}
                             id={index}
+                            handleChange={this.handleHyperparameterChange}
+                            value={
+                              this.state.hyperparameters.find(
+                                e =>
+                                  e.parameter_name ===
+                                  m.hyperparameters[h].parameter_name
+                              ).state
+                            }
                           />
                         );
                       } else if (
@@ -208,11 +269,46 @@ class ModelPage extends Component {
                           <SelectionHyperparameter
                             {...m.hyperparameters[h]}
                             id={index}
+                            handleChange={this.handleHyperparameterChange}
+                            value={
+                              this.state.hyperparameters.find(
+                                e =>
+                                  e.parameter_name ===
+                                  m.hyperparameters[h].parameter_name
+                              ).state
+                            }
                           />
                         );
                       }
                     });
                   })}
+                <Button
+                  onClick={e => {
+                    console.log(this.state.modelSelection);
+                    console.log(this.state.hyperparameters);
+                    const config = {
+                      method: 'post',
+                      url: 'http://localhost:3003/ml/train',
+                      headers: {
+                        Authorization: getAccessToken(),
+                        project: this.props.project._id,
+                        'Content-Type': 'application/json'
+                      },
+                      data: {
+                        model_id: this.state.selectedModelId,
+                        selected_timeseries: this.state.selectedSensorStreams,
+                        target_labeling: this.state.selectedLabeling,
+                        hyperparameters: this.state.hyperparameters
+                      }
+                    };
+                    axios(config)
+                      .then(res => console.log(res))
+                      .catch(err => console.log(err));
+                  }}
+                  project={this.props.project}
+                >
+                  Submit
+                </Button>
               </div>
             </div>
           </div>

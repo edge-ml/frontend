@@ -13,7 +13,6 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 class NumberHyperparameter extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
   }
 
   render() {
@@ -43,10 +42,17 @@ class NumberHyperparameter extends Component {
         <InputGroupAddon>
           <Input
             type="number"
+            value={this.props.value}
             defaultValue={this.props.default}
             step={this.props.step_size}
             min={this.props.number_min}
             max={this.props.number_max}
+            onChange={e => {
+              this.props.handleChange({
+                parameter_name: this.props.parameter_name,
+                state: e.target.value
+              });
+            }}
             className="hyperparameter-input-container"
             style={{ textAlign: 'center' }}
           />

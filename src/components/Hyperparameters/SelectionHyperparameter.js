@@ -20,18 +20,11 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 class SelectionHyperparameter extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
-    this.state.selectedOptions = {
-      value: this.props.default,
-      label: this.props.default
-    };
   }
 
-  handleChange = selectedOptions => {
-    this.setState({ selectedOptions });
-  };
-
   render() {
+    console.log('hi ');
+    console.log(this.props.value);
     return (
       <InputGroup style={{ display: 'flex' }}>
         <InputGroupAddon addonType="prepend">
@@ -60,8 +53,14 @@ class SelectionHyperparameter extends Component {
             return { value: e, label: e };
           })}
           isMulti={this.props.multi_select}
-          value={this.state.selectedOptions}
-          onChange={this.handleChange}
+          value={this.props.value}
+          defaultValue={this.props.default}
+          onChange={e => {
+            this.props.handleChange({
+              parameter_name: this.props.parameter_name,
+              state: e
+            });
+          }}
           components={makeAnimated()}
           closeMenuOnSelect={!this.props.multi_select}
           isSearchable={false}
