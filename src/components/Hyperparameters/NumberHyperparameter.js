@@ -50,7 +50,7 @@ class NumberHyperparameter extends Component {
             onChange={e => {
               this.props.handleChange({
                 parameter_name: this.props.parameter_name,
-                state: e.target.value
+                state: parseInt(e.target.value, 10)
               });
             }}
             className="hyperparameter-input-container"
