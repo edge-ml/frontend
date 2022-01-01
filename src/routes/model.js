@@ -78,7 +78,7 @@ class ModelPage extends Component {
           ? result[0].labelings[0]._id
           : '',
         labelings: result[0].labelings,
-        sensorStreams: result[1] ? result[1][0] : [],
+        sensorStreams: result[1] ? result[1] : [],
         models: result[2],
         selectedModelId: result[2][0] ? result[2][0].id : '',
         modelSelection: result[2][0]
