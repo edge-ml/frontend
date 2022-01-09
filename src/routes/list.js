@@ -235,8 +235,14 @@ class ListPage extends Component {
                             >
                               pre-defined CSV format
                             </a>
-                            . Click <a href="/csv/example_file2.csv">here</a> to
-                            download an example CSV file. You can also upload
+                            . Click{' '}
+                            <a
+                              href="/example_file.csv"
+                              download="example_file.csv"
+                            >
+                              here
+                            </a>{' '}
+                            to download an example CSV file. You can also upload
                             pre-labeled data.
                           </small>
                         </div>
