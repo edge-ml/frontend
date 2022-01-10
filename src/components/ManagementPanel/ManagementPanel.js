@@ -4,6 +4,7 @@ import './ManagementPanel.css';
 import HelpModal from './HelpModal';
 import CreateNewDatasetModal from '../CreateNewDatasetModal/CreateNewDatasetModal';
 import { generateCSV } from '../../services/CsvService';
+import { downloadSingleDataset } from '../../services/DatasetService';
 
 class ManagementPanel extends Component {
   constructor(props) {
@@ -36,20 +37,11 @@ class ManagementPanel extends Component {
   }
 
   downloadDataSet() {
-    const csv = generateCSV(
+    downloadSingleDataset(
       this.props.dataset,
       this.props.labelings,
       this.props.labels
     );
-    const fileName = this.props.dataset.name;
-    const blob = new Blob([csv], { type: 'application/csv' });
-    const href = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = href;
-    link.download = fileName + '.csv';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   }
 
   render() {

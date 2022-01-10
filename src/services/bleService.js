@@ -61,14 +61,6 @@ module.exports.prepareSensorBleObject = sensorArray => {
   return result;
 };
 
-/*
-module.exports.findDeviceIdById = (devices, deviceName) => {
-  if (deviceName === 'Arduino') deviceName = 'nicla';
-  return devices.find(elm =>
-    deviceName.toLowerCase().includes(elm.name.toLowerCase())
-  )._id;
-};*/
-
 module.exports.getBaseDataset = (sensors, datasetName) => {
   const timeSeries = [];
   sensors.forEach(sensor => {

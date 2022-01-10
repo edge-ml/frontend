@@ -231,6 +231,9 @@ function processCSVColumn(timeData) {
     const timeSeries = [];
     const labelings = [];
     const numDatasets = timeData[0].length - 1;
+    if (numDatasets === 0) {
+      throw { error: 'No data in csv file' };
+    }
     for (var i = 1; i <= numDatasets; i++) {
       const csvLength = timeData[0].length;
       const csvLenghError = timeData.findIndex(elm => elm.length !== csvLength);
@@ -248,7 +251,7 @@ function processCSVColumn(timeData) {
       } else if (timeData[0][i].startsWith('label_')) {
         labelings.push(extractLabel(timeData, i));
       } else {
-        return { error: 'Wrong format' };
+        throw { error: 'Wrong format' };
       }
     }
 
