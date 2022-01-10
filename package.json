@@ -121,6 +121,5 @@
         "ignore": [
             "config/"
         ]
-    },
-    "homepage": "https://app.edge-ml.org"
+    }
 }
