@@ -17,7 +17,8 @@ class BleDeviceProcessor {
     device,
     sensors,
     sensorConfigCharacteristic,
-    sensorDataCharacteristic
+    sensorDataCharacteristic,
+    uploadBLE
   ) {
     this.device = device;
     this.sensors = sensors;
@@ -28,6 +29,7 @@ class BleDeviceProcessor {
     this.recordedData = [];
     this.newDataset = undefined;
     this.recordingSensors = [];
+    this.uploadBLE = uploadBLE;
   }
 
   async configureSingleSensor(sensorId, sampleRate, latency) {
@@ -93,11 +95,15 @@ class BleDeviceProcessor {
         this.uploadCache(this.recordedData);
         this.recordedData = [];
       }
+      return { sensor: sensor, data: parsedData };
     };
     this.sensorDataCharacteristic.startNotifications();
     this.sensorDataCharacteristic.addEventListener(
       'characteristicvaluechanged',
-      event => recordData(event.target.value)
+      event => {
+        let currentValue = recordData(event.target.value);
+        this.uploadBLE.setCurrentData(currentValue);
+      }
     );
   }
 
