@@ -24,8 +24,11 @@ import Loader from '../modules/loader';
 
 import {
   getDatasets,
+  getDataset,
   deleteDatasets
 } from '../services/ApiServices/DatasetServices';
+import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
+import { downloadSingleDataset } from '../services/DatasetService';
 
 class ListPage extends Component {
   constructor(props) {
@@ -47,6 +50,7 @@ class ListPage extends Component {
       this
     );
     this.onUploadBLE = this.onUploadBLE.bind(this);
+    this.downloadAllDatasets = this.downloadAllDatasets.bind(this);
   }
 
   componentDidMount() {
@@ -55,6 +59,17 @@ class ListPage extends Component {
       .catch(err => {
         window.alert('Could not receive datasets from server');
       });
+  }
+
+  async downloadAllDatasets() {
+    const { labelings, labels } = await subscribeLabelingsAndLabels();
+    console.log(this.state.datasets);
+    Promise.all(
+      this.state.datasets.map(async elm => {
+        const dataset = await getDataset(elm._id);
+        downloadSingleDataset(dataset, labelings, labels);
+      })
+    );
   }
 
   onDatasetsChanged(datasets) {
@@ -337,7 +352,19 @@ class ListPage extends Component {
                     <th>Name</th>
                     <th>Start Time</th>
                     <th>User ID</th>
-                    <th />
+                    <th style={{ textAlign: 'right' }}>
+                      {' '}
+                      <Button
+                        id="downloadAllDatasetsButton"
+                        size="sm"
+                        color="primary"
+                        outline
+                        disabled={this.state.datasets.length === 0}
+                        onClick={this.downloadAllDatasets}
+                      >
+                        Download all
+                      </Button>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>

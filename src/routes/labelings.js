@@ -180,7 +180,7 @@ class LabelingsPage extends Component {
 
   resetURL() {
     const newPath = this.props.history.location.pathname.split('/');
-    if (newPath[newPath.length - 1] !== 'labelings') {
+    if (newPath[newPath.length - 1].toLowerCase() !== 'labelings') {
       newPath.pop();
     }
     this.props.history.replace({ pathname: newPath.join('/'), search: null });

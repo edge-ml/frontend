@@ -18,6 +18,7 @@ import {
 } from '../services/bleService';
 
 import BleDeviceProcessor from '../components/BLE/BleDeviceProcessor';
+import BlePanelRecordingDisplay from '../components/BLE/BlePanelRecordingDisplay';
 
 import '../components/BLE/BleActivated.css';
 
@@ -33,7 +34,8 @@ class UploadBLE extends Component {
       datasetName: '',
       recorderState: 'ready', // ready, startup, recording, finalizing
       deviceSensors: undefined,
-      selectedSensors: new Set()
+      selectedSensors: new Set(),
+      currentData: []
     };
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
@@ -48,8 +50,7 @@ class UploadBLE extends Component {
     this.onToggleSensor = this.onToggleSensor.bind(this);
     this.onGlobalSampleRateChanged = this.onGlobalSampleRateChanged.bind(this);
     this.onDatasetNameChanged = this.onDatasetNameChanged.bind(this);
-
-    this.baseState = this.state;
+    this.resetState = this.resetState.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
@@ -78,6 +79,21 @@ class UploadBLE extends Component {
   onGlobalSampleRateChanged(e) {
     this.setState({
       sampleRate: e.target.value
+    });
+  }
+
+  resetState() {
+    this.setState({
+      bleConnectionChanging: false,
+      connectedBLEDevice: undefined,
+      bleStatus: navigator.bluetooth,
+      sampleRate: 50,
+      latency: 0,
+      datasetName: '',
+      recorderState: 'ready',
+      deviceSensors: undefined,
+      selectedSensors: new Set(),
+      currentData: []
     });
   }
 
@@ -118,6 +134,8 @@ class UploadBLE extends Component {
     switch (this.state.recorderState) {
       case 'ready':
         this.setState({ recorderState: 'startup' });
+        let emptyData = new Array(this.state.deviceSensors.length).fill(0);
+        this.setState({ currentData: emptyData });
         await this.bleDeviceProcessor.startRecording(
           this.state.selectedSensors,
           this.state.sampleRate,
@@ -143,14 +161,12 @@ class UploadBLE extends Component {
     }
     if (
       this.state.connectedBLEDevice &&
-      this.tate.connectedBLEDevice.gatt &&
+      this.state.connectedBLEDevice.gatt &&
       this.state.connectedBLEDevice.gatt.disconnect
     ) {
       this.state.connectedBLEDevice.gatt.disconnect();
     }
-    this.setState({
-      ...this.baseState
-    });
+    this.resetState();
   }
 
   onConnection() {
@@ -223,7 +239,8 @@ class UploadBLE extends Component {
       bleDevice,
       this.state.deviceSensors,
       this.sensorConfigCharacteristic,
-      this.sensorDataCharacteristic
+      this.sensorDataCharacteristic,
+      this
     );
     this.setState({
       connectedBLEDevice: bleDevice
@@ -235,6 +252,12 @@ class UploadBLE extends Component {
       .then(this.connectDevice)
       .then(this.getSensorCharacteristics)
       .then(this.onConnection);
+  }
+
+  setCurrentData(sensorData) {
+    const freshData = this.state.currentData.slice();
+    freshData[sensorData['sensor']] = sensorData['data'];
+    this.setState({ currentData: freshData });
   }
 
   async toggleBLEDeviceConnection() {
@@ -276,6 +299,7 @@ class UploadBLE extends Component {
             <Col>
               <div className="shadow p-3 mb-5 bg-white rounded">
                 <BlePanelSensorList
+                  selectedSensors={this.state.selectedSensors}
                   sensors={this.state.deviceSensors}
                   onToggleSensor={this.onToggleSensor}
                   disabled={this.state.recorderState !== 'ready'}
@@ -292,6 +316,17 @@ class UploadBLE extends Component {
                 recorderState={this.state.recorderState}
                 sensorsSelected={this.state.selectedSensors.size > 0}
               ></BlePanelRecorderSettings>
+              {this.state.recorderState === 'recording' ? (
+                <div className="shadow p-3 mb-5 bg-white rounded">
+                  <BlePanelRecordingDisplay
+                    deviceSensors={this.state.deviceSensors}
+                    selectedSensors={this.state.selectedSensors}
+                    lastData={this.state.currentData}
+                  ></BlePanelRecordingDisplay>
+                </div>
+              ) : (
+                <div></div>
+              )}
             </Col>
           </Row>
         ) : null}

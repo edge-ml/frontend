@@ -31,8 +31,15 @@ class Navbar extends Component {
       x => x._id === this.props.currentProjectId
     )[0];
     const isSelected =
-      this.props.location.pathname ===
-      '/' + project.admin.userName + '/' + project.name + '/' + location;
+      this.props.location.pathname.toLowerCase() ===
+      (
+        '/' +
+        project.admin.userName +
+        '/' +
+        project.name +
+        '/' +
+        location
+      ).toLowerCase();
     return (
       'pt-2 pb-2 pl-4 small ' +
       (isSelected ? 'navbar-project-item-active' : 'navbar-project-item')

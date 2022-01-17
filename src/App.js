@@ -36,6 +36,7 @@ import AppContent from './AppContent';
 import NoProjectPage from './components/NoProjectPage/NoProjectPage';
 import ErrorPage from './components/ErrorPage/ErrorPage';
 import { deleteProject } from './services/ApiServices/ProjectService';
+import Loader from './modules/loader';
 
 class App extends Component {
   constructor(props) {
@@ -238,11 +239,11 @@ class App extends Component {
         if (storedProjectIndex === -1) {
           storedProjectIndex = 0;
         }
-
+        setProject(projects[storedProjectIndex]._id);
         this.setState({
           projects: projects,
-          currentProjectId: undefined,
-          projectLocation: undefined
+          currentProjectId: projects[storedProjectIndex]._id,
+          projectLocation: 'datasets'
         });
 
         this.props.history.push(
@@ -359,8 +360,7 @@ class App extends Component {
             onUserLoggedIn={this.onUserLoggedIn}
             on2FA={this.on2FA}
           >
-            {/* Only load these components when the access token is available else they gonna preload and cannot access api */}
-            {this.state.isLoggedIn && this.state.projects ? (
+            <Loader loading={!(this.state.isLoggedIn && this.state.projects)}>
               <div className="d-flex">
                 <Navbar
                   userName={this.state.userName}
@@ -386,7 +386,10 @@ class App extends Component {
                   ></NoProjectPage>
                 )}
                 <div
-                  style={{ marginLeft: this.state.navbarWidth, width: '100%' }}
+                  style={{
+                    marginLeft: this.state.navbarWidth,
+                    width: '100%'
+                  }}
                 >
                   <Route
                     {...this.props}
@@ -410,7 +413,7 @@ class App extends Component {
                   ></Route>
                 </div>
               </div>
-            ) : null}
+            </Loader>
           </AuthWall>
         ) : null}
       </div>
