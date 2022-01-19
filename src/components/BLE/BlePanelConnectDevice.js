@@ -5,6 +5,11 @@ function BlePanelConnectDevice(props) {
   return (
     <div className="shadow p-3 mb-5 bg-white rounded">
       <div className="panelHeader">1. Device</div>
+      <small className="text-danger">
+        <strong>Warning: </strong>
+        If your device can not be found, try to turn bluetooth off and on again
+        in your settings.
+      </small>
       <div className="panelDivider"></div>
       <div
         style={{
