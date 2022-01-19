@@ -307,7 +307,7 @@ class ModelPage extends Component {
                   }}
                   project={this.props.project}
                 >
-                  Submit
+                  Train Model
                 </Button>
               </div>
             </div>
