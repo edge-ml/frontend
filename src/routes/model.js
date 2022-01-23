@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Loader from '../modules/loader';
 import Select from 'react-select';
-import { Button } from 'reactstrap';
+import { Button, Badge } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import { getAccessToken } from '../services/LocalStorageService';
 
@@ -21,6 +21,7 @@ class ModelPage extends Component {
       ready: true,
       inviteRequested: false,
       labelings: [],
+      labels: [],
       selectedLabeling: undefined,
       sensorStreams: [],
       selectedSensorStreams: [],
@@ -72,23 +73,26 @@ class ModelPage extends Component {
       subscribeLabelingsAndLabels(),
       getProjectSensorStreams(this.props.project),
       getModels()
-    ]).then(result => {
-      this.setState({
-        selectedLabeling: result[0].labelings[0]
-          ? result[0].labelings[0]._id
-          : '',
-        labelings: result[0].labelings,
-        sensorStreams: result[1] ? result[1] : [],
-        models: result[2],
-        selectedModelId: result[2][0] ? result[2][0].id : '',
-        modelSelection: result[2][0]
-          ? { value: result[2][0].id, label: result[2][0].name }
-          : {},
-        hyperparameters: result[2][0]
-          ? this.formatHyperparameters(result[2][0].hyperparameters)
-          : []
-      });
-    });
+    ])
+      .then(result => {
+        this.setState({
+          selectedLabeling: result[0].labelings[0]
+            ? result[0].labelings[0]._id
+            : '',
+          labelings: result[0].labelings,
+          labels: result[0].labels,
+          sensorStreams: result[1] ? result[1] : [],
+          models: result[2],
+          selectedModelId: result[2][0] ? result[2][0].id : '',
+          modelSelection: result[2][0]
+            ? { value: result[2][0].id, label: result[2][0].name }
+            : {},
+          hyperparameters: result[2][0]
+            ? this.formatHyperparameters(result[2][0].hyperparameters)
+            : []
+        });
+      })
+      .catch(err => console.log(err));
   }
 
   render() {
@@ -116,7 +120,7 @@ class ModelPage extends Component {
                               checked={this.state.selectedLabeling === x._id}
                             ></input>
                             <label
-                              className="mb-0 ml-1"
+                              className="mb-0 ml-1 mr-1"
                               for={x._id}
                               onClick={y => {
                                 this.setState({ selectedLabeling: x._id });
@@ -124,6 +128,20 @@ class ModelPage extends Component {
                             >
                               {x.name}
                             </label>
+                            {x.labels.map(labelId => {
+                              const label = this.state.labels.find(
+                                label => label._id === labelId
+                              );
+                              return (
+                                <Badge
+                                  key={labelId}
+                                  className={'m-1'}
+                                  style={{ backgroundColor: label.color }}
+                                >
+                                  {label.name}
+                                </Badge>
+                              );
+                            })}
                           </div>
                         );
                       })
