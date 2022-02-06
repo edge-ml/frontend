@@ -1,0 +1,8 @@
+.sorted_table_header-th {
+  cursor: pointer;
+}
+
+.sorted_table_header-arrows {
+  min-width: 2em; /* fixed width arrows */
+  text-align: right;
+}

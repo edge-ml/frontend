@@ -58,7 +58,8 @@ module.exports = {
     SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive'
   },
   ML_ENDPOINTS: {
-    MODELS: 'models'
+    MODELS: 'models',
+    TRAINED_MODELS: 'models/trained'
   }
 };
 

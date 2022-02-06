@@ -127,6 +127,7 @@ class Navbar extends Component {
                         ['Datasets', faDatabase],
                         ['Labelings', faPen],
                         ['Model', faBrain],
+                        ['Validation', faBrain],
                         ['Settings', faCogs]
                       ].map((elm, indx) => (
                         <div

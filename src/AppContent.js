@@ -9,6 +9,7 @@ import ExperimentsPage from './routes/experiments';
 import ProjectSettings from './routes/projectSettings';
 import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
 import ModelPage from './routes/model';
+import ValidationPage from './routes/validation';
 import UploadBLE from './routes/uploadBLE';
 
 class AppContent extends Component {
@@ -70,6 +71,15 @@ class AppContent extends Component {
             render={props => (
               <ProjectRefresh project={this.props.project}>
                 <ModelPage {...props}></ModelPage>
+              </ProjectRefresh>
+            )}
+          />
+          <Route
+            exact
+            path={this.props.match.path + '/validation'}
+            render={props => (
+              <ProjectRefresh project={this.props.project}>
+                <ValidationPage {...props}></ValidationPage>
               </ProjectRefresh>
             )}
           />
