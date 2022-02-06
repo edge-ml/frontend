@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Loader from '../modules/loader';
 import Select from 'react-select';
-import { Button, Badge } from 'reactstrap';
+import { Button, Badge, InputGroup, InputGroupAddon, Input } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import { getAccessToken } from '../services/LocalStorageService';
 
@@ -27,7 +27,8 @@ class ModelPage extends Component {
       selectedSensorStreams: [],
       models: [],
       selectedModelId: undefined,
-      hyperparameters: []
+      hyperparameters: [],
+      modelName: ''
     };
 
     this.initComponent = this.initComponent.bind(this);
@@ -247,6 +248,18 @@ class ModelPage extends Component {
                     backgroundColor: 'lightgray'
                   }}
                 ></div>
+                <InputGroup style={{ width: '350px' }}>
+                  <InputGroupAddon addonType="prepend">
+                    Model Name
+                  </InputGroupAddon>
+                  <Input
+                    type={'text'}
+                    value={this.state.modelName}
+                    onChange={e => {
+                      this.setState({ modelName: e.target.value });
+                    }}
+                  ></Input>
+                </InputGroup>
                 <h6>Hyperparameters</h6>
                 {console.log('rendering')}
                 {console.log(this.state.hyperparameters)}
@@ -316,7 +329,8 @@ class ModelPage extends Component {
                         model_id: this.state.selectedModelId,
                         selected_timeseries: this.state.selectedSensorStreams,
                         target_labeling: this.state.selectedLabeling,
-                        hyperparameters: this.state.hyperparameters
+                        hyperparameters: this.state.hyperparameters,
+                        model_name: this.state.modelName
                       }
                     };
                     axios(config)
