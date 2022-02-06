@@ -59,7 +59,6 @@ class BlePanelSensorGraph extends Component {
 
   componentWillUnmount() {
     //this.handleStopLiveUpdate();
-    console.log('unmounted');
     window.clearInterval(this.state.liveUpdate);
   }
 
@@ -67,20 +66,19 @@ class BlePanelSensorGraph extends Component {
     if (Array.isArray(this.props.value)) {
       this.setState({
         data1: this.addDataPoint(this.state.data1, [
-          Date.now(),
-          this.props.value[0]
+          this.props.value[0],
+          this.props.value[1][0]
         ])
       });
-      console.log(this.state.data1);
       if (this.length === 3) {
         this.setState({
           data2: this.addDataPoint(this.state.data2, [
-            Date.now(),
-            this.props.value[1]
+            this.props.value[0],
+            this.props.value[1][1]
           ]),
           data3: this.addDataPoint(this.state.data3, [
-            Date.now(),
-            this.props.value[2]
+            this.props.value[0],
+            this.props.value[1][2]
           ])
         });
       }

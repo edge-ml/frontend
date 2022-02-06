@@ -134,7 +134,9 @@ class UploadBLE extends Component {
     switch (this.state.recorderState) {
       case 'ready':
         this.setState({ recorderState: 'startup' });
-        let emptyData = new Array(this.state.deviceSensors.length).fill(0);
+        let emptyData = new Array(this.state.deviceSensors.length).fill(
+          new Array(0, 0)
+        );
         this.setState({ currentData: emptyData });
         await this.bleDeviceProcessor.startRecording(
           this.state.selectedSensors,
@@ -256,7 +258,10 @@ class UploadBLE extends Component {
 
   setCurrentData(sensorData) {
     const freshData = this.state.currentData.slice();
-    freshData[sensorData['sensor']] = sensorData['data'];
+    freshData[sensorData['sensor']] = new Array(
+      sensorData['time'],
+      sensorData['data']
+    );
     this.setState({ currentData: freshData });
   }
 
