@@ -1,33 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import Loader from '../../modules/loader';
+import {
+  getTrainedModels,
+  getModels,
+  getTrained
+} from '../../services/ApiServices/MlService';
 import { ValidationView } from './ValidationView';
-import { getTrainedModels } from '../../services/ApiServices/MlService';
+import { SelectedModelModalView } from './SelectedModelModalView';
 
 const ValidationPage = () => {
-  let [loading, setLoading] = useState(false);
-  let [models, setModels] = useState([]);
+  let [models, setModels] = useState(null);
+  let [baseModels, setBaseModels] = useState(null);
+
+  let [viewedModel, setViewedModel] = useState(null);
+  let [modalState, setModalState] = useState(false);
 
   useEffect(() => {
-    console.log('validation - useEffect');
     getTrainedModels().then(m => {
-      console.log('validation - got data', m);
+      setModels(m); // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number}[]
+    });
 
-      setModels(m);
-      setLoading(false);
+    getModels().then(m => {
+      setBaseModels(m);
     });
   }, []);
 
-  return (
-    <Loader loading={loading}>
-      <ValidationView
-        models={models}
-        // selectedModel={[
-        //   {
-        //     id: 'idxxddddddddddd', name: 'My Little Model', creation_date: Date.now() - 10000, classifier: 'Ciks Classifier', accuracy: 0.15, precision: 0.9, f1_score: 0.4,
+  const viewModel = async id => {
+    const model = await getTrained(id);
+    setViewedModel(model);
+    setModalState(true);
+  };
 
-        //   }
-        // ]}
-      />
+  const closeModal = () => {
+    setModalState(false);
+  };
+
+  return (
+    <Loader loading={!(models && baseModels)}>
+      {models ? (
+        <ValidationView models={models} onViewModel={viewModel} />
+      ) : null}
+      {baseModels && viewedModel ? (
+        <SelectedModelModalView
+          isOpen={modalState}
+          baseModels={baseModels}
+          model={viewedModel}
+          onClosed={closeModal}
+        />
+      ) : null}
     </Loader>
   );
 };

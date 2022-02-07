@@ -4,7 +4,8 @@ import { useTable, useSortBy } from 'react-table';
 import SortedTableHeader from '../../components/SortedTableHeader';
 
 export const ValidationView = ({
-  models // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number}[]
+  models, // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number}[]
+  onViewModel = () => {}
 }) => {
   const {
     getTableProps,
@@ -29,7 +30,20 @@ export const ValidationView = ({
           { Header: 'Classifier', accessor: 'classifier', sortType: 'string' },
           { Header: 'Accuracy', accessor: 'accuracy', sortType: 'number' },
           { Header: 'Precision', accessor: 'precision', sortType: 'number' },
-          { Header: 'f1 Score', accessor: 'f1_score', sortType: 'number' }
+          { Header: 'f1 Score', accessor: 'f1_score', sortType: 'number' },
+          {
+            id: 'details-button',
+            accessor: row => row.id,
+            Cell: ({ value }) => (
+              <Button
+                onClick={() => onViewModel(value)}
+                className="btn-secondary mt-0"
+                block
+              >
+                View
+              </Button>
+            )
+          }
         ],
         []
       )
@@ -45,20 +59,28 @@ export const ValidationView = ({
             <thead className={'bg-light'}>
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map(column => (
-                    <SortedTableHeader
-                      {...column.getHeaderProps(column.getSortByToggleProps())}
-                      sorted={
-                        column.isSorted
-                          ? column.isSortedDesc
-                            ? 'desc'
-                            : 'asc'
-                          : null
-                      }
-                    >
-                      {column.render('Header')}
-                    </SortedTableHeader>
-                  ))}
+                  {headerGroup.headers.map(column =>
+                    column.canSort ? (
+                      <SortedTableHeader
+                        {...column.getHeaderProps(
+                          column.getSortByToggleProps()
+                        )}
+                        sorted={
+                          column.isSorted
+                            ? column.isSortedDesc
+                              ? 'desc'
+                              : 'asc'
+                            : null
+                        }
+                      >
+                        {column.render('Header')}
+                      </SortedTableHeader>
+                    ) : (
+                      <th {...column.getHeaderProps()}>
+                        {column.render('Header')}
+                      </th>
+                    )
+                  )}
                 </tr>
               ))}
             </thead>

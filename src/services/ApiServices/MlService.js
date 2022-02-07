@@ -30,3 +30,17 @@ module.exports.getTrainedModels = function() {
       .catch(err => reject(err.response));
   });
 };
+
+module.exports.getTrained = function(id) {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.ML_URI,
+        apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id
+      )
+    )
+      .then(data => resolve(data.data))
+      .catch(err => reject(err.response));
+  });
+};
