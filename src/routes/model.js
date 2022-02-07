@@ -2,7 +2,14 @@ import React, { Component } from 'react';
 
 import Loader from '../modules/loader';
 import Select from 'react-select';
-import { Button, Badge, InputGroup, InputGroupAddon, Input } from 'reactstrap';
+import {
+  Button,
+  Badge,
+  InputGroup,
+  InputGroupAddon,
+  Input,
+  FormFeedback
+} from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import { getAccessToken } from '../services/LocalStorageService';
 
@@ -258,8 +265,10 @@ class ModelPage extends Component {
                     onChange={e => {
                       this.setState({ modelName: e.target.value });
                     }}
+                    invalid={!this.state.modelName}
                   ></Input>
                 </InputGroup>
+                <FormFeedback invalid></FormFeedback>
                 <h6>Hyperparameters</h6>
                 {console.log('rendering')}
                 {console.log(this.state.hyperparameters)}
@@ -314,6 +323,7 @@ class ModelPage extends Component {
                     });
                   })}
                 <Button
+                  disabled={!this.state.modelName}
                   onClick={e => {
                     console.log(this.state.modelSelection);
                     console.log(this.state.hyperparameters);
