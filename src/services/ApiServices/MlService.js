@@ -44,3 +44,18 @@ module.exports.getTrained = function(id) {
       .catch(err => reject(err.response));
   });
 };
+
+module.exports.train = function(data) {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.ML_URI,
+        apiConsts.ML_ENDPOINTS.TRAIN,
+        data
+      )
+    )
+      .then(() => resolve()) // TODO: ml should return training id
+      .catch(err => reject(err.response));
+  });
+};

@@ -11,15 +11,13 @@ import {
   FormFeedback
 } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
-import { getAccessToken } from '../services/LocalStorageService';
 
 import { getProjectSensorStreams } from '../services/ApiServices/ProjectService';
 
-import { getModels } from '../services/ApiServices/MlService';
+import { getModels, train } from '../services/ApiServices/MlService';
 
 import NumberHyperparameter from '../components/Hyperparameters/NumberHyperparameter';
 import SelectionHyperparameter from '../components/Hyperparameters/SelectionHyperparameter';
-import axios from 'axios';
 
 class ModelPage extends Component {
   constructor(props) {
@@ -102,6 +100,16 @@ class ModelPage extends Component {
       })
       .catch(err => console.log(err));
   }
+
+  handleTrainButton = e => {
+    train({
+      model_id: this.state.selectedModelId,
+      selected_timeseries: this.state.selectedSensorStreams,
+      target_labeling: this.state.selectedLabeling,
+      hyperparameters: this.state.hyperparameters,
+      model_name: this.state.modelName
+    });
+  };
 
   render() {
     if (!this.state.ready) {
@@ -324,29 +332,7 @@ class ModelPage extends Component {
                   })}
                 <Button
                   disabled={!this.state.modelName}
-                  onClick={e => {
-                    console.log(this.state.modelSelection);
-                    console.log(this.state.hyperparameters);
-                    const config = {
-                      method: 'post',
-                      url: 'http://localhost:3003/ml/train',
-                      headers: {
-                        Authorization: getAccessToken(),
-                        project: this.props.project._id,
-                        'Content-Type': 'application/json'
-                      },
-                      data: {
-                        model_id: this.state.selectedModelId,
-                        selected_timeseries: this.state.selectedSensorStreams,
-                        target_labeling: this.state.selectedLabeling,
-                        hyperparameters: this.state.hyperparameters,
-                        model_name: this.state.modelName
-                      }
-                    };
-                    axios(config)
-                      .then(res => console.log(res))
-                      .catch(err => console.log(err));
-                  }}
+                  onClick={this.handleTrainButton}
                   project={this.props.project}
                 >
                   Train Model
