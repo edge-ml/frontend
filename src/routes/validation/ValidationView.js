@@ -7,6 +7,8 @@ export const ValidationView = ({
   models, // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number}[]
   onViewModel = () => {}
 }) => {
+  const toPercantage = (row, property) =>
+    (row[property] * 100).toFixed(2) + '%';
   const {
     getTableProps,
     getTableBodyProps,
@@ -28,9 +30,21 @@ export const ValidationView = ({
             Cell: ({ value }) => value.toISOString()
           },
           { Header: 'Classifier', accessor: 'classifier', sortType: 'string' },
-          { Header: 'Accuracy', accessor: 'accuracy', sortType: 'number' },
-          { Header: 'Precision', accessor: 'precision', sortType: 'number' },
-          { Header: 'f1 Score', accessor: 'f1_score', sortType: 'number' },
+          {
+            Header: 'Accuracy',
+            accessor: row => toPercantage(row, 'accuracy'),
+            sortType: 'number'
+          },
+          {
+            Header: 'Precision',
+            accessor: row => toPercantage(row, 'precision'),
+            sortType: 'number'
+          },
+          {
+            Header: 'f1 Score',
+            accessor: row => toPercantage(row, 'f1_score'),
+            sortType: 'number'
+          },
           {
             id: 'details-button',
             accessor: row => row.id,

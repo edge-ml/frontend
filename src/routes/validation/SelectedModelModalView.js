@@ -90,6 +90,7 @@ export const SelectedModelModalView = ({
   ...props
 }) => {
   const base = baseModels.find(x => x.name === model.classifier);
+  const toPercentage = x => (x * 100).toFixed(4) + '%';
   console.assert(base !== undefined);
 
   return (
@@ -124,17 +125,17 @@ export const SelectedModelModalView = ({
               <tr>
                 {' '}
                 <th>Accuracy</th>
-                <td>{model.accuracy}</td>{' '}
+                <td>{toPercentage(model.accuracy)}</td>{' '}
               </tr>
               <tr>
                 {' '}
                 <th>Precision</th>
-                <td>{model.precision}</td>{' '}
+                <td>{toPercentage(model.precision)}</td>{' '}
               </tr>
               <tr>
                 {' '}
                 <th>f1 Score</th>
-                <td>{model.f1_score}</td>{' '}
+                <td>{toPercentage(model.f1_score)}</td>{' '}
               </tr>
               <tr>
                 {' '}
