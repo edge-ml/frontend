@@ -134,9 +134,7 @@ class UploadBLE extends Component {
     switch (this.state.recorderState) {
       case 'ready':
         this.setState({ recorderState: 'startup' });
-        let emptyData = new Array(this.state.deviceSensors.length).fill(
-          new Array(0, 0)
-        );
+        let emptyData = new Array(this.state.deviceSensors.length).fill(0);
         this.setState({ currentData: emptyData });
         await this.bleDeviceProcessor.startRecording(
           this.state.selectedSensors,
@@ -258,10 +256,7 @@ class UploadBLE extends Component {
 
   setCurrentData(sensorData) {
     const freshData = this.state.currentData.slice();
-    freshData[sensorData['sensor']] = new Array(
-      sensorData['time'],
-      sensorData['data']
-    );
+    freshData[sensorData['sensor']] = sensorData['data'];
     this.setState({ currentData: freshData });
   }
 
@@ -321,14 +316,17 @@ class UploadBLE extends Component {
                 recorderState={this.state.recorderState}
                 sensorsSelected={this.state.selectedSensors.size > 0}
               ></BlePanelRecorderSettings>
-              <div className="shadow p-3 mb-5 bg-white rounded">
-                <BlePanelRecordingDisplay
-                  deviceSensors={this.state.deviceSensors}
-                  selectedSensors={this.state.selectedSensors}
-                  lastData={this.state.currentData}
-                  recorderState={this.state.recorderState}
-                ></BlePanelRecordingDisplay>
-              </div>
+              {this.state.recorderState === 'recording' ? (
+                <div className="shadow p-3 mb-5 bg-white rounded">
+                  <BlePanelRecordingDisplay
+                    deviceSensors={this.state.deviceSensors}
+                    selectedSensors={this.state.selectedSensors}
+                    lastData={this.state.currentData}
+                  ></BlePanelRecordingDisplay>
+                </div>
+              ) : (
+                <div></div>
+              )}
             </Col>
           </Row>
         ) : null}
