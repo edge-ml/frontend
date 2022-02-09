@@ -95,7 +95,11 @@ class BleDeviceProcessor {
         this.uploadCache(this.recordedData);
         this.recordedData = [];
       }
-      return { sensor: sensor, data: parsedData };
+      return {
+        sensor: sensor,
+        time: timestamp + recordingStart,
+        data: parsedData
+      };
     };
     this.sensorDataCharacteristic.startNotifications();
     this.sensorDataCharacteristic.addEventListener(
