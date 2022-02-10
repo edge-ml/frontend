@@ -12,7 +12,7 @@ function BlePanelRecordingDisplay(props) {
   }
 
   function roundComponents(dataArray) {
-    return dataArray.map(function(element) {
+    return dataArray.map(function (element) {
       return element % 1 === 0 ? element : element.toFixed(4);
     });
   }
@@ -21,7 +21,7 @@ function BlePanelRecordingDisplay(props) {
     <div>
       <div className="panelHeader">4. Recording</div>
       <div className="panelDivider"></div>
-      <Table style={{ width: 'fit-content' }}>
+      <Table style={{ tableLayout: 'fixed' }}>
         <thead>
           <tr className="bg-light">
             <th>SensorName</th>
@@ -30,13 +30,13 @@ function BlePanelRecordingDisplay(props) {
           </tr>
         </thead>
         <tbody>
-          {indices.map(sensorKey => {
+          {indices.map((sensorKey) => {
             const sensorData = props.deviceSensors[sensorKey];
             return (
               <tr key={sensorKey}>
                 <td>{sensorData.name}</td>
                 <td>
-                  {sensorData.parseScheme.map(elm => elm.name).join('; ')}
+                  {sensorData.parseScheme.map((elm) => elm.name).join('; ')}
                 </td>
                 <td>
                   {separateComponents(props.lastData[parseInt(sensorKey)])}
