@@ -295,6 +295,7 @@ class UploadBLE extends Component {
             <Col>
               <div className="shadow p-3 mb-5 bg-white rounded">
                 <BlePanelSensorList
+                  maxSampleRate={this.state.connectedDeviceData.maxSampleRate}
                   selectedSensors={this.state.selectedSensors}
                   onChangeSampleRate={this.onChangeSampleRate}
                   sensors={this.state.deviceSensors}

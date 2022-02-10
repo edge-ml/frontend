@@ -14,12 +14,12 @@ function BlePanelSensorList(props) {
   return (
     <div>
       <div className="panelHeader">2. Configure sensors</div>
-      {sampleRateSum > 30 ? (
+      {sampleRateSum > props.maxSampleRate ? (
         <small className="text-danger">
           <strong>Warning: </strong>Collecting data from multiple sensors with
           high sampling rate can cause delays / errors during recording. It is
-          recommended to keep sum of sample rates below 30 Hz. Your are
-          currently at {sampleRateSum} Hz.
+          recommended to keep the sum of sample rates below{' '}
+          {props.maxSampleRate} Hz. Your are currently at {sampleRateSum} Hz.
         </small>
       ) : null}
       <div className="panelDivider"></div>
