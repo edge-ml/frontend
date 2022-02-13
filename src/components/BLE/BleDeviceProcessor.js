@@ -3,25 +3,30 @@ import {
   intToBytes,
   parseData,
   getBaseDataset,
-  parseTimeSeriesData
+  parseTimeSeriesData,
 } from '../../services/bleService';
 
 import {
   createDataset,
   appendToDataset,
-  getDatasets
+  getDatasets,
 } from '../../services/ApiServices/DatasetServices';
+import {
+  ga_uploadataset_len,
+  ga_uploadDataset,
+} from '../../services/AnalyticsService';
 
 class BleDeviceProcessor {
   constructor(
     device,
+    deviceInfo,
     sensors,
     sensorConfigCharacteristic,
     sensorDataCharacteristic,
     uploadBLE
   ) {
     this.device = device;
-    this.sensors = sensors;
+    (this.deviceInfo = deviceInfo), (this.sensors = sensors);
     this.sensorConfigCharacteristic = sensorConfigCharacteristic;
     this.sensorDataCharacteristic = sensorDataCharacteristic;
     this.sensorData = new Map();
@@ -30,6 +35,7 @@ class BleDeviceProcessor {
     this.newDataset = undefined;
     this.recordingSensors = [];
     this.uploadBLE = uploadBLE;
+    this.uploadCounter = new Map();
   }
 
   async configureSingleSensor(sensorId, sampleRate, latency) {
@@ -63,19 +69,19 @@ class BleDeviceProcessor {
   }
 
   async startRecording(selectedSensors, sampleRate, latency, datasetName) {
-    var oldDatasets = (await getDatasets()).map(elm => elm._id);
+    var oldDatasets = (await getDatasets()).map((elm) => elm._id);
     this.newDataset = (
       await createDataset(
         getBaseDataset(
-          [...selectedSensors].map(elm => this.sensors[elm]),
+          [...selectedSensors].map((elm) => this.sensors[elm]),
           datasetName
         )
       )
-    ).filter(elm => !oldDatasets.includes(elm._id))[0];
+    ).filter((elm) => !oldDatasets.includes(elm._id))[0];
     await this.prepareRecording(selectedSensors, sampleRate, latency);
     var recordingStart = new Date().getTime();
     var adjustedTime = false;
-    const recordData = value => {
+    const recordData = (value) => {
       var sensor = value.getUint8(0);
       var timestamp = value.getUint32(2, true);
       if (!adjustedTime) {
@@ -86,7 +92,7 @@ class BleDeviceProcessor {
       this.recordedData.push({
         sensor: sensor,
         time: timestamp + recordingStart,
-        data: parsedData
+        data: parsedData,
       });
       if (
         this.recordedData.length > 1000 ||
@@ -100,7 +106,7 @@ class BleDeviceProcessor {
     this.sensorDataCharacteristic.startNotifications();
     this.sensorDataCharacteristic.addEventListener(
       'characteristicvaluechanged',
-      event => {
+      (event) => {
         let currentValue = recordData(event.target.value);
         this.uploadBLE.setCurrentData(currentValue);
       }
@@ -113,7 +119,19 @@ class BleDeviceProcessor {
       this.recordingSensors,
       this.sensors
     );
+    this.addToUploadCounter(recordedData);
     await appendToDataset(this.newDataset, recordedData);
+  }
+
+  addToUploadCounter(recordedData) {
+    recordedData.forEach((elm) => {
+      if (this.uploadCounter.has(elm.name)) {
+        var old_ctr = this.uploadCounter.get(elm.name);
+        this.uploadCounter.set(elm.name, old_ctr + elm.data.length);
+      } else {
+        this.uploadCounter.set(elm.name, elm.data.length);
+      }
+    });
   }
 
   async stopRecording() {
@@ -124,9 +142,16 @@ class BleDeviceProcessor {
       this.recordingSensors,
       this.sensors
     );
+    this.addToUploadCounter(recordedData);
+    ga_uploadataset_len(
+      Array.from(this.uploadCounter.values()),
+      'bluetooth',
+      this.deviceInfo
+    );
     await appendToDataset(this.newDataset, recordedData);
     this.recordingSensors = [];
     this.recordedData = [];
+    this.uploadCounter = new Map();
   }
 }
 

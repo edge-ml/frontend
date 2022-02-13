@@ -1,3 +1,4 @@
+const { ga_downloadDataset } = require('./AnalyticsService');
 const { generateCSV } = require('./CsvService');
 
 module.exports.downloadSingleDataset = (dataset, labelings, labels) => {
@@ -11,4 +12,5 @@ module.exports.downloadSingleDataset = (dataset, labelings, labels) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  ga_downloadDataset(dataset);
 };
