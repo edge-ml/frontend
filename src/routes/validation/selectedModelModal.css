@@ -1,4 +1,4 @@
-.selected_model_modal_view-body {
+.validation_selected_model_modal_view-body {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }

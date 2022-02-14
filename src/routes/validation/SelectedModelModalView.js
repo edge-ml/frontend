@@ -89,6 +89,7 @@ export const SelectedModelModalView = ({
     2: {name: "K-Nearest Neighbours Classifier", description: "A simple K-Nearest Neighbours classifier.",…}
   */
   //#endregion
+  onDelete,
   onClosed = () => {},
   ...props
 }) => {
@@ -98,7 +99,7 @@ export const SelectedModelModalView = ({
   return (
     <Modal isOpen={model && baseModels} size="xl" {...props}>
       <ModalHeader>{model.name}</ModalHeader>
-      <ModalBody className="selected_model_modal_view-body">
+      <ModalBody className="validation_selected_model_modal_view-body">
         <div>
           <Table borderless responsive>
             <tbody>
@@ -178,6 +179,9 @@ export const SelectedModelModalView = ({
         </Table>
       </ModalBody>
       <ModalFooter>
+        <Button className="mr-auto" onClick={onDelete} color="danger">
+          Delete
+        </Button>
         <Button onClick={onClosed}>Close</Button>
       </ModalFooter>
     </Modal>
