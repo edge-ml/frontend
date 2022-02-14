@@ -9,6 +9,8 @@ import {
   Table
 } from 'reactstrap';
 
+import { toPercentage } from '../../services/helpers';
+
 import './selectedModelModal.css';
 
 export const SelectedModelModalView = ({
@@ -90,7 +92,6 @@ export const SelectedModelModalView = ({
   ...props
 }) => {
   const base = baseModels.find(x => x.name === model.classifier);
-  const toPercentage = x => (x * 100).toFixed(4) + '%';
   console.assert(base !== undefined);
 
   return (

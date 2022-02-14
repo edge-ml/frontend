@@ -2,13 +2,14 @@ import React, { useMemo } from 'react';
 import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
 import { useTable, useSortBy } from 'react-table';
 import SortedTableHeader from '../../components/SortedTableHeader';
+import { toPercentage } from '../../services/helpers';
+
+const percentageCell = ({ value }) => toPercentage(value);
 
 export const ValidationView = ({
   models, // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number}[]
   onViewModel = () => {}
 }) => {
-  const toPercantage = (row, property) =>
-    (row[property] * 100).toFixed(2) + '%';
   const {
     getTableProps,
     getTableBodyProps,
@@ -32,18 +33,21 @@ export const ValidationView = ({
           { Header: 'Classifier', accessor: 'classifier', sortType: 'string' },
           {
             Header: 'Accuracy',
-            accessor: row => toPercantage(row, 'accuracy'),
-            sortType: 'number'
+            accessor: 'accuracy',
+            sortType: 'number',
+            Cell: percentageCell
           },
           {
             Header: 'Precision',
-            accessor: row => toPercantage(row, 'precision'),
-            sortType: 'number'
+            accessor: 'precision',
+            sortType: 'number',
+            Cell: percentageCell
           },
           {
             Header: 'f1 Score',
-            accessor: row => toPercantage(row, 'f1_score'),
-            sortType: 'number'
+            accessor: 'f1_score',
+            sortType: 'number',
+            Cell: percentageCell
           },
           {
             id: 'details-button',

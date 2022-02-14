@@ -39,3 +39,5 @@ export const unixTimeToString = ms => {
 
   return hours + ':' + minutes + ':' + seconds + ':' + milliseconds;
 };
+
+export const toPercentage = p => (p * 100).toFixed(2) + '%';
