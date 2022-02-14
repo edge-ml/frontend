@@ -9,7 +9,7 @@ import {
   Table
 } from 'reactstrap';
 
-import { toPercentage } from '../../services/helpers';
+import { humanFileSize, toPercentage } from '../../services/helpers';
 
 import './selectedModelModal.css';
 
@@ -25,6 +25,7 @@ export const SelectedModelModalView = ({
       "accuracy":1.0,
       "precision":1.0,
       "f1_score":1.0,
+      "size": 27650
       "hyperparameters":{ // this is different for each hyperparameter
           "n_estimators":100,
           "criterion":"gini",
@@ -117,6 +118,11 @@ export const SelectedModelModalView = ({
                 <td>
                   {new Date(parseInt(model.creation_date) * 1000).toISOString()}
                 </td>{' '}
+              </tr>
+              <tr>
+                {' '}
+                <th>Size on Disk</th>
+                <td>{humanFileSize(model.size)}</td>{' '}
               </tr>
               <tr>
                 {' '}

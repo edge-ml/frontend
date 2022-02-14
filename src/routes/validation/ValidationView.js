@@ -2,12 +2,12 @@ import React, { useMemo } from 'react';
 import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
 import { useTable, useSortBy } from 'react-table';
 import SortedTableHeader from '../../components/SortedTableHeader';
-import { toPercentage } from '../../services/helpers';
+import { humanFileSize, toPercentage } from '../../services/helpers';
 
 const percentageCell = ({ value }) => toPercentage(value);
 
 export const ValidationView = ({
-  models, // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number}[]
+  models, // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number, size: number}[]
   onViewModel = () => {}
 }) => {
   const {
@@ -29,6 +29,12 @@ export const ValidationView = ({
             accessor: row => new Date(parseInt(row.creation_date) * 1000),
             sortType: 'datetime',
             Cell: ({ value }) => value.toISOString()
+          },
+          {
+            Header: 'Size on Disk',
+            accessor: 'size',
+            sortType: 'number',
+            Cell: ({ value }) => humanFileSize(value)
           },
           { Header: 'Classifier', accessor: 'classifier', sortType: 'string' },
           {
