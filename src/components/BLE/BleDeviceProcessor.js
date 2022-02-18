@@ -3,13 +3,13 @@ import {
   intToBytes,
   parseData,
   getBaseDataset,
-  parseTimeSeriesData
+  parseTimeSeriesData,
 } from '../../services/bleService';
 
 import {
   createDataset,
   appendToDataset,
-  getDatasets
+  getDatasets,
 } from '../../services/ApiServices/DatasetServices';
 
 class BleDeviceProcessor {
@@ -49,11 +49,14 @@ class BleDeviceProcessor {
     }
   }
 
-  async prepareRecording(sensorsToRecord, sampleRate, latency) {
+  async prepareRecording(sensorsToRecord, latency) {
     for (const bleKey of Object.keys(this.sensors)) {
       if (sensorsToRecord.has(bleKey)) {
-        await this.configureSingleSensor(bleKey, sampleRate, latency);
-        //this.recordedData[bleKey] = [];
+        await this.configureSingleSensor(
+          bleKey,
+          this.sensors[bleKey].sampleRate,
+          latency
+        );
         this.recordedData = [];
         this.recordingSensors = sensorsToRecord;
       } else {
@@ -62,20 +65,20 @@ class BleDeviceProcessor {
     }
   }
 
-  async startRecording(selectedSensors, sampleRate, latency, datasetName) {
-    var oldDatasets = (await getDatasets()).map(elm => elm._id);
+  async startRecording(selectedSensors, latency, datasetName) {
+    var oldDatasets = (await getDatasets()).map((elm) => elm._id);
     this.newDataset = (
       await createDataset(
         getBaseDataset(
-          [...selectedSensors].map(elm => this.sensors[elm]),
+          [...selectedSensors].map((elm) => this.sensors[elm]),
           datasetName
         )
       )
-    ).filter(elm => !oldDatasets.includes(elm._id))[0];
-    await this.prepareRecording(selectedSensors, sampleRate, latency);
+    ).filter((elm) => !oldDatasets.includes(elm._id))[0];
+    await this.prepareRecording(selectedSensors, latency);
     var recordingStart = new Date().getTime();
     var adjustedTime = false;
-    const recordData = value => {
+    const recordData = (value) => {
       var sensor = value.getUint8(0);
       var timestamp = value.getUint32(2, true);
       if (!adjustedTime) {
@@ -86,7 +89,7 @@ class BleDeviceProcessor {
       this.recordedData.push({
         sensor: sensor,
         time: timestamp + recordingStart,
-        data: parsedData
+        data: parsedData,
       });
       if (
         this.recordedData.length > 1000 ||
@@ -100,7 +103,7 @@ class BleDeviceProcessor {
     this.sensorDataCharacteristic.startNotifications();
     this.sensorDataCharacteristic.addEventListener(
       'characteristicvaluechanged',
-      event => {
+      (event) => {
         let currentValue = recordData(event.target.value);
         this.uploadBLE.setCurrentData(currentValue);
       }
