@@ -10,7 +10,6 @@ import {
 } from 'reactstrap';
 
 import { humanFileSize, toPercentage } from '../../services/helpers';
-
 import './selectedModelModal.css';
 
 export const SelectedModelModalView = ({
@@ -95,7 +94,6 @@ export const SelectedModelModalView = ({
 }) => {
   const base = baseModels.find(x => x.name === model.classifier);
   console.assert(base !== undefined);
-
   return (
     <Modal isOpen={model && baseModels} size="xl" {...props}>
       <ModalHeader>{model.name}</ModalHeader>
