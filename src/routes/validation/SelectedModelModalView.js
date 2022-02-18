@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 
 import { humanFileSize, toPercentage } from '../../services/helpers';
-
+import { deleteModel } from '../../services/ApiServices/MlService';
 import './selectedModelModal.css';
 
 export const SelectedModelModalView = ({
@@ -94,7 +94,13 @@ export const SelectedModelModalView = ({
 }) => {
   const base = baseModels.find(x => x.name === model.classifier);
   console.assert(base !== undefined);
-
+  const onDeleteModel = () => {
+    if (window.confirm('Are you sure to delete this model?')) {
+      deleteModel(model.id);
+    }
+    onClosed();
+    window.location.reload(false);
+  };
   return (
     <Modal isOpen={model && baseModels} size="xl" {...props}>
       <ModalHeader>{model.name}</ModalHeader>
@@ -178,7 +184,30 @@ export const SelectedModelModalView = ({
         </Table>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={onClosed}>Close</Button>
+        {/* <Button
+          id='delete-model-button'
+          onClick={() => { console.log('clicked') }}
+          color='danger'
+          className="m-1 mr-auto"
+          block
+        >
+          Delete
+        </Button>{' '}
+        <Button id='close-modal-button' onClick={onClosed} className='m-1'>Close</Button> */}
+        <Button
+          id="delete-model-button"
+          className="btn-danger m-1 mr-auto"
+          onClick={onDeleteModel}
+        >
+          Delete
+        </Button>{' '}
+        <Button
+          id="close-modal-button"
+          className="btn-secondary m-1"
+          onClick={onClosed}
+        >
+          Close
+        </Button>
       </ModalFooter>
     </Modal>
   );
