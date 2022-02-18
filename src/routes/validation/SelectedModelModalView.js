@@ -10,7 +10,6 @@ import {
 } from 'reactstrap';
 
 import { humanFileSize, toPercentage } from '../../services/helpers';
-import { deleteModel } from '../../services/ApiServices/MlService';
 import './selectedModelModal.css';
 
 export const SelectedModelModalView = ({
@@ -89,22 +88,16 @@ export const SelectedModelModalView = ({
     2: {name: "K-Nearest Neighbours Classifier", description: "A simple K-Nearest Neighbours classifier.",…}
   */
   //#endregion
+  onDelete,
   onClosed = () => {},
   ...props
 }) => {
   const base = baseModels.find(x => x.name === model.classifier);
   console.assert(base !== undefined);
-  const onDeleteModel = () => {
-    if (window.confirm('Are you sure to delete this model?')) {
-      deleteModel(model.id);
-    }
-    onClosed();
-    window.location.reload(false);
-  };
   return (
     <Modal isOpen={model && baseModels} size="xl" {...props}>
       <ModalHeader>{model.name}</ModalHeader>
-      <ModalBody className="selected_model_modal_view-body">
+      <ModalBody className="validation_selected_model_modal_view-body">
         <div>
           <Table borderless responsive>
             <tbody>
@@ -184,30 +177,10 @@ export const SelectedModelModalView = ({
         </Table>
       </ModalBody>
       <ModalFooter>
-        {/* <Button
-          id='delete-model-button'
-          onClick={() => { console.log('clicked') }}
-          color='danger'
-          className="m-1 mr-auto"
-          block
-        >
+        <Button className="mr-auto" onClick={onDelete} color="danger">
           Delete
-        </Button>{' '}
-        <Button id='close-modal-button' onClick={onClosed} className='m-1'>Close</Button> */}
-        <Button
-          id="delete-model-button"
-          className="btn-danger m-1 mr-auto"
-          onClick={onDeleteModel}
-        >
-          Delete
-        </Button>{' '}
-        <Button
-          id="close-modal-button"
-          className="btn-secondary m-1"
-          onClick={onClosed}
-        >
-          Close
         </Button>
+        <Button onClick={onClosed}>Close</Button>
       </ModalFooter>
     </Modal>
   );

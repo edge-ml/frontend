@@ -45,6 +45,20 @@ module.exports.getTrained = function(id) {
   });
 };
 
+module.exports.deleteTrained = function(id) {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.DELETE,
+        apiConsts.ML_URI,
+        apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id
+      )
+    )
+      .then(resp => resolve(resp.data))
+      .catch(err => reject(err.response));
+  });
+};
+
 module.exports.train = function(data) {
   return new Promise((resolve, reject) => {
     axios(
@@ -56,20 +70,6 @@ module.exports.train = function(data) {
       )
     )
       .then(() => resolve()) // TODO: ml should return training id
-      .catch(err => reject(err.response));
-  });
-};
-
-module.exports.deleteModel = function(id) {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.DELETE,
-        apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id
-      )
-    )
-      .then(data => resolve(data.data))
       .catch(err => reject(err.response));
   });
 };

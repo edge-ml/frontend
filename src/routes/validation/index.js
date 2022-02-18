@@ -3,7 +3,8 @@ import Loader from '../../modules/loader';
 import {
   getTrainedModels,
   getModels,
-  getTrained
+  getTrained,
+  deleteTrained
 } from '../../services/ApiServices/MlService';
 import { ValidationView } from './ValidationView';
 import { SelectedModelModalView } from './SelectedModelModalView';
@@ -16,14 +17,17 @@ const ValidationPage = () => {
   let [modalState, setModalState] = useState(false);
 
   useEffect(() => {
-    getTrainedModels().then(m => {
-      setModels(m); // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number}[]
-    });
-
     getModels().then(m => {
       setBaseModels(m);
     });
+
+    update();
   }, []);
+
+  const update = async () => {
+    const models = await getTrainedModels();
+    setModels(models); // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number}[]
+  };
 
   const viewModel = async id => {
     const model = await getTrained(id);
@@ -33,6 +37,14 @@ const ValidationPage = () => {
 
   const closeModal = () => {
     setModalState(false);
+  };
+
+  const deleteModel = model => async () => {
+    const succ = await deleteTrained(model.id);
+    if (succ) {
+      setModalState(false);
+      update();
+    }
   };
 
   return (
@@ -46,6 +58,7 @@ const ValidationPage = () => {
           baseModels={baseModels}
           model={viewedModel}
           onClosed={closeModal}
+          onDelete={deleteModel(viewedModel)}
         />
       ) : null}
     </Loader>
