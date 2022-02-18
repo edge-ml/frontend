@@ -21,6 +21,7 @@ import BleDeviceProcessor from '../components/BLE/BleDeviceProcessor';
 import BlePanelRecordingDisplay from '../components/BLE/BlePanelRecordingDisplay';
 
 import '../components/BLE/BleActivated.css';
+import { ga_connectBluetooth } from '../services/AnalyticsService';
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -33,6 +34,7 @@ class UploadBLE extends Component {
       datasetName: '',
       recorderState: 'ready', // ready, startup, recording, finalizing
       deviceSensors: undefined,
+      connectedDeviceData: undefined,
       selectedSensors: new Set(),
       currentData: [],
     };
@@ -99,6 +101,7 @@ class UploadBLE extends Component {
       datasetName: '',
       recorderState: 'ready',
       deviceSensors: undefined,
+      connectedDeviceData: undefined,
       selectedSensors: new Set(),
       currentData: [],
     });
@@ -126,6 +129,7 @@ class UploadBLE extends Component {
     });
   }
 
+  
   async onClickRecordButton() {
     // ready, startup, recording, finalizing
     switch (this.state.recorderState) {
@@ -167,27 +171,21 @@ class UploadBLE extends Component {
 
   onConnection() {
     console.log('Device is now connected');
+    ga_connectBluetooth(this.state.connectedDeviceData);
   }
 
   async getDeviceInfo() {
-    try {
-      let options = {
-        filters: [{ services: [this.deviceInfoServiceUuid] }],
-        optionalServices: [this.sensorServiceUuid],
-      };
-      let newOptions = {
-        acceptAllDevices: true,
-        optionalServices: [this.deviceInfoServiceUuid, this.sensorServiceUuid],
-      };
-      const bleDevice = await navigator.bluetooth.requestDevice(options);
-      //const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
-      return bleDevice;
-    } catch (error) {
-      console.log('Request device error: ' + error);
-      if (error.toString().includes('Bluetooth adapter not available')) {
-        alert('Activate bluetooth');
-      }
-    }
+    let options = {
+      filters: [{ services: [this.deviceInfoServiceUuid] }],
+      optionalServices: [this.sensorServiceUuid],
+    };
+    let newOptions = {
+      acceptAllDevices: true,
+      optionalServices: [this.deviceInfoServiceUuid, this.sensorServiceUuid],
+    };
+    const bleDevice = await navigator.bluetooth.requestDevice(options);
+    //const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
+    return bleDevice;
   }
 
   async connectDevice(bleDevice) {
@@ -233,6 +231,7 @@ class UploadBLE extends Component {
     );
     this.bleDeviceProcessor = new BleDeviceProcessor(
       bleDevice,
+      this.state.connectedDeviceData,
       this.state.deviceSensors,
       this.sensorConfigCharacteristic,
       this.sensorDataCharacteristic,
@@ -247,7 +246,10 @@ class UploadBLE extends Component {
     return this.getDeviceInfo()
       .then(this.connectDevice)
       .then(this.getSensorCharacteristics)
-      .then(this.onConnection);
+      .then(this.onConnection)
+      .catch((err) => {
+        ga_connectBluetooth(this.state.connectedDeviceData, err);
+      });
   }
 
   setCurrentData(sensorData) {
@@ -266,13 +268,7 @@ class UploadBLE extends Component {
     } else {
       // Case: Not connected, so connect
       this.setState({ bleConnectionChanging: true });
-      await this.connect()
-        .then((_) => {
-          console.log('Connected');
-        })
-        .catch((error) => {
-          console.log('ERROR: ' + error);
-        });
+      await this.connect();
       this.setState({ bleConnectionChanging: false });
     }
   }

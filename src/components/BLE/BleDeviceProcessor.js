@@ -11,17 +11,22 @@ import {
   appendToDataset,
   getDatasets,
 } from '../../services/ApiServices/DatasetServices';
+import {
+  ga_uploadataset_len,
+  ga_uploadDataset,
+} from '../../services/AnalyticsService';
 
 class BleDeviceProcessor {
   constructor(
     device,
+    deviceInfo,
     sensors,
     sensorConfigCharacteristic,
     sensorDataCharacteristic,
     uploadBLE
   ) {
     this.device = device;
-    this.sensors = sensors;
+    (this.deviceInfo = deviceInfo), (this.sensors = sensors);
     this.sensorConfigCharacteristic = sensorConfigCharacteristic;
     this.sensorDataCharacteristic = sensorDataCharacteristic;
     this.sensorData = new Map();
@@ -30,6 +35,7 @@ class BleDeviceProcessor {
     this.newDataset = undefined;
     this.recordingSensors = [];
     this.uploadBLE = uploadBLE;
+    this.uploadCounter = new Map();
   }
 
   async configureSingleSensor(sensorId, sampleRate, latency) {
@@ -64,6 +70,7 @@ class BleDeviceProcessor {
       }
     }
   }
+
 
   async startRecording(selectedSensors, latency, datasetName) {
     var oldDatasets = (await getDatasets()).map((elm) => elm._id);
@@ -116,7 +123,19 @@ class BleDeviceProcessor {
       this.recordingSensors,
       this.sensors
     );
+    this.addToUploadCounter(recordedData);
     await appendToDataset(this.newDataset, recordedData);
+  }
+
+  addToUploadCounter(recordedData) {
+    recordedData.forEach((elm) => {
+      if (this.uploadCounter.has(elm.name)) {
+        var old_ctr = this.uploadCounter.get(elm.name);
+        this.uploadCounter.set(elm.name, old_ctr + elm.data.length);
+      } else {
+        this.uploadCounter.set(elm.name, elm.data.length);
+      }
+    });
   }
 
   async stopRecording() {
@@ -127,9 +146,16 @@ class BleDeviceProcessor {
       this.recordingSensors,
       this.sensors
     );
+    this.addToUploadCounter(recordedData);
+    ga_uploadataset_len(
+      Array.from(this.uploadCounter.values()),
+      'bluetooth',
+      this.deviceInfo
+    );
     await appendToDataset(this.newDataset, recordedData);
     this.recordingSensors = [];
     this.recordedData = [];
+    this.uploadCounter = new Map();
   }
 }
 

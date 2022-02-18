@@ -212,11 +212,21 @@ class RegisterPage extends Component {
                               onChange={this.onToS_checked}
                             />{' '}
                             I have read and agree to the{' '}
-                            <a href="/terms_of_service.html">
+                            <a href="/terms_of_service.html" target="_blank">
                               terms of service
                             </a>{' '}
+                            ,{' '}
+                            <a
+                              href="/google_analytics_policy.html"
+                              target="_blank"
+                            >
+                              Google Analytics legal notice
+                            </a>{' '}
                             and{' '}
-                            <a href="/privacy_notice.html">privacy notice</a>.
+                            <a href="/privacy_notice.html" target="_blank">
+                              privacy notice
+                            </a>
+                            .
                           </Label>
                         </FormGroup>
                       </Col>
