@@ -30,7 +30,6 @@ class UploadBLE extends Component {
       bleConnectionChanging: false,
       connectedBLEDevice: undefined,
       bleStatus: navigator.bluetooth,
-      sampleRate: 50,
       latency: 0,
       datasetName: '',
       recorderState: 'ready', // ready, startup, recording, finalizing
@@ -48,11 +47,11 @@ class UploadBLE extends Component {
     this.getSensorCharacteristics = this.getSensorCharacteristics.bind(this);
     this.onClickRecordButton = this.onClickRecordButton.bind(this);
     this.onLatencyChanged = this.onLatencyChanged.bind(this);
-    this.onSampleRateChanged = this.onSampleRateChanged.bind(this);
     this.onToggleSensor = this.onToggleSensor.bind(this);
     this.onGlobalSampleRateChanged = this.onGlobalSampleRateChanged.bind(this);
     this.onDatasetNameChanged = this.onDatasetNameChanged.bind(this);
     this.resetState = this.resetState.bind(this);
+    this.onChangeSampleRate = this.onChangeSampleRate.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
@@ -72,6 +71,15 @@ class UploadBLE extends Component {
     this.textEncoder = new TextDecoder('utf-8');
   }
 
+  onChangeSampleRate(bleKey, sampleRate) {
+    const tmpDeviceSensors = this.state.deviceSensors;
+    tmpDeviceSensors[bleKey].sampleRate = parseInt(sampleRate);
+    console.log(tmpDeviceSensors);
+    this.setState({
+      deviceSensors: tmpDeviceSensors,
+    });
+  }
+
   onDatasetNameChanged(e) {
     this.setState({
       datasetName: e.target.value,
@@ -89,7 +97,6 @@ class UploadBLE extends Component {
       bleConnectionChanging: false,
       connectedBLEDevice: undefined,
       bleStatus: navigator.bluetooth,
-      sampleRate: 50,
       latency: 0,
       datasetName: '',
       recorderState: 'ready',
@@ -122,16 +129,7 @@ class UploadBLE extends Component {
     });
   }
 
-  onSampleRateChanged(sensorId, sampleRate) {
-    this.setState((prevState) => {
-      const nextSensorMap = new Map(prevState.sensorMap);
-      const data = nextSensorMap.get(sensorId);
-      data.sampleRate = sampleRate;
-      nextSensorMap.set(sensorId, data);
-      return { sensorMap: nextSensorMap };
-    });
-  }
-
+  
   async onClickRecordButton() {
     // ready, startup, recording, finalizing
     switch (this.state.recorderState) {
@@ -141,7 +139,6 @@ class UploadBLE extends Component {
         this.setState({ currentData: emptyData });
         await this.bleDeviceProcessor.startRecording(
           this.state.selectedSensors,
-          this.state.sampleRate,
           this.state.latency,
           this.state.datasetName
         );
@@ -294,7 +291,9 @@ class UploadBLE extends Component {
             <Col>
               <div className="shadow p-3 mb-5 bg-white rounded">
                 <BlePanelSensorList
+                  maxSampleRate={this.state.connectedDeviceData.maxSampleRate}
                   selectedSensors={this.state.selectedSensors}
+                  onChangeSampleRate={this.onChangeSampleRate}
                   sensors={this.state.deviceSensors}
                   onToggleSensor={this.onToggleSensor}
                   disabled={this.state.recorderState !== 'ready'}

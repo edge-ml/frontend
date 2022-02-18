@@ -55,11 +55,14 @@ class BleDeviceProcessor {
     }
   }
 
-  async prepareRecording(sensorsToRecord, sampleRate, latency) {
+  async prepareRecording(sensorsToRecord, latency) {
     for (const bleKey of Object.keys(this.sensors)) {
       if (sensorsToRecord.has(bleKey)) {
-        await this.configureSingleSensor(bleKey, sampleRate, latency);
-        //this.recordedData[bleKey] = [];
+        await this.configureSingleSensor(
+          bleKey,
+          this.sensors[bleKey].sampleRate,
+          latency
+        );
         this.recordedData = [];
         this.recordingSensors = sensorsToRecord;
       } else {
@@ -68,7 +71,8 @@ class BleDeviceProcessor {
     }
   }
 
-  async startRecording(selectedSensors, sampleRate, latency, datasetName) {
+
+  async startRecording(selectedSensors, latency, datasetName) {
     var oldDatasets = (await getDatasets()).map((elm) => elm._id);
     this.newDataset = (
       await createDataset(
@@ -78,7 +82,7 @@ class BleDeviceProcessor {
         )
       )
     ).filter((elm) => !oldDatasets.includes(elm._id))[0];
-    await this.prepareRecording(selectedSensors, sampleRate, latency);
+    await this.prepareRecording(selectedSensors, latency);
     var recordingStart = new Date().getTime();
     var adjustedTime = false;
     const recordData = (value) => {
