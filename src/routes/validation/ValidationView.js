@@ -58,6 +58,7 @@ export const ValidationView = ({
           {
             id: 'details-button',
             accessor: row => row.id,
+            disableSortBy: true,
             Cell: ({ value }) => (
               <Button
                 onClick={() => onViewModel(value)}
