@@ -52,6 +52,8 @@ class UploadBLE extends Component {
     this.onDatasetNameChanged = this.onDatasetNameChanged.bind(this);
     this.resetState = this.resetState.bind(this);
     this.onChangeSampleRate = this.onChangeSampleRate.bind(this);
+    this.onConnection = this.onConnection.bind(this);
+    this.connect = this.connect.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
@@ -129,7 +131,6 @@ class UploadBLE extends Component {
     });
   }
 
-  
   async onClickRecordButton() {
     // ready, startup, recording, finalizing
     switch (this.state.recorderState) {
@@ -171,7 +172,7 @@ class UploadBLE extends Component {
 
   onConnection() {
     console.log('Device is now connected');
-    ga_connectBluetooth(this.state.connectedDeviceData);
+    ga_connectBluetooth(this.state.connectedDeviceData, '', true);
   }
 
   async getDeviceInfo() {
@@ -248,7 +249,8 @@ class UploadBLE extends Component {
       .then(this.getSensorCharacteristics)
       .then(this.onConnection)
       .catch((err) => {
-        ga_connectBluetooth(this.state.connectedDeviceData, err);
+        console.log(err);
+        ga_connectBluetooth(this.state.connectedDeviceData, err, false);
       });
   }
 

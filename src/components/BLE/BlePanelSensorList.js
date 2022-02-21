@@ -10,7 +10,6 @@ function BlePanelSensorList(props) {
   props.selectedSensors.forEach((elm) => {
     sampleRateSum += props.sensors[elm].sampleRate;
   });
-  console.log(sampleRateSum);
   return (
     <div>
       <div className="panelHeader">2. Configure sensors</div>

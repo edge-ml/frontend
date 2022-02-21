@@ -37,10 +37,10 @@ module.exports.ga_uploadataset_len = (len_dataset, method, device) => {
   }
 };
 
-module.exports.ga_connectBluetooth = (device, error) => {
+module.exports.ga_connectBluetooth = (device, error, success) => {
   try {
     const gtmData = {
-      success: !!error,
+      success: success,
       event: 'connect_bluetooth',
       bluetooth_device: device,
       'gtm.errorMessage': String(error),
