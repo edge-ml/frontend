@@ -12,7 +12,8 @@ import {
   faPen,
   faBrain,
   faLightbulb,
-  faCheck
+  faCheck,
+  faFileExport
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -129,6 +130,7 @@ class Navbar extends Component {
                         ['Labelings', faPen],
                         ['Model', faBrain],
                         ['Validation', faCheck],
+                        ['Export', faFileExport],
                         ['Settings', faCogs]
                       ].map((elm, indx) => (
                         <div
