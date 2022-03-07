@@ -6,7 +6,8 @@ import {
   ListGroupItem,
   Card,
   CardHeader,
-  CardBody
+  CardBody,
+  Button
 } from 'reactstrap';
 
 export const ExportView = ({
@@ -14,6 +15,7 @@ export const ExportView = ({
   deployments = [], // {key: string, name: string, creation_date: number}[]
   selectModel,
   selectDeployment,
+  onDeployNew,
 
   detail
 }) => {
@@ -54,6 +56,7 @@ export const ExportView = ({
               <h4>Deployments</h4>
             </CardHeader>
             <CardBody>
+              <Button onClick={() => onDeployNew()}>ddd</Button>
               <ListGroup>
                 {deployments.map(m => (
                   <ListGroupItem

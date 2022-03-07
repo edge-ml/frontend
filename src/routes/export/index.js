@@ -7,9 +7,9 @@ import {
   getTrainedModels,
   getTrained,
   getDeployment,
-  getModelDeployments,
+  getTrainedDeployments,
   deleteDeployment,
-  deployModel,
+  deployTrained,
   getModels
 } from '../../services/ApiServices/MlService';
 
@@ -32,7 +32,7 @@ const ExportPage = () => {
 
   const update = async () => setModels(await getTrainedModels());
   const updateDeployments = async modelId =>
-    setDeployments(await getModelDeployments(modelId));
+    setDeployments(await getTrainedDeployments(modelId));
 
   const selectModel = async modelId => {
     const model = await getTrained(modelId);
@@ -50,7 +50,7 @@ const ExportPage = () => {
   };
   const deployNew = async () => {
     const deploymentKey = await deployModel();
-    const deployment = await getDeployment();
+    const deployment = await getDeployment(deploymentKey);
 
     setSelectedDeployment(deployment);
     await updateDeployments(selectedModel.id);
@@ -79,13 +79,14 @@ const ExportPage = () => {
         selectDeployment={selectDeployment}
         onDeployNew={deployNew}
         detail={
-          true ? (
+          selectedDeployment ? (
             <ExportDetailView
               model={selectedModel}
               baseModels={baseModels}
               deployment={selectedDeployment}
               platform={platform}
               onPlatform={setPlatform}
+              delet={() => del(selectedDeployment.key)}
             />
           ) : null
         }
