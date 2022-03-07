@@ -6,11 +6,12 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-  Table
+  Table,
+  Row,
+  Col
 } from 'reactstrap';
 
 import { humanFileSize, toPercentage } from '../../services/helpers';
-import './selectedModelModal.css';
 
 export const SelectedModelModalView = ({
   model,
@@ -88,7 +89,7 @@ export const SelectedModelModalView = ({
     2: {name: "K-Nearest Neighbours Classifier", description: "A simple K-Nearest Neighbours classifier.",…}
   */
   //#endregion
-  onDelete,
+  onDelete = null,
   onClosed = () => {},
   ...props
 }) => {
@@ -96,90 +97,98 @@ export const SelectedModelModalView = ({
   console.assert(base !== undefined);
   return (
     <Modal isOpen={model && baseModels} size="xl" {...props}>
-      <ModalHeader>{model.name}</ModalHeader>
-      <ModalBody className="validation_selected_model_modal_view-body">
-        <div>
-          <Table borderless responsive>
-            <tbody>
-              <tr>
-                {' '}
-                <th>ID</th>
-                <td>{model.id}</td>{' '}
-              </tr>
-              <tr>
-                {' '}
-                <th>Name</th>
-                <td>{model.name}</td>{' '}
-              </tr>
-              <tr>
-                {' '}
-                <th>Creation Date</th>
-                <td>
-                  {new Date(parseInt(model.creation_date) * 1000).toISOString()}
-                </td>{' '}
-              </tr>
-              <tr>
-                {' '}
-                <th>Size on Disk</th>
-                <td>{humanFileSize(model.size)}</td>{' '}
-              </tr>
-              <tr>
-                {' '}
-                <th>Classifier</th>
-                <td>{base.name}</td>{' '}
-              </tr>
-              <tr>
-                {' '}
-                <th>Accuracy</th>
-                <td>{toPercentage(model.accuracy)}</td>{' '}
-              </tr>
-              <tr>
-                {' '}
-                <th>Precision</th>
-                <td>{toPercentage(model.precision)}</td>{' '}
-              </tr>
-              <tr>
-                {' '}
-                <th>f1 Score</th>
-                <td>{toPercentage(model.f1_score)}</td>{' '}
-              </tr>
-              <tr>
-                {' '}
-                <th>Report</th>{' '}
-                <td>
-                  <pre>{model.classification_report}</pre>
-                </td>{' '}
-              </tr>
-              <tr>
-                {' '}
-                <th>Confusion Matrix</th>{' '}
-                <td>
-                  <pre>{model.confusion_matrix}</pre>
-                </td>{' '}
-              </tr>
-            </tbody>
-          </Table>
-        </div>
-        <Table borderless responsive>
-          <tbody>
-            {Object.entries(model.hyperparameters).map(([key, val]) => (
-              <tr>
-                {' '}
-                <th>
-                  {base.hyperparameters[key]
-                    ? base.hyperparameters[key].display_name
-                    : key}
-                </th>{' '}
-                <td>{String(val)}</td>{' '}
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+      <ModalHeader>Model: {model.name}</ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>
+            <Table borderless responsive>
+              <tbody>
+                <tr>
+                  {' '}
+                  <th>ID</th>
+                  <td>{model.id}</td>{' '}
+                </tr>
+                <tr>
+                  {' '}
+                  <th>Name</th>
+                  <td>{model.name}</td>{' '}
+                </tr>
+                <tr>
+                  {' '}
+                  <th>Creation Date</th>
+                  <td>
+                    {new Date(
+                      parseInt(model.creation_date) * 1000
+                    ).toISOString()}
+                  </td>{' '}
+                </tr>
+                <tr>
+                  {' '}
+                  <th>Size on Disk</th>
+                  <td>{humanFileSize(model.size)}</td>{' '}
+                </tr>
+                <tr>
+                  {' '}
+                  <th>Classifier</th>
+                  <td>{base.name}</td>{' '}
+                </tr>
+                <tr>
+                  {' '}
+                  <th>Accuracy</th>
+                  <td>{toPercentage(model.accuracy)}</td>{' '}
+                </tr>
+                <tr>
+                  {' '}
+                  <th>Precision</th>
+                  <td>{toPercentage(model.precision)}</td>{' '}
+                </tr>
+                <tr>
+                  {' '}
+                  <th>f1 Score</th>
+                  <td>{toPercentage(model.f1_score)}</td>{' '}
+                </tr>
+                <tr>
+                  {' '}
+                  <th>Report</th>{' '}
+                  <td>
+                    <pre>{model.classification_report}</pre>
+                  </td>{' '}
+                </tr>
+                <tr>
+                  {' '}
+                  <th>Confusion Matrix</th>{' '}
+                  <td>
+                    <pre>{model.confusion_matrix}</pre>
+                  </td>{' '}
+                </tr>
+              </tbody>
+            </Table>
+          </Col>
+          <Col>
+            <Table borderless responsive>
+              <tbody>
+                {Object.entries(model.hyperparameters).map(([key, val]) => (
+                  <tr>
+                    {' '}
+                    <th>
+                      {base.hyperparameters[key]
+                        ? base.hyperparameters[key].display_name
+                        : key}
+                    </th>{' '}
+                    <td>{String(val)}</td>{' '}
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </Col>
+        </Row>
       </ModalBody>
       <ModalFooter>
-        <Button className="mr-auto" onClick={onDelete} color="danger">
-          Delete
-        </Button>
+        {onDelete ? (
+          <Button className="mr-auto" onClick={onDelete} color="danger">
+            Delete
+          </Button>
+        ) : null}
         <Button onClick={onClosed}>Close</Button>
       </ModalFooter>
     </Modal>

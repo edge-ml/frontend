@@ -1,57 +1,80 @@
 import React from 'react';
-import { Label, Input, FormGroup, Row, Col } from 'reactstrap';
-
-const Checkbox = ({ checked, value, onChange, label }) => (
-  <FormGroup className="mr-2" check>
-    <Label check>
-      <Input
-        value={value}
-        type="radio"
-        checked={checked}
-        onChange={e => onChange(e.target.value)}
-      />
-      {label}
-    </Label>
-  </FormGroup>
-);
+import { Row, Col, Button } from 'reactstrap';
+import Select from 'react-select';
+import PrismCode from 'react-prism';
 
 export const ExportDetailView = ({
   model,
-
-  dSource,
-  dSourceList,
-  setDSource,
+  deployment,
+  onModelDetails = () => {},
 
   platform,
-  platformList,
-  setPlatform
+  onPlatform,
+  onGetLink,
+  onDownloadModel
 }) => {
+  const platforms = [
+    // this should come with model
+    {
+      value: 'python',
+      label: 'Python',
+      code: `
+    const id = x => x
+    `
+    }
+  ];
+
+  console.log(platform);
+  const nPlatform = platform || platforms[0];
+
   return (
     <div>
       <Row>
-        <Col className="col-3">Platform:</Col>
         <Col>
-          {platformList.map((ds, i) => (
-            <Checkbox
-              checked={i === platform}
-              value={ds.name}
-              label={ds.label}
-              onChange={() => setPlatform(i)}
-            />
-          ))}
-        </Col>
-      </Row>
-      <Row>
-        <Col className="col-3">Data source:</Col>
-        <Col>
-          {dSourceList.map((ds, i) => (
-            <Checkbox
-              checked={i === dSource}
-              value={ds.name}
-              label={ds.label}
-              onChange={() => setDSource(i)}
-            />
-          ))}
+          <div className="pb-2">
+            <b>Model name: </b>
+            <span>{model.name}</span>
+            <Button onClick={onModelDetails} className="float-right">
+              See Model Details
+            </Button>
+          </div>
+          <div className="pb-2">
+            <b>Deployment key: </b>
+            <code>{deployment.key}</code>
+          </div>
+
+          <hr />
+
+          <div className="pb-2">
+            <h5>Export model</h5>
+          </div>
+          <div className="pb-2">
+            <b>Platform: </b>
+            <span className="float-right" style={{ minWidth: '200px' }}>
+              <Select
+                value={nPlatform}
+                onChange={x => onPlatform(x)}
+                options={platforms}
+              />
+            </span>
+          </div>
+          <div className="pb-2">
+            <Button onClick={onDownloadModel} className="mr-3">
+              Download model
+            </Button>
+            <Button onClick={onGetLink}>Get public link</Button>
+          </div>
+          <div className="pb-2">
+            <b>Usage: </b>
+            <PrismCode component="pre" className="language-javascript">
+              {nPlatform.code}
+            </PrismCode>
+          </div>
+
+          <hr />
+          <div className="pb-2">
+            <h5>Administration</h5>
+          </div>
         </Col>
       </Row>
     </div>
