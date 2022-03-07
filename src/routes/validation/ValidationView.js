@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
-import { useTable, useSortBy } from 'react-table';
+import { Container, Col, Row, Table, Badge, Button, Input } from 'reactstrap';
+import { useTable, useSortBy, useRowSelect } from 'react-table';
 import SortedTableHeader from '../../components/SortedTableHeader';
 import { humanFileSize, toPercentage } from '../../services/helpers';
 
@@ -8,19 +8,40 @@ const percentageCell = ({ value }) => toPercentage(value);
 
 export const ValidationView = ({
   models, // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number, size: number}[]
+  handleDelete,
   onViewModel = () => {}
 }) => {
+  const Checkbox = ({ ...rest }) => {
+    return <Input type="checkbox" {...rest} />;
+  };
+
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
-    prepareRow
+    prepareRow,
+    selectedFlatRows
   } = useTable(
     {
       data: models,
       columns: useMemo(
         () => [
+          {
+            id: 'selection',
+            Header: ({ selectedFlatRows }) => (
+              <Button
+                color="danger"
+                outline={true}
+                onClick={e => {
+                  handleDelete(selectedFlatRows.map(r => r.original.id));
+                }}
+              >
+                Delete
+              </Button>
+            ),
+            Cell: ({ row }) => <Checkbox {...row.getToggleRowSelectedProps()} />
+          },
           { Header: 'Name', accessor: 'name', sortType: 'string' },
           { Header: 'ID', accessor: 'id', sortType: 'alphanumeric' },
           {
@@ -73,7 +94,8 @@ export const ValidationView = ({
         []
       )
     },
-    useSortBy
+    useSortBy,
+    useRowSelect
   );
 
   return (

@@ -47,10 +47,25 @@ const ValidationPage = () => {
     }
   };
 
+  const deleteMultiple = async ids => {
+    console.log(ids);
+    const succ = (
+      await Promise.all([...ids].map(id => deleteTrained(id)))
+    ).reduce((prev, cur) => prev || cur, false);
+    console.log(succ);
+    if (succ) {
+      update();
+    }
+  };
+
   return (
     <Loader loading={!(models && baseModels)}>
       {models ? (
-        <ValidationView models={models} onViewModel={viewModel} />
+        <ValidationView
+          models={models}
+          onViewModel={viewModel}
+          handleDelete={deleteMultiple}
+        />
       ) : null}
       {baseModels && viewedModel ? (
         <SelectedModelModalView
