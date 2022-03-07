@@ -8,6 +8,7 @@ import {
 } from '../../services/ApiServices/MlService';
 import { ValidationView } from './ValidationView';
 import { SelectedModelModalView } from './SelectedModelModalView';
+import { DeleteConfirmationModalView } from './DeleteConfirmationModalView';
 
 const ValidationPage = () => {
   let [models, setModels] = useState(null);
@@ -15,6 +16,8 @@ const ValidationPage = () => {
 
   let [viewedModel, setViewedModel] = useState(null);
   let [modalState, setModalState] = useState(false);
+  let [modelsToDelete, setModelsToDelete] = useState([]);
+  let [deleteModalState, setDeleteModalState] = useState(false);
 
   useEffect(() => {
     getModels().then(m => {
@@ -39,6 +42,15 @@ const ValidationPage = () => {
     setModalState(false);
   };
 
+  const showConfirmation = ids => {
+    setModelsToDelete(ids);
+    setDeleteModalState(true);
+  };
+
+  const closeConfirmation = () => {
+    setDeleteModalState(false);
+  };
+
   const deleteModel = model => async () => {
     const succ = await deleteTrained(model.id);
     if (succ) {
@@ -48,11 +60,9 @@ const ValidationPage = () => {
   };
 
   const deleteMultiple = async ids => {
-    console.log(ids);
     const succ = (
       await Promise.all([...ids].map(id => deleteTrained(id)))
     ).reduce((prev, cur) => prev || cur, false);
-    console.log(succ);
     if (succ) {
       update();
     }
@@ -64,7 +74,7 @@ const ValidationPage = () => {
         <ValidationView
           models={models}
           onViewModel={viewModel}
-          handleDelete={deleteMultiple}
+          handleDelete={showConfirmation}
         />
       ) : null}
       {baseModels && viewedModel ? (
@@ -74,6 +84,14 @@ const ValidationPage = () => {
           model={viewedModel}
           onClosed={closeModal}
           onDelete={deleteModel(viewedModel)}
+        />
+      ) : null}
+      {baseModels && modelsToDelete.length ? (
+        <DeleteConfirmationModalView
+          isOpen={deleteModalState}
+          modelsToDelete={modelsToDelete}
+          onClosed={closeConfirmation}
+          onDelete={deleteMultiple}
         />
       ) : null}
     </Loader>

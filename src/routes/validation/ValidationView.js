@@ -33,6 +33,7 @@ export const ValidationView = ({
               <Button
                 color="danger"
                 outline={true}
+                disabled={!selectedFlatRows.length}
                 onClick={e => {
                   handleDelete(selectedFlatRows.map(r => r.original.id));
                 }}
