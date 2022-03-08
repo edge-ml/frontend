@@ -2,95 +2,159 @@ import React, { useState, useEffect } from 'react';
 import Loader from '../../modules/loader';
 import { ExportView } from './ExportView';
 import { ExportDetailView } from './ExportDetailView';
+import {
+  useIncrement,
+  useAsyncMemo,
+  useBoolean
+} from '../../services/ReactHooksService';
+import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
+import { ML_ENDPOINTS, ML_URI } from '../../services/ApiServices/ApiConstants';
 
 import {
   getTrainedModels,
   getTrained,
-  getDeployment,
   getTrainedDeployments,
-  deleteDeployment,
   deployTrained,
   getModels
 } from '../../services/ApiServices/MlService';
+import {
+  getDeployment,
+  deleteDeployment,
+  changeDeploymentName,
+  downloadDeploymentModel
+} from '../../services/ApiServices/MLDeploymentService';
+// import { ChangeNameModalView } from './ChangeNameModalView';
+import { Empty } from './components/Empty';
+import { downloadBlob } from '../../services/helpers';
+
+// this is a small harmless hack
+const buildLink = (key, platform) =>
+  `${
+    ML_URI.startsWith('http')
+      ? ML_URI
+      : `${window.location.protocol + '//' + window.location.host}/ml/`
+  }${ML_ENDPOINTS.DEPLOY}/${key}/export/${platform}`;
 
 const ExportPage = () => {
-  const [models, setModels] = useState([]); // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number}[]
-  const [deployments, setDeployments] = useState([]); // {key: string, name: string, creation_date: number}[]
-  let [selectedModel, setSelectedModel] = useState(null);
-  let [selectedDeployment, setSelectedDeployment] = useState(null);
-  const [baseModels, setBaseModels] = useState(null);
+  const [selectedModelId, setSelectedModelId] = useState(null);
+  const [selectedDeploymentKey, setSelectedDeploymentKey] = useState(null);
 
-  const [platform, setPlatform] = useState(null);
+  const [platform, setPlatform] = useState('python');
+  const [modelModalState, openModelModal, closeModelModal] = useBoolean(false);
+  // const [changeNameModalState, openChangeNameModal, closeChangeNameModal] = useBoolean(false);
 
-  useEffect(() => {
-    getModels().then(m => {
-      setBaseModels(m);
-    });
+  const [modelsInvalidate, refreshModels] = useIncrement();
+  const [deploymentsInvalidate, refreshDeployments] = useIncrement();
+  const [
+    selectedDeploymentInvalidate,
+    refreshSelectedDeployment
+  ] = useIncrement();
 
-    update();
-  }, []);
+  const baseModels = useAsyncMemo(async () => await getModels(), [], []);
+  const models = useAsyncMemo(
+    async () => await getTrainedModels(),
+    [modelsInvalidate],
+    []
+  );
+  const deployments = useAsyncMemo(
+    async () => {
+      if (!selectedModelId) return [];
+      return getTrainedDeployments(selectedModelId);
+    },
+    [selectedModelId, deploymentsInvalidate],
+    []
+  );
+  const selectedModel = useAsyncMemo(async () => {
+    if (!selectedModelId) return undefined;
+    return getTrained(selectedModelId);
+  }, [selectedModelId]);
+  const selectedDeployment = useAsyncMemo(async () => {
+    if (!selectedDeploymentKey) return undefined;
+    return getDeployment(selectedDeploymentKey);
+  }, [selectedDeploymentKey, selectedDeploymentInvalidate]);
 
-  const update = async () => setModels(await getTrainedModels());
-  const updateDeployments = async modelId =>
-    setDeployments(await getTrainedDeployments(modelId));
-
-  const selectModel = async modelId => {
-    const model = await getTrained(modelId);
-    setSelectedModel(model);
-
-    await updateDeployments();
+  const selectModel = modelId => {
+    setSelectedDeploymentKey(null);
+    setSelectedModelId(modelId);
   };
-  const selectDeployment = async key =>
-    setSelectedDeployment(await getDeployment(key));
-  const del = async key => {
-    await deleteDeployment(key);
+  const selectDeployment = key => setSelectedDeploymentKey(key);
 
-    setSelectedDeployment(null);
-    await updateDeployments(selectedModel.id);
+  const del = async () => {
+    await deleteDeployment(selectedDeployment.key);
+    refreshDeployments();
+    setSelectedDeploymentKey(null);
   };
+
   const deployNew = async () => {
-    const deploymentKey = await deployModel();
-    const deployment = await getDeployment(deploymentKey);
-
-    setSelectedDeployment(deployment);
-    await updateDeployments(selectedModel.id);
-  };
-  const changeDeploymentName = async (key, name) => {
-    await changeDeploymentName(key, name);
-    await updateDeployments(selectedModel.id);
-    await selectDeployment(key);
+    const deploymentKey = await deployTrained(selectedModelId);
+    refreshDeployments();
+    selectDeployment(deploymentKey);
   };
 
-  selectedDeployment = {
-    key: 'wehdfijulawehcf3iu4tghoqw3984'
+  const onDownloadModel = async () => {
+    const blob = await downloadDeploymentModel(
+      selectedDeployment.key,
+      platform
+    );
+    // console.log(blob)
+    downloadBlob(blob, `${selectedModel.name}-${platform}.bin`);
   };
 
-  selectedModel = {
-    id: 1,
-    name: 'modelname'
+  const handleDeploymentNameChange = async name => {
+    await changeDeploymentName(selectedDeployment.key, name);
+    refreshDeployments();
+    refreshSelectedDeployment();
   };
+
+  const availablePlatforms = [
+    // TODO: need to think about how to handle this
+    'python'
+  ];
 
   return (
     <Loader loading={!baseModels}>
       <ExportView
         models={models}
         deployments={deployments}
+        selectedModel={selectedModel}
         selectModel={selectModel}
         selectDeployment={selectDeployment}
-        onDeployNew={deployNew}
+        onClickDeployNew={deployNew}
         detail={
           selectedDeployment ? (
             <ExportDetailView
               model={selectedModel}
-              baseModels={baseModels}
               deployment={selectedDeployment}
               platform={platform}
+              availablePlatforms={availablePlatforms}
               onPlatform={setPlatform}
-              delet={() => del(selectedDeployment.key)}
+              onClickDownloadModel={onDownloadModel}
+              onClickDelete={del}
+              onClickViewModelDetails={openModelModal}
+              onChangeDeploymentName={name => handleDeploymentNameChange(name)}
+              publicLink={buildLink(selectedDeployment.key, platform)}
             />
-          ) : null
+          ) : (
+            <Empty>Select a deployment to see it's details</Empty>
+          )
         }
       />
+      {baseModels && selectedModel ? (
+        <SelectedModelModalView
+          isOpen={modelModalState}
+          baseModels={baseModels}
+          model={selectedModel}
+          onClosed={closeModelModal}
+        />
+      ) : null}
+      {/* {selectedDeployment ? (
+        <ChangeNameModalView
+          initialName={selectedDeployment.name}
+          onChangeName={(name) => handleDeploymentNameChange(name)}
+          isOpen={changeNameModalState}
+          onClosed={closeChangeNameModal}
+        />
+      ) : null} */}
     </Loader>
   );
 };

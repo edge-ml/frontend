@@ -10,12 +10,15 @@ import {
   Button
 } from 'reactstrap';
 
+import { Empty } from './components/Empty';
+
 export const ExportView = ({
   models, // {id: string, name: string, creation_date: number}[]
   deployments = [], // {key: string, name: string, creation_date: number}[]
   selectModel,
+  selectedModel,
   selectDeployment,
-  onDeployNew,
+  onClickDeployNew,
 
   detail
 }) => {
@@ -27,7 +30,10 @@ export const ExportView = ({
             <CardHeader>
               <h4>Overview</h4>
             </CardHeader>
-            <CardBody>Overview</CardBody>
+            <CardBody>
+              [TODO: cue overall statistics like total number of deployments,
+              most accessed deployments, platforms etc]
+            </CardBody>
           </Card>
         </Col>
       </Row>
@@ -37,37 +43,60 @@ export const ExportView = ({
             <CardHeader>
               <h4>Models</h4>
             </CardHeader>
-            <CardBody>
-              <ListGroup>
-                {models.map(m => (
-                  <ListGroupItem
-                    action
-                    tag="button"
-                    onClick={() => selectModel(m.id)}
-                  >
-                    {m.name}
-                  </ListGroupItem>
-                ))}
-              </ListGroup>
+            <CardBody className="overflow-auto">
+              {models.length ? (
+                <ListGroup>
+                  {models.map(m => (
+                    <ListGroupItem
+                      key={m.id}
+                      action
+                      tag="button"
+                      onClick={() => selectModel(m.id)}
+                    >
+                      {m.name}
+                    </ListGroupItem>
+                  ))}
+                </ListGroup>
+              ) : (
+                <Empty>No models available</Empty>
+              )}
             </CardBody>
           </Card>
           <Card className="text-left mt-3" style={{ maxHeight: '50vh' }}>
-            <CardHeader>
+            <CardHeader className="d-flex align-items-baseline">
               <h4>Deployments</h4>
+              {selectedModel && deployments ? (
+                <span className="ml-2">
+                  {deployments.length} in total for model
+                </span>
+              ) : null}
+              <Button
+                disabled={!selectedModel}
+                className="ml-auto"
+                onClick={() => onClickDeployNew()}
+              >
+                New deployment
+              </Button>
             </CardHeader>
-            <CardBody>
-              <Button onClick={() => onDeployNew()}>ddd</Button>
-              <ListGroup>
-                {deployments.map(m => (
-                  <ListGroupItem
-                    action
-                    tag="button"
-                    onClick={() => selectDeployment(m.key)}
-                  >
-                    {m.name}
-                  </ListGroupItem>
-                ))}
-              </ListGroup>
+            <CardBody className="overflow-auto">
+              {!selectedModel ? (
+                <Empty>Select a model above to see it's deployments</Empty>
+              ) : deployments.length === 0 ? (
+                <Empty>No deployments for this model</Empty>
+              ) : (
+                <ListGroup>
+                  {deployments.map(m => (
+                    <ListGroupItem
+                      key={m.key}
+                      action
+                      tag="button"
+                      onClick={() => selectDeployment(m.key)}
+                    >
+                      {m.name}
+                    </ListGroupItem>
+                  ))}
+                </ListGroup>
+              )}
             </CardBody>
           </Card>
         </Col>

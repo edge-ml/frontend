@@ -1,7 +1,6 @@
 var apiConsts = require('./ApiConstants');
 const ax = require('axios');
 const axios = ax.create();
-const axiosNoToken = ax.create();
 
 module.exports.getModels = function() {
   return new Promise((resolve, reject) => {
@@ -74,20 +73,6 @@ module.exports.train = function(data) {
   });
 };
 
-module.exports.getDeployment = function(key) {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.GET,
-        apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + key
-      )
-    )
-      .then(() => resolve())
-      .catch(err => reject(err.response));
-  });
-};
-
 module.exports.getTrainedDeployments = function(id) {
   return new Promise((resolve, reject) => {
     axios(
@@ -98,20 +83,6 @@ module.exports.getTrainedDeployments = function(id) {
       )
     )
       .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
-  });
-};
-
-module.exports.deleteDeployment = function(key) {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.DELETE,
-        apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + key
-      )
-    )
-      .then(() => resolve())
       .catch(err => reject(err.response));
   });
 };

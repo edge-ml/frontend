@@ -130,7 +130,7 @@ class Navbar extends Component {
                         ['Labelings', faPen],
                         ['Model', faBrain],
                         ['Validation', faCheck],
-                        ['Export', faFileExport],
+                        ['Deploy', faFileExport],
                         ['Settings', faCogs]
                       ].map((elm, indx) => (
                         <div

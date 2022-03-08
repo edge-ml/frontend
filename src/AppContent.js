@@ -86,7 +86,7 @@ class AppContent extends Component {
           />
           <Route
             exact
-            path={this.props.match.path + '/export'}
+            path={this.props.match.path + '/deploy'}
             render={props => (
               <ProjectRefresh project={this.props.project}>
                 <ExportPage {...props}></ExportPage>

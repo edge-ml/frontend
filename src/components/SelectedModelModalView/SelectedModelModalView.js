@@ -96,7 +96,7 @@ export const SelectedModelModalView = ({
   const base = baseModels.find(x => x.name === model.classifier);
   console.assert(base !== undefined);
   return (
-    <Modal isOpen={model && baseModels} size="xl" {...props}>
+    <Modal isOpen={model && baseModels} size="xl" toggle={onClosed} {...props}>
       <ModalHeader>Model: {model.name}</ModalHeader>
       <ModalBody>
         <Row>
@@ -168,7 +168,7 @@ export const SelectedModelModalView = ({
             <Table borderless responsive>
               <tbody>
                 {Object.entries(model.hyperparameters).map(([key, val]) => (
-                  <tr>
+                  <tr key={key}>
                     {' '}
                     <th>
                       {base.hyperparameters[key]

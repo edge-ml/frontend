@@ -1,82 +1,160 @@
-import React from 'react';
-import { Row, Col, Button } from 'reactstrap';
+import React, { useState } from 'react';
+import {
+  Row,
+  Col,
+  Button,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText
+} from 'reactstrap';
 import Select from 'react-select';
-import PrismCode from 'react-prism';
+import { platforms } from './platforms';
+import { Line } from './components/Line';
 
 export const ExportDetailView = ({
-  model,
-  deployment,
-  onModelDetails = () => {},
+  model, // { name: string } // later platforms
+  deployment, // { key: string, name: string, created_date: Time }
 
+  onClickViewModelDetails,
+  onClickDownloadModel,
+  onChangeDeploymentName,
+  onClickDelete,
+  availablePlatforms,
   platform,
   onPlatform,
-  onGetLink,
-  onDownloadModel
+  publicLink
 }) => {
-  const platforms = [
-    // this should come with model
-    {
-      value: 'python',
-      label: 'Python',
-      code: `
-    const id = x => x
-    `
-    }
-  ];
+  const nPlatforms = availablePlatforms
+    .map(v => platforms.find(p => p.value === v))
+    .filter(v => v);
+  const nPlatform = nPlatforms.find(p => p.value === platform);
+  const Code = nPlatform.prism;
 
-  console.log(platform);
-  const nPlatform = platform || platforms[0];
+  const [sample, setSample] = useState(nPlatform.samples[0]);
+
+  const [newName, setNewName] = useState('');
+  const handleNewNameChange = () => {
+    onChangeDeploymentName(newName);
+    setNewName('');
+  };
 
   return (
-    <div>
-      <Row>
-        <Col>
-          <div className="pb-2">
-            <b>Model name: </b>
-            <span>{model.name}</span>
-            <Button onClick={onModelDetails} className="float-right">
-              See Model Details
-            </Button>
-          </div>
-          <div className="pb-2">
-            <b>Deployment key: </b>
-            <code>{deployment.key}</code>
-          </div>
+    <Row>
+      <Col>
+        <Line>
+          <Button onClick={onClickViewModelDetails} className="float-right">
+            See Model Details
+          </Button>
+          <b>Model name: </b>
+          <span>{model.name}</span>
+        </Line>
+        <Line>
+          <b>Model id: </b>
+          <code>{model.id}</code>
+        </Line>
+        <Line>
+          <b>Deployment name: </b>
+          <span>{deployment.name}</span>
+        </Line>
+        <Line>
+          <b>Deployment access key: </b>
+          <code>{deployment.key}</code>
+        </Line>
+        <Line>
+          <b>Available on platforms: </b>
+          <ul className="my-0">
+            {nPlatforms.map(p => (
+              <li key={p.value}>
+                <span>{p.label}</span>
+              </li>
+            ))}
+          </ul>
+        </Line>
 
-          <hr />
+        <hr />
 
-          <div className="pb-2">
-            <h5>Export model</h5>
-          </div>
-          <div className="pb-2">
-            <b>Platform: </b>
-            <span className="float-right" style={{ minWidth: '200px' }}>
+        <Line>
+          <h5>Export model</h5>
+        </Line>
+        <Line>
+          <div className="float-right d-flex">
+            <span style={{ minWidth: '200px' }}>
               <Select
                 value={nPlatform}
-                onChange={x => onPlatform(x)}
+                onChange={x => onPlatform(x.value)}
                 options={platforms}
               />
             </span>
-          </div>
-          <div className="pb-2">
-            <Button onClick={onDownloadModel} className="mr-3">
+            <Button onClick={onClickDownloadModel} className="ml-3">
               Download model
             </Button>
-            <Button onClick={onGetLink}>Get public link</Button>
           </div>
-          <div className="pb-2">
-            <b>Usage: </b>
-            <PrismCode component="pre" className="language-javascript">
-              {nPlatform.code}
-            </PrismCode>
+          <b>Platform: </b>
+        </Line>
+        <Line>
+          <b>Public link: </b>
+          <a href={publicLink}>{publicLink}</a>
+        </Line>
+        <Line>
+          <div className="clearfix">
+            <span className="float-right" style={{ minWidth: '300px' }}>
+              <Select
+                value={sample}
+                onChange={x => setSample(x)}
+                options={nPlatform.samples}
+              />
+            </span>
+            <b>Usage samples: </b>
+            <br />
+            <span>
+              You can change the model access method in the samples with the
+              menu on the right.
+            </span>
           </div>
+          <Code code={sample.code({ link: publicLink })} />
+        </Line>
 
-          <hr />
-          <div className="pb-2">
-            <h5>Administration</h5>
+        <hr />
+
+        {/* <Line>
+          <h5>Statistics</h5>
+        </Line>
+
+        <hr /> */}
+
+        <Line>
+          <h5>Administration</h5>
+        </Line>
+        <Line className="clearfix">
+          <div className="float-right d-flex align-items-baseline">
+            <InputGroup className="my-0">
+              <Input
+                placeholder="New name"
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+              />
+            </InputGroup>
+            <Button outline onClick={handleNewNameChange} className="ml-3">
+              Change
+            </Button>
           </div>
-        </Col>
-      </Row>
-    </div>
+          <b>Change deployment name: </b>
+        </Line>
+        <Line>
+          <Button
+            outline
+            color="danger"
+            onClick={onClickDelete}
+            className="float-right"
+          >
+            Delete deployment
+          </Button>
+          <b>Delete deployment: </b>
+          <br />
+          <span>This does not remove the underlying model.</span>
+        </Line>
+      </Col>
+    </Row>
   );
 };
