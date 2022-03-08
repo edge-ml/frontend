@@ -60,7 +60,8 @@ module.exports = {
   ML_ENDPOINTS: {
     MODELS: 'models',
     TRAIN: 'train',
-    TRAINED_MODELS: 'models/trained'
+    TRAINED_MODELS: 'models/trained',
+    DEPLOY: 'deploy'
   }
 };
 

@@ -7,8 +7,8 @@ import {
   deleteTrained
 } from '../../services/ApiServices/MlService';
 import { ValidationView } from './ValidationView';
-import { SelectedModelModalView } from './SelectedModelModalView';
 import { DeleteConfirmationModalView } from './DeleteConfirmationModalView';
+import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 
 const ValidationPage = () => {
   let [models, setModels] = useState(null);
