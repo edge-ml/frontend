@@ -9,7 +9,8 @@ const percentageCell = ({ value }) => toPercentage(value);
 export const ValidationView = ({
   models, // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number, size: number}[]
   handleDelete,
-  onViewModel = () => {}
+  onViewModel = () => {},
+  onDeployModel = () => {}
 }) => {
   const Checkbox = ({ ...rest }) => {
     return <Input type="checkbox" {...rest} />;
@@ -88,6 +89,20 @@ export const ValidationView = ({
                 block
               >
                 View
+              </Button>
+            )
+          },
+          {
+            id: 'deploy-button',
+            accessor: row => row.id,
+            disableSortBy: true,
+            Cell: ({ value }) => (
+              <Button
+                onClick={() => onDeployModel(value)}
+                className="btn-secondary mt-0"
+                block
+              >
+                Deploy
               </Button>
             )
           }

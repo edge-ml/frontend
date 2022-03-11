@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
 import Loader from '../../modules/loader';
 import { ExportView } from './ExportView';
 import { ExportDetailView } from './ExportDetailView';
@@ -36,7 +37,11 @@ const buildLink = (key, platform) =>
   }${ML_ENDPOINTS.DEPLOY}/${key}/export/${platform}`;
 
 const ExportPage = () => {
-  const [selectedModelId, setSelectedModelId] = useState(null);
+  const location = useLocation();
+  const history = useHistory();
+  const [selectedModelId, setSelectedModelId] = useState(
+    location.state ? location.state.id : null
+  );
   const [selectedDeploymentKey, setSelectedDeploymentKey] = useState(null);
 
   const [platform, setPlatform] = useState('python');
@@ -111,6 +116,10 @@ const ExportPage = () => {
     'python'
   ];
 
+  useEffect(() => {
+    history.replace(location.pathname, null);
+  }, []);
+
   return (
     <Loader loading={!baseModels}>
       <ExportView
@@ -118,6 +127,7 @@ const ExportPage = () => {
         deployments={deployments}
         selectedModel={selectedModel}
         selectModel={selectModel}
+        selectedDeployment={selectedDeployment}
         selectDeployment={selectDeployment}
         onClickDeployNew={deployNew}
         detail={
@@ -139,7 +149,7 @@ const ExportPage = () => {
           )
         }
       />
-      {baseModels && selectedModel ? (
+      {baseModels.length && selectedModel ? (
         <SelectedModelModalView
           isOpen={modelModalState}
           baseModels={baseModels}

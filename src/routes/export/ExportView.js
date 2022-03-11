@@ -18,6 +18,7 @@ export const ExportView = ({
   selectModel,
   selectedModel,
   selectDeployment,
+  selectedDeployment,
   onClickDeployNew,
 
   detail
@@ -49,6 +50,7 @@ export const ExportView = ({
                   {models.map(m => (
                     <ListGroupItem
                       key={m.id}
+                      active={selectedModel && m.id === selectedModel.id}
                       action
                       tag="button"
                       onClick={() => selectModel(m.id)}
@@ -85,9 +87,13 @@ export const ExportView = ({
                 <Empty>No deployments for this model</Empty>
               ) : (
                 <ListGroup>
+                  {console.log(deployments)}
                   {deployments.map(m => (
                     <ListGroupItem
                       key={m.key}
+                      active={
+                        selectedDeployment && m.key === selectedDeployment.key
+                      }
                       action
                       tag="button"
                       onClick={() => selectDeployment(m.key)}

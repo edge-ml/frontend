@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import Loader from '../../modules/loader';
 import {
   getTrainedModels,
@@ -18,6 +19,8 @@ const ValidationPage = () => {
   let [modalState, setModalState] = useState(false);
   let [modelsToDelete, setModelsToDelete] = useState([]);
   let [deleteModalState, setDeleteModalState] = useState(false);
+  const location = useLocation();
+  const history = useHistory();
 
   useEffect(() => {
     getModels().then(m => {
@@ -36,6 +39,13 @@ const ValidationPage = () => {
     const model = await getTrained(id);
     setViewedModel(model);
     setModalState(true);
+  };
+
+  const deployModel = id => {
+    history.push({
+      pathname: location.pathname.replace('Validation', 'Deploy'),
+      state: { id }
+    });
   };
 
   const closeModal = () => {
@@ -74,6 +84,7 @@ const ValidationPage = () => {
         <ValidationView
           models={models}
           onViewModel={viewModel}
+          onDeployModel={deployModel}
           handleDelete={showConfirmation}
         />
       ) : null}
