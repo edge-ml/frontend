@@ -179,9 +179,7 @@ class UploadBLE extends Component {
   }
 
   onConnection() {
-    this.currentData = new Array(this.state.deviceSensors).fill(
-      new Array(0, 0)
-    ); //TODO
+    this.currentData = new Array(Object.keys(this.state.deviceSensors).length);
     console.log('Device is now connected');
     ga_connectBluetooth(this.state.connectedDeviceData, '', true);
   }

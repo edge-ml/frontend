@@ -17,6 +17,7 @@ class BlePanelRecordingDisplay extends Component {
     this.interval_length = 200; // in ms
     this.datastream_length = 20;
     this.allOptions = [];
+    this.diff = 0;
 
     this.state = {
       liveUpdate: false
@@ -42,9 +43,9 @@ class BlePanelRecordingDisplay extends Component {
         marginRight: 10
       },
       boost: {
-        // chart-level boost when there are more than 2 series in the chart
+        // chart-level boost when there are more than 1 series in the chart
         useGPUTranslations: true,
-        seriesThreshold: 2
+        seriesThreshold: 1
       },
       series: this.generateStartData(components, number),
       title: {
@@ -52,7 +53,9 @@ class BlePanelRecordingDisplay extends Component {
       },
       xAxis: {
         labels: {
-          enabled: false
+          enabled: true,
+          rotation: 20,
+          overflow: 'allow'
         }
       },
       yAxis: {
@@ -98,10 +101,7 @@ class BlePanelRecordingDisplay extends Component {
   }
 
   componentDidMount() {
-    let diff = Highcharts.charts.length - this.props.selectedSensors.size; //for stopping and restarting
-    for (let i = 0; i < diff; i++) {
-      var shift = Highcharts.charts.shift(); //HighCharts does not delete 'deleted' charts but leaves an 'undefined' in the chart list
-    }
+    this.diff = Highcharts.charts.length - this.props.selectedSensors.size; //for stopping and restarting: HighCharts does not delete 'deleted' charts but leaves an 'undefined' in the chart list
     this.handleStartLiveUpdate();
   }
 
@@ -112,22 +112,22 @@ class BlePanelRecordingDisplay extends Component {
   updateLiveData() {
     const setIter = this.props.selectedSensors[Symbol.iterator]();
     var current;
-    for (var i = 0; i < Highcharts.charts.length; i++) {
+    for (var i = this.diff; i < Highcharts.charts.length; i++) {
       current = setIter.next().value;
       var chart = Highcharts.charts[i];
 
-      for (var j = 0; j < chart.series.length; j++) {
+      for (var j = chart.series.length - 1; j >= 0; j--) {
         var series = chart.series[j];
-        var x;
-        var y;
+        var timestamp;
+        var value;
         if (Array.isArray(this.props.lastData[current])) {
-          x = this.props.lastData[current][0];
-          y = this.props.lastData[current][1][j];
+          timestamp = this.props.lastData[current][0];
+          value = this.props.lastData[current][1][j];
         } else {
-          x = new Date().getTime();
-          y = 0;
+          timestamp = new Date().getTime();
+          value = 0;
         }
-        series.addPoint([x, y], true, true);
+        series.addPoint([timestamp, value], true, true);
       }
     }
   }
