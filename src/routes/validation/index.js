@@ -10,10 +10,12 @@ import {
 import { ValidationView } from './ValidationView';
 import { DeleteConfirmationModalView } from './DeleteConfirmationModalView';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
+import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 
 const ValidationPage = () => {
   let [models, setModels] = useState(null);
   let [baseModels, setBaseModels] = useState(null);
+  let [labels, setLabels] = useState([]);
 
   let [viewedModel, setViewedModel] = useState(null);
   let [modalState, setModalState] = useState(false);
@@ -37,6 +39,8 @@ const ValidationPage = () => {
 
   const viewModel = async id => {
     const model = await getTrained(id);
+    const { labels } = await subscribeLabelingsAndLabels();
+    setLabels(labels);
     setViewedModel(model);
     setModalState(true);
   };
@@ -93,6 +97,7 @@ const ValidationPage = () => {
           isOpen={modalState}
           baseModels={baseModels}
           model={viewedModel}
+          labels={labels}
           onClosed={closeModal}
           onDelete={deleteModel(viewedModel)}
         />

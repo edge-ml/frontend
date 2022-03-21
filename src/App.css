@@ -303,3 +303,54 @@ div.card {
 .hyperparameter-input__control {
   border-radius: 0px 4px 4px 0px !important;
 }
+
+.ConfusionMatrix {
+  border-collapse: collapse;
+}
+
+.ConfusionMatrix td {
+  border: 1px solid #e4e4e4;
+}
+
+.ConfusionMatrixHeader td {
+  height: 40px;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.ConfusionMatrixRow {
+  font-size: 10px;
+}
+
+.ConfusionMatrixRow:hover {
+  background: yellow;
+}
+
+.ConfusionMatrixLabel {
+  font-size: 10px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.ConfusionMatrixCell {
+  text-align: center;
+}
+
+.ConfusionMatrixScale {
+  background: #4a7d70;
+  background-image: linear-gradient(
+    90deg,
+    #440154,
+    #482475,
+    #414487,
+    #355f8d,
+    #2a788e,
+    #21908d,
+    #22a884,
+    #42be71,
+    #7ad151,
+    #bddf26,
+    #bddf26
+  );
+}

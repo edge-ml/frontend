@@ -12,6 +12,7 @@ import {
 } from 'reactstrap';
 
 import { humanFileSize, toPercentage } from '../../services/helpers';
+import ConfusionMatrixView from '../ConfusionMatrix/ConfusionMatrixView';
 
 export const SelectedModelModalView = ({
   model,
@@ -89,6 +90,7 @@ export const SelectedModelModalView = ({
     2: {name: "K-Nearest Neighbours Classifier", description: "A simple K-Nearest Neighbours classifier.",…}
   */
   //#endregion
+  labels,
   onDelete = null,
   onClosed = () => {},
   ...props
@@ -158,7 +160,11 @@ export const SelectedModelModalView = ({
                   {' '}
                   <th>Confusion Matrix</th>{' '}
                   <td>
-                    <pre>{model.confusion_matrix}</pre>
+                    <ConfusionMatrixView
+                      matrix={model.confusion_matrix}
+                      labelMap={labels}
+                      labelIds={model.labels}
+                    />
                   </td>{' '}
                 </tr>
               </tbody>
