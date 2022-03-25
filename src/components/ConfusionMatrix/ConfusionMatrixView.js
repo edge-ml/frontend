@@ -12,7 +12,7 @@ const ConfusionMatrixRow = ({
       <td
         key={predicted}
         className="ConfusionMatrixCell"
-        style={{ background: heatMapColorforValue(value / maxVal) }}
+        // style={{ background: heatMapColorforValue(value / maxVal) }}
       >
         {value && value}
       </td>

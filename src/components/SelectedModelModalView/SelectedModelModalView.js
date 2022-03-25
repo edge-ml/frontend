@@ -146,7 +146,7 @@ export const SelectedModelModalView = ({
                 </tr>
                 <tr>
                   {' '}
-                  <th>f1 Score</th>
+                  <th>F1-Score</th>
                   <td>{toPercentage(model.f1_score)}</td>{' '}
                 </tr>
                 <tr>
