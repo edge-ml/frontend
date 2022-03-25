@@ -73,7 +73,7 @@ export const ValidationView = ({
             Cell: percentageCell
           },
           {
-            Header: 'f1 Score',
+            Header: 'F1-Score',
             accessor: 'f1_score',
             sortType: 'number',
             Cell: percentageCell
