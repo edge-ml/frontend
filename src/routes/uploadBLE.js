@@ -61,6 +61,7 @@ class UploadBLE extends Component {
     this.recorderDataset = undefined;
     this.recordInterval;
     this.currentData = [];
+    this.sensorKeys = [];
 
     // Global vars to manage ble connnection
     this.sensorConfigCharacteristic;
@@ -180,6 +181,7 @@ class UploadBLE extends Component {
 
   onConnection() {
     this.currentData = new Array(Object.keys(this.state.deviceSensors).length);
+    this.sensorKeys = Object.keys(this.state.deviceSensors);
     console.log('Device is now connected');
     ga_connectBluetooth(this.state.connectedDeviceData, '', true);
   }
@@ -264,10 +266,9 @@ class UploadBLE extends Component {
   }
 
   setCurrentData(sensorData) {
-    this.currentData[sensorData['sensor']] = [
-      sensorData['time'],
-      sensorData['data']
-    ];
+    this.currentData[
+      this.sensorKeys.indexOf(sensorData['sensor'].toString())
+    ] = [sensorData['time'], sensorData['data']];
   }
 
   async toggleBLEDeviceConnection() {
@@ -329,6 +330,7 @@ class UploadBLE extends Component {
                     deviceSensors={this.state.deviceSensors}
                     selectedSensors={this.state.selectedSensors}
                     lastData={this.currentData}
+                    sensorKeys={this.sensorKeys}
                     sampleRate={this.state.sampleRate}
                   ></BlePanelRecordingDisplay>
                 </div>

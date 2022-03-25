@@ -24,11 +24,11 @@ class BlePanelRecordingDisplay extends Component {
     };
 
     //initialize HighCharts options for the different sensors
-    for (let i = 0; i < Object.keys(this.props.deviceSensors).length; i++) {
+    for (const key of Object.keys(this.props.deviceSensors)) {
       this.allOptions.push(
         this.getOptions(
-          this.props.deviceSensors[i].parseScheme.map(elm => elm.name),
-          this.props.deviceSensors[i].name,
+          this.props.deviceSensors[key].parseScheme.map(elm => elm.name),
+          this.props.deviceSensors[key].name,
           this.datastream_length
         )
       );
@@ -112,6 +112,7 @@ class BlePanelRecordingDisplay extends Component {
   updateLiveData() {
     const setIter = this.props.selectedSensors[Symbol.iterator]();
     var current;
+    const keys = this.props.sensorKeys;
     for (var i = this.diff; i < Highcharts.charts.length; i++) {
       current = setIter.next().value;
       var chart = Highcharts.charts[i];
@@ -120,9 +121,11 @@ class BlePanelRecordingDisplay extends Component {
         var series = chart.series[j];
         var timestamp;
         var value;
-        if (Array.isArray(this.props.lastData[current])) {
-          timestamp = this.props.lastData[current][0];
-          value = this.props.lastData[current][1][j];
+        if (
+          Array.isArray(this.props.lastData[keys.indexOf(current.toString())])
+        ) {
+          timestamp = this.props.lastData[keys.indexOf(current.toString())][0];
+          value = this.props.lastData[keys.indexOf(current.toString())][1][j];
         } else {
           timestamp = new Date().getTime();
           value = 0;
@@ -159,7 +162,11 @@ class BlePanelRecordingDisplay extends Component {
                 <div>
                   <HighchartsReact
                     highcharts={Highcharts}
-                    options={this.allOptions[sensorKey]}
+                    options={
+                      this.allOptions[
+                        this.props.sensorKeys.indexOf(sensorKey.toString())
+                      ]
+                    }
                     updateArgs={[true, true, true]}
                   />
                 </div>
