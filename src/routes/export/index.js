@@ -9,7 +9,7 @@ import {
   useBoolean
 } from '../../services/ReactHooksService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
-import { ML_ENDPOINTS, ML_URI } from '../../services/ApiServices/ApiConstants';
+import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 
 import {
   getTrainedModels,
@@ -24,14 +24,6 @@ import {
 // import { ChangeNameModalView } from './ChangeNameModalView';
 import { Empty } from './components/Empty';
 import { downloadBlob } from '../../services/helpers';
-
-// this is a small harmless hack
-const buildLink = (key, platform) =>
-  `${
-    ML_URI.startsWith('http')
-      ? ML_URI
-      : `${window.location.protocol + '//' + window.location.host}/ml/`
-  }${ML_ENDPOINTS.DEPLOY}/${key}/export/${platform}`;
 
 const ExportPage = () => {
   const location = useLocation();
@@ -63,6 +55,16 @@ const ExportPage = () => {
     [selectedModelId],
     [undefined, undefined]
   );
+
+  const labels = useAsyncMemo(
+    async () => {
+      const { labels } = await subscribeLabelingsAndLabels();
+      return labels;
+    },
+    [selectedModelId],
+    []
+  );
+
   const selectedPlatform = useAsyncMemo(async () => {
     if (!selectedModelId) return undefined;
     if (!platform) return undefined;
@@ -112,6 +114,7 @@ const ExportPage = () => {
           isOpen={modelModalState}
           baseModels={baseModels}
           model={selectedModel}
+          labels={labels}
           onClosed={closeModelModal}
         />
       ) : null}

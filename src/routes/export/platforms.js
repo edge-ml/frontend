@@ -13,5 +13,14 @@ export const platforms = [
         {code}
       </PrismCode>
     )
+  },
+  {
+    value: 'c',
+    label: 'C',
+    prism: ({ code }) => (
+      <PrismCode component="pre" className="language-c">
+        {code}
+      </PrismCode>
+    )
   }
 ];
