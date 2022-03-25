@@ -2,27 +2,13 @@ var apiConsts = require('./ApiConstants');
 const ax = require('axios');
 const axios = ax.create();
 
-module.exports.deleteDeployment = function(key) {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.DELETE,
-        apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + key
-      )
-    )
-      .then(() => resolve())
-      .catch(err => reject(err.response));
-  });
-};
-
-module.exports.getDeployment = function(key) {
+module.exports.getDeployment = function(modelId) {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + key
+        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + modelId
       )
     )
       .then(data => resolve(data.data))
@@ -30,28 +16,41 @@ module.exports.getDeployment = function(key) {
   });
 };
 
-module.exports.changeDeploymentName = function(key, name) {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.PUT,
-        apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + key + '/name',
-        name
-      )
-    )
-      .then(() => resolve())
-      .catch(err => reject(err.response));
-  });
-};
-
-module.exports.downloadDeploymentModel = function(key, platform) {
+module.exports.getPlatform = function(modelId, platform) {
   return new Promise((resolve, reject) => {
     axios({
       ...apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + key + '/export/' + platform
+        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + modelId + '/export/' + platform
+      )
+    })
+      .then(resp => resolve(resp.data))
+      .catch(err => reject(err.response));
+  });
+};
+
+module.exports.getPlatform = function(modelId, platform) {
+  return new Promise((resolve, reject) => {
+    axios({
+      ...apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.ML_URI,
+        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + modelId + '/export/' + platform
+      )
+    })
+      .then(resp => resolve(resp.data))
+      .catch(err => reject(err.response));
+  });
+};
+
+module.exports.downloadDeploymentModel = function(modelId) {
+  return new Promise((resolve, reject) => {
+    axios({
+      ...apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.ML_URI,
+        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + modelId + '/download'
       ),
       responseType: 'blob'
     })
