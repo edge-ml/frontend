@@ -11,6 +11,7 @@ import {
   FormFeedback,
   Row,
   Col,
+  Alert,
 } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 
@@ -20,6 +21,7 @@ import { getModels, train } from '../services/ApiServices/MlService';
 
 import NumberHyperparameter from '../components/Hyperparameters/NumberHyperparameter';
 import SelectionHyperparameter from '../components/Hyperparameters/SelectionHyperparameter';
+import Snackbar from '../components/Snackbar/Snackbar';
 
 class ModelPage extends Component {
   constructor(props) {
@@ -36,6 +38,8 @@ class ModelPage extends Component {
       selectedModelId: undefined,
       hyperparameters: [],
       modelName: '',
+      alertText: undefined,
+      trainSuccess: undefined,
     };
 
     this.initComponent = this.initComponent.bind(this);
@@ -103,13 +107,36 @@ class ModelPage extends Component {
   }
 
   handleTrainButton = (e) => {
+    const resetAlert = () => {
+      setTimeout(() => {
+        this.setState({
+          alertText: undefined,
+        });
+      }, 2000);
+    };
+
     train({
       model_id: this.state.selectedModelId,
       selected_timeseries: this.state.selectedSensorStreams,
       target_labeling: this.state.selectedLabeling,
       hyperparameters: this.state.hyperparameters,
       model_name: this.state.modelName,
-    });
+    })
+      .then(() => {
+        this.setState({
+          alertText: 'Training started successfully',
+          trainSuccess: true,
+        });
+        resetAlert();
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({
+          alertText: err.data.detail,
+          trainSuccess: false,
+        });
+        resetAlert();
+      });
   };
 
   render() {
@@ -117,241 +144,270 @@ class ModelPage extends Component {
       return <Loader loading={!this.state.ready}></Loader>;
     }
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-12 col-xl-5 mt-4">
-            <div className="card h-100" style={{ border: '0px solid white' }}>
-              <div className="card-body d-flex flex-column justify-content-between align-items-start">
-                <h4>Target Labeling</h4>
-                <fieldset>
-                  {this.state.labelings.length
-                    ? this.state.labelings.map((x) => {
-                        return (
-                          <div className="d-flex flex-row align-items-center mt-2">
-                            <input
-                              id={x._id}
-                              type="radio"
-                              onClick={(y) => {
-                                this.setState({ selectedLabeling: x._id });
-                              }}
-                              checked={this.state.selectedLabeling === x._id}
-                            ></input>
-                            <label
-                              className="mb-0 ml-1 mr-1"
-                              for={x._id}
-                              onClick={(y) => {
-                                this.setState({ selectedLabeling: x._id });
-                              }}
-                            >
-                              {x.name}
-                            </label>
-                            {x.labels.map((labelId) => {
-                              const label = this.state.labels.find(
-                                (label) => label._id === labelId
-                              );
-                              return (
-                                <Badge
-                                  key={labelId}
-                                  className={'m-1'}
-                                  style={{ backgroundColor: label.color }}
-                                >
-                                  {label.name}
-                                </Badge>
-                              );
-                            })}
-                          </div>
-                        );
-                      })
-                    : 'There are no labelings defined'}
-                </fieldset>
-                <small className="mt-3 text-left">
-                  <b>
-                    <i>Note:</i>
-                  </b>{' '}
-                  Model will classify based on target labeling.
-                </small>
-              </div>
-            </div>
-          </div>
-          <div className="col-12 col-xl-7 mt-4">
-            <div className="card h-100" style={{ border: '0px solid white' }}>
-              <div className="card-body h-100 d-flex flex-column align-items-start flex-column justify-content-between">
-                <div>
-                  <h4>Target Sensor Streams</h4>
-                </div>
-                <fieldset>
-                  {this.state.sensorStreams.length
-                    ? this.state.sensorStreams.map((x) => {
-                        return (
-                          <div className="d-flex flex-row align-items-center mt-2">
-                            <input
-                              id={x}
-                              type="checkbox"
-                              onClick={(y) => {
-                                if (
-                                  this.state.selectedSensorStreams.includes(x)
-                                ) {
-                                  this.setState({
-                                    selectedSensorStreams:
-                                      this.state.selectedSensorStreams.filter(
-                                        (z) => z !== x
-                                      ),
-                                  });
-                                } else {
-                                  var tmp = this.state.selectedSensorStreams;
-                                  tmp.push(x);
-                                  this.setState({
-                                    selectedSensorStreams: tmp,
-                                  });
-                                }
-                              }}
-                            ></input>
-                            <label className="mb-0 ml-1" for={x}>
-                              {x}
-                            </label>
-                          </div>
-                        );
-                      })
-                    : 'There are no sensor streams defined'}
-                </fieldset>
-                <div className="mt-3 text-left">
-                  <small>
+      <div>
+        <div>
+          {this.state.alertText ? (
+            <Alert
+              color={this.state.trainSuccess ? 'success' : 'danger'}
+              style={{
+                marginBottom: 0,
+                position: 'fixed',
+                zIndex: 100,
+                bottom: '40px',
+                left: '50%',
+                marginLeft: '-100px',
+              }}
+            >
+              {this.state.alertText}
+            </Alert>
+          ) : null}
+        </div>
+        <div className="container">
+          <div className="row">
+            <div className="col-12 col-xl-5 mt-4">
+              <div className="card h-100" style={{ border: '0px solid white' }}>
+                <div className="card-body d-flex flex-column justify-content-between align-items-start">
+                  <h4>Target Labeling</h4>
+                  <fieldset>
+                    {this.state.labelings.length
+                      ? this.state.labelings.map((x) => {
+                          return (
+                            <div className="d-flex flex-row align-items-center mt-2">
+                              <input
+                                id={x._id}
+                                type="radio"
+                                onClick={(y) => {
+                                  this.setState({ selectedLabeling: x._id });
+                                }}
+                                checked={this.state.selectedLabeling === x._id}
+                              ></input>
+                              <label
+                                className="mb-0 ml-1 mr-1"
+                                for={x._id}
+                                onClick={(y) => {
+                                  this.setState({ selectedLabeling: x._id });
+                                }}
+                              >
+                                {x.name}
+                              </label>
+                              {x.labels.map((labelId) => {
+                                const label = this.state.labels.find(
+                                  (label) => label._id === labelId
+                                );
+                                return (
+                                  <Badge
+                                    key={labelId}
+                                    className={'m-1'}
+                                    style={{ backgroundColor: label.color }}
+                                  >
+                                    {label.name}
+                                  </Badge>
+                                );
+                              })}
+                            </div>
+                          );
+                        })
+                      : 'There are no labelings defined'}
+                  </fieldset>
+                  <small className="mt-3 text-left">
                     <b>
                       <i>Note:</i>
                     </b>{' '}
-                    Datasets that do not have all selected sensor streams will
-                    be dropped.
+                    Model will classify based on target labeling.
                   </small>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="col-12 mt-4">
-            <div className="card h-100" style={{ border: '0px solid white' }}>
-              <div className="card-body h-100 d-flex flex-column align-items-start flex-column justify-content-between">
-                <div className="d-flex flex-row justify-content-between w-100">
-                  <h4>Classifier</h4>
-                  <Select
-                    options={this.state.models.map((m) => {
-                      return { value: m.id, label: m.name };
-                    })}
-                    value={this.state.modelSelection}
-                    onChange={(modelSelection) => {
-                      this.setState({ modelSelection });
-                      this.setState({ selectedModelId: modelSelection.value });
-                      this.setState({
-                        hyperparameters: this.formatHyperparameters(
-                          this.state.models.find(
-                            (m) => m.id === parseInt(modelSelection.value, 10)
-                          ).hyperparameters
-                        ),
-                      });
-                    }}
-                    isSearchable={false}
-                    styles={{
-                      valueContainer: () => ({
-                        width: 200,
-                        height: 25,
-                      }),
-                    }}
-                  ></Select>
+            <div className="col-12 col-xl-7 mt-4">
+              <div className="card h-100" style={{ border: '0px solid white' }}>
+                <div className="card-body h-100 d-flex flex-column align-items-start flex-column justify-content-between">
+                  <div>
+                    <h4>Target Sensor Streams</h4>
+                  </div>
+                  <fieldset>
+                    {this.state.sensorStreams.length
+                      ? this.state.sensorStreams.map((x) => {
+                          return (
+                            <div className="d-flex flex-row align-items-center mt-2">
+                              <input
+                                id={x}
+                                type="checkbox"
+                                onClick={(y) => {
+                                  if (
+                                    this.state.selectedSensorStreams.includes(x)
+                                  ) {
+                                    this.setState({
+                                      selectedSensorStreams:
+                                        this.state.selectedSensorStreams.filter(
+                                          (z) => z !== x
+                                        ),
+                                    });
+                                  } else {
+                                    var tmp = this.state.selectedSensorStreams;
+                                    tmp.push(x);
+                                    this.setState({
+                                      selectedSensorStreams: tmp,
+                                    });
+                                  }
+                                }}
+                              ></input>
+                              <label className="mb-0 ml-1" for={x}>
+                                {x}
+                              </label>
+                            </div>
+                          );
+                        })
+                      : 'There are no sensor streams defined'}
+                  </fieldset>
+                  <div className="mt-3 text-left">
+                    <small>
+                      <b>
+                        <i>Note:</i>
+                      </b>{' '}
+                      Datasets that do not have all selected sensor streams will
+                      be dropped.
+                    </small>
+                  </div>
                 </div>
+              </div>
+            </div>
+            <div className="col-12 mt-4">
+              <div className="card h-100" style={{ border: '0px solid white' }}>
+                <div className="card-body h-100 d-flex flex-column align-items-start flex-column justify-content-between">
+                  <div className="d-flex flex-row justify-content-between w-100">
+                    <h4>Classifier</h4>
+                    <Select
+                      options={this.state.models.map((m) => {
+                        return { value: m.id, label: m.name };
+                      })}
+                      value={this.state.modelSelection}
+                      onChange={(modelSelection) => {
+                        this.setState({ modelSelection });
+                        this.setState({
+                          selectedModelId: modelSelection.value,
+                        });
+                        this.setState({
+                          hyperparameters: this.formatHyperparameters(
+                            this.state.models.find(
+                              (m) => m.id === parseInt(modelSelection.value, 10)
+                            ).hyperparameters
+                          ),
+                        });
+                      }}
+                      isSearchable={false}
+                      styles={{
+                        valueContainer: () => ({
+                          width: 200,
+                          height: 25,
+                        }),
+                      }}
+                    ></Select>
+                  </div>
 
-                <div
-                  className="mt-3 mb-3"
-                  style={{
-                    width: '100%',
-                    height: '0.5px',
-                    backgroundColor: 'lightgray',
-                  }}
-                ></div>
-                <InputGroup style={{ width: '350px' }}>
-                  <InputGroupAddon addonType="prepend">
-                    Model Name
-                  </InputGroupAddon>
-                  <Input
-                    type={'text'}
-                    value={this.state.modelName}
-                    onChange={(e) => {
-                      this.setState({ modelName: e.target.value });
+                  <div
+                    className="mt-3 mb-3"
+                    style={{
+                      width: '100%',
+                      height: '0.5px',
+                      backgroundColor: 'lightgray',
                     }}
-                    invalid={!this.state.modelName}
-                  ></Input>
-                </InputGroup>
-                <FormFeedback invalid></FormFeedback>
-                <h6 style={{ marginTop: '16px' }}>Hyperparameters</h6>
-                {console.log('rendering')}
-                {console.log(this.state.hyperparameters)}
-                <Row>
-                  {this.state.models
-                    .filter(
-                      (m) => m.id === parseInt(this.state.selectedModelId, 10)
-                    )
-                    .map((m) => {
-                      return Object.keys(m.hyperparameters).map((h, index) => {
-                        if (m.hyperparameters[h].parameter_type === 'number') {
-                          {
-                            console.log(
-                              this.state.hyperparameters.find(
-                                (e) =>
-                                  e.parameter_name ===
-                                  m.hyperparameters[h].parameter_name
-                              )
-                            );
+                  ></div>
+                  <InputGroup style={{ width: '350px' }}>
+                    <InputGroupAddon addonType="prepend">
+                      Model Name
+                    </InputGroupAddon>
+                    <Input
+                      type={'text'}
+                      value={this.state.modelName}
+                      onChange={(e) => {
+                        this.setState({ modelName: e.target.value });
+                      }}
+                      invalid={!this.state.modelName}
+                    ></Input>
+                  </InputGroup>
+                  <FormFeedback invalid></FormFeedback>
+                  <h6 style={{ marginTop: '16px' }}>Hyperparameters</h6>
+                  {console.log('rendering')}
+                  {console.log(this.state.hyperparameters)}
+                  <Row>
+                    {this.state.models
+                      .filter(
+                        (m) => m.id === parseInt(this.state.selectedModelId, 10)
+                      )
+                      .map((m) => {
+                        return Object.keys(m.hyperparameters).map(
+                          (h, index) => {
+                            if (
+                              m.hyperparameters[h].parameter_type === 'number'
+                            ) {
+                              {
+                                console.log(
+                                  this.state.hyperparameters.find(
+                                    (e) =>
+                                      e.parameter_name ===
+                                      m.hyperparameters[h].parameter_name
+                                  )
+                                );
+                              }
+                              return (
+                                <Col
+                                  className="col-4"
+                                  style={{ minWidth: '400px' }}
+                                >
+                                  <NumberHyperparameter
+                                    {...m.hyperparameters[h]}
+                                    id={index}
+                                    handleChange={
+                                      this.handleHyperparameterChange
+                                    }
+                                    value={
+                                      this.state.hyperparameters.find(
+                                        (e) =>
+                                          e.parameter_name ===
+                                          m.hyperparameters[h].parameter_name
+                                      ).state
+                                    }
+                                  />
+                                </Col>
+                              );
+                            } else if (
+                              m.hyperparameters[h].parameter_type ===
+                              'selection'
+                            ) {
+                              return (
+                                <Col
+                                  className="col-4"
+                                  style={{ minWidth: '400px' }}
+                                >
+                                  <SelectionHyperparameter
+                                    {...m.hyperparameters[h]}
+                                    id={index}
+                                    handleChange={
+                                      this.handleHyperparameterChange
+                                    }
+                                    value={
+                                      this.state.hyperparameters.find(
+                                        (e) =>
+                                          e.parameter_name ===
+                                          m.hyperparameters[h].parameter_name
+                                      ).state
+                                    }
+                                  />
+                                </Col>
+                              );
+                            }
                           }
-                          return (
-                            <Col
-                              className="col-4"
-                              style={{ minWidth: '400px' }}
-                            >
-                              <NumberHyperparameter
-                                {...m.hyperparameters[h]}
-                                id={index}
-                                handleChange={this.handleHyperparameterChange}
-                                value={
-                                  this.state.hyperparameters.find(
-                                    (e) =>
-                                      e.parameter_name ===
-                                      m.hyperparameters[h].parameter_name
-                                  ).state
-                                }
-                              />
-                            </Col>
-                          );
-                        } else if (
-                          m.hyperparameters[h].parameter_type === 'selection'
-                        ) {
-                          return (
-                            <Col
-                              className="col-4"
-                              style={{ minWidth: '400px' }}
-                            >
-                              <SelectionHyperparameter
-                                {...m.hyperparameters[h]}
-                                id={index}
-                                handleChange={this.handleHyperparameterChange}
-                                value={
-                                  this.state.hyperparameters.find(
-                                    (e) =>
-                                      e.parameter_name ===
-                                      m.hyperparameters[h].parameter_name
-                                  ).state
-                                }
-                              />
-                            </Col>
-                          );
-                        }
-                      });
-                    })}
-                </Row>
-                <Button
-                  style={{ marginTop: '16px' }}
-                  disabled={!this.state.modelName}
-                  onClick={this.handleTrainButton}
-                  project={this.props.project}
-                >
-                  Train Model
-                </Button>
+                        );
+                      })}
+                  </Row>
+                  <Button
+                    disabled={!this.state.modelName}
+                    onClick={this.handleTrainButton}
+                    project={this.props.project}
+                  >
+                    Train Model
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
