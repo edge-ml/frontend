@@ -8,7 +8,9 @@ import {
   InputGroup,
   InputGroupAddon,
   Input,
-  FormFeedback
+  FormFeedback,
+  Row,
+  Col,
 } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 
@@ -33,27 +35,26 @@ class ModelPage extends Component {
       models: [],
       selectedModelId: undefined,
       hyperparameters: [],
-      modelName: ''
+      modelName: '',
     };
 
     this.initComponent = this.initComponent.bind(this);
-    this.handleHyperparameterChange = this.handleHyperparameterChange.bind(
-      this
-    );
+    this.handleHyperparameterChange =
+      this.handleHyperparameterChange.bind(this);
   }
 
   formatHyperparameters(hyperparameters) {
-    return Object.entries(hyperparameters).map(e => {
+    return Object.entries(hyperparameters).map((e) => {
       return {
         parameter_name: e[0],
         state:
           e[1].parameter_type === 'number'
             ? e[1].default
             : e[1].multi_select
-            ? e[1].default.map(x => {
+            ? e[1].default.map((x) => {
                 return { value: x, label: x };
               })
-            : { value: e[1].default, label: e[1].default }
+            : { value: e[1].default, label: e[1].default },
       };
     });
   }
@@ -61,11 +62,11 @@ class ModelPage extends Component {
   handleHyperparameterChange(hyperparameter) {
     const newState = hyperparameter.state;
     const parameter_name = hyperparameter.parameter_name;
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const params = prevState.hyperparameters;
-      params.find(e => e.parameter_name === parameter_name).state = newState;
+      params.find((e) => e.parameter_name === parameter_name).state = newState;
       return {
-        hyperparameters: params
+        hyperparameters: params,
       };
     });
   }
@@ -78,9 +79,9 @@ class ModelPage extends Component {
     Promise.all([
       subscribeLabelingsAndLabels(),
       getProjectSensorStreams(this.props.project),
-      getModels()
+      getModels(),
     ])
-      .then(result => {
+      .then((result) => {
         this.setState({
           selectedLabeling: result[0].labelings[0]
             ? result[0].labelings[0]._id
@@ -95,19 +96,19 @@ class ModelPage extends Component {
             : {},
           hyperparameters: result[2][0]
             ? this.formatHyperparameters(result[2][0].hyperparameters)
-            : []
+            : [],
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }
 
-  handleTrainButton = e => {
+  handleTrainButton = (e) => {
     train({
       model_id: this.state.selectedModelId,
       selected_timeseries: this.state.selectedSensorStreams,
       target_labeling: this.state.selectedLabeling,
       hyperparameters: this.state.hyperparameters,
-      model_name: this.state.modelName
+      model_name: this.state.modelName,
     });
   };
 
@@ -124,13 +125,13 @@ class ModelPage extends Component {
                 <h4>Target Labeling</h4>
                 <fieldset>
                   {this.state.labelings.length
-                    ? this.state.labelings.map(x => {
+                    ? this.state.labelings.map((x) => {
                         return (
                           <div className="d-flex flex-row align-items-center mt-2">
                             <input
                               id={x._id}
                               type="radio"
-                              onClick={y => {
+                              onClick={(y) => {
                                 this.setState({ selectedLabeling: x._id });
                               }}
                               checked={this.state.selectedLabeling === x._id}
@@ -138,15 +139,15 @@ class ModelPage extends Component {
                             <label
                               className="mb-0 ml-1 mr-1"
                               for={x._id}
-                              onClick={y => {
+                              onClick={(y) => {
                                 this.setState({ selectedLabeling: x._id });
                               }}
                             >
                               {x.name}
                             </label>
-                            {x.labels.map(labelId => {
+                            {x.labels.map((labelId) => {
                               const label = this.state.labels.find(
-                                label => label._id === labelId
+                                (label) => label._id === labelId
                               );
                               return (
                                 <Badge
@@ -180,26 +181,27 @@ class ModelPage extends Component {
                 </div>
                 <fieldset>
                   {this.state.sensorStreams.length
-                    ? this.state.sensorStreams.map(x => {
+                    ? this.state.sensorStreams.map((x) => {
                         return (
                           <div className="d-flex flex-row align-items-center mt-2">
                             <input
                               id={x}
                               type="checkbox"
-                              onClick={y => {
+                              onClick={(y) => {
                                 if (
                                   this.state.selectedSensorStreams.includes(x)
                                 ) {
                                   this.setState({
-                                    selectedSensorStreams: this.state.selectedSensorStreams.filter(
-                                      z => z !== x
-                                    )
+                                    selectedSensorStreams:
+                                      this.state.selectedSensorStreams.filter(
+                                        (z) => z !== x
+                                      ),
                                   });
                                 } else {
                                   var tmp = this.state.selectedSensorStreams;
                                   tmp.push(x);
                                   this.setState({
-                                    selectedSensorStreams: tmp
+                                    selectedSensorStreams: tmp,
                                   });
                                 }
                               }}
@@ -230,27 +232,27 @@ class ModelPage extends Component {
                 <div className="d-flex flex-row justify-content-between w-100">
                   <h4>Classifier</h4>
                   <Select
-                    options={this.state.models.map(m => {
+                    options={this.state.models.map((m) => {
                       return { value: m.id, label: m.name };
                     })}
                     value={this.state.modelSelection}
-                    onChange={modelSelection => {
+                    onChange={(modelSelection) => {
                       this.setState({ modelSelection });
                       this.setState({ selectedModelId: modelSelection.value });
                       this.setState({
                         hyperparameters: this.formatHyperparameters(
                           this.state.models.find(
-                            m => m.id === parseInt(modelSelection.value, 10)
+                            (m) => m.id === parseInt(modelSelection.value, 10)
                           ).hyperparameters
-                        )
+                        ),
                       });
                     }}
                     isSearchable={false}
                     styles={{
                       valueContainer: () => ({
                         width: 200,
-                        height: 25
-                      })
+                        height: 25,
+                      }),
                     }}
                   ></Select>
                 </div>
@@ -260,7 +262,7 @@ class ModelPage extends Component {
                   style={{
                     width: '100%',
                     height: '0.5px',
-                    backgroundColor: 'lightgray'
+                    backgroundColor: 'lightgray',
                   }}
                 ></div>
                 <InputGroup style={{ width: '350px' }}>
@@ -270,67 +272,80 @@ class ModelPage extends Component {
                   <Input
                     type={'text'}
                     value={this.state.modelName}
-                    onChange={e => {
+                    onChange={(e) => {
                       this.setState({ modelName: e.target.value });
                     }}
                     invalid={!this.state.modelName}
                   ></Input>
                 </InputGroup>
                 <FormFeedback invalid></FormFeedback>
-                <h6>Hyperparameters</h6>
+                <h6 style={{ marginTop: '16px' }}>Hyperparameters</h6>
                 {console.log('rendering')}
                 {console.log(this.state.hyperparameters)}
-                {this.state.models
-                  .filter(
-                    m => m.id === parseInt(this.state.selectedModelId, 10)
-                  )
-                  .map(m => {
-                    return Object.keys(m.hyperparameters).map((h, index) => {
-                      if (m.hyperparameters[h].parameter_type === 'number') {
-                        {
-                          console.log(
-                            this.state.hyperparameters.find(
-                              e =>
-                                e.parameter_name ===
-                                m.hyperparameters[h].parameter_name
-                            )
+                <Row>
+                  {this.state.models
+                    .filter(
+                      (m) => m.id === parseInt(this.state.selectedModelId, 10)
+                    )
+                    .map((m) => {
+                      return Object.keys(m.hyperparameters).map((h, index) => {
+                        if (m.hyperparameters[h].parameter_type === 'number') {
+                          {
+                            console.log(
+                              this.state.hyperparameters.find(
+                                (e) =>
+                                  e.parameter_name ===
+                                  m.hyperparameters[h].parameter_name
+                              )
+                            );
+                          }
+                          return (
+                            <Col
+                              className="col-4"
+                              style={{ minWidth: '400px' }}
+                            >
+                              <NumberHyperparameter
+                                {...m.hyperparameters[h]}
+                                id={index}
+                                handleChange={this.handleHyperparameterChange}
+                                value={
+                                  this.state.hyperparameters.find(
+                                    (e) =>
+                                      e.parameter_name ===
+                                      m.hyperparameters[h].parameter_name
+                                  ).state
+                                }
+                              />
+                            </Col>
+                          );
+                        } else if (
+                          m.hyperparameters[h].parameter_type === 'selection'
+                        ) {
+                          return (
+                            <Col
+                              className="col-4"
+                              style={{ minWidth: '400px' }}
+                            >
+                              <SelectionHyperparameter
+                                {...m.hyperparameters[h]}
+                                id={index}
+                                handleChange={this.handleHyperparameterChange}
+                                value={
+                                  this.state.hyperparameters.find(
+                                    (e) =>
+                                      e.parameter_name ===
+                                      m.hyperparameters[h].parameter_name
+                                  ).state
+                                }
+                              />
+                            </Col>
                           );
                         }
-                        return (
-                          <NumberHyperparameter
-                            {...m.hyperparameters[h]}
-                            id={index}
-                            handleChange={this.handleHyperparameterChange}
-                            value={
-                              this.state.hyperparameters.find(
-                                e =>
-                                  e.parameter_name ===
-                                  m.hyperparameters[h].parameter_name
-                              ).state
-                            }
-                          />
-                        );
-                      } else if (
-                        m.hyperparameters[h].parameter_type === 'selection'
-                      ) {
-                        return (
-                          <SelectionHyperparameter
-                            {...m.hyperparameters[h]}
-                            id={index}
-                            handleChange={this.handleHyperparameterChange}
-                            value={
-                              this.state.hyperparameters.find(
-                                e =>
-                                  e.parameter_name ===
-                                  m.hyperparameters[h].parameter_name
-                              ).state
-                            }
-                          />
-                        );
-                      }
-                    });
-                  })}
+                      });
+                    })}
+                </Row>
                 <Button
+                  style={{ marginTop: '16px' }}
                   disabled={!this.state.modelName}
                   onClick={this.handleTrainButton}
                   project={this.props.project}
