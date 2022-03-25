@@ -14,14 +14,11 @@ import { ML_ENDPOINTS, ML_URI } from '../../services/ApiServices/ApiConstants';
 import {
   getTrainedModels,
   getTrained,
-  getTrainedDeployments,
-  deployTrained,
   getModels
 } from '../../services/ApiServices/MlService';
 import {
   getDeployment,
-  deleteDeployment,
-  changeDeploymentName,
+  getPlatform,
   downloadDeploymentModel
 } from '../../services/ApiServices/MLDeploymentService';
 // import { ChangeNameModalView } from './ChangeNameModalView';
@@ -42,18 +39,12 @@ const ExportPage = () => {
   const [selectedModelId, setSelectedModelId] = useState(
     location.state ? location.state.id : null
   );
-  const [selectedDeploymentKey, setSelectedDeploymentKey] = useState(null);
 
   const [platform, setPlatform] = useState('python');
   const [modelModalState, openModelModal, closeModelModal] = useBoolean(false);
   // const [changeNameModalState, openChangeNameModal, closeChangeNameModal] = useBoolean(false);
 
   const [modelsInvalidate, refreshModels] = useIncrement();
-  const [deploymentsInvalidate, refreshDeployments] = useIncrement();
-  const [
-    selectedDeploymentInvalidate,
-    refreshSelectedDeployment
-  ] = useIncrement();
 
   const baseModels = useAsyncMemo(async () => await getModels(), [], []);
   const models = useAsyncMemo(
@@ -61,60 +52,34 @@ const ExportPage = () => {
     [modelsInvalidate],
     []
   );
-  const deployments = useAsyncMemo(
+  const [selectedModel, selectedDeployment] = useAsyncMemo(
     async () => {
-      if (!selectedModelId) return [];
-      return getTrainedDeployments(selectedModelId);
+      if (!selectedModelId) return [undefined, undefined];
+      return [
+        await getTrained(selectedModelId),
+        await getDeployment(selectedModelId)
+      ];
     },
-    [selectedModelId, deploymentsInvalidate],
-    []
+    [selectedModelId],
+    [undefined, undefined]
   );
-  const selectedModel = useAsyncMemo(async () => {
+  const selectedPlatform = useAsyncMemo(async () => {
     if (!selectedModelId) return undefined;
-    return getTrained(selectedModelId);
-  }, [selectedModelId]);
-  const selectedDeployment = useAsyncMemo(async () => {
-    if (!selectedDeploymentKey) return undefined;
-    return getDeployment(selectedDeploymentKey);
-  }, [selectedDeploymentKey, selectedDeploymentInvalidate]);
+    if (!platform) return undefined;
+    return getPlatform(selectedModelId, platform);
+  }, [selectedModelId, platform]);
 
   const selectModel = modelId => {
-    setSelectedDeploymentKey(null);
     setSelectedModelId(modelId);
-  };
-  const selectDeployment = key => setSelectedDeploymentKey(key);
-
-  const del = async () => {
-    await deleteDeployment(selectedDeployment.key);
-    refreshDeployments();
-    setSelectedDeploymentKey(null);
-  };
-
-  const deployNew = async () => {
-    const deploymentKey = await deployTrained(selectedModelId);
-    refreshDeployments();
-    selectDeployment(deploymentKey);
   };
 
   const onDownloadModel = async () => {
-    const blob = await downloadDeploymentModel(
-      selectedDeployment.key,
-      platform
-    );
+    if (!selectedPlatform.model) return;
+
+    const blob = await downloadDeploymentModel(selectedModelId);
     // console.log(blob)
     downloadBlob(blob, `${selectedModel.name}-${platform}.bin`);
   };
-
-  const handleDeploymentNameChange = async name => {
-    await changeDeploymentName(selectedDeployment.key, name);
-    refreshDeployments();
-    refreshSelectedDeployment();
-  };
-
-  const availablePlatforms = [
-    // TODO: need to think about how to handle this
-    'python'
-  ];
 
   useEffect(() => {
     history.replace(location.pathname, null);
@@ -124,25 +89,18 @@ const ExportPage = () => {
     <Loader loading={!baseModels}>
       <ExportView
         models={models}
-        deployments={deployments}
         selectedModel={selectedModel}
         selectModel={selectModel}
-        selectedDeployment={selectedDeployment}
-        selectDeployment={selectDeployment}
-        onClickDeployNew={deployNew}
         detail={
           selectedDeployment ? (
             <ExportDetailView
               model={selectedModel}
-              deployment={selectedDeployment}
-              platform={platform}
-              availablePlatforms={availablePlatforms}
+              platformName={platform}
+              platformContents={selectedPlatform}
+              availablePlatforms={selectedDeployment.platforms}
               onPlatform={setPlatform}
               onClickDownloadModel={onDownloadModel}
-              onClickDelete={del}
               onClickViewModelDetails={openModelModal}
-              onChangeDeploymentName={name => handleDeploymentNameChange(name)}
-              publicLink={buildLink(selectedDeployment.key, platform)}
             />
           ) : (
             <Empty>Select a deployment to see it's details</Empty>
