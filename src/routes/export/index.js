@@ -9,7 +9,6 @@ import {
   useBoolean
 } from '../../services/ReactHooksService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
-import { ML_ENDPOINTS, ML_URI } from '../../services/ApiServices/ApiConstants';
 
 import {
   getTrainedModels,
@@ -24,14 +23,6 @@ import {
 // import { ChangeNameModalView } from './ChangeNameModalView';
 import { Empty } from './components/Empty';
 import { downloadBlob } from '../../services/helpers';
-
-// this is a small harmless hack
-const buildLink = (key, platform) =>
-  `${
-    ML_URI.startsWith('http')
-      ? ML_URI
-      : `${window.location.protocol + '//' + window.location.host}/ml/`
-  }${ML_ENDPOINTS.DEPLOY}/${key}/export/${platform}`;
 
 const ExportPage = () => {
   const location = useLocation();
