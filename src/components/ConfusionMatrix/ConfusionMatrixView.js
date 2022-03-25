@@ -1,91 +1,92 @@
-import React, { useEffect, useState, useMemo } from 'react';
-
-const ConfusionMatrixRow = ({
-  labels,
-  actualLabel,
-  maxVal,
-  confusionMatrix
-}) => {
-  return labels.map((e, predicted) => {
-    const value = confusionMatrix[actualLabel][predicted];
-    return (
-      <td
-        key={predicted}
-        className="ConfusionMatrixCell"
-        // style={{ background: heatMapColorforValue(value / maxVal) }}
-      >
-        {value && value}
-      </td>
-    );
-  });
-};
-
-const heatMapColorforValue = value => {
-  var h = (1.0 - value) * 240;
-  return 'hsl(' + h + ', 100%, 50%)';
-};
+import React from 'react';
 
 export const ConfusionMatrixView = ({ matrix, labelMap, labelIds }) => {
-  const [confusionMatrix, setConfusionMatrix] = useState([]);
-  const [labels, setLabels] = useState([]);
-  const [maxVal, setMaxVal] = useState(0);
+  var cm = matrix.split('\n').map((r) =>
+    r
+      .replace(/\[|\]/g, '')
+      .trim()
+      .split(/\s+/)
+      .map((v) => parseInt(v))
+  );
 
-  useEffect(() => {
-    const cm = matrix.split('\n').map(r =>
-      r
-        .replace(/\[|\]/g, '')
-        .trim()
-        .split(/\s+/)
-        .map(v => parseInt(v))
+  var labels = undefined;
+  if (!labelIds.length) {
+    labels = [...Array(cm[0].length).keys()];
+  } else {
+    labels = labelIds.map(
+      (id) => labelMap.filter((label) => label._id === id)[0].name
     );
-    if (!labelIds.length) {
-      setLabels([...Array(cm[0].length).keys()]);
-    } else {
-      setLabels(
-        labelIds.map(id => labelMap.filter(label => label._id === id)[0].name)
-      );
-    }
-    setConfusionMatrix(cm);
-    const rowMax = cm.map(r => Math.max.apply(Math, r));
-    setMaxVal(Math.max.apply(Math, rowMax));
-  }, []);
+  }
 
-  const confusionMatrixTable = useMemo(() => {
-    let cmTableHeader = labels.map(key => (
-      <td key={key}>
-        <div>
-          <span>{key}</span>
-        </div>
-      </td>
-    ));
-    return (
-      <table className="ConfusionMatrix">
-        <thead className="ConfusionMatrixHeader">
+  const maxValue = Math.max(...cm.flat());
+  const cmLen = cm.length;
+
+  const getAdditionalStyles = (col) => {
+    const scale = (parseFloat(col) / parseFloat(maxValue)) * 70;
+    return {
+      backgroundColor: 'hsl(202, 100%,' + (100 - scale) + '%)',
+      color: scale > 50 ? 'white' : 'black',
+    };
+  };
+
+  return (
+    <div>
+      <table>
+        <tr>
+          <td></td>
+          {labels.map((label) => (
+            <td
+              style={{
+                paddingRight: 0,
+                paddingLeft: 0,
+                textAlign: 'center',
+                borderBottom: '1px solid black',
+                fontWeight: 'bold',
+              }}
+            >
+              {label}
+            </td>
+          ))}
+        </tr>
+        {cm.map((row, rowIdx) => (
           <tr>
-            <td></td>
-            {cmTableHeader}
+            <td
+              style={{
+                borderRight: '1px solid black',
+                paddingBottom: '2px',
+                fontWeight: 'bold',
+              }}
+            >
+              {labels[rowIdx]}
+            </td>
+            {row.map((col, colIdx) => (
+              <td
+                style={{
+                  padding: 0,
+                  height: '50px',
+                  width: '50px',
+                  borderRight: colIdx == cmLen - 1 ? '1px solid black' : null,
+                  borderBottom: rowIdx == cmLen - 1 ? '1px solid black' : null,
+                  ...getAdditionalStyles(col),
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: 'inherit',
+                  }}
+                >
+                  {col}
+                </div>
+              </td>
+            ))}
           </tr>
-        </thead>
-        <tbody>
-          {labels.map((key, idx) => {
-            return (
-              <tr key={key} className="ConfusionMatrixRow">
-                <td className="ConfusionMatrixLabel">{key}</td>
-                <ConfusionMatrixRow
-                  actualLabel={idx}
-                  labels={labels}
-                  maxVal={maxVal}
-                  confusionMatrix={confusionMatrix}
-                />
-              </tr>
-            );
-          })}
-        </tbody>
+        ))}
       </table>
-    );
-  }, [confusionMatrix, labels]);
-
-  return confusionMatrixTable;
+    </div>
+  );
 };
 
 export default ConfusionMatrixView;
