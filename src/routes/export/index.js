@@ -9,6 +9,7 @@ import {
   useBoolean
 } from '../../services/ReactHooksService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
+import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 
 import {
   getTrainedModels,
@@ -54,6 +55,16 @@ const ExportPage = () => {
     [selectedModelId],
     [undefined, undefined]
   );
+
+  const labels = useAsyncMemo(
+    async () => {
+      const { labels } = await subscribeLabelingsAndLabels();
+      return labels;
+    },
+    [selectedModelId],
+    []
+  );
+
   const selectedPlatform = useAsyncMemo(async () => {
     if (!selectedModelId) return undefined;
     if (!platform) return undefined;
@@ -103,6 +114,7 @@ const ExportPage = () => {
           isOpen={modelModalState}
           baseModels={baseModels}
           model={selectedModel}
+          labels={labels}
           onClosed={closeModelModal}
         />
       ) : null}
