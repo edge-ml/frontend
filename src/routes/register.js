@@ -12,7 +12,7 @@ import {
   CardBody,
   CardHeader,
   FormGroup,
-  Label
+  Label,
 } from 'reactstrap';
 import { MailIcon, PersonIcon, ShieldIcon } from 'react-octicons';
 import { FadeInUp } from 'animate-components';
@@ -32,7 +32,7 @@ class RegisterPage extends Component {
       passwordRepeat: '',
       userName: '',
       ToS_accepted: false,
-      error: ''
+      error: '',
     };
     this.onEMailChanged = this.onEMailChanged.bind(this);
     this.onPasswordChanged = this.onPasswordChanged.bind(this);
@@ -45,25 +45,25 @@ class RegisterPage extends Component {
 
   onUserNameChanged(e) {
     this.setState({
-      userName: e.target.value
+      userName: e.target.value,
     });
   }
 
   onEMailChanged(e) {
     this.setState({
-      email: e.target.value
+      email: e.target.value,
     });
   }
 
   onPasswordChanged(e) {
     this.setState({
-      password: e.target.value
+      password: e.target.value,
     });
   }
 
   onPasswordRepeatChanged(e) {
     this.setState({
-      passwordRepeat: e.target.value
+      passwordRepeat: e.target.value,
     });
   }
 
@@ -77,13 +77,13 @@ class RegisterPage extends Component {
     }
 
     this.setState({
-      error: err
+      error: err,
     });
   }
 
   onToS_checked() {
     this.setState({
-      ToS_accepted: !this.state.ToS_accepted
+      ToS_accepted: !this.state.ToS_accepted,
     });
   }
 
@@ -103,14 +103,14 @@ class RegisterPage extends Component {
         .then(() => {
           clearToken();
           this.setState({
-            error: ''
+            error: '',
           });
           this.props.history.push({
             pathname: '/',
-            search: ''
+            search: '',
           });
         })
-        .catch(err => {
+        .catch((err) => {
           this.onError(err);
         });
     }
@@ -122,7 +122,7 @@ class RegisterPage extends Component {
         className="Page"
         style={{
           paddingLeft: 0,
-          paddingRight: 0
+          paddingRight: 0,
         }}
       >
         <Row>
@@ -202,7 +202,7 @@ class RegisterPage extends Component {
                       <Col
                         style={{
                           paddingBottom: '10px',
-                          textAlign: 'left'
+                          textAlign: 'left',
                         }}
                       >
                         <FormGroup check>
@@ -212,11 +212,10 @@ class RegisterPage extends Component {
                               onChange={this.onToS_checked}
                             />{' '}
                             I have read and agree to the{' '}
-                            <a href="/terms_of_service.html">
+                            <a href="/terms_of_service.html" target="_blank">
                               terms of service
                             </a>{' '}
-                            and{' '}
-                            <a href="/privacy_notice.html">privacy notice</a>.
+                            .
                           </Label>
                         </FormGroup>
                       </Col>
