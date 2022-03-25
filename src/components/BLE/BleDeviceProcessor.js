@@ -3,17 +3,17 @@ import {
   intToBytes,
   parseData,
   getBaseDataset,
-  parseTimeSeriesData,
+  parseTimeSeriesData
 } from '../../services/bleService';
 
 import {
   createDataset,
   appendToDataset,
-  getDatasets,
+  getDatasets
 } from '../../services/ApiServices/DatasetServices';
 import {
   ga_uploadataset_len,
-  ga_uploadDataset,
+  ga_uploadDataset
 } from '../../services/AnalyticsService';
 
 class BleDeviceProcessor {
@@ -72,19 +72,19 @@ class BleDeviceProcessor {
   }
 
   async startRecording(selectedSensors, latency, datasetName) {
-    var oldDatasets = (await getDatasets()).map((elm) => elm._id);
+    var oldDatasets = (await getDatasets()).map(elm => elm._id);
     this.newDataset = (
       await createDataset(
         getBaseDataset(
-          [...selectedSensors].map((elm) => this.sensors[elm]),
+          [...selectedSensors].map(elm => this.sensors[elm]),
           datasetName
         )
       )
-    ).filter((elm) => !oldDatasets.includes(elm._id))[0];
+    ).filter(elm => !oldDatasets.includes(elm._id))[0];
     await this.prepareRecording(selectedSensors, latency);
     var recordingStart = new Date().getTime();
     var adjustedTime = false;
-    const recordData = (value) => {
+    const recordData = value => {
       var sensor = value.getUint8(0);
       var timestamp = value.getUint32(2, true);
       if (!adjustedTime) {
@@ -95,7 +95,7 @@ class BleDeviceProcessor {
       this.recordedData.push({
         sensor: sensor,
         time: timestamp + recordingStart,
-        data: parsedData,
+        data: parsedData
       });
       if (
         this.recordedData.length > 1000 ||
@@ -104,12 +104,16 @@ class BleDeviceProcessor {
         this.uploadCache(this.recordedData);
         this.recordedData = [];
       }
-      return { sensor: sensor, data: parsedData };
+      return {
+        sensor: sensor,
+        time: timestamp + recordingStart,
+        data: parsedData
+      };
     };
     this.sensorDataCharacteristic.startNotifications();
     this.sensorDataCharacteristic.addEventListener(
       'characteristicvaluechanged',
-      (event) => {
+      event => {
         let currentValue = recordData(event.target.value);
         this.uploadBLE.setCurrentData(currentValue);
       }
@@ -127,7 +131,7 @@ class BleDeviceProcessor {
   }
 
   addToUploadCounter(recordedData) {
-    recordedData.forEach((elm) => {
+    recordedData.forEach(elm => {
       if (this.uploadCounter.has(elm.name)) {
         var old_ctr = this.uploadCounter.get(elm.name);
         this.uploadCounter.set(elm.name, old_ctr + elm.data.length);

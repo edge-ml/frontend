@@ -131,6 +131,15 @@ function BlePanelRecorderSettings(props) {
           >
             Sensors need to be selected
           </div>
+          <div>
+            <Input
+              onChange={props.onToggleStream}
+              className="stream-check"
+              type="checkbox"
+              id="stream-check"
+            />
+            <label htmlFor="stream-check">Disable sensor streaming</label>
+          </div>
         </div>
       </div>
     </div>
