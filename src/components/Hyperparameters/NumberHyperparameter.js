@@ -19,7 +19,7 @@ class NumberHyperparameter extends Component {
     return (
       <InputGroup>
         <InputGroupAddon addonType="prepend">
-          <InputGroupText style={{ width: '200px' }}>
+          <InputGroupText style={{ width: '225px' }}>
             {
               <React.Fragment>
                 <FontAwesomeIcon
