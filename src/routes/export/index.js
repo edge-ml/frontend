@@ -101,7 +101,7 @@ const ExportPage = () => {
               onClickViewModelDetails={openModelModal}
             />
           ) : (
-            <Empty>Select a model to see it's details</Empty>
+            <Empty>Select model for details</Empty>
           )
         }
       />
