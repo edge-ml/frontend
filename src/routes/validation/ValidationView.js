@@ -13,7 +13,7 @@ export const ValidationView = ({
   onDeployModel = () => {}
 }) => {
   const Checkbox = ({ ...rest }) => {
-    return <Input type="checkbox" {...rest} />;
+    return <input type="checkbox" {...rest} />;
   };
 
   const {
@@ -119,9 +119,12 @@ export const ValidationView = ({
       <Row className="mt-3">
         <Col>
           <Table {...getTableProps()} responsive>
-            <thead className={'bg-light'}>
+            <thead className="bg-light">
               {headerGroups.map(headerGroup => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
+                <tr
+                  className="text-center"
+                  {...headerGroup.getHeaderGroupProps()}
+                >
                   {headerGroup.headers.map(column =>
                     column.canSort ? (
                       <SortedTableHeader
@@ -154,7 +157,12 @@ export const ValidationView = ({
                   <tr {...row.getRowProps()}>
                     {row.cells.map(cell => {
                       return (
-                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                        <td
+                          className="text-center align-middle"
+                          {...cell.getCellProps()}
+                        >
+                          {cell.render('Cell')}
+                        </td>
                       );
                     })}
                   </tr>
