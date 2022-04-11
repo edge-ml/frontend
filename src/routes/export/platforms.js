@@ -7,12 +7,13 @@ import 'prismjs/components/prism-python';
 export const platforms = [
   {
     value: 'python',
-    label: 'Python/pickle',
+    label: 'Python',
     prism: ({ code }) => (
       <PrismCode component="pre" className="language-python">
         {code}
       </PrismCode>
-    )
+    ),
+    extension: 'py'
   },
   {
     value: 'c',
@@ -21,6 +22,27 @@ export const platforms = [
       <PrismCode component="pre" className="language-c">
         {code}
       </PrismCode>
-    )
+    ),
+    extension: 'c'
+  },
+  {
+    value: 'c-embedded',
+    label: 'C (for embedded)',
+    prism: ({ code }) => (
+      <PrismCode component="pre" className="language-c">
+        {code}
+      </PrismCode>
+    ),
+    extension: 'c'
+  },
+  {
+    value: 'javascript',
+    label: 'Javascript',
+    prism: ({ code }) => (
+      <PrismCode component="pre" className="language-javascript">
+        {code}
+      </PrismCode>
+    ),
+    extension: 'js'
   }
 ];
