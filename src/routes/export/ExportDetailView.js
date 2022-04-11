@@ -17,12 +17,11 @@ export const ExportDetailView = ({
 
   onClickViewModelDetails,
   onClickDownloadModel,
-  availablePlatforms,
   platformName,
   platformContents,
   onPlatform
 }) => {
-  const nPlatforms = availablePlatforms
+  const nPlatforms = model.platforms
     .map(v => platforms.find(p => p.value === v))
     .filter(v => v);
   const nPlatform = nPlatforms.find(p => p.value === platformName);
@@ -67,17 +66,15 @@ export const ExportDetailView = ({
                 options={platforms}
               />
             </span>
-            {platformContents.model ? (
-              <Button onClick={onClickDownloadModel} className="ml-3">
-                Download model
-              </Button>
-            ) : null}
+            <Button onClick={onClickDownloadModel} className="ml-3">
+              Download model
+            </Button>
           </div>
           <b>Platform: </b>
         </Line>
         <Line>
           <b>Code: </b>
-          <Code code={platformContents.code} />
+          <Code code={platformContents} />
         </Line>
       </Col>
     </Row>
