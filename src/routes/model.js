@@ -40,7 +40,7 @@ class ModelPage extends Component {
       modelName: '',
       alertText: undefined,
       trainSuccess: undefined,
-      useUnlabelled: false
+      useUnlabelledFor: {}
     };
 
     this.initComponent = this.initComponent.bind(this);
@@ -94,6 +94,10 @@ class ModelPage extends Component {
             : '',
           labelings: result[0].labelings,
           labels: result[0].labels,
+          useUnlabelledFor: result[0].labelings.reduce(
+            (acc, labeling) => ({ ...acc, [labeling._id]: false }),
+            {}
+          ),
           sensorStreams: result[1] ? result[1] : [],
           models: result[2],
           selectedModelId: result[2][0] ? result[2][0].id : '',
@@ -123,7 +127,7 @@ class ModelPage extends Component {
       target_labeling: this.state.selectedLabeling,
       hyperparameters: this.state.hyperparameters,
       model_name: this.state.modelName,
-      use_unlabelled: this.state.useUnlabelled
+      use_unlabelled: this.state.useUnlabelledFor[this.state.selectedLabeling]
     })
       .then(() => {
         this.setState({
@@ -210,18 +214,24 @@ class ModelPage extends Component {
                               <input
                                 type="checkbox"
                                 className="mt-0 ml-2 mr-0"
-                                checked={this.state.useUnlabelled}
-                                onClick={e =>
-                                  this.setState({
-                                    useUnlabelled: e.target.checked
-                                  })
-                                }
+                                checked={this.state.useUnlabelledFor[x._id]}
+                                onClick={e => {
+                                  const val = e.target.checked;
+                                  this.setState(prevState => ({
+                                    useUnlabelledFor: {
+                                      ...prevState.useUnlabelledFor,
+                                      [x._id]: val
+                                    }
+                                  }));
+                                }}
                               />
                               <Badge
                                 key={x._id + 'other'}
                                 className={'m-1'}
                                 style={{
-                                  backgroundColor: this.state.useUnlabelled
+                                  backgroundColor: this.state.useUnlabelledFor[
+                                    x._id
+                                  ]
                                     ? '#388e3c'
                                     : '#f1110d'
                                 }}
@@ -239,8 +249,7 @@ class ModelPage extends Component {
                     </b>{' '}
                     Model will classify based on target labeling.
                     <br />
-                    Check the label other if you'd like to use unlabelled data
-                    in training.
+                    Check "Other" to mark unlabeled data and use it in training.
                   </small>
                 </div>
               </div>
