@@ -18,50 +18,57 @@ export const LabelingView = ({
             ? labelings.map(x => {
                 return (
                   <div className="d-flex flex-row align-items-center mt-2">
-                    <input
-                      id={x._id}
-                      type="radio"
-                      onClick={y => changeSelectedLabeling(x._id)}
-                      checked={selectedLabeling === x._id}
-                    ></input>
-                    <label
-                      className="mb-0 ml-1 mr-1"
-                      for={x._id}
-                      onClick={y => changeSelectedLabeling(x._id)}
-                    >
-                      {x.name}
-                    </label>
-                    {x.labels.map(labelId => {
-                      const label = labels.find(label => label._id === labelId);
-                      return (
-                        <Badge
-                          key={labelId}
-                          className={'m-1'}
-                          style={{ backgroundColor: label.color }}
-                        >
-                          {label.name}
-                        </Badge>
-                      );
-                    })}
-                    <input
-                      type="checkbox"
-                      className="mt-0 ml-2 mr-0"
-                      checked={useUnlabelledFor[x._id]}
-                      onClick={e => {
-                        changeUnlabelledFor(e.target.checked, x._id);
-                      }}
-                    />
-                    <Badge
-                      key={x._id + 'other'}
-                      className={'m-1'}
-                      style={{
-                        backgroundColor: useUnlabelledFor[x._id]
-                          ? '#388e3c'
-                          : '#f1110d'
-                      }}
-                    >
-                      Other
-                    </Badge>
+                    <div className="d-flex flex-row align-items-center align-self-baseline">
+                      <input
+                        id={x._id}
+                        type="radio"
+                        style={{ marginTop: '0.1em' }}
+                        onClick={y => changeSelectedLabeling(x._id)}
+                        checked={selectedLabeling === x._id}
+                      ></input>
+                      <label
+                        className="mb-0 ml-1 mr-1"
+                        for={x._id}
+                        onClick={y => changeSelectedLabeling(x._id)}
+                      >
+                        {x.name}
+                      </label>
+                    </div>
+                    <div className="d-flex flex-wrap flex-row align-items-center align-content-start mt-0">
+                      {x.labels.map(labelId => {
+                        const label = labels.find(
+                          label => label._id === labelId
+                        );
+                        return (
+                          <Badge
+                            key={labelId}
+                            className={'m-1'}
+                            style={{ backgroundColor: label.color }}
+                          >
+                            {label.name}
+                          </Badge>
+                        );
+                      })}
+                      <input
+                        type="checkbox"
+                        className="mt-0 ml-2 mr-0"
+                        checked={useUnlabelledFor[x._id]}
+                        onClick={e => {
+                          changeUnlabelledFor(e.target.checked, x._id);
+                        }}
+                      />
+                      <Badge
+                        key={x._id + 'other'}
+                        className={'m-1'}
+                        style={{
+                          backgroundColor: useUnlabelledFor[x._id]
+                            ? '#388e3c'
+                            : '#f1110d'
+                        }}
+                      >
+                        Other
+                      </Badge>
+                    </div>
                   </div>
                 );
               })
