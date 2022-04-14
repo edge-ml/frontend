@@ -1,18 +1,16 @@
 import React from 'react';
 import Select from 'react-select';
 
-import NumberHyperparameter from '../../components/Hyperparameters/NumberHyperparameter';
-import SelectionHyperparameter from '../../components/Hyperparameters/SelectionHyperparameter';
-
 import {
   Button,
   InputGroup,
   InputGroupAddon,
   Input,
-  FormFeedback,
-  Row,
-  Col
+  FormFeedback
 } from 'reactstrap';
+import { AdvancedHyperparameters } from './AdvancedHyperparameters';
+
+import { HyperparameterView } from './HyperparameterView';
 
 export const ClassifierView = ({
   models,
@@ -24,7 +22,9 @@ export const ClassifierView = ({
   selectedModelId,
   handleHyperparameterChange,
   handleTrainButton,
-  project
+  project,
+  showAdvanced,
+  toggleShowAdvanced
 }) => {
   return (
     <div className="card h-100" style={{ border: '0px solid white' }}>
@@ -46,7 +46,6 @@ export const ClassifierView = ({
             }}
           ></Select>
         </div>
-
         <div
           className="mt-3 mb-3"
           style={{
@@ -66,60 +65,19 @@ export const ClassifierView = ({
         </InputGroup>
         <FormFeedback invalid></FormFeedback>
         <h6 style={{ marginTop: '16px' }}>Hyperparameters</h6>
-        <Row>
-          {models
-            .filter(m => m.id === parseInt(selectedModelId, 10))
-            .map(m => {
-              return Object.keys(m.hyperparameters).map((h, index) => {
-                if (m.hyperparameters[h].parameter_type === 'number') {
-                  {
-                    console.log(
-                      hyperparameters.find(
-                        e =>
-                          e.parameter_name ===
-                          m.hyperparameters[h].parameter_name
-                      )
-                    );
-                  }
-                  return (
-                    <Col className="col-4" style={{ minWidth: '400px' }}>
-                      <NumberHyperparameter
-                        {...m.hyperparameters[h]}
-                        id={index}
-                        handleChange={handleHyperparameterChange}
-                        value={
-                          hyperparameters.find(
-                            e =>
-                              e.parameter_name ===
-                              m.hyperparameters[h].parameter_name
-                          ).state
-                        }
-                      />
-                    </Col>
-                  );
-                } else if (
-                  m.hyperparameters[h].parameter_type === 'selection'
-                ) {
-                  return (
-                    <Col className="col-4" style={{ minWidth: '400px' }}>
-                      <SelectionHyperparameter
-                        {...m.hyperparameters[h]}
-                        id={index}
-                        handleChange={handleHyperparameterChange}
-                        value={
-                          hyperparameters.find(
-                            e =>
-                              e.parameter_name ===
-                              m.hyperparameters[h].parameter_name
-                          ).state
-                        }
-                      />
-                    </Col>
-                  );
-                }
-              });
-            })}
-        </Row>
+        <HyperparameterView
+          model={models.find(m => m.id === parseInt(selectedModelId, 10))}
+          hyperparameters={hyperparameters}
+          handleHyperparameterChange={handleHyperparameterChange}
+          isAdvanced={false}
+        />
+        <AdvancedHyperparameters
+          showAdvanced={showAdvanced}
+          toggleShowAdvanced={toggleShowAdvanced}
+          model={models.find(m => m.id === parseInt(selectedModelId, 10))}
+          hyperparameters={hyperparameters}
+          handleHyperparameterChange={handleHyperparameterChange}
+        />
         <Button
           disabled={!modelName}
           onClick={handleTrainButton}

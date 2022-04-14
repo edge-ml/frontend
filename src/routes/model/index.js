@@ -28,7 +28,8 @@ class ModelPage extends Component {
       modelName: '',
       alertText: undefined,
       trainSuccess: undefined,
-      useUnlabelledFor: {}
+      useUnlabelledFor: {},
+      showAdvanced: false
     };
 
     this.initComponent = this.initComponent.bind(this);
@@ -181,6 +182,10 @@ class ModelPage extends Component {
     this.setState({ modelName: e.target.value });
   };
 
+  toggleShowAdvanced = e => {
+    this.setState({ showAdvanced: !this.state.showAdvanced });
+  };
+
   render() {
     return (
       <Loader loading={!this.state.ready}>
@@ -234,6 +239,8 @@ class ModelPage extends Component {
                   handleHyperparameterChange={this.handleHyperparameterChange}
                   handleTrainButton={this.handleTrainButton}
                   project={this.props.project}
+                  showAdvanced={this.state.showAdvanced}
+                  toggleShowAdvanced={this.toggleShowAdvanced}
                 />
               </div>
             </div>
