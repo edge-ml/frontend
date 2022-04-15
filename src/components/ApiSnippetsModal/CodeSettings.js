@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input, FormGroup, Label, Row, Col } from 'reactstrap';
 
-const CodeSettings = props => {
+const CodeSettings = (props) => {
   return (
     <div>
       <Row>
@@ -32,6 +32,17 @@ const CodeSettings = props => {
                   onChange={props.onPlatformChange}
                 />
                 Node.js
+              </Label>
+            </FormGroup>
+            <FormGroup check>
+              <Label check>
+                <Input
+                  type="radio"
+                  value="Javascript"
+                  checked={props.platform === 'Javascript'}
+                  onChange={props.onPlatformChange}
+                />
+                Javascript
               </Label>
             </FormGroup>
             <FormGroup check>
