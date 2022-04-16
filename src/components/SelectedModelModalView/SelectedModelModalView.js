@@ -172,7 +172,28 @@ export const SelectedModelModalView = ({
           </Col>
           <Col>
             <Table borderless responsive>
+              <caption
+                style={{
+                  captionSide: 'top',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  color: '#000000'
+                }}
+              >
+                Hyperparameters
+              </caption>
               <tbody>
+                <tr key="window_size">
+                  {' '}
+                  <th>Window Size</th>{' '}
+                  <td style={{ textAlign: 'center' }}>{model.window_size}</td>{' '}
+                </tr>
+                <tr key="sliding_step">
+                  {' '}
+                  <th>Sliding Step</th>{' '}
+                  <td style={{ textAlign: 'center' }}>{model.sliding_step}</td>{' '}
+                </tr>
+
                 {Object.entries(model.hyperparameters).map(([key, val]) => (
                   <tr key={key}>
                     {' '}
@@ -181,7 +202,7 @@ export const SelectedModelModalView = ({
                         ? base.hyperparameters[key].display_name
                         : key}
                     </th>{' '}
-                    <td>{String(val)}</td>{' '}
+                    <td style={{ textAlign: 'center' }}>{String(val)}</td>{' '}
                   </tr>
                 ))}
               </tbody>
