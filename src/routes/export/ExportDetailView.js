@@ -25,7 +25,7 @@ export const ExportDetailView = ({
     .map(v => platforms.find(p => p.value === v))
     .filter(v => v);
   const nPlatform = nPlatforms.find(p => p.value === platformName);
-  const Code = nPlatform.prism;
+  const Code = nPlatform ? nPlatform.prism : null;
 
   return (
     <Row>
@@ -52,30 +52,34 @@ export const ExportDetailView = ({
           </ul>
         </Line>
 
-        <hr />
+        {nPlatform ? (
+          <React.Fragment>
+            <hr />
 
-        <Line>
-          <h5>Export model</h5>
-        </Line>
-        <Line>
-          <div className="float-right d-flex">
-            <span style={{ minWidth: '200px' }}>
-              <Select
-                value={nPlatform}
-                onChange={x => onPlatform(x.value)}
-                options={platforms}
-              />
-            </span>
-            <Button onClick={onClickDownloadModel} className="ml-3">
-              Download model
-            </Button>
-          </div>
-          <b>Platform: </b>
-        </Line>
-        <Line>
-          <b>Code: </b>
-          <Code code={platformContents} />
-        </Line>
+            <Line>
+              <h5>Export model</h5>
+            </Line>
+            <Line>
+              <div className="float-right d-flex">
+                <span style={{ minWidth: '200px' }}>
+                  <Select
+                    value={nPlatform}
+                    onChange={x => onPlatform(x.value)}
+                    options={nPlatforms}
+                  />
+                </span>
+                <Button onClick={onClickDownloadModel} className="ml-3">
+                  Download model
+                </Button>
+              </div>
+              <b>Platform: </b>
+            </Line>
+            <Line>
+              <b>Code: </b>
+              <Code code={platformContents} />
+            </Line>
+          </React.Fragment>
+        ) : null}
       </Col>
     </Row>
   );

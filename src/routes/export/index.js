@@ -35,7 +35,7 @@ const ExportPage = () => {
     location.state ? location.state.id : null
   );
 
-  const [platform, setPlatform] = useState('python');
+  const [platform, setPlatform] = useState(null);
   const [modelModalState, openModelModal, closeModelModal] = useBoolean(false);
 
   const baseModels = useAsyncMemo(async () => await getModels(), [], []);
@@ -57,11 +57,26 @@ const ExportPage = () => {
   const platformContents = useAsyncMemo(
     async () => {
       if (!selectedModelId || !platform) return platformContents;
-      return getPlatformCode(selectedModelId, platform);
+      return (await getPlatformCode(selectedModelId, platform))
+        .replace(
+          '___DOWNLOADED_MODEL_BASENAME___',
+          createBasename(platform, selectedModel)
+        )
+        .replace(
+          '___DOWNLOADED_MODEL_NAME___',
+          createName(platform, selectedModel)
+        );
     },
     [selectedModelId, platform],
     ''
   );
+
+  useEffect(() => {
+    if (!selectedModel) return;
+    setPlatform(
+      selectedModel.platforms.length > 0 ? selectedModel.platforms[0] : null
+    );
+  }, [selectedModel]);
 
   const selectModel = modelId => {
     setSelectedModelId(modelId);
@@ -83,19 +98,11 @@ const ExportPage = () => {
         selectedModel={selectedModel}
         selectModel={selectModel}
         detail={
-          selectedModel && platformContents ? (
+          selectedModel ? (
             <ExportDetailView
               model={selectedModel}
               platformName={platform}
-              platformContents={platformContents
-                .replace(
-                  '___DOWNLOADED_MODEL_BASENAME___',
-                  createBasename(platform, selectedModel)
-                )
-                .replace(
-                  '___DOWNLOADED_MODEL_NAME___',
-                  createName(platform, selectedModel)
-                )}
+              platformContents={platformContents}
               onPlatform={setPlatform}
               onClickDownloadModel={onDownloadModel}
               onClickViewModelDetails={openModelModal}
