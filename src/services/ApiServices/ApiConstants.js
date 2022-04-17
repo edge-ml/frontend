@@ -46,6 +46,7 @@ module.exports = {
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',
+    DATASETS_CAN_EDIT: 'datasets/canedit',
     DEVICE: 'devices',
     LABEL_DEFINITIONS: 'labelDefinitions',
     DATASET_LABEL_DEFINITIONS: 'datasetLabelDefinitions',
