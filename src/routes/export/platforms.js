@@ -26,6 +26,16 @@ export const platforms = [
     extension: 'c'
   },
   {
+    value: 'arduino_cpp',
+    label: 'Arduino_CPP',
+    prism: ({ code }) => (
+      <PrismCode component="pre" className="language-c">
+        {code}
+      </PrismCode>
+    ),
+    extension: 'hpp'
+  },
+  {
     value: 'c-embedded',
     label: 'C (for embedded)',
     prism: ({ code }) => (
