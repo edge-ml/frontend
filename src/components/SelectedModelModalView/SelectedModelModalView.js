@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   Modal,
@@ -10,6 +10,9 @@ import {
   Row,
   Col
 } from 'reactstrap';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 import { humanFileSize, toPercentage } from '../../services/helpers';
 import ConfusionMatrixView from '../ConfusionMatrix/ConfusionMatrixView';
@@ -96,6 +99,7 @@ export const SelectedModelModalView = ({
   ...props
 }) => {
   const base = baseModels.find(x => x.name === model.classifier);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   console.assert(base !== undefined);
   let report = model.classification_report;
   console.log(report);
@@ -204,9 +208,26 @@ export const SelectedModelModalView = ({
                   <th>Sliding Step</th>{' '}
                   <td style={{ textAlign: 'center' }}>{model.sliding_step}</td>{' '}
                 </tr>
-
+                <tr>
+                  <th
+                    className="user-select-none"
+                    onClick={e => setShowAdvanced(!showAdvanced)}
+                  >
+                    {showAdvanced ? (
+                      <FontAwesomeIcon icon={faCaretDown} />
+                    ) : (
+                      <FontAwesomeIcon icon={faCaretRight} />
+                    )}{' '}
+                    Advanced Hyperparameters
+                  </th>
+                </tr>
                 {Object.entries(model.hyperparameters).map(([key, val]) => (
-                  <tr key={key}>
+                  <tr
+                    key={key}
+                    style={{
+                      visibility: showAdvanced ? 'visible' : 'collapse'
+                    }}
+                  >
                     {' '}
                     <th>
                       {base.hyperparameters[key]
