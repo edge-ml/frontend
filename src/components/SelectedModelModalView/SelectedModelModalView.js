@@ -97,6 +97,17 @@ export const SelectedModelModalView = ({
 }) => {
   const base = baseModels.find(x => x.name === model.classifier);
   console.assert(base !== undefined);
+  let report = model.classification_report;
+  console.log(report);
+  model.labels.forEach(id => {
+    const label = labels.find(label => label._id == id);
+    if (!label) return;
+    report = report.replace(
+      id,
+      ' '.repeat(id.length - label.name.length) + label.name
+    );
+  });
+  console.log(report);
   return (
     <Modal isOpen={model && baseModels} size="xl" toggle={onClosed} {...props}>
       <ModalHeader>Model: {model.name}</ModalHeader>
@@ -153,7 +164,7 @@ export const SelectedModelModalView = ({
                   {' '}
                   <th>Report</th>{' '}
                   <td>
-                    <pre>{model.classification_report}</pre>
+                    <pre>{report}</pre>
                   </td>{' '}
                 </tr>
                 <tr>
