@@ -114,6 +114,9 @@ class ModelPage extends Component {
       model_id: this.state.selectedModelId,
       selected_timeseries: this.state.selectedSensorStreams,
       target_labeling: this.state.selectedLabeling,
+      labels: this.state.labelings.find(
+        x => x._id == this.state.selectedLabeling
+      ).labels,
       hyperparameters: this.state.hyperparameters,
       model_name: this.state.modelName,
       use_unlabelled: this.state.useUnlabelledFor[this.state.selectedLabeling]
