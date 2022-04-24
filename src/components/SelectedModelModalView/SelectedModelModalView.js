@@ -102,7 +102,6 @@ export const SelectedModelModalView = ({
   const [showAdvanced, setShowAdvanced] = useState(false);
   console.assert(base !== undefined);
   let report = model.classification_report;
-  console.log(report);
   model.labels.forEach(id => {
     const label = labels.find(label => label._id == id);
     if (!label) return;
@@ -111,7 +110,6 @@ export const SelectedModelModalView = ({
       ' '.repeat(id.length - label.name.length) + label.name
     );
   });
-  console.log(report);
   return (
     <Modal isOpen={model && baseModels} size="xl" toggle={onClosed} {...props}>
       <ModalHeader>Model: {model.name}</ModalHeader>
@@ -119,6 +117,16 @@ export const SelectedModelModalView = ({
         <Row>
           <Col>
             <Table borderless responsive>
+              <caption
+                style={{
+                  captionSide: 'top',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  color: '#000000'
+                }}
+              >
+                General Information
+              </caption>
               <tbody>
                 <tr>
                   {' '}
@@ -148,6 +156,26 @@ export const SelectedModelModalView = ({
                   {' '}
                   <th>Classifier</th>
                   <td>{base.name}</td>{' '}
+                </tr>
+                <tr>
+                  {' '}
+                  <th>Used Labels</th>
+                  <td>
+                    {model.labels.map((id, i, { length }) => {
+                      const label = labels.find(label => label._id == id);
+                      const name = label ? label.name : id;
+                      return i == length - 1 ? (
+                        <span>{name}</span>
+                      ) : (
+                        <span>{name}, </span>
+                      );
+                    })}
+                  </td>
+                </tr>
+                <tr>
+                  <th colSpan={2} className="text-center">
+                    Performance Metrics
+                  </th>
                 </tr>
                 <tr>
                   {' '}
