@@ -23,7 +23,7 @@ module.exports = {
     GET: 'GET',
     POST: 'POST',
     PUT: 'PUT',
-    DELETE: 'DELETE'
+    DELETE: 'DELETE',
   },
 
   AUTH_ENDPOINTS: {
@@ -41,7 +41,7 @@ module.exports = {
     CHANGE_PASSWORD: 'changePassword',
     ID: 'id',
     CHANGE_USERNAME: 'changeUserName',
-    USERNAME: 'userName'
+    USERNAME: 'userName',
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',
@@ -54,28 +54,30 @@ module.exports = {
     SETDEVICEAPIKEY: 'deviceApi/setkey',
     GETDEVICEAPIKEY: 'deviceApi/getkey',
     REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
-    SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive'
+    SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive',
   },
   ML_ENDPOINTS: {
-    PARAMETERS: 'parameters'
-  }
+    PARAMETERS: 'parameters',
+  },
 };
 
 module.exports.generateApiRequest = (
   method = this.HTTP_METHODS.GET,
   baseUri = this.API_URI,
   endpoint = this.API_ENDPOINTS.DEFAULT,
-  body = {}
+  body = {},
+  params = {}
 ) => {
   const project = localStorageService.getProject();
   return {
     method: method,
     url: baseUri + endpoint,
     data: body,
+    params: params,
     headers: {
       'Content-Type': 'application/json',
       ...(project && { project: project }),
-      Authorization: localStorageService.getAccessToken()
-    }
+      Authorization: localStorageService.getAccessToken(),
+    },
   };
 };

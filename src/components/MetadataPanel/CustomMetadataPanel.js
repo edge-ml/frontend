@@ -7,14 +7,46 @@ import {
   Input,
   CardBody,
   CardHeader,
+  Button,
+  CardFooter,
 } from 'reactstrap';
+import MetaDataEditModal from './MetaDataEditModal';
 import './MetadataPanel.css';
 
 class CustomMetadataPanel extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      editModalOpen: false,
+    };
     this.additionalMetadata = this.additionalMetaData.bind(this);
+    this.onEdit = this.onEdit.bind(this);
+    this.onCancelEdit = this.onCancelEdit.bind(this);
+    this.onSave = this.onSave.bind(this);
+  }
+
+  onCancelEdit() {
+    console.log('cancel edit');
+    this.setState({
+      editModalOpen: false,
+    });
+  }
+
+  onEdit() {
+    this.setState({
+      editModalOpen: true,
+    });
+  }
+
+  onSave(newMetaData) {
+    const metaDataAsObj = {};
+    newMetaData.forEach((elm) => {
+      metaDataAsObj[elm.key] = elm.data;
+    });
+    this.props.onUpdateMetaData({ metaData: metaDataAsObj });
+    this.setState({
+      editModalOpen: false,
+    });
   }
 
   additionalMetaData() {
@@ -37,22 +69,36 @@ class CustomMetadataPanel extends Component {
   }
 
   render() {
-    if (!this.props.metaData) {
-      return null;
-    }
     return (
-      <Card>
-        <CardHeader>
-          <b>Custom Metadata</b>
-        </CardHeader>
-        <CardBody>
-          {this.props.metaData ? (
-            <div>
-              <div>{this.additionalMetaData()}</div>
+      <div>
+        <Card>
+          <CardHeader>
+            <b>Custom Metadata</b>
+          </CardHeader>
+          <CardBody>
+            {Object.keys(this.props.metaData).length ? (
+              <div>
+                <div>{this.additionalMetaData()}</div>
+              </div>
+            ) : (
+              <div>No custom metadata</div>
+            )}
+          </CardBody>
+          <CardFooter>
+            <div className="text-right">
+              <Button color="primary" size="sm" onClick={this.onEdit}>
+                + Edit
+              </Button>
             </div>
-          ) : null}
-        </CardBody>
-      </Card>
+          </CardFooter>
+        </Card>
+        <MetaDataEditModal
+          onClose={this.onCancelEdit}
+          onSave={this.onSave}
+          isOpen={this.state.editModalOpen}
+          metaData={this.props.metaData}
+        ></MetaDataEditModal>
+      </div>
     );
   }
 }

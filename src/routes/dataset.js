@@ -1,13 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Col,
-  Row,
-  Fade,
-  Button,
-  Toast,
-  ToastBody,
-  ToastHeader,
-} from 'reactstrap';
+import { Col, Row, Fade, Button } from 'reactstrap';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
 import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
@@ -92,11 +84,23 @@ class DatasetPage extends Component {
     this.onClickPosition = this.onClickPosition.bind(this);
     this.onLabelPositionUpdate = this.onLabelPositionUpdate.bind(this);
     this.showSnackbar = this.showSnackbar.bind(this);
+    this.onUpdateMetaData = this.onUpdateMetaData.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false,
     };
+  }
+
+  onUpdateMetaData(updatedDataset) {
+    updateDataset(
+      { ...updatedDataset, _id: this.state.dataset._id },
+      true
+    ).then((newDataset) => {
+      this.setState({
+        dataset: { ...newDataset, timeSeries: this.state.dataset.timeSeries },
+      });
+    });
   }
 
   showSnackbar(errorText, duration) {
@@ -223,7 +227,11 @@ class DatasetPage extends Component {
   }
 
   onKeyDown(e) {
-    if (this.state.modalOpen || this.props.modalOpen) {
+    if (
+      this.state.modalOpen ||
+      this.props.modalOpen ||
+      document.querySelectorAll('.modal').length > 0
+    ) {
       return;
     }
     let keyCode = e.keyCode ? e.keyCode : e.which;
@@ -892,6 +900,7 @@ class DatasetPage extends Component {
                 <div className="mt-2">
                   <CustomMetadataPanel
                     metaData={this.state.dataset.metaData}
+                    onUpdateMetaData={this.onUpdateMetaData}
                   ></CustomMetadataPanel>
                 </div>
                 <div className="mt-2" />
