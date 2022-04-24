@@ -29,6 +29,7 @@ class ModelPage extends Component {
       alertText: undefined,
       trainSuccess: undefined,
       useUnlabelledFor: {},
+      unlabelledNameFor: {},
       showAdvanced: false
     };
 
@@ -87,6 +88,10 @@ class ModelPage extends Component {
             (acc, labeling) => ({ ...acc, [labeling._id]: false }),
             {}
           ),
+          unlabelledNameFor: result[0].labelings.reduce(
+            (acc, labeling) => ({ ...acc, [labeling._id]: 'Other' }),
+            {}
+          ),
           sensorStreams: result[1] ? result[1] : [],
           models: result[2],
           selectedModelId: result[2][0] ? result[2][0].id : '',
@@ -119,7 +124,8 @@ class ModelPage extends Component {
       ).labels,
       hyperparameters: this.state.hyperparameters,
       model_name: this.state.modelName,
-      use_unlabelled: this.state.useUnlabelledFor[this.state.selectedLabeling]
+      use_unlabelled: this.state.useUnlabelledFor[this.state.selectedLabeling],
+      unlabelled_name: this.state.unlabelledNameFor[this.state.selectedLabeling]
     })
       .then(() => {
         this.setState({
@@ -147,6 +153,15 @@ class ModelPage extends Component {
       useUnlabelledFor: {
         ...prevState.useUnlabelledFor,
         [id]: checked
+      }
+    }));
+  };
+
+  handleUnlabelledNameChange = (name, id) => {
+    this.setState(prevState => ({
+      unlabelledNameFor: {
+        ...prevState.unlabelledNameFor,
+        [id]: name
       }
     }));
   };
@@ -220,6 +235,8 @@ class ModelPage extends Component {
                   changeSelectedLabeling={this.handleLabelingChange}
                   useUnlabelledFor={this.state.useUnlabelledFor}
                   changeUnlabelledFor={this.handleUseUnlabelledChange}
+                  unlabelledNameFor={this.state.unlabelledNameFor}
+                  changeUnlabelledName={this.handleUnlabelledNameChange}
                 />
               </div>
               <div className="col-12 col-xl-7 mt-4">

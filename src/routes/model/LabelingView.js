@@ -7,7 +7,9 @@ export const LabelingView = ({
   labels,
   changeSelectedLabeling,
   useUnlabelledFor,
-  changeUnlabelledFor
+  changeUnlabelledFor,
+  unlabelledNameFor,
+  changeUnlabelledName
 }) => {
   return (
     <div className="card h-100" style={{ border: '0px solid white' }}>
@@ -57,17 +59,35 @@ export const LabelingView = ({
                           changeUnlabelledFor(e.target.checked, x._id);
                         }}
                       />
-                      <Badge
-                        key={x._id + 'other'}
-                        className={'m-1'}
+                      <input
+                        type="text"
+                        name="otherLabel"
+                        id="otherLabel"
+                        value={unlabelledNameFor[x._id]}
+                        onChange={e =>
+                          changeUnlabelledName(e.target.value, x._id)
+                        }
                         style={{
                           backgroundColor: useUnlabelledFor[x._id]
                             ? '#388e3c'
-                            : '#f1110d'
+                            : '#f1110d',
+                          border: 'none',
+                          color: 'white',
+                          outline: 'none',
+                          fontWeight: '700',
+                          fontSize: '75%',
+                          lineHeight: '1',
+                          verticalAlign: 'baseline',
+                          display: 'inline-block',
+                          borderRadius: '0.25rem',
+                          margin: '0.25rem',
+                          paddingLeft: '0.25rem',
+                          paddingRight: '0.25rem',
+                          width: '41px',
+                          fontFamily:
+                            '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'
                         }}
-                      >
-                        Other
-                      </Badge>
+                      />
                     </div>
                   </div>
                 );
