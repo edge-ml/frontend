@@ -92,7 +92,7 @@ const ValidationPage = () => {
           handleDelete={showConfirmation}
         />
       ) : null}
-      {baseModels && viewedModel ? (
+      {baseModels && viewedModel && modalState ? (
         <SelectedModelModalView
           isOpen={modalState}
           baseModels={baseModels}

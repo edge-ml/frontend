@@ -112,7 +112,7 @@ const ExportPage = () => {
           )
         }
       />
-      {baseModels.length && selectedModel ? (
+      {baseModels.length && selectedModel && modelModalState ? (
         <SelectedModelModalView
           isOpen={modelModalState}
           baseModels={baseModels}
