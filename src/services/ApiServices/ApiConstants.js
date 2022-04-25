@@ -24,7 +24,7 @@ module.exports = {
     GET: 'GET',
     POST: 'POST',
     PUT: 'PUT',
-    DELETE: 'DELETE'
+    DELETE: 'DELETE',
   },
 
   AUTH_ENDPOINTS: {
@@ -42,7 +42,7 @@ module.exports = {
     CHANGE_PASSWORD: 'changePassword',
     ID: 'id',
     CHANGE_USERNAME: 'changeUserName',
-    USERNAME: 'userName'
+    USERNAME: 'userName',
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',
@@ -56,14 +56,15 @@ module.exports = {
     SETDEVICEAPIKEY: 'deviceApi/setkey',
     GETDEVICEAPIKEY: 'deviceApi/getkey',
     REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
-    SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive'
+    SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive',
   },
   ML_ENDPOINTS: {
     MODELS: 'models',
     TRAIN: 'train',
+    TRAIN_ONGOING: 'train/ongoing',
     TRAINED_MODELS: 'models/trained',
-    DEPLOY: 'deploy'
-  }
+    DEPLOY: 'deploy',
+  },
 };
 
 module.exports.generateApiRequest = (
@@ -80,7 +81,7 @@ module.exports.generateApiRequest = (
     headers: {
       'Content-Type': 'application/json',
       ...(project && { project: project }),
-      Authorization: localStorageService.getAccessToken()
-    }
+      Authorization: localStorageService.getAccessToken(),
+    },
   };
 };

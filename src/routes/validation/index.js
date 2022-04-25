@@ -1,43 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import Loader from '../../modules/loader';
+import { useAsyncMemo, useIncrement } from '../../services/ReactHooksService';
 import {
   getTrainedModels,
   getModels,
   getTrained,
-  deleteTrained
+  deleteTrained,
+  getAllActiveTrainings,
 } from '../../services/ApiServices/MlService';
 import { ValidationView } from './ValidationView';
 import { DeleteConfirmationModalView } from './DeleteConfirmationModalView';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
+import { TrainedModelsView } from './TrainedModelsView';
+import { OngoingTrainingsView } from './OngoingTrainingsView';
+
+const REFRESH_INTERVAL = 500;
 
 const ValidationPage = () => {
-  let [models, setModels] = useState(null);
-  let [baseModels, setBaseModels] = useState(null);
-  let [labels, setLabels] = useState([]);
+  const [modelsInvalidate, modelsRefresh] = useIncrement();
+  const [trainingsInvalidate, trainingsRefresh] = useIncrement();
 
-  let [viewedModel, setViewedModel] = useState(null);
-  let [modalState, setModalState] = useState(false);
-  let [modelsToDelete, setModelsToDelete] = useState([]);
-  let [deleteModalState, setDeleteModalState] = useState(false);
+  const [labels, setLabels] = useState([]);
+  const [viewedModel, setViewedModel] = useState(null);
+  const [modalState, setModalState] = useState(false);
+  const [modelsToDelete, setModelsToDelete] = useState([]);
+  const [deleteModalState, setDeleteModalState] = useState(false);
   const location = useLocation();
   const history = useHistory();
 
+  const baseModels = useAsyncMemo(getModels, [], []);
+  const models = useAsyncMemo(getTrainedModels, [modelsInvalidate], []);
+  const trainings = useAsyncMemo(
+    getAllActiveTrainings,
+    [trainingsInvalidate],
+    []
+  );
+
   useEffect(() => {
-    getModels().then(m => {
-      setBaseModels(m);
-    });
+    if (trainings.length !== 0) {
+      setTimeout(() => {
+        trainingsRefresh();
+        modelsRefresh();
+      }, REFRESH_INTERVAL);
+    }
+  }, [trainings, trainingsInvalidate]);
 
-    update();
-  }, []);
-
-  const update = async () => {
-    const models = await getTrainedModels();
-    setModels(models); // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number}[]
-  };
-
-  const viewModel = async id => {
+  const viewModel = async (id) => {
     const model = await getTrained(id);
     const { labels } = await subscribeLabelingsAndLabels();
     setLabels(labels);
@@ -45,10 +55,10 @@ const ValidationPage = () => {
     setModalState(true);
   };
 
-  const deployModel = id => {
+  const deployModel = (id) => {
     history.push({
       pathname: location.pathname.replace('Validation', 'Deploy'),
-      state: { id }
+      state: { id },
     });
   };
 
@@ -56,7 +66,7 @@ const ValidationPage = () => {
     setModalState(false);
   };
 
-  const showConfirmation = ids => {
+  const showConfirmation = (ids) => {
     setModelsToDelete(ids);
     setDeleteModalState(true);
   };
@@ -65,20 +75,20 @@ const ValidationPage = () => {
     setDeleteModalState(false);
   };
 
-  const deleteModel = model => async () => {
+  const deleteModel = (model) => async () => {
     const succ = await deleteTrained(model.id);
     if (succ) {
       setModalState(false);
-      update();
+      modelsRefresh();
     }
   };
 
-  const deleteMultiple = async ids => {
+  const deleteMultiple = async (ids) => {
     const succ = (
-      await Promise.all([...ids].map(id => deleteTrained(id)))
+      await Promise.all([...ids].map((id) => deleteTrained(id)))
     ).reduce((prev, cur) => prev || cur, false);
     if (succ) {
-      update();
+      modelsRefresh();
     }
   };
 
@@ -86,10 +96,19 @@ const ValidationPage = () => {
     <Loader loading={!(models && baseModels)}>
       {models ? (
         <ValidationView
-          models={models}
-          onViewModel={viewModel}
-          onDeployModel={deployModel}
-          handleDelete={showConfirmation}
+          trained={
+            <TrainedModelsView
+              models={models}
+              onViewModel={viewModel}
+              onDeployModel={deployModel}
+              handleDelete={showConfirmation}
+            />
+          }
+          ongoing={
+            trainings.length ? (
+              <OngoingTrainingsView trainings={trainings} />
+            ) : null
+          }
         />
       ) : null}
       {baseModels && viewedModel && modalState ? (
