@@ -15,9 +15,12 @@ export const AdvancedHyperparameters = ({
 }) => {
   return (
     <div className="mb-3 mt-2 align-self-stretch">
-      <Card>
+      <Card className="shadow-none">
         <CardHeader
-          className="align-items-start text-left"
+          className={
+            'align-items-start text-left ' +
+            (showAdvanced ? '' : 'border-bottom-0')
+          }
           onClick={toggleShowAdvanced}
         >
           {showAdvanced ? (
