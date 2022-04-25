@@ -7,7 +7,7 @@ import {
   Card,
   CardHeader,
   CardBody,
-  Button
+  Container,
 } from 'reactstrap';
 
 import { Empty } from './components/Empty';
@@ -17,10 +17,10 @@ export const ExportView = ({
   selectModel,
   selectedModel,
 
-  detail
+  detail,
 }) => {
   return (
-    <div>
+    <Container>
       <Row>
         <Col xs={12} lg={4} className="pt-3">
           <Card className="text-left" style={{ maxHeight: '80vh' }}>
@@ -30,7 +30,7 @@ export const ExportView = ({
             <CardBody className="overflow-auto">
               {models.length ? (
                 <ListGroup>
-                  {models.map(m => (
+                  {models.map((m) => (
                     <ListGroupItem
                       key={m.id}
                       active={selectedModel && m.id === selectedModel.id}
@@ -57,6 +57,6 @@ export const ExportView = ({
           </Card>
         </Col>
       </Row>
-    </div>
+    </Container>
   );
 };
