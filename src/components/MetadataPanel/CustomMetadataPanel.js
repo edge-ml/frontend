@@ -40,9 +40,11 @@ class CustomMetadataPanel extends Component {
 
   onSave(newMetaData) {
     const metaDataAsObj = {};
-    newMetaData.forEach((elm) => {
-      metaDataAsObj[elm.key] = elm.data;
-    });
+    newMetaData
+      .filter((elm) => elm.key !== '')
+      .forEach((elm) => {
+        metaDataAsObj[elm.key] = elm.data;
+      });
     this.props.onUpdateMetaData({ metaData: metaDataAsObj });
     this.setState({
       editModalOpen: false,

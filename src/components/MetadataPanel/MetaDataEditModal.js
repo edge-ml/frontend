@@ -9,6 +9,7 @@ import {
   CardHeader,
   Button,
   CardFooter,
+  FormFeedback,
   Modal,
   ModalHeader,
   ModalBody,
@@ -28,6 +29,7 @@ class MetaDataEditModal extends Component {
     this.onEditKey = this.onEditKey.bind(this);
     this.onEditValue = this.onEditValue.bind(this);
     this.onDeleteMetaData = this.onDeleteMetaData.bind(this);
+    this.checkError = this.checkError.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -82,33 +84,51 @@ class MetaDataEditModal extends Component {
     });
   }
 
+  checkError(elm) {
+    const found = this.state.metaData.filter((d) => d.key == elm.key);
+    return found.length > 1;
+  }
+
   renderMetaData() {
     return this.state.metaData.map((elm, idx) => (
       <div key={idx}>
-        <div style={{ display: 'flex', marginTop: '4px', marginBottom: '4px' }}>
+        <InputGroup>
+          <InputGroupAddon addonType="prepend">
+            <Input
+              style={{
+                background: 'lightGrey',
+                borderBottomRightRadius: 0,
+                borderTopRightRadius: 0,
+              }}
+              value={elm.key}
+              onChange={(e) => this.onEditKey(e, idx)}
+              invalid={this.checkError(elm)}
+              placeholder="key"
+            ></Input>
+          </InputGroupAddon>
           <Input
-            style={{
-              background: 'lightGrey',
-              width: '33%',
-              borderBottomRightRadius: 0,
-              borderTopRightRadius: 0,
-            }}
-            value={elm.key}
-            onChange={(e) => this.onEditKey(e, idx)}
-          ></Input>
-          <Input
-            style={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
+            className="shadow-none"
+            // style={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
             value={elm.data}
             onChange={(e) => this.onEditValue(e, idx)}
+            invalid={this.checkError(elm)}
+            placeholder="data"
           ></Input>
-          <Button
-            style={{ marginLeft: '8px' }}
-            color="danger"
-            onClick={this.onDeleteMetaData}
-          >
-            X
-          </Button>
-        </div>
+          <InputGroupAddon addonType="prepend">
+            <Button
+              style={{
+                borderBottomRightRadius: '0.25rem',
+                borderTopRightRadius: '0.25rem',
+              }}
+              color="danger"
+              onClick={(e) => this.onDeleteMetaData(idx)}
+            >
+              X
+            </Button>
+          </InputGroupAddon>
+
+          <FormFeedback>Keys with the same name are not allowed.</FormFeedback>
+        </InputGroup>
       </div>
     ));
   }
