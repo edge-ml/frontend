@@ -63,7 +63,7 @@ export const ExportDetailView = ({
               <Select
                 value={nPlatform}
                 onChange={x => onPlatform(x.value)}
-                options={platforms}
+                options={nPlatforms}
               />
             </span>
             <Button onClick={onClickDownloadModel} className="ml-3">
