@@ -44,5 +44,15 @@ export const platforms = [
       </PrismCode>
     ),
     extension: 'js'
+  },
+  {
+    value: 'arduino_cpp',
+    label: 'Arduino Cpp',
+    prism: ({ code }) => (
+      <PrismCode component="pre" className="language-c">
+        {code}
+      </PrismCode>
+    ),
+    extension: 'hpp'
   }
 ];
