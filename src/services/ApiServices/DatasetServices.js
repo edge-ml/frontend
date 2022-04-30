@@ -84,7 +84,7 @@ module.exports.deleteDataset = id => {
   });
 };
 
-module.exports.updateDataset = dataset => {
+module.exports.updateDataset = (dataset, onlyMetaData) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -99,7 +99,9 @@ module.exports.updateDataset = dataset => {
           apiConsts.generateApiRequest(
             apiConsts.HTTP_METHODS.GET,
             apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`
+            apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`,
+            {},
+            { onlyMetaData: onlyMetaData }
           )
         ).then(updatedDataset => {
           resolve(updatedDataset.data);

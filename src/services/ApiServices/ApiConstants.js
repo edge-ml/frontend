@@ -63,7 +63,8 @@ module.exports = {
     TRAIN: 'train',
     TRAIN_ONGOING: 'train/ongoing',
     TRAINED_MODELS: 'models/trained',
-    DEPLOY: 'deploy'
+    DEPLOY: 'deploy',
+    PARAMETERS: 'parameters'
   }
 };
 
@@ -71,13 +72,15 @@ module.exports.generateApiRequest = (
   method = this.HTTP_METHODS.GET,
   baseUri = this.API_URI,
   endpoint = this.API_ENDPOINTS.DEFAULT,
-  body = {}
+  body = {},
+  params = {}
 ) => {
   const project = localStorageService.getProject();
   return {
     method: method,
     url: baseUri + endpoint,
     data: body,
+    params: params,
     headers: {
       'Content-Type': 'application/json',
       ...(project && { project: project }),
