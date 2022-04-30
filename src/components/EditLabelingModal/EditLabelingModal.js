@@ -241,6 +241,11 @@ class EditLabelingModal extends Component {
           this.props.onDeleteLabeling(id, []);
         }
       }
+    } else {
+      //No labeling conflict, just ask for permissions to delete
+      if (window.confirm('Are you sure to delete this labeling?')) {
+        this.props.onDeleteLabeling(id, []);
+      }
     }
   }
 

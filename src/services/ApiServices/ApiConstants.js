@@ -12,12 +12,13 @@ module.exports = {
       ? '/api/'
       : window.location.host === 'edge-ml.ngrok.io'
       ? 'http://backend.edge-ml.ngrok.io/api/'
-      : 'http://localhost:3000/api/',
-
+      : 'http://localhost:3001/api/',
   ML_URI:
     process.env.NODE_ENV === 'production'
       ? '/ml/'
-      : 'http://localhost:8000/api/',
+      : window.location.host === 'edge-ml.ngrok.io'
+      ? 'http://ml.edge-ml.ngrok.io/ml/'
+      : 'http://localhost:3003/ml/',
 
   HTTP_METHODS: {
     GET: 'GET',
@@ -45,6 +46,7 @@ module.exports = {
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',
+    DATASETS_CAN_EDIT: 'datasets/canedit',
     DEVICE: 'devices',
     LABEL_DEFINITIONS: 'labelDefinitions',
     DATASET_LABEL_DEFINITIONS: 'datasetLabelDefinitions',
@@ -57,7 +59,11 @@ module.exports = {
     SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive'
   },
   ML_ENDPOINTS: {
-    PARAMETERS: 'parameters'
+    MODELS: 'models',
+    TRAIN: 'train',
+    TRAIN_ONGOING: 'train/ongoing',
+    TRAINED_MODELS: 'models/trained',
+    DEPLOY: 'deploy'
   }
 };
 

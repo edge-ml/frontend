@@ -110,6 +110,13 @@ class PasswordSettings extends Component {
           id="buttonSaveNewPassword"
           color="primary"
           className="m-1 mr-auto"
+          disabled={
+            !(
+              this.state.currentPassword &&
+              this.state.newConfirmationPassword &&
+              this.state.newPassword
+            )
+          }
           onClick={this.onPasswordChangeSubmit}
         >
           Save new password

@@ -12,6 +12,8 @@ import {
   faPen,
   faBrain,
   faLightbulb,
+  faCheck,
+  faFileExport
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -28,7 +30,7 @@ class Navbar extends Component {
 
   getNavBarItemClasses(location) {
     const project = this.props.projects.filter(
-      (x) => x._id === this.props.currentProjectId
+      x => x._id === this.props.currentProjectId
     )[0];
     const isSelected =
       this.props.location.pathname.toLowerCase() ===
@@ -48,7 +50,7 @@ class Navbar extends Component {
 
   toggleUserSettingsModal() {
     this.setState({
-      userSettingsModalOpen: !this.state.userSettingsModalOpen,
+      userSettingsModalOpen: !this.state.userSettingsModalOpen
     });
   }
 
@@ -94,14 +96,14 @@ class Navbar extends Component {
                     onClick={() => this.props.onProjectClick(project._id)}
                     style={{
                       overflow: 'hidden',
-                      textOverflow: 'ellipsis',
+                      textOverflow: 'ellipsis'
                     }}
                   >
                     <FontAwesomeIcon
                       style={{
                         color: '#8b8d8f',
                         float: 'left',
-                        cursor: 'pointer',
+                        cursor: 'pointer'
                       }}
                       icon={
                         this.props.currentProjectId === project._id
@@ -115,7 +117,7 @@ class Navbar extends Component {
                       style={{
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        cursor: 'pointer',
+                        cursor: 'pointer'
                       }}
                     >
                       <b>{project.name}</b>
@@ -127,7 +129,9 @@ class Navbar extends Component {
                         ['Datasets', faDatabase],
                         ['Labelings', faPen],
                         ['Model', faBrain],
-                        ['Settings', faCogs],
+                        ['Validation', faCheck],
+                        ['Deploy', faFileExport],
+                        ['Settings', faCogs]
                       ].map((elm, indx) => (
                         <div
                           onClick={() => {
@@ -151,14 +155,13 @@ class Navbar extends Component {
 
           <div
             onClick={() => this.props.onProjectEditModal(true)}
-            style={{}}
             className="w-100 mt-3 pt-2 pb-2 navbar-project text-center"
             style={{
               backgroundColor: '#eee',
               border: '0px solid transparent',
               color: '#666',
               fontSize: '0.9rem',
-              cursor: 'pointer',
+              cursor: 'pointer'
             }}
           >
             <FontAwesomeIcon
@@ -199,7 +202,7 @@ class Navbar extends Component {
               height: '1px',
               backgroundColor: 'darkgray',
               opacity: '0.3',
-              width: '95%',
+              width: '95%'
             }}
           ></div>
           <div
@@ -214,7 +217,7 @@ class Navbar extends Component {
                 width: '26px',
                 height: '26px',
                 borderRadius: '13px',
-                overflow: 'hidden',
+                overflow: 'hidden'
               }}
               className="mr-2 d-flex justify-content-center align-items-center"
             >

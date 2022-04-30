@@ -158,7 +158,9 @@ module.exports.generateCSV = (dataset, props_labelings, props_labels) => {
 function extractTimeSeries(timeData, i) {
   const timeSeries = {
     name: timeData[0][i].replace('sensor_', '').split('[')[0],
-    unit: timeData[0][i].match(/\[(.*)\]/).pop(),
+    unit: /\[(.*)\]/.test(timeData[0][i])
+      ? timeData[0][i].match(/\[(.*)\]/).pop()
+      : '',
     end: parseInt(timeData[timeData.length - 1][0], 10),
     start: parseInt(timeData[1][0], 10),
     data: []
@@ -356,7 +358,9 @@ function checkHeaders(timeData) {
         });
       }
     }
-    errors.push(currentErrors);
+    if (currentErrors.length) {
+      errors.push(currentErrors);
+    }
   }
   return errors;
 }

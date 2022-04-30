@@ -233,7 +233,12 @@ class CreateNewDatasetModal extends Component {
       this.setState({ onUploading: false });
     } catch (e) {
       this.setState({ onUploading: false });
-      window.alert('An error occurred while uploading the dataset');
+      if (e.status === 413) {
+        // HTTP Payload Too Large
+        window.alert('Dataset is too large');
+      } else {
+        window.alert('An error occurred while uploading the dataset');
+      }
     }
   }
 

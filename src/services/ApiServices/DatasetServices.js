@@ -33,6 +33,22 @@ module.exports.getDataset = (id, callback) => {
   });
 };
 
+module.exports.getDatasetLock = id => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DATASETS_CAN_EDIT + `/${id}`
+      )
+    )
+      .then(lock => {
+        resolve(lock.data ? lock.data.canEdit : undefined);
+      })
+      .catch(err => reject(err.response));
+  });
+};
+
 module.exports.deleteDatasets = ids => {
   return new Promise((resolve, reject) => {
     let promises = [];
@@ -87,6 +103,31 @@ module.exports.updateDataset = dataset => {
           )
         ).then(updatedDataset => {
           resolve(updatedDataset.data);
+        })
+      )
+      .catch(err => reject(err.response));
+  });
+};
+
+module.exports.changeCanEditDataset = (dataset, lock) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.PUT,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DATASETS_CAN_EDIT + `/${dataset['_id']}`,
+        { canEdit: lock }
+      )
+    )
+      .then(() =>
+        axios(
+          apiConsts.generateApiRequest(
+            apiConsts.HTTP_METHODS.GET,
+            apiConsts.API_URI,
+            apiConsts.API_ENDPOINTS.DATASETS_CAN_EDIT + `/${dataset['_id']}`
+          )
+        ).then(updatedLock => {
+          resolve(updatedLock.data ? updatedLock.data.canEdit : undefined);
         })
       )
       .catch(err => reject(err.response));

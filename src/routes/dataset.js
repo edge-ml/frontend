@@ -21,7 +21,9 @@ import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingSer
 import {
   updateDataset,
   deleteDataset,
-  getDataset
+  getDataset,
+  getDatasetLock,
+  changeCanEditDataset
 } from '../services/ApiServices/DatasetServices';
 
 import {
@@ -47,7 +49,7 @@ class DatasetPage extends Component {
         selectedLabelingId: undefined,
         selectedLabelTypeId: undefined,
         selectedLabelTypes: undefined,
-        canEdit: false,
+        canEdit: undefined,
         drawingId: undefined,
         drawingPosition: undefined,
         newPosition: undefined,
@@ -175,6 +177,11 @@ class DatasetPage extends Component {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
     getDataset(this.props.match.params.id).then(this.onDatasetChanged);
+    getDatasetLock(this.props.match.params.id).then(canEdit =>
+      this.setState({
+        controlStates: { ...this.state.controlStates, canEdit }
+      })
+    );
   }
 
   componentWillUnmount() {
@@ -769,8 +776,10 @@ class DatasetPage extends Component {
   }
 
   onCanEditChanged(canEdit) {
-    this.setState({
-      controlStates: { ...this.state.controlStates, canEdit: canEdit }
+    changeCanEditDataset(this.state.dataset, canEdit).then(newCanEdit => {
+      this.setState({
+        controlStates: { ...this.state.controlStates, canEdit: newCanEdit }
+      });
     });
   }
 
@@ -788,7 +797,8 @@ class DatasetPage extends Component {
   }
 
   render() {
-    if (!this.state.isReady) return <Loader loading={true} />;
+    if (!this.state.isReady || this.state.controlStates.canEdit === undefined)
+      return <Loader loading={true} />;
 
     let selectedLabeling = this.state.labelings.filter(
       labeling =>
