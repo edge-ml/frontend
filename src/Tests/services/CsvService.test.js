@@ -103,7 +103,7 @@ describe('Generate dataset and labels', () => {
 
   it('No header errors', () => {
     const checkResult = checkHeaders(processedCsvNoLabels);
-    expect(checkResult).toEqual([[]]);
+    expect(checkResult).toEqual([]);
   });
 
   it("'time' keyword not present", () => {
