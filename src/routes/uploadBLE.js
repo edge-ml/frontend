@@ -36,7 +36,8 @@ class UploadBLE extends Component {
       deviceSensors: undefined,
       connectedDeviceData: undefined,
       selectedSensors: new Set(),
-      stream: true
+      stream: true,
+      fullSampleRate: false
     };
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
@@ -52,6 +53,7 @@ class UploadBLE extends Component {
     this.onDatasetNameChanged = this.onDatasetNameChanged.bind(this);
     this.resetState = this.resetState.bind(this);
     this.onToggleStream = this.onToggleStream.bind(this);
+    this.onToggleSampleRate = this.onToggleSampleRate.bind(this);
     this.setCurrentData = this.setCurrentData.bind(this);
     this.onChangeSampleRate = this.onChangeSampleRate.bind(this);
     this.onConnection = this.onConnection.bind(this);
@@ -129,6 +131,13 @@ class UploadBLE extends Component {
     const stream = this.state.stream;
     this.setState({
       stream: !stream
+    });
+  }
+
+  onToggleSampleRate() {
+    const fullSampleRate = this.state.fullSampleRate;
+    this.setState({
+      fullSampleRate: !fullSampleRate
     });
   }
 
@@ -323,6 +332,8 @@ class UploadBLE extends Component {
                 recorderState={this.state.recorderState}
                 sensorsSelected={this.state.selectedSensors.size > 0}
                 onToggleStream={this.onToggleStream}
+                onToggleSampleRate={this.onToggleSampleRate}
+                fullSampleRate={this.state.fullSampleRate}
               ></BlePanelRecorderSettings>
               {this.state.recorderState === 'recording' && this.state.stream ? (
                 <div className="shadow p-3 mb-5 bg-white rounded">
@@ -331,7 +342,7 @@ class UploadBLE extends Component {
                     selectedSensors={this.state.selectedSensors}
                     lastData={this.currentData}
                     sensorKeys={this.sensorKeys}
-                    sampleRate={this.state.sampleRate}
+                    fullSampleRate={this.state.fullSampleRate}
                   ></BlePanelRecordingDisplay>
                 </div>
               ) : null}
