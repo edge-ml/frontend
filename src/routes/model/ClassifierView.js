@@ -64,7 +64,7 @@ export const ClassifierView = ({
           ></Input>
         </InputGroup>
         <FormFeedback invalid></FormFeedback>
-        <h6 style={{ marginTop: '16px' }}>Hyperparameters</h6>
+        <h6 className="mt-3">Hyperparameters</h6>
         <HyperparameterView
           model={models.find(m => m.id === parseInt(selectedModelId, 10))}
           hyperparameters={hyperparameters}

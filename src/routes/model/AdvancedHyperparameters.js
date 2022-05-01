@@ -28,7 +28,7 @@ export const AdvancedHyperparameters = ({
           ) : (
             <FontAwesomeIcon icon={faCaretRight} />
           )}
-          <span className="font-weight-bold"> Advanced Hyperparameters</span>
+          <span style={{ fontWeight: 500 }}> Advanced Hyperparameters</span>
         </CardHeader>
         <Collapse isOpen={showAdvanced}>
           <CardBody>
