@@ -39,7 +39,7 @@ class NumberHyperparameter extends Component {
             {this.props.display_name}
           </InputGroupText>
         </InputGroupAddon>
-        <InputGroupAddon>
+        <InputGroupAddon addonType="append">
           <Input
             type="number"
             value={this.props.value}
