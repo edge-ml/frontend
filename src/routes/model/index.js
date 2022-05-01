@@ -17,10 +17,10 @@ class ModelPage extends Component {
     this.state = {
       ready: true,
       inviteRequested: false,
-      labelings: [],
-      labels: [],
+      labelings: undefined,
+      labels: undefined,
       selectedLabeling: undefined,
-      sensorStreams: [],
+      sensorStreams: undefined,
       selectedSensorStreams: [],
       models: [],
       selectedModelId: undefined,
