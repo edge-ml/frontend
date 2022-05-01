@@ -131,16 +131,37 @@ function BlePanelRecorderSettings(props) {
           >
             Sensors need to be selected
           </div>
-          <div>
-            <Input
-              onChange={props.onToggleStream}
-              className="stream-check"
-              type="checkbox"
-              id="stream-check"
-            />
-            <label htmlFor="stream-check">Disable sensor streaming</label>
-          </div>
+          <small>
+            <div>
+              <div>
+                <Input
+                  onChange={props.onToggleStream}
+                  className="stream-check"
+                  type="checkbox"
+                  id="stream-check"
+                />
+                <label htmlFor="stream-check">Disable sensor streaming</label>
+              </div>
+              <div>
+                <Input
+                  onChange={props.onToggleSampleRate}
+                  className="sampleRate-check"
+                  type="checkbox"
+                  id="sampleRate-check"
+                />
+                <label htmlFor="sampleRate-check">
+                  Show sensor data at full sampling rate
+                </label>
+              </div>
+            </div>
+          </small>
         </div>
+        {props.fullSampleRate ? (
+          <small className="text-danger">
+            <strong>Warning: </strong>
+            Showing sensor data at full sample rate can affect performance.
+          </small>
+        ) : null}
       </div>
     </div>
   );
