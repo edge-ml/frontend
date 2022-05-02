@@ -70,6 +70,8 @@ try {
   (key = "${deviceApiKey}"),
   (name = "${datasetName}"),
   (useDeviceTime = ${useServerTime})
+  (metaData = { "KEY": "VALUE" })
+  (datasetLabel = "labeling_label")
   );
 } catch (e) {
   // Error occurred, cannot use the collector as a function to upload
@@ -104,6 +106,8 @@ module.exports.codeJs = (
     (key = "${deviceApiKey}"),
     (name = "${datasetName}"),
     (useDeviceTime = ${useServerTime})
+    (metaData = { "KEY": "VALUE" })
+    (datasetLabel = "labeling_label")
     );
   } catch (e) {
     // Error occurred, cannot use the collector as a function to upload
