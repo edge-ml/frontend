@@ -17,10 +17,10 @@ class ModelPage extends Component {
     this.state = {
       ready: true,
       inviteRequested: false,
-      labelings: [],
-      labels: [],
+      labelings: undefined,
+      labels: undefined,
       selectedLabeling: undefined,
-      sensorStreams: [],
+      sensorStreams: undefined,
       selectedSensorStreams: [],
       models: [],
       selectedModelId: undefined,
@@ -30,27 +30,26 @@ class ModelPage extends Component {
       trainSuccess: undefined,
       useUnlabelledFor: {},
       unlabelledNameFor: {},
-      showAdvanced: false
+      showAdvanced: false,
     };
 
     this.initComponent = this.initComponent.bind(this);
-    this.handleHyperparameterChange = this.handleHyperparameterChange.bind(
-      this
-    );
+    this.handleHyperparameterChange =
+      this.handleHyperparameterChange.bind(this);
   }
 
   formatHyperparameters(hyperparameters) {
-    return Object.entries(hyperparameters).map(e => {
+    return Object.entries(hyperparameters).map((e) => {
       return {
         parameter_name: e[0],
         state:
           e[1].parameter_type === 'number'
             ? e[1].default
             : e[1].multi_select
-            ? e[1].default.map(x => {
+            ? e[1].default.map((x) => {
                 return { value: x, label: x };
               })
-            : { value: e[1].default, label: e[1].default }
+            : { value: e[1].default, label: e[1].default },
       };
     });
   }
@@ -58,11 +57,11 @@ class ModelPage extends Component {
   handleHyperparameterChange(hyperparameter) {
     const newState = hyperparameter.state;
     const parameter_name = hyperparameter.parameter_name;
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const params = prevState.hyperparameters;
-      params.find(e => e.parameter_name === parameter_name).state = newState;
+      params.find((e) => e.parameter_name === parameter_name).state = newState;
       return {
-        hyperparameters: params
+        hyperparameters: params,
       };
     });
   }
@@ -75,9 +74,9 @@ class ModelPage extends Component {
     Promise.all([
       subscribeLabelingsAndLabels(),
       getProjectSensorStreams(this.props.project),
-      getModels()
+      getModels(),
     ])
-      .then(result => {
+      .then((result) => {
         this.setState({
           selectedLabeling: result[0].labelings[0]
             ? result[0].labelings[0]._id
@@ -100,17 +99,17 @@ class ModelPage extends Component {
             : {},
           hyperparameters: result[2][0]
             ? this.formatHyperparameters(result[2][0].hyperparameters)
-            : []
+            : [],
         });
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }
 
-  handleTrainButton = e => {
+  handleTrainButton = (e) => {
     const resetAlert = () => {
       setTimeout(() => {
         this.setState({
-          alertText: undefined
+          alertText: undefined,
         });
       }, 2000);
     };
@@ -120,87 +119,89 @@ class ModelPage extends Component {
       selected_timeseries: this.state.selectedSensorStreams,
       target_labeling: this.state.selectedLabeling,
       labels: this.state.labelings.find(
-        x => x._id == this.state.selectedLabeling
+        (x) => x._id == this.state.selectedLabeling
       ).labels,
       hyperparameters: this.state.hyperparameters,
       model_name: this.state.modelName,
       use_unlabelled: this.state.useUnlabelledFor[this.state.selectedLabeling],
-      unlabelled_name: this.state.unlabelledNameFor[this.state.selectedLabeling]
+      unlabelled_name:
+        this.state.unlabelledNameFor[this.state.selectedLabeling],
     })
       .then(() => {
         this.setState({
           alertText: 'Training started successfully',
-          trainSuccess: true
+          trainSuccess: true,
         });
         resetAlert();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         this.setState({
           alertText: err.data.detail,
-          trainSuccess: false
+          trainSuccess: false,
         });
         resetAlert();
       });
   };
 
-  handleLabelingChange = labelingId => {
+  handleLabelingChange = (labelingId) => {
     this.setState({ selectedLabeling: labelingId });
   };
 
   handleUseUnlabelledChange = (checked, id) => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       useUnlabelledFor: {
         ...prevState.useUnlabelledFor,
-        [id]: checked
-      }
+        [id]: checked,
+      },
     }));
   };
 
   handleUnlabelledNameChange = (name, id) => {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       unlabelledNameFor: {
         ...prevState.unlabelledNameFor,
-        [id]: name
-      }
+        [id]: name,
+      },
     }));
   };
 
-  handleSelectedSensorStreamChange = sensor => {
+  handleSelectedSensorStreamChange = (sensor) => {
     // TODO fix this, use prevState
     if (this.state.selectedSensorStreams.includes(sensor)) {
       this.setState({
         selectedSensorStreams: this.state.selectedSensorStreams.filter(
-          z => z !== sensor
-        )
+          (z) => z !== sensor
+        ),
       });
       return;
     }
     var tmp = this.state.selectedSensorStreams;
     tmp.push(sensor);
     this.setState({
-      selectedSensorStreams: tmp
+      selectedSensorStreams: tmp,
     });
   };
 
-  handleModelSelectionChange = modelSelection => {
+  handleModelSelectionChange = (modelSelection) => {
     this.setState({ modelSelection });
     this.setState({
-      selectedModelId: modelSelection.value
+      selectedModelId: modelSelection.value,
     });
     this.setState({
       hyperparameters: this.formatHyperparameters(
-        this.state.models.find(m => m.id === parseInt(modelSelection.value, 10))
-          .hyperparameters
-      )
+        this.state.models.find(
+          (m) => m.id === parseInt(modelSelection.value, 10)
+        ).hyperparameters
+      ),
     });
   };
 
-  handleModelNameChange = e => {
+  handleModelNameChange = (e) => {
     this.setState({ modelName: e.target.value });
   };
 
-  toggleShowAdvanced = e => {
+  toggleShowAdvanced = (e) => {
     this.setState({ showAdvanced: !this.state.showAdvanced });
   };
 
@@ -218,7 +219,7 @@ class ModelPage extends Component {
                   zIndex: 100,
                   bottom: '40px',
                   left: '50%',
-                  marginLeft: '-100px'
+                  marginLeft: '-100px',
                 }}
               >
                 {this.state.alertText}

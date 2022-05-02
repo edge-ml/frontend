@@ -4,7 +4,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  FormFeedback
+  FormFeedback,
 } from 'reactstrap';
 import SpinnerButton from '../Common/SpinnerButton';
 import PropTypes from 'prop-types';
@@ -18,7 +18,7 @@ function BlePanelRecorderSettings(props) {
   const [sensorNotSelectedError, setSensorNotSelectedError] = useState(false);
   const [buttonErrorAnimate, setButtonErrorAnimate] = useState(false);
 
-  const onClickRecordButton = e => {
+  const onClickRecordButton = (e) => {
     const tmpNameError = props.datasetName === '';
     const tmpSamplingRateError = props.sampleRate <= 0 || props.sampleRate > 50;
 
@@ -45,7 +45,7 @@ function BlePanelRecorderSettings(props) {
       ? 'Starting recording'
       : 'Stopping recording';
 
-  const onDatasetNameChanged = e => {
+  const onDatasetNameChanged = (e) => {
     setNameError(false);
     props.onDatasetNameChanged(e);
   };
@@ -100,14 +100,14 @@ function BlePanelRecorderSettings(props) {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center'
+            alignItems: 'center',
           }}
         >
           <SpinnerButton
             style={
               buttonErrorAnimate
                 ? {
-                    animation: 'hzejgT 0.3s ease 0s 1 normal none running'
+                    animation: 'hzejgT 0.3s ease 0s 1 normal none running',
                   }
                 : null
             }
@@ -131,30 +131,51 @@ function BlePanelRecorderSettings(props) {
           >
             Sensors need to be selected
           </div>
-          <div>
-            <Input
-              onChange={props.onToggleStream}
-              className="stream-check"
-              type="checkbox"
-              id="stream-check"
-            />
-            <label htmlFor="stream-check">Disable sensor streaming</label>
-          </div>
+          <small>
+            <div>
+              <div>
+                <Input
+                  onChange={props.onToggleStream}
+                  className="stream-check"
+                  type="checkbox"
+                  id="stream-check"
+                />
+                <label htmlFor="stream-check">Disable sensor streaming</label>
+              </div>
+              <div>
+                <Input
+                  onChange={props.onToggleSampleRate}
+                  className="sampleRate-check"
+                  type="checkbox"
+                  id="sampleRate-check"
+                />
+                <label htmlFor="sampleRate-check">
+                  Show sensor data at full sampling rate
+                </label>
+              </div>
+            </div>
+          </small>
         </div>
+        {props.fullSampleRate ? (
+          <small className="text-danger">
+            <strong>Warning: </strong>
+            Showing sensor data at full sample rate can affect performance.
+          </small>
+        ) : null}
       </div>
     </div>
   );
 }
 
 BlePanelRecorderSettings.defaultProps = {
-  disabled: false
+  disabled: false,
 };
 
 BlePanelRecorderSettings.propTypes = {
   recorderState: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.oneOf(['ready', 'startup', 'recording', 'finalizing'])
-  ])
+    PropTypes.oneOf(['ready', 'startup', 'recording', 'finalizing']),
+  ]),
 };
 
 export default BlePanelRecorderSettings;

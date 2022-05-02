@@ -11,7 +11,7 @@ export const HyperparameterView = ({
   model,
   hyperparameters,
   handleHyperparameterChange,
-  isAdvanced
+  isAdvanced,
 }) => {
   return (
     <Loader loading={!model}>
@@ -19,18 +19,18 @@ export const HyperparameterView = ({
         <Row>
           {model &&
             Object.keys(model.hyperparameters)
-              .filter(h => model.hyperparameters[h].is_advanced == isAdvanced)
-              .map((h, index) => {
+              .filter((h) => model.hyperparameters[h].is_advanced == isAdvanced)
+              .map((h) => {
                 if (model.hyperparameters[h].parameter_type === 'number') {
                   return (
                     <Col className="col-4 pl-0" style={{ minWidth: '400px' }}>
                       <NumberHyperparameter
                         {...model.hyperparameters[h]}
-                        id={index}
+                        id={'input_' + model.hyperparameters[h].parameter_name}
                         handleChange={handleHyperparameterChange}
                         value={
                           hyperparameters.find(
-                            e =>
+                            (e) =>
                               e.parameter_name ===
                               model.hyperparameters[h].parameter_name
                           ).state
@@ -45,11 +45,11 @@ export const HyperparameterView = ({
                     <Col className="col-4 pl-0" style={{ minWidth: '400px' }}>
                       <SelectionHyperparameter
                         {...model.hyperparameters[h]}
-                        id={index}
+                        id={'input_' + model.hyperparameters[h].parameter_name}
                         handleChange={handleHyperparameterChange}
                         value={
                           hyperparameters.find(
-                            e =>
+                            (e) =>
                               e.parameter_name ===
                               model.hyperparameters[h].parameter_name
                           ).state

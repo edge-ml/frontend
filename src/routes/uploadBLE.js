@@ -9,12 +9,12 @@ import BlePanelConnectDevice from '../components/BLE/BlePanelConnectDevice';
 import {
   getDevices,
   getDeviceById,
-  getDeviceByNameAndGeneration
+  getDeviceByNameAndGeneration,
 } from '../services/ApiServices/DeviceService';
 
 import {
   prepareSensorBleObject,
-  findDeviceIdById
+  findDeviceIdById,
 } from '../services/bleService';
 
 import BleDeviceProcessor from '../components/BLE/BleDeviceProcessor';
@@ -36,7 +36,8 @@ class UploadBLE extends Component {
       deviceSensors: undefined,
       connectedDeviceData: undefined,
       selectedSensors: new Set(),
-      stream: true
+      stream: true,
+      fullSampleRate: false,
     };
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
@@ -52,6 +53,7 @@ class UploadBLE extends Component {
     this.onDatasetNameChanged = this.onDatasetNameChanged.bind(this);
     this.resetState = this.resetState.bind(this);
     this.onToggleStream = this.onToggleStream.bind(this);
+    this.onToggleSampleRate = this.onToggleSampleRate.bind(this);
     this.setCurrentData = this.setCurrentData.bind(this);
     this.onChangeSampleRate = this.onChangeSampleRate.bind(this);
     this.onConnection = this.onConnection.bind(this);
@@ -82,19 +84,19 @@ class UploadBLE extends Component {
     tmpDeviceSensors[bleKey].sampleRate = parseInt(sampleRate);
     console.log(tmpDeviceSensors);
     this.setState({
-      deviceSensors: tmpDeviceSensors
+      deviceSensors: tmpDeviceSensors,
     });
   }
 
   onDatasetNameChanged(e) {
     this.setState({
-      datasetName: e.target.value
+      datasetName: e.target.value,
     });
   }
 
   onGlobalSampleRateChanged(e) {
     this.setState({
-      sampleRate: e.target.value
+      sampleRate: e.target.value,
     });
   }
 
@@ -109,7 +111,7 @@ class UploadBLE extends Component {
       deviceSensors: undefined,
       connectedDeviceData: undefined,
       selectedSensors: new Set(),
-      stream: true
+      stream: true,
     });
   }
 
@@ -121,19 +123,26 @@ class UploadBLE extends Component {
       tmpSelectedSensors.add(sensorBleKey);
     }
     this.setState({
-      selectedSensors: tmpSelectedSensors
+      selectedSensors: tmpSelectedSensors,
     });
   }
 
   onToggleStream() {
     const stream = this.state.stream;
     this.setState({
-      stream: !stream
+      stream: !stream,
+    });
+  }
+
+  onToggleSampleRate() {
+    const fullSampleRate = this.state.fullSampleRate;
+    this.setState({
+      fullSampleRate: !fullSampleRate,
     });
   }
 
   onLatencyChanged(sensorId, latency) {
-    this.setState(prevState => {
+    this.setState((prevState) => {
       const nextSensorMap = new Map(prevState.sensorMap);
       const data = nextSensorMap.get(sensorId);
       data.latency = latency;
@@ -158,7 +167,7 @@ class UploadBLE extends Component {
         this.setState({ recorderState: 'finalizing' });
         await this.bleDeviceProcessor.stopRecording();
         // Upload dataset here
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         this.setState({ recorderState: 'ready' });
         break;
     }
@@ -189,11 +198,11 @@ class UploadBLE extends Component {
   async getDeviceInfo() {
     let options = {
       filters: [{ services: [this.deviceInfoServiceUuid] }],
-      optionalServices: [this.sensorServiceUuid]
+      optionalServices: [this.sensorServiceUuid],
     };
     let newOptions = {
       acceptAllDevices: true,
-      optionalServices: [this.deviceInfoServiceUuid, this.sensorServiceUuid]
+      optionalServices: [this.deviceInfoServiceUuid, this.sensorServiceUuid],
     };
     const bleDevice = await navigator.bluetooth.requestDevice(options);
     //const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
@@ -202,20 +211,20 @@ class UploadBLE extends Component {
 
   async connectDevice(bleDevice) {
     bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
-    const primaryService = await bleDevice.gatt.connect().then(server => {
+    const primaryService = await bleDevice.gatt.connect().then((server) => {
       return server.getPrimaryService(this.sensorServiceUuid);
     });
-    const deviceInfoService = await bleDevice.gatt.connect().then(server => {
+    const deviceInfoService = await bleDevice.gatt.connect().then((server) => {
       return server.getPrimaryService(this.deviceInfoServiceUuid);
     });
-    const deviceIdentifierCharacteristic = await deviceInfoService.getCharacteristic(
-      this.deviceIdentifierUuid
-    );
-    const deviceGenerationCharacteristic = await deviceInfoService.getCharacteristic(
-      this.deviceGenerationUuid
-    );
-    const deviceIdentifierArrayBuffer = await deviceIdentifierCharacteristic.readValue();
-    const deviceGenerationArrayBuffer = await deviceGenerationCharacteristic.readValue();
+    const deviceIdentifierCharacteristic =
+      await deviceInfoService.getCharacteristic(this.deviceIdentifierUuid);
+    const deviceGenerationCharacteristic =
+      await deviceInfoService.getCharacteristic(this.deviceGenerationUuid);
+    const deviceIdentifierArrayBuffer =
+      await deviceIdentifierCharacteristic.readValue();
+    const deviceGenerationArrayBuffer =
+      await deviceGenerationCharacteristic.readValue();
     const deviceName = this.textEncoder.decode(deviceIdentifierArrayBuffer);
     const deviceGeneration = this.textEncoder.decode(
       deviceGenerationArrayBuffer
@@ -227,7 +236,7 @@ class UploadBLE extends Component {
     console.log(deviceInfo);
     this.setState({
       connectedDeviceData: deviceInfo.device,
-      deviceSensors: prepareSensorBleObject(deviceInfo.sensors)
+      deviceSensors: prepareSensorBleObject(deviceInfo.sensors),
     });
     return [bleDevice, primaryService];
   }
@@ -250,7 +259,7 @@ class UploadBLE extends Component {
       this
     );
     this.setState({
-      connectedBLEDevice: bleDevice
+      connectedBLEDevice: bleDevice,
     });
   }
 
@@ -259,16 +268,15 @@ class UploadBLE extends Component {
       .then(this.connectDevice)
       .then(this.getSensorCharacteristics)
       .then(this.onConnection)
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         ga_connectBluetooth(this.state.connectedDeviceData, err, false);
       });
   }
 
   setCurrentData(sensorData) {
-    this.currentData[
-      this.sensorKeys.indexOf(sensorData['sensor'].toString())
-    ] = [sensorData['time'], sensorData['data']];
+    this.currentData[this.sensorKeys.indexOf(sensorData['sensor'].toString())] =
+      [sensorData['time'], sensorData['data']];
   }
 
   async toggleBLEDeviceConnection() {
@@ -323,6 +331,8 @@ class UploadBLE extends Component {
                 recorderState={this.state.recorderState}
                 sensorsSelected={this.state.selectedSensors.size > 0}
                 onToggleStream={this.onToggleStream}
+                onToggleSampleRate={this.onToggleSampleRate}
+                fullSampleRate={this.state.fullSampleRate}
               ></BlePanelRecorderSettings>
               {this.state.recorderState === 'recording' && this.state.stream ? (
                 <div className="shadow p-3 mb-5 bg-white rounded">
@@ -331,7 +341,7 @@ class UploadBLE extends Component {
                     selectedSensors={this.state.selectedSensors}
                     lastData={this.currentData}
                     sensorKeys={this.sensorKeys}
-                    sampleRate={this.state.sampleRate}
+                    fullSampleRate={this.state.fullSampleRate}
                   ></BlePanelRecordingDisplay>
                 </div>
               ) : null}

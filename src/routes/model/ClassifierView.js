@@ -6,7 +6,7 @@ import {
   InputGroup,
   InputGroupAddon,
   Input,
-  FormFeedback
+  FormFeedback,
 } from 'reactstrap';
 import { AdvancedHyperparameters } from './AdvancedHyperparameters';
 
@@ -24,7 +24,7 @@ export const ClassifierView = ({
   handleTrainButton,
   project,
   showAdvanced,
-  toggleShowAdvanced
+  toggleShowAdvanced,
 }) => {
   return (
     <div className="card h-100" style={{ border: '0px solid white' }}>
@@ -32,7 +32,7 @@ export const ClassifierView = ({
         <div className="d-flex flex-row justify-content-between w-100">
           <h4>Classifier</h4>
           <Select
-            options={models.map(m => {
+            options={models.map((m) => {
               return { value: m.id, label: m.name };
             })}
             value={modelSelection}
@@ -41,8 +41,8 @@ export const ClassifierView = ({
             styles={{
               valueContainer: () => ({
                 width: 200,
-                height: 25
-              })
+                height: 25,
+              }),
             }}
           ></Select>
         </div>
@@ -51,7 +51,7 @@ export const ClassifierView = ({
           style={{
             width: '100%',
             height: '0.5px',
-            backgroundColor: 'lightgray'
+            backgroundColor: 'lightgray',
           }}
         ></div>
         <InputGroup style={{ width: '350px' }}>
@@ -64,9 +64,9 @@ export const ClassifierView = ({
           ></Input>
         </InputGroup>
         <FormFeedback invalid></FormFeedback>
-        <h6 style={{ marginTop: '16px' }}>Hyperparameters</h6>
+        <h6 className="mt-3">Hyperparameters</h6>
         <HyperparameterView
-          model={models.find(m => m.id === parseInt(selectedModelId, 10))}
+          model={models.find((m) => m.id === parseInt(selectedModelId, 10))}
           hyperparameters={hyperparameters}
           handleHyperparameterChange={handleHyperparameterChange}
           isAdvanced={false}
@@ -74,7 +74,7 @@ export const ClassifierView = ({
         <AdvancedHyperparameters
           showAdvanced={showAdvanced}
           toggleShowAdvanced={toggleShowAdvanced}
-          model={models.find(m => m.id === parseInt(selectedModelId, 10))}
+          model={models.find((m) => m.id === parseInt(selectedModelId, 10))}
           hyperparameters={hyperparameters}
           handleHyperparameterChange={handleHyperparameterChange}
         />

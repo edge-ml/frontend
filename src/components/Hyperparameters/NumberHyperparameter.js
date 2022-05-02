@@ -4,7 +4,7 @@ import {
   InputGroupText,
   InputGroupAddon,
   Input,
-  UncontrolledTooltip
+  UncontrolledTooltip,
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -39,7 +39,7 @@ class NumberHyperparameter extends Component {
             {this.props.display_name}
           </InputGroupText>
         </InputGroupAddon>
-        <InputGroupAddon>
+        <InputGroupAddon addonType="append">
           <Input
             type="number"
             value={this.props.value}
@@ -47,10 +47,10 @@ class NumberHyperparameter extends Component {
             step={this.props.step_size}
             min={this.props.number_min}
             max={this.props.number_max}
-            onChange={e => {
+            onChange={(e) => {
               this.props.handleChange({
                 parameter_name: this.props.parameter_name,
-                state: parseInt(e.target.value, 10)
+                state: parseInt(e.target.value, 10),
               });
             }}
             className="hyperparameter-input-container"

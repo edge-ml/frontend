@@ -1,8 +1,10 @@
 import React from 'react';
 
+import Loader from '../../modules/loader';
+
 export const TargetSensorsView = ({
   sensorStreams,
-  changeSelectedSensorStreams
+  changeSelectedSensorStreams,
 }) => {
   return (
     <div className="card h-100" style={{ border: '0px solid white' }}>
@@ -10,26 +12,28 @@ export const TargetSensorsView = ({
         <div>
           <h4>Target Sensor Streams</h4>
         </div>
-        <fieldset>
-          {sensorStreams.length
-            ? sensorStreams.map(x => {
-                return (
-                  <div className="d-flex flex-row align-items-center mt-2">
-                    <input
-                      id={x}
-                      type="checkbox"
-                      onClick={y => {
-                        changeSelectedSensorStreams(x);
-                      }}
-                    ></input>
-                    <label className="mb-0 ml-1" for={x}>
-                      {x}
-                    </label>
-                  </div>
-                );
-              })
-            : 'There are no sensor streams defined'}
-        </fieldset>
+        <Loader loading={!sensorStreams}>
+          <fieldset>
+            {sensorStreams && sensorStreams.length
+              ? sensorStreams.map((x) => {
+                  return (
+                    <div className="d-flex flex-row align-items-center mt-2">
+                      <input
+                        id={x}
+                        type="checkbox"
+                        onClick={(y) => {
+                          changeSelectedSensorStreams(x);
+                        }}
+                      ></input>
+                      <label className="mb-0 ml-1" for={x}>
+                        {x}
+                      </label>
+                    </div>
+                  );
+                })
+              : 'There are no sensor streams defined'}
+          </fieldset>
+        </Loader>
         <div className="mt-3 text-left">
           <small>
             <b>
