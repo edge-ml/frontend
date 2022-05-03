@@ -19,7 +19,9 @@ const BS_SUCCESS = '#28a745'; // TODO: find a better way
 const BS_SECONDARY = '#6c757d';
 const BS_FAILURE = '#df4759';
 
-export const TrainingStateCounter = ({ training: { training_state } }) => {
+export const TrainingStateCounter = ({
+  training: { training_state, error_msg }
+}) => {
   return (
     <div
       style={{
@@ -72,7 +74,7 @@ export const TrainingStateCounter = ({ training: { training_state } }) => {
             style={{ color: BS_FAILURE }}
             icon={faExclamationTriangle}
           />{' '}
-          <Badge color="danger">TRAINING_FAILED</Badge>
+          <Badge color="danger">Training failed: {error_msg}</Badge>
         </div>
       )}
     </div>
