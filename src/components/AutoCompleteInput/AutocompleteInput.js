@@ -10,7 +10,7 @@ class AutocompleteInput extends Component {
     this.state = {
       suggestions: [],
       menuOpen: false,
-      selectedIndex: -1
+      selectedIndex: -1,
     };
     this.onInputChange = this.onInputChange.bind(this);
     this.onItemClick = this.onItemClick.bind(this);
@@ -24,16 +24,21 @@ class AutocompleteInput extends Component {
       this.closeMenu();
     }
     if (this.props.getsuggestions && e.target.value !== '') {
-      this.props.getsuggestions(e.target.value).then(data => {
-        let newData = data;
-        if (this.props.filter) {
-          newData = data.filter(elm => !this.props.filter.includes(elm));
-        }
-        this.setState({
-          suggestions: newData.slice(0, 5) // Show top 5 results
+      this.props
+        .getsuggestions(e.target.value)
+        .then((data) => {
+          let newData = data;
+          if (this.props.filter) {
+            newData = data.filter((elm) => !this.props.filter.includes(elm));
+          }
+          this.setState({
+            suggestions: newData.slice(0, 5), // Show top 5 results
+          });
+          this.openMenu();
+        })
+        .catch((err) => {
+          console.log(err);
         });
-        this.openMenu();
-      });
     }
     this.props.onChange ? this.props.onChange(e) : null;
   }
@@ -54,41 +59,43 @@ class AutocompleteInput extends Component {
 
   onMouseOver(e, index) {
     this.setState({
-      selectedIndex: index
+      selectedIndex: index,
     });
   }
 
   onKeyDown(e) {
     var selectedIndex = 0;
-    switch (e.key) {
-      case 'ArrowDown':
-        selectedIndex = betterModulo(
-          this.state.selectedIndex + 1,
-          this.state.suggestions.length
-        );
-        break;
-      case 'ArrowUp':
-        selectedIndex = betterModulo(
-          this.state.selectedIndex - 1,
-          this.state.suggestions.length
-        );
-        break;
-      case 'Enter':
-        const newEvent = e;
-        newEvent.target.value = this.state.suggestions[
-          this.state.selectedIndex
-        ];
-        this.props.onClick ? this.props.onClick(newEvent) : null;
-        this.closeMenu();
-        break;
-      case 'Escape':
-        this.closeMenu();
-        break;
-      default:
-        return;
+    if (this.state.suggestions.length !== 0) {
+      switch (e.key) {
+        case 'ArrowDown':
+          selectedIndex = betterModulo(
+            this.state.selectedIndex + 1,
+            this.state.suggestions.length
+          );
+          break;
+        case 'ArrowUp':
+          selectedIndex = betterModulo(
+            this.state.selectedIndex - 1,
+            this.state.suggestions.length
+          );
+          break;
+        case 'Enter':
+          const newEvent = e;
+          newEvent.target.value =
+            this.state.suggestions[this.state.selectedIndex];
+          this.props.onClick ? this.props.onClick(newEvent) : null;
+          this.closeMenu();
+          break;
+        default:
+          break;
+      }
+    }
+    if (e.key === 'Escape') {
+      this.closeMenu();
+      return;
     }
     this.setState({
-      selectedIndex: selectedIndex
+      selectedIndex: selectedIndex,
     });
   }
 
@@ -109,7 +116,7 @@ class AutocompleteInput extends Component {
           {...inputProps}
           autoComplete="off"
           onChange={this.onInputChange}
-          onClick={e => e.preventDefault()}
+          onClick={(e) => e.preventDefault()}
         ></Input>
         {this.state.menuOpen ? (
           <div className="autocomplete-menu" id="autocomplete-menu">
@@ -118,8 +125,8 @@ class AutocompleteInput extends Component {
                 <div
                   id={item}
                   key={item}
-                  onMouseEnter={e => this.onMouseOver(e, index)}
-                  onClick={e => this.onItemClick(e, index)}
+                  onMouseEnter={(e) => this.onMouseOver(e, index)}
+                  onClick={(e) => this.onItemClick(e, index)}
                   className={
                     index === this.state.selectedIndex
                       ? 'autocomplete-button select'
@@ -130,6 +137,9 @@ class AutocompleteInput extends Component {
                 </div>
               );
             })}
+            {this.state.suggestions.length === 0 ? (
+              <div className="autocomplete-button">No results</div>
+            ) : null}
           </div>
         ) : null}
       </div>
