@@ -15,6 +15,7 @@
         "highcharts": "^9.0.0",
         "highcharts-react-official": "^2.2.2",
         "immutability-helper": "^2.7.1",
+        "jszip": "^3.9.1",
         "jwt-decode": "^3.1.2",
         "lint-staged": "^10.5.4",
         "prismjs": "^1.24.0",

@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
 import { Button, Card, CardHeader, CardBody } from 'reactstrap';
-import './ManagementPanel.css';
 import HelpModal from './HelpModal';
 import CreateNewDatasetModal from '../CreateNewDatasetModal/CreateNewDatasetModal';
-import { generateCSV } from '../../services/CsvService';
 import { downloadSingleDataset } from '../../services/DatasetService';
+import './ManagementPanel.css';
 
 class ManagementPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isUploadModalOpen: false,
-      isHelpModalOpen: false
+      isHelpModalOpen: false,
     };
 
     this.toggleUploadModal = this.toggleUploadModal.bind(this);
@@ -22,7 +21,7 @@ class ManagementPanel extends Component {
 
   onDatasetComplete() {
     this.setState({
-      isUploadModalOpen: false
+      isUploadModalOpen: false,
     });
     this.props.onDatasetComplete();
   }
