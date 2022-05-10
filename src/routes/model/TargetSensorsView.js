@@ -4,7 +4,9 @@ import Loader from '../../modules/loader';
 
 export const TargetSensorsView = ({
   sensorStreams,
-  changeSelectedSensorStreams
+  selectedSensorStreams,
+  toggleSelectedSensorStreams,
+  changeAllSelectedSensorStreams
 }) => {
   return (
     <div className="card h-100" style={{ border: '0px solid white' }}>
@@ -14,6 +16,25 @@ export const TargetSensorsView = ({
         </div>
         <Loader loading={!sensorStreams}>
           <fieldset>
+            <input
+              id="select-all"
+              type="checkbox"
+              onClick={y => {
+                changeAllSelectedSensorStreams(
+                  !sensorStreams ||
+                    !sensorStreams.every(x => selectedSensorStreams.includes(x))
+                );
+              }}
+              checked={
+                sensorStreams &&
+                sensorStreams.every(x => selectedSensorStreams.includes(x))
+              }
+            ></input>
+            <label className="mb-0 ml-1" for="select-all">
+              Select All
+            </label>
+          </fieldset>
+          <fieldset>
             {sensorStreams && sensorStreams.length
               ? sensorStreams.map(x => {
                   return (
@@ -22,8 +43,9 @@ export const TargetSensorsView = ({
                         id={x}
                         type="checkbox"
                         onClick={y => {
-                          changeSelectedSensorStreams(x);
+                          toggleSelectedSensorStreams(x);
                         }}
+                        checked={selectedSensorStreams.includes(x)}
                       ></input>
                       <label className="mb-0 ml-1" for={x}>
                         {x}

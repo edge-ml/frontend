@@ -23,8 +23,6 @@ class SelectionHyperparameter extends Component {
   }
 
   render() {
-    console.log('hi ');
-    console.log(this.props.value);
     return (
       <InputGroup style={{ display: 'flex' }}>
         <InputGroupAddon addonType="prepend">

@@ -166,8 +166,7 @@ class ModelPage extends Component {
     }));
   };
 
-  handleSelectedSensorStreamChange = sensor => {
-    // TODO fix this, use prevState
+  handleSelectedSensorStreamToggle = sensor => {
     if (this.state.selectedSensorStreams.includes(sensor)) {
       this.setState({
         selectedSensorStreams: this.state.selectedSensorStreams.filter(
@@ -176,11 +175,18 @@ class ModelPage extends Component {
       });
       return;
     }
-    var tmp = this.state.selectedSensorStreams;
-    tmp.push(sensor);
     this.setState({
-      selectedSensorStreams: tmp
+      selectedSensorStreams: [...this.state.selectedSensorStreams, sensor]
     });
+  };
+
+  handleSelectedSensorStreamSelectAll = selectAll => {
+    if (selectAll) {
+      this.setState({ selectedSensorStreams: this.state.sensorStreams });
+    } else {
+      // deselect all
+      this.setState({ selectedSensorStreams: [] });
+    }
   };
 
   handleModelSelectionChange = modelSelection => {
@@ -242,8 +248,12 @@ class ModelPage extends Component {
               <div className="col-12 col-xl-7 mt-4">
                 <TargetSensorsView
                   sensorStreams={this.state.sensorStreams}
-                  changeSelectedSensorStreams={
-                    this.handleSelectedSensorStreamChange
+                  selectedSensorStreams={this.state.selectedSensorStreams}
+                  toggleSelectedSensorStreams={
+                    this.handleSelectedSensorStreamToggle
+                  }
+                  changeAllSelectedSensorStreams={
+                    this.handleSelectedSensorStreamSelectAll
                   }
                 />
               </div>
