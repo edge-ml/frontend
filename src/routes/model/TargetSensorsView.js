@@ -61,8 +61,8 @@ export const TargetSensorsView = ({
             <b>
               <i>Note:</i>
             </b>{' '}
-            Datasets that do not have all selected sensor streams will be
-            dropped.
+            Datasets that do not have all selected sensor streams or the target
+            labeling will be dropped.
           </small>
         </div>
       </div>

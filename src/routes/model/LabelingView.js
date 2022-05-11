@@ -105,6 +105,8 @@ export const LabelingView = ({
           Model will classify based on target labeling.
           <br />
           Check "Other" to mark unlabeled data and use it in training.
+          <br />
+          Click and type into the "Other" field to rename the label.
         </small>
       </div>
     </div>
