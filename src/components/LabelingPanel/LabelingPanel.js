@@ -6,7 +6,7 @@ import {
   InputGroup,
   InputGroupText,
   InputGroupAddon,
-  Input
+  Input,
 } from 'reactstrap';
 import './LabelingPanel.css';
 
@@ -27,7 +27,7 @@ class LabelingPanel extends Component {
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
       onCanEditChanged: props.onCanEditChanged,
-      isCrosshairIntervalActive: props.isCrosshairIntervalActive
+      isCrosshairIntervalActive: props.isCrosshairIntervalActive,
     };
 
     this.toggleEdit = this.toggleEdit.bind(this);
@@ -35,7 +35,7 @@ class LabelingPanel extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState(state => ({
+    this.setState((state) => ({
       id: props.id,
       from: props.from,
       to: props.to,
@@ -46,7 +46,7 @@ class LabelingPanel extends Component {
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
       onCanEditChanged: props.onCanEditChanged,
-      isCrosshairIntervalActive: props.isCrosshairIntervalActive
+      isCrosshairIntervalActive: props.isCrosshairIntervalActive,
     }));
   }
 
@@ -70,7 +70,7 @@ class LabelingPanel extends Component {
     this.props.history.push({
       pathname: newHistory.join('/') + '/labelings',
       search: '?id=' + this.state.labeling['_id'],
-      state: this.props.history.location.pathname
+      state: this.props.history.location.pathname,
     });
   }
 
@@ -94,6 +94,17 @@ class LabelingPanel extends Component {
                 style={{ color: !this.state.canEdit ? '#b71c1c' : '#43A047' }}
               >
                 {!this.state.canEdit ? 'Locked' : 'Unlocked'}
+              </span>
+            </Button>
+            <Button
+              className="m-1 btn-light"
+              style={{ float: 'left' }}
+              onClick={this.props.onHideLabels}
+            >
+              <span
+                style={{ color: !this.props.hideLabels ? '#007BFF' : 'gray' }}
+              >
+                {!this.props.hideLabels ? 'Show labels' : 'Hide labels'}
               </span>
             </Button>
             <InputGroup className="inputGroup m-1">
@@ -142,7 +153,7 @@ class LabelingPanel extends Component {
               className="deleteButton m-1"
               outline
               color="danger"
-              onClick={e => this.state.onDeleteSelectedLabel()}
+              onClick={(e) => this.state.onDeleteSelectedLabel()}
             >
               Delete
             </Button>
@@ -162,7 +173,7 @@ class LabelingPanel extends Component {
                   .reverse()
                   .map((labelId, index, array) => {
                     let label = this.state.labels.filter(
-                      label => label['_id'] === labelId
+                      (label) => label['_id'] === labelId
                     )[0];
                     return (
                       <Button
@@ -183,9 +194,9 @@ class LabelingPanel extends Component {
                           color:
                             labelId === this.state.selectedLabelTypeId
                               ? null
-                              : label.color
+                              : label.color,
                         }}
-                        onClick={e => this.handleLabelTypeClicked(e, labelId)}
+                        onClick={(e) => this.handleLabelTypeClicked(e, labelId)}
                         key={index}
                       >
                         {label.name} {'(' + (array.length - index) + ')'}

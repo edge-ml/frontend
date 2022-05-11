@@ -48,6 +48,7 @@ class DatasetPage extends Component {
         newPosition: undefined,
         fromLastPosition: false,
       },
+      hideLabels: false,
       fuseTimeSeriesModalState: {
         isOpen: false,
       },
@@ -87,11 +88,18 @@ class DatasetPage extends Component {
     this.onLabelPositionUpdate = this.onLabelPositionUpdate.bind(this);
     this.showSnackbar = this.showSnackbar.bind(this);
     this.onUpdateMetaData = this.onUpdateMetaData.bind(this);
+    this.hideLabels = this.hideLabels.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false,
     };
+  }
+
+  hideLabels() {
+    this.setState((prevState) => ({
+      hideLabels: !prevState.hideLabels,
+    }));
   }
 
   onUpdateMetaData(updatedDataset) {
@@ -818,10 +826,9 @@ class DatasetPage extends Component {
     if (!selectedDatasetlabeling) selectedDatasetlabeling = {};
     let selectedDatasetLabel =
       selectedDatasetlabeling && selectedDatasetlabeling.labels
-        ? selectedDatasetlabeling.labels.filter(
-            (label) =>
-              label['type'] === this.state.controlStates.selectedLabelId
-          )[0]
+        ? selectedDatasetlabeling.labels.find(
+            (label) => label['_id'] === this.state.controlStates.selectedLabelId
+          )
         : null;
 
     let isCrosshairIntervalActive = this.crosshairInterval ? true : false;
@@ -838,19 +845,16 @@ class DatasetPage extends Component {
       <div style={{ position: 'relative' }}>
         {' '}
         <Fade in={this.state.fadeIn}>
-          <div className="pb-5">
+          <div>
             <Row className="pt-3">
               <Col
+                ref={this.middle_col_width}
                 onMouseUp={this.mouseUpHandler}
                 xs={12}
                 lg={9}
                 className="pr-lg-0"
               >
-                <div
-                  style={{
-                    paddingBottom: '86px',
-                  }}
-                >
+                <div>
                   <LabelingSelectionPanel
                     objectType={'labelings'}
                     history={this.props.history}
@@ -870,7 +874,11 @@ class DatasetPage extends Component {
                     onSetAllName={this.onSetAllName}
                     timeSeries={this.state.dataset.timeSeries}
                     fusedSeries={this.state.dataset.fusedSeries}
-                    labeling={selectedDatasetlabeling}
+                    labeling={
+                      this.state.hideLabels
+                        ? { labels: undefined }
+                        : selectedDatasetlabeling
+                    }
                     labelTypes={this.state.controlStates.selectedLabelTypes}
                     onLabelClicked={this.onSelectedLabelChanged}
                     selectedLabelId={this.state.controlStates.selectedLabelId}
@@ -891,25 +899,18 @@ class DatasetPage extends Component {
                     block
                     outline
                     onClick={this.onOpenFuseTimeSeriesModal}
-                    style={{ zIndex: 1, position: 'relative' }}
+                    style={{
+                      zIndex: 1,
+                      position: 'relative',
+                      marginBottom: '240px',
+                    }}
                   >
                     + Fuse Multiple Time Series
                   </Button>
-                </div>
-                <div className="dataset-labelingpanel">
-                  {this.state.error ? (
-                    <Fade>
-                      <div className="dataset-snackbar-center">
-                        <Snackbar
-                          text={this.state.error}
-                          closeSnackbar={() => {
-                            this.setState({ error: undefined });
-                          }}
-                        ></Snackbar>
-                      </div>
-                    </Fade>
-                  ) : null}
                   <LabelingPanel
+                    hideLabels={this.state.hideLabels}
+                    onHideLabels={this.hideLabels}
+                    className="StickyLabelingSelectionPanel"
                     history={this.props.history}
                     id={this.state.controlStates.selectedLabelId}
                     from={
@@ -929,6 +930,20 @@ class DatasetPage extends Component {
                     canEdit={this.state.controlStates.canEdit}
                     isCrosshairIntervalActive={isCrosshairIntervalActive}
                   />
+                </div>
+                <div className="dataset-labelingpanel">
+                  {this.state.error ? (
+                    <Fade>
+                      <div className="dataset-snackbar-center">
+                        <Snackbar
+                          text={this.state.error}
+                          closeSnackbar={() => {
+                            this.setState({ error: undefined });
+                          }}
+                        ></Snackbar>
+                      </div>
+                    </Fade>
+                  ) : null}
                 </div>
               </Col>
               <Col xs={12} lg={3}>
