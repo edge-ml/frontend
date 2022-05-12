@@ -337,23 +337,45 @@ class ListPage extends Component {
                 <thead>
                   <tr className="bg-light">
                     <th>
-                      {' '}
-                      <Button
-                        id="deleteDatasetsButton"
-                        size="sm"
-                        color="danger"
-                        outline
-                        disabled={this.state.datasetsToDelete.length === 0}
-                        onClick={this.openDeleteModal}
-                      >
-                        Delete
-                      </Button>
+                      <input
+                        type="checkbox"
+                        onClick={y => {
+                          if (
+                            this.state.datasetsToDelete.length ===
+                            this.state.datasets.length
+                          ) {
+                            this.setState({ datasetsToDelete: [] });
+                          } else {
+                            this.setState({
+                              datasetsToDelete: [
+                                ...this.state.datasets.map(d => d._id)
+                              ]
+                            });
+                          }
+                        }}
+                        checked={
+                          this.state.datasets.length &&
+                          this.state.datasetsToDelete.length ===
+                            this.state.datasets.length
+                        }
+                      />
                     </th>
                     <th>Name</th>
                     <th>Start Time</th>
                     <th>User ID</th>
                     <th style={{ textAlign: 'right' }}>
                       {' '}
+                      <Button
+                        id="deleteDatasetsButton"
+                        size="sm"
+                        color="danger"
+                        className="mr-2"
+                        outline
+                        disabled={this.state.datasetsToDelete.length === 0}
+                        onClick={this.openDeleteModal}
+                      >
+                        Delete Selected
+                      </Button>
                       <Button
                         id="downloadAllDatasetsButton"
                         size="sm"

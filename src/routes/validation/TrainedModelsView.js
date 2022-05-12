@@ -10,7 +10,7 @@ export const TrainedModelsView = ({
   models, // {id: string, name: string, creation_date: number, classifier: string, accuracy: number, precision: number, f1_score: number, size: number}[]
   handleDelete,
   onViewModel = () => {},
-  onDeployModel = () => {},
+  onDeployModel = () => {}
 }) => {
   const Checkbox = ({ ...rest }) => {
     return <input type="checkbox" {...rest} />;
@@ -22,7 +22,7 @@ export const TrainedModelsView = ({
     headerGroups,
     rows,
     prepareRow,
-    selectedFlatRows,
+    selectedFlatRows
   } = useTable(
     {
       data: models,
@@ -30,59 +30,61 @@ export const TrainedModelsView = ({
         () => [
           {
             id: 'selection',
-            Header: ({ selectedFlatRows }) => (
-              <Button
-                color="danger"
-                outline={true}
-                disabled={!selectedFlatRows.length}
-                onClick={(e) => {
-                  handleDelete(selectedFlatRows.map((r) => r.original.id));
-                }}
-              >
-                Delete
-              </Button>
+            Header: ({ getToggleAllRowsSelectedProps }) => (
+              <Checkbox {...getToggleAllRowsSelectedProps()} />
             ),
-            Cell: ({ row }) => (
-              <Checkbox {...row.getToggleRowSelectedProps()} />
-            ),
+            Cell: ({ row }) => <Checkbox {...row.getToggleRowSelectedProps()} />
           },
           { Header: 'Name', accessor: 'name', sortType: 'string' },
           // { Header: 'ID', accessor: 'id', sortType: 'alphanumeric' },
           {
             Header: 'Creation Date',
             id: 'creation_date',
-            accessor: (row) => new Date(parseInt(row.creation_date) * 1000),
+            accessor: row => new Date(parseInt(row.creation_date) * 1000),
             sortType: 'datetime',
-            Cell: ({ value }) => value.toISOString(),
+            Cell: ({ value }) => value.toISOString()
           },
           {
             Header: 'Size on Disk',
             accessor: 'size',
             sortType: 'number',
-            Cell: ({ value }) => humanFileSize(value),
+            Cell: ({ value }) => humanFileSize(value)
           },
           { Header: 'Classifier', accessor: 'classifier', sortType: 'string' },
           {
             Header: 'Accuracy',
             accessor: 'accuracy',
             sortType: 'number',
-            Cell: percentageCell,
+            Cell: percentageCell
           },
           {
             Header: 'Precision',
             accessor: 'precision',
             sortType: 'number',
-            Cell: percentageCell,
+            Cell: percentageCell
           },
           {
             Header: 'F1-Score',
             accessor: 'f1_score',
             sortType: 'number',
-            Cell: percentageCell,
+            Cell: percentageCell
           },
           {
+            Header: ({ selectedFlatRows }) => (
+              <Button
+                className="mb-1"
+                color="danger"
+                outline={true}
+                disabled={!selectedFlatRows.length}
+                onClick={e => {
+                  handleDelete(selectedFlatRows.map(r => r.original.id));
+                }}
+              >
+                Delete
+              </Button>
+            ),
             id: 'details-button',
-            accessor: (row) => row.id,
+            accessor: row => row.id,
             disableSortBy: true,
             Cell: ({ value }) => (
               <Button
@@ -92,11 +94,11 @@ export const TrainedModelsView = ({
               >
                 View
               </Button>
-            ),
+            )
           },
           {
             id: 'deploy-button',
-            accessor: (row) => row.id,
+            accessor: row => row.id,
             disableSortBy: true,
             Cell: ({ value }) => (
               <Button
@@ -106,11 +108,11 @@ export const TrainedModelsView = ({
               >
                 Deploy
               </Button>
-            ),
-          },
+            )
+          }
         ],
         []
-      ),
+      )
     },
     useSortBy,
     useRowSelect
@@ -121,13 +123,13 @@ export const TrainedModelsView = ({
       <Col>
         <Table {...getTableProps()} responsive>
           <thead className="bg-light">
-            {headerGroups.map((headerGroup) => (
+            {headerGroups.map(headerGroup => (
               <tr
                 className="text-center"
                 {...headerGroup.getHeaderGroupProps()}
               >
-                {headerGroup.headers.map((column) =>
-                  column.canSort ? (
+                {headerGroup.headers.map(column => {
+                  return column.canSort ? (
                     <SortedTableHeader
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                       sorted={
@@ -140,21 +142,27 @@ export const TrainedModelsView = ({
                     >
                       {column.render('Header')}
                     </SortedTableHeader>
-                  ) : (
-                    <th {...column.getHeaderProps()}>
+                  ) : column.id === 'details-button' ? (
+                    <th {...column.getHeaderProps()} colSpan={2}>
                       {column.render('Header')}
                     </th>
-                  )
-                )}
+                  ) : (
+                    column.id !== 'deploy-button' && (
+                      <th {...column.getHeaderProps()}>
+                        {column.render('Header')}
+                      </th>
+                    )
+                  );
+                })}
               </tr>
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {rows.map((row) => {
+            {rows.map(row => {
               prepareRow(row);
               return (
                 <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
+                  {row.cells.map(cell => {
                     return (
                       <td
                         className="text-center align-middle"
