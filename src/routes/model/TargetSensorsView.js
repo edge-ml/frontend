@@ -27,6 +27,7 @@ export const TargetSensorsView = ({
               }}
               checked={
                 sensorStreams &&
+                sensorStreams.length &&
                 sensorStreams.every(x => selectedSensorStreams.includes(x))
               }
             ></input>
