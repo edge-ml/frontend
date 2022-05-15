@@ -7,7 +7,7 @@ import {
   getModels,
   getTrained,
   deleteTrained,
-  getAllActiveTrainings,
+  getAllActiveTrainings
 } from '../../services/ApiServices/MlService';
 import { ValidationView } from './ValidationView';
 import { DeleteConfirmationModalView } from './DeleteConfirmationModalView';
@@ -38,16 +38,21 @@ const ValidationPage = () => {
     []
   );
 
+  const [prevTrainingsLength, setPrevTrainingsLength] = useState(0);
+
   useEffect(() => {
+    setPrevTrainingsLength(trainings.length);
     if (trainings.length !== 0) {
       setTimeout(() => {
         trainingsRefresh();
-        modelsRefresh();
+        if (prevTrainingsLength !== trainings.length) {
+          modelsRefresh();
+        }
       }, REFRESH_INTERVAL);
     }
   }, [trainings, trainingsInvalidate]);
 
-  const viewModel = async (id) => {
+  const viewModel = async id => {
     const model = await getTrained(id);
     const { labels } = await subscribeLabelingsAndLabels();
     setLabels(labels);
@@ -55,10 +60,10 @@ const ValidationPage = () => {
     setModalState(true);
   };
 
-  const deployModel = (id) => {
+  const deployModel = id => {
     history.push({
       pathname: location.pathname.replace('Validation', 'Deploy'),
-      state: { id },
+      state: { id }
     });
   };
 
@@ -66,7 +71,7 @@ const ValidationPage = () => {
     setModalState(false);
   };
 
-  const showConfirmation = (ids) => {
+  const showConfirmation = ids => {
     setModelsToDelete(ids);
     setDeleteModalState(true);
   };
@@ -75,7 +80,7 @@ const ValidationPage = () => {
     setDeleteModalState(false);
   };
 
-  const deleteModel = (model) => async () => {
+  const deleteModel = model => async () => {
     const succ = await deleteTrained(model.id);
     if (succ) {
       setModalState(false);
@@ -83,9 +88,9 @@ const ValidationPage = () => {
     }
   };
 
-  const deleteMultiple = async (ids) => {
+  const deleteMultiple = async ids => {
     const succ = (
-      await Promise.all([...ids].map((id) => deleteTrained(id)))
+      await Promise.all([...ids].map(id => deleteTrained(id)))
     ).reduce((prev, cur) => prev || cur, false);
     if (succ) {
       modelsRefresh();
