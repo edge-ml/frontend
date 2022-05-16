@@ -31,7 +31,7 @@ export const TargetSensorsView = ({
                 sensorStreams.every(x => selectedSensorStreams.includes(x))
               }
             ></input>
-            <label className="mb-0 ml-1" for="select-all">
+            <label className="mb-0 ml-1 font-italic" for="select-all">
               Select All
             </label>
           </fieldset>
