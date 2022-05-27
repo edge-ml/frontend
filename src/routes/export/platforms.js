@@ -13,7 +13,7 @@ export const platforms = [
         {code}
       </PrismCode>
     ),
-    extension: 'py'
+    extension: 'py',
   },
   {
     value: 'c',
@@ -23,7 +23,7 @@ export const platforms = [
         {code}
       </PrismCode>
     ),
-    extension: 'c'
+    extension: 'c',
   },
   {
     value: 'c-embedded',
@@ -33,7 +33,7 @@ export const platforms = [
         {code}
       </PrismCode>
     ),
-    extension: 'c'
+    extension: 'c',
   },
   {
     value: 'javascript',
@@ -43,16 +43,16 @@ export const platforms = [
         {code}
       </PrismCode>
     ),
-    extension: 'js'
+    extension: 'js',
   },
   {
-    value: 'arduino_cpp',
-    label: 'Arduino Cpp',
+    value: 'cpp',
+    label: 'C++',
     prism: ({ code }) => (
       <PrismCode component="pre" className="language-c">
         {code}
       </PrismCode>
     ),
-    extension: 'hpp'
-  }
+    extension: 'hpp',
+  },
 ];
