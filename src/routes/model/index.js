@@ -20,6 +20,7 @@ class ModelPage extends Component {
       labelings: undefined,
       labels: undefined,
       selectedLabeling: undefined,
+      selectedLabelsFor: undefined,
       sensorStreams: undefined,
       selectedSensorStreams: [],
       models: [],
@@ -82,6 +83,16 @@ class ModelPage extends Component {
           selectedLabeling: result[0].labelings[0]
             ? result[0].labelings[0]._id
             : '',
+          selectedLabelsFor: result[0].labelings.reduce(
+            (acc, labeling) => ({
+              ...acc,
+              [labeling._id]: labeling.labels.reduce(
+                (c, label) => ({ ...c, [label]: true }),
+                {}
+              )
+            }),
+            {}
+          ),
           labelings: result[0].labelings,
           labels: result[0].labels,
           useUnlabelledFor: result[0].labelings.reduce(
@@ -114,14 +125,22 @@ class ModelPage extends Component {
         });
       }, 2000);
     };
-
+    const selectedLabels = Object.keys(
+      this.state.selectedLabelsFor[this.state.selectedLabeling]
+    ).filter(x => this.state.selectedLabelsFor[this.state.selectedLabeling][x]);
+    if (!selectedLabels.length) {
+      this.setState({
+        alertText: 'Please select at least one label in target labeling',
+        trainSuccess: false
+      });
+      resetAlert();
+      return;
+    }
     train({
       model_id: this.state.selectedModelId,
       selected_timeseries: this.state.selectedSensorStreams,
       target_labeling: this.state.selectedLabeling,
-      labels: this.state.labelings.find(
-        x => x._id == this.state.selectedLabeling
-      ).labels,
+      labels: selectedLabels,
       hyperparameters: this.state.hyperparameters,
       model_name: this.state.modelName,
       use_unlabelled: this.state.useUnlabelledFor[this.state.selectedLabeling],
@@ -137,11 +156,23 @@ class ModelPage extends Component {
       .catch(err => {
         console.log(err);
         this.setState({
-          alertText: err.data.detail,
+          alertText: err.data.detail, // breaks if err is undefined
           trainSuccess: false
         });
         resetAlert();
       });
+  };
+
+  handleLabelSelection = (labelingId, labelId) => {
+    this.setState(prevState => ({
+      selectedLabelsFor: {
+        ...prevState.selectedLabelsFor,
+        [labelingId]: {
+          ...prevState.selectedLabelsFor[labelingId],
+          [labelId]: !prevState.selectedLabelsFor[labelingId][labelId]
+        }
+      }
+    }));
   };
 
   handleLabelingChange = labelingId => {
@@ -243,6 +274,8 @@ class ModelPage extends Component {
                   changeUnlabelledFor={this.handleUseUnlabelledChange}
                   unlabelledNameFor={this.state.unlabelledNameFor}
                   changeUnlabelledName={this.handleUnlabelledNameChange}
+                  selectedLabelsFor={this.state.selectedLabelsFor}
+                  changeLabelSelection={this.handleLabelSelection}
                 />
               </div>
               <div className="col-12 col-xl-7 mt-4">
