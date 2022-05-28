@@ -90,7 +90,14 @@ export const LabelingView = ({
                               />
                             </FormGroup>
                             <FormGroup>
-                              <input type="checkbox" className="float-left" />
+                              <input
+                                type="checkbox"
+                                className="float-left"
+                                checked={useUnlabelledFor[x._id]}
+                                onClick={e =>
+                                  changeUnlabelledFor(e.target.value, x._id)
+                                }
+                              />
                             </FormGroup>
                           </Form>
                         </Badge>
