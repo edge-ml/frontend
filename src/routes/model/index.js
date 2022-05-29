@@ -125,6 +125,45 @@ class ModelPage extends Component {
         });
       }, 2000);
     };
+
+    const hyperparameterConfig = this.state.hyperparameters.reduce(
+      (acc, cur) => ({
+        ...acc,
+        [cur.parameter_name]: cur.state
+      }),
+      {}
+    );
+    const hyperparameterRestrictions = Object.values(
+      this.state.models[this.state.selectedModelId].hyperparameters
+    ).reduce((acc, cur) => {
+      if (cur.parameter_type === 'number') {
+        return {
+          ...acc,
+          [cur.parameter_name]: {
+            min: cur.number_min,
+            max: cur.number_max
+          }
+        };
+      }
+      return { ...acc };
+    }, {});
+    const violatingHyperparams = Object.entries(
+      hyperparameterRestrictions
+    ).filter(
+      ([name, restriction]) =>
+        hyperparameterConfig[name] !== null &&
+        (restriction.min > hyperparameterConfig[name] ||
+          restriction.max < hyperparameterConfig[name])
+    );
+    if (violatingHyperparams.length > 0) {
+      this.setState({
+        alertText: 'Invalid Hyperparameter Configuration',
+        trainSuccess: false
+      });
+      resetAlert();
+      return;
+    }
+
     const selectedLabels = Object.keys(
       this.state.selectedLabelsFor[this.state.selectedLabeling]
     ).filter(x => this.state.selectedLabelsFor[this.state.selectedLabeling][x]);
@@ -136,6 +175,7 @@ class ModelPage extends Component {
       resetAlert();
       return;
     }
+
     train({
       model_id: this.state.selectedModelId,
       selected_timeseries: this.state.selectedSensorStreams,

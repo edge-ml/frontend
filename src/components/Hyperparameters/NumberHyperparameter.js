@@ -53,8 +53,14 @@ class NumberHyperparameter extends Component {
                 state: parseInt(e.target.value, 10)
               });
             }}
-            className="hyperparameter-input-container"
-            style={{ textAlign: 'center' }}
+            className={`hyperparameter-input-container text-center 
+              ${
+                this.props.value === null ||
+                (this.props.number_min <= this.props.value &&
+                  this.props.number_max >= this.props.value)
+                  ? ''
+                  : 'border border-danger'
+              }`}
           />
         </InputGroupAddon>
       </InputGroup>
