@@ -15,26 +15,30 @@ export const TargetSensorsView = ({
           <h4>Target Sensor Streams</h4>
         </div>
         <Loader loading={!sensorStreams}>
-          <fieldset>
-            <input
-              id="select-all"
-              type="checkbox"
-              onClick={y => {
-                changeAllSelectedSensorStreams(
-                  !sensorStreams ||
-                    !sensorStreams.every(x => selectedSensorStreams.includes(x))
-                );
-              }}
-              checked={
-                sensorStreams &&
-                sensorStreams.length &&
-                sensorStreams.every(x => selectedSensorStreams.includes(x))
-              }
-            ></input>
-            <label className="mb-0 ml-1 font-italic" for="select-all">
-              Select All
-            </label>
-          </fieldset>
+          {sensorStreams && sensorStreams.length > 0 && (
+            <fieldset>
+              <input
+                id="select-all"
+                type="checkbox"
+                onClick={y => {
+                  changeAllSelectedSensorStreams(
+                    !sensorStreams ||
+                      !sensorStreams.every(x =>
+                        selectedSensorStreams.includes(x)
+                      )
+                  );
+                }}
+                checked={
+                  sensorStreams &&
+                  sensorStreams.length &&
+                  sensorStreams.every(x => selectedSensorStreams.includes(x))
+                }
+              ></input>
+              <label className="mb-0 ml-1 font-italic" for="select-all">
+                Select All
+              </label>
+            </fieldset>
+          )}
           <fieldset>
             {sensorStreams && sensorStreams.length
               ? sensorStreams.map(x => {
