@@ -69,8 +69,6 @@ export const LabelingView = ({
                             <FormGroup>
                               <input
                                 type="text"
-                                name="otherLabel"
-                                id="otherLabel"
                                 value={unlabelledNameFor[x._id]}
                                 onChange={e =>
                                   changeUnlabelledName(e.target.value, x._id)
@@ -95,7 +93,7 @@ export const LabelingView = ({
                                 className="float-left"
                                 checked={useUnlabelledFor[x._id]}
                                 onClick={e =>
-                                  changeUnlabelledFor(e.target.value, x._id)
+                                  changeUnlabelledFor(e.target.checked, x._id)
                                 }
                               />
                             </FormGroup>
