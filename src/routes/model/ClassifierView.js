@@ -8,6 +8,9 @@ import {
   Input,
   FormFeedback
 } from 'reactstrap';
+
+import { faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AdvancedHyperparameters } from './AdvancedHyperparameters';
 
 import { HyperparameterView } from './HyperparameterView';
@@ -24,7 +27,8 @@ export const ClassifierView = ({
   handleTrainButton,
   project,
   showAdvanced,
-  toggleShowAdvanced
+  toggleShowAdvanced,
+  requestInProgress
 }) => {
   return (
     <div className="card h-100" style={{ border: '0px solid white' }}>
@@ -79,11 +83,17 @@ export const ClassifierView = ({
           handleHyperparameterChange={handleHyperparameterChange}
         />
         <Button
-          disabled={!modelName}
+          disabled={!modelName || requestInProgress}
           onClick={handleTrainButton}
           project={project}
         >
-          Train Model
+          <div>
+            <span className="mr-1">Train Model</span>
+            <FontAwesomeIcon
+              icon={requestInProgress ? faSpinner : faCheck}
+              pulse={requestInProgress}
+            />
+          </div>
         </Button>
       </div>
     </div>

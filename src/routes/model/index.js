@@ -31,7 +31,8 @@ class ModelPage extends Component {
       trainSuccess: undefined,
       useUnlabelledFor: {},
       unlabelledNameFor: {},
-      showAdvanced: false
+      showAdvanced: false,
+      requestInProgress: false
     };
 
     this.initComponent = this.initComponent.bind(this);
@@ -126,6 +127,7 @@ class ModelPage extends Component {
       }, 2000);
     };
 
+    this.setState({ requestInProgress: true });
     const hyperparameterConfig = this.state.hyperparameters.reduce(
       (acc, cur) => ({
         ...acc,
@@ -189,7 +191,8 @@ class ModelPage extends Component {
       .then(() => {
         this.setState({
           alertText: 'Training started successfully',
-          trainSuccess: true
+          trainSuccess: true,
+          requestInProgress: false
         });
         resetAlert();
       })
@@ -197,7 +200,8 @@ class ModelPage extends Component {
         console.log(err);
         this.setState({
           alertText: err.data.detail, // breaks if err is undefined
-          trainSuccess: false
+          trainSuccess: false,
+          requestInProgress: false
         });
         resetAlert();
       });
@@ -344,6 +348,7 @@ class ModelPage extends Component {
                   project={this.props.project}
                   showAdvanced={this.state.showAdvanced}
                   toggleShowAdvanced={this.toggleShowAdvanced}
+                  requestInProgress={this.state.requestInProgress}
                 />
               </div>
             </div>
