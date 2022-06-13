@@ -4,6 +4,7 @@ import EventEmitter from 'events';
  * DeviceMotionEvent/DeviceOrientationEvent based sensor for ios devices, conforms to Sensor api above
  */
 export class IOSSafariSensor extends EventEmitter {
+  static trigger = () => DeviceMotionEvent.requestPermission();
   constructor(name, Event, event, shortComponents, mapComponents) {
     super();
     this.name = name;
@@ -30,12 +31,10 @@ export class IOSSafariSensor extends EventEmitter {
     this.stop();
 
     try {
-      this._Event.requestPermission().then((response) => {
-        if (response == 'granted') {
-          console.log('resp most lovely');
-          window.addEventListener(this._event, this._handler);
-        }
-      });
+      const response = await this._Event.requestPermission();
+      if (response == 'granted') {
+        window.addEventListener(this._event, this._handler);
+      }
     } catch (error) {
       this.stop();
       this.emit('error', error.message);

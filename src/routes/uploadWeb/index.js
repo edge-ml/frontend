@@ -76,6 +76,15 @@ export const UploadWebPage = () => {
         const mySensors = sensors.filter(({ name }) =>
           selectedNames.includes(name)
         );
+
+        for (const Class of Array.from(
+          new Set(mySensors.map((x) => x.constructor))
+        )) {
+          if (Class.trigger) {
+            await Class.trigger();
+          }
+        }
+
         setVisibleStore({});
         setErrors({});
 
