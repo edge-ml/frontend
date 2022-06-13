@@ -39,11 +39,14 @@ export const UploadWebPage = () => {
   const [datasetName, setDatasetName] = useState('');
 
   const controllerRef = useRef(null);
-  useEffect(() => () => {
-    if (controllerRef.current) {
-      controllerRef.current.abort();
-    }
-  });
+  useEffect(
+    () => () => {
+      if (controllerRef.current) {
+        controllerRef.current.abort();
+      }
+    },
+    []
+  );
 
   const [visibleStore, setVisibleStore] = useState({}); // { sensorA: { sensorAX: [{ datapoint: 5, timestamp: 1234 }, ], }, }
   const [errors, setErrors] = useState({});

@@ -21,7 +21,6 @@ export class IOSSafariSensor extends EventEmitter {
   }
 
   _handler = (event) => {
-    console.log(event);
     this.emit('data', this._mapComponents(this, undefined, event), {
       timestamp: Date.now(),
     });
