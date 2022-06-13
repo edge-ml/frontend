@@ -347,7 +347,7 @@ class ListPage extends Component {
                         <div className="d-flex flex-column">
                           <div>
                             <small>
-                              <b>Web Sensor API</b>
+                              <b>Record with Mobile Device</b>
                             </small>
                           </div>
                           <small>
