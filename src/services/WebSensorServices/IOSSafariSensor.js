@@ -34,6 +34,8 @@ export class IOSSafariSensor extends EventEmitter {
       const response = await this._Event.requestPermission();
       if (response == 'granted') {
         window.addEventListener(this._event, this._handler);
+      } else {
+        throw new Error(`Permission to ${this.name}Event was denied.`);
       }
     } catch (error) {
       this.stop();
