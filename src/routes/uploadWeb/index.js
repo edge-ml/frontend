@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo } from 'react';
 import { SensorList } from './SensorList';
 import { UploadWebView } from './UploadWebView';
 
-import { SUPPORTED_SENSORS } from '../../services/WebSensorService';
+import { SUPPORTED_SENSORS } from '../../services/WebSensorServices';
 import { RecorderSettings } from './RecorderSettings';
 import { throttle, debounce } from '../../services/helpers';
 import { RecordingController } from './RecordingController';

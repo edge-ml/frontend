@@ -116,7 +116,11 @@ export class RecordingController extends EventEmitter {
 
       sensor.on('error', this._onSensorError(sensor));
       sensor.on('data', this._onSensorData(sensor));
-      sensor.listen({ frequency: this._sampleRates[sensor.name] });
+      await sensor.listen({
+        ...(sensor.properties.fixedFrequency
+          ? {}
+          : { frequency: this._sampleRates[sensor.name] }),
+      });
     }
   }
 

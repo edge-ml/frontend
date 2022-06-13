@@ -18,39 +18,50 @@ export const SensorList = ({
       </tr>
     </thead>
     <tbody>
-      {sensors.map(({ name, shortComponents, sampleRate }) => {
-        return (
-          <tr key={name}>
-            <td>
-              {' '}
-              <Input
-                onChange={(e) => setSensor(name, !selectedSensors[name])}
-                className="datasets-check"
-                checked={selectedSensors[name]}
-                type="checkbox"
-              />
-            </td>
-            <td>{name}</td>
-            <td>
-              <InputGroup style={{ margin: 0, minWidth: '90px' }} size="sm">
+      {sensors.map(
+        ({
+          name,
+          shortComponents,
+          sampleRate,
+          properties: { fixedFrequency },
+        }) => {
+          return (
+            <tr key={name}>
+              <td>
+                {' '}
                 <Input
-                  value={sampleRate}
-                  onChange={(e) => setSensorRate(name, e.target.value)}
-                  type="number"
-                  min={0}
-                  max={50}
-                ></Input>{' '}
-                <InputGroupAddon addonType="append">Hz</InputGroupAddon>
-              </InputGroup>
-            </td>
-            <td>
-              {shortComponents.map((c) => (
-                <Badge className="m-1">{c}</Badge>
-              ))}
-            </td>
-          </tr>
-        );
-      })}
+                  onChange={(e) => setSensor(name, !selectedSensors[name])}
+                  className="datasets-check"
+                  checked={selectedSensors[name]}
+                  type="checkbox"
+                />
+              </td>
+              <td>{name}</td>
+              <td>
+                {fixedFrequency ? (
+                  <small>Not available</small>
+                ) : (
+                  <InputGroup style={{ margin: 0, minWidth: '90px' }} size="sm">
+                    <Input
+                      value={sampleRate}
+                      onChange={(e) => setSensorRate(name, e.target.value)}
+                      type="number"
+                      min={0}
+                      max={50}
+                    ></Input>{' '}
+                    <InputGroupAddon addonType="append">Hz</InputGroupAddon>
+                  </InputGroup>
+                )}
+              </td>
+              <td>
+                {shortComponents.map((c) => (
+                  <Badge className="m-1">{c}</Badge>
+                ))}
+              </td>
+            </tr>
+          );
+        }
+      )}
     </tbody>
   </Table>
 );
