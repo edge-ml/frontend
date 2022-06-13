@@ -279,7 +279,7 @@ class ListPage extends Component {
                       </div>
                     </div>
                     <div
-                      className="d-flex flex-row justify-content-center align-items-start"
+                      className="d-flex flex-row justify-content-center align-items-start mr-5"
                       style={{ flex: '1 1 0px' }}
                     >
                       <FontAwesomeIcon
@@ -335,7 +335,7 @@ class ListPage extends Component {
                       </div>
                     </div>
                     <div
-                      className="d-flex flex-row justify-content-center align-items-start mr-5"
+                      className="d-flex flex-row justify-content-center align-items-start"
                       style={{ flex: '1 1 0px' }}
                     >
                       <FontAwesomeIcon
