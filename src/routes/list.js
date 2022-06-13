@@ -2,7 +2,8 @@ import {
   faCode,
   faFile,
   faMicrochip,
-  faWifi
+  faMobileAlt,
+  faWifi,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
@@ -16,7 +17,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from 'reactstrap';
 import CreateNewDatasetModal from '../components/CreateNewDatasetModal/CreateNewDatasetModal';
 
@@ -25,7 +26,7 @@ import Loader from '../modules/loader';
 import {
   getDatasets,
   getDataset,
-  deleteDatasets
+  deleteDatasets,
 } from '../services/ApiServices/DatasetServices';
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import { downloadSingleDataset } from '../services/DatasetService';
@@ -38,7 +39,7 @@ class ListPage extends Component {
       datasets: undefined,
       datasetsToDelete: [],
       ready: false,
-      CreateNewDatasetToggle: false
+      CreateNewDatasetToggle: false,
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.deleteDatasets = this.deleteDatasets.bind(this);
@@ -46,17 +47,17 @@ class ListPage extends Component {
     this.toggleCheck = this.toggleCheck.bind(this);
     this.openDeleteModal = this.openDeleteModal.bind(this);
     this.onUploadFromCode = this.onUploadFromCode.bind(this);
-    this.toggleCreateNewDatasetModal = this.toggleCreateNewDatasetModal.bind(
-      this
-    );
+    this.toggleCreateNewDatasetModal =
+      this.toggleCreateNewDatasetModal.bind(this);
     this.onUploadBLE = this.onUploadBLE.bind(this);
+    this.onUploadWeb = this.onUploadWeb.bind(this);
     this.downloadAllDatasets = this.downloadAllDatasets.bind(this);
   }
 
   componentDidMount() {
     getDatasets()
       .then(this.onDatasetsChanged)
-      .catch(err => {
+      .catch((err) => {
         window.alert('Could not receive datasets from server');
       });
   }
@@ -65,7 +66,7 @@ class ListPage extends Component {
     const { labelings, labels } = await subscribeLabelingsAndLabels();
     console.log(this.state.datasets);
     Promise.all(
-      this.state.datasets.map(async elm => {
+      this.state.datasets.map(async (elm) => {
         const dataset = await getDataset(elm._id);
         downloadSingleDataset(dataset, labelings, labels);
       })
@@ -79,12 +80,16 @@ class ListPage extends Component {
       modal: false,
       datasets: datasets,
       ready: true,
-      isCreateNewDatasetOpen: false
+      isCreateNewDatasetOpen: false,
     });
   }
 
   onUploadBLE() {
     this.props.history.push('./ble');
+  }
+
+  onUploadWeb() {
+    this.props.history.push('./uploadweb');
   }
 
   onUploadFromCode() {
@@ -97,21 +102,21 @@ class ListPage extends Component {
     if (checked) {
       if (!this.state.datasetsToDelete.includes(datasetId)) {
         this.setState({
-          datasetsToDelete: [...this.state.datasetsToDelete, datasetId]
+          datasetsToDelete: [...this.state.datasetsToDelete, datasetId],
         });
       }
     } else {
       this.setState({
         datasetsToDelete: this.state.datasetsToDelete.filter(
-          id => id !== datasetId
-        )
+          (id) => id !== datasetId
+        ),
       });
     }
   }
 
   toggleCreateNewDatasetModal() {
     this.setState({
-      isCreateNewDatasetOpen: !this.state.isCreateNewDatasetOpen
+      isCreateNewDatasetOpen: !this.state.isCreateNewDatasetOpen,
     });
   }
 
@@ -123,7 +128,7 @@ class ListPage extends Component {
 
   toggleModal() {
     this.setState({
-      modal: !this.state.modal
+      modal: !this.state.modal,
     });
   }
 
@@ -133,15 +138,15 @@ class ListPage extends Component {
         this.setState({
           modal: false,
           datasets: this.state.datasets.filter(
-            dataset => !this.state.datasetsToDelete.includes(dataset['_id'])
+            (dataset) => !this.state.datasetsToDelete.includes(dataset['_id'])
           ),
-          datasetsToDelete: []
+          datasetsToDelete: [],
         });
       })
-      .catch(err => {
+      .catch((err) => {
         window.alert('Error deleting datasets');
         this.setState({
-          modal: false
+          modal: false,
         });
       });
   }
@@ -329,6 +334,42 @@ class ListPage extends Component {
                         </Button>
                       </div>
                     </div>
+                    <div
+                      className="d-flex flex-row justify-content-center align-items-start mr-5"
+                      style={{ flex: '1 1 0px' }}
+                    >
+                      <FontAwesomeIcon
+                        className="mr-3 mt-1"
+                        icon={faMobileAlt}
+                        style={{ fontSize: 'x-large' }}
+                      ></FontAwesomeIcon>
+                      <div className="d-flex flex-column justify-content-between h-100">
+                        <div className="d-flex flex-column">
+                          <div>
+                            <small>
+                              <b>Web Sensor API</b>
+                            </small>
+                          </div>
+                          <small>
+                            If you own a smartphone or tablet with onboard
+                            sensors you can use these directly from your browser
+                            using Web Sensors API.
+                          </small>
+                        </div>
+
+                        <Button
+                          id="buttonUploadWeb"
+                          block
+                          className="mt-2"
+                          color="success"
+                          outline
+                          onClick={this.onUploadWeb}
+                          style={{ padding: '0px' }}
+                        >
+                          <small>Collect Data via Web Sensors</small>
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -339,7 +380,7 @@ class ListPage extends Component {
                     <th>
                       <input
                         type="checkbox"
-                        onClick={y => {
+                        onClick={(y) => {
                           if (
                             this.state.datasetsToDelete.length ===
                             this.state.datasets.length
@@ -348,8 +389,8 @@ class ListPage extends Component {
                           } else {
                             this.setState({
                               datasetsToDelete: [
-                                ...this.state.datasets.map(d => d._id)
-                              ]
+                                ...this.state.datasets.map((d) => d._id),
+                              ],
                             });
                           }
                         }}
@@ -400,7 +441,9 @@ class ListPage extends Component {
                             checked={this.state.datasetsToDelete.includes(
                               dataset['_id']
                             )}
-                            onChange={e => this.toggleCheck(e, dataset['_id'])}
+                            onChange={(e) =>
+                              this.toggleCheck(e, dataset['_id'])
+                            }
                           />
                         </td>
                         <th className="datasets-column">{dataset.name}</th>
@@ -413,10 +456,10 @@ class ListPage extends Component {
                             id="buttonViewDatasets"
                             block
                             className="btn-secondary mt-0 btn-edit"
-                            onClick={e => {
+                            onClick={(e) => {
                               this.props.history.push({
                                 pathname: `datasets/${dataset['_id']}`,
-                                state: { dataset }
+                                state: { dataset },
                               });
                             }}
                           >
@@ -445,7 +488,7 @@ class ListPage extends Component {
           <ModalHeader toggle={this.toggleModal}>Delete Dataset</ModalHeader>
           <ModalBody>
             Are you sure to delete the following datasets?
-            {this.state.datasetsToDelete.map(id => {
+            {this.state.datasetsToDelete.map((id) => {
               return (
                 <React.Fragment key={id}>
                   <br />
