@@ -124,14 +124,23 @@ export class RecordingController extends EventEmitter {
     }
   }
 
-  async stop() {
-    if (!this._isRecording) return;
+  async _stop() {
     for (const sensor of this._sensors) {
       sensor.stop();
       sensor.removeAllListeners();
     }
+  }
 
+  async stop() {
+    if (!this._isRecording) return;
+    await this._stop();
     await this._upload();
+    this._isRecording = false;
+  }
+
+  async abort() {
+    if (!this._isRecording) return;
+    await this._stop();
     this._isRecording = false;
   }
 }
