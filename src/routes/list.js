@@ -54,6 +54,7 @@ class ListPage extends Component {
       this.toggleCreateNewDatasetModal.bind(this);
     this.onUploadBLE = this.onUploadBLE.bind(this);
     this.downloadAllDatasets = this.downloadAllDatasets.bind(this);
+    this.deleteAllEmptyDatasets = this.deleteAllEmptyDatasets.bind(this);
   }
 
   componentDidMount() {
@@ -67,6 +68,17 @@ class ListPage extends Component {
   async downloadAllDatasets() {
     const { labelings, labels } = await subscribeLabelingsAndLabels();
     downloadAllAsZip(this.state.datasets, labelings, labels);
+  }
+
+  deleteAllEmptyDatasets() {
+    this.setState(
+      {
+        datasetsToDelete: this.state.datasets
+          .filter((elm) => elm.end === 0)
+          .map((elm) => elm._id),
+      },
+      () => this.toggleModal()
+    );
   }
 
   onDatasetsChanged(datasets) {
@@ -121,6 +133,7 @@ class ListPage extends Component {
   toggleModal() {
     this.setState({
       modal: !this.state.modal,
+      datasetsToDelete: this.state.modal ? [] : this.state.datasetsToDelete,
     });
   }
 
@@ -333,7 +346,7 @@ class ListPage extends Component {
               <Table responsive>
                 <thead>
                   <tr className="bg-light">
-                    <th>
+                    <th style={{ display: 'flex' }}>
                       {' '}
                       <Button
                         id="deleteDatasetsButton"
@@ -344,6 +357,19 @@ class ListPage extends Component {
                         onClick={this.openDeleteModal}
                       >
                         Delete
+                      </Button>
+                      <Button
+                        className="ml-2"
+                        id="downloadAllDatasetsButton"
+                        size="sm"
+                        color="danger"
+                        outline
+                        disabled={
+                          !this.state.datasets.some((elm) => elm.end === 0)
+                        }
+                        onClick={this.deleteAllEmptyDatasets}
+                      >
+                        Delete all empty
                       </Button>
                     </th>
                     <th>Name</th>
@@ -386,18 +412,20 @@ class ListPage extends Component {
                         >
                           <div className="mr-2">{dataset.name}</div>
                           {dataset.end == 0 ? (
-                            <FontAwesomeIcon
-                              id="datasetInfo"
-                              icon={faInfo}
-                            ></FontAwesomeIcon>
+                            <div id="datasetInfo">
+                              <FontAwesomeIcon
+                                style={{ color: 'orange', fontSize: 'smaller' }}
+                                icon={faInfo}
+                              ></FontAwesomeIcon>
+                              <UncontrolledTooltip
+                                placement="right"
+                                target="datasetInfo"
+                              >
+                                Dataset is empty
+                              </UncontrolledTooltip>
+                            </div>
                           ) : null}
                         </th>
-                        <UncontrolledTooltip
-                          placement="right"
-                          target="datasetInfo"
-                        >
-                          Dataset is empty
-                        </UncontrolledTooltip>
                         <td className="datasets-column">
                           {dataset.end == 0
                             ? '-'
@@ -442,10 +470,11 @@ class ListPage extends Component {
           <ModalBody>
             Are you sure to delete the following datasets?
             {this.state.datasetsToDelete.map((id) => {
+              const dataset = this.state.datasets.find((elm) => elm._id === id);
               return (
                 <React.Fragment key={id}>
                   <br />
-                  <b>{id}</b>
+                  <b>{dataset.name}</b>
                 </React.Fragment>
               );
             })}
