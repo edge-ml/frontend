@@ -3,8 +3,11 @@ import {
   faFile,
   faMicrochip,
   faWifi,
+  faInfo,
+  faQuestion,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import React, { Component } from 'react';
 import {
   Container,
@@ -17,6 +20,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  UncontrolledTooltip,
 } from 'reactstrap';
 import CreateNewDatasetModal from '../components/CreateNewDatasetModal/CreateNewDatasetModal';
 
@@ -376,9 +380,28 @@ class ListPage extends Component {
                             }
                           />
                         </td>
-                        <th className="datasets-column">{dataset.name}</th>
+                        <th
+                          className="datasets-column"
+                          style={{ display: 'flex', alignItems: 'center' }}
+                        >
+                          <div className="mr-2">{dataset.name}</div>
+                          {dataset.end == 0 ? (
+                            <FontAwesomeIcon
+                              id="datasetInfo"
+                              icon={faInfo}
+                            ></FontAwesomeIcon>
+                          ) : null}
+                        </th>
+                        <UncontrolledTooltip
+                          placement="right"
+                          target="datasetInfo"
+                        >
+                          Dataset is empty
+                        </UncontrolledTooltip>
                         <td className="datasets-column">
-                          {this.displayTime(dataset.start)}
+                          {dataset.end == 0
+                            ? '-'
+                            : this.displayTime(dataset.start)}
                         </td>
                         <td className="datasets-column">{dataset.userId}</td>
                         <td className="datasets-column">

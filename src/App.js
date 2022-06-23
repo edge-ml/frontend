@@ -4,18 +4,6 @@ import { Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCaretDown,
-  faCaretRight,
-  faPlus,
-  faUser,
-  faDatabase,
-  faCogs,
-  faPen,
-  faBrain,
-  faLightbulb
-} from '@fortawesome/free-solid-svg-icons';
 import Navbar from './components/Navbar/Navbar';
 
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -29,7 +17,7 @@ import {
   getProject,
   clearToken,
   setToken,
-  clearProject
+  clearProject,
 } from './services/LocalStorageService';
 import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal';
 import AppContent from './AppContent';
@@ -53,7 +41,7 @@ class App extends Component {
       projectEditModalOpen: false,
       projectEditModalNew: false,
       userSettingsModalOpen: false,
-      navbarWidth: '160px'
+      navbarWidth: '160px',
     };
     this.baseState = JSON.parse(JSON.stringify(this.state));
     this.logoutHandler = this.logoutHandler.bind(this);
@@ -76,18 +64,18 @@ class App extends Component {
     this.props.history.listen(() => {
       const splitUrl = this.props.history.location.pathname
         .split('/')
-        .filter(elm => elm !== '');
+        .filter((elm) => elm !== '');
 
       if (splitUrl[2] !== undefined) {
         this.setState({
-          projectLocation: splitUrl[2] // handle changes of location from other places
+          projectLocation: splitUrl[2], // handle changes of location from other places
         });
       }
     });
   }
 
   onDeleteProject(project) {
-    deleteProject(project).then(data => {
+    deleteProject(project).then((data) => {
       this.onProjectsChanged(data);
     });
   }
@@ -100,7 +88,7 @@ class App extends Component {
 
     const splitUrl = this.props.history.location.pathname
       .split('/')
-      .filter(elm => elm !== '');
+      .filter((elm) => elm !== '');
     splitUrl[0] = project.admin.userName;
     splitUrl[1] = project.name;
     this.props.history.push('/' + splitUrl.join('/'));
@@ -108,19 +96,19 @@ class App extends Component {
 
   navigateTo(location) {
     const project = this.state.projects.filter(
-      x => x._id === this.state.currentProjectId
+      (x) => x._id === this.state.currentProjectId
     )[0];
     this.props.history.push(
       '/' + project.admin.userName + '/' + project.name + '/' + location
     );
     this.setState({
-      projectLocation: location
+      projectLocation: location,
     });
   }
 
   enable2FA() {
     this.setState({
-      twoFAEnabled: true
+      twoFAEnabled: true,
     });
   }
 
@@ -130,7 +118,7 @@ class App extends Component {
       this.setState({
         projects: [],
         currentProjectId: -1,
-        projectEditModalOpen: false
+        projectEditModalOpen: false,
       });
       clearProject();
       return;
@@ -138,7 +126,7 @@ class App extends Component {
 
     var newProject = false;
     var projectIndex = projects.findIndex(
-      elm => elm._id === this.state.currentProjectId
+      (elm) => elm._id === this.state.currentProjectId
     );
     if (projectIndex === -1) {
       projectIndex = 0;
@@ -155,7 +143,7 @@ class App extends Component {
       projects: projects,
       currentProjectId: projects[projectIndex]._id,
       projectEditModalOpen: false,
-      projectLocation: 'datasets'
+      projectLocation: 'datasets',
     });
     this.changeURL(this.state.projects[projectIndex]);
     if (newProject) {
@@ -165,14 +153,14 @@ class App extends Component {
 
   onProjectModalClose() {
     this.setState({
-      projectEditModalOpen: false
+      projectEditModalOpen: false,
     });
   }
 
   onProjectEditModal(isNew) {
     this.setState({
       projectEditModalOpen: true,
-      projectEditModalNew: isNew
+      projectEditModalNew: isNew,
     });
   }
 
@@ -180,7 +168,7 @@ class App extends Component {
     console.log(id);
     if (this.state.currentProjectId === id) {
       this.setState({
-        currentProjectId: undefined
+        currentProjectId: undefined,
       });
       this.changeURL(undefined);
       return;
@@ -188,19 +176,19 @@ class App extends Component {
     setProject(id);
 
     this.setState({
-      currentProjectId: id
+      currentProjectId: id,
     });
 
-    this.changeURL(this.state.projects.filter(x => x._id === id)[0]);
+    this.changeURL(this.state.projects.filter((x) => x._id === id)[0]);
   }
 
   refreshProjects() {
     getProjects()
-      .then(projects => {
+      .then((projects) => {
         // if no project is available
         if (projects.length === 0) {
           this.setState({
-            projects: []
+            projects: [],
           });
           this.props.history.push('/');
           return;
@@ -208,16 +196,18 @@ class App extends Component {
 
         // if the user comes to a url parse the name of the project from it
         const params = this.props.history.location.pathname.split('/');
-        const projectIndex = projects.findIndex(elm => elm.name === params[2]);
+        const projectIndex = projects.findIndex(
+          (elm) => elm.name === params[2]
+        );
         const retrievedProjectLocation = params[3];
         this.setState({
-          projectLocation: retrievedProjectLocation
+          projectLocation: retrievedProjectLocation,
         });
 
         if (projectIndex !== -1) {
           this.setState({
             projects: projects,
-            currentProjectId: projects[projectIndex]._id
+            currentProjectId: projects[projectIndex]._id,
           });
           setProject(projects[projectIndex]._id);
           this.props.history.push(
@@ -233,7 +223,7 @@ class App extends Component {
 
         // verify now project was openend last, otherwise start with first project open
         var storedProjectIndex = projects.findIndex(
-          elm => elm._id === getProject()
+          (elm) => elm._id === getProject()
         );
 
         if (storedProjectIndex === -1) {
@@ -243,7 +233,7 @@ class App extends Component {
         this.setState({
           projects: projects,
           currentProjectId: projects[storedProjectIndex]._id,
-          projectLocation: 'datasets'
+          projectLocation: 'datasets',
         });
 
         this.props.history.push(
@@ -254,7 +244,7 @@ class App extends Component {
             '/datasets'
         );
       })
-      .catch(errorStatus => {
+      .catch((errorStatus) => {
         if (errorStatus) {
           this.onLogout(true);
         } else {
@@ -269,7 +259,7 @@ class App extends Component {
       userMail: userMail ? userMail : this.state.userMail,
       userName: userName ? userName : this.state.userName,
       twoFAEnabled: twoFAEnabled ? twoFAEnabled : this.state.twoFAEnabled,
-      isLoggedIn: true
+      isLoggedIn: true,
     });
     this.refreshProjects();
   }
@@ -280,7 +270,7 @@ class App extends Component {
 
   setCurrentUserMail(currentUserMail) {
     this.setState({
-      currentUserMail: currentUserMail
+      currentUserMail: currentUserMail,
     });
   }
 
@@ -288,7 +278,7 @@ class App extends Component {
     let tmpUser = { ...this.state.user };
     tmpUser.access_token = token;
     this.setState({
-      user: tmpUser
+      user: tmpUser,
     });
   }
 
@@ -303,7 +293,7 @@ class App extends Component {
   onLogin(didSucceed) {
     if (didSucceed) {
       this.setState({
-        isLoggedIn: didSucceed
+        isLoggedIn: didSucceed,
       });
     }
   }
@@ -315,7 +305,7 @@ class App extends Component {
   render() {
     var projectIndex = this.state.projects
       ? this.state.projects.findIndex(
-          x => x._id === this.state.currentProjectId
+          (x) => x._id === this.state.currentProjectId
         )
       : -1;
     const projectAvailable = this.state.projects
@@ -338,16 +328,15 @@ class App extends Component {
           userName={this.state.userName}
           onClose={this.onProjectModalClose}
           projectChanged={this.onProjectsChanged}
-          userName={this.state.userName}
         ></EditProjectModal>
         <Route
           exact
           path="/register"
-          render={props => <RegisterPage {...props} />}
+          render={(props) => <RegisterPage {...props} />}
         />
         <Route
           path={'/errorpage/:error/:errorText?/:statusText?'}
-          render={props => <ErrorPage {...props} />}
+          render={(props) => <ErrorPage {...props} />}
         />
         {!this.props.history.location.pathname.includes('/register') ? (
           <AuthWall
@@ -379,7 +368,7 @@ class App extends Component {
                 ></Navbar>
                 {projectAvailable ? null : (
                   <NoProjectPage
-                    onCreateProject={e => {
+                    onCreateProject={(e) => {
                       e.preventDefault();
                       this.onProjectEditModal(true);
                     }}
@@ -388,13 +377,13 @@ class App extends Component {
                 <div
                   style={{
                     marginLeft: this.state.navbarWidth,
-                    width: '100%'
+                    width: '100%',
                   }}
                 >
                   <Route
                     {...this.props}
                     path="/:userName/:projectID"
-                    render={props => (
+                    render={(props) => (
                       <AppContent
                         {...props}
                         userName={this.state.userName}
@@ -403,7 +392,7 @@ class App extends Component {
                         modalOpen={modalOpen}
                         project={
                           this.state.projects.filter(
-                            x => x._id === this.state.currentProjectId
+                            (x) => x._id === this.state.currentProjectId
                           )[0]
                         }
                         onProjectsChanged={this.onProjectsChanged}

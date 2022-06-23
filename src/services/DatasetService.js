@@ -23,13 +23,22 @@ const downloadSingleDataset = (dataset, labelings, labels) => {
 const downloadAllAsZip = async (datasets, labelings, labels) => {
   const zip = new JSZip();
 
+  var nameCtr = {};
+  var names = [];
+  datasets.forEach((elm) => {
+    const ctr = nameCtr[elm.name] || 0;
+    const nameExt = ctr === 0 ? '' : '_' + ctr;
+    names.push(elm.name + nameExt);
+    nameCtr[elm.name] = ctr + 1;
+  });
+
   await Promise.all(
-    datasets.map(async (elm) => {
+    datasets.map(async (elm, idx) => {
       const dataset = await getDataset(elm._id);
       const csv = generateCSV(dataset, labelings, labels);
       const json = JSON.stringify(dataset.metaData);
-      const csv_fileName = dataset.name + '.csv';
-      const json_fileName = dataset.name + '_metaData.json';
+      const csv_fileName = names[idx] + '.csv';
+      const json_fileName = names[idx] + '_metaData.json';
       const blob_dataset = new Blob([csv], { type: 'application/csv' });
       const blob_metaData = new Blob([json], { type: 'application/json' });
       zip.file(csv_fileName, blob_dataset);
