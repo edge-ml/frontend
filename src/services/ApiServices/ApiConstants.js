@@ -57,6 +57,10 @@ module.exports = {
     GETDEVICEAPIKEY: 'deviceApi/getkey',
     REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
     SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive',
+    CHECKOUT: 'checkout/create-checkout-session',
+    PRODUCTS: 'checkout/products',
+    PRICES: 'checkout/prices',
+    PORTAL: 'checkout/create-customer-portal-session',
   },
   ML_ENDPOINTS: {
     MODELS: 'models',

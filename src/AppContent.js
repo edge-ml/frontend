@@ -11,6 +11,7 @@ import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
 import ModelPage from './routes/model';
 import ValidationPage from './routes/validation';
 import ExportPage from './routes/export';
+import PaymentPage from './routes/payment';
 import UploadBLE from './routes/uploadBLE';
 import { UploadWebPage } from './routes/uploadWeb';
 
@@ -91,6 +92,15 @@ class AppContent extends Component {
             render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ExportPage {...props}></ExportPage>
+              </ProjectRefresh>
+            )}
+          />
+          <Route
+            exact
+            path={this.props.match.path + '/payment'}
+            render={(props) => (
+              <ProjectRefresh project={this.props.project}>
+                <PaymentPage {...props}></PaymentPage>
               </ProjectRefresh>
             )}
           />
