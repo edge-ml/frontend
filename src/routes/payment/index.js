@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Table } from 'reactstrap';
+import { Table, Card } from 'reactstrap';
 import {
   getCustomerId,
   getProducts,
@@ -53,7 +53,10 @@ const PaymentPage = ({ subscriptionLevel }) => {
                 <th style={{ width: '10%' }} className="text-center">
                   {proPlus.details.title}
                 </th>
-                <th style={{ width: '12%' }} className="text-center">
+                <th
+                  style={{ width: '12%', paddingRight: '4rem' }}
+                  className="text-center"
+                >
                   {pro.details.title}
                 </th>
               </tr>
@@ -75,7 +78,10 @@ const PaymentPage = ({ subscriptionLevel }) => {
                     >
                       {proPlus.details[k]}
                     </td>
-                    <td style={{ width: '12%' }} className="text-center">
+                    <td
+                      style={{ width: '12%', paddingRight: '4rem' }}
+                      className="text-center"
+                    >
                       {pro.details[k]}
                     </td>
                   </tr>
@@ -102,7 +108,10 @@ const PaymentPage = ({ subscriptionLevel }) => {
                     priceId={pro.priceId}
                   />
                 </td>
-                <td style={{ width: '12%' }} className="text-center">
+                <td
+                  style={{ width: '12%', paddingRight: '4rem' }}
+                  className="text-center"
+                >
                   <InteractionButton
                     subscriptionLevel={subscriptionLevel}
                     customerId={customerId}
@@ -115,35 +124,45 @@ const PaymentPage = ({ subscriptionLevel }) => {
           </Table>
         )}
       </div>
-      {/* <div
+      <div
         className="card"
         style={{
-          position: "absolute",
-          top: "60px",
-          left: "585px",
-          width: "260px",
-          height: "570px",
-          backgroundColor: "#F3F3F3",
-          borderRadius: "8px",
-          zIndex: "-2",
-        }}>
-
-      </div> */}
-      {/* <div
-        className="card"
-        style={{
-          position: "absolute",
-          top: "60px",
-          left: "865px",
-          width: "250px",
-          height: "570px",
-          backgroundColor: "#F3F3FF",
-          borderRadius: "8px",
-          zIndex: "-1",
+          position: 'absolute',
+          top: '60px',
+          left: '580px',
+          width: '260px',
+          height: '610px',
+          backgroundColor: '#F3F3F3',
+          borderRadius: '8px',
+          zIndex: '-2',
         }}
-      >
-
-      </div> */}
+      ></div>
+      <div
+        className="card"
+        style={{
+          position: 'absolute',
+          top: '50px',
+          left: '815px',
+          width: '290px',
+          height: '640px',
+          backgroundColor: '#F3F3FF',
+          borderRadius: '8px',
+          zIndex: '-1',
+        }}
+      ></div>
+      <div
+        className="card"
+        style={{
+          position: 'absolute',
+          top: '60px',
+          left: '1088px',
+          width: '260px',
+          height: '610px',
+          backgroundColor: '#F3F3F3',
+          borderRadius: '8px',
+          zIndex: '-2',
+        }}
+      ></div>
     </Loader>
   );
 };
