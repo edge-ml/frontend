@@ -4,6 +4,7 @@ import { Table, Button } from 'reactstrap';
 import {
   accessPortal,
   checkout,
+  getCustomerId,
   getProducts,
 } from '../../services/ApiServices/PaymentService';
 import { useAsyncMemo } from '../../services/ReactHooksService';
@@ -11,6 +12,10 @@ import Loader from '../../modules/loader';
 
 const PaymentPage = () => {
   const products = useAsyncMemo(async () => await getProducts(), [], []);
+  const customerId = useAsyncMemo(
+    async () => (await getCustomerId()).customerId,
+    []
+  );
   const features = {
     trainingTime: 'Training Time',
     storage: 'Storage',
@@ -82,14 +87,17 @@ const PaymentPage = () => {
                   style={{ width: '12%', paddingLeft: '4rem' }}
                   className="text-center"
                 >
-                  <Button color="success" onClick={(e) => accessPortal()}>
+                  <Button
+                    color="success"
+                    onClick={(e) => accessPortal(customerId)}
+                  >
                     View Subscription
                   </Button>
                 </td>
                 <td style={{ width: '10%' }} className="text-center">
                   <Button
                     color="success"
-                    onClick={(e) => checkout(proPlus.priceId)}
+                    onClick={(e) => checkout(proPlus.priceId, customerId)}
                   >
                     Buy Now
                   </Button>
@@ -97,7 +105,7 @@ const PaymentPage = () => {
                 <td style={{ width: '12%' }} className="text-center">
                   <Button
                     color="success"
-                    onClick={(e) => checkout(pro.priceId)}
+                    onClick={(e) => checkout(pro.priceId, customerId)}
                   >
                     Buy Now
                   </Button>

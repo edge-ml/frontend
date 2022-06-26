@@ -43,6 +43,7 @@ module.exports = {
     ID: 'id',
     CHANGE_USERNAME: 'changeUserName',
     USERNAME: 'userName',
+    CUSTOMER_ID: 'customerId',
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',

@@ -34,14 +34,17 @@ module.exports.getPrices = function () {
   });
 };
 
-module.exports.checkout = function (priceId) {
+module.exports.checkout = function (priceId, customerId) {
   return new Promise(() => {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.API_URI,
         apiConsts.API_ENDPOINTS.CHECKOUT,
-        { priceId: priceId }
+        {
+          priceId: priceId,
+          customerId: customerId,
+        }
       )
     )
       .then((res) => {
@@ -65,5 +68,21 @@ module.exports.accessPortal = function (customerId) {
         window.location.href = res.data.redirectUrl;
       })
       .catch((err) => console.log(err));
+  });
+};
+
+module.exports.getCustomerId = function () {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.CUSTOMER_ID
+      )
+    )
+      .then((data) => {
+        resolve(data.data);
+      })
+      .catch((err) => reject(err.response));
   });
 };
