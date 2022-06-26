@@ -81,7 +81,7 @@ module.exports.getCustomerId = function () {
       )
     )
       .then((data) => {
-        resolve(data.data);
+        resolve(data.data.customerId);
       })
       .catch((err) => reject(err.response));
   });

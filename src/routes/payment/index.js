@@ -12,10 +12,7 @@ import { InteractionButton } from './InteractionButtons';
 
 const PaymentPage = ({ subscriptionLevel }) => {
   const products = useAsyncMemo(async () => await getProducts(), [], []);
-  const customerId = useAsyncMemo(
-    async () => (await getCustomerId()).customerId,
-    []
-  );
+  const customerId = useAsyncMemo(async () => await getCustomerId(), []);
   const features = {
     trainingTime: 'Training Time',
     storage: 'Storage',
@@ -30,8 +27,9 @@ const PaymentPage = ({ subscriptionLevel }) => {
   const dev = products.find((x) => x.details.title === 'Dev');
   const proPlus = products.find((x) => x.details.title === 'Pro+');
   const pro = products.find((x) => x.details.title === 'Pro');
+  console.log(customerId);
   return (
-    <Loader loading={!products}>
+    <Loader loading={!products || !customerId}>
       <div
         className="d-flex justify-content-center align-items-center vh-100"
         style={{ fontSize: '1.20rem' }}
