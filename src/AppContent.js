@@ -100,7 +100,10 @@ class AppContent extends Component {
             path={this.props.match.path + '/payment'}
             render={(props) => (
               <ProjectRefresh project={this.props.project}>
-                <PaymentPage {...props}></PaymentPage>
+                <PaymentPage
+                  {...props}
+                  subscriptionLevel={this.props.subscriptionLevel}
+                ></PaymentPage>
               </ProjectRefresh>
             )}
           />

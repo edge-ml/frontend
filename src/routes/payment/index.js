@@ -1,16 +1,16 @@
 import React from 'react';
 
-import { Table, Button } from 'reactstrap';
+import { Table } from 'reactstrap';
 import {
-  accessPortal,
-  checkout,
   getCustomerId,
   getProducts,
 } from '../../services/ApiServices/PaymentService';
+
 import { useAsyncMemo } from '../../services/ReactHooksService';
 import Loader from '../../modules/loader';
+import { InteractionButton } from './InteractionButtons';
 
-const PaymentPage = () => {
+const PaymentPage = ({ subscriptionLevel }) => {
   const products = useAsyncMemo(async () => await getProducts(), [], []);
   const customerId = useAsyncMemo(
     async () => (await getCustomerId()).customerId,
@@ -87,28 +87,28 @@ const PaymentPage = () => {
                   style={{ width: '12%', paddingLeft: '4rem' }}
                   className="text-center"
                 >
-                  <Button
-                    color="success"
-                    onClick={(e) => accessPortal(customerId)}
-                  >
-                    View Subscription
-                  </Button>
+                  <InteractionButton
+                    subscriptionLevel={subscriptionLevel}
+                    customerId={customerId}
+                    buttonLevel="standard"
+                    priceId={dev.priceId}
+                  />
                 </td>
                 <td style={{ width: '10%' }} className="text-center">
-                  <Button
-                    color="success"
-                    onClick={(e) => checkout(proPlus.priceId, customerId)}
-                  >
-                    Buy Now
-                  </Button>
+                  <InteractionButton
+                    subscriptionLevel={subscriptionLevel}
+                    customerId={customerId}
+                    buttonLevel="upgraded"
+                    priceId={pro.priceId}
+                  />
                 </td>
                 <td style={{ width: '12%' }} className="text-center">
-                  <Button
-                    color="success"
-                    onClick={(e) => checkout(pro.priceId, customerId)}
-                  >
-                    Buy Now
-                  </Button>
+                  <InteractionButton
+                    subscriptionLevel={subscriptionLevel}
+                    customerId={customerId}
+                    buttonLevel="unlimited"
+                    priceId={proPlus.priceId}
+                  />
                 </td>
               </tr>
             </tbody>

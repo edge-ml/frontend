@@ -11,7 +11,7 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Alert
+  Alert,
 } from 'reactstrap';
 import { PersonIcon, ShieldIcon } from 'react-octicons';
 import update from 'immutability-helper';
@@ -19,14 +19,14 @@ import { FadeInUp } from 'animate-components';
 import { getServerTime } from '../services/helpers.js';
 import {
   loginUser,
-  verify2FA
+  verify2FA,
 } from '../services/ApiServices/AuthentificationServices';
 import jwt_decode from 'jwt-decode';
 
 import {
   getAccessToken,
   getRefreshToken,
-  setToken
+  setToken,
 } from '../services/LocalStorageService';
 
 class LoginPage extends Component {
@@ -40,7 +40,7 @@ class LoginPage extends Component {
       isLoggedIn: false,
       time: undefined,
       loginFailed: false,
-      show2FA: false
+      show2FA: false,
     };
     this.baseState = JSON.parse(JSON.stringify(this.state));
     this.emailChange = this.emailChange.bind(this);
@@ -76,10 +76,11 @@ class LoginPage extends Component {
           refreshToken,
           decoded.email,
           decoded.twoFactorEnabled,
-          decoded.userName
+          decoded.userName,
+          decoded.subscriptionLevel
         );
         this.setState({
-          isLoggedIn: true
+          isLoggedIn: true,
         });
       }
     }
@@ -93,8 +94,8 @@ class LoginPage extends Component {
     this.setState(
       update(this.state, {
         $merge: {
-          userMail: event.target.value
-        }
+          userMail: event.target.value,
+        },
       })
     );
   }
@@ -103,8 +104,8 @@ class LoginPage extends Component {
     this.setState(
       update(this.state, {
         $merge: {
-          password: event.target.value
-        }
+          password: event.target.value,
+        },
       })
     );
   }
@@ -117,20 +118,20 @@ class LoginPage extends Component {
 
   onTokenChanged(e) {
     this.setState({
-      token: e.target.value
+      token: e.target.value,
     });
     if (!e.target || !e.target.value) return;
     if (e.target.value.length === 6) {
       verify2FA(e.target.value)
-        .then(data => {
+        .then((data) => {
           if (data.isTwoFactorAuthenticated) {
             this.props.onUserLoggedIn(data.access_token, data.refresh_token);
             this.setState({
-              isLoggedIn: true
+              isLoggedIn: true,
             });
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.onLoginError();
         });
     }
@@ -143,7 +144,7 @@ class LoginPage extends Component {
   submit() {
     this.setState({ buttonDisabled: true });
     loginUser(this.state.userMail, this.state.password)
-      .then(data => {
+      .then((data) => {
         const decoded = jwt_decode(data.access_token);
         setToken(data.access_token, data.refresh_token);
         if (!data.twoFactorEnabled) {
@@ -158,15 +159,15 @@ class LoginPage extends Component {
             isLoggedIn: true,
             buttonDisabled: false,
             password: '',
-            userMail: ''
+            userMail: '',
           });
         } else {
           this.setState({
-            show2FA: true
+            show2FA: true,
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log('Error');
         console.log(err);
         this.onLoginError();
@@ -176,7 +177,7 @@ class LoginPage extends Component {
   onLoginError() {
     this.setState(
       {
-        loginFailed: true
+        loginFailed: true,
       },
       () => {
         //Wait for animation to stop then reset page
@@ -185,7 +186,7 @@ class LoginPage extends Component {
             loginFailed: false,
             buttonDisabled: false,
             password: '',
-            token: ''
+            token: '',
           });
         }, 300);
       }
@@ -195,8 +196,8 @@ class LoginPage extends Component {
   componentDidMount() {
     this.checkLoggedInStatus();
     getServerTime()
-      .then(serverTime => this.setState({ time: serverTime }))
-      .catch(err => {});
+      .then((serverTime) => this.setState({ time: serverTime }))
+      .catch((err) => {});
     this.interval = setInterval(this.tick, 1000);
   }
 
@@ -222,7 +223,7 @@ class LoginPage extends Component {
           className="Page"
           style={{
             paddingLeft: 0,
-            paddingRight: 0
+            paddingRight: 0,
           }}
         >
           <Alert color="info" hidden={!this.state.show2FA}>
@@ -237,7 +238,8 @@ class LoginPage extends Component {
                   style={
                     this.state.loginFailed
                       ? {
-                          animation: 'hzejgT 0.3s ease 0s 1 normal none running'
+                          animation:
+                            'hzejgT 0.3s ease 0s 1 normal none running',
                         }
                       : null
                   }
