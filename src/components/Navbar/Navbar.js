@@ -20,6 +20,8 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 import './Navbar.css';
 
+const navbarProjectId = (id) => `navbar-project-${id}`;
+
 class Navbar extends Component {
   constructor(props) {
     super(props);
@@ -48,10 +50,27 @@ class Navbar extends Component {
     );
   }
 
+  scrollProjectIntoView() {
+    const project = this.props.projects.find(
+      (x) => x._id === this.props.currentProjectId
+    );
+
+    if (project) {
+      const element = document.getElementById(navbarProjectId(project._id));
+      if (element) {
+        element.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+      }
+    }
+  }
+
   toggleUserSettingsModal() {
     this.setState({
       userSettingsModalOpen: !this.state.userSettingsModalOpen,
     });
+  }
+
+  componentDidUpdate() {
+    this.scrollProjectIntoView();
   }
 
   render() {
@@ -60,7 +79,10 @@ class Navbar extends Component {
         className="d-flex flex-column bg-light align-items-center justify-content-between shadow navbar-base user-select-none"
         color="light"
       >
-        <div className="w-100 d-flex flex-column justify-content-center align-items-center">
+        <div
+          className="w-100 d-flex flex-column justify-content-center align-items-center"
+          style={{ minHeight: 0 }}
+        >
           <NavbarBrand
             style={{ marginRight: '8px' }}
             className="dark-hover mt-2"
@@ -87,10 +109,14 @@ class Navbar extends Component {
               </b>
             </a>
           </NavbarBrand>
-          <div className="w-100 mt-3">
+          <div className="w-100 mt-3 overflow-auto">
             {this.props.projects.map((project, index) => {
               return (
-                <div className="w-100 text-left" key={project._id}>
+                <div
+                  className="w-100 text-left"
+                  key={project._id}
+                  id={navbarProjectId(project._id)}
+                >
                   <div
                     className="d-flex align-items-center mt-1 pt-2 pb-2 pl-2 navbar-project"
                     onClick={() => this.props.onProjectClick(project._id)}
