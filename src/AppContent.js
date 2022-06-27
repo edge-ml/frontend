@@ -103,6 +103,7 @@ class AppContent extends Component {
                   onProjectsChanged={this.props.onProjectsChanged}
                   userName={this.props.userName}
                   onDeleteProject={this.props.onDeleteProject}
+                  onLeaveProject={this.props.onLeaveProject}
                   userMail={this.props.userMail}
                   {...props}
                 />
@@ -120,6 +121,7 @@ class AppContent extends Component {
                   userName={this.props.userName}
                   userMail={this.props.userMail}
                   onDeleteProject={this.props.onDeleteProject}
+                  onLeaveProject={this.props.onLeaveProject}
                   {...props}
                 />
               </ProjectRefresh>
