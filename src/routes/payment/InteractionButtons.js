@@ -15,6 +15,9 @@ export const InteractionButton = ({
   if (subscriptionLevel !== 'standard' && buttonLevel === 'standard') {
     return <Button disabled>Base Level</Button>;
   }
+  if (subscriptionLevel === 'unlimited' && buttonLevel !== 'unlimited') {
+    return <Button disabled>Buy Now</Button>;
+  }
   return (
     <Button
       color="success"

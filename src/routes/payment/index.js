@@ -37,7 +37,11 @@ const PaymentPage = ({ subscriptionLevel }) => {
         {products.length > 0 && (
           <Table
             className="table-borderless"
-            style={{ marginLeft: '4rem', marginRight: '8rem' }}
+            style={{
+              marginLeft: '4rem',
+              marginRight: '8rem',
+              tableLayout: 'fixed',
+            }}
           >
             <thead>
               <tr>
@@ -48,7 +52,7 @@ const PaymentPage = ({ subscriptionLevel }) => {
                 >
                   {dev.details.title}
                 </th>
-                <th style={{ width: '10%' }} className="text-center">
+                <th style={{ width: '11%' }} className="text-center">
                   {proPlus.details.title}
                 </th>
                 <th
@@ -102,19 +106,23 @@ const PaymentPage = ({ subscriptionLevel }) => {
                   <InteractionButton
                     subscriptionLevel={subscriptionLevel}
                     customerId={customerId}
-                    buttonLevel="upgraded"
-                    priceId={pro.priceId}
+                    buttonLevel="unlimited"
+                    priceId={proPlus.priceId}
                   />
                 </td>
                 <td
-                  style={{ width: '12%', paddingRight: '4rem' }}
+                  style={{
+                    width: '12%',
+                    paddingRight: '4rem',
+                    maxWidth: '100px',
+                  }}
                   className="text-center"
                 >
                   <InteractionButton
                     subscriptionLevel={subscriptionLevel}
                     customerId={customerId}
-                    buttonLevel="unlimited"
-                    priceId={proPlus.priceId}
+                    buttonLevel="upgraded"
+                    priceId={pro.priceId}
                   />
                 </td>
               </tr>
@@ -140,8 +148,8 @@ const PaymentPage = ({ subscriptionLevel }) => {
         style={{
           position: 'absolute',
           top: '50px',
-          left: '815px',
-          width: '290px',
+          left: '821px',
+          width: '284px',
           height: '640px',
           backgroundColor: '#F3F3FF',
           borderRadius: '8px',
@@ -153,7 +161,7 @@ const PaymentPage = ({ subscriptionLevel }) => {
         style={{
           position: 'absolute',
           top: '60px',
-          left: '1088px',
+          left: '1086px',
           width: '260px',
           height: '610px',
           backgroundColor: '#F3F3F3',
