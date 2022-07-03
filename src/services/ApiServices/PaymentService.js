@@ -7,8 +7,8 @@ module.exports.getProducts = function () {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PRODUCTS
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.PRODUCTS
       )
     )
       .then((data) => {
@@ -23,8 +23,8 @@ module.exports.getPrices = function () {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PRICES
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.PRICES
       )
     )
       .then((data) => {
@@ -39,8 +39,8 @@ module.exports.checkout = function (priceId, customerId) {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.CHECKOUT,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.CHECKOUT,
         {
           priceId: priceId,
           customerId: customerId,
@@ -59,8 +59,8 @@ module.exports.accessPortal = function (customerId) {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PORTAL,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.PORTAL,
         { customerId: customerId }
       )
     )

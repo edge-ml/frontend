@@ -44,6 +44,10 @@ module.exports = {
     CHANGE_USERNAME: 'changeUserName',
     USERNAME: 'userName',
     CUSTOMER_ID: 'customerId',
+    PRODUCTS: 'products',
+    PRICES: 'prices',
+    CHECKOUT: 'create-checkout-session',
+    PORTAL: 'create-portal-session',
   },
   API_ENDPOINTS: {
     DATASETS: 'datasets',
@@ -58,10 +62,6 @@ module.exports = {
     GETDEVICEAPIKEY: 'deviceApi/getkey',
     REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
     SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive',
-    CHECKOUT: 'checkout/create-checkout-session',
-    PRODUCTS: 'checkout/products',
-    PRICES: 'checkout/prices',
-    PORTAL: 'checkout/create-customer-portal-session',
   },
   ML_ENDPOINTS: {
     MODELS: 'models',
