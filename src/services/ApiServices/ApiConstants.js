@@ -30,6 +30,7 @@ module.exports = {
   AUTH_ENDPOINTS: {
     DEFAULT: '/',
     LOGIN: 'login',
+    REFRESH: 'refresh',
     DELETE: 'unregister',
     REGISTER: 'register',
     USERS: 'USERS',
