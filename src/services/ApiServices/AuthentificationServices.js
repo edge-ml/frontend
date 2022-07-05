@@ -12,16 +12,33 @@ module.exports.loginUser = function (userEMail, password) {
         apiConsts.AUTH_ENDPOINTS.LOGIN,
         {
           email: userEMail,
-          password: password
+          password: password,
         }
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.deleteUser = userEMail => {
+module.exports.loginUserRefresh = function (refreshToken) {
+  return new Promise((resolve, reject) => {
+    axiosNoToken(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.REFRESH,
+        {
+          refresh_token: refreshToken,
+        }
+      )
+    )
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
+  });
+};
+
+module.exports.deleteUser = (userEMail) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -29,12 +46,12 @@ module.exports.deleteUser = userEMail => {
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.DELETE,
         {
-          email: userEMail
+          email: userEMail,
         }
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
@@ -48,16 +65,16 @@ module.exports.registerNewUser = function (userEMail, password, userName) {
         {
           email: userEMail,
           password: password,
-          userName: userName
+          userName: userName,
         }
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response.data.error));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response.data.error));
   });
 };
 
-module.exports.subscribeUsers = callback => {
+module.exports.subscribeUsers = (callback) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -66,7 +83,7 @@ module.exports.subscribeUsers = callback => {
         apiConsts.AUTH_ENDPOINTS.USERS
       )
     )
-      .then(res => callback(res.data))
+      .then((res) => callback(res.data))
       .catch(() => callback([]));
   });
 };
@@ -80,12 +97,12 @@ module.exports.init2FA = () => {
         apiConsts.AUTH_ENDPOINTS.INIT2FA
       )
     )
-      .then(res => resolve(res.data))
-      .catch(err => reject(err.response));
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.verify2FA = token => {
+module.exports.verify2FA = (token) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -95,8 +112,8 @@ module.exports.verify2FA = token => {
         { token: token }
       )
     )
-      .then(res => resolve(res.data))
-      .catch(err => reject(err.response));
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err.response));
   });
 };
 
@@ -109,12 +126,12 @@ module.exports.reset2FA = () => {
         apiConsts.AUTH_ENDPOINTS.RESET2FA
       )
     )
-      .then(res => resolve(res.data))
-      .catch(err => reject(err.response));
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getUserMail = userIDs => {
+module.exports.getUserMail = (userIDs) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -124,16 +141,16 @@ module.exports.getUserMail = userIDs => {
         userIDs
       )
     )
-      .then(res => {
+      .then((res) => {
         resolve(res.data[0]);
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.response);
       });
   });
 };
 
-module.exports.changeUserMail = newUserMail => {
+module.exports.changeUserMail = (newUserMail) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -143,12 +160,12 @@ module.exports.changeUserMail = newUserMail => {
         { email: newUserMail }
       )
     )
-      .then(res => resolve(res.data))
-      .catch(err => reject(err.response.data));
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err.response.data));
   });
 };
 
-module.exports.changeUserName = newUserName => {
+module.exports.changeUserName = (newUserName) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -158,10 +175,10 @@ module.exports.changeUserName = newUserName => {
         { userName: newUserName }
       )
     )
-      .then(data => {
+      .then((data) => {
         resolve(data.data);
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.response.data);
       });
   });
@@ -177,12 +194,12 @@ module.exports.changeUserPassword = (currentPassword, newPassword) => {
         { password: currentPassword, newPassword: newPassword }
       )
     )
-      .then(res => resolve(res.data))
-      .catch(err => reject(err.response.data));
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err.response.data));
   });
 };
 
-module.exports.getUserIds = userNames => {
+module.exports.getUserIds = (userNames) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -192,14 +209,14 @@ module.exports.getUserIds = userNames => {
         userNames
       )
     )
-      .then(data => {
+      .then((data) => {
         resolve(data.data);
       })
-      .catch(err => reject(err.response));
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getUserNameSuggestions = userName => {
+module.exports.getUserNameSuggestions = (userName) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -209,7 +226,7 @@ module.exports.getUserNameSuggestions = userName => {
         { userName: userName }
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response.data.error));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response.data.error));
   });
 };

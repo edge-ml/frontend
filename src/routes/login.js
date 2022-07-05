@@ -19,6 +19,7 @@ import { FadeInUp } from 'animate-components';
 import { getServerTime } from '../services/helpers.js';
 import {
   loginUser,
+  loginUserRefresh,
   verify2FA,
 } from '../services/ApiServices/AuthentificationServices';
 import jwt_decode from 'jwt-decode';
@@ -84,8 +85,30 @@ class LoginPage extends Component {
         });
       }
     }
-    if (refreshToken && jwt_decode(refreshToken).exp * 1000 >= Date.now()) {
-      //TODO: Need to obtain new Access_Token here
+    // check whether the access token expires in 5 minutes
+    const refreshThreshold = 5 * 60 * 1000;
+    if (
+      refreshToken &&
+      jwt_decode(accessToken).exp * 1000 - Date.now() <= refreshThreshold
+    ) {
+      loginUserRefresh(refreshToken)
+        .then((res) => {
+          const refreshedAccessToken = 'Bearer ' + res.access_token;
+          const decoded = jwt_decode(refreshedAccessToken);
+          setToken(refreshedAccessToken, refreshToken);
+          this.props.onUserLoggedIn(
+            refreshedAccessToken,
+            refreshToken,
+            decoded.email,
+            decoded.twoFactorEnabled,
+            decoded.userName,
+            decoded.subscriptionLevel
+          );
+          console.log('success');
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       return;
     }
   }
@@ -199,6 +222,10 @@ class LoginPage extends Component {
       .then((serverTime) => this.setState({ time: serverTime }))
       .catch((err) => {});
     this.interval = setInterval(this.tick, 1000);
+    this.checkLoggedInInterval = setInterval(() => {
+      console.log('checking status');
+      this.checkLoggedInStatus();
+    }, 1000 * 60 * 4);
   }
 
   componentWillUnmount() {
