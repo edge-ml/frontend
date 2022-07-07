@@ -377,7 +377,7 @@ class App extends Component {
                 <div
                   style={{
                     marginLeft: this.state.navbarWidth,
-                    width: '100%',
+                    width: `calc(100% - ${this.state.navbarWidth})`,
                   }}
                 >
                   <Route
