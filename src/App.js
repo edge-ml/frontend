@@ -4,6 +4,18 @@ import { Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCaretDown,
+  faCaretRight,
+  faPlus,
+  faUser,
+  faDatabase,
+  faCogs,
+  faPen,
+  faBrain,
+  faLightbulb,
+} from '@fortawesome/free-solid-svg-icons';
 import Navbar from './components/Navbar/Navbar';
 
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -23,7 +35,10 @@ import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal'
 import AppContent from './AppContent';
 import NoProjectPage from './components/NoProjectPage/NoProjectPage';
 import ErrorPage from './components/ErrorPage/ErrorPage';
-import { deleteProject } from './services/ApiServices/ProjectService';
+import {
+  deleteProject,
+  leaveProject,
+} from './services/ApiServices/ProjectService';
 import Loader from './modules/loader';
 
 class App extends Component {
@@ -60,6 +75,7 @@ class App extends Component {
     this.changeURL = this.changeURL.bind(this);
     this.navigateTo = this.navigateTo.bind(this);
     this.onDeleteProject = this.onDeleteProject.bind(this);
+    this.onLeaveProject = this.onLeaveProject.bind(this);
 
     this.props.history.listen(() => {
       const splitUrl = this.props.history.location.pathname
@@ -76,6 +92,12 @@ class App extends Component {
 
   onDeleteProject(project) {
     deleteProject(project).then((data) => {
+      this.onProjectsChanged(data);
+    });
+  }
+
+  onLeaveProject(project) {
+    leaveProject(project).then((data) => {
       this.onProjectsChanged(data);
     });
   }
@@ -389,6 +411,7 @@ class App extends Component {
                         userName={this.state.userName}
                         userMail={this.state.userMail}
                         onDeleteProject={this.onDeleteProject}
+                        onLeaveProject={this.onLeaveProject}
                         modalOpen={modalOpen}
                         project={
                           this.state.projects.filter(

@@ -2,9 +2,9 @@ import {
   faCode,
   faFile,
   faMicrochip,
-  faWifi,
   faInfo,
-  faQuestion,
+  faMobileAlt,
+  faWifi,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -53,6 +53,7 @@ class ListPage extends Component {
     this.toggleCreateNewDatasetModal =
       this.toggleCreateNewDatasetModal.bind(this);
     this.onUploadBLE = this.onUploadBLE.bind(this);
+    this.onUploadWeb = this.onUploadWeb.bind(this);
     this.downloadAllDatasets = this.downloadAllDatasets.bind(this);
     this.deleteAllEmptyDatasets = this.deleteAllEmptyDatasets.bind(this);
   }
@@ -94,6 +95,10 @@ class ListPage extends Component {
 
   onUploadBLE() {
     this.props.history.push('./ble');
+  }
+
+  onUploadWeb() {
+    this.props.history.push('./uploadweb');
   }
 
   onUploadFromCode() {
@@ -284,7 +289,7 @@ class ListPage extends Component {
                       </div>
                     </div>
                     <div
-                      className="d-flex flex-row justify-content-center align-items-start"
+                      className="d-flex flex-row justify-content-center align-items-start mr-5"
                       style={{ flex: '1 1 0px' }}
                     >
                       <FontAwesomeIcon
@@ -339,6 +344,42 @@ class ListPage extends Component {
                         </Button>
                       </div>
                     </div>
+                    <div
+                      className="d-flex flex-row justify-content-center align-items-start"
+                      style={{ flex: '1 1 0px' }}
+                    >
+                      <FontAwesomeIcon
+                        className="mr-3 mt-1"
+                        icon={faMobileAlt}
+                        style={{ fontSize: 'x-large' }}
+                      ></FontAwesomeIcon>
+                      <div className="d-flex flex-column justify-content-between h-100">
+                        <div className="d-flex flex-column">
+                          <div>
+                            <small>
+                              <b>Record with Mobile Device</b>
+                            </small>
+                          </div>
+                          <small>
+                            If you own a smartphone or tablet with onboard
+                            sensors you can use these directly from your browser
+                            using Web Sensors API.
+                          </small>
+                        </div>
+
+                        <Button
+                          id="buttonUploadWeb"
+                          block
+                          className="mt-2"
+                          color="success"
+                          outline
+                          onClick={this.onUploadWeb}
+                          style={{ padding: '0px' }}
+                        >
+                          <small>Collect Data via Web Sensors</small>
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -352,11 +393,12 @@ class ListPage extends Component {
                         id="deleteDatasetsButton"
                         size="sm"
                         color="danger"
+                        className="mr-2"
                         outline
                         disabled={this.state.datasetsToDelete.length === 0}
                         onClick={this.openDeleteModal}
                       >
-                        Delete
+                        Delete Selected
                       </Button>
                       <Button
                         className="ml-2"

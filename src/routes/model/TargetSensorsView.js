@@ -4,7 +4,9 @@ import Loader from '../../modules/loader';
 
 export const TargetSensorsView = ({
   sensorStreams,
-  changeSelectedSensorStreams,
+  selectedSensorStreams,
+  toggleSelectedSensorStreams,
+  changeAllSelectedSensorStreams,
 }) => {
   return (
     <div className="card h-100" style={{ border: '0px solid white' }}>
@@ -13,6 +15,30 @@ export const TargetSensorsView = ({
           <h4>Target Sensor Streams</h4>
         </div>
         <Loader loading={!sensorStreams}>
+          {sensorStreams && sensorStreams.length > 0 && (
+            <fieldset>
+              <input
+                id="select-all"
+                type="checkbox"
+                onClick={(y) => {
+                  changeAllSelectedSensorStreams(
+                    !sensorStreams ||
+                      !sensorStreams.every((x) =>
+                        selectedSensorStreams.includes(x)
+                      )
+                  );
+                }}
+                checked={
+                  sensorStreams &&
+                  sensorStreams.length &&
+                  sensorStreams.every((x) => selectedSensorStreams.includes(x))
+                }
+              ></input>
+              <label className="mb-0 ml-1 font-italic" for="select-all">
+                Select All
+              </label>
+            </fieldset>
+          )}
           <fieldset>
             {sensorStreams && sensorStreams.length
               ? sensorStreams.map((x) => {
@@ -22,8 +48,9 @@ export const TargetSensorsView = ({
                         id={x}
                         type="checkbox"
                         onClick={(y) => {
-                          changeSelectedSensorStreams(x);
+                          toggleSelectedSensorStreams(x);
                         }}
+                        checked={selectedSensorStreams.includes(x)}
                       ></input>
                       <label className="mb-0 ml-1" for={x}>
                         {x}
@@ -39,8 +66,8 @@ export const TargetSensorsView = ({
             <b>
               <i>Note:</i>
             </b>{' '}
-            Datasets that do not have all selected sensor streams will be
-            dropped.
+            Datasets that do not have all selected sensor streams or the target
+            labeling will be dropped.
           </small>
         </div>
       </div>

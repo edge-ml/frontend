@@ -12,6 +12,7 @@ import ModelPage from './routes/model';
 import ValidationPage from './routes/validation';
 import ExportPage from './routes/export';
 import UploadBLE from './routes/uploadBLE';
+import { UploadWebPage } from './routes/uploadWeb';
 
 class AppContent extends Component {
   constructor(props) {
@@ -28,9 +29,9 @@ class AppContent extends Component {
             forceRefresh
             path={[
               this.props.match.path + '/datasets',
-              this.props.match.path + '/'
+              this.props.match.path + '/',
             ]}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ListPage {...props} />
               </ProjectRefresh>
@@ -38,7 +39,7 @@ class AppContent extends Component {
           />
           <Route
             path={[this.props.match.path + '/labelings']}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <LabelingsPage {...props} />
               </ProjectRefresh>
@@ -46,7 +47,7 @@ class AppContent extends Component {
           />
           <Route
             path={this.props.match.path + '/datasets/:id'}
-            render={props => (
+            render={(props) => (
               <DatasetPage
                 {...props}
                 navigateTo={this.props.navigateTo}
@@ -58,9 +59,9 @@ class AppContent extends Component {
             exact
             path={[
               this.props.match.path + '/experiments',
-              this.props.match.path + '/experiments/new'
+              this.props.match.path + '/experiments/new',
             ]}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ExperimentsPage {...props} />
               </ProjectRefresh>
@@ -69,7 +70,7 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/model'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ModelPage {...props}></ModelPage>
               </ProjectRefresh>
@@ -78,7 +79,7 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/validation'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ValidationPage {...props}></ValidationPage>
               </ProjectRefresh>
@@ -87,7 +88,7 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/deploy'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ExportPage {...props}></ExportPage>
               </ProjectRefresh>
@@ -96,12 +97,13 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/settings'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ProjectSettings
                   onProjectsChanged={this.props.onProjectsChanged}
                   userName={this.props.userName}
                   onDeleteProject={this.props.onDeleteProject}
+                  onLeaveProject={this.props.onLeaveProject}
                   userMail={this.props.userMail}
                   {...props}
                 />
@@ -111,7 +113,7 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/settings/getCode'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ProjectSettings
                   onProjectsChanged={this.props.onProjectsChanged}
@@ -119,6 +121,7 @@ class AppContent extends Component {
                   userName={this.props.userName}
                   userMail={this.props.userMail}
                   onDeleteProject={this.props.onDeleteProject}
+                  onLeaveProject={this.props.onLeaveProject}
                   {...props}
                 />
               </ProjectRefresh>
@@ -127,9 +130,18 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/ble'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <UploadBLE {...props}></UploadBLE>
+              </ProjectRefresh>
+            )}
+          />
+          <Route
+            exact
+            path={this.props.match.path + '/uploadweb'}
+            render={(props) => (
+              <ProjectRefresh project={this.props.project}>
+                <UploadWebPage {...props}></UploadWebPage>
               </ProjectRefresh>
             )}
           />

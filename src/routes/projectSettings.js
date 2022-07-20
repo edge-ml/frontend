@@ -58,6 +58,7 @@ class ProjectSettings extends Component {
       };
     }
     this.onDeleteProject = this.onDeleteProject.bind(this);
+    this.onLeaveProject = this.onLeaveProject.bind(this);
     this.onNameChanged = this.onNameChanged.bind(this);
     this.onUserNameChange = this.onUserNameChange.bind(this);
     this.onSave = this.onSave.bind(this);
@@ -221,6 +222,15 @@ class ProjectSettings extends Component {
     }
   }
 
+  onLeaveProject() {
+    var doLeave = window.confirm(
+      'Do you want to leave this project? If you change your mind, you will have to ask the project admin to add you again.'
+    );
+    if (doLeave) {
+      this.props.onLeaveProject(this.state.project);
+    }
+  }
+
   onUserNameChange(index, e) {
     const project = { ...this.state.project };
     project.users[index].userName = e.target.value;
@@ -247,6 +257,7 @@ class ProjectSettings extends Component {
   }
 
   render() {
+    console.log(this.props);
     var changes = false;
     if (this.props.project && this.props.project.users) {
       var originalUsers = this.props.project.users.map((elm) => elm.userName);
@@ -275,13 +286,21 @@ class ProjectSettings extends Component {
             <h3 style={{ marginBottom: '0px' }}>
               {'Edit Project: ' + this.props.project.name}
             </h3>
-            {this.state.project.users ? (
+            {this.state.project.users ? ( // users exists only on admin?
               <Button
                 id="buttonDeleteProject"
                 onClick={this.onDeleteProject}
                 color="danger"
               >
                 Delete project
+              </Button>
+            ) : this.props.userName !== this.props.project.admin.userName ? (
+              <Button
+                id="buttonLeaveProject"
+                onClick={this.onLeaveProject}
+                color="danger"
+              >
+                Leave project
               </Button>
             ) : null}
           </div>
