@@ -12,7 +12,6 @@ const states = Object.entries({
   FEATURE_EXTRACTION: 'Feature extraction',
   MODEL_TRAINING: 'Classifier fit',
   TRAINING_SUCCESSFUL: 'Training successful',
-  TRAINING_FAILED: 'Training failed',
 });
 
 const BS_SUCCESS = '#28a745'; // TODO: find a better way
