@@ -97,18 +97,6 @@ class AppContent extends Component {
           />
           <Route
             exact
-            path={this.props.match.path + '/payment'}
-            render={(props) => (
-              <ProjectRefresh project={this.props.project}>
-                <PaymentPage
-                  {...props}
-                  subscriptionLevel={this.props.subscriptionLevel}
-                ></PaymentPage>
-              </ProjectRefresh>
-            )}
-          />
-          <Route
-            exact
             path={this.props.match.path + '/settings'}
             render={(props) => (
               <ProjectRefresh project={this.props.project}>

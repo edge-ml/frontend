@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { NavbarBrand } from 'reactstrap';
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
@@ -22,6 +22,7 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
+import PaymentPage from './routes/payment';
 import { getProjects } from './services/ApiServices/ProjectService';
 import EditProjectModal from './components/EditProjectModal/EditProjectModal';
 import {
@@ -178,7 +179,6 @@ class App extends Component {
   }
 
   onProjectClick(id) {
-    console.log(id);
     if (this.state.currentProjectId === id) {
       this.setState({
         currentProjectId: undefined,
@@ -248,6 +248,10 @@ class App extends Component {
           currentProjectId: projects[storedProjectIndex]._id,
           projectLocation: 'datasets',
         });
+        // user is accessing payment page, dont push to history
+        if (params[1] === 'payment') {
+          return;
+        }
 
         this.props.history.push(
           '/' +
@@ -404,27 +408,39 @@ class App extends Component {
                     width: '100%',
                   }}
                 >
-                  <Route
-                    {...this.props}
-                    path="/:userName/:projectID"
-                    render={(props) => (
-                      <AppContent
-                        {...props}
-                        userName={this.state.userName}
-                        userMail={this.state.userMail}
-                        subscriptionLevel={this.state.subscriptionLevel}
-                        onDeleteProject={this.onDeleteProject}
-                        modalOpen={modalOpen}
-                        project={
-                          this.state.projects.filter(
-                            (x) => x._id === this.state.currentProjectId
-                          )[0]
-                        }
-                        onProjectsChanged={this.onProjectsChanged}
-                        navigateTo={this.navigateTo}
-                      />
-                    )}
-                  ></Route>
+                  <Switch>
+                    <Route
+                      {...this.props}
+                      path="/payment"
+                      render={(props) => (
+                        <PaymentPage
+                          {...props}
+                          subscriptionLevel={this.props.subscriptionLevel}
+                        ></PaymentPage>
+                      )}
+                    />
+                    <Route
+                      {...this.props}
+                      path="/:userName/:projectID"
+                      render={(props) => (
+                        <AppContent
+                          {...props}
+                          userName={this.state.userName}
+                          userMail={this.state.userMail}
+                          subscriptionLevel={this.state.subscriptionLevel}
+                          onDeleteProject={this.onDeleteProject}
+                          modalOpen={modalOpen}
+                          project={
+                            this.state.projects.filter(
+                              (x) => x._id === this.state.currentProjectId
+                            )[0]
+                          }
+                          onProjectsChanged={this.onProjectsChanged}
+                          navigateTo={this.navigateTo}
+                        />
+                      )}
+                    ></Route>
+                  </Switch>
                 </div>
               </div>
             </Loader>
