@@ -9,8 +9,17 @@ import {
 import { useAsyncMemo } from '../../services/ReactHooksService';
 import Loader from '../../modules/loader';
 import { InteractionButton } from './InteractionButtons';
+import { useLocation } from 'react-router-dom';
 
-const PaymentPage = ({ subscriptionLevel }) => {
+const FeedbackPage = ({ success, userName }) => {
+  return success ? (
+    <h1>Thanks for your purchase, {userName}!</h1>
+  ) : (
+    <h1>Purchase failed</h1>
+  );
+};
+
+const PaymentPage = ({ subscriptionLevel, userName, match }) => {
   const products = useAsyncMemo(async () => await getProducts(), [], []);
   const customerId = useAsyncMemo(async () => await getCustomerId(), []);
   const features = {
@@ -27,7 +36,22 @@ const PaymentPage = ({ subscriptionLevel }) => {
   const dev = products.find((x) => x.details.title === 'Dev');
   const proPlus = products.find((x) => x.details.title === 'Pro+');
   const pro = products.find((x) => x.details.title === 'Pro');
-  console.log(customerId);
+  const query = useLocation().search.split('?')[1];
+  const success = query
+    ? query.split('=')[0] === 'success'
+      ? true
+      : false
+    : undefined;
+  if (query) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center vh-100"
+        style={{ fontSize: '1.20rem' }}
+      >
+        <FeedbackPage success={success} userName={userName} />
+      </div>
+    );
+  }
   return (
     <Loader loading={!products || !customerId}>
       <div

@@ -415,6 +415,7 @@ class App extends Component {
                       render={(props) => (
                         <PaymentPage
                           {...props}
+                          userName={this.state.userName}
                           subscriptionLevel={this.props.subscriptionLevel}
                         ></PaymentPage>
                       )}
