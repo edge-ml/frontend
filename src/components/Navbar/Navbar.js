@@ -132,7 +132,6 @@ class Navbar extends Component {
                         ['Model', faBrain],
                         ['Validation', faCheck],
                         ['Deploy', faFileExport],
-                        ['Payment', faCreditCard],
                         ['Settings', faCogs],
                       ].map((elm, indx) => (
                         <div
@@ -177,6 +176,14 @@ class Navbar extends Component {
         <div></div>
 
         <div className="d-flex flex-column footer w-100 text-light justify-content-center align-items-center">
+          <a href="/payment" className="w-100 text-decoration-none">
+            <div className="pt-3 pb-3 navbar-project-item w-100 text-center">
+              <small>
+                <FontAwesomeIcon icon={faCreditCard} className="mr-2" />
+                Subscribe
+              </small>
+            </div>
+          </a>
           <div
             className="pt-3 pb-3 navbar-project-item w-100 text-center"
             onClick={() =>
