@@ -43,7 +43,7 @@ export class RecordingController extends EventEmitter {
     await this._uploadLock.acquire();
 
     try {
-      if (this._deltaTimeseries.length === 0) return; // nothing to _upload
+      if (Object.values(this._deltaTimeseries).flat().length === 0) return; // nothing to _upload
       await appendToDataset(
         this.newDataset,
         Object.entries(this._deltaTimeseries).map(([name, data]) => ({
