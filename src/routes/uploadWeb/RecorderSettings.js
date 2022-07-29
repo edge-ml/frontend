@@ -77,9 +77,9 @@ export const RecorderSettings = ({
       <React.Fragment>
         <hr />
         <h5>Errors</h5>
-        {Object.entries(errors).map(([comp, err]) => (
-          <Alert color="danger">
-            {comp}: {err}
+        {Object.entries(errors).map(([comp, { error, isWarning }]) => (
+          <Alert color={isWarning ? 'warning' : 'danger'}>
+            <strong>{comp}</strong>: {error}
           </Alert>
         ))}
       </React.Fragment>
