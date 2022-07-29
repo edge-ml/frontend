@@ -31,7 +31,7 @@ export class WebSensorApiSensor extends EventEmitter {
     this.stop();
 
     // const clVal = setInterval(() => {
-    //     this.emit('data', XYZMAP(this, {x: Math.random() * 100, y: Math.random() * 100, z: Math.random() * 100}), {
+    //     this.emit('data', this._mapComponents(this, {x: Math.random() * 100, y: Math.random() * 100, z: Math.random() * 100}), {
     //         timestamp: Date.now()
     //     })
     // }, 1000 / opts.frequency)
