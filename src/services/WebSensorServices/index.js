@@ -1,5 +1,5 @@
 import { WebSensorApiSensor } from './WebSensorApiSensor';
-import { IOSSafariSensor } from './IOSSafariSensor';
+import { DeviceMotionSensor } from './DeviceMotionSensor';
 import { BatterySensor } from './BatterySensor';
 
 /**
@@ -12,7 +12,9 @@ import { BatterySensor } from './BatterySensor';
  *  - stop: () => void
  *  - detection: () => boolean
  *  - properties: { fixedFrequency: boolean }
+ *  - static trigger: () => void
  * events/payloads:
+ *  - warn: string
  *  - error: any
  *  - data: Record<keyof typeof this.components, number>, { timestamp: number }
  */
@@ -106,7 +108,7 @@ export const SENSORS = [
     PERMAPIASK('magnetometer')
   ),
 
-  new IOSSafariSensor(
+  new DeviceMotionSensor(
     'DeviceMotion',
     DeviceMotionEvent,
     'devicemotion',
@@ -137,7 +139,7 @@ export const SENSORS = [
       [name + 'RotationRateGamma']: rotationRate.gamma,
     })
   ),
-  new IOSSafariSensor(
+  new DeviceMotionSensor(
     'DeviceOrientation',
     DeviceOrientationEvent,
     'deviceorientation',
