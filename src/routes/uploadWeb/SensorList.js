@@ -38,9 +38,7 @@ export const SensorList = ({
               </td>
               <td>{name}</td>
               <td>
-                {fixedFrequency ? (
-                  <small>Not available</small>
-                ) : (
+                {fixedFrequency ? null : (
                   <InputGroup style={{ margin: 0, minWidth: '90px' }} size="sm">
                     <Input
                       value={sampleRate}
