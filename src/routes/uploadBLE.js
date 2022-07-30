@@ -22,6 +22,7 @@ import BlePanelRecordingDisplay from '../components/BLE/BlePanelRecordingDisplay
 
 import '../components/BLE/BleActivated.css';
 import { ga_connectBluetooth } from '../services/AnalyticsService';
+import BlePanelFlashFirmware from '../components/BLE/BlePanelFlashFirmware';
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -204,8 +205,8 @@ class UploadBLE extends Component {
       acceptAllDevices: true,
       optionalServices: [this.deviceInfoServiceUuid, this.sensorServiceUuid],
     };
-    const bleDevice = await navigator.bluetooth.requestDevice(options);
-    //const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
+    //const bleDevice = await navigator.bluetooth.requestDevice(options);
+    const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
     return bleDevice;
   }
 
@@ -301,12 +302,14 @@ class UploadBLE extends Component {
 
     return (
       <div className="bleActivatedContainer">
-        <BlePanelConnectDevice
-          bleConnectionChanging={this.state.bleConnectionChanging}
-          toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
-          connectedBLEDevice={this.state.connectedBLEDevice}
-        ></BlePanelConnectDevice>
-
+        <div>
+          <BlePanelConnectDevice
+            bleConnectionChanging={this.state.bleConnectionChanging}
+            toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
+            connectedBLEDevice={this.state.connectedBLEDevice}
+          ></BlePanelConnectDevice>
+          <BlePanelFlashFirmware />
+        </div>
         {this.state.deviceSensors && this.state.connectedBLEDevice ? (
           <Row>
             <Col>
