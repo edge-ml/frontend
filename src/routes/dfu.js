@@ -42,6 +42,36 @@ class DFUPage extends Component {
     this.onDisconnection = this.onDisconnection.bind(this);
     this.update = this.update.bind(this);
     this.increaseIndex = this.increaseIndex.bind(this);
+    this.updateFW = this.updateFW.bind(this);
+    this.loadFile = this.loadFile.bind(this);
+  }
+
+  componentDidMount() {
+    this.loadFile();
+  }
+
+  loadFile() {
+    var reader = new FileReader();
+    reader.addEventListener('load', () => {
+      var arrayBuffer = this.result;
+      this.arrayFW = new Uint8Array(arrayBuffer);
+      this.fwLen = this.arrayFW.length;
+
+      console.log('Binary file length: ', this.fwLen);
+      if (this.debug == true) {
+        console.log(this.arrayFW);
+      }
+      this.crc8();
+      console.log('Computed 8-bit CRC: ', this.crc8bit);
+      console.log('Press "Update" button to start the fw update');
+
+      //document.querySelector('#update').disabled = false;
+    });
+
+    reader.readAsArrayBuffer(new File([''], 'filepath'));
+    // Update label file name
+    //var fileName = $(this).val().replace('C:\\fakepath\\', " ");
+    //$(this).next('.custom-file-label').html(fileName);
   }
 
   getDeviceInfo() {
@@ -222,7 +252,28 @@ class DFUPage extends Component {
     }
   }
 
-  updateFW() {}
+  updateFW() {
+    if (this.state.isConnected) {
+      this.iterations = Math.floor(this.fwLen / this.dataLen);
+      this.spareBytes = this.fwLen % this.dataLen;
+      this.iterations++;
+      if (this.debug == true) {
+        console.log('Iterations: ', this.iterations);
+        console.log('Spare bytes: ', this.spareBytes);
+      }
+      if (this.spareBytes == 0) {
+        if (this.debug == true) {
+          console.log('No remaining bytes in last packet to write CRC.');
+          console.log('CRC will be sent alone in a new packet');
+        }
+        this.onlyCRCleft = true;
+      }
+      this.updateIndex = 0;
+      // Take selected dfu characteristic
+      this.dfuCharacteristic = this.state.gattInternalCharacteristic;
+      this.update(this.updateIndex);
+    }
+  }
 
   render() {
     if (!this.state.bleStatus) {
