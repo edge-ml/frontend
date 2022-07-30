@@ -308,7 +308,9 @@ class UploadBLE extends Component {
             toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
             connectedBLEDevice={this.state.connectedBLEDevice}
           ></BlePanelConnectDevice>
-          <BlePanelFlashFirmware />
+          {this.state.deviceSensors && this.state.connectedBLEDevice ? null : (
+            <BlePanelFlashFirmware />
+          )}
         </div>
         {this.state.deviceSensors && this.state.connectedBLEDevice ? (
           <Row>

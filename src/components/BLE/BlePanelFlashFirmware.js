@@ -7,7 +7,7 @@ function BlePanelFlashFirmware(props) {
   const history = useHistory();
   return (
     <div className="shadow p-3 mb-5 bg-white rounded">
-      <div className="panelHeader">2. Firmware</div>
+      <div className="panelHeader">Firmware</div>
       <small className="text-danger">
         <strong>Warning: </strong>
         The device needs to have the edge-ml firmware running. If not already
