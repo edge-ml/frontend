@@ -8,20 +8,20 @@ import {
   Table,
   CustomInput,
   Col,
-  Row
+  Row,
 } from 'reactstrap';
 
 import { Prompt, withRouter } from 'react-router-dom';
 
 import {
   deleteProject,
-  updateProject
+  updateProject,
 } from './../services/ApiServices/ProjectService';
 import {
   switchDeviceApiActive,
   getDeviceApiKey,
   setDeviceApiKey,
-  deleteDeviceApiKey
+  deleteDeviceApiKey,
 } from '../services/ApiServices/DeviceApiService';
 import { API_URI } from './../services/ApiServices/ApiConstants';
 
@@ -42,14 +42,14 @@ class ProjectSettings extends Component {
         project: JSON.parse(JSON.stringify(props.project)),
         deviceKey: undefined,
         userSearchValue: '',
-        codeSnippetModalOpen: props.codeSnippetModalOpen || false
+        codeSnippetModalOpen: props.codeSnippetModalOpen || false,
       };
     } else {
       this.state = {
         error: undefined,
         originalProject: undefined,
         project: undefined,
-        originalUsers: []
+        originalUsers: [],
       };
     }
     this.onDeleteProject = this.onDeleteProject.bind(this);
@@ -63,14 +63,13 @@ class ProjectSettings extends Component {
     this.toggleCodeSnippetModal = this.toggleCodeSnippetModal.bind(this);
     this.usersValid = this.usersValid.bind(this);
     this.deleteUserName = this.deleteUserName.bind(this);
-    this.onChangeUserNameSuggestion = this.onChangeUserNameSuggestion.bind(
-      this
-    );
+    this.onChangeUserNameSuggestion =
+      this.onChangeUserNameSuggestion.bind(this);
     this.onAddUserName = this.onAddUserName.bind(this);
     this.init = this.init.bind(this);
     this.init();
     if (this.props.codeSnippetModalOpen) {
-      getDeviceApiKey.apply().then(key => {
+      getDeviceApiKey.apply().then((key) => {
         if (!key.deviceApiKey || !props.project.enableDeviceApi) {
           if (!key.deviceApiKey) {
             this.onEnableDeviceApi();
@@ -85,7 +84,7 @@ class ProjectSettings extends Component {
 
   onChangeUserNameSuggestion(e) {
     this.setState({
-      userSearchValue: e.target.value
+      userSearchValue: e.target.value,
     });
   }
 
@@ -95,13 +94,13 @@ class ProjectSettings extends Component {
     project.users.push({ userName: e.target.value });
     this.setState({
       project: project,
-      userSearchValue: ''
+      userSearchValue: '',
     });
   }
 
   usersValid(users) {
     return users.every(
-      elm =>
+      (elm) =>
         elm.userName !== this.props.userName &&
         elm.userName !== this.props.userMail
     );
@@ -110,30 +109,30 @@ class ProjectSettings extends Component {
   async init() {
     const apiKey = await getDeviceApiKey();
     this.setState({
-      deviceKey: apiKey.deviceApiKey
+      deviceKey: apiKey.deviceApiKey,
     });
   }
 
   onDeviceApiSwitch(checked) {
     switchDeviceApiActive(checked)
-      .then(data => {
+      .then((data) => {
         this.props.onProjectsChanged(data);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }
 
   onEnableDeviceApi() {
-    setDeviceApiKey().then(data => {
+    setDeviceApiKey().then((data) => {
       this.setState({
-        deviceKey: data.deviceApiKey
+        deviceKey: data.deviceApiKey,
       });
     });
   }
 
   onDisableDeviceApi() {
-    deleteDeviceApiKey().then(data => {
+    deleteDeviceApiKey().then((data) => {
       this.setState({
-        deviceKey: undefined
+        deviceKey: undefined,
       });
     });
   }
@@ -141,11 +140,11 @@ class ProjectSettings extends Component {
   toggleCheck(e, user) {
     if (!this.state.usersToDelete.includes(user)) {
       this.setState({
-        usersToDelete: [...this.state.usersToDelete, user]
+        usersToDelete: [...this.state.usersToDelete, user],
       });
     } else {
       this.setState({
-        usersToDelete: this.state.usersToDelete.filter(elm => elm !== user)
+        usersToDelete: this.state.usersToDelete.filter((elm) => elm !== user),
       });
     }
   }
@@ -158,28 +157,29 @@ class ProjectSettings extends Component {
       this.setState({
         project: this.props.project,
         originalProject: this.props.project,
-        originalUsers: this.props.project.users
+        originalUsers: this.props.project.users,
       });
     }
   }
 
   onSave() {
     updateProject(this.state.project)
-      .then(data => {
+      .then((data) => {
         this.props.onProjectsChanged(data);
+        this.setState({ error: undefined });
       })
-      .catch(err => {
+      .catch((err) => {
         this.setState({
-          error: err
+          error: err,
         });
       });
   }
 
   deleteUserName(userName) {
     const project = this.state.project;
-    project.users = project.users.filter(elm => elm.userName !== userName);
+    project.users = project.users.filter((elm) => elm.userName !== userName);
     this.setState({
-      project: project
+      project: project,
     });
   }
 
@@ -188,7 +188,7 @@ class ProjectSettings extends Component {
     tmpProject.name = newName;
     this.setState({
       project: tmpProject,
-      error: undefined
+      error: undefined,
     });
   }
 
@@ -204,13 +204,13 @@ class ProjectSettings extends Component {
     project.users[index].userName = e.target.value;
     this.setState({
       project: project,
-      error: undefined
+      error: undefined,
     });
   }
 
   toggleCodeSnippetModal(open) {
     this.setState({
-      codeSnippetModalOpen: open
+      codeSnippetModalOpen: open,
     });
     let newPath;
     if (!open) {
@@ -227,11 +227,11 @@ class ProjectSettings extends Component {
   render() {
     var changes = false;
     if (this.props.project && this.props.project.users) {
-      var originalUsers = this.props.project.users.map(elm => elm.userName);
+      var originalUsers = this.props.project.users.map((elm) => elm.userName);
       changes =
         this.state.project.name !== this.props.project.name ||
         !(
-          this.state.project.users.map(elm =>
+          this.state.project.users.map((elm) =>
             originalUsers.includes(elm.user)
           ) &&
           this.state.project.users.length === this.props.project.users.length
@@ -273,7 +273,7 @@ class ProjectSettings extends Component {
               readOnly={!this.props.project.users}
               placeholder={'Name'}
               value={this.state.project.name}
-              onChange={e => this.onNameChanged(e.target.value)}
+              onChange={(e) => this.onNameChanged(e.target.value)}
             />
           </InputGroup>
           <InputGroup>
@@ -294,7 +294,7 @@ class ProjectSettings extends Component {
                 type="switch"
                 id="exampleCustomSwitch"
                 checked={this.props.project.enableDeviceApi}
-                onChange={e => this.onDeviceApiSwitch(e.target.checked)}
+                onChange={(e) => this.onDeviceApiSwitch(e.target.checked)}
               />
             </FormGroup>
           ) : null}
@@ -366,8 +366,8 @@ class ProjectSettings extends Component {
                   onChange={this.onChangeUserNameSuggestion}
                   getsuggestions={getUserNameSuggestions}
                   filter={[
-                    ...this.state.project.users.map(elm => elm.userName),
-                    this.props.userName
+                    ...this.state.project.users.map((elm) => elm.userName),
+                    this.props.userName,
                   ]}
                 ></AutoCompleteInput>
               </Col>
@@ -410,7 +410,7 @@ class ProjectSettings extends Component {
               >
                 {this.usersValid(this.state.project.users)
                   ? this.state.error
-                    ? 'Could not add users. Make sure they exist'
+                    ? this.state.error
                     : null
                   : `${this.props.userName} is already in the project`}
               </div>
@@ -419,7 +419,7 @@ class ProjectSettings extends Component {
             <div
               style={{
                 display: 'flex',
-                justifyContent: 'right'
+                justifyContent: 'right',
               }}
             >
               <Button
