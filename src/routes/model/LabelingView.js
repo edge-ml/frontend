@@ -55,6 +55,7 @@ export const LabelingView = ({
                               {label.name}
                               <input
                                 type="checkbox"
+                                disabled={selectedLabeling !== x._id}
                                 className="ml-1 float-right"
                                 checked={selectedLabelsFor[x._id][labelId]}
                                 onClick={(y) =>
@@ -73,6 +74,7 @@ export const LabelingView = ({
                                 onChange={(e) =>
                                   changeUnlabelledName(e.target.value, x._id)
                                 }
+                                disabled={selectedLabeling !== x._id}
                                 style={{
                                   backgroundColor: 'rgba(0,0,0,0)',
                                   border: 'none',
@@ -90,6 +92,7 @@ export const LabelingView = ({
                             <FormGroup>
                               <input
                                 type="checkbox"
+                                disabled={selectedLabeling !== x._id}
                                 className="float-left"
                                 checked={useUnlabelledFor[x._id]}
                                 onClick={(e) =>
