@@ -34,7 +34,7 @@ export class RecordingController extends EventEmitter {
   }
 
   getTimeseries = () => this._fullTimeseries;
-  getErrors = () => this._errors;
+  getErrors = () => ({ ...this._errors });
 
   _upload = async () => {
     // lock to ensure no datapoint goes missing (new datapoint could come while uploading, which is done out of the event loop)
@@ -57,10 +57,12 @@ export class RecordingController extends EventEmitter {
     }
   };
 
-  _onSensorError = (sensor) => (error) => {
-    this._errors[sensor.name] = error;
-    this.emit('error', this);
-  };
+  _onSensorError =
+    (sensor, isWarning = false) =>
+    (error) => {
+      this._errors[sensor.name] = { error, isWarning };
+      this.emit('error', this);
+    };
   _onSensorData =
     (sensor) =>
     (data, { timestamp }) => {
@@ -114,6 +116,7 @@ export class RecordingController extends EventEmitter {
     for (const sensor of this._sensors) {
       sensor.removeAllListeners();
 
+      sensor.on('warn', this._onSensorError(sensor, true));
       sensor.on('error', this._onSensorError(sensor));
       sensor.on('data', this._onSensorData(sensor));
       await sensor.listen({
