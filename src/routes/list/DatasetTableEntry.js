@@ -24,25 +24,70 @@ const format_time = (s) => {
   return dtFormat.format(new Date(s));
 };
 
-const AdditionalInfo = (props) => {
+const Labelings = (props) => {
+  if (!props.dataset.labelings.length) {
+    return null;
+  }
+  const labelings = props.dataset.labelings.map((elm) =>
+    props.labelings.find((labeling) => labeling._id === elm.labelingId)
+  );
+  const labels = labelings.map((labeling) =>
+    labeling.labels.map((elm) =>
+      props.labels.find((label) => elm === label._id)
+    )
+  );
+
+  return (
+    <div className="mt-1">
+      <b>Labelings: </b>
+      {labelings.map((labeling, idx) => (
+        <Badge className="mr-2 badgeSize badgeLabelings">
+          <b>{labeling.name + ': '}</b>
+          {labels[idx].map((label) => (
+            <Badge
+              className="badgeSize mx-1"
+              style={{ backgroundColor: label.color }}
+            >
+              {label.name}
+            </Badge>
+          ))}
+        </Badge>
+      ))}
+    </div>
+  );
+};
+
+const Metadata = (props) => {
   const dataset = props.dataset;
   return (
-    <div className="text-left">
+    <div className="mt-2">
       <div className="mt-2 d-inline font-weight-bold">Metadata: </div>
       <div className="d-inline">
         {Object.keys(dataset.metaData).map((key, idx) => {
           const value = dataset.metaData[key];
           return (
-            <div className="d-inline mr-2">
-              <Badge color="primary">
-                <b>{key}: </b>
-                {value}
-              </Badge>
-            </div>
+            <Badge className="mr-2 badgeSize" color="primary">
+              <b>{key}: </b>
+              {value}
+            </Badge>
           );
         })}
       </div>
-      <div className="d-inline"></div>
+    </div>
+  );
+};
+
+const AdditionalInfo = (props) => {
+  const dataset = props.dataset;
+
+  return (
+    <div className="text-left">
+      <Metadata dataset={dataset}></Metadata>
+      <Labelings
+        labelings={props.labelings}
+        labels={props.labels}
+        dataset={props.dataset}
+      ></Labelings>
     </div>
   );
 };
@@ -133,8 +178,12 @@ const DatasetTableEntry = (props) => {
             <div
               className={classNames('animationDuration', { showInfo: !isOpen })}
             >
-              <div className="dividerMetaData"></div>
-              <AdditionalInfo dataset={dataset}></AdditionalInfo>
+              <div className="dividerMetaData my-2"></div>
+              <AdditionalInfo
+                dataset={dataset}
+                labelings={props.labelings}
+                labels={props.labels}
+              ></AdditionalInfo>
             </div>
           </div>
         </div>

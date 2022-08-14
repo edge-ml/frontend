@@ -28,8 +28,6 @@
 }
 
 .dividerMetaData {
-  margin-top: 5px;
-  margin-bottom: 5px;
   border-bottom: 1px solid grey;
   width: 100%;
 }
@@ -40,6 +38,17 @@
 
 .collapse_arrow {
   transform: rotate(90deg);
+}
+
+.badgeSize {
+  font-size: 0.8rem;
+}
+
+.badgeLabelings {
+  color: black;
+  background-color: unset;
+  border: 1px black solid;
+  padding: 2px;
 }
 
 .showInfo {

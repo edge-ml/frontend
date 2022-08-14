@@ -31,6 +31,8 @@ class ListPage extends Component {
       datasetsToDelete: [],
       ready: false,
       CreateNewDatasetToggle: false,
+      labelings: undefined,
+      label: undefined,
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.deleteDatasets = this.deleteDatasets.bind(this);
@@ -46,11 +48,17 @@ class ListPage extends Component {
   }
 
   componentDidMount() {
-    getDatasets()
-      .then(this.onDatasetsChanged)
-      .catch((err) => {
-        window.alert('Could not receive datasets from server');
-      });
+    Promise.all([
+      getDatasets(),
+      subscribeLabelingsAndLabels().then((labelingdata) => {
+        this.setState({
+          labelings: labelingdata.labelings,
+          labels: labelingdata.labels,
+        });
+      }),
+    ]).then(([datasets, _]) => {
+      this.onDatasetsChanged(datasets);
+    });
   }
 
   async downloadAllDatasets() {
@@ -74,8 +82,8 @@ class ListPage extends Component {
     this.setState({
       modalID: null,
       modal: false,
-      datasets: datasets,
       ready: true,
+      datasets: datasets,
       isCreateNewDatasetOpen: false,
     });
   }
@@ -158,6 +166,8 @@ class ListPage extends Component {
             deleteAllEmptyDatasets={this.deleteAllEmptyDatasets}
             downloadAllDatasets={this.downloadAllDatasets}
             toggleCheck={this.toggleCheck}
+            labelings={this.state.labelings}
+            labels={this.state.labels}
           ></DatasetTable>
         </Container>
 
