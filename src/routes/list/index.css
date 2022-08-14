@@ -1,0 +1,58 @@
+.tableHeadElement {
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+}
+
+.tableEntry {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 0px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.datasetCard {
+  cursor: pointer;
+  transition-duration: 0.3s;
+}
+
+.datasetCard_selected {
+  background-color: rgba(255, 23, 23, 0.281);
+}
+
+.divider {
+  border-bottom: 3px solid grey;
+  width: 100%;
+}
+
+.dividerMetaData {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid grey;
+  width: 100%;
+}
+
+.animationDuration {
+  transition-duration: 0.1s;
+}
+
+.collapse_arrow {
+  transform: rotate(90deg);
+}
+
+.showInfo {
+  height: 0;
+  overflow: hidden;
+  -prefix-animation: slide 1s ease 3.5s forwards;
+}
+
+@-prefix-keyframes slide {
+  from {
+    height: 0;
+  }
+  to {
+    height: unset;
+  }
+}

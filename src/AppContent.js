@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Container } from 'reactstrap';
 import { Route, Switch } from 'react-router-dom';
 
-import ListPage from './routes/list';
+import ListPage from './routes/list/index';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labelings';
 import ExperimentsPage from './routes/experiments';
@@ -28,9 +28,9 @@ class AppContent extends Component {
             forceRefresh
             path={[
               this.props.match.path + '/datasets',
-              this.props.match.path + '/'
+              this.props.match.path + '/',
             ]}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ListPage {...props} />
               </ProjectRefresh>
@@ -38,7 +38,7 @@ class AppContent extends Component {
           />
           <Route
             path={[this.props.match.path + '/labelings']}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <LabelingsPage {...props} />
               </ProjectRefresh>
@@ -46,7 +46,7 @@ class AppContent extends Component {
           />
           <Route
             path={this.props.match.path + '/datasets/:id'}
-            render={props => (
+            render={(props) => (
               <DatasetPage
                 {...props}
                 navigateTo={this.props.navigateTo}
@@ -58,9 +58,9 @@ class AppContent extends Component {
             exact
             path={[
               this.props.match.path + '/experiments',
-              this.props.match.path + '/experiments/new'
+              this.props.match.path + '/experiments/new',
             ]}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ExperimentsPage {...props} />
               </ProjectRefresh>
@@ -69,7 +69,7 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/model'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ModelPage {...props}></ModelPage>
               </ProjectRefresh>
@@ -78,7 +78,7 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/validation'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ValidationPage {...props}></ValidationPage>
               </ProjectRefresh>
@@ -87,7 +87,7 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/deploy'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ExportPage {...props}></ExportPage>
               </ProjectRefresh>
@@ -96,7 +96,7 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/settings'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ProjectSettings
                   onProjectsChanged={this.props.onProjectsChanged}
@@ -111,7 +111,7 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/settings/getCode'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <ProjectSettings
                   onProjectsChanged={this.props.onProjectsChanged}
@@ -127,7 +127,7 @@ class AppContent extends Component {
           <Route
             exact
             path={this.props.match.path + '/ble'}
-            render={props => (
+            render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <UploadBLE {...props}></UploadBLE>
               </ProjectRefresh>
