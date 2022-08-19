@@ -416,7 +416,7 @@ class App extends Component {
                         <PaymentPage
                           {...props}
                           userName={this.state.userName}
-                          subscriptionLevel={this.props.subscriptionLevel}
+                          subscriptionLevel={this.state.subscriptionLevel}
                         ></PaymentPage>
                       )}
                     />
