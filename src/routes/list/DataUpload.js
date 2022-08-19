@@ -2,9 +2,12 @@ import { faCode, faFile, faMicrochip } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { Button } from 'reactstrap';
 
-const DataUpload = () => {
+const DataUpload = (props) => {
+  const history = useHistory();
+
   return (
     <div className="card d-flex flex-row mb-4" style={{ display: 'flex' }}>
       <div className="card-body d-flex flex-column text-left">
@@ -61,7 +64,9 @@ const DataUpload = () => {
                 className="mt-2"
                 color="success"
                 outline
-                onClick={this.onUploadBLE}
+                onClick={() => {
+                  history.push('./ble');
+                }}
                 style={{ padding: '0px' }}
               >
                 <small>Connect to Bluetooth Device</small>
@@ -106,7 +111,7 @@ const DataUpload = () => {
                 className="mt-2"
                 color="success"
                 outline
-                onClick={this.toggleCreateNewDatasetModal}
+                onClick={props.toggleCreateNewDatasetModal}
                 style={{ padding: '0px' }}
               >
                 <small>Upload CSV Files</small>
@@ -153,7 +158,9 @@ const DataUpload = () => {
                 className="mt-2"
                 color="success"
                 outline
-                onClick={this.onUploadFromCode}
+                onClick={() => {
+                  history.push('./settings/getCode');
+                }}
                 style={{ padding: '0px' }}
               >
                 <small>Generate Code for my Device</small>

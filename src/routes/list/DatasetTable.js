@@ -9,6 +9,16 @@ const DatasetTable = (props) => {
         <div className="font-weight-bold h4">Datasets</div>
         <div>
           <Button
+            id="selectAllEmptyButton"
+            size="sm"
+            color="danger"
+            outline
+            onClick={props.selectAllEmpty}
+          >
+            Select empty
+          </Button>
+          <Button
+            className="mx-2"
             id="deleteDatasetsButton"
             size="sm"
             color="danger"
@@ -16,18 +26,7 @@ const DatasetTable = (props) => {
             disabled={props.datasetsToDelete.length === 0}
             onClick={props.openDeleteModal}
           >
-            Delete
-          </Button>
-          <Button
-            className="mx-2"
-            id="downloadAllDatasetsButton"
-            size="sm"
-            color="danger"
-            outline
-            disabled={!props.datasets.some((elm) => elm.end === 0)}
-            onClick={props.deleteAllEmptyDatasets}
-          >
-            Delete all empty
+            Delete selected
           </Button>
           <Button
             id="downloadAllDatasetsButton"
@@ -51,6 +50,7 @@ const DatasetTable = (props) => {
             isSelected={props.datasetsToDelete.includes(dataset['_id'])}
             labelings={props.labelings}
             labels={props.labels}
+            deleteEntry={props.deleteEntry}
           ></DatasetTableEntry>
         ))}
       </div>

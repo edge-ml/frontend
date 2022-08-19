@@ -39,12 +39,11 @@ class ListPage extends Component {
     this.onDatasetsChanged = this.onDatasetsChanged.bind(this);
     this.toggleCheck = this.toggleCheck.bind(this);
     this.openDeleteModal = this.openDeleteModal.bind(this);
-    this.onUploadFromCode = this.onUploadFromCode.bind(this);
     this.toggleCreateNewDatasetModal =
       this.toggleCreateNewDatasetModal.bind(this);
-    this.onUploadBLE = this.onUploadBLE.bind(this);
     this.downloadAllDatasets = this.downloadAllDatasets.bind(this);
-    this.deleteAllEmptyDatasets = this.deleteAllEmptyDatasets.bind(this);
+    this.deleteEntry = this.deleteEntry.bind(this);
+    this.selectAllEmpty = this.selectAllEmpty.bind(this);
   }
 
   componentDidMount() {
@@ -66,15 +65,12 @@ class ListPage extends Component {
     downloadAllAsZip(this.state.datasets, labelings, labels);
   }
 
-  deleteAllEmptyDatasets() {
-    this.setState(
-      {
-        datasetsToDelete: this.state.datasets
-          .filter((elm) => elm.end === 0)
-          .map((elm) => elm._id),
-      },
-      () => this.toggleModal()
-    );
+  selectAllEmpty() {
+    this.setState({
+      datasetsToDelete: this.state.datasets
+        .filter((elm) => Math.max(elm.end - elm.start, 0) === 0)
+        .map((elm) => elm._id),
+    });
   }
 
   onDatasetsChanged(datasets) {
@@ -86,14 +82,6 @@ class ListPage extends Component {
       datasets: datasets,
       isCreateNewDatasetOpen: false,
     });
-  }
-
-  onUploadBLE() {
-    this.props.history.push('./ble');
-  }
-
-  onUploadFromCode() {
-    this.props.history.push('./settings/getCode');
   }
 
   toggleCheck(e, datasetId) {
@@ -151,6 +139,8 @@ class ListPage extends Component {
       });
   }
 
+  deleteEntry(datasetId) {}
+
   render() {
     if (!this.state.ready) {
       return <Loader loading={!this.state.ready}></Loader>;
@@ -158,16 +148,19 @@ class ListPage extends Component {
     return (
       <div id="dataList">
         <Container style={{ margin: '5px' }}>
-          <DataUpload></DataUpload>
+          <DataUpload
+            toggleCreateNewDatasetModal={this.toggleCreateNewDatasetModal}
+          ></DataUpload>
           <DatasetTable
             datasets={this.state.datasets}
             datasetsToDelete={this.state.datasetsToDelete}
             openDeleteModal={this.openDeleteModal}
-            deleteAllEmptyDatasets={this.deleteAllEmptyDatasets}
+            selectAllEmpty={this.selectAllEmpty}
             downloadAllDatasets={this.downloadAllDatasets}
             toggleCheck={this.toggleCheck}
             labelings={this.state.labelings}
             labels={this.state.labels}
+            deleteEntry={this.deleteEntry}
           ></DatasetTable>
         </Container>
 

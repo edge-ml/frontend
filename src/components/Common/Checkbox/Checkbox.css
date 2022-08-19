@@ -1,0 +1,51 @@
+.checkBoxContainer {
+  display: block;
+  position: relative;
+  margin: 0;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.checkBoxContainer > input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkBoxCheckmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 1px solid black;
+  border-radius: 0.25rem;
+}
+
+.checkBoxContainer input:checked ~ .checkBoxCheckmark {
+  background-color: #007bff;
+  border: 0px;
+}
+
+.container input:checked ~ .checkBoxCheckmark:after {
+  display: block;
+}
+
+.checkBoxContainer:after {
+  content: '';
+  position: absolute;
+  display: none;
+}
+
+.checkBoxIcon {
+  top: 0;
+  left: 0;
+  padding: 2px;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  color: white;
+}

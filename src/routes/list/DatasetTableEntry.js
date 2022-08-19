@@ -5,10 +5,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import React, { Fragment, useState } from 'react';
-import { Badge, Button } from 'reactstrap';
+import { Badge, Button, Col, Row } from 'reactstrap';
 
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
+
+import Checkbox from '../../components/Common/Checkbox';
 
 const displayTime = (time) => {
   const date = new Date(time);
@@ -39,20 +41,26 @@ const Labelings = (props) => {
 
   return (
     <div className="mt-1">
-      <b>Labelings: </b>
-      {labelings.map((labeling, idx) => (
-        <Badge className="mr-2 badgeSize badgeLabelings">
-          <b>{labeling.name + ': '}</b>
-          {labels[idx].map((label) => (
-            <Badge
-              className="badgeSize mx-1"
-              style={{ backgroundColor: label.color }}
-            >
-              {label.name}
+      <Row>
+        <Col className="col-auto pr-0">
+          <b>Labelings: </b>
+        </Col>
+        <Col>
+          {labelings.map((labeling, idx) => (
+            <Badge className="mr-2 badgeSize badgeLabelings">
+              <b>{labeling.name + ': '}</b>
+              {labels[idx].map((label) => (
+                <Badge
+                  className="badgeSize mx-1"
+                  style={{ backgroundColor: label.color }}
+                >
+                  {label.name}
+                </Badge>
+              ))}
             </Badge>
           ))}
-        </Badge>
-      ))}
+        </Col>
+      </Row>
     </div>
   );
 };
@@ -60,19 +68,25 @@ const Labelings = (props) => {
 const Metadata = (props) => {
   const dataset = props.dataset;
   return (
-    <div className="mt-2">
-      <div className="mt-2 d-inline font-weight-bold">Metadata: </div>
-      <div className="d-inline">
-        {Object.keys(dataset.metaData).map((key, idx) => {
-          const value = dataset.metaData[key];
-          return (
-            <Badge className="mr-2 badgeSize" color="primary">
-              <b>{key}: </b>
-              {value}
-            </Badge>
-          );
-        })}
-      </div>
+    <div>
+      <Row>
+        <Col className="col-auto pr-0">
+          <div className="mt-2 d-inline font-weight-bold">Metadata: </div>
+        </Col>
+        <Col>
+          <div className="d-inline">
+            {Object.keys(dataset.metaData).map((key, idx) => {
+              const value = dataset.metaData[key];
+              return (
+                <Badge className="mr-2 badgeSize" color="primary">
+                  <b>{key}: </b>
+                  {value}
+                </Badge>
+              );
+            })}
+          </div>
+        </Col>
+      </Row>
     </div>
   );
 };
@@ -81,7 +95,7 @@ const AdditionalInfo = (props) => {
   const dataset = props.dataset;
 
   return (
-    <div className="text-left">
+    <div className="text-left m-2">
       <Metadata dataset={dataset}></Metadata>
       <Labelings
         labelings={props.labelings}
@@ -92,100 +106,140 @@ const AdditionalInfo = (props) => {
   );
 };
 
+const DatasetInfo = (props) => {
+  const { dataset } = props;
+  const duration = Math.max(dataset.end - dataset.start, 0);
+  return (
+    <div className="text-left d-inline-block m-2">
+      <div className="font-weight-bold font-size-lg h5 d-inline">
+        {dataset.name}
+      </div>
+      {duration != 0 ? (
+        <Fragment>
+          <div>
+            <b>Start: </b>
+            {displayTime(dataset.start)}
+          </div>
+          <div>
+            <b>Duration: </b>
+            {format_time(duration)}
+          </div>
+        </Fragment>
+      ) : (
+        <div className="d-flex align-items-center">
+          <div className="d-inline">
+            <FontAwesomeIcon
+              style={{ fontSize: '1rem' }}
+              icon={faExclamationTriangle}
+            ></FontAwesomeIcon>
+          </div>
+          <div className="text-left d-inline ml-1">empty</div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ExpandButton = (props) => {
+  return (
+    <div
+      className="p-2 align-self-stretch d-flex"
+      onClick={(e) => {
+        e.stopPropagation();
+        props.setOpen(!props.isOpen);
+      }}
+    >
+      <div
+        className={classNames('d-flex align-items-center animationDuration', {
+          collapse_arrow: props.isOpen,
+        })}
+      >
+        <FontAwesomeIcon
+          style={{ fontSize: '2rem' }}
+          icon={faAngleRight}
+        ></FontAwesomeIcon>
+      </div>
+    </div>
+  );
+};
+
 const DatasetTableEntry = (props) => {
   const dataset = props.dataset;
   const history = useHistory();
 
   const [isOpen, setOpen] = useState(false);
 
-  const duration = Math.max(dataset.end - dataset.start, 0);
-
   return (
     <Fragment>
-      <div
-        className={classNames('card p-1 mt-2 p-2 datasetCard', {
-          datasetCard_selected: props.isSelected,
-        })}
-        onClick={(e) => props.toggleCheck(e, dataset['_id'])}
-      >
-        <div className="d-flex align-items-center flex-row">
-          <div
-            className="p-2 align-self-stretch d-flex"
-            onClick={(e) => {
-              e.stopPropagation();
-              setOpen(!isOpen);
-            }}
-          >
-            <div
-              className={classNames(
-                'd-flex align-items-center animationDuration',
-                {
-                  collapse_arrow: isOpen,
-                }
-              )}
-            >
-              <FontAwesomeIcon
-                style={{ fontSize: '2rem' }}
-                icon={faAngleRight}
-              ></FontAwesomeIcon>
-            </div>
+      <div className="card mt-2 datasetCard">
+        <div className="d-flex">
+          <div className="d-flex align-items-center p-2">
+            <Checkbox
+              isSelected={props.isSelected}
+              className="d-inline-block"
+              // onClick={(e) => console.log("Click")}
+              onClick={(e) => props.toggleCheck(e, dataset['_id'])}
+            ></Checkbox>
           </div>
-          <div className="flex-grow-1 mx-2">
-            <div className=" d-flex flex-row justify-content-between">
-              <div className="text-left">
-                <div className="font-weight-bold font-size-lg h5 d-inline">
-                  {dataset.name}
+          <div className="w-100">
+            <Row>
+              <Col className="text-left align-self-center col-lg-4 col-xl-3">
+                <DatasetInfo dataset={dataset}></DatasetInfo>
+              </Col>
+              <Col className="d-none d-lg-block">
+                <div className="d-flex h-100 flex-column justify-content-center">
+                  <AdditionalInfo
+                    dataset={dataset}
+                    labelings={props.labelings}
+                    labels={props.labels}
+                  ></AdditionalInfo>
                 </div>
-                {duration != 0 ? (
-                  <Fragment>
-                    <div>
-                      <b>Start: </b>
-                      {displayTime(dataset.start)}
-                    </div>
-                    <div>
-                      <b>Duration: </b>
-                      {format_time(duration)}
-                    </div>
-                  </Fragment>
-                ) : (
-                  <div className="d-flex align-items-center">
-                    <div className="d-inline">
-                      <FontAwesomeIcon
-                        style={{ fontSize: '1rem' }}
-                        icon={faExclamationTriangle}
-                      ></FontAwesomeIcon>
-                    </div>
-                    <div className="text-left d-inline ml-1">empty</div>
-                  </div>
-                )}
-              </div>
-              <div className="d-flex">
-                <Button
-                  id="buttonViewDatasets"
-                  className="btn-secondary mt-0 btn-edit"
-                  onClick={(e) => {
-                    history.push({
-                      pathname: `datasets/${dataset['_id']}`,
-                      state: dataset,
-                    });
-                  }}
-                >
-                  View
-                </Button>
-              </div>
-            </div>
+              </Col>
+              <Col className="col-2 ">
+                <div className="d-flex justify-content-end align-items-center h-100">
+                  <Button
+                    color="danger"
+                    onClick={() => props.deleteEntry(dataset._id)}
+                  >
+                    Delete
+                  </Button>
+                  <Button
+                    color="primary"
+                    className="btn-secondary m-2 btn-edit"
+                    onClick={(e) => {
+                      history.push({
+                        pathname: `datasets/${dataset['_id']}`,
+                        state: dataset,
+                      });
+                    }}
+                  >
+                    View
+                  </Button>
 
-            <div
-              className={classNames('animationDuration', { showInfo: !isOpen })}
-            >
-              <div className="dividerMetaData my-2"></div>
-              <AdditionalInfo
-                dataset={dataset}
-                labelings={props.labelings}
-                labels={props.labels}
-              ></AdditionalInfo>
-            </div>
+                  <div className="d-block d-lg-none m-2">
+                    <ExpandButton
+                      isOpen={isOpen}
+                      setOpen={setOpen}
+                    ></ExpandButton>
+                  </div>
+                </div>
+              </Col>
+            </Row>
           </div>
+        </div>
+        <div
+          className={classNames('animationDuration d-block d-lg-none', {
+            showInfo: !isOpen,
+          })}
+        >
+          <div className="mx-2">
+            <div className="dividerMetaData"></div>
+          </div>
+          <AdditionalInfo
+            dataset={dataset}
+            labelings={props.labelings}
+            labels={props.labels}
+          ></AdditionalInfo>
         </div>
       </div>
     </Fragment>

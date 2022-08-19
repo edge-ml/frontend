@@ -18,10 +18,6 @@
   transition-duration: 0.3s;
 }
 
-.datasetCard_selected {
-  background-color: rgba(255, 23, 23, 0.281);
-}
-
 .divider {
   border-bottom: 3px solid grey;
   width: 100%;
@@ -64,4 +60,12 @@
   to {
     height: unset;
   }
+}
+
+.listCheckBox {
+  width: 30px;
+  align-self: stretch;
+  background-color: red;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
 }
