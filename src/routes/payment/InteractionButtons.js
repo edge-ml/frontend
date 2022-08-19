@@ -11,8 +11,7 @@ export const InteractionButton = ({
   priceId,
   customerId,
 }) => {
-  console.log(subscriptionLevel);
-  if (subscriptionLevel !== 'standard' && buttonLevel === 'standard') {
+  if (buttonLevel === 'standard') {
     return <Button disabled>Base Level</Button>;
   }
   if (subscriptionLevel === 'unlimited' && buttonLevel !== 'unlimited') {
@@ -22,7 +21,7 @@ export const InteractionButton = ({
     <Button
       color="success"
       onClick={(e) =>
-        subscriptionLevel === buttonLevel
+        subscriptionLevel !== 'standard'
           ? accessPortal(customerId)
           : checkout(priceId, customerId)
       }
