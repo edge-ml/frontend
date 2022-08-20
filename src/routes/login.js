@@ -29,6 +29,7 @@ import {
   getRefreshToken,
   setToken,
 } from '../services/LocalStorageService';
+import { renewAccessToken } from '../services/TokenService.js';
 
 class LoginPage extends Component {
   constructor(props) {
@@ -91,24 +92,7 @@ class LoginPage extends Component {
       refreshToken &&
       jwt_decode(accessToken).exp * 1000 - Date.now() <= refreshThreshold
     ) {
-      loginUserRefresh(refreshToken)
-        .then((res) => {
-          const refreshedAccessToken = 'Bearer ' + res.access_token;
-          const decoded = jwt_decode(refreshedAccessToken);
-          setToken(refreshedAccessToken, refreshToken);
-          this.props.onUserLoggedIn(
-            refreshedAccessToken,
-            refreshToken,
-            decoded.email,
-            decoded.twoFactorEnabled,
-            decoded.userName,
-            decoded.subscriptionLevel
-          );
-          console.log('success');
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      renewAccessToken(this.props.onUserLoggedIn);
       return;
     }
   }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Table, Card } from 'reactstrap';
 import {
@@ -10,8 +10,16 @@ import { useAsyncMemo } from '../../services/ReactHooksService';
 import Loader from '../../modules/loader';
 import { InteractionButton } from './InteractionButtons';
 import { useLocation } from 'react-router-dom';
+import { renewAccessToken } from '../../services/TokenService';
+const FeedbackPage = ({ success, userName, onUserLoggedIn }) => {
+  useEffect(() => {
+    if (success) {
+      setTimeout(() => {
+        renewAccessToken(onUserLoggedIn);
+      }, 500); // empirical value, can cause race condition
+    }
+  }, []);
 
-const FeedbackPage = ({ success, userName }) => {
   return success ? (
     <h1>Thanks for your purchase, {userName}!</h1>
   ) : (
@@ -19,7 +27,7 @@ const FeedbackPage = ({ success, userName }) => {
   );
 };
 
-const PaymentPage = ({ subscriptionLevel, userName, match }) => {
+const PaymentPage = ({ subscriptionLevel, userName, onUserLoggedIn }) => {
   const products = useAsyncMemo(async () => await getProducts(), [], []);
   const customerId = useAsyncMemo(async () => await getCustomerId(), []);
   const features = {
@@ -48,7 +56,11 @@ const PaymentPage = ({ subscriptionLevel, userName, match }) => {
         className="d-flex justify-content-center align-items-center vh-100"
         style={{ fontSize: '1.20rem' }}
       >
-        <FeedbackPage success={success} userName={userName} />
+        <FeedbackPage
+          success={success}
+          userName={userName}
+          onUserLoggedIn={onUserLoggedIn}
+        />
       </div>
     );
   }

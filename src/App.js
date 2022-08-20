@@ -417,6 +417,7 @@ class App extends Component {
                           {...props}
                           userName={this.state.userName}
                           subscriptionLevel={this.state.subscriptionLevel}
+                          onUserLoggedIn={this.onUserLoggedIn}
                         ></PaymentPage>
                       )}
                     />
