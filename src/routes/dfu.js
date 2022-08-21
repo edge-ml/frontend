@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { ModalHeader, Container, Row, Col, Button, Progress } from 'reactstrap';
+import {
+  ModalHeader,
+  Container,
+  Row,
+  Col,
+  Button,
+  Progress,
+  Spinner,
+} from 'reactstrap';
 import BleNotActivated from '../components/BLE/BleNotActivated';
 
 class DFUPage extends Component {
@@ -14,8 +22,11 @@ class DFUPage extends Component {
       gattExternalCharacteristic: undefined,
       progress: 0,
       uploadFinished: false,
+      isFetchingFW: true,
     };
 
+    this.niclaSenseMEFirmwareLink =
+      'https://nightly.link/edge-ml/EdgeML-Arduino/workflows/build/main/nicla.bin.zip';
     this.deviceName = 'NICLA';
     this.dfuService = '34c2e3b8-34aa-11eb-adc1-0242ac120002';
     this.dfuInternalCharacteristic = '34c2e3b9-34aa-11eb-adc1-0242ac120002';
@@ -43,13 +54,32 @@ class DFUPage extends Component {
     this.update = this.update.bind(this);
     this.increaseIndex = this.increaseIndex.bind(this);
     this.updateFW = this.updateFW.bind(this);
-    this.loadFile = this.loadFile.bind(this);
+    this.fetchFirmware = this.fetchFirmware.bind(this);
   }
 
   componentDidMount() {
-    this.loadFile();
+    this.fetchFirmware();
   }
 
+  async fetchFirmware() {
+    const response = await fetch(this.niclaSenseMEFirmwareLink);
+    if (!response.ok) {
+      throw new Error('HTTP error ' + response.status);
+    }
+    console.log(response.type);
+    this.arrayFW = new Uint8Array(await response.arrayBuffer());
+    this.fwLen = this.arrayFW.length;
+    console.log('Binary file length: ', this.fwLen);
+    if (this.debug == true) {
+      console.log(this.arrayFW);
+    }
+    this.crc8();
+    console.log('Computed 8-bit CRC: ', this.crc8bit);
+    console.log('Press "Update" button to start the fw update');
+    this.setState({ isFetchingFW: false });
+  }
+
+  /** -
   loadFile() {
     var reader = new FileReader();
     reader.addEventListener('load', () => {
@@ -73,6 +103,7 @@ class DFUPage extends Component {
     //var fileName = $(this).val().replace('C:\\fakepath\\', " ");
     //$(this).next('.custom-file-label').html(fileName);
   }
+  */
 
   getDeviceInfo() {
     let options = {
@@ -278,6 +309,13 @@ class DFUPage extends Component {
   render() {
     if (!this.state.bleStatus) {
       return <BleNotActivated></BleNotActivated>;
+    }
+    if (this.state.isFetchingFW) {
+      return (
+        <div>
+          <Spinner color="primary" />
+        </div>
+      );
     }
     return (
       <div className="text-center">
