@@ -7,8 +7,6 @@ import {
   Button,
   Progress,
   Spinner,
-  Form,
-  FormGroup,
   Label,
   Input,
   InputGroup,
@@ -27,8 +25,9 @@ class DFUPage extends Component {
       gattExternalCharacteristic: undefined,
       progress: 0,
       uploadFinished: false,
-      isFetchingFW: false,
       selectedDevice: true,
+      fileLoaded: true,
+      firmwareLink: '',
     };
 
     this.niclaSenseMEFirmwareLink =
@@ -66,6 +65,9 @@ class DFUPage extends Component {
     this.updateFW = this.updateFW.bind(this);
     this.downloadSelectedFirmware = this.downloadSelectedFirmware.bind(this);
     this.changeSelectedDevice = this.changeSelectedDevice.bind(this);
+    this.loadFile = this.loadFile.bind(this);
+    this.readerCallback = this.readerCallback.bind(this);
+    this.updateFW = this.updateFW.bind(this);
   }
 
   componentDidMount() {}
@@ -90,29 +92,9 @@ class DFUPage extends Component {
     }
   }
 
-  /**async fetchFirmware() {
-    const response = await fetch(this.niclaSenseMEFirmwareLink);
-    if (!response.ok) {
-        throw new Error("HTTP error " + response.status);
-    }
-    console.log(response.type)
-    this.arrayFW = new Uint8Array(await response.arrayBuffer());
-    this.fwLen = this.arrayFW.length;
-    console.log('Binary file length: ', this.fwLen);
-    if (this.debug == true) {
-      console.log(this.arrayFW);
-    }
-    this.crc8();
-    console.log('Computed 8-bit CRC: ', this.crc8bit);
-    console.log('Press "Update" button to start the fw update');
-    this.setState({isFetchingFW:false})
-};*/
-
-  /** -
-  loadFile() {
-    var reader = new FileReader();
-    reader.addEventListener('load', () => {
-      var arrayBuffer = this.result;
+  readerCallback(result) {
+    {
+      var arrayBuffer = result;
       this.arrayFW = new Uint8Array(arrayBuffer);
       this.fwLen = this.arrayFW.length;
 
@@ -123,16 +105,21 @@ class DFUPage extends Component {
       this.crc8();
       console.log('Computed 8-bit CRC: ', this.crc8bit);
       console.log('Press "Update" button to start the fw update');
+      this.setState({ fileLoaded: true });
+    }
+  }
 
-      //document.querySelector('#update').disabled = false;
-    });
+  loadFile(files) {
+    var reader = new FileReader();
+    reader.addEventListener('loadend', (event) =>
+      this.readerCallback(event.target.result)
+    );
 
-    reader.readAsArrayBuffer(new File([''], 'filepath'));
+    reader.readAsArrayBuffer(files[0]);
     // Update label file name
     //var fileName = $(this).val().replace('C:\\fakepath\\', " ");
     //$(this).next('.custom-file-label').html(fileName);
   }
-  */
 
   getDeviceInfo() {
     let options = {
@@ -330,7 +317,12 @@ class DFUPage extends Component {
       }
       this.updateIndex = 0;
       // Take selected dfu characteristic
-      this.dfuCharacteristic = this.state.gattInternalCharacteristic;
+      //nicla
+      if (this.state.selectedDevice == '1') {
+        this.dfuCharacteristic = this.state.gattInternalCharacteristic;
+      } else {
+        this.dfuCharacteristic = this.state.gattExternalCharacteristic;
+      }
       this.update(this.updateIndex);
     }
   }
@@ -392,14 +384,25 @@ class DFUPage extends Component {
             </Col>
           </Row>
           <Row className="mt-2">
+            <Col>Select firmware file for upload to device</Col>
+          </Row>
+          <Row className="mt-2">
+            <Col>
+              <Input
+                type="file"
+                onChange={(e) => this.loadFile(e.target.files)}
+              />
+            </Col>
+          </Row>
+          <Row className="mt-2">
             <Col>Press Upload to flash the edge-ml firmware.</Col>
           </Row>
           <Row className="mt-2">
             <Col>
               <Button
                 color="primary"
-                onClick={() => {}}
-                disabled={!this.state.isConnected}
+                onClick={this.updateFW}
+                disabled={!this.state.isConnected || !this.state.fileLoaded}
               >
                 Upload
               </Button>
