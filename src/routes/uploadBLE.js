@@ -206,7 +206,7 @@ class UploadBLE extends Component {
       optionalServices: [this.deviceInfoServiceUuid, this.sensorServiceUuid],
     };
     //const bleDevice = await navigator.bluetooth.requestDevice(options);
-    const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
+    const bleDevice = await navigator.bluetooth.requestDevice(options);
     return bleDevice;
   }
 

@@ -7,6 +7,11 @@ import {
   Button,
   Progress,
   Spinner,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  InputGroup,
 } from 'reactstrap';
 import BleNotActivated from '../components/BLE/BleNotActivated';
 
@@ -22,11 +27,16 @@ class DFUPage extends Component {
       gattExternalCharacteristic: undefined,
       progress: 0,
       uploadFinished: false,
-      isFetchingFW: true,
+      isFetchingFW: false,
+      selectedDevice: true,
     };
 
     this.niclaSenseMEFirmwareLink =
       'https://nightly.link/edge-ml/EdgeML-Arduino/workflows/build/main/nicla.bin.zip';
+    this.nano33FirmwareLink =
+      'https://nightly.link/edge-ml/EdgeML-Arduino/workflows/build/main/nano.bin.zip';
+    this.seeedXiaonRF52840SenseFirmwareLink =
+      'https://nightly.link/edge-ml/EdgeML-Arduino/workflows/build/main/xiao.bin.zip';
     this.deviceName = 'NICLA';
     this.dfuService = '34c2e3b8-34aa-11eb-adc1-0242ac120002';
     this.dfuInternalCharacteristic = '34c2e3b9-34aa-11eb-adc1-0242ac120002';
@@ -54,19 +64,38 @@ class DFUPage extends Component {
     this.update = this.update.bind(this);
     this.increaseIndex = this.increaseIndex.bind(this);
     this.updateFW = this.updateFW.bind(this);
-    this.fetchFirmware = this.fetchFirmware.bind(this);
+    this.downloadSelectedFirmware = this.downloadSelectedFirmware.bind(this);
+    this.changeSelectedDevice = this.changeSelectedDevice.bind(this);
   }
 
-  componentDidMount() {
-    this.fetchFirmware();
+  componentDidMount() {}
+
+  changeSelectedDevice(e) {
+    let value = e.target.value;
+    this.setState({ selectedDevice: value });
   }
 
-  async fetchFirmware() {
+  downloadSelectedFirmware() {
+    switch (this.state.selectedDevice) {
+      case '1':
+        window.location.href = this.niclaSenseMEFirmwareLink;
+        break;
+      case '2':
+        window.location.href = this.nano33FirmwareLink;
+        break;
+      case '3':
+        window.location.href = this.seeedXiaonRF52840SenseFirmwareLink;
+        break;
+      default:
+    }
+  }
+
+  /**async fetchFirmware() {
     const response = await fetch(this.niclaSenseMEFirmwareLink);
     if (!response.ok) {
-      throw new Error('HTTP error ' + response.status);
+        throw new Error("HTTP error " + response.status);
     }
-    console.log(response.type);
+    console.log(response.type)
     this.arrayFW = new Uint8Array(await response.arrayBuffer());
     this.fwLen = this.arrayFW.length;
     console.log('Binary file length: ', this.fwLen);
@@ -76,8 +105,8 @@ class DFUPage extends Component {
     this.crc8();
     console.log('Computed 8-bit CRC: ', this.crc8bit);
     console.log('Press "Update" button to start the fw update');
-    this.setState({ isFetchingFW: false });
-  }
+    this.setState({isFetchingFW:false})
+};*/
 
   /** -
   loadFile() {
@@ -107,7 +136,7 @@ class DFUPage extends Component {
 
   getDeviceInfo() {
     let options = {
-      filters: [{ name: this.deviceName }],
+      acceptAllDevices: true,
       optionalServices: [this.dfuService],
     };
     if (this.debug == true) {
@@ -322,7 +351,7 @@ class DFUPage extends Component {
         <ModalHeader>DFU Page</ModalHeader>
         <Container>
           <Row className="mt-2">
-            <Col>Connect to the Nicla Sense ME</Col>
+            <Col>Connect to the BLE device</Col>
           </Row>
           <Row className="mt-2">
             <Col>
@@ -337,6 +366,28 @@ class DFUPage extends Component {
                 }}
               >
                 {this.state.isConnected ? 'Disconnect' : 'Connect'}
+              </Button>
+            </Col>
+          </Row>
+          <Label for="select">Select device for firmware download</Label>{' '}
+          <Row classname="justify-content-center">
+            <Col>
+              <InputGroup>
+                <Input
+                  type="select"
+                  name="select"
+                  id="selected"
+                  onChange={this.changeSelectedDevice}
+                >
+                  <option value="1">1. Nicla Sense ME</option>
+                  <option value="2">2. Nano 33 BLE</option>
+                  <option value="3">3. Seeed Xiao nRF52840 Sense</option>
+                </Input>
+              </InputGroup>
+            </Col>
+            <Col>
+              <Button color="primary" onClick={this.downloadSelectedFirmware}>
+                Download selected firmware
               </Button>
             </Col>
           </Row>
