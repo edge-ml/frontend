@@ -25,9 +25,8 @@ class DFUPage extends Component {
       gattExternalCharacteristic: undefined,
       progress: 0,
       uploadFinished: false,
-      selectedDevice: true,
+      selectedDevice: 1,
       fileLoaded: true,
-      firmwareLink: '',
     };
 
     this.niclaSenseMEFirmwareLink =
