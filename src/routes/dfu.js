@@ -23,6 +23,7 @@ class DFUPage extends Component {
       gattService: undefined,
       gattInternalCharacteristic: undefined,
       gattExternalCharacteristic: undefined,
+      dfuCharacteristic: undefined,
       progress: 0,
       uploadFinished: false,
       selectedDevice: '1',
@@ -40,7 +41,6 @@ class DFUPage extends Component {
     this.dfuInternalCharacteristic = '34c2e3b9-34aa-11eb-adc1-0242ac120002';
     this.dfuExternalCharacteristic = '34c2e3ba-34aa-11eb-adc1-0242ac120002';
 
-    this.dfuCharacteristic;
     this.arrayFW;
     this.fwLen;
     this.bytesArray = new Uint8Array(235);
@@ -66,7 +66,7 @@ class DFUPage extends Component {
     this.changeSelectedDevice = this.changeSelectedDevice.bind(this);
     this.loadFile = this.loadFile.bind(this);
     this.readerCallback = this.readerCallback.bind(this);
-    this.updateFW = this.updateFW.bind(this);
+    this.resetConnectionState = this.resetConnectionState.bind(this);
   }
 
   componentDidMount() {}
@@ -156,7 +156,15 @@ class DFUPage extends Component {
   }
 
   disconnect() {
-    return null;
+    if (!this.state.bleDevice) {
+      return;
+    }
+    console.log('Disconnecting from Bluetooth Device...');
+    if (this.state.bleDevice.gatt.connected) {
+      this.state.bleDevice.gatt.disconnect();
+    } else {
+      console.log('> Bluetooth Device is already disconnected');
+    }
   }
 
   connectGATTdfu() {
@@ -207,8 +215,19 @@ class DFUPage extends Component {
       });
   }
 
+  resetConnectionState() {
+    this.setState({
+      isConnected: false,
+      bleDevice: undefined,
+      gattService: undefined,
+      gattInternalCharacteristic: undefined,
+      gattExternalCharacteristic: undefined,
+      dfuCharacteristic: undefined,
+    });
+  }
+
   onDisconnection(event) {
-    this.setState({ isConnected: false });
+    this.resetConnectionState();
   }
 
   onConnection() {
@@ -273,7 +292,7 @@ class DFUPage extends Component {
     }
     console.log(this.bytesArray);
     console.log('Writing 67 bytes array...');
-    this.dfuCharacteristic.writeValue(this.bytesArray).then((_) => {
+    this.state.dfuCharacteristic.writeValue(this.bytesArray).then((_) => {
       //show on Progress bar
       this.setState({ progress: (index / (this.iterations - 1)) * 100 });
 
@@ -315,9 +334,13 @@ class DFUPage extends Component {
       // Take selected dfu characteristic
       //nicla
       if (this.state.selectedDevice == '1') {
-        this.dfuCharacteristic = this.state.gattInternalCharacteristic;
+        this.setState({
+          dfuCharacteristic: this.state.gattInternalCharacteristic,
+        });
       } else {
-        this.dfuCharacteristic = this.state.gattExternalCharacteristic;
+        this.setState({
+          dfuCharacteristic: this.state.gattExternalCharacteristic,
+        });
       }
       this.update(this.updateIndex);
     }
