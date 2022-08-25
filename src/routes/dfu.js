@@ -25,7 +25,7 @@ class DFUPage extends Component {
       gattExternalCharacteristic: undefined,
       progress: 0,
       uploadFinished: false,
-      selectedDevice: 1,
+      selectedDevice: '1',
       fileLoaded: true,
     };
 
@@ -110,14 +110,11 @@ class DFUPage extends Component {
 
   loadFile(files) {
     var reader = new FileReader();
-    reader.addEventListener('loadend', (event) =>
+    reader.addEventListener('load', (event) =>
       this.readerCallback(event.target.result)
     );
 
     reader.readAsArrayBuffer(files[0]);
-    // Update label file name
-    //var fileName = $(this).val().replace('C:\\fakepath\\', " ");
-    //$(this).next('.custom-file-label').html(fileName);
   }
 
   getDeviceInfo() {
@@ -274,8 +271,8 @@ class DFUPage extends Component {
         3
       );
     }
-    //console.log(bytesArray);
-    //console.log('Writing 67 bytes array...');
+    console.log(this.bytesArray);
+    console.log('Writing 67 bytes array...');
     this.dfuCharacteristic.writeValue(this.bytesArray).then((_) => {
       //show on Progress bar
       this.setState({ progress: (index / (this.iterations - 1)) * 100 });
@@ -361,7 +358,7 @@ class DFUPage extends Component {
             </Col>
           </Row>
           <Label for="select">Select device for firmware download</Label>{' '}
-          <Row classname="justify-content-center">
+          <Row className="justify-content-center">
             <Col>
               <InputGroup>
                 <Input
