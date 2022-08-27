@@ -39,6 +39,8 @@ class UploadBLE extends Component {
       selectedSensors: new Set(),
       stream: true,
       fullSampleRate: false,
+      hasDFUFunction: false,
+      isEdgeMLInstalled: false,
     };
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
@@ -67,6 +69,12 @@ class UploadBLE extends Component {
     this.sensorKeys = [];
 
     // Global vars to manage ble connnection
+    this.dfuServiceUuid = '34c2e3b8-34aa-11eb-adc1-0242ac120002';
+    this.dfuInternalCharacteristicUuid = '34c2e3b9-34aa-11eb-adc1-0242ac120002';
+    this.dfuExternalCharacteristicUuid = '34c2e3ba-34aa-11eb-adc1-0242ac120002';
+    this.dfuInternalCharacteristic;
+    this.dfuExternalCharacteristic;
+
     this.sensorConfigCharacteristic;
     this.sensorDataCharacteristic;
     this.sensorServiceUuid = '34c2e3bb-34aa-11eb-adc1-0242ac120002';
@@ -113,6 +121,8 @@ class UploadBLE extends Component {
       connectedDeviceData: undefined,
       selectedSensors: new Set(),
       stream: true,
+      hasDFUFunction: false,
+      isEdgeMLInstalled: false,
     });
   }
 
@@ -203,15 +213,19 @@ class UploadBLE extends Component {
     };
     let newOptions = {
       acceptAllDevices: true,
-      optionalServices: [this.deviceInfoServiceUuid, this.sensorServiceUuid],
+      optionalServices: [
+        this.deviceInfoServiceUuid,
+        this.sensorServiceUuid,
+        this.dfuServiceUuid,
+      ],
     };
     //const bleDevice = await navigator.bluetooth.requestDevice(options);
-    const bleDevice = await navigator.bluetooth.requestDevice(options);
+    const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
     return bleDevice;
   }
 
   async connectDevice(bleDevice) {
-    bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
+    //bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
     const primaryService = await bleDevice.gatt.connect().then((server) => {
       return server.getPrimaryService(this.sensorServiceUuid);
     });
@@ -261,6 +275,38 @@ class UploadBLE extends Component {
     );
     this.setState({
       connectedBLEDevice: bleDevice,
+    });
+  }
+
+  async checkServices() {
+    bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
+    //check for DFU function
+    await bleDevice.gatt.connect().then((server) => {
+      server
+        .getPrimaryService(this.dfuServiceUuid)
+        .then((_) => this.setState({ hasDFUFunction: true }))
+        .catch(
+          (_) => {}
+          //no DFU function
+        );
+    });
+    //test if services of edge ML are installed
+    await bleDevice.gatt.connect().then((server) => {
+      server
+        .getPrimaryService(this.deviceInfoServiceUuid)
+        .then((_) => {
+          server
+            .getPrimaryService(this.sensorServiceUuid)
+            .then((_) => {
+              this.setState({ isEdgeMLInstalled: true });
+            })
+            .catch((_) => {
+              //no sensorService
+            });
+        })
+        .catch((_) => {
+          //no device info service
+        });
     });
   }
 
