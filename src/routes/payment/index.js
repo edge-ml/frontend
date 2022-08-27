@@ -12,14 +12,6 @@ import { InteractionButton } from './InteractionButtons';
 import { useLocation } from 'react-router-dom';
 import { renewAccessToken } from '../../services/TokenService';
 const FeedbackPage = ({ success, userName, onUserLoggedIn }) => {
-  useEffect(() => {
-    if (success) {
-      setTimeout(() => {
-        renewAccessToken(onUserLoggedIn);
-      }, 500); // empirical value, can cause race condition
-    }
-  }, []);
-
   return success ? (
     <h1>Thanks for your purchase, {userName}!</h1>
   ) : (
@@ -28,6 +20,12 @@ const FeedbackPage = ({ success, userName, onUserLoggedIn }) => {
 };
 
 const PaymentPage = ({ subscriptionLevel, userName, onUserLoggedIn }) => {
+  useEffect(() => {
+    setTimeout(() => {
+      renewAccessToken(onUserLoggedIn);
+    }, 500); // empirical value, can cause race condition
+  }, []);
+
   const products = useAsyncMemo(async () => await getProducts(), [], []);
   const customerId = useAsyncMemo(async () => await getCustomerId(), []);
   const features = {
