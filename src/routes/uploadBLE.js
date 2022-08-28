@@ -41,6 +41,7 @@ class UploadBLE extends Component {
       fullSampleRate: false,
       hasDFUFunction: false,
       isEdgeMLInstalled: false,
+      deviceNotUsable: false,
     };
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
@@ -61,6 +62,7 @@ class UploadBLE extends Component {
     this.onChangeSampleRate = this.onChangeSampleRate.bind(this);
     this.onConnection = this.onConnection.bind(this);
     this.connect = this.connect.bind(this);
+    this.checkServices = this.checkServices.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
@@ -123,6 +125,7 @@ class UploadBLE extends Component {
       stream: true,
       hasDFUFunction: false,
       isEdgeMLInstalled: false,
+      deviceNotUsable: false,
     });
   }
 
@@ -278,46 +281,60 @@ class UploadBLE extends Component {
     });
   }
 
-  async checkServices() {
+  async checkServices(bleDevice) {
     bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
-    //check for DFU function
-    await bleDevice.gatt.connect().then((server) => {
-      server
-        .getPrimaryService(this.dfuServiceUuid)
-        .then((_) => this.setState({ hasDFUFunction: true }))
-        .catch(
-          (_) => {}
-          //no DFU function
-        );
+    //check for available services
+    let hasDeviceInfo = false;
+    let hasDFUFunction = false;
+    let hasSensorService = false;
+    const server = await bleDevice.gatt.connect();
+    const services = await server.getPrimaryServices();
+    services.forEach((service) => {
+      if (service.uuid === this.deviceInfoServiceUuid) {
+        hasDeviceInfo = true;
+      } else if (service.uuid === this.dfuServiceUuid) {
+        hasDFUFunction = true;
+      } else if (service.uuid === this.sensorServiceUuid) {
+        hasSensorService = true;
+      }
     });
-    //test if services of edge ML are installed
-    await bleDevice.gatt.connect().then((server) => {
-      server
-        .getPrimaryService(this.deviceInfoServiceUuid)
-        .then((_) => {
-          server
-            .getPrimaryService(this.sensorServiceUuid)
-            .then((_) => {
-              this.setState({ isEdgeMLInstalled: true });
-            })
-            .catch((_) => {
-              //no sensorService
-            });
-        })
-        .catch((_) => {
-          //no device info service
-        });
-    });
+
+    console.log(bleDevice);
+    let promisedSetState = (newState) =>
+      new Promise((resolve) => this.setState(newState, resolve));
+
+    if (hasDeviceInfo && hasSensorService && this.hasDFUFunction) {
+      await promisedSetState({ isEdgeMLInstalled: true, hasDFUFunction: true });
+    } else if (hasDFUFunction) {
+      await promisedSetState({ hasDFUFunction: true });
+    } else if (hasDeviceInfo && hasSensorService) {
+      await promisedSetState({ isEdgeMLInstalled: true });
+    } else {
+      await promisedSetState({ deviceNotUsable: true });
+    }
+    return bleDevice;
   }
 
   connect() {
-    return this.getDeviceInfo()
-      .then(this.connectDevice)
-      .then(this.getSensorCharacteristics)
-      .then(this.onConnection)
-      .catch((err) => {
-        console.log(err);
-        ga_connectBluetooth(this.state.connectedDeviceData, err, false);
+    this.getDeviceInfo()
+      .then(this.checkServices)
+      .then((bleDevice) => {
+        console.log(this.state.deviceNotUsable);
+        console.log(this.state.hasDFUFunction);
+        console.log(this.state.isEdgeMLInstalled);
+        if (this.state.isEdgeMLInstalled) {
+          return this.connectDevice(bleDevice)
+            .then(this.getSensorCharacteristics)
+            .then(this.onConnection)
+            .catch((err) => {
+              console.log(err);
+              ga_connectBluetooth(this.state.connectedDeviceData, err, false);
+            });
+        } else {
+          //handle possibility of flashing firmware or show incompatibility of device
+          console.log(bleDevice);
+          this.setState({ connectedBLEDevice: bleDevice });
+        }
       });
   }
 
@@ -348,17 +365,14 @@ class UploadBLE extends Component {
 
     return (
       <div className="bleActivatedContainer">
-        <div>
-          <BlePanelConnectDevice
-            bleConnectionChanging={this.state.bleConnectionChanging}
-            toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
-            connectedBLEDevice={this.state.connectedBLEDevice}
-          ></BlePanelConnectDevice>
-          {this.state.deviceSensors && this.state.connectedBLEDevice ? null : (
-            <BlePanelFlashFirmware />
-          )}
-        </div>
-        {this.state.deviceSensors && this.state.connectedBLEDevice ? (
+        <BlePanelConnectDevice
+          bleConnectionChanging={this.state.bleConnectionChanging}
+          toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
+          connectedBLEDevice={this.state.connectedBLEDevice}
+        ></BlePanelConnectDevice>
+        {this.state.deviceSensors &&
+        this.state.connectedBLEDevice &&
+        this.state.isEdgeMLInstalled ? (
           <Row>
             <Col>
               <div className="shadow p-3 mb-5 bg-white rounded">
