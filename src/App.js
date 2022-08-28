@@ -198,17 +198,20 @@ class App extends Component {
   refreshProjects() {
     getProjects()
       .then((projects) => {
+        // if the user comes to a url parse the name of the project from it
+        const params = this.props.history.location.pathname.split('/');
+
         // if no project is available
         if (projects.length === 0) {
           this.setState({
             projects: [],
           });
-          this.props.history.push('/');
+          if (params[1] !== 'payment') {
+            this.props.history.push('/');
+          }
           return;
         }
 
-        // if the user comes to a url parse the name of the project from it
-        const params = this.props.history.location.pathname.split('/');
         const projectIndex = projects.findIndex(
           (elm) => elm.name === params[2]
         );
@@ -394,7 +397,9 @@ class App extends Component {
                   navigateTo={this.navigateTo}
                   onProjectEditModal={this.onProjectEditModal}
                 ></Navbar>
-                {projectAvailable ? null : (
+                {projectAvailable ||
+                this.props.history.location.pathname.split('/')[1] ===
+                  'payment' ? null : (
                   <NoProjectPage
                     onCreateProject={(e) => {
                       e.preventDefault();
