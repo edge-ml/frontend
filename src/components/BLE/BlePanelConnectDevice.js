@@ -1,5 +1,6 @@
 import React from 'react';
 import SpinnerButton from '../Common/SpinnerButton';
+import { Button } from 'reactstrap';
 
 function BlePanelConnectDevice(props) {
   return (
@@ -39,6 +40,24 @@ function BlePanelConnectDevice(props) {
           {props.connectedBLEDevice ? 'Disconnect device' : 'Connect device'}
         </SpinnerButton>
       </div>
+      {props.hasDFUFunction ? (
+        <div>
+          <div className="panelDivider"></div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div>
+              This device has the ability to flash the edge-ml firmware over
+              BLE.
+            </div>
+            <Button color="primary">Flash edge-ml firmware</Button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

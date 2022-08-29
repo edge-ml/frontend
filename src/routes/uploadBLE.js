@@ -22,7 +22,6 @@ import BlePanelRecordingDisplay from '../components/BLE/BlePanelRecordingDisplay
 
 import '../components/BLE/BleActivated.css';
 import { ga_connectBluetooth } from '../services/AnalyticsService';
-import BlePanelFlashFirmware from '../components/BLE/BlePanelFlashFirmware';
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -332,7 +331,6 @@ class UploadBLE extends Component {
             });
         } else {
           //handle possibility of flashing firmware or show incompatibility of device
-          console.log(bleDevice);
           this.setState({ connectedBLEDevice: bleDevice });
         }
       });
@@ -347,7 +345,9 @@ class UploadBLE extends Component {
     // Case: Connected: Now disconnect
     if (this.state.connectedBLEDevice) {
       this.setState({ bleConnectionChanging: true });
-      await this.bleDeviceProcessor.unSubscribeAllSensors();
+      if (this.state.bleDeviceProcessor !== undefined) {
+        await this.bleDeviceProcessor.unSubscribeAllSensors();
+      }
       this.onDisconnection();
       this.setState({ bleConnectionChanging: false });
     } else {
@@ -369,6 +369,7 @@ class UploadBLE extends Component {
           bleConnectionChanging={this.state.bleConnectionChanging}
           toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
           connectedBLEDevice={this.state.connectedBLEDevice}
+          hasDFUFunction={this.state.hasDFUFunction}
         ></BlePanelConnectDevice>
         {this.state.deviceSensors &&
         this.state.connectedBLEDevice &&
