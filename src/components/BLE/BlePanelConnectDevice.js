@@ -58,6 +58,24 @@ function BlePanelConnectDevice(props) {
           </div>
         </div>
       ) : null}
+      {props.deviceNotUsable ? (
+        <div>
+          <div className="panelDivider"></div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div className="text-danger">
+              This device does not have the edge-ml firmware installed. Please
+              install via the guide
+            </div>
+            <Button color="primary">Flash edge-ml firmware</Button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

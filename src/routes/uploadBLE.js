@@ -314,7 +314,7 @@ class UploadBLE extends Component {
     return bleDevice;
   }
 
-  connect() {
+  async connect() {
     this.getDeviceInfo()
       .then(this.checkServices)
       .then((bleDevice) => {
