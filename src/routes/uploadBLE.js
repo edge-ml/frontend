@@ -298,7 +298,6 @@ class UploadBLE extends Component {
       }
     });
 
-    console.log(bleDevice);
     let promisedSetState = (newState) =>
       new Promise((resolve) => this.setState(newState, resolve));
 
@@ -314,15 +313,15 @@ class UploadBLE extends Component {
     return bleDevice;
   }
 
-  async connect() {
-    this.getDeviceInfo()
+  connect() {
+    return this.getDeviceInfo()
       .then(this.checkServices)
       .then((bleDevice) => {
         console.log(this.state.deviceNotUsable);
         console.log(this.state.hasDFUFunction);
         console.log(this.state.isEdgeMLInstalled);
         if (this.state.isEdgeMLInstalled) {
-          return this.connectDevice(bleDevice)
+          this.connectDevice(bleDevice)
             .then(this.getSensorCharacteristics)
             .then(this.onConnection)
             .catch((err) => {
