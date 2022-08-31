@@ -227,7 +227,6 @@ class UploadBLE extends Component {
   }
 
   async connectDevice(bleDevice) {
-    //bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
     const primaryService = await bleDevice.gatt.connect().then((server) => {
       return server.getPrimaryService(this.sensorServiceUuid);
     });
@@ -372,10 +371,14 @@ class UploadBLE extends Component {
           hasDFUFunction={this.state.hasDFUFunction}
           toggleDFUModal={this.toggleDFUModal}
         ></BlePanelConnectDevice>
-        <DFUModal
-          showDFUModal={this.state.showDFUModal}
-          toggleDFUModal={this.toggleDFUModal}
-        />
+        {this.state.showDFUModal ? (
+          <DFUModal
+            connectedBLEDevice={this.state.connectedBLEDevice}
+            hasEdgeMLInstalled={this.state.isEdgeMLInstalled}
+            toggleDFUModal={this.toggleDFUModal}
+            showDFUModal={this.state.showDFUModal}
+          />
+        ) : null}
         {this.state.deviceSensors &&
         this.state.connectedBLEDevice &&
         this.state.isEdgeMLInstalled ? (
