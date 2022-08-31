@@ -54,7 +54,9 @@ function BlePanelConnectDevice(props) {
               This device has the ability to flash the edge-ml firmware over
               BLE.
             </div>
-            <Button color="primary">Flash edge-ml firmware</Button>
+            <Button color="primary" onClick={props.toggleDFUModal}>
+              Flash edge-ml firmware
+            </Button>
           </div>
         </div>
       ) : null}

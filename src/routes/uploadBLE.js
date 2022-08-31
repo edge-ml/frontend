@@ -22,6 +22,7 @@ import BlePanelRecordingDisplay from '../components/BLE/BlePanelRecordingDisplay
 
 import '../components/BLE/BleActivated.css';
 import { ga_connectBluetooth } from '../services/AnalyticsService';
+import DFUModal from '../components/BLE/DFUModal/DFUModal';
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -41,6 +42,7 @@ class UploadBLE extends Component {
       hasDFUFunction: false,
       isEdgeMLInstalled: false,
       deviceNotUsable: false,
+      showDFUModal: false,
     };
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
@@ -62,6 +64,7 @@ class UploadBLE extends Component {
     this.onConnection = this.onConnection.bind(this);
     this.connect = this.connect.bind(this);
     this.checkServices = this.checkServices.bind(this);
+    this.toggleDFUModal = this.toggleDFUModal.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
@@ -71,10 +74,6 @@ class UploadBLE extends Component {
 
     // Global vars to manage ble connnection
     this.dfuServiceUuid = '34c2e3b8-34aa-11eb-adc1-0242ac120002';
-    this.dfuInternalCharacteristicUuid = '34c2e3b9-34aa-11eb-adc1-0242ac120002';
-    this.dfuExternalCharacteristicUuid = '34c2e3ba-34aa-11eb-adc1-0242ac120002';
-    this.dfuInternalCharacteristic;
-    this.dfuExternalCharacteristic;
 
     this.sensorConfigCharacteristic;
     this.sensorDataCharacteristic;
@@ -125,6 +124,7 @@ class UploadBLE extends Component {
       hasDFUFunction: false,
       isEdgeMLInstalled: false,
       deviceNotUsable: false,
+      showDFUModal: false,
     });
   }
 
@@ -317,9 +317,6 @@ class UploadBLE extends Component {
     return this.getDeviceInfo()
       .then(this.checkServices)
       .then((bleDevice) => {
-        console.log(this.state.deviceNotUsable);
-        console.log(this.state.hasDFUFunction);
-        console.log(this.state.isEdgeMLInstalled);
         if (this.state.isEdgeMLInstalled) {
           this.connectDevice(bleDevice)
             .then(this.getSensorCharacteristics)
@@ -357,6 +354,10 @@ class UploadBLE extends Component {
     }
   }
 
+  toggleDFUModal() {
+    this.setState({ showDFUModal: !this.state.showDFUModal });
+  }
+
   render() {
     if (!this.state.bleStatus) {
       return <BleNotActivated></BleNotActivated>;
@@ -369,7 +370,12 @@ class UploadBLE extends Component {
           toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
           connectedBLEDevice={this.state.connectedBLEDevice}
           hasDFUFunction={this.state.hasDFUFunction}
+          toggleDFUModal={this.toggleDFUModal}
         ></BlePanelConnectDevice>
+        <DFUModal
+          showDFUModal={this.state.showDFUModal}
+          toggleDFUModal={this.toggleDFUModal}
+        />
         {this.state.deviceSensors &&
         this.state.connectedBLEDevice &&
         this.state.isEdgeMLInstalled ? (

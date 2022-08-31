@@ -12,7 +12,6 @@ import ModelPage from './routes/model';
 import ValidationPage from './routes/validation';
 import ExportPage from './routes/export';
 import UploadBLE from './routes/uploadBLE';
-import DFUPage from './routes/dfu';
 
 class AppContent extends Component {
   constructor(props) {
@@ -131,15 +130,6 @@ class AppContent extends Component {
             render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <UploadBLE {...props}></UploadBLE>
-              </ProjectRefresh>
-            )}
-          />
-          <Route
-            exact
-            path={this.props.match.path + '/dfu'}
-            render={(props) => (
-              <ProjectRefresh project={this.props.project}>
-                <DFUPage {...props}></DFUPage>
               </ProjectRefresh>
             )}
           />
