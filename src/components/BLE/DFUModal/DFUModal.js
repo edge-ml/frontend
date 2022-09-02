@@ -26,7 +26,6 @@ class DFUModal extends Component {
       dfuCharacteristic: undefined,
       progress: 0,
       uploadFinished: false,
-      selectedDevice: '1',
       fileLoaded: false,
       isConnectingGATTDFU: false,
       //fwUpdateInProgress: false,
@@ -61,7 +60,6 @@ class DFUModal extends Component {
     this.increaseIndex = this.increaseIndex.bind(this);
     this.updateFW = this.updateFW.bind(this);
     //this.downloadSelectedFirmware = this.downloadSelectedFirmware.bind(this);
-    this.changeSelectedDevice = this.changeSelectedDevice.bind(this);
     this.loadFile = this.loadFile.bind(this);
     this.readerCallback = this.readerCallback.bind(this);
     this.downloadFirmware = this.downloadFirmware.bind(this);
@@ -71,11 +69,6 @@ class DFUModal extends Component {
     this.setState({ isConnectingGATTDFU: true });
     await this.connectGATTdfu();
     this.setState({ isConnectingGATTDFU: false });
-  }
-
-  changeSelectedDevice(e) {
-    let value = e.target.value;
-    this.setState({ selectedDevice: value });
   }
 
   readerCallback(result) {
@@ -280,7 +273,6 @@ class DFUModal extends Component {
   render() {
     return (
       <div>
-        <a ref={this.linkRef} />
         <Modal
           isOpen={this.props.showDFUModal}
           className="modal-xl"
@@ -341,15 +333,9 @@ class DFUModal extends Component {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
+                    justifyContent: 'center',
                   }}
                 >
-                  <Progress
-                    color={
-                      this.state.fwUpdateInProgress ? 'primary' : 'success'
-                    }
-                    value={this.state.progress}
-                  />
                   <Button
                     color="primary"
                     disabled={!this.state.fileLoaded}
@@ -357,6 +343,25 @@ class DFUModal extends Component {
                   >
                     Update firmware
                   </Button>
+                </div>
+                <div className="mt-3">
+                  <Progress
+                    color={
+                      this.state.fwUpdateInProgress ? 'primary' : 'success'
+                    }
+                    value={this.state.progress}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {this.state.uploadFinished
+                    ? 'The firmware update is completed'
+                    : ''}
                 </div>
               </div>
             )}

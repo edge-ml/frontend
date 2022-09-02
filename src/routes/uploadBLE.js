@@ -319,15 +319,15 @@ class UploadBLE extends Component {
         if (this.state.isEdgeMLInstalled) {
           this.connectDevice(bleDevice)
             .then(this.getSensorCharacteristics)
-            .then(this.onConnection)
-            .catch((err) => {
-              console.log(err);
-              ga_connectBluetooth(this.state.connectedDeviceData, err, false);
-            });
+            .then(this.onConnection);
         } else {
           //handle possibility of flashing firmware or show incompatibility of device
           this.setState({ connectedBLEDevice: bleDevice });
         }
+      })
+      .catch((err) => {
+        console.log(err);
+        ga_connectBluetooth(this.state.connectedDeviceData, err, false);
       });
   }
 
