@@ -4,12 +4,16 @@ import Loader from '../../modules/loader';
 import { Alert } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 
-import { getProjectSensorStreams } from '../../services/ApiServices/ProjectService';
+import {
+  getProjectSensorStreams,
+  getProjectCustomMetaData,
+} from '../../services/ApiServices/ProjectService';
 
 import { getModels, train } from '../../services/ApiServices/MlService';
 import { LabelingView } from './LabelingView';
 import { TargetSensorsView } from './TargetSensorsView';
 import { ClassifierView } from './ClassifierView';
+import { ValidationMethodsView } from './ValidationMethodsView';
 
 class ModelPage extends Component {
   constructor(props) {
@@ -33,6 +37,10 @@ class ModelPage extends Component {
       unlabelledNameFor: {},
       showAdvanced: false,
       requestInProgress: false,
+      customMetaData: undefined,
+      currentValidationMethod: 'none',
+      validationMethods: ['none', 'LOSO'],
+      validationMethodOptions: undefined,
     };
 
     this.initComponent = this.initComponent.bind(this);
@@ -77,8 +85,10 @@ class ModelPage extends Component {
       subscribeLabelingsAndLabels(),
       getProjectSensorStreams(this.props.project),
       getModels(),
+      getProjectCustomMetaData(this.props.project),
     ])
       .then((result) => {
+        const customMetaData = result[3];
         this.setState({
           selectedLabeling: result[0].labelings[0]
             ? result[0].labelings[0]._id
@@ -112,6 +122,7 @@ class ModelPage extends Component {
           hyperparameters: result[2][0]
             ? this.formatHyperparameters(result[2][0].hyperparameters)
             : [],
+          customMetaData: customMetaData,
         });
       })
       .catch((err) => console.log(err));
@@ -284,6 +295,19 @@ class ModelPage extends Component {
     this.setState({ modelName: e.target.value });
   };
 
+  handleValidationMethodChange = (newMethod) => {
+    this.setState({
+      currentValidationMethod: newMethod,
+      validationMethodOptions: undefined,
+    });
+  };
+
+  handleValidationMethodOptionsChange = (newOpts) => {
+    this.setState({
+      validationMethodOptions: newOpts,
+    });
+  };
+
   toggleShowAdvanced = (e) => {
     this.setState({ showAdvanced: !this.state.showAdvanced });
   };
@@ -311,7 +335,7 @@ class ModelPage extends Component {
           </div>
           <div className="container">
             <div className="row">
-              <div className="col-12 col-xl-5 mt-4">
+              <div className="col-12 col-xl-4 mt-4">
                 <LabelingView
                   labelings={this.state.labelings}
                   selectedLabeling={this.state.selectedLabeling}
@@ -325,7 +349,7 @@ class ModelPage extends Component {
                   changeLabelSelection={this.handleLabelSelection}
                 />
               </div>
-              <div className="col-12 col-xl-7 mt-4">
+              <div className="col-12 col-xl-4 mt-4">
                 <TargetSensorsView
                   sensorStreams={this.state.sensorStreams}
                   selectedSensorStreams={this.state.selectedSensorStreams}
@@ -335,6 +359,18 @@ class ModelPage extends Component {
                   changeAllSelectedSensorStreams={
                     this.handleSelectedSensorStreamSelectAll
                   }
+                />
+              </div>
+              <div className="col-12 col-xl-4 mt-4">
+                <ValidationMethodsView
+                  customMetaData={this.state.customMetaData}
+                  onValidationMethodChange={this.handleValidationMethodChange}
+                  onValidationMethodOptionsChange={
+                    this.handleValidationMethodOptionsChange
+                  }
+                  currentValidationMethod={this.state.currentValidationMethod}
+                  validationMethods={this.state.validationMethods}
+                  validationMethodOptions={this.state.validationMethodOptions}
                 />
               </div>
               <div className="col-12 mt-4">
