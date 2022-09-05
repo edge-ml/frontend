@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Container } from 'reactstrap';
 import { Route, Switch } from 'react-router-dom';
 
-import ListPage from './routes/list';
+import ListPage from './routes/list/index';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labelings';
 import ExperimentsPage from './routes/experiments';
