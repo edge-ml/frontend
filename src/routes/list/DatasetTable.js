@@ -14,6 +14,7 @@ const DatasetTable = (props) => {
             color="danger"
             outline
             onClick={props.selectAllEmpty}
+            disabled={props.datasets.every((elm) => elm.end != 0)}
           >
             Select empty
           </Button>

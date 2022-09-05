@@ -139,7 +139,14 @@ class ListPage extends Component {
       });
   }
 
-  deleteEntry(datasetId) {}
+  deleteEntry(datasetId) {
+    this.setState(
+      {
+        datasetsToDelete: [datasetId],
+      },
+      () => this.openDeleteModal()
+    );
+  }
 
   render() {
     if (!this.state.ready) {
