@@ -1,8 +1,8 @@
 const apiConsts = require('./ApiConstants');
 const ax = require('axios');
 const axios = ax.create();
-const getUserIds = require('../ApiServices/AuthentificationServices')
-  .getUserIds;
+const getUserIds =
+  require('../ApiServices/AuthentificationServices').getUserIds;
 
 module.exports.getProjects = () => {
   return new Promise((resolve, reject) => {
@@ -13,19 +13,19 @@ module.exports.getProjects = () => {
         apiConsts.API_ENDPOINTS.PROJECTS
       )
     )
-      .then(result => {
+      .then((result) => {
         resolve(result.data);
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.response ? err.response.status : undefined);
       });
   });
 };
 
-module.exports.createProject = project => {
+module.exports.createProject = (project) => {
   return new Promise((resolve, reject) => {
     const tmpProject = project;
-    getUserIds(project.users.map(elm => elm.userName)).then(userData => {
+    getUserIds(project.users.map((elm) => elm.userName)).then((userData) => {
       tmpProject.users = userData;
       axios(
         apiConsts.generateApiRequest(
@@ -36,18 +36,18 @@ module.exports.createProject = project => {
         )
       )
         .then(() => {
-          this.getProjects().then(data => resolve(data));
+          this.getProjects().then((data) => resolve(data));
         })
-        .catch(err => reject(err.response.data.error));
+        .catch((err) => reject(err.response.data.error));
     });
   });
 };
 
-module.exports.updateProject = project => {
+module.exports.updateProject = (project) => {
   return new Promise((resolve, reject) => {
     const tmpProject = project;
-    getUserIds(project.users.map(elm => elm.userName))
-      .then(userData => {
+    getUserIds(project.users.map((elm) => elm.userName))
+      .then((userData) => {
         tmpProject.users = userData;
         axios(
           apiConsts.generateApiRequest(
@@ -58,19 +58,19 @@ module.exports.updateProject = project => {
           )
         )
           .then(() => {
-            this.getProjects().then(data => resolve(data));
+            this.getProjects().then((data) => resolve(data));
           })
-          .catch(err => {
+          .catch((err) => {
             reject(err.response.data.error);
           });
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.data.error);
       });
   });
 };
 
-module.exports.deleteProject = project => {
+module.exports.deleteProject = (project) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -80,13 +80,29 @@ module.exports.deleteProject = project => {
       )
     )
       .then(() => {
-        this.getProjects().then(data => resolve(data));
+        this.getProjects().then((data) => resolve(data));
       })
-      .catch(err => reject(err.response));
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getProjectSensorStreams = project => {
+module.exports.leaveProject = (project) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}` + '/leave'
+      )
+    )
+      .then(() => {
+        this.getProjects().then((data) => resolve(data));
+      })
+      .catch((err) => reject(err.response));
+  });
+};
+
+module.exports.getProjectSensorStreams = (project) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -94,7 +110,7 @@ module.exports.getProjectSensorStreams = project => {
         apiConsts.API_URI,
         apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}/sensorStreams`
       )
-    ).then(x => {
+    ).then((x) => {
       resolve(x['data'].sensorStreams);
     });
   });

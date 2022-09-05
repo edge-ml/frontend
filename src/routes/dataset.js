@@ -664,6 +664,15 @@ class DatasetPage extends Component {
       const newLabel = newDataset.labelings[labelingIdx].labels[labelIdx];
       newLabel.start = Math.min(newLabel.start, position);
       newLabel.end = Math.max(newLabel.start, position);
+      if (
+        labelIdx - 1 >= 0 &&
+        newDataset.labelings[labelingIdx].labels[labelIdx - 1]
+      ) {
+        const prevLabel =
+          newDataset.labelings[labelingIdx].labels[labelIdx - 1];
+        newLabel.type = prevLabel.type;
+      }
+      console.log('click label', labelIdx, newLabel, this.state);
       this.setState({
         dataset: newDataset,
         controlStates: {

@@ -66,6 +66,9 @@ const Labelings = (props) => {
 };
 
 const Metadata = (props) => {
+  if (!props.metaData) {
+    return null;
+  }
   const dataset = props.dataset;
   return (
     <div>
