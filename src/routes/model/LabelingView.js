@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge } from 'reactstrap';
+import { Form, Badge, FormGroup } from 'reactstrap';
 
 import Loader from '../../modules/loader';
 
@@ -12,6 +12,8 @@ export const LabelingView = ({
   changeUnlabelledFor,
   unlabelledNameFor,
   changeUnlabelledName,
+  selectedLabelsFor,
+  changeLabelSelection,
 }) => {
   return (
     <div className="card h-100" style={{ border: '0px solid white' }}>
@@ -47,50 +49,59 @@ export const LabelingView = ({
                           return (
                             <Badge
                               key={labelId}
-                              className={'m-1'}
+                              className="m-1"
                               style={{ backgroundColor: label.color }}
                             >
                               {label.name}
+                              <input
+                                type="checkbox"
+                                disabled={selectedLabeling !== x._id}
+                                className="ml-1 float-right"
+                                checked={selectedLabelsFor[x._id][labelId]}
+                                onClick={(y) =>
+                                  changeLabelSelection(x._id, labelId)
+                                }
+                              />
                             </Badge>
                           );
                         })}
-                        <input
-                          type="checkbox"
-                          className="mt-0 ml-2 mr-0"
-                          checked={useUnlabelledFor[x._id]}
-                          onClick={(e) => {
-                            changeUnlabelledFor(e.target.checked, x._id);
-                          }}
-                        />
-                        <input
-                          type="text"
-                          name="otherLabel"
-                          id="otherLabel"
-                          value={unlabelledNameFor[x._id]}
-                          onChange={(e) =>
-                            changeUnlabelledName(e.target.value, x._id)
-                          }
-                          style={{
-                            backgroundColor: useUnlabelledFor[x._id]
-                              ? '#388e3c'
-                              : '#f1110d',
-                            border: 'none',
-                            color: 'white',
-                            outline: 'none',
-                            fontWeight: '700',
-                            fontSize: '75%',
-                            lineHeight: '1',
-                            verticalAlign: 'baseline',
-                            display: 'inline-block',
-                            borderRadius: '0.25rem',
-                            margin: '0.25rem',
-                            paddingLeft: '0.25rem',
-                            paddingRight: '0.25rem',
-                            width: '41px',
-                            fontFamily:
-                              '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"',
-                          }}
-                        />
+                        <Badge className="m-1">
+                          <Form inline>
+                            <FormGroup>
+                              <input
+                                type="text"
+                                value={unlabelledNameFor[x._id]}
+                                onChange={(e) =>
+                                  changeUnlabelledName(e.target.value, x._id)
+                                }
+                                disabled={selectedLabeling !== x._id}
+                                style={{
+                                  backgroundColor: 'rgba(0,0,0,0)',
+                                  border: 'none',
+                                  color: 'white',
+                                  outline: 'none',
+                                  verticalAlign: 'baseline',
+                                  display: 'inline-block',
+                                  fontWeight: 700,
+                                  padding: 0,
+                                  height: '12px',
+                                  width: '37px',
+                                }}
+                              />
+                            </FormGroup>
+                            <FormGroup>
+                              <input
+                                type="checkbox"
+                                disabled={selectedLabeling !== x._id}
+                                className="float-left"
+                                checked={useUnlabelledFor[x._id]}
+                                onClick={(e) =>
+                                  changeUnlabelledFor(e.target.checked, x._id)
+                                }
+                              />
+                            </FormGroup>
+                          </Form>
+                        </Badge>
                       </div>
                     </div>
                   );
@@ -105,6 +116,8 @@ export const LabelingView = ({
           Model will classify based on target labeling.
           <br />
           Check "Other" to mark unlabeled data and use it in training.
+          <br />
+          Click and type into the "Other" field to rename the label.
         </small>
       </div>
     </div>

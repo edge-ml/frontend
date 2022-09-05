@@ -11,7 +11,7 @@ import {
   InputGroupAddon,
   Input,
   Label,
-  UncontrolledTooltip
+  UncontrolledTooltip,
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -23,8 +23,6 @@ class SelectionHyperparameter extends Component {
   }
 
   render() {
-    console.log('hi ');
-    console.log(this.props.value);
     return (
       <InputGroup style={{ display: 'flex' }}>
         <InputGroupAddon addonType="prepend">
@@ -49,16 +47,16 @@ class SelectionHyperparameter extends Component {
           </InputGroupText>
         </InputGroupAddon>
         <Select
-          options={this.props.options.map(e => {
+          options={this.props.options.map((e) => {
             return { value: e, label: e };
           })}
           isMulti={this.props.multi_select}
           value={this.props.value}
           defaultValue={this.props.default}
-          onChange={e => {
+          onChange={(e) => {
             this.props.handleChange({
               parameter_name: this.props.parameter_name,
-              state: e
+              state: e,
             });
           }}
           components={makeAnimated()}
