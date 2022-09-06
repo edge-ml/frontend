@@ -57,7 +57,7 @@ module.exports = {
     GETDEVICEAPIKEY: 'deviceApi/getkey',
     REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
     SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive',
-    ARDUINOFIRMWARE: 'arduinoFirmware/',
+    ARDUINOFIRMWARE: 'arduinoFirmware',
   },
   ML_ENDPOINTS: {
     MODELS: 'models',

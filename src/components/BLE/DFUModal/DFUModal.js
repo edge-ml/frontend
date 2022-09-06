@@ -14,8 +14,7 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
-import * as apiConsts from '../../../services/ApiServices/ApiConstants';
-import axios from 'axios';
+import { getArduinoFirmware } from '../../../services/ApiServices/ArduinoFirmwareServices';
 
 class DFUModal extends Component {
   constructor(props) {
@@ -263,23 +262,7 @@ class DFUModal extends Component {
 
   async downloadFirmware() {
     this.setState({ dfuState: 'downloadingFW' });
-    const request = apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.GET,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.ARDUINOFIRMWARE + 'nicla'
-    );
-    request['responseType'] = 'arraybuffer';
-    return new Promise((resolve, reject) => {
-      axios(request)
-        .then((res) => {
-          if (this.debug) {
-            console.log(res);
-            console.log(typeof res.data);
-          }
-          resolve(res.data);
-        })
-        .catch((err) => reject(err.response.data));
-    });
+    return getArduinoFirmware('nicla');
   }
 
   renderProgressInfo(dfuState) {
