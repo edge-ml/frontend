@@ -14,7 +14,8 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
-import JSZip from 'jszip';
+import * as apiConsts from '../../../services/ApiServices/ApiConstants';
+import axios from 'axios';
 
 class DFUModal extends Component {
   constructor(props) {
@@ -25,11 +26,9 @@ class DFUModal extends Component {
       gattExternalCharacteristic: undefined,
       dfuCharacteristic: undefined,
       progress: 0,
-      uploadFinished: false,
       fileLoaded: false,
+      dfuState: 'start', //start, downloadingFW, dfuInProgress, uploadFinished
       isConnectingGATTDFU: false,
-      //fwUpdateInProgress: false,
-      //fwDownloading: false,
     };
 
     this.niclaSenseMEFirmwareLink =
@@ -59,10 +58,9 @@ class DFUModal extends Component {
     this.update = this.update.bind(this);
     this.increaseIndex = this.increaseIndex.bind(this);
     this.updateFW = this.updateFW.bind(this);
-    //this.downloadSelectedFirmware = this.downloadSelectedFirmware.bind(this);
-    this.loadFile = this.loadFile.bind(this);
-    this.readerCallback = this.readerCallback.bind(this);
+    this.init = this.init.bind(this);
     this.downloadFirmware = this.downloadFirmware.bind(this);
+    this.downLoadAndInstallFW = this.downLoadAndInstallFW.bind(this);
   }
 
   async componentDidMount() {
@@ -71,30 +69,17 @@ class DFUModal extends Component {
     this.setState({ isConnectingGATTDFU: false });
   }
 
-  readerCallback(result) {
-    {
-      var arrayBuffer = result;
-      this.arrayFW = new Uint8Array(arrayBuffer);
-      this.fwLen = this.arrayFW.length;
+  init(arrayBuffer) {
+    this.arrayFW = new Uint8Array(arrayBuffer);
+    this.fwLen = this.arrayFW.length;
 
-      console.log('Binary file length: ', this.fwLen);
-      if (this.debug == true) {
-        console.log(this.arrayFW);
-      }
-      this.crc8();
-      console.log('Computed 8-bit CRC: ', this.crc8bit);
-      console.log('Press "Update" button to start the fw update');
-      this.setState({ fileLoaded: true });
+    console.log('Binary file length: ', this.fwLen);
+    if (this.debug == true) {
+      console.log(this.arrayFW);
     }
-  }
-
-  loadFile(files) {
-    var reader = new FileReader();
-    reader.addEventListener('load', (event) =>
-      this.readerCallback(event.target.result)
-    );
-
-    reader.readAsArrayBuffer(files[0]);
+    this.crc8();
+    console.log('Computed 8-bit CRC: ', this.crc8bit);
+    console.log('Press "Update" button to start the fw update');
   }
 
   crc8() {
@@ -224,7 +209,7 @@ class DFUModal extends Component {
       this.update(this.updateIndex);
     } else {
       console.log('firmware sent');
-      this.setState({ uploadFinished: true, fwUpdateInProgress: false });
+      this.setState({ dfuState: 'uploadFinished' });
       return;
     }
   }
@@ -233,7 +218,7 @@ class DFUModal extends Component {
     new Promise((resolve) => this.setState(newState, resolve));
 
   async updateFW() {
-    this.setState({ fwUpdateInProgress: true });
+    this.setState({ dfuState: 'dfuInProgress' });
     this.iterations = Math.floor(this.fwLen / this.dataLen);
     this.spareBytes = this.fwLen % this.dataLen;
     this.iterations++;
@@ -266,8 +251,27 @@ class DFUModal extends Component {
     this.update(this.updateIndex);
   }
 
-  downloadFirmware() {
-    window.location.href = this.niclaSenseMEFirmwareLink;
+  async downLoadAndInstallFW() {
+    const arrayBuffer = await this.downloadFirmware();
+    this.init(arrayBuffer);
+    this.updateFW();
+  }
+
+  async downloadFirmware() {
+    this.setState({ dfuState: 'downloadingFW' });
+    const response = await axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.ARDUINOFIRMWARE + 'nicla'
+      )
+    );
+    if (this.debug) {
+      console.log(response);
+      console.log(typeof response.data);
+    }
+    let encoder = new TextEncoder();
+    return encoder.encode(response.data);
   }
 
   render() {
@@ -305,49 +309,25 @@ class DFUModal extends Component {
                   }}
                 >
                   <div>
-                    You can download the newest edge-ml firmware by clicking on
-                    the download firmware button
+                    You can download and install the latest edge-ml firmware by
+                    clicking on the update button.
                   </div>
-                  <Button color="primary" onClick={this.downloadFirmware}>
-                    Download firmware
-                  </Button>
-                </div>
-                <div className="panelDivider"></div>
-                <div
-                  style={{
-                    display: 'column',
-                    alignItems: 'space-between',
-                    justifyContent: 'space-evenly',
-                  }}
-                >
-                  <div>
-                    Select binary firmware file for the flashing process.
-                  </div>
-                  <Input
-                    type="file"
-                    onChange={(e) => this.loadFile(e.target.files)}
-                  />
-                </div>
-                <div className="panelDivider"></div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
                   <Button
                     color="primary"
-                    disabled={!this.state.fileLoaded}
-                    onClick={this.updateFW}
+                    disabled={!this.state.dfuState === 'start'}
+                    onClick={this.downLoadAndInstallFW}
                   >
                     Update firmware
                   </Button>
                 </div>
+                <div className="panelDivider"></div>
+
                 <div className="mt-3">
                   <Progress
                     color={
-                      this.state.fwUpdateInProgress ? 'primary' : 'success'
+                      this.state.dfuState === 'uploadFinished'
+                        ? 'primary'
+                        : 'success'
                     }
                     value={this.state.progress}
                   />
@@ -359,7 +339,7 @@ class DFUModal extends Component {
                     justifyContent: 'center',
                   }}
                 >
-                  {this.state.uploadFinished
+                  {this.state.dfuState === 'uploadFinished'
                     ? 'The firmware update is completed'
                     : ''}
                 </div>
@@ -370,7 +350,10 @@ class DFUModal extends Component {
             <Button
               color="danger"
               onClick={this.props.toggleDFUModal}
-              disabled={this.state.fwUpdateInProgress}
+              disabled={
+                this.dfuState === 'downloadingFW' ||
+                this.dfuState === 'dfuInProgress'
+              }
             >
               Cancel
             </Button>

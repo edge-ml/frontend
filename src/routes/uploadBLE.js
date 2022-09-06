@@ -370,11 +370,13 @@ class UploadBLE extends Component {
           connectedBLEDevice={this.state.connectedBLEDevice}
           hasDFUFunction={this.state.hasDFUFunction}
           toggleDFUModal={this.toggleDFUModal}
+          deviceNotUsable={this.state.deviceNotUsable}
         ></BlePanelConnectDevice>
         {this.state.showDFUModal ? (
           <DFUModal
             connectedBLEDevice={this.state.connectedBLEDevice}
             hasEdgeMLInstalled={this.state.isEdgeMLInstalled}
+            connectedDeviceData={this.state.connectedDeviceData}
             toggleDFUModal={this.toggleDFUModal}
             showDFUModal={this.state.showDFUModal}
           />
