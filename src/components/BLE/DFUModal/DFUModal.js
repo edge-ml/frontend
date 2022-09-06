@@ -61,6 +61,7 @@ class DFUModal extends Component {
     this.init = this.init.bind(this);
     this.downloadFirmware = this.downloadFirmware.bind(this);
     this.downLoadAndInstallFW = this.downLoadAndInstallFW.bind(this);
+    this.renderProgressInfo = this.renderProgressInfo.bind(this);
   }
 
   async componentDidMount() {
@@ -252,26 +253,46 @@ class DFUModal extends Component {
   }
 
   async downLoadAndInstallFW() {
-    const arrayBuffer = await this.downloadFirmware();
-    this.init(arrayBuffer);
-    this.updateFW();
+    this.downloadFirmware()
+      .then((arrayBuffer) => {
+        this.init(arrayBuffer);
+        this.updateFW();
+      })
+      .catch((err) => console.log(err));
   }
 
   async downloadFirmware() {
     this.setState({ dfuState: 'downloadingFW' });
-    const response = await axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.GET,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.ARDUINOFIRMWARE + 'nicla'
-      )
+    const request = apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.GET,
+      apiConsts.API_URI,
+      apiConsts.API_ENDPOINTS.ARDUINOFIRMWARE + 'nicla'
     );
-    if (this.debug) {
-      console.log(response);
-      console.log(typeof response.data);
+    request['responseType'] = 'arraybuffer';
+    return new Promise((resolve, reject) => {
+      axios(request)
+        .then((res) => {
+          if (this.debug) {
+            console.log(res);
+            console.log(typeof res.data);
+          }
+          resolve(res.data);
+        })
+        .catch((err) => reject(err.response.data));
+    });
+  }
+
+  renderProgressInfo(dfuState) {
+    switch (dfuState) {
+      case 'start':
+        return 'Update has not started yet';
+      case 'downloadingFW':
+        return 'Downloading firmware...';
+      case 'dfuInProgress':
+        return 'Flashing firmware over BLE...';
+      case 'uploadFinished':
+        return 'The firmware update is completed';
     }
-    let encoder = new TextEncoder();
-    return encoder.encode(response.data);
   }
 
   render() {
@@ -281,7 +302,7 @@ class DFUModal extends Component {
           isOpen={this.props.showDFUModal}
           className="modal-xl"
           backdrop="static"
-          keyboard="false"
+          keyboard={false}
         >
           <ModalHeader>Update firmware</ModalHeader>
           <ModalBody>
@@ -293,7 +314,7 @@ class DFUModal extends Component {
               <div className="align-items-center">
                 <div>
                   Connected BLE device:{' '}
-                  <strong>{this.props.connectedBLEDevice.name}</strong>
+                  {<strong>{this.props.connectedBLEDevice.name}</strong>}
                 </div>
                 <div>
                   {this.props.hasEdgeMLInstalled
@@ -339,9 +360,7 @@ class DFUModal extends Component {
                     justifyContent: 'center',
                   }}
                 >
-                  {this.state.dfuState === 'uploadFinished'
-                    ? 'The firmware update is completed'
-                    : ''}
+                  {this.renderProgressInfo(this.state.dfuState)}
                 </div>
               </div>
             )}
@@ -351,8 +370,8 @@ class DFUModal extends Component {
               color="danger"
               onClick={this.props.toggleDFUModal}
               disabled={
-                this.dfuState === 'downloadingFW' ||
-                this.dfuState === 'dfuInProgress'
+                this.state.dfuState === 'downloadingFW' ||
+                this.state.dfuState === 'dfuInProgress'
               }
             >
               Cancel
