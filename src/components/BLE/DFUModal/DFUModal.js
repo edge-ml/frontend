@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
 import {
   ModalHeader,
-  Container,
-  Row,
-  Col,
   Button,
   Progress,
   Spinner,
-  Label,
-  Input,
-  InputGroup,
   Modal,
   ModalBody,
   ModalFooter,

@@ -17,3 +17,13 @@ module.exports.getArduinoFirmware = function (deviceName) {
       .catch((err) => reject(err.response));
   });
 };
+
+module.exports.getLatestEdgeMLVersionNumber = function () {
+  return new Promise((resolve, reject) => {
+    axios('https://api.github.com/repos/edge-ml/EdgeML-Arduino/tags')
+      .then((res) => {
+        resolve(res.data[0].name);
+      })
+      .catch((err) => reject(err.response));
+  });
+};

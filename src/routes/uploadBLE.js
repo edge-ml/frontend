@@ -22,6 +22,7 @@ import BlePanelRecordingDisplay from '../components/BLE/BlePanelRecordingDisplay
 
 import '../components/BLE/BleActivated.css';
 import { ga_connectBluetooth } from '../services/AnalyticsService';
+import { getLatestEdgeMLVersionNumber } from '../services/ApiServices/ArduinoFirmwareServices';
 import DFUModal from '../components/BLE/DFUModal/DFUModal';
 
 class UploadBLE extends Component {
