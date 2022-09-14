@@ -20,12 +20,7 @@ class DFUModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      gattService: undefined,
-      gattInternalCharacteristic: undefined,
-      gattExternalCharacteristic: undefined,
-      dfuCharacteristic: undefined,
       progress: 0,
-      fileLoaded: false,
       dfuState: 'start', //start, downloadingFW, dfuInProgress, uploadFinished
       isConnectingGATTDFU: false,
     };
@@ -51,6 +46,10 @@ class DFUModal extends Component {
     this.debug = true;
     this.crc8bit = 0;
     this.onlyCRCleft = false;
+    this.gattService = undefined;
+    this.gattInternalCharacteristic = undefined;
+    this.gattExternalCharacteristic = undefined;
+    this.dfuCharacteristic = undefined;
 
     this.crc8 = this.crc8.bind(this);
     this.connectGATTdfu = this.connectGATTdfu.bind(this);
@@ -101,34 +100,34 @@ class DFUModal extends Component {
         return server.getPrimaryService(this.dfuService);
       })
       .then((service) => {
-        this.setState({ gattService: service });
+        this.gattService = service;
         if (this.debug == true) {
           console.log('Getting service:', service);
         }
         return service.getCharacteristic(this.dfuInternalCharacteristic);
       })
       .then((characteristic) => {
-        this.setState({ gattInternalCharacteristic: characteristic });
+        this.gattInternalCharacteristic = characteristic;
         if (this.debug == true) {
           console.log('Looking for characteristic...');
           console.log(
             'dfu internal characteristic:',
-            this.state.gattInternalCharacteristic
+            this.gattInternalCharacteristic
           );
         }
       })
       .then((_) => {
-        return this.state.gattService.getCharacteristic(
+        return this.gattService.getCharacteristic(
           this.dfuExternalCharacteristic
         );
       })
       .then((characteristic) => {
-        this.setState({ gattExternalCharacteristic: characteristic });
+        this.gattExternalCharacteristic = characteristic;
         if (this.debug == true) {
           console.log('Looking for characteristic...');
           console.log(
             'dfu external characteristic:',
-            this.state.gattExternalCharacteristic
+            this.gattExternalCharacteristic
           );
         }
       });
@@ -192,7 +191,7 @@ class DFUModal extends Component {
     }
     console.log(this.bytesArray);
     console.log('Writing 67 bytes array...');
-    this.state.dfuCharacteristic.writeValue(this.bytesArray).then((_) => {
+    this.dfuCharacteristic.writeValue(this.bytesArray).then((_) => {
       //show on Progress bar
       this.setState({ progress: (index / (this.iterations - 1)) * 100 });
 
@@ -214,9 +213,6 @@ class DFUModal extends Component {
     }
   }
 
-  promisedSetState = (newState) =>
-    new Promise((resolve) => this.setState(newState, resolve));
-
   async updateFW() {
     this.setState({ dfuState: 'dfuInProgress' });
     this.iterations = Math.floor(this.fwLen / this.dataLen);
@@ -236,9 +232,8 @@ class DFUModal extends Component {
     this.updateIndex = 0;
     // Take selected dfu characteristic
     //nicla
-    await this.promisedSetState({
-      dfuCharacteristic: this.state.gattInternalCharacteristic,
-    });
+    this.dfuCharacteristic = this.gattInternalCharacteristic;
+
     /**if (this.state.selectedDevice == '1') {
       this.setState({
         dfuCharacteristic: this.state.gattInternalCharacteristic,
