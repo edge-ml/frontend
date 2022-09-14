@@ -287,7 +287,7 @@ class DFUModal extends Component {
                   <strong>{this.props.latestEdgeMLVersion}</strong>
                 </div>
                 <div>
-                  {this.props.hasEdgeMLInstalled
+                  {this.props.isEdgeMLInstalled
                     ? "This device already has edge-ml installed, but an update is possible. Please don't close this window, while the firmware is flashing."
                     : "This device does not have edge-ml installed. Flash now to install the firmware. Please don't close this window, while the firmware is flashing."}
                 </div>

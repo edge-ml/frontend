@@ -40,7 +40,10 @@ function BlePanelConnectDevice(props) {
           {props.connectedBLEDevice ? 'Disconnect device' : 'Connect device'}
         </SpinnerButton>
       </div>
-      {props.hasDFUFunction ? (
+      {props.hasDFUFunction &&
+      props.connectedBLEDevice &&
+      ((props.isEdgeMLInstalled && props.outdatedVersionInstalled) ||
+        !props.hasEdgeMLInstalled) ? (
         <div>
           <div className="panelDivider"></div>
           <div
@@ -51,8 +54,9 @@ function BlePanelConnectDevice(props) {
             }}
           >
             <div>
-              This device has the ability to flash the edge-ml firmware over
-              BLE.
+              {props.isEdgeMLInstalled
+                ? 'The edge-ml firmware version is outdated. You can update it to the latest version by clicking on the button'
+                : 'This device does not have the edge-ml firmware installed yet. You can install it by clicking on the button.'}
             </div>
             <Button color="primary" onClick={props.toggleDFUModal}>
               Flash edge-ml firmware
@@ -60,7 +64,7 @@ function BlePanelConnectDevice(props) {
           </div>
         </div>
       ) : null}
-      {props.deviceNotUsable ? (
+      {props.deviceNotUsable && props.connectedBLEDevice ? (
         <div>
           <div className="panelDivider"></div>
           <div

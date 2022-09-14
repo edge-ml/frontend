@@ -25,6 +25,8 @@ import { ga_connectBluetooth } from '../services/AnalyticsService';
 import { getLatestEdgeMLVersionNumber } from '../services/ApiServices/ArduinoFirmwareServices';
 import DFUModal from '../components/BLE/DFUModal/DFUModal';
 
+const semverLt = require('semver/functions/lt');
+
 class UploadBLE extends Component {
   constructor(props) {
     super(props);
@@ -37,6 +39,7 @@ class UploadBLE extends Component {
       recorderState: 'ready', // ready, startup, recording, finalizing
       deviceSensors: undefined,
       connectedDeviceData: undefined,
+      connecectedDeviceGeneration: undefined,
       selectedSensors: new Set(),
       stream: true,
       fullSampleRate: false,
@@ -45,6 +48,7 @@ class UploadBLE extends Component {
       deviceNotUsable: false,
       showDFUModal: false,
       latestEdgeMLVersion: undefined,
+      outdatedVersionInstalled: false,
     };
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
@@ -128,6 +132,9 @@ class UploadBLE extends Component {
       isEdgeMLInstalled: false,
       deviceNotUsable: false,
       showDFUModal: false,
+      latestEdgeMLVersion: undefined,
+      outdatedVersionInstalled: false,
+      connecectedDeviceGeneration: undefined,
     });
   }
 
@@ -256,7 +263,15 @@ class UploadBLE extends Component {
     this.setState({
       connectedDeviceData: deviceInfo.device,
       deviceSensors: prepareSensorBleObject(deviceInfo.sensors),
+      connecectedDeviceGeneration: deviceGeneration,
     });
+    this.setState({
+      outdatedVersionInstalled: semverLt(
+        deviceGeneration,
+        this.state.latestEdgeMLVersion
+      ),
+    });
+    console.log(semverLt(deviceGeneration, this.state.latestEdgeMLVersion));
     return [bleDevice, primaryService];
   }
 
@@ -284,10 +299,11 @@ class UploadBLE extends Component {
 
   async checkServicesAndGetLatestFWVersion(bleDevice) {
     bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
+    let promisedSetState = (newState) =>
+      new Promise((resolve) => this.setState(newState, resolve));
     //get latest edge-ml fw version
-    getLatestEdgeMLVersionNumber().then((res) => {
-      this.setState({ latestEdgeMLVersion: res });
-    });
+    const latestEdgeMLVersion = await getLatestEdgeMLVersionNumber();
+    await promisedSetState({ latestEdgeMLVersion: latestEdgeMLVersion });
     //check for available services on device
     let hasDeviceInfo = false;
     let hasDFUFunction = false;
@@ -303,9 +319,6 @@ class UploadBLE extends Component {
         hasSensorService = true;
       }
     });
-
-    let promisedSetState = (newState) =>
-      new Promise((resolve) => this.setState(newState, resolve));
 
     if (hasDeviceInfo && hasSensorService && this.hasDFUFunction) {
       await promisedSetState({ isEdgeMLInstalled: true, hasDFUFunction: true });
@@ -379,11 +392,13 @@ class UploadBLE extends Component {
           toggleDFUModal={this.toggleDFUModal}
           deviceNotUsable={this.state.deviceNotUsable}
           latestEdgeMLVersion={this.state.latestEdgeMLVersion}
+          isEdgeMLInstalled={this.state.isEdgeMLInstalled}
+          outdatedVersionInstalled={this.state.outdatedVersionInstalled}
         ></BlePanelConnectDevice>
         {this.state.showDFUModal ? (
           <DFUModal
             connectedBLEDevice={this.state.connectedBLEDevice}
-            hasEdgeMLInstalled={this.state.isEdgeMLInstalled}
+            isEdgeMLInstalled={this.state.isEdgeMLInstalled}
             connectedDeviceData={this.state.connectedDeviceData}
             toggleDFUModal={this.toggleDFUModal}
             showDFUModal={this.state.showDFUModal}
