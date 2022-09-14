@@ -22,7 +22,12 @@ module.exports.getLatestEdgeMLVersionNumber = function () {
   return new Promise((resolve, reject) => {
     axios('https://api.github.com/repos/edge-ml/EdgeML-Arduino/tags')
       .then((res) => {
-        resolve(res.data[0].name);
+        var format = /^[0-9][0-9.]*$/;
+        if (format.test(res.data[0].name)) {
+          resolve(res.data[0].name);
+        } else {
+          reject(new Error('Illegal version format'));
+        }
       })
       .catch((err) => reject(err.response));
   });

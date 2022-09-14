@@ -19,12 +19,6 @@ class DFUModal extends Component {
       isConnectingGATTDFU: false,
     };
 
-    this.niclaSenseMEFirmwareLink =
-      'https://nightly.link/edge-ml/EdgeML-Arduino/workflows/build/main/nicla.bin.zip';
-    this.nano33FirmwareLink =
-      'https://nightly.link/edge-ml/EdgeML-Arduino/workflows/build/main/nano.bin.zip';
-    this.seeedXiaonRF52840SenseFirmwareLink =
-      'https://nightly.link/edge-ml/EdgeML-Arduino/workflows/build/main/xiao.bin.zip';
     this.dfuService = '34c2e3b8-34aa-11eb-adc1-0242ac120002';
     this.dfuInternalCharacteristic = '34c2e3b9-34aa-11eb-adc1-0242ac120002';
     this.dfuExternalCharacteristic = '34c2e3ba-34aa-11eb-adc1-0242ac120002';
@@ -289,6 +283,10 @@ class DFUModal extends Component {
                   {<strong>{this.props.connectedBLEDevice.name}</strong>}
                 </div>
                 <div>
+                  Latest edge-ml version:{' '}
+                  <strong>{this.props.latestEdgeMLVersion}</strong>
+                </div>
+                <div>
                   {this.props.hasEdgeMLInstalled
                     ? "This device already has edge-ml installed, but an update is possible. Please don't close this window, while the firmware is flashing."
                     : "This device does not have edge-ml installed. Flash now to install the firmware. Please don't close this window, while the firmware is flashing."}
@@ -302,8 +300,8 @@ class DFUModal extends Component {
                   }}
                 >
                   <div>
-                    You can download and install the latest edge-ml firmware by
-                    clicking on the update button.
+                    You can download and install the latest version of the
+                    edge-ml firmware by clicking on the update button.
                   </div>
                   <Button
                     color="primary"

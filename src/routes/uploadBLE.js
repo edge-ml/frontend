@@ -44,6 +44,7 @@ class UploadBLE extends Component {
       isEdgeMLInstalled: false,
       deviceNotUsable: false,
       showDFUModal: false,
+      latestEdgeMLVersion: undefined,
     };
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
@@ -64,7 +65,8 @@ class UploadBLE extends Component {
     this.onChangeSampleRate = this.onChangeSampleRate.bind(this);
     this.onConnection = this.onConnection.bind(this);
     this.connect = this.connect.bind(this);
-    this.checkServices = this.checkServices.bind(this);
+    this.checkServicesAndGetLatestFWVersion =
+      this.checkServicesAndGetLatestFWVersion.bind(this);
     this.toggleDFUModal = this.toggleDFUModal.bind(this);
 
     this.recorderMap = undefined;
@@ -280,9 +282,13 @@ class UploadBLE extends Component {
     });
   }
 
-  async checkServices(bleDevice) {
+  async checkServicesAndGetLatestFWVersion(bleDevice) {
     bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
-    //check for available services
+    //get latest edge-ml fw version
+    getLatestEdgeMLVersionNumber().then((res) => {
+      this.setState({ latestEdgeMLVersion: res });
+    });
+    //check for available services on device
     let hasDeviceInfo = false;
     let hasDFUFunction = false;
     let hasSensorService = false;
@@ -315,7 +321,7 @@ class UploadBLE extends Component {
 
   connect() {
     return this.getDeviceInfo()
-      .then(this.checkServices)
+      .then(this.checkServicesAndGetLatestFWVersion)
       .then((bleDevice) => {
         if (this.state.isEdgeMLInstalled) {
           this.connectDevice(bleDevice)
@@ -372,6 +378,7 @@ class UploadBLE extends Component {
           hasDFUFunction={this.state.hasDFUFunction}
           toggleDFUModal={this.toggleDFUModal}
           deviceNotUsable={this.state.deviceNotUsable}
+          latestEdgeMLVersion={this.state.latestEdgeMLVersion}
         ></BlePanelConnectDevice>
         {this.state.showDFUModal ? (
           <DFUModal
@@ -380,6 +387,7 @@ class UploadBLE extends Component {
             connectedDeviceData={this.state.connectedDeviceData}
             toggleDFUModal={this.toggleDFUModal}
             showDFUModal={this.state.showDFUModal}
+            latestEdgeMLVersion={this.state.latestEdgeMLVersion}
           />
         ) : null}
         {this.state.deviceSensors &&
