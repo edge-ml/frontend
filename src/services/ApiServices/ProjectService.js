@@ -115,3 +115,17 @@ module.exports.getProjectSensorStreams = (project) => {
     });
   });
 };
+
+module.exports.getProjectCustomMetaData = (project) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}/customMetaData`
+      )
+    ).then((x) => {
+      resolve(x['data']);
+    });
+  });
+};

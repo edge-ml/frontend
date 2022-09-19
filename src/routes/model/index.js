@@ -4,12 +4,19 @@ import Loader from '../../modules/loader';
 import { Alert } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 
-import { getProjectSensorStreams } from '../../services/ApiServices/ProjectService';
+import {
+  getProjectSensorStreams,
+  getProjectCustomMetaData,
+} from '../../services/ApiServices/ProjectService';
 
 import { getModels, train } from '../../services/ApiServices/MlService';
 import { LabelingView } from './LabelingView';
 import { TargetSensorsView } from './TargetSensorsView';
 import { ClassifierView } from './ClassifierView';
+import {
+  ValidationMethodsView,
+  validationSelectOptions,
+} from './ValidationMethodsView';
 
 class ModelPage extends Component {
   constructor(props) {
@@ -33,6 +40,14 @@ class ModelPage extends Component {
       unlabelledNameFor: {},
       showAdvanced: false,
       requestInProgress: false,
+      customMetaData: undefined,
+      currentValidationMethod: validationSelectOptions.none.value,
+      validationMethods: [
+        validationSelectOptions.none.value,
+        validationSelectOptions.LOSO.value,
+      ],
+      validationMethodOptions: {},
+      testSplit: 0.33,
     };
 
     this.initComponent = this.initComponent.bind(this);
@@ -77,8 +92,10 @@ class ModelPage extends Component {
       subscribeLabelingsAndLabels(),
       getProjectSensorStreams(this.props.project),
       getModels(),
+      getProjectCustomMetaData(this.props.project),
     ])
       .then((result) => {
+        const customMetaData = result[3];
         this.setState({
           selectedLabeling: result[0].labelings[0]
             ? result[0].labelings[0]._id
@@ -112,6 +129,7 @@ class ModelPage extends Component {
           hyperparameters: result[2][0]
             ? this.formatHyperparameters(result[2][0].hyperparameters)
             : [],
+          customMetaData: customMetaData,
         });
       })
       .catch((err) => console.log(err));
@@ -179,6 +197,22 @@ class ModelPage extends Component {
       return;
     }
 
+    let crossValidationPayload = {};
+    switch (this.state.currentValidationMethod) {
+      case validationSelectOptions.LOSO.value:
+        crossValidationPayload = {
+          cross_validation: [
+            {
+              loso_variable:
+                this.state.validationMethodOptions['selectedMetaDataKey'],
+            },
+          ],
+        };
+      case validationSelectOptions.none.value:
+      default:
+        break;
+    }
+
     train({
       model_id: this.state.selectedModelId,
       selected_timeseries: this.state.selectedSensorStreams,
@@ -189,6 +223,12 @@ class ModelPage extends Component {
       use_unlabelled: this.state.useUnlabelledFor[this.state.selectedLabeling],
       unlabelled_name:
         this.state.unlabelledNameFor[this.state.selectedLabeling],
+      validation: {
+        train_test_split: {
+          test_size: parseFloat(this.state.testSplit),
+        },
+        ...crossValidationPayload,
+      },
     })
       .then(() => {
         this.setState({
@@ -284,6 +324,23 @@ class ModelPage extends Component {
     this.setState({ modelName: e.target.value });
   };
 
+  handleValidationMethodChange = (newMethod) => {
+    this.setState({
+      currentValidationMethod: newMethod,
+      validationMethodOptions: {},
+    });
+  };
+
+  handleTestSplitChange = (e) => {
+    this.setState({ testSplit: e.target.value });
+  };
+
+  handleValidationMethodOptionsChange = (newOpts) => {
+    this.setState({
+      validationMethodOptions: newOpts,
+    });
+  };
+
   toggleShowAdvanced = (e) => {
     this.setState({ showAdvanced: !this.state.showAdvanced });
   };
@@ -311,7 +368,7 @@ class ModelPage extends Component {
           </div>
           <div className="container">
             <div className="row">
-              <div className="col-12 col-xl-5 mt-4">
+              <div className="col-12 col-xl-4 mt-4">
                 <LabelingView
                   labelings={this.state.labelings}
                   selectedLabeling={this.state.selectedLabeling}
@@ -325,7 +382,7 @@ class ModelPage extends Component {
                   changeLabelSelection={this.handleLabelSelection}
                 />
               </div>
-              <div className="col-12 col-xl-7 mt-4">
+              <div className="col-12 col-xl-4 mt-4">
                 <TargetSensorsView
                   sensorStreams={this.state.sensorStreams}
                   selectedSensorStreams={this.state.selectedSensorStreams}
@@ -335,6 +392,20 @@ class ModelPage extends Component {
                   changeAllSelectedSensorStreams={
                     this.handleSelectedSensorStreamSelectAll
                   }
+                />
+              </div>
+              <div className="col-12 col-xl-4 mt-4">
+                <ValidationMethodsView
+                  testSplit={this.state.testSplit}
+                  onTestSplitChange={this.handleTestSplitChange}
+                  customMetaData={this.state.customMetaData}
+                  onValidationMethodChange={this.handleValidationMethodChange}
+                  onValidationMethodOptionsChange={
+                    this.handleValidationMethodOptionsChange
+                  }
+                  currentValidationMethod={this.state.currentValidationMethod}
+                  validationMethods={this.state.validationMethods}
+                  validationMethodOptions={this.state.validationMethodOptions}
                 />
               </div>
               <div className="col-12 mt-4">
