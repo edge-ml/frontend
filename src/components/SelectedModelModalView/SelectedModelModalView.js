@@ -16,6 +16,7 @@ import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 import { humanFileSize, toPercentage } from '../../services/helpers';
 import ConfusionMatrixView from '../ConfusionMatrix/ConfusionMatrixView';
+import { CrossValidationTable } from './CrossValidationTable';
 
 export const SelectedModelModalView = ({
   model,
@@ -210,6 +211,17 @@ export const SelectedModelModalView = ({
                     />
                   </td>{' '}
                 </tr>
+                {model.cross_validation && model.cross_validation.length > 0 ? (
+                  <tr>
+                    {' '}
+                    <th>Cross Validation</th>{' '}
+                    <td>
+                      {model.cross_validation.map((c) => (
+                        <CrossValidationTable {...c} />
+                      ))}
+                    </td>{' '}
+                  </tr>
+                ) : null}
               </tbody>
             </Table>
           </Col>
