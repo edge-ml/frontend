@@ -13,7 +13,10 @@ import { getModels, train } from '../../services/ApiServices/MlService';
 import { LabelingView } from './LabelingView';
 import { TargetSensorsView } from './TargetSensorsView';
 import { ClassifierView } from './ClassifierView';
-import { ValidationMethodsView } from './ValidationMethodsView';
+import {
+  ValidationMethodsView,
+  validationSelectOptions,
+} from './ValidationMethodsView';
 
 class ModelPage extends Component {
   constructor(props) {
@@ -38,9 +41,13 @@ class ModelPage extends Component {
       showAdvanced: false,
       requestInProgress: false,
       customMetaData: undefined,
-      currentValidationMethod: 'none',
-      validationMethods: ['none', 'LOSO'],
-      validationMethodOptions: undefined,
+      currentValidationMethod: validationSelectOptions.none.value,
+      validationMethods: [
+        validationSelectOptions.none.value,
+        validationSelectOptions.LOSO.value,
+      ],
+      validationMethodOptions: {},
+      testSplit: 0.33,
     };
 
     this.initComponent = this.initComponent.bind(this);
@@ -190,6 +197,22 @@ class ModelPage extends Component {
       return;
     }
 
+    let crossValidationPayload = {};
+    switch (this.state.currentValidationMethod) {
+      case validationSelectOptions.LOSO.value:
+        crossValidationPayload = {
+          cross_validation: [
+            {
+              loso_variable:
+                this.state.validationMethodOptions['selectedMetaDataKey'],
+            },
+          ],
+        };
+      case validationSelectOptions.none.value:
+      default:
+        break;
+    }
+
     train({
       model_id: this.state.selectedModelId,
       selected_timeseries: this.state.selectedSensorStreams,
@@ -200,6 +223,12 @@ class ModelPage extends Component {
       use_unlabelled: this.state.useUnlabelledFor[this.state.selectedLabeling],
       unlabelled_name:
         this.state.unlabelledNameFor[this.state.selectedLabeling],
+      validation: {
+        train_test_split: {
+          test_size: parseFloat(this.state.testSplit),
+        },
+        ...crossValidationPayload,
+      },
     })
       .then(() => {
         this.setState({
@@ -298,8 +327,12 @@ class ModelPage extends Component {
   handleValidationMethodChange = (newMethod) => {
     this.setState({
       currentValidationMethod: newMethod,
-      validationMethodOptions: undefined,
+      validationMethodOptions: {},
     });
+  };
+
+  handleTestSplitChange = (e) => {
+    this.setState({ testSplit: e.target.value });
   };
 
   handleValidationMethodOptionsChange = (newOpts) => {
@@ -363,6 +396,8 @@ class ModelPage extends Component {
               </div>
               <div className="col-12 col-xl-4 mt-4">
                 <ValidationMethodsView
+                  testSplit={this.state.testSplit}
+                  onTestSplitChange={this.handleTestSplitChange}
                   customMetaData={this.state.customMetaData}
                   onValidationMethodChange={this.handleValidationMethodChange}
                   onValidationMethodOptionsChange={

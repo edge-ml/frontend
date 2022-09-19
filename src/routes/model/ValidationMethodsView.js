@@ -1,15 +1,17 @@
 import React from 'react';
 import Select from 'react-select';
-import { Badge } from 'reactstrap';
+import { Badge, InputGroup, Input } from 'reactstrap';
 
 import { withLoader } from '../../modules/loader';
 
-const validationSelectOptions = {
+export const validationSelectOptions = {
   none: { value: 'none', label: 'None' },
   LOSO: { value: 'LOSO', label: 'Leave One Subject Out' },
 };
 
 const ValidationMethodsViewRaw = ({
+  testSplit,
+  onTestSplitChange,
   customMetaData,
   currentValidationMethod,
   validationMethods,
@@ -21,6 +23,18 @@ const ValidationMethodsViewRaw = ({
 
   return (
     <div className="w-100 text-left">
+      <h6>Train Test Split</h6>
+      <div className="d-flex flex-row align-items-baseline justify-content-between w-100">
+        <span>Split: </span>
+        <InputGroup style={{ width: '200px' }}>
+          <Input
+            type={'text'}
+            value={testSplit}
+            onChange={onTestSplitChange}
+          ></Input>
+        </InputGroup>
+      </div>
+      <h6>Validation</h6>
       <div className="d-flex flex-row align-items-baseline justify-content-between">
         <span>Method: </span>
         <span style={{ minWidth: '200px' }}>
@@ -31,10 +45,11 @@ const ValidationMethodsViewRaw = ({
           />
         </span>
       </div>
-      {currentValidationMethod && currentValidationMethod !== 'none' ? (
+      {currentValidationMethod &&
+      currentValidationMethod !== validationSelectOptions.none.value ? (
         <hr></hr>
       ) : null}
-      {currentValidationMethod === 'LOSO' ? (
+      {currentValidationMethod === validationSelectOptions.LOSO.value ? (
         <LOSO
           customMetaData={customMetaData}
           options={validationMethodOptions}
@@ -81,6 +96,15 @@ const LOSO = ({
           )
         )}
       </div>
+      <br />
+      <small>
+        <strong>
+          <em>Note:</em>
+        </strong>{' '}
+        Datasets without the selected metadata present will <strong>not</strong>{' '}
+        be ignored, but instead collectively included in the validation as
+        another group.
+      </small>
     </div>
   );
 };
@@ -99,7 +123,7 @@ const withCard = (name, Wrapped) => (props) =>
   );
 
 export const ValidationMethodsView = withCard(
-  'Validation Methods',
+  'Validation and Test',
   withLoader(
     (pred) => pred.customMetaData && pred.validationMethods,
     ValidationMethodsViewRaw
