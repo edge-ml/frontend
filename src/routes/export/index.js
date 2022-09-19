@@ -10,11 +10,11 @@ import { subscribeLabelingsAndLabels } from '../../services/ApiServices/Labeling
 import {
   getTrainedModels,
   getTrained,
-  getModels
+  getModels,
 } from '../../services/ApiServices/MlService';
 import {
   getPlatformCode,
-  downloadDeploymentModel
+  downloadDeploymentModel,
 } from '../../services/ApiServices/MLDeploymentService';
 // import { ChangeNameModalView } from './ChangeNameModalView';
 import { Empty } from './components/Empty';
@@ -24,9 +24,9 @@ import { platforms } from './platforms';
 const createBasename = (platform, selectedModel) =>
   `${selectedModel.name}_${platform}`;
 const createName = (platform, selectedModel) =>
-  `${createBasename(platform, selectedModel)}.${platforms.find(
-    x => x.value === platform
-  ).extension || 'bin'}`;
+  `${createBasename(platform, selectedModel)}.${
+    platforms.find((x) => x.value === platform).extension || 'bin'
+  }`;
 
 const ExportPage = () => {
   const location = useLocation();
@@ -67,7 +67,7 @@ const ExportPage = () => {
           createName(platform, selectedModel)
         );
     },
-    [selectedModelId, platform],
+    [selectedModelId, platform, selectedModel && selectedModel.name],
     ''
   );
 
@@ -78,7 +78,7 @@ const ExportPage = () => {
     );
   }, [selectedModel]);
 
-  const selectModel = modelId => {
+  const selectModel = (modelId) => {
     setSelectedModelId(modelId);
   };
 
