@@ -264,14 +264,11 @@ class UploadBLE extends Component {
       connectedDeviceData: deviceInfo.device,
       deviceSensors: prepareSensorBleObject(deviceInfo.sensors),
       connecectedDeviceGeneration: deviceGeneration,
-    });
-    this.setState({
       outdatedVersionInstalled: semverLt(
         deviceGeneration,
         this.state.latestEdgeMLVersion
       ),
     });
-    console.log(semverLt(deviceGeneration, this.state.latestEdgeMLVersion));
     return [bleDevice, primaryService];
   }
 
