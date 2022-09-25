@@ -4,7 +4,7 @@ module.exports.parseData = (sensor, data) => {
   var dataIndex = 6;
   var value = 0;
   var values = [];
-  scheme.forEach(element => {
+  scheme.forEach((element) => {
     //var name = element['name'];
     var valueType = element.type;
     var scale = element.scaleFactor;
@@ -39,21 +39,21 @@ module.exports.parseData = (sensor, data) => {
   return values;
 };
 
-module.exports.floatToBytes = value => {
+module.exports.floatToBytes = (value) => {
   var tempArray = new Float32Array(1);
   tempArray[0] = value;
   return new Uint8Array(tempArray.buffer);
 };
 
-module.exports.intToBytes = value => {
+module.exports.intToBytes = (value) => {
   var tempArray = new Int32Array(1);
   tempArray[0] = value;
   return new Uint8Array(tempArray.buffer);
 };
 
-module.exports.prepareSensorBleObject = sensorArray => {
+module.exports.prepareSensorBleObject = (sensorArray) => {
   const result = {};
-  sensorArray.forEach(elm => {
+  sensorArray.forEach((elm) => {
     const bleKey = elm.bleKey;
     delete elm.bleKey;
     result[bleKey] = elm;
@@ -61,15 +61,15 @@ module.exports.prepareSensorBleObject = sensorArray => {
   return result;
 };
 
-module.exports.getBaseDataset = (sensors, datasetName) => {
+module.exports.getBaseDataset = (sensors, datasetName, deviceInfo) => {
   const timeSeries = [];
-  sensors.forEach(sensor => {
-    sensor.parseScheme.forEach(scheme => {
+  sensors.forEach((sensor) => {
+    sensor.parseScheme.forEach((scheme) => {
       timeSeries.push({
         name: sensor.name + '_' + scheme.name,
         start: new Date().getTime() + 10000000,
         end: new Date().getTime(),
-        data: []
+        data: [],
       });
     });
   });
@@ -78,7 +78,11 @@ module.exports.getBaseDataset = (sensors, datasetName) => {
     name: datasetName,
     start: new Date().getTime() + 10000000,
     end: new Date().getTime(),
-    timeSeries: timeSeries
+    timeSeries: timeSeries,
+    metaData: {
+      deviceName: deviceInfo.name,
+      firmwareVersion: deviceInfo.generation,
+    },
   };
 };
 
@@ -89,15 +93,15 @@ module.exports.parseTimeSeriesData = (
 ) => {
   const timeSeries = [];
   const sensorData = {};
-  [...recordingSensors].forEach(sensorKey => {
+  [...recordingSensors].forEach((sensorKey) => {
     sensorData[sensorKey] = recordedData.filter(
-      elm => elm.sensor.toString() === sensorKey.toString()
+      (elm) => elm.sensor.toString() === sensorKey.toString()
     );
   });
-  Object.keys(sensorData).forEach(key => {
+  Object.keys(sensorData).forEach((key) => {
     const sensor = sensors[key];
     sensor.parseScheme.forEach((scheme, idx) => {
-      const data = sensorData[key].map(elm => {
+      const data = sensorData[key].map((elm) => {
         return { timestamp: elm.time, datapoint: elm.data[idx] };
       });
       timeSeries.push({ name: sensor.name + '_' + scheme.name, data: data });
