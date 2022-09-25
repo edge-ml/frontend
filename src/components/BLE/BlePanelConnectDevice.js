@@ -43,7 +43,7 @@ function BlePanelConnectDevice(props) {
       {props.hasDFUFunction &&
       props.connectedBLEDevice &&
       ((props.isEdgeMLInstalled && props.outdatedVersionInstalled) ||
-        !props.hasEdgeMLInstalled) ? (
+        !props.isEdgeMLInstalled) ? (
         <div>
           <div className="panelDivider"></div>
           <div
@@ -53,11 +53,23 @@ function BlePanelConnectDevice(props) {
               justifyContent: 'space-between',
             }}
           >
-            <div>
-              {props.isEdgeMLInstalled
-                ? 'The edge-ml firmware version is outdated. You can update it to the latest version by clicking on the button'
-                : 'This device does not have the edge-ml firmware installed yet. You can install it by clicking on the button.'}
-            </div>
+            {props.isEdgeMLInstalled ? (
+              <div>
+                The edge-ml firmware version is outdated. You can update it to
+                the latest version by clicking on the button.
+                <br />
+                Installed version:{' '}
+                <strong>{props.connectedDeviceData.generation}</strong>
+                <br />
+                Newest version: <strong>{props.latestEdgeMLVersion}</strong>
+              </div>
+            ) : (
+              <div>
+                'This device does not have the edge-ml firmware installed yet.
+                You can install it by clicking on the button.'
+              </div>
+            )}
+
             <Button color="primary" onClick={props.toggleDFUModal}>
               Flash edge-ml firmware
             </Button>

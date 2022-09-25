@@ -391,6 +391,7 @@ class UploadBLE extends Component {
           latestEdgeMLVersion={this.state.latestEdgeMLVersion}
           isEdgeMLInstalled={this.state.isEdgeMLInstalled}
           outdatedVersionInstalled={this.state.outdatedVersionInstalled}
+          connectedDeviceData={this.state.connectedDeviceData}
         ></BlePanelConnectDevice>
         {this.state.showDFUModal ? (
           <DFUModal
