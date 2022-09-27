@@ -34,7 +34,8 @@
         "react-tooltip": "^4.2.14",
         "reactstrap": "^8.9.0",
         "request": "^2.88.2",
-        "request-promise": "^4.2.6"
+        "request-promise": "^4.2.6",
+        "semver": "^7.3.7"
     },
     "lint-staged": {
         "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
