@@ -63,7 +63,10 @@ module.exports.prepareSensorBleObject = (sensorArray) => {
 
 module.exports.getBaseDataset = (sensors, datasetName, deviceInfo) => {
   const timeSeries = [];
+  const sampleRates = {};
   sensors.forEach((sensor) => {
+    sampleRates[sensor.name.toString() + '_sampleRate'] =
+      sensor.sampleRate.toString() + ' Hz';
     sensor.parseScheme.forEach((scheme) => {
       timeSeries.push({
         name: sensor.name + '_' + scheme.name,
@@ -82,6 +85,7 @@ module.exports.getBaseDataset = (sensors, datasetName, deviceInfo) => {
     metaData: {
       deviceName: deviceInfo.name,
       firmwareVersion: deviceInfo.generation,
+      ...sampleRates,
     },
   };
 };
