@@ -317,7 +317,7 @@ class UploadBLE extends Component {
       }
     });
 
-    if (hasDeviceInfo && hasSensorService && this.hasDFUFunction) {
+    if (hasDeviceInfo && hasSensorService && hasDFUFunction) {
       await promisedSetState({ isEdgeMLInstalled: true, hasDFUFunction: true });
     } else if (hasDFUFunction) {
       await promisedSetState({ hasDFUFunction: true });
