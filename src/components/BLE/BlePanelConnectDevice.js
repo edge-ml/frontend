@@ -61,12 +61,12 @@ function BlePanelConnectDevice(props) {
                 Installed version:{' '}
                 <strong>{props.connectedDeviceData.generation}</strong>
                 <br />
-                Newest version: <strong>{props.latestEdgeMLVersion}</strong>
+                Latest version: <strong>{props.latestEdgeMLVersion}</strong>
               </div>
             ) : (
               <div>
-                'This device does not have the edge-ml firmware installed yet.
-                You can install it by clicking on the button.'
+                This device does not have the edge-ml firmware installed yet.
+                You can install it by clicking on the button.
               </div>
             )}
 
