@@ -90,7 +90,6 @@ function BlePanelConnectDevice(props) {
               This device does not have the edge-ml firmware installed. Please
               install via the guide
             </div>
-            <Button color="primary">Flash edge-ml firmware</Button>
           </div>
         </div>
       ) : null}

@@ -39,7 +39,6 @@ class UploadBLE extends Component {
       recorderState: 'ready', // ready, startup, recording, finalizing
       deviceSensors: undefined,
       connectedDeviceData: undefined,
-      connecectedDeviceGeneration: undefined,
       selectedSensors: new Set(),
       stream: true,
       fullSampleRate: false,
@@ -134,7 +133,6 @@ class UploadBLE extends Component {
       showDFUModal: false,
       latestEdgeMLVersion: undefined,
       outdatedVersionInstalled: false,
-      connecectedDeviceGeneration: undefined,
     });
   }
 
@@ -263,7 +261,6 @@ class UploadBLE extends Component {
     this.setState({
       connectedDeviceData: deviceInfo.device,
       deviceSensors: prepareSensorBleObject(deviceInfo.sensors),
-      connecectedDeviceGeneration: deviceGeneration,
       outdatedVersionInstalled: semverLt(
         deviceGeneration,
         this.state.latestEdgeMLVersion
