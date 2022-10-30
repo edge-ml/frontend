@@ -235,7 +235,16 @@ class DFUModal extends Component {
 
   async downloadFirmware() {
     this.setState({ dfuState: 'downloadingFW' });
-    return getArduinoFirmware('nicla');
+    let downloadName = '';
+    switch (this.props.connectedBLEDevice.name) {
+      case 'NICLA':
+        downloadName = 'nicla';
+      case 'NANO':
+        downloadName = 'nano';
+      case 'Seeed XIAO':
+        downloadName = 'xiao';
+    }
+    return getArduinoFirmware(downloadName);
   }
 
   renderProgressInfo(dfuState) {
