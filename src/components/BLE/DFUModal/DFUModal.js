@@ -221,15 +221,6 @@ class DFUModal extends Component {
     // Take selected dfu characteristic
     //nicla
     this.dfuCharacteristic = this.gattInternalCharacteristic;
-    /**if (this.state.selectedDevice == '1') {
-      this.setState({
-        dfuCharacteristic: this.state.gattInternalCharacteristic,
-      });
-    } else {
-      this.setState({
-        dfuCharacteristic: this.state.gattExternalCharacteristic,
-      });
-    }*/
     this.update(this.updateIndex);
   }
 
