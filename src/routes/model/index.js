@@ -4,12 +4,19 @@ import Loader from '../../modules/loader';
 import { Alert } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 
-import { getProjectSensorStreams } from '../../services/ApiServices/ProjectService';
+import {
+  getProjectSensorStreams,
+  getProjectCustomMetaData,
+} from '../../services/ApiServices/ProjectService';
 
 import { getModels, train } from '../../services/ApiServices/MlService';
 import { LabelingView } from './LabelingView';
 import { TargetSensorsView } from './TargetSensorsView';
 import { ClassifierView } from './ClassifierView';
+import {
+  ValidationMethodsView,
+  validationSelectOptions,
+} from './ValidationMethodsView';
 
 class ModelPage extends Component {
   constructor(props) {
@@ -20,6 +27,7 @@ class ModelPage extends Component {
       labelings: undefined,
       labels: undefined,
       selectedLabeling: undefined,
+      selectedLabelsFor: undefined,
       sensorStreams: undefined,
       selectedSensorStreams: [],
       models: [],
@@ -31,6 +39,15 @@ class ModelPage extends Component {
       useUnlabelledFor: {},
       unlabelledNameFor: {},
       showAdvanced: false,
+      requestInProgress: false,
+      customMetaData: undefined,
+      currentValidationMethod: validationSelectOptions.none.value,
+      validationMethods: [
+        validationSelectOptions.none.value,
+        validationSelectOptions.LOSO.value,
+      ],
+      validationMethodOptions: {},
+      testSplit: 0.33,
     };
 
     this.initComponent = this.initComponent.bind(this);
@@ -75,12 +92,24 @@ class ModelPage extends Component {
       subscribeLabelingsAndLabels(),
       getProjectSensorStreams(this.props.project),
       getModels(),
+      getProjectCustomMetaData(this.props.project),
     ])
       .then((result) => {
+        const customMetaData = result[3];
         this.setState({
           selectedLabeling: result[0].labelings[0]
             ? result[0].labelings[0]._id
             : '',
+          selectedLabelsFor: result[0].labelings.reduce(
+            (acc, labeling) => ({
+              ...acc,
+              [labeling._id]: labeling.labels.reduce(
+                (c, label) => ({ ...c, [label]: true }),
+                {}
+              ),
+            }),
+            {}
+          ),
           labelings: result[0].labelings,
           labels: result[0].labels,
           useUnlabelledFor: result[0].labelings.reduce(
@@ -100,6 +129,7 @@ class ModelPage extends Component {
           hyperparameters: result[2][0]
             ? this.formatHyperparameters(result[2][0].hyperparameters)
             : [],
+          customMetaData: customMetaData,
         });
       })
       .catch((err) => console.log(err));
@@ -114,34 +144,121 @@ class ModelPage extends Component {
       }, 2000);
     };
 
+    this.setState({ requestInProgress: true });
+    const hyperparameterConfig = this.state.hyperparameters.reduce(
+      (acc, cur) => ({
+        ...acc,
+        [cur.parameter_name]: cur.state,
+      }),
+      {}
+    );
+    const hyperparameterRestrictions = Object.values(
+      this.state.models[this.state.selectedModelId].hyperparameters
+    ).reduce((acc, cur) => {
+      if (cur.parameter_type === 'number') {
+        return {
+          ...acc,
+          [cur.parameter_name]: {
+            min: cur.number_min,
+            max: cur.number_max,
+          },
+        };
+      }
+      return { ...acc };
+    }, {});
+    const violatingHyperparams = Object.entries(
+      hyperparameterRestrictions
+    ).filter(
+      ([name, restriction]) =>
+        hyperparameterConfig[name] !== null &&
+        (restriction.min > hyperparameterConfig[name] ||
+          restriction.max < hyperparameterConfig[name])
+    );
+    if (violatingHyperparams.length > 0) {
+      this.setState({
+        alertText: 'Invalid Hyperparameter Configuration',
+        trainSuccess: false,
+      });
+      resetAlert();
+      return;
+    }
+
+    const selectedLabels = Object.keys(
+      this.state.selectedLabelsFor[this.state.selectedLabeling]
+    ).filter(
+      (x) => this.state.selectedLabelsFor[this.state.selectedLabeling][x]
+    );
+    if (!selectedLabels.length) {
+      this.setState({
+        alertText: 'Please select at least one label in target labeling',
+        trainSuccess: false,
+      });
+      resetAlert();
+      return;
+    }
+
+    let crossValidationPayload = {};
+    switch (this.state.currentValidationMethod) {
+      case validationSelectOptions.LOSO.value:
+        crossValidationPayload = {
+          cross_validation: [
+            {
+              loso_variable:
+                this.state.validationMethodOptions['selectedMetaDataKey'],
+            },
+          ],
+        };
+      case validationSelectOptions.none.value:
+      default:
+        break;
+    }
+
     train({
       model_id: this.state.selectedModelId,
       selected_timeseries: this.state.selectedSensorStreams,
       target_labeling: this.state.selectedLabeling,
-      labels: this.state.labelings.find(
-        (x) => x._id == this.state.selectedLabeling
-      ).labels,
+      labels: selectedLabels,
       hyperparameters: this.state.hyperparameters,
       model_name: this.state.modelName,
       use_unlabelled: this.state.useUnlabelledFor[this.state.selectedLabeling],
       unlabelled_name:
         this.state.unlabelledNameFor[this.state.selectedLabeling],
+      validation: {
+        train_test_split: {
+          test_size: parseFloat(this.state.testSplit),
+        },
+        ...crossValidationPayload,
+      },
     })
       .then(() => {
         this.setState({
           alertText: 'Training started successfully',
           trainSuccess: true,
+          requestInProgress: false,
         });
         resetAlert();
       })
       .catch((err) => {
         console.log(err);
         this.setState({
-          alertText: err.data.detail,
+          alertText: err.data.detail, // breaks if err is undefined
           trainSuccess: false,
+          requestInProgress: false,
         });
         resetAlert();
       });
+  };
+
+  handleLabelSelection = (labelingId, labelId) => {
+    this.setState((prevState) => ({
+      selectedLabelsFor: {
+        ...prevState.selectedLabelsFor,
+        [labelingId]: {
+          ...prevState.selectedLabelsFor[labelingId],
+          [labelId]: !prevState.selectedLabelsFor[labelingId][labelId],
+        },
+      },
+    }));
   };
 
   handleLabelingChange = (labelingId) => {
@@ -166,8 +283,7 @@ class ModelPage extends Component {
     }));
   };
 
-  handleSelectedSensorStreamChange = (sensor) => {
-    // TODO fix this, use prevState
+  handleSelectedSensorStreamToggle = (sensor) => {
     if (this.state.selectedSensorStreams.includes(sensor)) {
       this.setState({
         selectedSensorStreams: this.state.selectedSensorStreams.filter(
@@ -176,11 +292,18 @@ class ModelPage extends Component {
       });
       return;
     }
-    var tmp = this.state.selectedSensorStreams;
-    tmp.push(sensor);
     this.setState({
-      selectedSensorStreams: tmp,
+      selectedSensorStreams: [...this.state.selectedSensorStreams, sensor],
     });
+  };
+
+  handleSelectedSensorStreamSelectAll = (selectAll) => {
+    if (selectAll) {
+      this.setState({ selectedSensorStreams: this.state.sensorStreams });
+    } else {
+      // deselect all
+      this.setState({ selectedSensorStreams: [] });
+    }
   };
 
   handleModelSelectionChange = (modelSelection) => {
@@ -199,6 +322,23 @@ class ModelPage extends Component {
 
   handleModelNameChange = (e) => {
     this.setState({ modelName: e.target.value });
+  };
+
+  handleValidationMethodChange = (newMethod) => {
+    this.setState({
+      currentValidationMethod: newMethod,
+      validationMethodOptions: {},
+    });
+  };
+
+  handleTestSplitChange = (e) => {
+    this.setState({ testSplit: e.target.value });
+  };
+
+  handleValidationMethodOptionsChange = (newOpts) => {
+    this.setState({
+      validationMethodOptions: newOpts,
+    });
   };
 
   toggleShowAdvanced = (e) => {
@@ -228,7 +368,7 @@ class ModelPage extends Component {
           </div>
           <div className="container">
             <div className="row">
-              <div className="col-12 col-xl-5 mt-4">
+              <div className="col-12 col-xl-4 mt-4">
                 <LabelingView
                   labelings={this.state.labelings}
                   selectedLabeling={this.state.selectedLabeling}
@@ -238,14 +378,34 @@ class ModelPage extends Component {
                   changeUnlabelledFor={this.handleUseUnlabelledChange}
                   unlabelledNameFor={this.state.unlabelledNameFor}
                   changeUnlabelledName={this.handleUnlabelledNameChange}
+                  selectedLabelsFor={this.state.selectedLabelsFor}
+                  changeLabelSelection={this.handleLabelSelection}
                 />
               </div>
-              <div className="col-12 col-xl-7 mt-4">
+              <div className="col-12 col-xl-4 mt-4">
                 <TargetSensorsView
                   sensorStreams={this.state.sensorStreams}
-                  changeSelectedSensorStreams={
-                    this.handleSelectedSensorStreamChange
+                  selectedSensorStreams={this.state.selectedSensorStreams}
+                  toggleSelectedSensorStreams={
+                    this.handleSelectedSensorStreamToggle
                   }
+                  changeAllSelectedSensorStreams={
+                    this.handleSelectedSensorStreamSelectAll
+                  }
+                />
+              </div>
+              <div className="col-12 col-xl-4 mt-4">
+                <ValidationMethodsView
+                  testSplit={this.state.testSplit}
+                  onTestSplitChange={this.handleTestSplitChange}
+                  customMetaData={this.state.customMetaData}
+                  onValidationMethodChange={this.handleValidationMethodChange}
+                  onValidationMethodOptionsChange={
+                    this.handleValidationMethodOptionsChange
+                  }
+                  currentValidationMethod={this.state.currentValidationMethod}
+                  validationMethods={this.state.validationMethods}
+                  validationMethodOptions={this.state.validationMethodOptions}
                 />
               </div>
               <div className="col-12 mt-4">
@@ -262,6 +422,7 @@ class ModelPage extends Component {
                   project={this.props.project}
                   showAdvanced={this.state.showAdvanced}
                   toggleShowAdvanced={this.toggleShowAdvanced}
+                  requestInProgress={this.state.requestInProgress}
                 />
               </div>
             </div>

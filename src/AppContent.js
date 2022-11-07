@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Container } from 'reactstrap';
 import { Route, Switch } from 'react-router-dom';
 
-import ListPage from './routes/list';
+import ListPage from './routes/list/index';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labelings';
 import ExperimentsPage from './routes/experiments';
@@ -12,6 +12,7 @@ import ModelPage from './routes/model';
 import ValidationPage from './routes/validation';
 import ExportPage from './routes/export';
 import UploadBLE from './routes/uploadBLE';
+import { UploadWebPage } from './routes/uploadWeb';
 
 class AppContent extends Component {
   constructor(props) {
@@ -102,6 +103,7 @@ class AppContent extends Component {
                   onProjectsChanged={this.props.onProjectsChanged}
                   userName={this.props.userName}
                   onDeleteProject={this.props.onDeleteProject}
+                  onLeaveProject={this.props.onLeaveProject}
                   userMail={this.props.userMail}
                   {...props}
                 />
@@ -119,6 +121,7 @@ class AppContent extends Component {
                   userName={this.props.userName}
                   userMail={this.props.userMail}
                   onDeleteProject={this.props.onDeleteProject}
+                  onLeaveProject={this.props.onLeaveProject}
                   {...props}
                 />
               </ProjectRefresh>
@@ -130,6 +133,15 @@ class AppContent extends Component {
             render={(props) => (
               <ProjectRefresh project={this.props.project}>
                 <UploadBLE {...props}></UploadBLE>
+              </ProjectRefresh>
+            )}
+          />
+          <Route
+            exact
+            path={this.props.match.path + '/uploadweb'}
+            render={(props) => (
+              <ProjectRefresh project={this.props.project}>
+                <UploadWebPage {...props}></UploadWebPage>
               </ProjectRefresh>
             )}
           />

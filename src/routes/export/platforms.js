@@ -55,4 +55,14 @@ export const platforms = [
     ),
     extension: 'hpp',
   },
+  {
+    value: 'c',
+    label: 'C',
+    prism: ({ code }) => (
+      <PrismCode component="pre" className="language-c">
+        {code}
+      </PrismCode>
+    ),
+    extension: 'h',
+  },
 ];

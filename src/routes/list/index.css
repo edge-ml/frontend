@@ -1,0 +1,71 @@
+.tableHeadElement {
+  font-weight: bold;
+  font-size: large;
+  text-align: center;
+}
+
+.tableEntry {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 0px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.datasetCard {
+  cursor: pointer;
+  transition-duration: 0.3s;
+}
+
+.divider {
+  border-bottom: 3px solid grey;
+  width: 100%;
+}
+
+.dividerMetaData {
+  border-bottom: 1px solid grey;
+  width: 100%;
+}
+
+.animationDuration {
+  transition-duration: 0.1s;
+}
+
+.collapse_arrow {
+  transform: rotate(90deg);
+}
+
+.badgeSize {
+  font-size: 0.8rem;
+}
+
+.badgeLabelings {
+  color: black;
+  background-color: unset;
+  border: 1px black solid;
+  padding: 2px;
+}
+
+.showInfo {
+  height: 0;
+  overflow: hidden;
+  -prefix-animation: slide 1s ease 3.5s forwards;
+}
+
+@-prefix-keyframes slide {
+  from {
+    height: 0;
+  }
+  to {
+    height: unset;
+  }
+}
+
+.listCheckBox {
+  width: 30px;
+  align-self: stretch;
+  background-color: red;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}

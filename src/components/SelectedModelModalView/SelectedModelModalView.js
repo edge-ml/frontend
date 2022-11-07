@@ -8,7 +8,7 @@ import {
   Button,
   Table,
   Row,
-  Col
+  Col,
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,6 +16,7 @@ import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 import { humanFileSize, toPercentage } from '../../services/helpers';
 import ConfusionMatrixView from '../ConfusionMatrix/ConfusionMatrixView';
+import { CrossValidationTable } from './CrossValidationTable';
 
 export const SelectedModelModalView = ({
   model,
@@ -98,12 +99,12 @@ export const SelectedModelModalView = ({
   onClosed = () => {},
   ...props
 }) => {
-  const base = baseModels.find(x => x.name === model.classifier);
+  const base = baseModels.find((x) => x.name === model.classifier);
   const [showAdvanced, setShowAdvanced] = useState(false);
   console.assert(base !== undefined);
   let report = model.classification_report;
-  model.labels.forEach(id => {
-    const label = labels.find(label => label._id == id);
+  model.labels.forEach((id) => {
+    const label = labels.find((label) => label._id == id);
     if (!label) return;
     report = report.replace(
       id,
@@ -122,7 +123,7 @@ export const SelectedModelModalView = ({
                   captionSide: 'top',
                   fontWeight: 'bold',
                   textAlign: 'center',
-                  color: '#000000'
+                  color: '#000000',
                 }}
               >
                 General Information
@@ -162,7 +163,7 @@ export const SelectedModelModalView = ({
                   <th>Used Labels</th>
                   <td>
                     {model.labels.map((id, i, { length }) => {
-                      const label = labels.find(label => label._id == id);
+                      const label = labels.find((label) => label._id == id);
                       const name = label ? label.name : id;
                       return i == length - 1 ? (
                         <span>{name}</span>
@@ -210,6 +211,17 @@ export const SelectedModelModalView = ({
                     />
                   </td>{' '}
                 </tr>
+                {model.cross_validation && model.cross_validation.length > 0 ? (
+                  <tr>
+                    {' '}
+                    <th>Cross Validation</th>{' '}
+                    <td>
+                      {model.cross_validation.map((c) => (
+                        <CrossValidationTable {...c} />
+                      ))}
+                    </td>{' '}
+                  </tr>
+                ) : null}
               </tbody>
             </Table>
           </Col>
@@ -220,26 +232,33 @@ export const SelectedModelModalView = ({
                   captionSide: 'top',
                   fontWeight: 'bold',
                   textAlign: 'center',
-                  color: '#000000'
+                  color: '#000000',
                 }}
               >
                 Hyperparameters
               </caption>
               <tbody>
-                <tr key="window_size">
-                  {' '}
-                  <th>Window Size</th>{' '}
-                  <td style={{ textAlign: 'center' }}>{model.window_size}</td>{' '}
-                </tr>
-                <tr key="sliding_step">
-                  {' '}
-                  <th>Sliding Step</th>{' '}
-                  <td style={{ textAlign: 'center' }}>{model.sliding_step}</td>{' '}
-                </tr>
+                {Object.entries(base.hyperparameters)
+                  .map(
+                    ([
+                      key,
+                      { display_name: displayName, is_advanced: isAdvanced },
+                    ]) =>
+                      !isAdvanced ? (
+                        <tr key={key}>
+                          {' '}
+                          <th>{displayName}</th>{' '}
+                          <td style={{ textAlign: 'center' }}>
+                            {String(model.hyperparameters[key] || model[key])}
+                          </td>{' '}
+                        </tr>
+                      ) : null
+                  )
+                  .filter((x) => x)}
                 <tr>
                   <th
                     className="user-select-none"
-                    onClick={e => setShowAdvanced(!showAdvanced)}
+                    onClick={(e) => setShowAdvanced(!showAdvanced)}
                   >
                     {showAdvanced ? (
                       <FontAwesomeIcon icon={faCaretDown} />
@@ -249,22 +268,28 @@ export const SelectedModelModalView = ({
                     Advanced Hyperparameters
                   </th>
                 </tr>
-                {Object.entries(model.hyperparameters).map(([key, val]) => (
-                  <tr
-                    key={key}
-                    style={{
-                      visibility: showAdvanced ? 'visible' : 'collapse'
-                    }}
-                  >
-                    {' '}
-                    <th>
-                      {base.hyperparameters[key]
-                        ? base.hyperparameters[key].display_name
-                        : key}
-                    </th>{' '}
-                    <td style={{ textAlign: 'center' }}>{String(val)}</td>{' '}
-                  </tr>
-                ))}
+                {Object.entries(base.hyperparameters)
+                  .map(
+                    ([
+                      key,
+                      { display_name: displayName, is_advanced: isAdvanced },
+                    ]) =>
+                      isAdvanced ? (
+                        <tr
+                          key={key}
+                          style={{
+                            visibility: showAdvanced ? 'visible' : 'collapse',
+                          }}
+                        >
+                          {' '}
+                          <th>{displayName}</th>{' '}
+                          <td style={{ textAlign: 'center' }}>
+                            {String(model.hyperparameters[key])}
+                          </td>{' '}
+                        </tr>
+                      ) : null
+                  )
+                  .filter((x) => x)}
               </tbody>
             </Table>
           </Col>

@@ -13,12 +13,14 @@ import {
   faBrain,
   faLightbulb,
   faCheck,
-  faFileExport
+  faFileExport,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 import './Navbar.css';
+
+const navbarProjectId = (id) => `navbar-project-${id}`;
 
 class Navbar extends Component {
   constructor(props) {
@@ -30,7 +32,7 @@ class Navbar extends Component {
 
   getNavBarItemClasses(location) {
     const project = this.props.projects.filter(
-      x => x._id === this.props.currentProjectId
+      (x) => x._id === this.props.currentProjectId
     )[0];
     const isSelected =
       this.props.location.pathname.toLowerCase() ===
@@ -48,10 +50,27 @@ class Navbar extends Component {
     );
   }
 
+  scrollProjectIntoView() {
+    const project = this.props.projects.find(
+      (x) => x._id === this.props.currentProjectId
+    );
+
+    if (project) {
+      const element = document.getElementById(navbarProjectId(project._id));
+      if (element) {
+        element.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+      }
+    }
+  }
+
   toggleUserSettingsModal() {
     this.setState({
-      userSettingsModalOpen: !this.state.userSettingsModalOpen
+      userSettingsModalOpen: !this.state.userSettingsModalOpen,
     });
+  }
+
+  componentDidUpdate() {
+    this.scrollProjectIntoView();
   }
 
   render() {
@@ -60,7 +79,10 @@ class Navbar extends Component {
         className="d-flex flex-column bg-light align-items-center justify-content-between shadow navbar-base user-select-none"
         color="light"
       >
-        <div className="w-100 d-flex flex-column justify-content-center align-items-center">
+        <div
+          className="w-100 d-flex flex-column justify-content-center align-items-center"
+          style={{ minHeight: 0 }}
+        >
           <NavbarBrand
             style={{ marginRight: '8px' }}
             className="dark-hover mt-2"
@@ -87,23 +109,27 @@ class Navbar extends Component {
               </b>
             </a>
           </NavbarBrand>
-          <div className="w-100 mt-3">
+          <div className="w-100 mt-3 overflow-auto">
             {this.props.projects.map((project, index) => {
               return (
-                <div className="w-100 text-left" key={project._id}>
+                <div
+                  className="w-100 text-left"
+                  key={project._id}
+                  id={navbarProjectId(project._id)}
+                >
                   <div
                     className="d-flex align-items-center mt-1 pt-2 pb-2 pl-2 navbar-project"
                     onClick={() => this.props.onProjectClick(project._id)}
                     style={{
                       overflow: 'hidden',
-                      textOverflow: 'ellipsis'
+                      textOverflow: 'ellipsis',
                     }}
                   >
                     <FontAwesomeIcon
                       style={{
                         color: '#8b8d8f',
                         float: 'left',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
                       }}
                       icon={
                         this.props.currentProjectId === project._id
@@ -117,7 +143,7 @@ class Navbar extends Component {
                       style={{
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
                       }}
                     >
                       <b>{project.name}</b>
@@ -131,7 +157,7 @@ class Navbar extends Component {
                         ['Model', faBrain],
                         ['Validation', faCheck],
                         ['Deploy', faFileExport],
-                        ['Settings', faCogs]
+                        ['Settings', faCogs],
                       ].map((elm, indx) => (
                         <div
                           onClick={() => {
@@ -161,7 +187,7 @@ class Navbar extends Component {
               border: '0px solid transparent',
               color: '#666',
               fontSize: '0.9rem',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             <FontAwesomeIcon
@@ -202,7 +228,7 @@ class Navbar extends Component {
               height: '1px',
               backgroundColor: 'darkgray',
               opacity: '0.3',
-              width: '95%'
+              width: '95%',
             }}
           ></div>
           <div
@@ -217,7 +243,7 @@ class Navbar extends Component {
                 width: '26px',
                 height: '26px',
                 borderRadius: '13px',
-                overflow: 'hidden'
+                overflow: 'hidden',
               }}
               className="mr-2 d-flex justify-content-center align-items-center"
             >
