@@ -1,5 +1,6 @@
 import React from 'react';
 import SpinnerButton from '../Common/SpinnerButton';
+import { Button } from 'reactstrap';
 
 function BlePanelConnectDevice(props) {
   return (
@@ -15,7 +16,7 @@ function BlePanelConnectDevice(props) {
         style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
         }}
       >
         <div>
@@ -39,6 +40,59 @@ function BlePanelConnectDevice(props) {
           {props.connectedBLEDevice ? 'Disconnect device' : 'Connect device'}
         </SpinnerButton>
       </div>
+      {props.hasDFUFunction &&
+      props.connectedBLEDevice &&
+      ((props.isEdgeMLInstalled && props.outdatedVersionInstalled) ||
+        !props.isEdgeMLInstalled) ? (
+        <div>
+          <div className="panelDivider"></div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            {props.isEdgeMLInstalled ? (
+              <div>
+                The edge-ml firmware version is outdated. You can update it to
+                the latest version by clicking on the button.
+                <br />
+                Installed version:{' '}
+                <strong>{props.connectedDeviceData.generation}</strong>
+                <br />
+                Latest version: <strong>{props.latestEdgeMLVersion}</strong>
+              </div>
+            ) : (
+              <div>
+                This device does not have the edge-ml firmware installed yet.
+                You can install it by clicking on the button.
+              </div>
+            )}
+
+            <Button color="primary" onClick={props.toggleDFUModal}>
+              Flash edge-ml firmware
+            </Button>
+          </div>
+        </div>
+      ) : null}
+      {props.deviceNotUsable && props.connectedBLEDevice ? (
+        <div>
+          <div className="panelDivider"></div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div className="text-danger">
+              This device does not have the edge-ml firmware installed. Please
+              install via the guide
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
