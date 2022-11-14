@@ -1,8 +1,7 @@
 .navbar-base {
   width: 160px;
-  position: fixed;
+  min-width: 160px;
   height: 100vh;
-  z-index: 100;
 }
 
 .dark-hover:hover {

@@ -1,0 +1,15 @@
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-exclude {
+    display: none;
+  }
+
+  .mobile-navbar-slider {
+    margin-left: -100%;
+  }
+}
