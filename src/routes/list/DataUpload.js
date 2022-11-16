@@ -1,4 +1,9 @@
-import { faCode, faFile, faMicrochip } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCode,
+  faFile,
+  faMicrochip,
+  faMobileAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import React from 'react';
@@ -119,7 +124,7 @@ const DataUpload = (props) => {
             </div>
           </div>
           <div
-            className="d-flex flex-row justify-content-center align-items-start"
+            className="d-flex flex-row justify-content-center align-items-start mr-5"
             style={{ flex: '1 1 0px' }}
           >
             <FontAwesomeIcon
@@ -164,6 +169,44 @@ const DataUpload = (props) => {
                 style={{ padding: '0px' }}
               >
                 <small>Generate Code for my Device</small>
+              </Button>
+            </div>
+          </div>
+          <div
+            className="d-flex flex-row justify-content-center align-items-start"
+            style={{ flex: '1 1 0px' }}
+          >
+            <FontAwesomeIcon
+              className="mr-3 mt-1"
+              icon={faMobileAlt}
+              style={{ fontSize: 'x-large' }}
+            ></FontAwesomeIcon>
+            <div className="d-flex flex-column justify-content-between h-100">
+              <div className="d-flex flex-column">
+                <div>
+                  <small>
+                    <b>Web Sensor API</b>
+                  </small>
+                </div>
+                <small>
+                  If you own a smartphone or tablet with onboard sensors you can
+                  use these directly from your browser using the Web Sensors
+                  API.
+                </small>
+              </div>
+
+              <Button
+                id="buttonUploadWeb"
+                block
+                className="mt-2"
+                color="success"
+                outline
+                onClick={() => {
+                  history.push('./uploadWeb');
+                }}
+                style={{ padding: '0px' }}
+              >
+                <small>Collect Data via Web Sensors</small>
               </Button>
             </div>
           </div>
