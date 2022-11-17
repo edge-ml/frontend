@@ -20,6 +20,11 @@ module.exports = {
       ? 'http://ml.edge-ml.ngrok.io/ml/'
       : 'http://localhost:3003/ml/',
 
+  COMPILE_URI:
+    window.location.host === 'edge-ml.ngrok.io'
+      ? 'http://ml.edge-ml.ngrok.io/ml/'
+      : 'http://localhost:3004/compileFirmware',
+
   HTTP_METHODS: {
     GET: 'GET',
     POST: 'POST',
