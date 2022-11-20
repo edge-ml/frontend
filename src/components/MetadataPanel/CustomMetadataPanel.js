@@ -8,7 +8,7 @@ import {
   CardBody,
   CardHeader,
   Button,
-  CardFooter
+  CardFooter,
 } from 'reactstrap';
 import MetaDataEditModal from './MetaDataEditModal';
 import './MetadataPanel.css';
@@ -17,7 +17,7 @@ class CustomMetadataPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      editModalOpen: false
+      editModalOpen: false,
     };
     this.additionalMetadata = this.additionalMetaData.bind(this);
     this.onEdit = this.onEdit.bind(this);
@@ -28,31 +28,33 @@ class CustomMetadataPanel extends Component {
   onCancelEdit() {
     console.log('cancel edit');
     this.setState({
-      editModalOpen: false
+      editModalOpen: false,
     });
   }
 
   onEdit() {
     this.setState({
-      editModalOpen: true
+      editModalOpen: true,
     });
   }
 
-  onSave(newMetaData) {
+  onSave(editableMetaData, nonEditableMetaData) {
     const metaDataAsObj = {};
-    newMetaData
-      .filter(elm => elm.key !== '')
-      .forEach(elm => {
-        metaDataAsObj[elm.key] = elm.data;
-      });
+    for (const metaDataElement of nonEditableMetaData) {
+      metaDataAsObj[metaDataElement.key] = metaDataElement.data;
+    }
+    editableMetaData.forEach((elm) => {
+      metaDataAsObj[elm.key] = elm.data;
+    });
     this.props.onUpdateMetaData({ metaData: metaDataAsObj });
     this.setState({
-      editModalOpen: false
+      editModalOpen: false,
     });
   }
 
   additionalMetaData() {
-    return Object.keys(this.props.metaData).map(key => (
+    let editableMetaData = this.props.filterMetaData(this.props.metaData, true);
+    return Object.keys(editableMetaData).map((key) => (
       <div>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
@@ -62,7 +64,7 @@ class CustomMetadataPanel extends Component {
           </InputGroupAddon>
           <Input
             className="text-right"
-            value={this.props.metaData[key]}
+            value={this.props.metaData[key].value}
             readOnly
           />
         </InputGroup>
@@ -94,12 +96,15 @@ class CustomMetadataPanel extends Component {
             </div>
           </CardFooter>
         </Card>
-        <MetaDataEditModal
-          onClose={this.onCancelEdit}
-          onSave={this.onSave}
-          isOpen={this.state.editModalOpen}
-          metaData={this.props.metaData}
-        ></MetaDataEditModal>
+        {this.state.editModalOpen && (
+          <MetaDataEditModal
+            filterMetaData={this.props.filterMetaData}
+            onClose={this.onCancelEdit}
+            onSave={this.onSave}
+            isOpen={this.state.editModalOpen}
+            metaData={this.props.metaData}
+          ></MetaDataEditModal>
+        )}
       </div>
     );
   }

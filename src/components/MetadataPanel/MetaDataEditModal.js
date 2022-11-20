@@ -13,15 +13,17 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from 'reactstrap';
 import './MetadataPanel.css';
+import cloneDeep from 'lodash/cloneDeep';
 
 class MetaDataEditModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      metaData: []
+      editableMetaData: [],
+      nonEditableMetaData: [],
     };
     this.onAddMetaData = this.onAddMetaData.bind(this);
     this.renderMetaData = this.renderMetaData.bind(this);
@@ -30,67 +32,124 @@ class MetaDataEditModal extends Component {
     this.onEditValue = this.onEditValue.bind(this);
     this.onDeleteMetaData = this.onDeleteMetaData.bind(this);
     this.checkError = this.checkError.bind(this);
+    this.checkAllValid = this.checkAllValid.bind(this);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps !== this.props) {
-      const metaData = Object.keys(this.props.metaData).map(elm => {
-        return { key: elm, data: this.props.metaData[elm] };
-      });
-      this.setState({
-        metaData: metaData
-      });
-    }
+  componentDidMount() {
+    const metaDataDeepCopy = cloneDeep(this.props.metaData);
+
+    const editableMetaData = Object.keys(
+      this.props.filterMetaData(metaDataDeepCopy, true)
+    ).map((elm) => {
+      return {
+        key: elm,
+        data: {
+          value: metaDataDeepCopy[elm].value,
+          deleteableByUser: metaDataDeepCopy[elm].deleteableByUser,
+        },
+      };
+    });
+    const nonEditableMetaData = Object.keys(
+      this.props.filterMetaData(metaDataDeepCopy, false)
+    ).map((elm) => {
+      return {
+        key: elm,
+        data: {
+          value: metaDataDeepCopy[elm].value,
+          deleteableByUser: metaDataDeepCopy[elm].deleteableByUser,
+        },
+      };
+    });
+
+    this.setState({
+      editableMetaData: editableMetaData,
+      nonEditableMetaData: nonEditableMetaData,
+    });
   }
 
   onEditKey(e, idx) {
     const value = e.target.value;
-    const metaData = this.state.metaData;
-    metaData[idx].key = value;
     this.setState({
-      metaData: metaData
+      editableMetaData: this.state.editableMetaData.map(
+        (metaDataEntry, index) => {
+          if (index === idx) {
+            return { ...metaDataEntry, key: value };
+          } else {
+            return metaDataEntry;
+          }
+        }
+      ),
     });
   }
 
   onEditValue(e, idx) {
     const value = e.target.value;
-    const metaData = this.state.metaData;
-    metaData[idx].data = value;
     this.setState({
-      metaData: metaData
+      editableMetaData: this.state.editableMetaData.map(
+        (metaDataEntry, index) => {
+          if (index === idx) {
+            return {
+              ...metaDataEntry,
+              data: {
+                ...metaDataEntry.data,
+                value: value,
+              },
+            };
+          } else {
+            return metaDataEntry;
+          }
+        }
+      ),
     });
   }
 
   onClose() {
-    this.setState({
-      newMetaData: {}
-    });
     this.props.onClose();
   }
 
   onAddMetaData() {
-    var newMetaData = this.state.metaData;
-    newMetaData.push({ key: undefined, data: undefined });
+    const newMetaData = [
+      { key: '', data: { value: undefined, deleteableByUser: true } },
+    ];
     this.setState({
-      newMetaData: newMetaData
+      editableMetaData: this.state.editableMetaData.concat(newMetaData),
     });
   }
 
   onDeleteMetaData(idx) {
-    var newMetaData = this.state.metaData;
-    newMetaData.splice(idx, 1);
     this.setState({
-      metaData: newMetaData
+      editableMetaData: this.state.editableMetaData.filter((_, index) => {
+        return idx != index;
+      }),
     });
   }
 
-  checkError(elm) {
-    const found = this.state.metaData.filter(d => d.key == elm.key);
-    return found.length > 1;
+  checkError(elm, index) {
+    if (elm.key === '') {
+      return true;
+    }
+    //create new array without el[index] without mutation and test if key is already in use in metadata
+    const start = this.state.editableMetaData.slice(0, index);
+    const end = this.state.editableMetaData.slice(index + 1);
+
+    const found =
+      [...start, ...end].filter((d) => d.key == elm.key).length +
+      this.state.nonEditableMetaData.filter((d) => d.key == elm.key).length;
+    return found > 0;
+  }
+
+  checkAllValid() {
+    let containsErrors = false;
+    this.state.editableMetaData.forEach((metaDataEntry, index) => {
+      if (this.checkError(metaDataEntry, index)) {
+        containsErrors = true;
+      }
+    });
+    return containsErrors;
   }
 
   renderMetaData() {
-    return this.state.metaData.map((elm, idx) => (
+    return this.state.editableMetaData.map((elm, idx) => (
       <div key={idx}>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
@@ -98,36 +157,38 @@ class MetaDataEditModal extends Component {
               style={{
                 background: 'lightGrey',
                 borderBottomRightRadius: 0,
-                borderTopRightRadius: 0
+                borderTopRightRadius: 0,
               }}
               value={elm.key}
-              onChange={e => this.onEditKey(e, idx)}
-              invalid={this.checkError(elm)}
+              onChange={(e) => this.onEditKey(e, idx)}
+              invalid={this.checkError(elm, idx)}
               placeholder="key"
             ></Input>
           </InputGroupAddon>
           <Input
             className="shadow-none"
             // style={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
-            value={elm.data}
-            onChange={e => this.onEditValue(e, idx)}
-            invalid={this.checkError(elm)}
+            value={elm.data.value}
+            onChange={(e) => this.onEditValue(e, idx)}
+            invalid={this.checkError(elm, idx)}
             placeholder="data"
           ></Input>
           <InputGroupAddon addonType="prepend">
             <Button
               style={{
                 borderBottomRightRadius: '0.25rem',
-                borderTopRightRadius: '0.25rem'
+                borderTopRightRadius: '0.25rem',
               }}
               color="danger"
-              onClick={e => this.onDeleteMetaData(idx)}
+              onClick={(e) => this.onDeleteMetaData(idx)}
             >
               X
             </Button>
           </InputGroupAddon>
 
-          <FormFeedback>Keys with the same name are not allowed.</FormFeedback>
+          <FormFeedback>
+            Keys with the same name or empty names are not allowed.
+          </FormFeedback>
         </InputGroup>
       </div>
     ));
@@ -139,17 +200,23 @@ class MetaDataEditModal extends Component {
         <ModalHeader>Edit custom Metadata</ModalHeader>
         <ModalBody>
           <div>{this.renderMetaData()}</div>
-          <Button color="primary" onClick={this.onAddMetaData}>
+          <Button color="primary" onClick={() => this.onAddMetaData()}>
             + Add
           </Button>
         </ModalBody>
         <ModalFooter style={{ justifyContent: 'space-between' }}>
-          <Button color="secondary" onClick={this.onClose}>
+          <Button color="secondary" onClick={() => this.onClose()}>
             Cancel
           </Button>
           <Button
             color="primary"
-            onClick={() => this.props.onSave(this.state.metaData)}
+            disabled={this.checkAllValid()}
+            onClick={() =>
+              this.props.onSave(
+                this.state.editableMetaData,
+                this.state.nonEditableMetaData
+              )
+            }
           >
             Save
           </Button>

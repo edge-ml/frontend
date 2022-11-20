@@ -66,7 +66,7 @@ module.exports.getBaseDataset = (sensors, datasetName, deviceInfo) => {
   const sampleRates = {};
   sensors.forEach((sensor) => {
     sampleRates[sensor.name.toString() + '_sampleRate'] =
-      sensor.sampleRate.toString() + ' Hz';
+      getNonDeleteableMetaData(sensor.sampleRate.toString() + ' Hz');
     sensor.parseScheme.forEach((scheme) => {
       timeSeries.push({
         name: sensor.name + '_' + scheme.name,
@@ -83,12 +83,16 @@ module.exports.getBaseDataset = (sensors, datasetName, deviceInfo) => {
     end: new Date().getTime(),
     timeSeries: timeSeries,
     metaData: {
-      deviceName: deviceInfo.name,
-      firmwareVersion: deviceInfo.generation,
+      deviceName: getNonDeleteableMetaData(deviceInfo.name),
+      firmwareVersion: getNonDeleteableMetaData(deviceInfo.generation),
       ...sampleRates,
     },
   };
 };
+
+function getNonDeleteableMetaData(data) {
+  return { value: data, deleteableByUser: false };
+}
 
 module.exports.parseTimeSeriesData = (
   recordedData,

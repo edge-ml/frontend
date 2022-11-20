@@ -6,7 +6,7 @@ import {
   InputGroupText,
   Input,
   CardBody,
-  CardHeader
+  CardHeader,
 } from 'reactstrap';
 import { unixTimeToString } from '../../services/helpers';
 import './MetadataPanel.css';
@@ -15,6 +15,30 @@ class MetadataPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.renderMetadata = this.renderMetadata.bind(this);
+  }
+
+  renderMetadata(metaData) {
+    let nonEditableMetaData = this.props.filterMetaData(
+      this.props.metaData,
+      false
+    );
+    return Object.keys(nonEditableMetaData).map((metaDataEntry) => (
+      <div>
+        <InputGroup>
+          <InputGroupAddon addonType="prepend">
+            <InputGroupText className="timeInputGroupText">
+              {metaDataEntry}
+            </InputGroupText>
+          </InputGroupAddon>
+          <Input
+            className="text-right"
+            value={metaData[metaDataEntry].value}
+            readOnly
+          />
+        </InputGroup>
+      </div>
+    ));
   }
 
   render() {
@@ -84,6 +108,7 @@ class MetadataPanel extends Component {
               <Input className="text-right" value={this.props.user} readOnly />
             </InputGroup>
           </div>
+          {this.renderMetadata(this.props.metaData)}
         </CardBody>
       </Card>
     );
