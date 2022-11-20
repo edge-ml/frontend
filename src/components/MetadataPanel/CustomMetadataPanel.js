@@ -38,23 +38,19 @@ class CustomMetadataPanel extends Component {
     });
   }
 
-  onSave(editableMetaData, nonEditableMetaData) {
+  onSave(editableMetaData) {
     const metaDataAsObj = {};
-    for (const metaDataElement of nonEditableMetaData) {
-      metaDataAsObj[metaDataElement.key] = metaDataElement.data;
-    }
     editableMetaData.forEach((elm) => {
-      metaDataAsObj[elm.key] = elm.data;
+      metaDataAsObj[elm.key] = elm.value;
     });
-    this.props.onUpdateMetaData({ metaData: metaDataAsObj });
+    this.props.onUpdateMetaData(metaDataAsObj);
     this.setState({
       editModalOpen: false,
     });
   }
 
   additionalMetaData() {
-    let editableMetaData = this.props.filterMetaData(this.props.metaData, true);
-    return Object.keys(editableMetaData).map((key) => (
+    return Object.keys(this.props.metaData).map((key) => (
       <div>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
@@ -64,7 +60,7 @@ class CustomMetadataPanel extends Component {
           </InputGroupAddon>
           <Input
             className="text-right"
-            value={this.props.metaData[key].value}
+            value={this.props.metaData[key]}
             readOnly
           />
         </InputGroup>
@@ -98,7 +94,6 @@ class CustomMetadataPanel extends Component {
         </Card>
         {this.state.editModalOpen && (
           <MetaDataEditModal
-            filterMetaData={this.props.filterMetaData}
             onClose={this.onCancelEdit}
             onSave={this.onSave}
             isOpen={this.state.editModalOpen}

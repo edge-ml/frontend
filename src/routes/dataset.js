@@ -94,7 +94,6 @@ class DatasetPage extends Component {
       ctrl: false,
       shift: false,
     };
-    this.filterMetaData = this.filterMetaData.bind(this);
   }
 
   hideLabels() {
@@ -104,8 +103,15 @@ class DatasetPage extends Component {
   }
 
   onUpdateMetaData(updatedDataset) {
+    const updatedMetaData = {
+      editableMetaData: { ...updatedDataset },
+      nonEditableMetaData: {
+        ...this.state.dataset.metaData.nonEditableMetaData,
+      },
+    };
+
     updateDataset(
-      { ...updatedDataset, _id: this.state.dataset._id },
+      { metaData: { ...updatedMetaData }, _id: this.state.dataset._id },
       true
     ).then((newDataset) => {
       this.setState({
@@ -820,14 +826,6 @@ class DatasetPage extends Component {
       });
   }
 
-  filterMetaData(metaData, isEditable) {
-    const asArray = Object.entries(metaData);
-    let result = asArray.filter(
-      ([key, data]) => data.deleteableByUser === isEditable
-    );
-    return Object.fromEntries(result);
-  }
-
   render() {
     if (!this.state.isReady || this.state.controlStates.canEdit === undefined)
       return <Loader loading={true} />;
@@ -972,15 +970,13 @@ class DatasetPage extends Component {
                     end={this.state.dataset.end}
                     user={this.state.dataset.userId}
                     name={this.state.dataset.name}
-                    metaData={this.state.dataset.metaData}
-                    filterMetaData={this.filterMetaData}
+                    metaData={this.state.dataset.metaData.nonEditableMetaData}
                   />
                 </div>
                 <div className="mt-2">
                   <CustomMetadataPanel
-                    metaData={this.state.dataset.metaData}
+                    metaData={this.state.dataset.metaData.editableMetaData}
                     onUpdateMetaData={this.onUpdateMetaData}
-                    filterMetaData={this.filterMetaData}
                   ></CustomMetadataPanel>
                 </div>
                 <div className="mt-2" />

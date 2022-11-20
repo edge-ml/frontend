@@ -23,7 +23,6 @@ class MetaDataEditModal extends Component {
     super(props);
     this.state = {
       editableMetaData: [],
-      nonEditableMetaData: [],
     };
     this.onAddMetaData = this.onAddMetaData.bind(this);
     this.renderMetaData = this.renderMetaData.bind(this);
@@ -38,32 +37,15 @@ class MetaDataEditModal extends Component {
   componentDidMount() {
     const metaDataDeepCopy = cloneDeep(this.props.metaData);
 
-    const editableMetaData = Object.keys(
-      this.props.filterMetaData(metaDataDeepCopy, true)
-    ).map((elm) => {
+    const editableMetaData = Object.keys(metaDataDeepCopy).map((elm) => {
       return {
         key: elm,
-        data: {
-          value: metaDataDeepCopy[elm].value,
-          deleteableByUser: metaDataDeepCopy[elm].deleteableByUser,
-        },
-      };
-    });
-    const nonEditableMetaData = Object.keys(
-      this.props.filterMetaData(metaDataDeepCopy, false)
-    ).map((elm) => {
-      return {
-        key: elm,
-        data: {
-          value: metaDataDeepCopy[elm].value,
-          deleteableByUser: metaDataDeepCopy[elm].deleteableByUser,
-        },
+        value: metaDataDeepCopy[elm],
       };
     });
 
     this.setState({
       editableMetaData: editableMetaData,
-      nonEditableMetaData: nonEditableMetaData,
     });
   }
 
@@ -90,10 +72,7 @@ class MetaDataEditModal extends Component {
           if (index === idx) {
             return {
               ...metaDataEntry,
-              data: {
-                ...metaDataEntry.data,
-                value: value,
-              },
+              value: value,
             };
           } else {
             return metaDataEntry;
@@ -108,9 +87,7 @@ class MetaDataEditModal extends Component {
   }
 
   onAddMetaData() {
-    const newMetaData = [
-      { key: '', data: { value: undefined, deleteableByUser: true } },
-    ];
+    const newMetaData = [{ key: '', value: '' }];
     this.setState({
       editableMetaData: this.state.editableMetaData.concat(newMetaData),
     });
@@ -128,13 +105,11 @@ class MetaDataEditModal extends Component {
     if (elm.key === '') {
       return true;
     }
-    //create new array without el[index] without mutation and test if key is already in use in metadata
+    //create new array without el[index] without mutation and test if key is already in use in editable metadata
     const start = this.state.editableMetaData.slice(0, index);
     const end = this.state.editableMetaData.slice(index + 1);
 
-    const found =
-      [...start, ...end].filter((d) => d.key == elm.key).length +
-      this.state.nonEditableMetaData.filter((d) => d.key == elm.key).length;
+    const found = [...start, ...end].filter((d) => d.key == elm.key).length;
     return found > 0;
   }
 
@@ -168,7 +143,7 @@ class MetaDataEditModal extends Component {
           <Input
             className="shadow-none"
             // style={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
-            value={elm.data.value}
+            value={elm.value}
             onChange={(e) => this.onEditValue(e, idx)}
             invalid={this.checkError(elm, idx)}
             placeholder="data"
@@ -211,12 +186,7 @@ class MetaDataEditModal extends Component {
           <Button
             color="primary"
             disabled={this.checkAllValid()}
-            onClick={() =>
-              this.props.onSave(
-                this.state.editableMetaData,
-                this.state.nonEditableMetaData
-              )
-            }
+            onClick={() => this.props.onSave(this.state.editableMetaData)}
           >
             Save
           </Button>

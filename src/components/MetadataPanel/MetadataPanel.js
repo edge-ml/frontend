@@ -19,11 +19,7 @@ class MetadataPanel extends Component {
   }
 
   renderMetadata(metaData) {
-    let nonEditableMetaData = this.props.filterMetaData(
-      this.props.metaData,
-      false
-    );
-    return Object.keys(nonEditableMetaData).map((metaDataEntry) => (
+    return Object.keys(metaData).map((metaDataEntry) => (
       <div>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
@@ -33,7 +29,7 @@ class MetadataPanel extends Component {
           </InputGroupAddon>
           <Input
             className="text-right"
-            value={metaData[metaDataEntry].value}
+            value={this.props.metaData[metaDataEntry]}
             readOnly
           />
         </InputGroup>
