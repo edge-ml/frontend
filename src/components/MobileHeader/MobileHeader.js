@@ -1,13 +1,19 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import EdgeMLBrandLogo from '../EdgeMLBrandLogo/EdgeMLBrandLogo';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 import './MobileHeader.css';
 
-const MobileHeader = ({}) => (
-  <div className="mobile-header-base d-flex bg-light">
+const MobileHeader = ({ onMenuButton = () => {}, mobileNavbarShown }) => (
+  <div className="mobile-header-base bg-light pr-4">
     <div className="mobile-header-navbar-fitting d-flex justify-content-center align-items-center">
       <EdgeMLBrandLogo />
     </div>
+    <FontAwesomeIcon
+      icon={mobileNavbarShown ? faTimes : faBars}
+      onClick={onMenuButton}
+    />
   </div>
 );
 

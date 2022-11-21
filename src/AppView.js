@@ -3,13 +3,19 @@ import { Container } from 'reactstrap';
 
 import './AppView.css';
 
-const AppView = ({ navbar, content, mobileHeader }) => {
+const AppView = ({
+  navbar,
+  content,
+  mobileHeader,
+  mobileNavbarShown,
+  onMobileNavbarClose,
+}) => {
   return (
     <div className="position-relative">
       <div className="position-fixed mobile-only" style={{ zIndex: 90 }}>
         {mobileHeader}
       </div>
-      <div className="d-flex">
+      <div className={`d-flex` + (mobileNavbarShown ? ' navbar-shown' : '')}>
         <div className="mobile-exclude" style={{ minWidth: 160 }} />
         <div
           className="position-fixed mobile-navbar-slider"

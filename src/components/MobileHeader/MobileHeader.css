@@ -2,6 +2,9 @@
   width: 100vw;
   height: 50px;
   min-height: 50px;
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
 }
 
 .mobile-header-navbar-fitting {

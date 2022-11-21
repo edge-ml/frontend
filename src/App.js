@@ -390,10 +390,12 @@ class App extends Component {
           >
             <Loader loading={!(this.state.isLoggedIn && this.state.projects)}>
               <AppView
+                mobileNavbarShown={this.state.mobileNavbarShown}
+                onMobileNavbarClose={this.onMobileNavbarClose}
                 mobileHeader={
                   <MobileHeader
                     mobileNavbarShown={this.state.mobileNavbarShown}
-                    onMobileNavbarToggle={this.onMobileNavbarToggle}
+                    onMenuButton={this.onMobileNavbarToggle}
                   />
                 }
                 navbar={
@@ -411,8 +413,6 @@ class App extends Component {
                     onProjectClick={this.onProjectClick}
                     navigateTo={this.navigateTo}
                     onProjectEditModal={this.onProjectEditModal}
-                    mobileNavbarShown={this.state.mobileNavbarShown}
-                    onMobileNavbarClose={this.onMobileNavbarClose}
                   ></Navbar>
                 }
                 content={
