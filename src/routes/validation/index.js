@@ -38,19 +38,17 @@ const ValidationPage = () => {
     []
   );
 
-  const [prevTrainingsLength, setPrevTrainingsLength] = useState(0);
-
   useEffect(() => {
-    setPrevTrainingsLength(trainings.length);
     if (trainings.length !== 0) {
       setTimeout(() => {
         trainingsRefresh();
-        if (prevTrainingsLength !== trainings.length) {
-          modelsRefresh();
-        }
       }, REFRESH_INTERVAL);
     }
   }, [trainings, trainingsInvalidate]);
+
+  useEffect(() => {
+    modelsRefresh();
+  }, [trainings.length]);
 
   const viewModel = async (id) => {
     const model = await getTrained(id);
