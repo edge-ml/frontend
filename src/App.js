@@ -396,6 +396,7 @@ class App extends Component {
                   <MobileHeader
                     mobileNavbarShown={this.state.mobileNavbarShown}
                     onMenuButton={this.onMobileNavbarToggle}
+                    projectAvailable={projectAvailable}
                   />
                 }
                 navbar={
