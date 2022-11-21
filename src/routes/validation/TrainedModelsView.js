@@ -116,6 +116,14 @@ export const TrainedModelsView = ({
         []
       ),
       autoResetSortBy: false,
+      initialState: {
+        sortBy: [
+          {
+            id: 'creation_date',
+            desc: true,
+          },
+        ],
+      },
     },
     useSortBy,
     useRowSelect
