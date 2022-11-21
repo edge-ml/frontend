@@ -115,6 +115,7 @@ export const TrainedModelsView = ({
         ],
         []
       ),
+      autoResetSortBy: false,
     },
     useSortBy,
     useRowSelect
