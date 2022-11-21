@@ -8,7 +8,7 @@ export const SensorList = ({
   setSensorRate,
   disabled = false,
 }) => (
-  <Table>
+  <Table responsive>
     <thead className="bg-light">
       <tr>
         <th></th>
