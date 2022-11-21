@@ -69,3 +69,9 @@
   border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
 }
+
+.data-upload-item {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  justify-items: center;
+}

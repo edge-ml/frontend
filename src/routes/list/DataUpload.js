@@ -25,12 +25,9 @@ const DataUpload = (props) => {
             gap: '16px', // bootstrap $spacer, i.e. m-3, p-3 etc.
           }}
         >
-          <div
-            className="d-flex flex-row justify-content-center align-items-start"
-            style={{ flex: '1 1 0px' }}
-          >
+          <div className="data-upload-item" style={{ flex: '1 1 0px' }}>
             <FontAwesomeIcon
-              className="mr-3 mt-1"
+              className="mt-1"
               icon={faMicrochip}
               style={{ fontSize: 'x-large' }}
             ></FontAwesomeIcon>
@@ -83,12 +80,9 @@ const DataUpload = (props) => {
               </Button>
             </div>
           </div>
-          <div
-            className="d-flex flex-row justify-content-center align-items-start"
-            style={{ flex: '1 1 0px' }}
-          >
+          <div className="data-upload-item" style={{ flex: '1 1 0px' }}>
             <FontAwesomeIcon
-              className="mr-3 mt-1"
+              className="mt-1"
               icon={faFile}
               style={{ fontSize: 'x-large' }}
             ></FontAwesomeIcon>
@@ -128,12 +122,9 @@ const DataUpload = (props) => {
               </Button>
             </div>
           </div>
-          <div
-            className="d-flex flex-row justify-content-center align-items-start mr-5"
-            style={{ flex: '1 1 0px' }}
-          >
+          <div className="data-upload-item" style={{ flex: '1 1 0px' }}>
             <FontAwesomeIcon
-              className="mr-3 mt-1"
+              className="mt-1"
               icon={faCode}
               style={{ fontSize: 'x-large' }}
             ></FontAwesomeIcon>
@@ -177,12 +168,9 @@ const DataUpload = (props) => {
               </Button>
             </div>
           </div>
-          <div
-            className="d-flex flex-row justify-content-center align-items-start"
-            style={{ flex: '1 1 0px' }}
-          >
+          <div className="data-upload-item" style={{ flex: '1 1 0px' }}>
             <FontAwesomeIcon
-              className="mr-3 mt-1"
+              className="mt-1"
               icon={faMobileAlt}
               style={{ fontSize: 'x-large' }}
             ></FontAwesomeIcon>
