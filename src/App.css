@@ -290,13 +290,13 @@ div.card {
 }
 
 .hyperparameter-input-container {
-  width: 150px;
+  width: auto;
   height: auto;
   border-radius: 0px 4px 4px 0px;
 }
 
 .hyperparameter-input-container-multi {
-  width: 350px;
+  width: auto;
   height: auto;
 }
 

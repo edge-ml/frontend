@@ -851,11 +851,11 @@ class DatasetPage extends Component {
       0
     );
     return (
-      <div style={{ position: 'relative' }}>
+      <div className="w-100 position-relative">
         {' '}
         <Fade in={this.state.fadeIn}>
           <div>
-            <Row className="pt-3">
+            <Row className="pt-3 m-0">
               <Col
                 ref={this.middle_col_width}
                 onMouseUp={this.mouseUpHandler}
@@ -863,7 +863,7 @@ class DatasetPage extends Component {
                 lg={9}
                 className="pr-lg-0"
               >
-                <div>
+                <div className="position-relative">
                   <LabelingSelectionPanel
                     objectType={'labelings'}
                     history={this.props.history}
@@ -908,10 +908,10 @@ class DatasetPage extends Component {
                     block
                     outline
                     onClick={this.onOpenFuseTimeSeriesModal}
+                    className="mb-4"
                     style={{
                       zIndex: 1,
                       position: 'relative',
-                      marginBottom: '240px',
                     }}
                   >
                     + Fuse Multiple Time Series

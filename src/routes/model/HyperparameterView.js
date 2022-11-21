@@ -23,7 +23,7 @@ export const HyperparameterView = ({
               .map((h) => {
                 if (model.hyperparameters[h].parameter_type === 'number') {
                   return (
-                    <Col className="col-4 pl-0" style={{ minWidth: '400px' }}>
+                    <Col className="col-md-4 col-12 pl-0">
                       <NumberHyperparameter
                         {...model.hyperparameters[h]}
                         id={'input_' + model.hyperparameters[h].parameter_name}
@@ -42,7 +42,7 @@ export const HyperparameterView = ({
                   model.hyperparameters[h].parameter_type === 'selection'
                 ) {
                   return (
-                    <Col className="col-4 pl-0" style={{ minWidth: '400px' }}>
+                    <Col className="col-md-4 col-12 pl-0">
                       <SelectionHyperparameter
                         {...model.hyperparameters[h]}
                         id={'input_' + model.hyperparameters[h].parameter_name}

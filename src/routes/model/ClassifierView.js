@@ -34,7 +34,7 @@ export const ClassifierView = ({
     <div className="card h-100" style={{ border: '0px solid white' }}>
       <div className="card-body h-100 d-flex flex-column align-items-start flex-column justify-content-between">
         <div className="d-flex flex-row justify-content-between w-100">
-          <h4>Classifier</h4>
+          <h4 className="mr-2">Classifier</h4>
           <Select
             options={models.map((m) => {
               return { value: m.id, label: m.name };
@@ -42,12 +42,6 @@ export const ClassifierView = ({
             value={modelSelection}
             onChange={changeModelSelection}
             isSearchable={false}
-            styles={{
-              valueContainer: () => ({
-                width: 200,
-                height: 25,
-              }),
-            }}
           ></Select>
         </div>
         <div
@@ -58,7 +52,7 @@ export const ClassifierView = ({
             backgroundColor: 'lightgray',
           }}
         ></div>
-        <InputGroup style={{ width: '350px' }}>
+        <InputGroup style={{ maxWidth: '350px' }}>
           <InputGroupAddon addonType="prepend">Model Name</InputGroupAddon>
           <Input
             type={'text'}
