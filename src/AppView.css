@@ -1,3 +1,5 @@
+/* 768 corresponds to md in bootstrap grid */
+
 @media (min-width: 768px) {
   .mobile-only {
     display: none;

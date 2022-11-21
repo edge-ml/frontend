@@ -23,10 +23,10 @@ const AppView = ({
         >
           {navbar}
         </div>
-        <Container>
+        <div>
           <div className="mobile-only" style={{ minHeight: 50 }} />
           {content}
-        </Container>
+        </div>
       </div>
     </div>
   );
