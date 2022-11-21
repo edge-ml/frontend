@@ -5,7 +5,7 @@ import DatasetTableEntry from './DatasetTableEntry';
 const DatasetTable = (props) => {
   return (
     <Fragment>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between flex-md-row flex-column align-content-baseline">
         <div className="font-weight-bold h4">Datasets</div>
         <div>
           <Button
@@ -41,8 +41,8 @@ const DatasetTable = (props) => {
           </Button>
         </div>
       </div>
-      <div className="divider"></div>
-      <div>
+      <div className="divider my-2"></div>
+      <div className="w-100 position-relative">
         {props.datasets.map((dataset, index) => (
           <DatasetTableEntry
             dataset={dataset}
