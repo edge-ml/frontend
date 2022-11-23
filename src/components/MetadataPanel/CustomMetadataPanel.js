@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import {
   Card,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
   CardBody,
   CardHeader,
   Button,
   CardFooter,
+  Table,
 } from 'reactstrap';
 import MetaDataEditModal from './MetaDataEditModal';
 import './MetadataPanel.css';
@@ -19,7 +16,7 @@ class CustomMetadataPanel extends Component {
     this.state = {
       editModalOpen: false,
     };
-    this.additionalMetadata = this.additionalMetaData.bind(this);
+    this.additionalMetaDataTable = this.additionalMetaDataTable.bind(this);
     this.onEdit = this.onEdit.bind(this);
     this.onCancelEdit = this.onCancelEdit.bind(this);
     this.onSave = this.onSave.bind(this);
@@ -49,23 +46,25 @@ class CustomMetadataPanel extends Component {
     });
   }
 
-  additionalMetaData() {
-    return Object.keys(this.props.metaData).map((key) => (
-      <div>
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText className="timeInputGroupText">
-              {key}
-            </InputGroupText>
-          </InputGroupAddon>
-          <Input
-            className="text-right"
-            value={this.props.metaData[key]}
-            readOnly
-          />
-        </InputGroup>
-      </div>
-    ));
+  additionalMetaDataTable() {
+    return (
+      <Table striped bordered responsive size="sm">
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.keys(this.props.metaData).map((key, index) => (
+            <tr>
+              <td>{key}</td>
+              <td>{this.props.metaData[key]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    );
   }
 
   render() {
@@ -78,7 +77,7 @@ class CustomMetadataPanel extends Component {
           <CardBody>
             {Object.keys(this.props.metaData).length ? (
               <div>
-                <div>{this.additionalMetaData()}</div>
+                <div>{this.additionalMetaDataTable()}</div>
               </div>
             ) : (
               <div>No custom metadata</div>

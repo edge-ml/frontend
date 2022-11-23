@@ -1,13 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Card,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
-  CardBody,
-  CardHeader,
-} from 'reactstrap';
+import { Card, CardBody, CardHeader, Table } from 'reactstrap';
 import { unixTimeToString } from '../../services/helpers';
 import './MetadataPanel.css';
 
@@ -20,20 +12,10 @@ class MetadataPanel extends Component {
 
   renderMetadata(metaData) {
     return Object.keys(metaData).map((metaDataEntry) => (
-      <div>
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText className="timeInputGroupText">
-              {metaDataEntry}
-            </InputGroupText>
-          </InputGroupAddon>
-          <Input
-            className="text-right"
-            value={this.props.metaData[metaDataEntry]}
-            readOnly
-          />
-        </InputGroup>
-      </div>
+      <tr>
+        <td>{metaDataEntry}</td>
+        <td>{this.props.metaData[metaDataEntry]}</td>
+      </tr>
     ));
   }
 
@@ -44,47 +26,33 @@ class MetadataPanel extends Component {
           <b>Metadata</b>
         </CardHeader>
         <CardBody>
-          <div>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  Name
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input className="text-right" value={this.props.name} readOnly />
-            </InputGroup>
-          </div>
-          <div>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  Start
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                className="text-right"
-                value={
-                  this.props.start ? unixTimeToString(this.props.start) : ''
-                }
-                readOnly
-              />
-            </InputGroup>
-          </div>
-          <div>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  End
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                className="text-right"
-                value={this.props.end ? unixTimeToString(this.props.end) : ''}
-                readOnly
-              />
-            </InputGroup>
-          </div>
-          {this.renderMetadata(this.props.metaData)}
+          <Table striped bordered responsive size="sm">
+            <thead>
+              <tr>
+                <th>Attribute</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Name</td>
+                <td>{this.props.name}</td>
+              </tr>
+              <tr>
+                <td>Start</td>
+                <td>
+                  {this.props.start ? unixTimeToString(this.props.start) : ''}
+                </td>
+              </tr>
+              <tr>
+                <td>End</td>
+                <td>
+                  {this.props.end ? unixTimeToString(this.props.end) : ''}
+                </td>
+              </tr>
+              {this.renderMetadata(this.props.metaData)}
+            </tbody>
+          </Table>
         </CardBody>
       </Card>
     );
