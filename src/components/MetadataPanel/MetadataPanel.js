@@ -58,16 +58,6 @@ class MetadataPanel extends Component {
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText className="timeInputGroupText">
-                  Id
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input className="text-right" value={this.props.id} readOnly />
-            </InputGroup>
-          </div>
-          <div>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
                   Start
                 </InputGroupText>
               </InputGroupAddon>
@@ -92,16 +82,6 @@ class MetadataPanel extends Component {
                 value={this.props.end ? unixTimeToString(this.props.end) : ''}
                 readOnly
               />
-            </InputGroup>
-          </div>
-          <div>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  User
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input className="text-right" value={this.props.user} readOnly />
             </InputGroup>
           </div>
           {this.renderMetadata(this.props.metaData)}
