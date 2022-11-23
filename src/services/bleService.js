@@ -80,7 +80,7 @@ module.exports.getBaseDataset = (sensors, datasetName, deviceInfo) => {
   const metaData = { editableMetaData: {}, nonEditableMetaData: {} };
   metaData.nonEditableMetaData = {
     deviceName: deviceInfo.name,
-    firmwareVersion: deviceInfo.generation,
+    firmwareVersion: deviceInfo.installedFWVersion,
     ...sampleRates,
   };
 

@@ -235,7 +235,10 @@ class UploadBLE extends Component {
     );
     console.log(deviceInfo);
     this.setState({
-      connectedDeviceData: deviceInfo.device,
+      connectedDeviceData: {
+        ...deviceInfo.device,
+        installedFWVersion: deviceGeneration,
+      },
       deviceSensors: prepareSensorBleObject(deviceInfo.sensors),
     });
     return [bleDevice, primaryService];
