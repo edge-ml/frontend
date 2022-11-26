@@ -102,7 +102,7 @@ class MetaDataEditModal extends Component {
   }
 
   checkError(elm, index) {
-    if (elm.key === '') {
+    if (elm.key === '' || elm.value === '') {
       return true;
     }
     //create new array without el[index] without mutation and test if key is already in use in editable metadata
@@ -162,7 +162,8 @@ class MetaDataEditModal extends Component {
           </InputGroupAddon>
 
           <FormFeedback>
-            Keys with the same name or empty names are not allowed.
+            Attributes with the same name, empty attributes or empty values are
+            not allowed.
           </FormFeedback>
         </InputGroup>
       </div>
