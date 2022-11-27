@@ -477,9 +477,17 @@ class EditLabelingModal extends Component {
         </ModalBody>
         <ModalFooter>
           <Button
+            id="buttonClose"
+            color="secondary"
+            className="m-1 mr-auto"
+            onClick={this.onCloseModal}
+          >
+            Cancel
+          </Button>
+          <Button
             id="buttonSaveLabeling"
             color="primary"
-            className="m-1 mr-auto"
+            className="m-1"
             onClick={this.onClickingSave}
             disabled={
               !this.checkAllowSaving() ||
@@ -488,14 +496,6 @@ class EditLabelingModal extends Component {
             }
           >
             Save
-          </Button>{' '}
-          <Button
-            id="buttonClose"
-            color="secondary"
-            className="m-1"
-            onClick={this.onCloseModal}
-          >
-            Cancel
           </Button>
         </ModalFooter>
       </Modal>
