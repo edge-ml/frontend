@@ -59,7 +59,7 @@ function BlePanelConnectDevice(props) {
                 the latest version by clicking on the button.
                 <br />
                 Installed version:{' '}
-                <strong>{props.connectedDeviceData.generation}</strong>
+                <strong>{props.connectedDeviceData.installedFWVersion}</strong>
                 <br />
                 Latest version: <strong>{props.latestEdgeMLVersion}</strong>
               </div>
