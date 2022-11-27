@@ -74,15 +74,15 @@ class UploadBLE extends Component {
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
-    this.recordInterval;
+    this.recordInterval = null;
     this.currentData = [];
     this.sensorKeys = [];
 
     // Global vars to manage ble connnection
     this.dfuServiceUuid = '34c2e3b8-34aa-11eb-adc1-0242ac120002';
 
-    this.sensorConfigCharacteristic;
-    this.sensorDataCharacteristic;
+    this.sensorConfigCharacteristic = null;
+    this.sensorDataCharacteristic = null;
     this.sensorServiceUuid = '34c2e3bb-34aa-11eb-adc1-0242ac120002';
     this.sensorConfigCharacteristicUuid =
       '34c2e3bd-34aa-11eb-adc1-0242ac120002';

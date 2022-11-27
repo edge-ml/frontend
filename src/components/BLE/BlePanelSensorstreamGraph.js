@@ -12,11 +12,6 @@ class BlePanelSensorstreamGraph extends Component {
     this.handleStopLiveUpdate = this.handleStopLiveUpdate.bind(this);
     this.updateLiveData = this.updateLiveData.bind(this);
 
-    this.highcharts_index; // index of the highcharts chart
-    this.streaming_seconds;
-    this.interval_length;
-    this.datastream_length;
-
     if (this.props.fullSampleRate) {
       // show sensor stream at full sample rate
       this.streaming_seconds = 3; // last 3 seconds of sensor data are streamed
