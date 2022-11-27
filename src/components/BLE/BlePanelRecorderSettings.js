@@ -12,6 +12,8 @@ import classNames from 'classnames';
 
 import './BleActivated.css';
 
+import { Card, CardBody, CardHeader } from 'reactstrap';
+
 function BlePanelRecorderSettings(props) {
   const [nameError, setNameError] = useState(false);
   const [samplingRateError, setSamplingRateError] = useState(false);
@@ -51,12 +53,14 @@ function BlePanelRecorderSettings(props) {
   };
 
   return (
-    <div
+    <Card
+      className="text-left"
       style={props.disabled ? { opacity: '0.4', pointerEvents: 'none' } : null}
     >
-      <div className="shadow p-3 mb-5 bg-white rounded">
-        <div style={{ fontSize: 'x-large' }}>3. Record dataset</div>
-        <div className="panelDivider"></div>
+      <CardHeader>
+        <h4>3. Record dataset</h4>
+      </CardHeader>
+      <CardBody>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>{'Dataset name'}</InputGroupText>
@@ -95,7 +99,7 @@ function BlePanelRecorderSettings(props) {
             Samplerate must be between 0 and 50
           </FormFeedback>
         </InputGroup>*/}
-        <div className="panelDivider"></div>
+        <hr />
         <div
           style={{
             display: 'flex',
@@ -162,8 +166,8 @@ function BlePanelRecorderSettings(props) {
             Showing sensor data at full sample rate can affect performance.
           </small>
         ) : null}
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 }
 

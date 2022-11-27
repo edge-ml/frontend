@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react';
-import { Container } from 'reactstrap';
 
 import './AppView.css';
 
@@ -25,7 +24,7 @@ const AppView = ({
         >
           {navbar}
         </div>
-        <div className="w-100 position-relative">
+        <div className="container-container position-relative">
           <div className="mobile-only" style={{ minHeight: 50 }} />
           {content}
         </div>

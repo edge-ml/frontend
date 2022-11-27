@@ -4,6 +4,8 @@ import React, { Component } from 'react';
 import Highcharts from 'highcharts/highstock';
 import BlePanelSensorstreamGraph from './BlePanelSensorstreamGraph';
 
+import { Card, CardBody, CardHeader } from 'reactstrap';
+
 class BlePanelRecordingDisplay extends Component {
   constructor(props) {
     super(props);
@@ -73,29 +75,32 @@ class BlePanelRecordingDisplay extends Component {
 
   render() {
     return (
-      <div>
-        <div className="panelHeader">4. Recording</div>
-        <div className="panelDivider"></div>
-        <ul>
-          {Array.from(this.props.selectedSensors).map((sensorKey) => {
-            return (
-              <li key={sensorKey}>
-                <BlePanelSensorstreamGraph
-                  options={
-                    this.allOptions[
-                      this.props.sensorKeys.indexOf(sensorKey.toString())
-                    ]
-                  }
-                  fullSampleRate={this.props.fullSampleRate}
-                  sampleRate={this.props.deviceSensors[sensorKey].sampleRate}
-                  lastData={this.props.lastData}
-                  index={this.props.sensorKeys.indexOf(sensorKey.toString())}
-                ></BlePanelSensorstreamGraph>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+      <Card className="text-left">
+        <CardHeader>
+          <h4>4. Recording</h4>
+        </CardHeader>
+        <CardBody>
+          <ul>
+            {Array.from(this.props.selectedSensors).map((sensorKey) => {
+              return (
+                <li key={sensorKey}>
+                  <BlePanelSensorstreamGraph
+                    options={
+                      this.allOptions[
+                        this.props.sensorKeys.indexOf(sensorKey.toString())
+                      ]
+                    }
+                    fullSampleRate={this.props.fullSampleRate}
+                    sampleRate={this.props.deviceSensors[sensorKey].sampleRate}
+                    lastData={this.props.lastData}
+                    index={this.props.sensorKeys.indexOf(sensorKey.toString())}
+                  ></BlePanelSensorstreamGraph>
+                </li>
+              );
+            })}
+          </ul>
+        </CardBody>
+      </Card>
     );
   }
 }
