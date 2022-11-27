@@ -1,9 +1,10 @@
-const apiConsts = require('./ApiConstants');
-const ax = require('axios');
-const axios = ax.create();
-const getProjects = require('./ProjectService').getProjects;
+import apiConsts from './ApiConstants';
+import ax from 'axios';
+import { getProjects } from './ProjectService';
 
-module.exports.getDevices = () => {
+const axios = ax.create();
+
+export const getDevices = () => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -12,13 +13,13 @@ module.exports.getDevices = () => {
         apiConsts.API_ENDPOINTS.DEVICE
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
 /*
-module.exports.getDeviceById = (deviceId) => {
+export const getDeviceById = (deviceId) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -35,7 +36,7 @@ module.exports.getDeviceById = (deviceId) => {
   });
 };*/
 
-module.exports.getDeviceByNameAndGeneration = (name, generation) => {
+export const getDeviceByNameAndGeneration = (name, generation) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -44,9 +45,9 @@ module.exports.getDeviceByNameAndGeneration = (name, generation) => {
         apiConsts.API_ENDPOINTS.DEVICE + `/${name}` + `/${generation}`
       )
     )
-      .then(data => {
+      .then((data) => {
         resolve(data.data);
       })
-      .catch(err => reject(err.response));
+      .catch((err) => reject(err.response));
   });
 };

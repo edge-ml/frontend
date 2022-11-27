@@ -25,7 +25,7 @@ import { ga_connectBluetooth } from '../services/AnalyticsService';
 import { getLatestEdgeMLVersionNumber } from '../services/ApiServices/ArduinoFirmwareServices';
 import DFUModal from '../components/BLE/DFUModal/DFUModal';
 
-const semverLt = require('semver/functions/lt');
+import semverLt from 'semver/functions/lt';
 
 class UploadBLE extends Component {
   constructor(props) {

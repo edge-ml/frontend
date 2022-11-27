@@ -1,9 +1,10 @@
-var apiConsts = require('./ApiConstants');
-const ax = require('axios');
+import apiConsts from './ApiConstants';
+import ax from 'axios';
+
 const axios = ax.create();
 const axiosNoToken = ax.create();
 
-module.exports.loginUser = function (userEMail, password) {
+export const loginUser = function (userEMail, password) {
   return new Promise((resolve, reject) => {
     axiosNoToken(
       apiConsts.generateApiRequest(
@@ -12,16 +13,16 @@ module.exports.loginUser = function (userEMail, password) {
         apiConsts.AUTH_ENDPOINTS.LOGIN,
         {
           email: userEMail,
-          password: password
+          password: password,
         }
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.deleteUser = userEMail => {
+export const deleteUser = (userEMail) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -29,16 +30,16 @@ module.exports.deleteUser = userEMail => {
         apiConsts.AUTH_URI,
         apiConsts.AUTH_ENDPOINTS.DELETE,
         {
-          email: userEMail
+          email: userEMail,
         }
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.registerNewUser = function (userEMail, password, userName) {
+export const registerNewUser = function (userEMail, password, userName) {
   return new Promise((resolve, reject) => {
     axiosNoToken(
       apiConsts.generateApiRequest(
@@ -48,16 +49,16 @@ module.exports.registerNewUser = function (userEMail, password, userName) {
         {
           email: userEMail,
           password: password,
-          userName: userName
+          userName: userName,
         }
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response.data.error));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response.data.error));
   });
 };
 
-module.exports.subscribeUsers = callback => {
+export const subscribeUsers = (callback) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -66,12 +67,12 @@ module.exports.subscribeUsers = callback => {
         apiConsts.AUTH_ENDPOINTS.USERS
       )
     )
-      .then(res => callback(res.data))
+      .then((res) => callback(res.data))
       .catch(() => callback([]));
   });
 };
 
-module.exports.init2FA = () => {
+export const init2FA = () => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -80,12 +81,12 @@ module.exports.init2FA = () => {
         apiConsts.AUTH_ENDPOINTS.INIT2FA
       )
     )
-      .then(res => resolve(res.data))
-      .catch(err => reject(err.response));
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.verify2FA = token => {
+export const verify2FA = (token) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -95,12 +96,12 @@ module.exports.verify2FA = token => {
         { token: token }
       )
     )
-      .then(res => resolve(res.data))
-      .catch(err => reject(err.response));
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.reset2FA = () => {
+export const reset2FA = () => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -109,12 +110,12 @@ module.exports.reset2FA = () => {
         apiConsts.AUTH_ENDPOINTS.RESET2FA
       )
     )
-      .then(res => resolve(res.data))
-      .catch(err => reject(err.response));
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getUserMail = userIDs => {
+export const getUserMail = (userIDs) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -124,16 +125,16 @@ module.exports.getUserMail = userIDs => {
         userIDs
       )
     )
-      .then(res => {
+      .then((res) => {
         resolve(res.data[0]);
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.response);
       });
   });
 };
 
-module.exports.changeUserMail = newUserMail => {
+export const changeUserMail = (newUserMail) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -143,12 +144,12 @@ module.exports.changeUserMail = newUserMail => {
         { email: newUserMail }
       )
     )
-      .then(res => resolve(res.data))
-      .catch(err => reject(err.response.data));
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err.response.data));
   });
 };
 
-module.exports.changeUserName = newUserName => {
+export const changeUserName = (newUserName) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -158,16 +159,16 @@ module.exports.changeUserName = newUserName => {
         { userName: newUserName }
       )
     )
-      .then(data => {
+      .then((data) => {
         resolve(data.data);
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.response.data);
       });
   });
 };
 
-module.exports.changeUserPassword = (currentPassword, newPassword) => {
+export const changeUserPassword = (currentPassword, newPassword) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -177,12 +178,12 @@ module.exports.changeUserPassword = (currentPassword, newPassword) => {
         { password: currentPassword, newPassword: newPassword }
       )
     )
-      .then(res => resolve(res.data))
-      .catch(err => reject(err.response.data));
+      .then((res) => resolve(res.data))
+      .catch((err) => reject(err.response.data));
   });
 };
 
-module.exports.getUserIds = userNames => {
+export const getUserIds = (userNames) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -192,14 +193,14 @@ module.exports.getUserIds = userNames => {
         userNames
       )
     )
-      .then(data => {
+      .then((data) => {
         resolve(data.data);
       })
-      .catch(err => reject(err.response));
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getUserNameSuggestions = userName => {
+export const getUserNameSuggestions = (userName) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -209,7 +210,7 @@ module.exports.getUserNameSuggestions = userName => {
         { userName: userName }
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response.data.error));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response.data.error));
   });
 };

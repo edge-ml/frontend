@@ -1,3 +1,5 @@
+import ax from 'axios';
+
 export const validateEmail = (email) => {
   const re =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -5,7 +7,6 @@ export const validateEmail = (email) => {
 };
 
 export const getServerTime = () => {
-  const ax = require('axios');
   const axios = ax.create();
   return new Promise((resolve, reject) => {
     axios

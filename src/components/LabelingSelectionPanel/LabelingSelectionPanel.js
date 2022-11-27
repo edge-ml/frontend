@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Card, CardBody, Button } from 'reactstrap';
 import './LabelingSelectionPanel.css';
+import classNames from 'classnames';
 
 class LabelingSelectionPanel extends Component {
   handleLabelingClicked(e, id) {
@@ -9,8 +10,6 @@ class LabelingSelectionPanel extends Component {
   }
 
   render() {
-    var classNames = require('classnames');
-
     return (
       <Card id="labelingSelectionPanel" className="LabelingSelectionPanel">
         <CardBody className="text-left p-1">
