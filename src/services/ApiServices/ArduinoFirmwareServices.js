@@ -1,8 +1,9 @@
-var apiConsts = require('./ApiConstants');
-const ax = require('axios');
+import apiConsts from './ApiConstants';
+import ax from 'axios';
+
 const axios = ax.create();
 
-module.exports.getArduinoFirmware = function (deviceName) {
+export const getArduinoFirmware = function (deviceName) {
   const request = apiConsts.generateApiRequest(
     apiConsts.HTTP_METHODS.GET,
     apiConsts.API_URI,
@@ -18,7 +19,7 @@ module.exports.getArduinoFirmware = function (deviceName) {
   });
 };
 
-module.exports.getLatestEdgeMLVersionNumber = function () {
+export const getLatestEdgeMLVersionNumber = function () {
   return new Promise((resolve, reject) => {
     axios('https://api.github.com/repos/edge-ml/EdgeML-Arduino/tags')
       .then((res) => {

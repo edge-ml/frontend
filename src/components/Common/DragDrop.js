@@ -37,7 +37,7 @@ class DragDrop extends Component {
             cursor: 'pointer !important',
             border: '3px dashed black',
             borderRadius: '0.25rem',
-            height: 'inherit'
+            height: 'inherit',
           }}
           onDrop={this.onDrop}
           onDragOver={this.onCancel}
@@ -46,15 +46,16 @@ class DragDrop extends Component {
           <input
             onDrop={this.onDrop}
             onDragOver={this.onCancel}
-            onDragEnter={e => {
-              e.preventDefault(), e.stopPropagation();
+            onDragEnter={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
             }}
             style={{
               cursor: 'pointer',
               opacity: 0,
               position: 'absolute',
               boxSizing: 'inherit',
-              height: 'inherit'
+              height: 'inherit',
             }}
             id="fileInput"
             data-testid="fileInput"
@@ -75,7 +76,7 @@ class DragDrop extends Component {
               alignItems: 'center',
               height: 'inherit',
               fontSize: 'larger',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
             }}
           >
             {' '}
