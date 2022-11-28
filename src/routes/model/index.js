@@ -41,6 +41,8 @@ class ModelPage extends Component {
       showAdvanced: false,
       requestInProgress: false,
       customMetaData: undefined,
+      sensorSamplingRates: undefined,
+      sensorSelectedMap: undefined,
       currentValidationMethod: validationSelectOptions.none.value,
       validationMethods: [
         validationSelectOptions.none.value,
@@ -53,6 +55,7 @@ class ModelPage extends Component {
     this.initComponent = this.initComponent.bind(this);
     this.handleHyperparameterChange =
       this.handleHyperparameterChange.bind(this);
+    this.clickSampleRate = this.clickSampleRate.bind(this);
   }
 
   formatHyperparameters(hyperparameters) {
@@ -96,6 +99,23 @@ class ModelPage extends Component {
     ])
       .then((result) => {
         const customMetaData = result[3];
+        const sensorStreams = result[1].flat();
+
+        const individualSensorStreams = Array.from(
+          new Set(sensorStreams.map((elm) => elm.name))
+        );
+
+        const sensorSamplingRates = {};
+        individualSensorStreams.forEach((elm) => {
+          sensorSamplingRates[elm] = [];
+        });
+        sensorStreams.forEach((elm) => {
+          const sRate = Math.round(elm.samplingRate);
+          if (!sensorSamplingRates[elm.name].includes(sRate)) {
+            sensorSamplingRates[elm.name].push(sRate);
+          }
+        });
+
         this.setState({
           selectedLabeling: result[0].labelings[0]
             ? result[0].labelings[0]._id
@@ -120,7 +140,12 @@ class ModelPage extends Component {
             (acc, labeling) => ({ ...acc, [labeling._id]: 'Other' }),
             {}
           ),
-          sensorStreams: result[1] ? result[1] : [],
+          sensorStreams: individualSensorStreams ? individualSensorStreams : [],
+          sensorSamplingRates: sensorSamplingRates,
+          sensorSelectedMap: individualSensorStreams.reduce(
+            (map, elm) => ((map[elm] = []), map),
+            {}
+          ),
           models: result[2],
           selectedModelId: result[2][0] ? result[2][0].id : '',
           modelSelection: result[2][0]
@@ -134,6 +159,18 @@ class ModelPage extends Component {
       })
       .catch((err) => console.log(err));
   }
+
+  clickSampleRate = (sensor, sampleRate, checked) => {
+    const oldMap = this.state.sensorSelectedMap;
+    if (checked) {
+      oldMap[sensor].push(sampleRate);
+    } else {
+      oldMap[sensor].splice(oldMap[sensor].indexOf(sampleRate), 1);
+    }
+    this.setState({
+      sensorSelectedMap: oldMap,
+    });
+  };
 
   handleTrainButton = (e) => {
     const resetAlert = () => {
@@ -213,9 +250,13 @@ class ModelPage extends Component {
         break;
     }
 
+    const selectedTimeSeries = Object.keys(this.state.sensorSelectedMap).filter(
+      (elm) => this.state.sensorSelectedMap[elm].length != 0
+    );
     train({
       model_id: this.state.selectedModelId,
-      selected_timeseries: this.state.selectedSensorStreams,
+      selected_timeseries: selectedTimeSeries,
+      sampling_rate: this.state.sensorSelectedMap[selectedTimeSeries[0]][0],
       target_labeling: this.state.selectedLabeling,
       labels: selectedLabels,
       hyperparameters: this.state.hyperparameters,
@@ -385,6 +426,9 @@ class ModelPage extends Component {
               <div className="col-12 col-xl-4 mt-4">
                 <TargetSensorsView
                   sensorStreams={this.state.sensorStreams}
+                  clickSampleRate={this.clickSampleRate}
+                  sensorSelectedMap={this.state.sensorSelectedMap}
+                  sensorSamplingRates={this.state.sensorSamplingRates}
                   selectedSensorStreams={this.state.selectedSensorStreams}
                   toggleSelectedSensorStreams={
                     this.handleSelectedSensorStreamToggle
