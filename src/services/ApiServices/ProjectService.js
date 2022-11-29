@@ -36,9 +36,11 @@ export const createProject = (project) => {
         )
       )
         .then(() => {
-          this.getProjects().then((data) => resolve(data));
+          getProjects().then((data) => resolve(data));
         })
-        .catch((err) => reject(err.response.data.error));
+        .catch((err) => {
+          reject(err.response.data.error);
+        });
     });
   });
 };
@@ -58,7 +60,7 @@ export const updateProject = (project) => {
           )
         )
           .then(() => {
-            this.getProjects().then((data) => resolve(data));
+            getProjects().then((data) => resolve(data));
           })
           .catch((err) => {
             reject(err.response.data.error);
@@ -80,7 +82,7 @@ export const deleteProject = (project) => {
       )
     )
       .then(() => {
-        this.getProjects().then((data) => resolve(data));
+        getProjects().then((data) => resolve(data));
       })
       .catch((err) => reject(err.response));
   });
@@ -96,7 +98,7 @@ export const leaveProject = (project) => {
       )
     )
       .then(() => {
-        this.getProjects().then((data) => resolve(data));
+        getProjects().then((data) => resolve(data));
       })
       .catch((err) => reject(err.response));
   });
