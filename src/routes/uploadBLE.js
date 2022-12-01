@@ -234,7 +234,7 @@ class UploadBLE extends Component {
       ],
     };
     //const bleDevice = await navigator.bluetooth.requestDevice(options);
-    const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
+    const bleDevice = await navigator.bluetooth.requestDevice(options);
     console.log(bleDevice);
     return bleDevice;
   }
