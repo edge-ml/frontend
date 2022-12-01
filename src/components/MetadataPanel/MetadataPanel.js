@@ -6,7 +6,7 @@ import {
   InputGroupText,
   Input,
   CardBody,
-  CardHeader
+  CardHeader,
 } from 'reactstrap';
 import { unixTimeToString } from '../../services/helpers';
 import './MetadataPanel.css';
@@ -32,16 +32,6 @@ class MetadataPanel extends Component {
                 </InputGroupText>
               </InputGroupAddon>
               <Input className="text-right" value={this.props.name} readOnly />
-            </InputGroup>
-          </div>
-          <div>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  Id
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input className="text-right" value={this.props.id} readOnly />
             </InputGroup>
           </div>
           <div>

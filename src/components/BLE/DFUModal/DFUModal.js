@@ -23,8 +23,8 @@ class DFUModal extends Component {
     this.dfuInternalCharacteristic = '34c2e3b9-34aa-11eb-adc1-0242ac120002';
     this.dfuExternalCharacteristic = '34c2e3ba-34aa-11eb-adc1-0242ac120002';
 
-    this.arrayFW;
-    this.fwLen;
+    this.arrayFW = null;
+    this.fwLen = null;
     this.bytesArray = new Uint8Array(235);
     this.dataLen = 232;
     this.iterations = 0;

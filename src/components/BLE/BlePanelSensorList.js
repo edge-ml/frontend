@@ -1,5 +1,13 @@
 import React from 'react';
-import { Table, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import {
+  Table,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  Card,
+  CardBody,
+  CardHeader,
+} from 'reactstrap';
 
 function BlePanelSensorList(props) {
   if (!props.sensors || props.sensors === []) {
@@ -11,8 +19,10 @@ function BlePanelSensorList(props) {
     sampleRateSum += props.sensors[elm].sampleRate;
   });
   return (
-    <div>
-      <div className="panelHeader">2. Configure sensors</div>
+    <Card className="text-left">
+      <CardHeader>
+        <h4>2. Configure sensors</h4>
+      </CardHeader>
       {sampleRateSum > props.maxSampleRate ? (
         <small className="text-danger">
           <strong>Warning: </strong>Collecting data from multiple sensors with
@@ -21,8 +31,7 @@ function BlePanelSensorList(props) {
           {props.maxSampleRate} Hz. Your are currently at {sampleRateSum} Hz.
         </small>
       ) : null}
-      <div className="panelDivider"></div>
-      <div
+      <CardBody
         style={
           props.disabled ? { opacity: '0.4', pointerEvents: 'none' } : null
         }
@@ -76,8 +85,8 @@ function BlePanelSensorList(props) {
             })}
           </tbody>
         </Table>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 }
 

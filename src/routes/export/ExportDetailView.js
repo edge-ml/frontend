@@ -6,7 +6,7 @@ import {
   Input,
   InputGroup,
   InputGroupAddon,
-  InputGroupText
+  InputGroupText,
 } from 'reactstrap';
 import Select from 'react-select';
 import { platforms } from './platforms';
@@ -19,12 +19,12 @@ export const ExportDetailView = ({
   onClickDownloadModel,
   platformName,
   platformContents,
-  onPlatform
+  onPlatform,
 }) => {
   const nPlatforms = model.platforms
-    .map(v => platforms.find(p => p.value === v))
-    .filter(v => v);
-  const nPlatform = nPlatforms.find(p => p.value === platformName);
+    .map((v) => platforms.find((p) => p.value === v))
+    .filter((v) => v);
+  const nPlatform = nPlatforms.find((p) => p.value === platformName);
   const Code = nPlatform ? nPlatform.prism : null;
 
   return (
@@ -38,13 +38,9 @@ export const ExportDetailView = ({
           <span>{model.name}</span>
         </Line>
         <Line>
-          <b>Model id: </b>
-          <code>{model.id}</code>
-        </Line>
-        <Line>
           <b>Available on platforms: </b>
           <ul className="my-0">
-            {nPlatforms.map(p => (
+            {nPlatforms.map((p) => (
               <li key={p.value}>
                 <span>{p.label}</span>
               </li>
@@ -64,7 +60,7 @@ export const ExportDetailView = ({
                 <span style={{ minWidth: '200px' }}>
                   <Select
                     value={nPlatform}
-                    onChange={x => onPlatform(x.value)}
+                    onChange={(x) => onPlatform(x.value)}
                     options={nPlatforms}
                   />
                 </span>

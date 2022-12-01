@@ -1,9 +1,10 @@
-const apiConsts = require('./ApiConstants');
-const ax = require('axios');
-const axios = ax.create();
-const getProjects = require('./ProjectService').getProjects;
+import apiConsts from './ApiConstants';
+import ax from 'axios';
+import { getProjects } from './ProjectService';
 
-module.exports.setDeviceApiKey = () => {
+const axios = ax.create();
+
+export const setDeviceApiKey = () => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -12,12 +13,12 @@ module.exports.setDeviceApiKey = () => {
         apiConsts.API_ENDPOINTS.SETDEVICEAPIKEY
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getDeviceApiKey = () => {
+export const getDeviceApiKey = () => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -26,12 +27,12 @@ module.exports.getDeviceApiKey = () => {
         apiConsts.API_ENDPOINTS.GETDEVICEAPIKEY
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.deleteDeviceApiKey = () => {
+export const deleteDeviceApiKey = () => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -40,12 +41,12 @@ module.exports.deleteDeviceApiKey = () => {
         apiConsts.API_ENDPOINTS.REMOVEDEVICEAPIKEY
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.switchDeviceApiActive = activeState => {
+export const switchDeviceApiActive = (activeState) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -55,10 +56,10 @@ module.exports.switchDeviceApiActive = activeState => {
         { state: activeState }
       )
     )
-      .then(msg => {
-        getProjects().then(data => resolve(data));
+      .then((msg) => {
+        getProjects().then((data) => resolve(data));
       })
-      .catch(err => {
+      .catch((err) => {
         reject(err.response);
       });
   });

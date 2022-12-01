@@ -1,16 +1,17 @@
 .LabelingSelectionPanel {
   width: 100%;
-}
-
-.StickyLabelingSelectionPanel {
-  width: calc(75% - 15px);
-  z-index: 10;
-  position: fixed;
+  position: sticky;
   top: 15px;
+  z-index: 10;
 }
 
-.StickyLabelingSelectionPanel + .TimeSeriesCollectionPanel {
-  padding-top: 54px;
+/* mobile (md-breakpoint), account for 50px header with sticky */
+@media (max-width: 768px) {
+  .LabelingSelectionPanel {
+    /* top: 65px; */
+    position: relative;
+    top: unset;
+  }
 }
 
 .LabelingSelectionButtonsContainer {

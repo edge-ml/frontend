@@ -40,7 +40,10 @@ class AutocompleteInput extends Component {
           console.log(err);
         });
     }
-    this.props.onChange ? this.props.onChange(e) : null;
+
+    if (this.props.onChange) {
+      this.props.onChange(e);
+    }
   }
 
   openMenu() {
@@ -83,7 +86,7 @@ class AutocompleteInput extends Component {
           const newEvent = e;
           newEvent.target.value =
             this.state.suggestions[this.state.selectedIndex];
-          this.props.onClick ? this.props.onClick(newEvent) : null;
+          this.props.onClick && this.props.onClick(newEvent);
           this.closeMenu();
           break;
         default:
@@ -102,7 +105,7 @@ class AutocompleteInput extends Component {
   onItemClick(e, index) {
     const newEvent = e;
     newEvent.target.value = this.state.suggestions[index];
-    this.props.onClick ? this.props.onClick(newEvent) : null;
+    this.props.onClick && this.props.onClick(newEvent);
     this.closeMenu();
     e.preventDefault();
   }

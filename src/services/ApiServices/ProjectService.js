@@ -1,10 +1,10 @@
-const apiConsts = require('./ApiConstants');
-const ax = require('axios');
-const axios = ax.create();
-const getUserIds =
-  require('../ApiServices/AuthentificationServices').getUserIds;
+import apiConsts from './ApiConstants';
+import ax from 'axios';
+import { getUserIds } from '../ApiServices/AuthentificationServices';
 
-module.exports.getProjects = () => {
+const axios = ax.create();
+
+export const getProjects = () => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -22,7 +22,7 @@ module.exports.getProjects = () => {
   });
 };
 
-module.exports.createProject = (project) => {
+export const createProject = (project) => {
   return new Promise((resolve, reject) => {
     const tmpProject = project;
     getUserIds(project.users.map((elm) => elm.userName)).then((userData) => {
@@ -36,14 +36,16 @@ module.exports.createProject = (project) => {
         )
       )
         .then(() => {
-          this.getProjects().then((data) => resolve(data));
+          getProjects().then((data) => resolve(data));
         })
-        .catch((err) => reject(err.response.data.error));
+        .catch((err) => {
+          reject(err.response.data.error);
+        });
     });
   });
 };
 
-module.exports.updateProject = (project) => {
+export const updateProject = (project) => {
   return new Promise((resolve, reject) => {
     const tmpProject = project;
     getUserIds(project.users.map((elm) => elm.userName))
@@ -58,7 +60,7 @@ module.exports.updateProject = (project) => {
           )
         )
           .then(() => {
-            this.getProjects().then((data) => resolve(data));
+            getProjects().then((data) => resolve(data));
           })
           .catch((err) => {
             reject(err.response.data.error);
@@ -70,7 +72,7 @@ module.exports.updateProject = (project) => {
   });
 };
 
-module.exports.deleteProject = (project) => {
+export const deleteProject = (project) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -80,13 +82,13 @@ module.exports.deleteProject = (project) => {
       )
     )
       .then(() => {
-        this.getProjects().then((data) => resolve(data));
+        getProjects().then((data) => resolve(data));
       })
       .catch((err) => reject(err.response));
   });
 };
 
-module.exports.leaveProject = (project) => {
+export const leaveProject = (project) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -96,13 +98,13 @@ module.exports.leaveProject = (project) => {
       )
     )
       .then(() => {
-        this.getProjects().then((data) => resolve(data));
+        getProjects().then((data) => resolve(data));
       })
       .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getProjectSensorStreams = (project) => {
+export const getProjectSensorStreams = (project) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -116,7 +118,7 @@ module.exports.getProjectSensorStreams = (project) => {
   });
 };
 
-module.exports.getProjectCustomMetaData = (project) => {
+export const getProjectCustomMetaData = (project) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(

@@ -1,4 +1,9 @@
-import { faCode, faFile, faMicrochip } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCode,
+  faFile,
+  faMicrochip,
+  faMobileAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import React from 'react';
@@ -9,18 +14,20 @@ const DataUpload = (props) => {
   const history = useHistory();
 
   return (
-    <div className="card d-flex flex-row mb-4" style={{ display: 'flex' }}>
+    <div className="card d-flex flex-row mb-4 mt-2" style={{ display: 'flex' }}>
       <div className="card-body d-flex flex-column text-left">
         <div className="mb-3">
           <b>Data Upload</b>
         </div>
-        <div className="d-flex flex-row align-items-stretch">
-          <div
-            className="d-flex flex-row justify-content-center align-items-start mr-5"
-            style={{ flex: '1 1 0px' }}
-          >
+        <div
+          className="d-flex flex-column flex-md-row gap-3 align-items-stretch"
+          style={{
+            gap: '16px', // bootstrap $spacer, i.e. m-3, p-3 etc.
+          }}
+        >
+          <div className="data-upload-item" style={{ flex: '1 1 0px' }}>
             <FontAwesomeIcon
-              className="mr-3 mt-1"
+              className="mt-1"
               icon={faMicrochip}
               style={{ fontSize: 'x-large' }}
             ></FontAwesomeIcon>
@@ -73,12 +80,9 @@ const DataUpload = (props) => {
               </Button>
             </div>
           </div>
-          <div
-            className="d-flex flex-row justify-content-center align-items-start mr-5"
-            style={{ flex: '1 1 0px' }}
-          >
+          <div className="data-upload-item" style={{ flex: '1 1 0px' }}>
             <FontAwesomeIcon
-              className="mr-3 mt-1"
+              className="mt-1"
               icon={faFile}
               style={{ fontSize: 'x-large' }}
             ></FontAwesomeIcon>
@@ -118,12 +122,9 @@ const DataUpload = (props) => {
               </Button>
             </div>
           </div>
-          <div
-            className="d-flex flex-row justify-content-center align-items-start"
-            style={{ flex: '1 1 0px' }}
-          >
+          <div className="data-upload-item" style={{ flex: '1 1 0px' }}>
             <FontAwesomeIcon
-              className="mr-3 mt-1"
+              className="mt-1"
               icon={faCode}
               style={{ fontSize: 'x-large' }}
             ></FontAwesomeIcon>
@@ -164,6 +165,41 @@ const DataUpload = (props) => {
                 style={{ padding: '0px' }}
               >
                 <small>Generate Code for my Device</small>
+              </Button>
+            </div>
+          </div>
+          <div className="data-upload-item" style={{ flex: '1 1 0px' }}>
+            <FontAwesomeIcon
+              className="mt-1"
+              icon={faMobileAlt}
+              style={{ fontSize: 'x-large' }}
+            ></FontAwesomeIcon>
+            <div className="d-flex flex-column justify-content-between h-100">
+              <div className="d-flex flex-column">
+                <div>
+                  <small>
+                    <b>Web Sensor API</b>
+                  </small>
+                </div>
+                <small>
+                  If you own a smartphone or tablet with onboard sensors you can
+                  use these directly from your browser using the Web Sensors
+                  API.
+                </small>
+              </div>
+
+              <Button
+                id="buttonUploadWeb"
+                block
+                className="mt-2"
+                color="success"
+                outline
+                onClick={() => {
+                  history.push('./uploadWeb');
+                }}
+                style={{ padding: '0px' }}
+              >
+                <small>Collect Data via Web Sensors</small>
               </Button>
             </div>
           </div>

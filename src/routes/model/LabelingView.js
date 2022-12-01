@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Badge, FormGroup } from 'reactstrap';
+import { Form, Badge, FormGroup, Card, CardBody, CardHeader } from 'reactstrap';
 
 import Loader from '../../modules/loader';
 
@@ -16,9 +16,11 @@ export const LabelingView = ({
   changeLabelSelection,
 }) => {
   return (
-    <div className="card h-100" style={{ border: '0px solid white' }}>
-      <div className="card-body d-flex flex-column justify-content-between align-items-start">
+    <Card className="text-left">
+      <CardHeader>
         <h4>Target Labeling</h4>
+      </CardHeader>
+      <CardBody className="d-flex flex-column justify-content-between align-items-start">
         <Loader loading={!labelings && !labels}>
           <fieldset>
             {labelings && labelings.length
@@ -119,7 +121,7 @@ export const LabelingView = ({
           <br />
           Click and type into the "Other" field to rename the label.
         </small>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 };

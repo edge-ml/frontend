@@ -1,7 +1,15 @@
 import React, { Component } from 'react';
 
 import Loader from '../../modules/loader';
-import { Alert } from 'reactstrap';
+import {
+  Alert,
+  Container,
+  Row,
+  Col,
+  Card,
+  CardBody,
+  CardHeader,
+} from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 
 import {
@@ -348,86 +356,82 @@ class ModelPage extends Component {
   render() {
     return (
       <Loader loading={!this.state.ready}>
-        <div>
-          <div>
-            {this.state.alertText ? (
-              <Alert
-                color={this.state.trainSuccess ? 'success' : 'danger'}
-                style={{
-                  marginBottom: 0,
-                  position: 'fixed',
-                  zIndex: 100,
-                  bottom: '40px',
-                  left: '50%',
-                  marginLeft: '-100px',
-                }}
-              >
-                {this.state.alertText}
-              </Alert>
-            ) : null}
-          </div>
-          <div className="container">
-            <div className="row">
-              <div className="col-12 col-xl-4 mt-4">
-                <LabelingView
-                  labelings={this.state.labelings}
-                  selectedLabeling={this.state.selectedLabeling}
-                  labels={this.state.labels}
-                  changeSelectedLabeling={this.handleLabelingChange}
-                  useUnlabelledFor={this.state.useUnlabelledFor}
-                  changeUnlabelledFor={this.handleUseUnlabelledChange}
-                  unlabelledNameFor={this.state.unlabelledNameFor}
-                  changeUnlabelledName={this.handleUnlabelledNameChange}
-                  selectedLabelsFor={this.state.selectedLabelsFor}
-                  changeLabelSelection={this.handleLabelSelection}
-                />
-              </div>
-              <div className="col-12 col-xl-4 mt-4">
-                <TargetSensorsView
-                  sensorStreams={this.state.sensorStreams}
-                  selectedSensorStreams={this.state.selectedSensorStreams}
-                  toggleSelectedSensorStreams={
-                    this.handleSelectedSensorStreamToggle
-                  }
-                  changeAllSelectedSensorStreams={
-                    this.handleSelectedSensorStreamSelectAll
-                  }
-                />
-              </div>
-              <div className="col-12 col-xl-4 mt-4">
-                <ValidationMethodsView
-                  testSplit={this.state.testSplit}
-                  onTestSplitChange={this.handleTestSplitChange}
-                  customMetaData={this.state.customMetaData}
-                  onValidationMethodChange={this.handleValidationMethodChange}
-                  onValidationMethodOptionsChange={
-                    this.handleValidationMethodOptionsChange
-                  }
-                  currentValidationMethod={this.state.currentValidationMethod}
-                  validationMethods={this.state.validationMethods}
-                  validationMethodOptions={this.state.validationMethodOptions}
-                />
-              </div>
-              <div className="col-12 mt-4">
-                <ClassifierView
-                  models={this.state.models}
-                  modelSelection={this.state.modelSelection}
-                  changeModelSelection={this.handleModelSelectionChange}
-                  modelName={this.state.modelName}
-                  changeModelName={this.handleModelNameChange}
-                  hyperparameters={this.state.hyperparameters}
-                  selectedModelId={this.state.selectedModelId}
-                  handleHyperparameterChange={this.handleHyperparameterChange}
-                  handleTrainButton={this.handleTrainButton}
-                  project={this.props.project}
-                  showAdvanced={this.state.showAdvanced}
-                  toggleShowAdvanced={this.toggleShowAdvanced}
-                  requestInProgress={this.state.requestInProgress}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        {this.state.alertText ? (
+          <Alert
+            color={this.state.trainSuccess ? 'success' : 'danger'}
+            style={{
+              marginBottom: 0,
+              position: 'fixed',
+              zIndex: 100,
+              bottom: '40px',
+              left: '50%',
+              marginLeft: '-100px',
+            }}
+          >
+            {this.state.alertText}
+          </Alert>
+        ) : null}
+        <Container>
+          <Row>
+            <Col className="col-12 col-xl-4 mt-4">
+              <LabelingView
+                labelings={this.state.labelings}
+                selectedLabeling={this.state.selectedLabeling}
+                labels={this.state.labels}
+                changeSelectedLabeling={this.handleLabelingChange}
+                useUnlabelledFor={this.state.useUnlabelledFor}
+                changeUnlabelledFor={this.handleUseUnlabelledChange}
+                unlabelledNameFor={this.state.unlabelledNameFor}
+                changeUnlabelledName={this.handleUnlabelledNameChange}
+                selectedLabelsFor={this.state.selectedLabelsFor}
+                changeLabelSelection={this.handleLabelSelection}
+              />
+            </Col>
+            <Col className="col-12 col-xl-4 mt-4">
+              <TargetSensorsView
+                sensorStreams={this.state.sensorStreams}
+                selectedSensorStreams={this.state.selectedSensorStreams}
+                toggleSelectedSensorStreams={
+                  this.handleSelectedSensorStreamToggle
+                }
+                changeAllSelectedSensorStreams={
+                  this.handleSelectedSensorStreamSelectAll
+                }
+              />
+            </Col>
+            <Col className="col-12 col-xl-4 mt-4">
+              <ValidationMethodsView
+                testSplit={this.state.testSplit}
+                onTestSplitChange={this.handleTestSplitChange}
+                customMetaData={this.state.customMetaData}
+                onValidationMethodChange={this.handleValidationMethodChange}
+                onValidationMethodOptionsChange={
+                  this.handleValidationMethodOptionsChange
+                }
+                currentValidationMethod={this.state.currentValidationMethod}
+                validationMethods={this.state.validationMethods}
+                validationMethodOptions={this.state.validationMethodOptions}
+              />
+            </Col>
+            <Col className="col-12 mt-4">
+              <ClassifierView
+                models={this.state.models}
+                modelSelection={this.state.modelSelection}
+                changeModelSelection={this.handleModelSelectionChange}
+                modelName={this.state.modelName}
+                changeModelName={this.handleModelNameChange}
+                hyperparameters={this.state.hyperparameters}
+                selectedModelId={this.state.selectedModelId}
+                handleHyperparameterChange={this.handleHyperparameterChange}
+                handleTrainButton={this.handleTrainButton}
+                project={this.props.project}
+                showAdvanced={this.state.showAdvanced}
+                toggleShowAdvanced={this.toggleShowAdvanced}
+                requestInProgress={this.state.requestInProgress}
+              />
+            </Col>
+          </Row>
+        </Container>
       </Loader>
     );
   }

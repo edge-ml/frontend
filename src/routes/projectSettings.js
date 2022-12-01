@@ -10,6 +10,7 @@ import {
   Col,
   Row,
   Alert,
+  Container,
 } from 'reactstrap';
 
 import { Prompt, withRouter } from 'react-router-dom';
@@ -280,7 +281,7 @@ class ProjectSettings extends Component {
       return <NoProjectPage></NoProjectPage>;
     }
     return (
-      <div id="projectSettings" style={{ marginTop: '16px' }}>
+      <Container id="projectSettings" className="mt-3">
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <h3 style={{ marginBottom: '0px' }}>
@@ -504,7 +505,7 @@ class ProjectSettings extends Component {
             {this.state.alertText}
           </Alert>
         ) : null}
-      </div>
+      </Container>
     );
   }
 }
