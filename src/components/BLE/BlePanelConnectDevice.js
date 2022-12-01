@@ -2,6 +2,58 @@ import React from 'react';
 import SpinnerButton from '../Common/SpinnerButton';
 import { Button, Card, CardBody, CardHeader } from 'reactstrap';
 
+const getInfoText = (props) => {
+  if (!props.connectedBLEDevice) {
+    return <div>Not device connected</div>;
+  }
+  return (
+    <div>
+      {props.isEdgeMLInstalled ? (
+        <p>
+          The edge-ml firmware version is outdated. You can update it to the
+          latest version by clicking on the button.
+        </p>
+      ) : (
+        <p>
+          edge-ml is not installed. You can install the latest version by
+          clicking on the button.
+        </p>
+      )}
+      <br />
+      Installed version:{' '}
+      <strong>
+        {props.connectedDeviceData
+          ? props.connectedDeviceData.installedFWVersion
+          : '-'}
+      </strong>
+      <br />
+      Latest version: <strong>{props.latestEdgeMLVersion}</strong>
+    </div>
+  );
+};
+
+const getButtonView = (props) => {
+  if (
+    props.outdatedVersionInstalled ||
+    (props.hasDFUFunction && !props.isEdgeMLInstalled)
+  ) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'end',
+        }}
+      >
+        <Button color="primary" onClick={props.toggleDFUModal}>
+          Flash edge-ml firmware
+        </Button>
+      </div>
+    );
+  }
+  return null;
+};
+
 function BlePanelConnectDevice(props) {
   return (
     <Card className="text-left">
@@ -16,21 +68,7 @@ function BlePanelConnectDevice(props) {
             justifyContent: 'space-between',
           }}
         >
-          <div>
-            {props.connectedBLEDevice ? (
-              <div>
-                The edge-ml firmware version is outdated. You can update it to
-                the latest version by clicking on the button.
-                <br />
-                Installed version:{' '}
-                <strong>{props.connectedDeviceData.installedFWVersion}</strong>
-                <br />
-                Latest version: <strong>{props.latestEdgeMLVersion}</strong>
-              </div>
-            ) : (
-              'No device connected'
-            )}
-          </div>
+          {getInfoText(props)}
           <SpinnerButton
             loadingtext={
               props.connectedBLEDevice ? 'Disconnecting...' : 'Connecting...'
@@ -47,59 +85,7 @@ function BlePanelConnectDevice(props) {
           If your device can not be found, try to turn bluetooth off and on
           again in your settings.
         </small>
-        {props.hasDFUFunction &&
-        props.connectedBLEDevice &&
-        ((props.isEdgeMLInstalled && props.outdatedVersionInstalled) ||
-          !props.isEdgeMLInstalled) ? (
-          <div>
-            <hr />
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              {props.isEdgeMLInstalled ? (
-                <div>
-                  The edge-ml firmware version is outdated. You can update it to
-                  the latest version by clicking on the button.
-                  <br />
-                  Installed version:{' '}
-                  <strong>{props.connectedDeviceData.generation}</strong>
-                  <br />
-                  Latest version: <strong>{props.latestEdgeMLVersion}</strong>
-                </div>
-              ) : (
-                <div>
-                  This device does not have the edge-ml firmware installed yet.
-                  You can install it by clicking on the button.
-                </div>
-              )}
-
-              <Button color="primary" onClick={props.toggleDFUModal}>
-                Flash edge-ml firmware
-              </Button>
-            </div>
-          </div>
-        ) : null}
-        {props.deviceNotUsable && props.connectedBLEDevice ? (
-          <div>
-            <hr />
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div className="text-danger">
-                This device does not have the edge-ml firmware installed. Please
-                install via the guide
-              </div>
-            </div>
-          </div>
-        ) : null}
+        {getButtonView(props)}
       </CardBody>
     </Card>
   );
