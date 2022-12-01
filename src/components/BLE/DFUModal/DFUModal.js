@@ -239,10 +239,13 @@ class DFUModal extends Component {
     switch (this.props.connectedBLEDevice.name) {
       case 'NICLA':
         downloadName = 'nicla';
+        break;
       case 'NANO':
         downloadName = 'nano';
+        break;
       case 'Seeed XIAO':
         downloadName = 'xiao';
+        break;
     }
     return getArduinoFirmware(downloadName);
   }

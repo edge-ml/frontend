@@ -19,8 +19,13 @@ function BlePanelConnectDevice(props) {
           <div>
             {props.connectedBLEDevice ? (
               <div>
-                <b>{props.connectedBLEDevice.name}</b> (
-                {props.connectedBLEDevice.id})
+                The edge-ml firmware version is outdated. You can update it to
+                the latest version by clicking on the button.
+                <br />
+                Installed version:{' '}
+                <strong>{props.connectedDeviceData.installedFWVersion}</strong>
+                <br />
+                Latest version: <strong>{props.latestEdgeMLVersion}</strong>
               </div>
             ) : (
               'No device connected'
