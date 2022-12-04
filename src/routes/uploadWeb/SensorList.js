@@ -83,6 +83,10 @@ export const SensorList = ({
                 [name]: !prevState[name],
               }));
 
+            const tableVisibilityStyle = (name) => ({
+              visibility: collapseState[name] ? 'visible' : 'collapse',
+            });
+
             return (
               <React.Fragment key={name}>
                 <tr>
@@ -112,9 +116,9 @@ export const SensorList = ({
                     </React.Fragment>
                   )}
                 </tr>
-                {isDesktop ? null : !collapseState[name] ? null : (
+                {isDesktop ? null : (
                   <React.Fragment>
-                    <tr>
+                    <tr style={tableVisibilityStyle(name)}>
                       <Td className="p-0" />
                       <Td className="p-0" colspan="2">
                         <div className="d-flex align-items-center">
@@ -125,7 +129,7 @@ export const SensorList = ({
                         </div>
                       </Td>
                     </tr>
-                    <tr>
+                    <tr style={tableVisibilityStyle(name)}>
                       <Td className="p-0" />
                       <Td className="p-0" colspan="2">
                         <div className="d-flex flex-wrap align-items-center">
