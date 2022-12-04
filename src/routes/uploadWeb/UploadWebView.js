@@ -10,7 +10,8 @@ export const UploadWebView = ({ sensorList, datasetSettings, graph }) => {
             <Col md={6} className="pt-3">
               <Card className="text-left">
                 <CardHeader>
-                  <h4>Configure sensors</h4>
+                  <h4>Sensor Selection</h4>
+                  <span>Select sensors you want to record in a dataset.</span>
                 </CardHeader>
                 <CardBody>{sensorList}</CardBody>
               </Card>
@@ -20,7 +21,7 @@ export const UploadWebView = ({ sensorList, datasetSettings, graph }) => {
             <Col md={6} className="pt-3">
               <Card className="text-left">
                 <CardHeader>
-                  <h4>Record dataset</h4>
+                  <h4>Dataset Configuration</h4>
                 </CardHeader>
                 <CardBody>{datasetSettings}</CardBody>
               </Card>

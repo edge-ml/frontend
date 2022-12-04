@@ -7,9 +7,10 @@ import { RecorderSettings } from './RecorderSettings';
 import { throttle, debounce } from '../../services/helpers';
 import { RecordingController } from './RecordingController';
 import { SensorGraphs } from './SensorGraphs';
+import { usePersistedState } from '../../services/ReactHooksService';
 
-const mergeSingle = (replacer, prev) => (key, value) => {
-  replacer({ ...prev, [key]: value });
+const mergeSingle = (replacer) => (key, value) => {
+  replacer((prev) => ({ ...prev, [key]: value }));
 };
 
 const GRAPH_UPDATE_INTERVAL = 750;
@@ -27,12 +28,16 @@ export const UploadWebPage = () => {
     return obj;
   }, [sensors]);
 
-  const [selectedSensors, setSelectedSensors] = useState({});
-  const [sensorRates, setSensorRates] = useState(
+  const [selectedSensors, setSelectedSensors] = usePersistedState(
+    {},
+    'routes:uploadWeb:index.selectedSensors'
+  );
+  const [sensorRates, setSensorRates] = usePersistedState(
     sensors.reduce((acc, { name }) => {
       acc[name] = 50;
       return acc;
-    }, {})
+    }, {}),
+    'routes:uploadWeb:index.sensorRates'
   );
 
   const [recorderState, setRecorderState] = useState('ready'); // ready, starting, recording, stopping
