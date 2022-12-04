@@ -49,10 +49,10 @@ class ListPage extends Component {
   componentDidMount() {
     Promise.all([
       getDatasets(),
-      subscribeLabelingsAndLabels().then((labelingdata) => {
+      subscribeLabelingsAndLabels().then((labelingData) => {
         this.setState({
-          labelings: labelingdata.labelings,
-          labels: labelingdata.labels,
+          labelings: labelingData.labelings,
+          labels: labelingData.labels,
         });
       }),
     ]).then(([datasets, _]) => {
@@ -73,15 +73,22 @@ class ListPage extends Component {
     });
   }
 
-  onDatasetsChanged(datasets) {
+  async onDatasetsChanged(datasets) {
     if (!datasets) return;
-    this.setState({
-      modalID: null,
-      modal: false,
-      ready: true,
-      datasets: datasets,
-      isCreateNewDatasetOpen: false,
-    });
+    try {
+      const labelingData = await subscribeLabelingsAndLabels();
+      this.setState({
+        modalID: null,
+        modal: false,
+        ready: true,
+        datasets: datasets,
+        isCreateNewDatasetOpen: false,
+        labelings: labelingData.labelings,
+        labels: labelingData.labels,
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   toggleCheck(e, datasetId) {
