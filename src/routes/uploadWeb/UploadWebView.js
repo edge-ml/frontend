@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardBody, CardHeader, Col, Container, Row } from 'reactstrap';
 
-export const UploadWebView = ({ sensorList, datasetSettings, graph }) => {
+export const UploadWebView = ({ sensorList, datasetSettings, graph, fabs }) => {
   return (
     <Container>
       {sensorList || datasetSettings ? (
@@ -34,7 +34,7 @@ export const UploadWebView = ({ sensorList, datasetSettings, graph }) => {
           <Col className="pt-3">
             <Card className="text-left">
               <CardHeader>
-                <h4>Recording</h4>
+                <h4>Data Preview</h4>
               </CardHeader>
               <CardBody>{graph}</CardBody>
             </Card>
@@ -42,6 +42,9 @@ export const UploadWebView = ({ sensorList, datasetSettings, graph }) => {
         </Row>
       ) : null}
       <div className="pb-3" />
+      <div className="position-fixed" style={{ bottom: '24px', right: '24px' }}>
+        {fabs}
+      </div>
     </Container>
   );
 };

@@ -8,6 +8,7 @@ import { throttle, debounce } from '../../services/helpers';
 import { RecordingController } from './RecordingController';
 import { SensorGraphs } from './SensorGraphs';
 import { usePersistedState } from '../../services/ReactHooksService';
+import { FloatingActionButtons } from './FloatingActionButtons';
 
 const mergeSingle = (replacer) => (key, value) => {
   replacer((prev) => ({ ...prev, [key]: value }));
@@ -169,6 +170,14 @@ export const UploadWebPage = () => {
             setDataPreview={setDataPreview}
           />
         ) : null
+      }
+      fabs={
+        <FloatingActionButtons
+          recorderState={recorderState}
+          datasetName={datasetName}
+          onClickRecordButton={handleRecordButton}
+          selectedSensors={selectedSensors}
+        />
       }
     />
   );

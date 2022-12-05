@@ -36,9 +36,9 @@ export class DeviceMotionSensor extends EventEmitter {
   _onInactive = () => {
     this.emit(
       'warn',
-      `Event did not fire in the last ${
+      `Event did not trigger for ${
         Math.round(calcDelay(this.timeDelta) / 100) / 10
-      } seconds. Check if your device has the necessary sensors for the event.`
+      } seconds. Check if your device has the necessary sensors for the event. Apple devices throttle sensor events heavily during UI operations such as scrolling, refrain from scrolling the page as much as possible for the best data recording experience.`
     );
   };
 
