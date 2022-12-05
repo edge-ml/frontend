@@ -7,9 +7,11 @@ import { RecorderSettings } from './RecorderSettings';
 import { throttle, debounce } from '../../services/helpers';
 import { RecordingController } from './RecordingController';
 import { SensorGraphs } from './SensorGraphs';
+import { usePersistedState } from '../../services/ReactHooksService';
+import { FloatingActionButtons } from './FloatingActionButtons';
 
-const mergeSingle = (replacer, prev) => (key, value) => {
-  replacer({ ...prev, [key]: value });
+const mergeSingle = (replacer) => (key, value) => {
+  replacer((prev) => ({ ...prev, [key]: value }));
 };
 
 const GRAPH_UPDATE_INTERVAL = 750;
@@ -27,13 +29,26 @@ export const UploadWebPage = () => {
     return obj;
   }, [sensors]);
 
-  const [selectedSensors, setSelectedSensors] = useState({});
-  const [sensorRates, setSensorRates] = useState(
+  const [selectedSensors, setSelectedSensors] = usePersistedState(
+    {},
+    'routes:uploadWeb:index.selectedSensors'
+  );
+  const [sensorRates, setSensorRates] = usePersistedState(
     sensors.reduce((acc, { name }) => {
       acc[name] = 50;
       return acc;
-    }, {})
+    }, {}),
+    'routes:uploadWeb:index.sensorRates'
   );
+  const [dataPreview, _setDataPreview] = usePersistedState(
+    true,
+    'routes:uploadWeb:index.dataPreview'
+  );
+  const dataPreviewRef = useRef(dataPreview);
+  const setDataPreview = (up) => {
+    dataPreviewRef.current = up;
+    _setDataPreview(up);
+  };
 
   const [recorderState, setRecorderState] = useState('ready'); // ready, starting, recording, stopping
   const [datasetName, setDatasetName] = useState('');
@@ -52,6 +67,10 @@ export const UploadWebPage = () => {
   const [errors, setErrors] = useState({});
 
   const syncUI = throttle((controller) => {
+    if (!dataPreviewRef.current) {
+      return;
+    }
+
     const timeseries = controller.getTimeseries();
 
     const obj = {};
@@ -142,9 +161,23 @@ export const UploadWebPage = () => {
         />
       }
       graph={
-        Object.keys(visibleStore).length === 0 ? null : (
-          <SensorGraphs sensorStore={visibleStore} />
-        )
+        Object.keys(visibleStore).length !== 0 ||
+        recorderState === 'recording' ||
+        recorderState === 'stopping' ? (
+          <SensorGraphs
+            sensorStore={visibleStore}
+            dataPreview={dataPreview}
+            setDataPreview={setDataPreview}
+          />
+        ) : null
+      }
+      fabs={
+        <FloatingActionButtons
+          recorderState={recorderState}
+          datasetName={datasetName}
+          onClickRecordButton={handleRecordButton}
+          selectedSensors={selectedSensors}
+        />
       }
     />
   );

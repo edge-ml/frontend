@@ -1,10 +1,19 @@
 import React from 'react';
-import { Row } from 'reactstrap';
+import { Row, Button } from 'reactstrap';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 
-export const SensorGraphs = ({ sensorStore }) => (
-  <React.Fragment>
+export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
+  <div>
+    <div className="d-flex justify-content-between align-items-center">
+      <span>Data preview is {dataPreview ? 'enabled' : 'paused'}.</span>
+      <Button
+        color={dataPreview ? 'secondary' : 'primary'}
+        onClick={() => setDataPreview(!dataPreview)}
+      >
+        {dataPreview ? 'Pause' : 'Resume'}
+      </Button>
+    </div>
     {Object.entries(sensorStore).map(([sensor, value]) => (
       <Row className="mt-3">
         <HighchartsReact
@@ -49,5 +58,5 @@ export const SensorGraphs = ({ sensorStore }) => (
         />
       </Row>
     ))}
-  </React.Fragment>
+  </div>
 );
