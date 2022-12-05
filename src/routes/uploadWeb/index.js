@@ -39,6 +39,15 @@ export const UploadWebPage = () => {
     }, {}),
     'routes:uploadWeb:index.sensorRates'
   );
+  const [dataPreview, _setDataPreview] = usePersistedState(
+    true,
+    'routes:uploadWeb:index.dataPreview'
+  );
+  const dataPreviewRef = useRef(dataPreview);
+  const setDataPreview = (up) => {
+    dataPreviewRef.current = up;
+    _setDataPreview(up);
+  };
 
   const [recorderState, setRecorderState] = useState('ready'); // ready, starting, recording, stopping
   const [datasetName, setDatasetName] = useState('');
@@ -57,6 +66,10 @@ export const UploadWebPage = () => {
   const [errors, setErrors] = useState({});
 
   const syncUI = throttle((controller) => {
+    if (!dataPreviewRef.current) {
+      return;
+    }
+
     const timeseries = controller.getTimeseries();
 
     const obj = {};
@@ -147,9 +160,15 @@ export const UploadWebPage = () => {
         />
       }
       graph={
-        Object.keys(visibleStore).length === 0 ? null : (
-          <SensorGraphs sensorStore={visibleStore} />
-        )
+        Object.keys(visibleStore).length !== 0 ||
+        recorderState === 'recording' ||
+        recorderState === 'stopping' ? (
+          <SensorGraphs
+            sensorStore={visibleStore}
+            dataPreview={dataPreview}
+            setDataPreview={setDataPreview}
+          />
+        ) : null
       }
     />
   );
