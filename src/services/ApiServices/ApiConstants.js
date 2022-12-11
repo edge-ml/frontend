@@ -23,7 +23,7 @@ module.exports = {
   COMPILE_URI:
     window.location.host === 'edge-ml.ngrok.io'
       ? 'http://ml.edge-ml.ngrok.io/ml/'
-      : 'http://localhost:3004/compileFirmware',
+      : 'http://localhost:3004/compileFirmware/',
 
   HTTP_METHODS: {
     GET: 'GET',
@@ -70,6 +70,11 @@ module.exports = {
     TRAINED_MODELS: 'models/trained',
     DEPLOY: 'deploy',
     PARAMETERS: 'parameters',
+  },
+  COMPILE_ENDPOINTS: {
+    DEVICE_NAME_NICLA: 'nicla',
+    DEVICE_NAME_SEEED_XIAO: 'xiao',
+    DEVICE_NAME_NANO33: 'nano',
   },
 };
 
