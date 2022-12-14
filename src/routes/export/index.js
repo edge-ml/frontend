@@ -7,6 +7,7 @@ import { useAsyncMemo, useBoolean } from '../../services/ReactHooksService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import { FlashModelView } from './FlashModelView.js';
+import FlashModelModal from './FlashModelModal';
 
 import {
   getTrainedModels,
@@ -38,7 +39,7 @@ const ExportPage = () => {
 
   const [platform, setPlatform] = useState(null);
   const [modelModalState, openModelModal, closeModelModal] = useBoolean(false);
-
+  const [flashModalState, openFlashModal, closeFlashModal] = useBoolean(false);
   const baseModels = useAsyncMemo(async () => await getModels(), [], []);
   const models = useAsyncMemo(async () => await getTrainedModels(), [], []);
   const selectedModel = useAsyncMemo(async () => {
@@ -113,7 +114,9 @@ const ExportPage = () => {
           )
         }
         flashModel={
-          selectedModel ? <FlashModelView onClickFlashModel={''} /> : null
+          selectedModel ? (
+            <FlashModelView onClickFlashModel={openFlashModal} />
+          ) : null
         }
       />
       {baseModels.length && selectedModel && modelModalState ? (
@@ -123,6 +126,13 @@ const ExportPage = () => {
           model={selectedModel}
           labels={labels}
           onClosed={closeModelModal}
+        />
+      ) : null}
+      {selectedModel && flashModalState ? (
+        <FlashModelModal
+          flashModalState={flashModalState}
+          closeFlashModal={closeFlashModal}
+          selectedModel={selectedModel}
         />
       ) : null}
     </Loader>
