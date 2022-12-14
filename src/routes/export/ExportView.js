@@ -7,17 +7,18 @@ import {
   Card,
   CardHeader,
   CardBody,
-  Container
+  Container,
 } from 'reactstrap';
 
 import { Empty } from './components/Empty';
+import { FlashModelView } from './FlashModelView.js';
 
 export const ExportView = ({
   models, // {id: string, name: string, creation_date: number}[]
   selectModel,
   selectedModel,
-
-  detail
+  detail,
+  flashModel,
 }) => {
   return (
     <Container>
@@ -30,7 +31,7 @@ export const ExportView = ({
             <CardBody className="overflow-auto">
               {models.length ? (
                 <ListGroup>
-                  {models.map(m => (
+                  {models.map((m) => (
                     <ListGroupItem
                       key={m.id}
                       active={selectedModel && m.id === selectedModel.id}
@@ -53,7 +54,11 @@ export const ExportView = ({
             <CardHeader>
               <h4>Deployment</h4>
             </CardHeader>
-            <CardBody>{detail}</CardBody>
+            <CardBody>
+              {detail}
+              <hr />
+              {flashModel}
+            </CardBody>
           </Card>
         </Col>
       </Row>

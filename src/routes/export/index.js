@@ -6,15 +6,16 @@ import { ExportDetailView } from './ExportDetailView';
 import { useAsyncMemo, useBoolean } from '../../services/ReactHooksService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
+import { FlashModelView } from './FlashModelView.js';
 
 import {
   getTrainedModels,
   getTrained,
-  getModels
+  getModels,
 } from '../../services/ApiServices/MlService';
 import {
   getPlatformCode,
-  downloadDeploymentModel
+  downloadDeploymentModel,
 } from '../../services/ApiServices/MLDeploymentService';
 // import { ChangeNameModalView } from './ChangeNameModalView';
 import { Empty } from './components/Empty';
@@ -24,9 +25,9 @@ import { platforms } from './platforms';
 const createBasename = (platform, selectedModel) =>
   `${selectedModel.name}_${platform}`;
 const createName = (platform, selectedModel) =>
-  `${createBasename(platform, selectedModel)}.${platforms.find(
-    x => x.value === platform
-  ).extension || 'bin'}`;
+  `${createBasename(platform, selectedModel)}.${
+    platforms.find((x) => x.value === platform).extension || 'bin'
+  }`;
 
 const ExportPage = () => {
   const location = useLocation();
@@ -78,7 +79,7 @@ const ExportPage = () => {
     );
   }, [selectedModel]);
 
-  const selectModel = modelId => {
+  const selectModel = (modelId) => {
     setSelectedModelId(modelId);
   };
 
@@ -110,6 +111,9 @@ const ExportPage = () => {
           ) : (
             <Empty>Select model for details</Empty>
           )
+        }
+        flashModel={
+          selectedModel ? <FlashModelView onClickFlashModel={''} /> : null
         }
       />
       {baseModels.length && selectedModel && modelModalState ? (
