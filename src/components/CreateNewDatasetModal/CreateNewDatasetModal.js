@@ -17,6 +17,8 @@ import DragDrop from '../Common/DragDrop';
 import {
   updateDataset,
   createDatasets,
+  processCSVBackend,
+  generateDatasetBackend,
 } from '../../services/ApiServices/DatasetServices';
 
 import {
@@ -71,7 +73,12 @@ class CreateNewDatasetModal extends Component {
   }
 
   onFileInput(files) {
-    processCSV(files).then((timeData) => {
+    const formData = new FormData();
+    // keep field name consistent with the backend
+    for (const single_file of files) {
+      formData.append('CSVFile', single_file);
+    }
+    processCSVBackend(formData).then((timeData) => {
       const result = generateDataset(timeData);
       if (Array.isArray(result)) {
         this.setState({

@@ -58,6 +58,8 @@ export const API_ENDPOINTS = {
   REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
   SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive',
   ARDUINOFIRMWARE: 'arduinoFirmware',
+  PROCESS_CSV: 'datasets/processCSV',
+  GENERATE_DATASET: 'datasets/generateDataset',
 };
 
 export const ML_ENDPOINTS = {
@@ -74,7 +76,8 @@ export const generateApiRequest = (
   baseUri = this.API_URI,
   endpoint = this.API_ENDPOINTS.DEFAULT,
   body = {},
-  params = {}
+  params = {},
+  contentType = 'application/json'
 ) => {
   const project = localStorageService.getProject();
   return {
@@ -83,7 +86,7 @@ export const generateApiRequest = (
     data: body,
     params: params,
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': contentType,
       ...(project && { project: project }),
       Authorization: localStorageService.getAccessToken(),
     },
