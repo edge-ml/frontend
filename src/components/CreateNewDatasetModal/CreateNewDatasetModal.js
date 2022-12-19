@@ -78,8 +78,8 @@ class CreateNewDatasetModal extends Component {
     for (const single_file of files) {
       formData.append('CSVFile', single_file);
     }
-    processCSVBackend(formData).then((timeData) => {
-      const result = generateDataset(timeData);
+    processCSVBackend(formData).then(async (timeData) => {
+      const result = await generateDatasetBackend(timeData);
       if (Array.isArray(result)) {
         this.setState({
           uploadErrors: result,

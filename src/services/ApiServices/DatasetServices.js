@@ -221,6 +221,6 @@ export const generateDatasetBackend = (timeData) => {
       timeData
     )
   )
-    .then((result) => result)
+    .then((result) => result.data)
     .catch((err) => err.response);
 };
