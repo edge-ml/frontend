@@ -7,7 +7,6 @@ import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
 import CustomMetadataPanel from '../components/MetadataPanel/CustomMetadataPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
-import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
 import Snackbar from '../components/Snackbar/Snackbar';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
@@ -49,9 +48,6 @@ class DatasetPage extends Component {
         fromLastPosition: false,
       },
       hideLabels: false,
-      fuseTimeSeriesModalState: {
-        isOpen: false,
-      },
       modalOpen: false,
     };
 
@@ -63,14 +59,11 @@ class DatasetPage extends Component {
     this.onDeleteSelectedLabel = this.onDeleteSelectedLabel.bind(this);
     this.onCanEditChanged = this.onCanEditChanged.bind(this);
     this.addTimeSeries = this.addTimeSeries.bind(this);
-    this.onFuseTimeSeries = this.onFuseTimeSeries.bind(this);
-    this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
     this.onLabelingsAndLabelsChanged =
       this.onLabelingsAndLabelsChanged.bind(this);
     this.onDatasetChanged = this.onDatasetChanged.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
-    this.onFuseCanceled = this.onFuseCanceled.bind(this);
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
     this.onScrubbed = this.onScrubbed.bind(this);
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
@@ -158,9 +151,6 @@ class DatasetPage extends Component {
   onDatasetChanged(dataset) {
     if (!dataset) return;
 
-    dataset.fusedSeries = dataset.fusedSeries.filter(
-      (fused) => fused.timeSeries.length > 1
-    );
     this.setState({ dataset }, () =>
       subscribeLabelingsAndLabels().then((result) => {
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
@@ -416,19 +406,7 @@ class DatasetPage extends Component {
   onDeleteTimeSeries(fused, index) {
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
 
-    if (!fused) {
-      dataset.fusedSeries.forEach((series) => {
-        series.timeSeries = series.timeSeries.filter(
-          (timeSeries) => timeSeries !== dataset.timeSeries[index]['_id']
-        );
-      });
-      dataset.timeSeries.splice(index, 1);
-      dataset.fusedSeries = dataset.fusedSeries.filter(
-        (series) => series.timeSeries.length > 1
-      );
-    } else {
-      dataset.fusedSeries.splice(index, 1);
-    }
+    dataset.timeSeries.splice(index, 1);
 
     updateDataset(dataset).then((newDataset) => {
       this.setState({
@@ -448,28 +426,6 @@ class DatasetPage extends Component {
         dataset: newDataset,
       });
     });
-  }
-
-  onFuseTimeSeries(seriesIds) {
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-    dataset.fusedSeries.push({
-      timeSeries: seriesIds,
-    });
-
-    updateDataset(dataset).then((dataset) => {
-      this.setState({
-        dataset,
-        fuseTimeSeriesModalState: { isOpen: false },
-      });
-    });
-  }
-
-  onFuseCanceled() {
-    this.setState({ fuseTimeSeriesModalState: { isOpen: false } });
-  }
-
-  onOpenFuseTimeSeriesModal() {
-    this.setState({ fuseTimeSeriesModalState: { isOpen: true } });
   }
 
   updateControlStates(
@@ -830,7 +786,6 @@ class DatasetPage extends Component {
                   />
                   <TimeSeriesCollectionPanel
                     timeSeries={this.state.dataset.timeSeries}
-                    fusedSeries={this.state.dataset.fusedSeries}
                     labeling={
                       this.state.hideLabels
                         ? { labels: undefined }
@@ -852,18 +807,6 @@ class DatasetPage extends Component {
                     onClickPosition={this.onClickPosition}
                     onLabelPositionUpdate={this.onLabelPositionUpdate}
                   />
-                  <Button
-                    block
-                    outline
-                    onClick={this.onOpenFuseTimeSeriesModal}
-                    className="mb-4"
-                    style={{
-                      zIndex: 1,
-                      position: 'relative',
-                    }}
-                  >
-                    + Fuse Multiple Time Series
-                  </Button>
                   <LabelingPanel
                     hideLabels={this.state.hideLabels}
                     onHideLabels={this.hideLabels}
@@ -934,12 +877,6 @@ class DatasetPage extends Component {
               </Col>
               <Col xs={12}></Col>
               <Col />
-              <CombineTimeSeriesModal
-                timeSeries={this.state.dataset.timeSeries}
-                onFuse={this.onFuseTimeSeries}
-                onFuseCanceled={this.onFuseCanceled}
-                isOpen={this.state.fuseTimeSeriesModalState.isOpen}
-              />
             </Row>
           </div>
         </Fade>
