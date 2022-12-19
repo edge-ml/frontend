@@ -58,7 +58,6 @@ class DatasetPage extends Component {
     this.onSelectedLabelChanged = this.onSelectedLabelChanged.bind(this);
     this.onDeleteSelectedLabel = this.onDeleteSelectedLabel.bind(this);
     this.onCanEditChanged = this.onCanEditChanged.bind(this);
-    this.addTimeSeries = this.addTimeSeries.bind(this);
     this.onLabelingsAndLabelsChanged =
       this.onLabelingsAndLabelsChanged.bind(this);
     this.onDatasetChanged = this.onDatasetChanged.bind(this);
@@ -70,8 +69,6 @@ class DatasetPage extends Component {
     this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
     this.updateControlStates = this.updateControlStates.bind(this);
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
-    this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
-    this.setModalOpen = this.setModalOpen.bind(this);
     this.onAddLabeling = this.onAddLabeling.bind(this);
     this.onClickPosition = this.onClickPosition.bind(this);
     this.onLabelPositionUpdate = this.onLabelPositionUpdate.bind(this);
@@ -122,12 +119,6 @@ class DatasetPage extends Component {
     });
   }
 
-  setModalOpen(isOpen) {
-    this.setState({
-      modalOpen: isOpen,
-    });
-  }
-
   componentDidMount() {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
@@ -142,10 +133,6 @@ class DatasetPage extends Component {
   componentWillUnmount() {
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('keydown', this.onKeyDown);
-  }
-
-  onDatasetUpdated() {
-    getDataset(this.props.match.params.id).then(this.onDatasetChanged);
   }
 
   onDatasetChanged(dataset) {
@@ -337,70 +324,6 @@ class DatasetPage extends Component {
     this.pressedKeys.num = [];
     this.pressedKeys.ctrl = false;
     this.pressedKeys.shift = false;
-  }
-
-  addTimeSeries(obj) {
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-
-    let labels = JSON.parse(JSON.stringify(obj.labels));
-    obj.labels = undefined;
-    obj.offset = 0;
-    obj.data = obj.data.map((point) => {
-      return {
-        timestamp: point[0],
-        value: point[1],
-      };
-    });
-    dataset.timeSeries.push(obj);
-
-    labels = labels.filter((label) => {
-      let labelings = this.state.labelings;
-
-      for (let j = 0; j < labelings.length; j++) {
-        let labelTypes = this.state.labels.filter((labelType) =>
-          labelings[j].labels.includes(labelType['_id'])
-        );
-
-        if (label.labelingId === labelings[j]['_id']) {
-          if (!labelTypes.some((type) => type['_id'] === label.typeId)) {
-            window.alert(
-              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
-            );
-            return null;
-          }
-
-          for (let i = 0; i < dataset.labelings.length; i++) {
-            if (dataset.labelings[i].labelingId === label.labelingId) {
-              dataset.labelings[i].labels.push({
-                type: label.typeId,
-                start: label.start,
-                end: label.end,
-              });
-              break;
-            }
-          }
-          break;
-        }
-      }
-      return null;
-    });
-
-    if (labels.length !== 0) {
-      window.alert(
-        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`
-      );
-      return;
-    }
-
-    dataset.end = Math.max(
-      obj.data[obj.data.length - 1].timestamp,
-      dataset.end
-    );
-    dataset.start = Math.min(obj.data[0].timestamp, dataset.start);
-
-    updateDataset(dataset).then((dataset) => {
-      this.setState({ dataset });
-    });
   }
 
   onDeleteTimeSeries(fused, index) {
@@ -866,12 +789,8 @@ class DatasetPage extends Component {
                   <ManagementPanel
                     labels={this.state.labels}
                     labelings={this.state.labelings}
-                    onUpload={(obj) => this.addTimeSeries(obj)}
-                    startTime={this.state.dataset.start}
                     onDeleteDataset={this.onDeleteDataset}
                     dataset={this.state.dataset}
-                    onDatasetComplete={this.onDatasetUpdated}
-                    setModalOpen={this.setModalOpen}
                   />
                 </div>
               </Col>
