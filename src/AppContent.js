@@ -13,6 +13,7 @@ import ValidationPage from './routes/validation';
 import ExportPage from './routes/export';
 import UploadBLE from './routes/uploadBLE';
 import { UploadWebPage } from './routes/uploadWeb';
+import Settings from './routes/settings/Settings';
 
 class AppContent extends Component {
   constructor(props) {
@@ -99,7 +100,7 @@ class AppContent extends Component {
             path={this.props.match.path + '/settings'}
             render={(props) => (
               <ProjectRefresh project={this.props.project}>
-                <ProjectSettings
+                <Settings
                   onProjectsChanged={this.props.onProjectsChanged}
                   userName={this.props.userName}
                   onDeleteProject={this.props.onDeleteProject}
