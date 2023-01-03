@@ -236,7 +236,7 @@ class DFUModal extends Component {
   async downloadFirmware() {
     this.setState({ dfuState: 'downloadingFW' });
     let downloadName = '';
-    switch (this.props.connectedBLEDevice.name) {
+    switch (this.props.connectedDeviceData.name) {
       case 'NICLA':
         downloadName = 'nicla';
         break;
@@ -282,7 +282,7 @@ class DFUModal extends Component {
               <div className="align-items-center">
                 <div>
                   Connected BLE device:{' '}
-                  {<strong>{this.props.connectedBLEDevice.name}</strong>}
+                  {<strong>{this.props.connectedDeviceData.name}</strong>}
                 </div>
                 <div>
                   Latest edge-ml version:{' '}
