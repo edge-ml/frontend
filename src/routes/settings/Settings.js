@@ -14,6 +14,9 @@ import {
   Collapse,
 } from 'reactstrap';
 import ListItem from './ListItem';
+import SaveFooter from './SaveFooter';
+import DeleteProject from './DeleteProject';
+import EditName from './EditName';
 
 import { Prompt, withRouter } from 'react-router-dom';
 
@@ -45,11 +48,13 @@ const options = [
     },
     values: [
       {
+        index: 0,
         name: 'Edit Project Name',
         description: 'Edit the name of this project',
         tags: ['admin', 'name'],
       },
       {
+        index: 1,
         name: 'Delete Project',
         description: 'Completely remove the project',
         tags: ['delete', 'remove'],
@@ -62,6 +67,7 @@ const options = [
     },
     values: [
       {
+        index: 2,
         name: 'Key Settings',
         description: 'Create or remove device API key',
         tags: ['change key', 'remove key', 'get code'],
@@ -74,6 +80,7 @@ const options = [
     },
     values: [
       {
+        index: 3,
         name: 'Edit Users',
         description: 'Add or remove users from project',
         tags: ['add user', 'delete user', 'remove user', 'change user name'],
@@ -110,6 +117,204 @@ class Settings extends Component {
     this.setVisibleOptions = this.setVisibleOptions.bind(this);
     this.mapOptions = this.mapOptions.bind(this);
     this.onChangeSearch = this.onChangeSearch.bind(this);
+    this.onDeleteProject = this.onDeleteProject.bind(this);
+    this.onLeaveProject = this.onLeaveProject.bind(this);
+    this.onNameChanged = this.onNameChanged.bind(this);
+    this.onUserNameChange = this.onUserNameChange.bind(this);
+    this.onSave = this.onSave.bind(this);
+    this.toggleCheck = this.toggleCheck.bind(this);
+    this.onEnableDeviceApi = this.onEnableDeviceApi.bind(this);
+    this.onDisableDeviceApi = this.onDisableDeviceApi.bind(this);
+    this.onDeviceApiSwitch = this.onDeviceApiSwitch.bind(this);
+    this.toggleCodeSnippetModal = this.toggleCodeSnippetModal.bind(this);
+    this.usersValid = this.usersValid.bind(this);
+    this.deleteUserName = this.deleteUserName.bind(this);
+    this.onChangeUserNameSuggestion =
+      this.onChangeUserNameSuggestion.bind(this);
+    this.onAddUserName = this.onAddUserName.bind(this);
+    this.getComponent = this.getComponent.bind(this);
+    this.init = this.init.bind(this);
+    this.init();
+    if (this.props.codeSnippetModalOpen) {
+      getDeviceApiKey.apply().then((key) => {
+        if (!key.deviceApiKey || !props.project.enableDeviceApi) {
+          if (!key.deviceApiKey) {
+            this.onEnableDeviceApi();
+          }
+          if (!props.project.enableDeviceApi) {
+            this.onDeviceApiSwitch(true);
+          }
+        }
+      });
+    }
+  }
+
+  async init() {
+    const apiKey = await getDeviceApiKey();
+    this.setState({
+      deviceKey: apiKey.deviceApiKey,
+    });
+  }
+
+  onChangeUserNameSuggestion(e) {
+    this.setState({
+      userSearchValue: e.target.value,
+    });
+  }
+
+  onAddUserName(e) {
+    e.preventDefault();
+    const project = this.state.project;
+    project.users.push({ userName: e.target.value });
+    this.setState({
+      project: project,
+      userSearchValue: '',
+    });
+  }
+
+  usersValid(users) {
+    return users.every(
+      (elm) =>
+        elm.userName !== this.props.userName &&
+        elm.userName !== this.props.userMail
+    );
+  }
+
+  onDeviceApiSwitch(checked) {
+    switchDeviceApiActive(checked)
+      .then((data) => {
+        this.props.onProjectsChanged(data);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  onEnableDeviceApi() {
+    setDeviceApiKey().then((data) => {
+      this.setState({
+        deviceKey: data.deviceApiKey,
+      });
+    });
+  }
+
+  onDisableDeviceApi() {
+    deleteDeviceApiKey().then((data) => {
+      this.setState({
+        deviceKey: undefined,
+      });
+    });
+  }
+
+  toggleCheck(e, user) {
+    if (!this.state.usersToDelete.includes(user)) {
+      this.setState({
+        usersToDelete: [...this.state.usersToDelete, user],
+      });
+    } else {
+      this.setState({
+        usersToDelete: this.state.usersToDelete.filter((elm) => elm !== user),
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (
+      JSON.stringify(prevProps.project) !== JSON.stringify(this.props.project)
+    ) {
+      this.init();
+      this.setState({
+        project: this.props.project,
+        originalProject: this.props.project,
+        originalUsers: this.props.project.users,
+      });
+    }
+  }
+
+  onSave() {
+    const resetAlert = () => {
+      setTimeout(() => {
+        this.setState({
+          alertText: undefined,
+        });
+      }, 2000);
+    };
+
+    updateProject(this.state.project)
+      .then((data) => {
+        this.props.onProjectsChanged(data);
+        this.setState({
+          alertText: 'Data saved',
+          saveSuccess: true,
+        });
+        resetAlert();
+      })
+      .catch((err) => {
+        this.setState({
+          error: err,
+        });
+        this.setState({
+          alertText: 'Could not save data',
+          saveSuccess: false,
+        });
+        resetAlert();
+      });
+  }
+
+  deleteUserName(userName) {
+    const project = this.state.project;
+    project.users = project.users.filter((elm) => elm.userName !== userName);
+    this.setState({
+      project: project,
+    });
+  }
+
+  onNameChanged(newName) {
+    var tmpProject = { ...this.state.project };
+    tmpProject.name = newName;
+    this.setState({
+      project: tmpProject,
+      error: undefined,
+    });
+  }
+
+  onDeleteProject() {
+    var doDelete = window.confirm('Do you want to delete this project?');
+    if (doDelete) {
+      this.props.onDeleteProject(this.state.project);
+    }
+  }
+
+  onLeaveProject() {
+    var doLeave = window.confirm(
+      'Do you want to leave this project? If you change your mind, you will have to ask the project admin to add you again.'
+    );
+    if (doLeave) {
+      this.props.onLeaveProject(this.state.project);
+    }
+  }
+
+  onUserNameChange(index, e) {
+    const project = { ...this.state.project };
+    project.users[index].userName = e.target.value;
+    this.setState({
+      project: project,
+      error: undefined,
+    });
+  }
+
+  toggleCodeSnippetModal(open) {
+    this.setState({
+      codeSnippetModalOpen: open,
+    });
+    let newPath;
+    if (!open) {
+      newPath = '.';
+    } else {
+      newPath = this.props.location.pathname.replace(
+        new RegExp('settings/?'),
+        'settings/getCode'
+      );
+    }
+    this.props.history.push(newPath);
   }
 
   setVisibleOptions(options) {
@@ -153,14 +358,65 @@ class Settings extends Component {
         <h3>{option.header.name}</h3>
         <div>
           {option.values.map((value) => (
-            <ListItem value={value}></ListItem>
+            <ListItem
+              value={value}
+              component={this.getComponent(value.index)}
+            ></ListItem>
           ))}
         </div>
       </div>
     ));
   }
 
+  getComponent(index) {
+    switch (index) {
+      case 0:
+        return (
+          <EditName
+            readonly={!this.props.project.users}
+            value={this.state.project.name}
+            onNameChanged={this.onNameChanged}
+            adminUserName={this.props.project.admin.userName}
+          />
+        );
+      case 1:
+        return (
+          <DeleteProject
+            onDeleteProject={this.onDeleteProject}
+            userName={this.props.userName}
+            adminUserName={this.props.project.admin.userName}
+            onLeaveProject={this.onLeaveProject}
+            project={this.props.project}
+          />
+        );
+      default:
+        null;
+    }
+  }
+
   render() {
+    console.log(this.props);
+    var changes = false;
+    if (this.props.project && this.props.project.users) {
+      var originalUsers = this.props.project.users.map((elm) => elm.userName);
+      changes =
+        this.state.project.name !== this.props.project.name ||
+        !(
+          this.state.project.users.map((elm) =>
+            originalUsers.includes(elm.user)
+          ) &&
+          this.state.project.users.length === this.props.project.users.length
+        );
+    }
+
+    const backendUrl =
+      API_URI.replace('/api/', '') === ''
+        ? window.location.origin
+        : API_URI.replace('/api/', '');
+
+    if (!this.props.project) {
+      return <NoProjectPage></NoProjectPage>;
+    }
     return (
       <Container className="my-5">
         <h3>{'Project Settings'}</h3>
@@ -171,6 +427,7 @@ class Settings extends Component {
           onChange={this.onChangeSearch}
         ></Input>
         {this.mapOptions()}
+        <SaveFooter onSave={this.onSave} />
       </Container>
     );
   }

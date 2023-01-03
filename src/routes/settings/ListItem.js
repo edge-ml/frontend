@@ -30,7 +30,11 @@ class ListItem extends Component {
             </div>
           </li>
         </ul>
-        {<Collapse isOpen={!this.state.isCollapsed}>Test</Collapse>}
+        {
+          <Collapse isOpen={!this.state.isCollapsed}>
+            {this.props.component}
+          </Collapse>
+        }
       </div>
     );
   }
