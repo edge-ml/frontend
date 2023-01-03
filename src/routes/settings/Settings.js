@@ -11,7 +11,9 @@ import {
   Row,
   Alert,
   Container,
+  Collapse,
 } from 'reactstrap';
+import ListItem from './ListItem';
 
 import { Prompt, withRouter } from 'react-router-dom';
 
@@ -46,6 +48,11 @@ const options = [
         name: 'Edit Project Name',
         description: 'Edit the name of this project',
         tags: ['admin', 'name'],
+      },
+      {
+        name: 'Delete Project',
+        description: 'Completely remove the project',
+        tags: ['delete', 'remove'],
       },
     ],
   },
@@ -146,14 +153,7 @@ class Settings extends Component {
         <h3>{option.header.name}</h3>
         <div>
           {option.values.map((value) => (
-            <div key={value.name}>
-              <ul className="list-group">
-                <li className="list-group-item mb-2">
-                  <h6 className="font-weight-bold">{value.name}</h6>
-                  <p>{value.description}</p>
-                </li>
-              </ul>
-            </div>
+            <ListItem value={value}></ListItem>
           ))}
         </div>
       </div>
