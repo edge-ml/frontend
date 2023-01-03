@@ -424,7 +424,7 @@ class FlashModelModal extends Component {
                   : this.connectDevice
               }
             >
-              {this.state.connectedBLEDevice ? 'Disconnect' : 'Conect'}
+              {this.state.connectedBLEDevice ? 'Disconnect' : 'Connect'}
             </Button>
             <Button
               color="danger"
