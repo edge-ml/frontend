@@ -1,40 +1,62 @@
 import React, { Component } from 'react';
-import { Collapse, Button, Modal, Card } from 'reactstrap';
+import {
+  Button,
+  Modal,
+  Card,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from 'reactstrap';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class ListItemModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isCollapsed: true,
+      modalOpen: false,
     };
-    this.toggleCollapsed = this.toggleCollapsed.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
   }
 
-  toggleCollapsed = () => {
-    this.setState({ isCollapsed: !this.state.isCollapsed });
+  toggleModal = () => {
+    this.setState({ modalOpen: !this.state.modalOpen });
   };
 
   render() {
     return (
-      <div key={this.props.value.name}>
-        <ul className="list-group">
-          <li className="list-group-item mb-2">
+      <div>
+        <Card className="my-2 p-1">
+          <CardTitle className="text-left">
+            <h5>{this.props.value.name}</h5>
+          </CardTitle>
+          <CardSubtitle className="text-left">
+            {this.props.value.description}
+          </CardSubtitle>
+          <CardBody>
             <div className="d-flex justify-content-between">
-              <div>
-                <h6 className="font-weight-bold">{this.props.value.name}</h6>
-                <p>{this.props.value.description}</p>
-              </div>
-              <Button onClick={this.toggleCollapsed}>
-                {this.state.isCollapsed ? 'Expand' : 'Collapse'}
+              {this.props.component}
+              <Button onClick={this.toggleModal}>
+                <FontAwesomeIcon
+                  className="mr-2"
+                  icon={faArrowRight}
+                ></FontAwesomeIcon>
               </Button>
             </div>
-          </li>
-        </ul>
-        {
-          <Collapse isOpen={!this.state.isCollapsed}>
-            {this.props.component}
-          </Collapse>
-        }
+          </CardBody>
+        </Card>
+        {this.state.modalOpen && (
+          <Modal isOpen={this.state.modalOpen}>
+            <ModalHeader>{this.props.value.name}</ModalHeader>
+            <ModalBody>{this.props.component}</ModalBody>
+            <ModalFooter>
+              <Button color="primary">Save</Button>
+              <Button color="danger" onClick={this.toggleModal}>
+                Cancel
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
       </div>
     );
   }

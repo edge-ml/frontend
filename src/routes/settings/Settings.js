@@ -16,6 +16,7 @@ import {
 import ListItem from './ListItem';
 import DeleteProject from './DeleteProject';
 import EditName from './EditName';
+import GenerateCode from './GenerateCode';
 
 import { Prompt, withRouter } from 'react-router-dom';
 
@@ -29,7 +30,6 @@ import {
   setDeviceApiKey,
   deleteDeviceApiKey,
 } from '../../services/ApiServices/DeviceApiService';
-import { API_URI } from './../../services/ApiServices/ApiConstants';
 
 import NoProjectPage from './../../components/NoProjectPage/NoProjectPage';
 import { getUserNameSuggestions } from '../../services/ApiServices/AuthentificationServices';
@@ -125,7 +125,6 @@ class Settings extends Component {
     this.onEnableDeviceApi = this.onEnableDeviceApi.bind(this);
     this.onDisableDeviceApi = this.onDisableDeviceApi.bind(this);
     this.onDeviceApiSwitch = this.onDeviceApiSwitch.bind(this);
-    this.toggleCodeSnippetModal = this.toggleCodeSnippetModal.bind(this);
     this.usersValid = this.usersValid.bind(this);
     this.deleteUserName = this.deleteUserName.bind(this);
     this.onChangeUserNameSuggestion =
@@ -215,7 +214,7 @@ class Settings extends Component {
     }
   }
 
-  /**componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps, prevState, snapshot) {
     if (
       JSON.stringify(prevProps.project) !== JSON.stringify(this.props.project)
     ) {
@@ -226,7 +225,7 @@ class Settings extends Component {
         originalUsers: this.props.project.users,
       });
     }
-  }*/
+  }
 
   onSave() {
     const resetAlert = () => {
@@ -304,22 +303,6 @@ class Settings extends Component {
     });
   }
 
-  toggleCodeSnippetModal(open) {
-    this.setState({
-      codeSnippetModalOpen: open,
-    });
-    let newPath;
-    if (!open) {
-      newPath = '.';
-    } else {
-      newPath = this.props.location.pathname.replace(
-        new RegExp('settings/?'),
-        'settings/getCode'
-      );
-    }
-    this.props.history.push(newPath);
-  }
-
   setVisibleOptions(options) {
     this.setState({ visibleOptions: options });
   }
@@ -390,7 +373,19 @@ class Settings extends Component {
             userName={this.props.userName}
             adminUserName={this.props.project.admin.userName}
             onLeaveProject={this.onLeaveProject}
-            project={this.props.project}
+            project={this.state.project}
+          />
+        );
+      case 2:
+        return (
+          <GenerateCode
+            project={this.state.project}
+            onDeviceApiSwitch={this.onDeviceApiSwitch}
+            onEnableDeviceApi={this.onEnableDeviceApi}
+            onDisableDeviceApi={this.onDisableDeviceApi}
+            deviceKey={this.state.deviceKey}
+            location={this.props.location}
+            history={this.props.history}
           />
         );
       default:
@@ -412,11 +407,6 @@ class Settings extends Component {
           this.state.project.users.length === this.props.project.users.length
         );
     }
-
-    const backendUrl =
-      API_URI.replace('/api/', '') === ''
-        ? window.location.origin
-        : API_URI.replace('/api/', '');
 
     if (!this.props.project) {
       return <NoProjectPage></NoProjectPage>;
