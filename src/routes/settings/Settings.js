@@ -14,7 +14,6 @@ import {
   Collapse,
 } from 'reactstrap';
 import ListItem from './ListItem';
-import SaveFooter from './SaveFooter';
 import DeleteProject from './DeleteProject';
 import EditName from './EditName';
 
@@ -119,7 +118,7 @@ class Settings extends Component {
     this.onChangeSearch = this.onChangeSearch.bind(this);
     this.onDeleteProject = this.onDeleteProject.bind(this);
     this.onLeaveProject = this.onLeaveProject.bind(this);
-    this.onNameChanged = this.onNameChanged.bind(this);
+    this.onProjectNameSave = this.onProjectNameSave.bind(this);
     this.onUserNameChange = this.onUserNameChange.bind(this);
     this.onSave = this.onSave.bind(this);
     this.toggleCheck = this.toggleCheck.bind(this);
@@ -216,7 +215,7 @@ class Settings extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  /**componentDidUpdate(prevProps, prevState, snapshot) {
     if (
       JSON.stringify(prevProps.project) !== JSON.stringify(this.props.project)
     ) {
@@ -227,7 +226,7 @@ class Settings extends Component {
         originalUsers: this.props.project.users,
       });
     }
-  }
+  }*/
 
   onSave() {
     const resetAlert = () => {
@@ -267,13 +266,17 @@ class Settings extends Component {
     });
   }
 
-  onNameChanged(newName) {
-    var tmpProject = { ...this.state.project };
-    tmpProject.name = newName;
-    this.setState({
-      project: tmpProject,
-      error: undefined,
-    });
+  onProjectNameSave(newName) {
+    this.setState(
+      {
+        project: { ...this.state.project, name: newName },
+        error: undefined,
+      },
+      () => {
+        console.log('test');
+        this.onSave();
+      }
+    );
   }
 
   onDeleteProject() {
@@ -375,8 +378,9 @@ class Settings extends Component {
           <EditName
             readonly={!this.props.project.users}
             value={this.state.project.name}
-            onNameChanged={this.onNameChanged}
+            onProjectNameSave={this.onProjectNameSave}
             adminUserName={this.props.project.admin.userName}
+            projectName={this.state.project.name}
           />
         );
       case 1:
@@ -427,7 +431,30 @@ class Settings extends Component {
           onChange={this.onChangeSearch}
         ></Input>
         {this.mapOptions()}
-        <SaveFooter onSave={this.onSave} />
+        <Prompt
+          when={changes}
+          message={(location, action) => {
+            if (this.props.location.pathname === location.pathname) {
+              return true;
+            }
+            return 'Changes have not been saved. Do you want to leave?';
+          }}
+        />
+        {this.state.alertText ? (
+          <Alert
+            color={this.state.saveSuccess ? 'success' : 'danger'}
+            style={{
+              marginBottom: 0,
+              position: 'fixed',
+              zIndex: 100,
+              bottom: '40px',
+              left: '50%',
+              marginLeft: '-100px',
+            }}
+          >
+            {this.state.alertText}
+          </Alert>
+        ) : null}
       </Container>
     );
   }

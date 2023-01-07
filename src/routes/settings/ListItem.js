@@ -1,41 +1,23 @@
 import React, { Component } from 'react';
-import { Collapse, Button } from 'reactstrap';
+import { Button, Card, CardTitle, CardBody, CardSubtitle } from 'reactstrap';
 
 class ListItem extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isCollapsed: true,
-    };
-    this.toggleCollapsed = this.toggleCollapsed.bind(this);
+    this.state = {};
   }
-
-  toggleCollapsed = () => {
-    this.setState({ isCollapsed: !this.state.isCollapsed });
-  };
 
   render() {
     return (
-      <div key={this.props.value.name}>
-        <ul className="list-group">
-          <li className="list-group-item mb-2">
-            <div className="d-flex justify-content-between">
-              <div>
-                <h6 className="font-weight-bold">{this.props.value.name}</h6>
-                <p>{this.props.value.description}</p>
-              </div>
-              <Button color="primary" onClick={this.toggleCollapsed}>
-                {this.state.isCollapsed ? 'Expand' : 'Collapse'}
-              </Button>
-            </div>
-          </li>
-        </ul>
-        {
-          <Collapse isOpen={!this.state.isCollapsed}>
-            {this.props.component}
-          </Collapse>
-        }
-      </div>
+      <Card className="my-2 p-1">
+        <CardTitle className="text-left">
+          <h5>{this.props.value.name}</h5>
+        </CardTitle>
+        <CardSubtitle className="text-left">
+          {this.props.value.description}
+        </CardSubtitle>
+        <CardBody>{this.props.component}</CardBody>
+      </Card>
     );
   }
 }
