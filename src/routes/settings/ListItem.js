@@ -9,7 +9,7 @@ class ListItem extends Component {
 
   render() {
     return (
-      <Card className="my-2 p-1">
+      <Card className="my-2 p-2">
         <CardTitle className="text-left">
           <h5>{this.props.value.name}</h5>
         </CardTitle>

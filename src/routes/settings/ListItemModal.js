@@ -37,15 +37,12 @@ class ListItemModal extends Component {
             {this.props.value.description}
           </CardSubtitle>
           <CardBody>
-            <div className="d-flex justify-content-between">
-              {this.props.component}
-              <Button color="primary" onClick={this.toggleModal}>
-                <FontAwesomeIcon
-                  className="mr-2"
-                  icon={faArrowRight}
-                ></FontAwesomeIcon>
-              </Button>
-            </div>
+            <Button color="primary" onClick={this.toggleModal}>
+              <FontAwesomeIcon
+                className="mr-2"
+                icon={faArrowRight}
+              ></FontAwesomeIcon>
+            </Button>
           </CardBody>
         </Card>
         {this.state.modalOpen && (
@@ -53,7 +50,6 @@ class ListItemModal extends Component {
             <ModalHeader>{this.props.value.name}</ModalHeader>
             <ModalBody>{this.props.component}</ModalBody>
             <ModalFooter>
-              <Button color="primary">Save</Button>
               <Button color="danger" onClick={this.toggleModal}>
                 Cancel
               </Button>

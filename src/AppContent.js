@@ -116,7 +116,7 @@ class AppContent extends Component {
             path={this.props.match.path + '/settings/getCode'}
             render={(props) => (
               <ProjectRefresh project={this.props.project}>
-                <ProjectSettings
+                <Settings
                   onProjectsChanged={this.props.onProjectsChanged}
                   codeSnippetModalOpen={true}
                   userName={this.props.userName}

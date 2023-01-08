@@ -9,9 +9,7 @@ import {
   Button,
   InputGroupText,
 } from 'reactstrap';
-import { API_URI } from './../../services/ApiServices/ApiConstants';
 import CodeSnippetModal from '../../components/ApiSnippetsModal/CodeSnippetModal';
-
 class GenerateCode extends Component {
   constructor(props) {
     super(props);
@@ -21,25 +19,20 @@ class GenerateCode extends Component {
     this.toggleCodeSnippetModal = this.toggleCodeSnippetModal.bind(this);
   }
 
-  toggleCodeSnippetModal(open) {
-    this.setState({ modalOpen: !this.state.modalOpen });
+  componentDidMount() {
+    this.setState({ modalOpen: this.props.codeSnippetModalOpen });
+  }
+
+  toggleCodeSnippetModal() {
     let newPath;
-    if (!open) {
+    if (this.props.codeSnippetModalOpen && this.state.modalOpen) {
       newPath = '.';
-    } else {
-      newPath = this.props.location.pathname.replace(
-        new RegExp('settings/?'),
-        'settings/getCode'
-      );
     }
+    this.setState({ modalOpen: !this.state.modalOpen });
     this.props.history.push(newPath);
   }
 
   render() {
-    const backendUrl =
-      API_URI.replace('/api/', '') === ''
-        ? window.location.origin
-        : API_URI.replace('/api/', '');
     return (
       <Container>
         <div style={{ paddingTop: '16px', display: 'flex' }}>
@@ -63,7 +56,7 @@ class GenerateCode extends Component {
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>{'Backend-URL'}</InputGroupText>
               </InputGroupAddon>
-              <Input value={backendUrl} readOnly />
+              <Input value={this.props.backendUrl} readOnly />
             </InputGroup>
             <InputGroup>
               <InputGroupAddon addonType="prepend">
@@ -99,7 +92,7 @@ class GenerateCode extends Component {
                 disabled={
                   !this.props.project.enableDeviceApi || !this.props.deviceKey
                 }
-                onClick={() => this.toggleCodeSnippetModal(true)}
+                onClick={() => this.toggleCodeSnippetModal()}
               >
                 Get code
               </Button>
@@ -111,8 +104,8 @@ class GenerateCode extends Component {
         {this.state.modalOpen && (
           <CodeSnippetModal
             isOpen={this.state.modalOpen}
-            onCancel={() => this.toggleCodeSnippetModal(true)}
-            backendUrl={backendUrl}
+            onCancel={() => this.toggleCodeSnippetModal()}
+            backendUrl={this.props.backendUrl}
             deviceApiKey={this.props.deviceKey}
           ></CodeSnippetModal>
         )}

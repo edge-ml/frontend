@@ -1,23 +1,11 @@
 import React, { Component } from 'react';
-import {
-  Button,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
-  Table,
-  CustomInput,
-  Col,
-  Row,
-  Alert,
-  Container,
-  Collapse,
-} from 'reactstrap';
+import { Input, Alert, Container } from 'reactstrap';
 import ListItem from './ListItem';
 import ListItemModal from './ListItemModal';
 import DeleteProject from './DeleteProject';
 import EditName from './EditName';
 import GenerateCode from './GenerateCode';
+import UserEdit from './UserEdit';
 
 import { Prompt, withRouter } from 'react-router-dom';
 
@@ -26,20 +14,14 @@ import {
   updateProject,
 } from './../../services/ApiServices/ProjectService';
 import {
-  switchDeviceApiActive,
   getDeviceApiKey,
   setDeviceApiKey,
   deleteDeviceApiKey,
+  switchDeviceApiActive,
 } from '../../services/ApiServices/DeviceApiService';
+import { API_URI } from './../../services/ApiServices/ApiConstants';
 
 import NoProjectPage from './../../components/NoProjectPage/NoProjectPage';
-import { getUserNameSuggestions } from '../../services/ApiServices/AuthentificationServices';
-import CodeSnippetModal from '../../components/ApiSnippetsModal/CodeSnippetModal';
-import { FormGroup } from 'react-bootstrap';
-import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteInput';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const options = [
   {
@@ -106,6 +88,7 @@ class Settings extends Component {
         alertText: undefined,
         saveSuccess: undefined,
         visibleOptions: options,
+        backendUrl: undefined,
       };
     } else {
       this.state = {
@@ -116,26 +99,22 @@ class Settings extends Component {
         alertText: undefined,
         saveSuccess: undefined,
         visibleOptions: options,
+        backendUrl: undefined,
       };
     }
     this.setVisibleOptions = this.setVisibleOptions.bind(this);
     this.mapOptions = this.mapOptions.bind(this);
     this.onChangeSearch = this.onChangeSearch.bind(this);
     this.onDeleteProject = this.onDeleteProject.bind(this);
+    this.onDisableDeviceApi = this.onDisableDeviceApi.bind(this);
+    this.onEnableDeviceApi = this.onEnableDeviceApi.bind(this);
+    this.onDeviceApiSwitch = this.onDeviceApiSwitch.bind(this);
     this.onLeaveProject = this.onLeaveProject.bind(this);
     this.onProjectNameSave = this.onProjectNameSave.bind(this);
-    this.onUserNameChange = this.onUserNameChange.bind(this);
     this.onSave = this.onSave.bind(this);
     this.toggleCheck = this.toggleCheck.bind(this);
-    this.onEnableDeviceApi = this.onEnableDeviceApi.bind(this);
-    this.onDisableDeviceApi = this.onDisableDeviceApi.bind(this);
-    this.onDeviceApiSwitch = this.onDeviceApiSwitch.bind(this);
-    this.usersValid = this.usersValid.bind(this);
-    this.deleteUserName = this.deleteUserName.bind(this);
-    this.onChangeUserNameSuggestion =
-      this.onChangeUserNameSuggestion.bind(this);
-    this.onAddUserName = this.onAddUserName.bind(this);
     this.getComponent = this.getComponent.bind(this);
+    this.onSaveUserNames = this.onSaveUserNames.bind(this);
     this.init = this.init.bind(this);
     this.init();
     if (this.props.codeSnippetModalOpen) {
@@ -153,42 +132,15 @@ class Settings extends Component {
   }
 
   async init() {
+    const backendUrl =
+      API_URI.replace('/api/', '') === ''
+        ? window.location.origin
+        : API_URI.replace('/api/', '');
     const apiKey = await getDeviceApiKey();
     this.setState({
       deviceKey: apiKey.deviceApiKey,
+      backendUrl: backendUrl,
     });
-  }
-
-  onChangeUserNameSuggestion(e) {
-    this.setState({
-      userSearchValue: e.target.value,
-    });
-  }
-
-  onAddUserName(e) {
-    e.preventDefault();
-    const project = this.state.project;
-    project.users.push({ userName: e.target.value });
-    this.setState({
-      project: project,
-      userSearchValue: '',
-    });
-  }
-
-  usersValid(users) {
-    return users.every(
-      (elm) =>
-        elm.userName !== this.props.userName &&
-        elm.userName !== this.props.userMail
-    );
-  }
-
-  onDeviceApiSwitch(checked) {
-    switchDeviceApiActive(checked)
-      .then((data) => {
-        this.props.onProjectsChanged(data);
-      })
-      .catch((err) => console.log(err));
   }
 
   onEnableDeviceApi() {
@@ -205,6 +157,26 @@ class Settings extends Component {
         deviceKey: undefined,
       });
     });
+  }
+
+  onDeviceApiSwitch(checked) {
+    switchDeviceApiActive(checked)
+      .then((data) => {
+        this.props.onProjectsChanged(data);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  onSaveUserNames(userNames) {
+    this.setState(
+      {
+        project: { ...this.state.project, users: userNames },
+        error: undefined,
+      },
+      () => {
+        this.onSave();
+      }
+    );
   }
 
   toggleCheck(e, user) {
@@ -262,14 +234,6 @@ class Settings extends Component {
       });
   }
 
-  deleteUserName(userName) {
-    const project = this.state.project;
-    project.users = project.users.filter((elm) => elm.userName !== userName);
-    this.setState({
-      project: project,
-    });
-  }
-
   onProjectNameSave(newName) {
     this.setState(
       {
@@ -277,7 +241,6 @@ class Settings extends Component {
         error: undefined,
       },
       () => {
-        console.log('test');
         this.onSave();
       }
     );
@@ -297,15 +260,6 @@ class Settings extends Component {
     if (doLeave) {
       this.props.onLeaveProject(this.state.project);
     }
-  }
-
-  onUserNameChange(index, e) {
-    const project = { ...this.state.project };
-    project.users[index].userName = e.target.value;
-    this.setState({
-      project: project,
-      error: undefined,
-    });
   }
 
   setVisibleOptions(options) {
@@ -396,12 +350,25 @@ class Settings extends Component {
         return (
           <GenerateCode
             project={this.state.project}
+            onProjectsChanged={this.props.onProjectsChanged}
+            codeSnippetModalOpen={this.state.codeSnippetModalOpen}
+            deviceKey={this.state.deviceKey}
             onDeviceApiSwitch={this.onDeviceApiSwitch}
             onEnableDeviceApi={this.onEnableDeviceApi}
             onDisableDeviceApi={this.onDisableDeviceApi}
-            deviceKey={this.state.deviceKey}
             location={this.props.location}
             history={this.props.history}
+            backendUrl={this.state.backendUrl}
+          />
+        );
+      case 3:
+        return (
+          <UserEdit
+            project={this.state.project}
+            userName={this.props.userName}
+            userMail={this.props.userMail}
+            error={this.state.error}
+            onSaveUserNames={this.onSaveUserNames}
           />
         );
       default:
