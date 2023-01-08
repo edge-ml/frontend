@@ -6,6 +6,9 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  CardBody,
+  CardTitle,
+  CardSubtitle,
 } from 'reactstrap';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -26,7 +29,7 @@ class ListItemModal extends Component {
   render() {
     return (
       <div>
-        <Card className="my-2 p-1">
+        <Card className="my-2 p-2">
           <CardTitle className="text-left">
             <h5>{this.props.value.name}</h5>
           </CardTitle>
@@ -36,7 +39,7 @@ class ListItemModal extends Component {
           <CardBody>
             <div className="d-flex justify-content-between">
               {this.props.component}
-              <Button onClick={this.toggleModal}>
+              <Button color="primary" onClick={this.toggleModal}>
                 <FontAwesomeIcon
                   className="mr-2"
                   icon={faArrowRight}

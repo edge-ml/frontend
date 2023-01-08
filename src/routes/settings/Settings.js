@@ -14,6 +14,7 @@ import {
   Collapse,
 } from 'reactstrap';
 import ListItem from './ListItem';
+import ListItemModal from './ListItemModal';
 import DeleteProject from './DeleteProject';
 import EditName from './EditName';
 import GenerateCode from './GenerateCode';
@@ -51,12 +52,14 @@ const options = [
         name: 'Edit Project Name',
         description: 'Edit the name of this project',
         tags: ['admin', 'name'],
+        isModal: false,
       },
       {
         index: 1,
         name: 'Delete Project',
         description: 'Completely remove the project',
         tags: ['delete', 'remove'],
+        isModal: false,
       },
     ],
   },
@@ -70,6 +73,7 @@ const options = [
         name: 'Key Settings',
         description: 'Create or remove device API key',
         tags: ['change key', 'remove key', 'get code'],
+        isModal: false,
       },
     ],
   },
@@ -83,6 +87,7 @@ const options = [
         name: 'Edit Users',
         description: 'Add or remove users from project',
         tags: ['add user', 'delete user', 'remove user', 'change user name'],
+        isModal: true,
       },
     ],
   },
@@ -343,12 +348,23 @@ class Settings extends Component {
       <div key={option.header.name} className="mt-5 mb-2">
         <h3>{option.header.name}</h3>
         <div>
-          {option.values.map((value) => (
-            <ListItem
-              value={value}
-              component={this.getComponent(value.index)}
-            ></ListItem>
-          ))}
+          {option.values.map((value) => {
+            if (value.isModal) {
+              return (
+                <ListItemModal
+                  value={value}
+                  component={this.getComponent(value.index)}
+                />
+              );
+            } else {
+              return (
+                <ListItem
+                  value={value}
+                  component={this.getComponent(value.index)}
+                />
+              );
+            }
+          })}
         </div>
       </div>
     ));
