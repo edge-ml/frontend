@@ -14,6 +14,7 @@ import {
   updateDataset,
   deleteDataset,
   getDataset,
+  getDatasetTimeseries,
   getDatasetLock,
   changeCanEditDataset,
 } from '../services/ApiServices/DatasetServices';
@@ -33,6 +34,7 @@ class DatasetPage extends Component {
     super(props);
     this.state = {
       dataset: undefined,
+      previewTimeSeriesData: undefined,
       labelings: [],
       labels: [],
       isReady: false,
@@ -62,6 +64,7 @@ class DatasetPage extends Component {
       this.onLabelingsAndLabelsChanged.bind(this);
     this.onDatasetChanged = this.onDatasetChanged.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
+    this.getTimeSeriesWindow = this.getTimeSeriesWindow.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
     this.onScrubbed = this.onScrubbed.bind(this);
@@ -79,6 +82,13 @@ class DatasetPage extends Component {
       num: [],
       ctrl: false,
       shift: false,
+    };
+
+    this.timeseriesPreviewCache = {
+      start: -100,
+      end: -100,
+      max_resolution: -100,
+      data: [],
     };
   }
 
@@ -128,6 +138,40 @@ class DatasetPage extends Component {
         controlStates: { ...this.state.controlStates, canEdit },
       })
     );
+
+    // get a downsampled preview for the timeseries, used for the initial graph + scrollbar
+    // half the window width seems like a good compromise for resolution
+    getDatasetTimeseries(this.props.match.params.id, {
+      max_resolution: window.innerWidth / 2,
+    }).then((timeseriesData) => {
+      this.setState({
+        previewTimeSeriesData: timeseriesData,
+      });
+    });
+  }
+
+  async getTimeSeriesWindow(index, start, end, max_resolution) {
+    if (
+      this.timeseriesPreviewCache.start === start &&
+      this.timeseriesPreviewCache.end === end &&
+      this.timeseriesPreviewCache.max_resolution === max_resolution
+    ) {
+      return this.timeseriesPreviewCache.data[index];
+    }
+
+    this.timeseriesPreviewCache.data = await getDatasetTimeseries(
+      this.props.match.params.id,
+      {
+        max_resolution,
+        start,
+        end,
+      }
+    );
+    this.timeseriesPreviewCache.start = start;
+    this.timeseriesPreviewCache.end = end;
+    this.timeseriesPreviewCache.max_resolution = max_resolution;
+
+    return this.getTimeSeriesWindow(index, start, end, max_resolution);
   }
 
   componentWillUnmount() {
@@ -651,7 +695,11 @@ class DatasetPage extends Component {
   }
 
   render() {
-    if (!this.state.isReady || this.state.controlStates.canEdit === undefined)
+    if (
+      !this.state.isReady ||
+      this.state.controlStates.canEdit === undefined ||
+      !this.state.previewTimeSeriesData
+    )
       return <Loader loading={true} />;
 
     let selectedLabeling = this.state.labelings.filter(
@@ -709,6 +757,8 @@ class DatasetPage extends Component {
                   />
                   <TimeSeriesCollectionPanel
                     timeSeries={this.state.dataset.timeSeries}
+                    previewTimeSeriesData={this.state.previewTimeSeriesData}
+                    getTimeSeriesWindow={this.getTimeSeriesWindow}
                     labeling={
                       this.state.hideLabels
                         ? { labels: undefined }

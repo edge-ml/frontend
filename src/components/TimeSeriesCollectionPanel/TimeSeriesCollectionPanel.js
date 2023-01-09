@@ -9,6 +9,7 @@ class TimeSeriesCollectionPanel extends Component {
     super(props);
     this.state = {
       timeSeries: props.timeSeries,
+      previewTimeSeriesData: props.previewTimeSeriesData,
       fusedSeries: props.fusedSeries ? props.fusedSeries : [],
       labeling: this.props.labeling,
       labelTypes: this.props.labelTypes,
@@ -18,7 +19,7 @@ class TimeSeriesCollectionPanel extends Component {
       end: props.end,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
-      onDelete: props.onDelete
+      onDelete: props.onDelete,
     };
 
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
@@ -31,10 +32,11 @@ class TimeSeriesCollectionPanel extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState(state => ({
+    this.setState((state) => ({
       labeling: props.labeling,
       labelTypes: props.labelTypes,
       timeSeries: props.timeSeries,
+      previewTimeSeriesData: props.previewTimeSeriesData,
       fusedSeries: props.fusedSeries ? props.fusedSeries : [],
       onLabelClicked: props.onLabelClicked,
       selectedLabelId: props.selectedLabelId,
@@ -42,7 +44,7 @@ class TimeSeriesCollectionPanel extends Component {
       end: props.end,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
-      onDelete: props.onDelete
+      onDelete: props.onDelete,
     }));
   }
 
@@ -72,9 +74,9 @@ class TimeSeriesCollectionPanel extends Component {
           index={0}
           offset={0}
           data={
-            this.state.timeSeries.length > 0
-              ? this.state.timeSeries
-                  .map(ts => ts.data)
+            this.state.previewTimeSeriesData.length > 0
+              ? this.state.previewTimeSeriesData
+                  .map((ts) => ts.data)
                   .flat()
                   .sort((elmA, elmB) => elmA.timestamp - elmB.timestamp)
               : [10, 10]
@@ -118,59 +120,68 @@ class TimeSeriesCollectionPanel extends Component {
             updateControlStates={this.props.updateControlStates}
             onClickPosition={this.props.onClickPosition}
             onLabelPositionUpdate={this.props.onLabelPositionUpdate}
+            getTimeSeriesWindow={this.props.getTimeSeriesWindow}
           />
         ) : null}
 
-        {this.state.timeSeries.map((timeSeries, key) => (
-          <TimeSeriesPanel
-            key={key}
-            index={key + 1}
-            offset={timeSeries.offset}
-            data={
-              timeSeries.data.length === 0
-                ? []
-                : [
-                    ...(timeSeries.data[0].timestamp === this.props.start
-                      ? []
-                      : [{ timestamp: this.props.start }]),
-                    ...timeSeries.data,
-                    ...(timeSeries.data[timeSeries.data.length - 1]
-                      .timestamp === this.props.end
-                      ? []
-                      : [{ timestamp: this.props.end }])
-                  ]
-            }
-            samplingRate={timeSeries.samplingRate ? timeSeries.samplingRate : 1}
-            name={timeSeries.name}
-            unit={timeSeries.unit}
-            labeling={this.state.labeling}
-            labelTypes={this.state.labelTypes}
-            onLabelClicked={this.state.onLabelClicked}
-            selectedLabelId={this.state.selectedLabelId}
-            start={this.state.start}
-            end={this.state.end}
-            canEdit={this.props.canEdit}
-            onScrubbed={this.state.onScrubbed}
-            numSeries={
-              this.state.timeSeries.length + this.state.fusedSeries.length + 1
-            }
-            onShift={timestamp => this.state.onShift(key, timestamp)}
-            onDelete={() => this.state.onDelete(false, key)}
-            drawingId={this.props.drawingId}
-            drawingPosition={this.props.drawingPosition}
-            newPosition={this.props.newPosition}
-            updateControlStates={this.props.updateControlStates}
-            onClickPosition={this.props.onClickPosition}
-            onLabelPositionUpdate={this.props.onLabelPositionUpdate}
-          />
-        ))}
+        {this.state.timeSeries.map((timeSeries, key) => {
+          const previewData = this.state.previewTimeSeriesData.find(
+            (x) => x._id === timeSeries._id
+          ).data;
+          return (
+            <TimeSeriesPanel
+              key={key}
+              index={key + 1}
+              offset={timeSeries.offset}
+              data={
+                previewData.length === 0
+                  ? []
+                  : [
+                      ...(previewData[0].timestamp === this.props.start
+                        ? []
+                        : [{ timestamp: this.props.start }]),
+                      ...previewData,
+                      ...(previewData[previewData.length - 1].timestamp ===
+                      this.props.end
+                        ? []
+                        : [{ timestamp: this.props.end }]),
+                    ]
+              }
+              samplingRate={
+                timeSeries.samplingRate ? timeSeries.samplingRate : 1
+              }
+              name={timeSeries.name}
+              unit={timeSeries.unit}
+              labeling={this.state.labeling}
+              labelTypes={this.state.labelTypes}
+              onLabelClicked={this.state.onLabelClicked}
+              selectedLabelId={this.state.selectedLabelId}
+              start={this.state.start}
+              end={this.state.end}
+              canEdit={this.props.canEdit}
+              onScrubbed={this.state.onScrubbed}
+              numSeries={
+                this.state.timeSeries.length + this.state.fusedSeries.length + 1
+              }
+              onShift={(timestamp) => this.state.onShift(key, timestamp)}
+              onDelete={() => this.state.onDelete(false, key)}
+              drawingId={this.props.drawingId}
+              drawingPosition={this.props.drawingPosition}
+              newPosition={this.props.newPosition}
+              updateControlStates={this.props.updateControlStates}
+              onClickPosition={this.props.onClickPosition}
+              onLabelPositionUpdate={this.props.onLabelPositionUpdate}
+              getTimeSeriesWindow={this.props.getTimeSeriesWindow}
+            />
+          );
+        })}
         {this.state.fusedSeries
-          .filter(fusedSeries => fusedSeries.timeSeries.length > 0)
+          .filter((fusedSeries) => fusedSeries.timeSeries.length > 0)
           .map((fusedSeries, key) => {
-            let selectedSeries = this.state.timeSeries.filter(timeSeries => {
+            let selectedSeries = this.state.timeSeries.filter((timeSeries) => {
               return (
                 fusedSeries.timeSeries.filter(
-                  seriesId => seriesId === timeSeries['_id']
+                  (seriesId) => seriesId === timeSeries['_id']
                 ).length !== 0
               );
             });
@@ -180,11 +191,14 @@ class TimeSeriesCollectionPanel extends Component {
                 key={key}
                 fused={true}
                 index={key + this.state.timeSeries.length + 1}
-                offset={selectedSeries.map(series => series.offset)}
-                data={selectedSeries.map(series => series.data)}
-                samplingRate={selectedSeries.map(series => series.samplingRate)}
-                name={selectedSeries.map(series => series.name)}
-                unit={selectedSeries.map(series => series.unit)}
+                offset={selectedSeries.map((series) => series.offset)}
+                // data={selectedSeries.map(series => series.data)}
+                data={[]}
+                samplingRate={selectedSeries.map(
+                  (series) => series.samplingRate
+                )}
+                name={selectedSeries.map((series) => series.name)}
+                unit={selectedSeries.map((series) => series.unit)}
                 labeling={this.state.labeling}
                 labelTypes={this.state.labelTypes}
                 onLabelClicked={this.state.onLabelClicked}
@@ -205,6 +219,7 @@ class TimeSeriesCollectionPanel extends Component {
                 updateControlStates={this.props.updateControlStates}
                 onClickPosition={this.props.onClickPosition}
                 onLabelPositionUpdate={this.props.onLabelPositionUpdate}
+                getTimeSeriesWindow={this.props.getTimeSeriesWindow}
               />
             );
           })}

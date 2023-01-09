@@ -34,6 +34,25 @@ export const getDataset = (id, callback) => {
   });
 };
 
+export const getDatasetTimeseries = (window.getDatasetTimeseries = (
+  id,
+  { start, end, max_resolution } = {}
+) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DATASETS + `/${id}/timeseries`,
+        {},
+        { start, end, max_resolution } // params here
+      )
+    )
+      .then((dataset) => resolve(dataset.data))
+      .catch((err) => reject(err.response));
+  });
+});
+
 export const getDatasetLock = (id) => {
   return new Promise((resolve, reject) => {
     axios(
