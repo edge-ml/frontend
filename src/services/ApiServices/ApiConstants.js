@@ -19,12 +19,18 @@ module.exports = {
       : window.location.host === 'edge-ml.ngrok.io'
       ? 'http://ml.edge-ml.ngrok.io/ml/'
       : 'http://localhost:3003/ml/',
+  TS_URI: 'http://localhost:8000/',
 
   HTTP_METHODS: {
     GET: 'GET',
     POST: 'POST',
     PUT: 'PUT',
     DELETE: 'DELETE',
+  },
+
+  TS_ENDPOINTS: {
+    TIMESERIESFORDATASET: '',
+    BATCH: 'batch',
   },
 
   AUTH_ENDPOINTS: {

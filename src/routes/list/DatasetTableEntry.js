@@ -111,7 +111,8 @@ const AdditionalInfo = (props) => {
 
 const DatasetInfo = (props) => {
   const { dataset } = props;
-  const duration = Math.max(dataset.end - dataset.start, 0);
+  const duration = Math.max(dataset.end - dataset.start, 0) || 0;
+  console.log('duration: ', duration);
   return (
     <div className="text-left d-inline-block m-2">
       <div className="font-weight-bold font-size-lg h5 d-inline">

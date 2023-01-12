@@ -19,6 +19,8 @@ import {
   changeCanEditDataset,
 } from '../services/ApiServices/DatasetServices';
 
+import { getTimeSeriesByIdBatch } from '../services/ApiServices/TimeSeriesService';
+
 import {
   changeDatasetLabel,
   createDatasetLabel,
@@ -63,14 +65,11 @@ class DatasetPage extends Component {
     this.onDeleteSelectedLabel = this.onDeleteSelectedLabel.bind(this);
     this.onCanEditChanged = this.onCanEditChanged.bind(this);
     this.addTimeSeries = this.addTimeSeries.bind(this);
-    this.onFuseTimeSeries = this.onFuseTimeSeries.bind(this);
-    this.onOpenFuseTimeSeriesModal = this.onOpenFuseTimeSeriesModal.bind(this);
     this.onLabelingsAndLabelsChanged =
       this.onLabelingsAndLabelsChanged.bind(this);
     this.onDatasetChanged = this.onDatasetChanged.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
-    this.onFuseCanceled = this.onFuseCanceled.bind(this);
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
     this.onScrubbed = this.onScrubbed.bind(this);
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
@@ -183,10 +182,21 @@ class DatasetPage extends Component {
     });
   }
 
+  async loadData() {
+    const dataset = await getDataset(this.props.match.params.id);
+    const timeSeries = await getTimeSeriesByIdBatch(dataset.timeSeries);
+    const dataset_end = Math.max(...timeSeries.map((elm) => elm.end));
+    const dataset_start = Math.min(...timeSeries.map((elm) => elm.start));
+    dataset.end = dataset_end;
+    dataset.start = dataset_start;
+    dataset.timeSeries = timeSeries;
+    return dataset;
+  }
+
   componentDidMount() {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
-    getDataset(this.props.match.params.id).then(this.onDatasetChanged);
+    this.loadData().then((data) => this.onDatasetChanged(data));
     getDatasetLock(this.props.match.params.id).then((canEdit) =>
       this.setState({
         controlStates: { ...this.state.controlStates, canEdit },
@@ -205,10 +215,6 @@ class DatasetPage extends Component {
 
   onDatasetChanged(dataset) {
     if (!dataset) return;
-
-    dataset.fusedSeries = dataset.fusedSeries.filter(
-      (fused) => fused.timeSeries.length > 1
-    );
     this.setState({ dataset }, () =>
       subscribeLabelingsAndLabels().then((result) => {
         this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
@@ -403,12 +409,6 @@ class DatasetPage extends Component {
     let labels = JSON.parse(JSON.stringify(obj.labels));
     obj.labels = undefined;
     obj.offset = 0;
-    obj.data = obj.data.map((point) => {
-      return {
-        timestamp: point[0],
-        value: point[1],
-      };
-    });
     dataset.timeSeries.push(obj);
 
     labels = labels.filter((label) => {
@@ -450,11 +450,8 @@ class DatasetPage extends Component {
       return;
     }
 
-    dataset.end = Math.max(
-      obj.data[obj.data.length - 1].timestamp,
-      dataset.end
-    );
-    dataset.start = Math.min(obj.data[0].timestamp, dataset.start);
+    dataset.end = Math.max(obj.data[obj.data.length - 1][0], dataset.end);
+    dataset.start = Math.min(obj.data[0][0], dataset.start);
 
     updateDataset(dataset).then((dataset) => {
       this.setState({ dataset });
@@ -463,20 +460,6 @@ class DatasetPage extends Component {
 
   onDeleteTimeSeries(fused, index) {
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-
-    if (!fused) {
-      dataset.fusedSeries.forEach((series) => {
-        series.timeSeries = series.timeSeries.filter(
-          (timeSeries) => timeSeries !== dataset.timeSeries[index]['_id']
-        );
-      });
-      dataset.timeSeries.splice(index, 1);
-      dataset.fusedSeries = dataset.fusedSeries.filter(
-        (series) => series.timeSeries.length > 1
-      );
-    } else {
-      dataset.fusedSeries.splice(index, 1);
-    }
 
     updateDataset(dataset).then((newDataset) => {
       this.setState({
@@ -496,28 +479,6 @@ class DatasetPage extends Component {
         dataset: newDataset,
       });
     });
-  }
-
-  onFuseTimeSeries(seriesIds) {
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-    dataset.fusedSeries.push({
-      timeSeries: seriesIds,
-    });
-
-    updateDataset(dataset).then((dataset) => {
-      this.setState({
-        dataset,
-        fuseTimeSeriesModalState: { isOpen: false },
-      });
-    });
-  }
-
-  onFuseCanceled() {
-    this.setState({ fuseTimeSeriesModalState: { isOpen: false } });
-  }
-
-  onOpenFuseTimeSeriesModal() {
-    this.setState({ fuseTimeSeriesModalState: { isOpen: true } });
   }
 
   updateControlStates(
@@ -820,8 +781,7 @@ class DatasetPage extends Component {
   }
 
   render() {
-    if (!this.state.isReady || this.state.controlStates.canEdit === undefined)
-      return <Loader loading={true} />;
+    if (!this.state.isReady) return <Loader loading={true} />;
 
     let selectedLabeling = this.state.labelings.filter(
       (labeling) =>
@@ -842,14 +802,19 @@ class DatasetPage extends Component {
 
     let isCrosshairIntervalActive = this.crosshairInterval ? true : false;
 
-    const startOffset = Math.min(
-      ...this.state.dataset.timeSeries.map((elm) => elm.offset),
-      0
-    );
-    const endOffset = Math.max(
-      ...this.state.dataset.timeSeries.map((elm) => elm.offset),
-      0
-    );
+    // const startOffset = Math.min(
+    //   ...this.state.dataset.timeSeries.map((elm) => elm.offset),
+    //   0
+    // );
+    // const endOffset = Math.max(
+    //   ...this.state.dataset.timeSeries.map((elm) => elm.offset),
+    //   0
+    // );
+
+    const startOffset = 0;
+    const endOffset = 0;
+
+    console.log(endOffset);
     return (
       <div style={{ position: 'relative' }}>
         {' '}
@@ -882,7 +847,6 @@ class DatasetPage extends Component {
                     onSetAllUnit={this.onSetAllUnit}
                     onSetAllName={this.onSetAllName}
                     timeSeries={this.state.dataset.timeSeries}
-                    fusedSeries={this.state.dataset.fusedSeries}
                     labeling={
                       this.state.hideLabels
                         ? { labels: undefined }
@@ -987,12 +951,6 @@ class DatasetPage extends Component {
               </Col>
               <Col xs={12}></Col>
               <Col />
-              <CombineTimeSeriesModal
-                timeSeries={this.state.dataset.timeSeries}
-                onFuse={this.onFuseTimeSeries}
-                onFuseCanceled={this.onFuseCanceled}
-                isOpen={this.state.fuseTimeSeriesModalState.isOpen}
-              />
             </Row>
           </div>
         </Fade>
