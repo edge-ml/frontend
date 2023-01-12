@@ -72,13 +72,18 @@ class CreateNewDatasetModal extends Component {
     });
   }
 
-  onFileInput(files) {
-    const formData = new FormData();
-    // keep field name consistent with the backend
-    for (const single_file of files) {
-      formData.append('CSVFile', single_file);
-    }
-    processCSVBackend(formData).then(async (timeData) => {
+  async onFileInput(files) {
+    // const formData = new FormData();
+    // // keep field name consistent with the backend
+    // for (const single_file of files) {
+    //   formData.append('CSVFile', single_file);
+    // }
+    console.log('onFileInput');
+    let results = [];
+    for (let i = 0; i < files.length; ++i) {
+      const formData = new FormData();
+      formData.append('CSVFile', files[i]);
+      const timeData = await processCSVBackend(formData);
       const result = await generateDatasetBackend(timeData);
       if (Array.isArray(result)) {
         this.setState({
@@ -87,25 +92,70 @@ class CreateNewDatasetModal extends Component {
         });
         return;
       }
-
-      var datasets = result.datasets;
-
-      datasets = datasets.map((dataset, idx) => {
-        const fileName = files[idx].name;
-        dataset.name = fileName.endsWith('.csv')
-          ? fileName.substring(0, fileName.length - 4)
-          : fileName;
-        return dataset;
+      const fileName = files[i].name;
+      results.push({
+        dataset: {
+          ...result.datasets[0],
+          name: fileName.endsWith('.csv')
+            ? fileName.substring(0, fileName.length - 4)
+            : fileName,
+        },
+        labeling: result.labelings[0],
       });
-      this.setState({
-        files: [...this.state.files, ...files],
-        datasets: [...this.state.datasets, ...datasets],
-        labelings: [
-          ...this.state.labelings,
-          ...result.labelings.map((elm) => elm.map((innerElm) => innerElm)),
-        ],
-      });
+    }
+
+    this.setState({
+      files: [...this.state.files, ...files],
+      datasets: [...this.state.datasets, ...results.map((e) => e.dataset)],
+      labelings: [
+        ...this.state.labelings,
+        ...results.map((elm) => elm.labeling.map((innerElm) => innerElm)),
+      ],
     });
+
+    // let datasets = result
+
+    // datasets = datasets.map((dataset, idx) => {
+    // 	const fileName = files[idx].name;
+    // 	dataset.name = fileName.endsWith(".csv")
+    // 		? fileName.substring(0, fileName.length - 4)
+    // 		: fileName;
+    // 	return dataset;
+    // });
+    // this.setState({
+    // 	files: [...this.state.files, ...files],
+    // 	datasets: [...this.state.datasets, ...datasets],
+    // 	labelings: [
+    // 		...this.state.labelings,
+    // 		...result.labelings.map((elm) => elm.map((innerElm) => innerElm)),
+    // 	],
+    // });
+
+    // const timeData = await processCSVBackend(formData);
+    // const result = await generateDatasetBackend(timeData);
+    // if (Array.isArray(result)) {
+    //   this.setState({
+    //       uploadErrors: result,
+    //       errorFiles: files,
+    //     });
+    //     return;
+    // }
+    // var datasets = result.datasets;
+    // datasets = datasets.map((dataset, idx) => {
+    // const fileName = files[idx].name;
+    //   dataset.name = fileName.endsWith('.csv')
+    //     ? fileName.substring(0, fileName.length - 4)
+    //     : fileName;
+    //   return dataset;
+    // });
+    // this.setState({
+    //   files: [...this.state.files, ...files],
+    //   datasets: [...this.state.datasets, ...datasets],
+    //   labelings: [
+    //     ...this.state.labelings,
+    //     ...result.labelings.map((elm) => elm.map((innerElm) => innerElm)),
+    //   ],
+    // });
   }
 
   onError(errorMsgs) {

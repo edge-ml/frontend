@@ -194,22 +194,18 @@ export const appendToDataset = (dataset, data) => {
 };
 
 export const processCSVBackend = (files) => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.POST,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PROCESS_CSV,
-        files,
-        {},
-        'multipart/form-data'
-      )
+  return axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.POST,
+      apiConsts.API_URI,
+      apiConsts.API_ENDPOINTS.PROCESS_CSV,
+      files,
+      {},
+      'multipart/form-data'
     )
-      .then((res) => {
-        resolve(res.data);
-      })
-      .catch((err) => reject(err.response));
-  });
+  )
+    .then((res) => res.data)
+    .catch((err) => err.response);
 };
 
 export const generateDatasetBackend = (timeData) => {
