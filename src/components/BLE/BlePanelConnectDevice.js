@@ -9,6 +9,12 @@ function BlePanelConnectDevice(props) {
         <h4>1. Device</h4>
       </CardHeader>
       <CardBody>
+        <small className="text-danger">
+          <strong>Warning: </strong>
+          If your device can not be found, try to turn bluetooth off and on
+          again in your settings.
+        </small>
+        <div className="panelDivider" />
         <div
           style={{
             display: 'flex',
@@ -76,11 +82,6 @@ function BlePanelConnectDevice(props) {
             ) : null}
           </div>
         </div>
-        <small className="text-danger">
-          <strong>Warning: </strong>
-          If your device can not be found, try to turn bluetooth off and on
-          again in your settings.
-        </small>
       </CardBody>
     </Card>
   );
