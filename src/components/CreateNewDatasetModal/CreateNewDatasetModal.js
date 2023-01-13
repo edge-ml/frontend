@@ -232,6 +232,7 @@ class CreateNewDatasetModal extends Component {
       }
       this.setState({ onUploading: false });
     } catch (e) {
+      console.log(e);
       this.setState({ onUploading: false });
       if (e.status === 413) {
         // HTTP Payload Too Large

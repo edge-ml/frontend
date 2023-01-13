@@ -12,7 +12,7 @@ function Snackbar(props) {
       className="snackbar"
       onClick={(e) => {
         props.closeSnackbar();
-        // () => e.preventDefault(); // FIXME: what was this originally here for?
+        e.preventDefault();
       }}
     >
       <div className="fontawesome-wrapper">
