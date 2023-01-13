@@ -17,8 +17,9 @@ import DragDrop from '../Common/DragDrop';
 import {
   updateDataset,
   createDatasets,
-  processCSVBackend,
 } from '../../services/ApiServices/DatasetServices';
+
+import { processCSVBackend } from '../../services/ApiServices/CSVServices';
 
 import {
   processCSV,
@@ -97,6 +98,10 @@ class CreateNewDatasetModal extends Component {
       });
     }
 
+    // console.log('state')
+    // console.log(this.state.datasets)
+    // console.log('result');
+    // console.log(results.map(e => e.dataset));
     this.setState({
       files: [...this.state.files, ...files],
       datasets: [...this.state.datasets, ...results.map((e) => e.dataset)],

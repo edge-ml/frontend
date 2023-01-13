@@ -58,8 +58,8 @@ export const API_ENDPOINTS = {
   REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
   SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive',
   ARDUINOFIRMWARE: 'arduinoFirmware',
-  PROCESS_CSV: 'datasets/processCSV',
-  GENERATE_DATASET: 'datasets/generateDataset',
+  PROCESS_CSV: 'CSVServices/processCSV',
+  GENERATE_DATASET: 'CSVServices/generateDataset',
 };
 
 export const ML_ENDPOINTS = {
