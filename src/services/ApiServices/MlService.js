@@ -1,8 +1,9 @@
-var apiConsts = require('./ApiConstants');
-const ax = require('axios');
+import apiConsts from './ApiConstants';
+import ax from 'axios';
+
 const axios = ax.create();
 
-module.exports.getModels = function() {
+export const getModels = function () {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -11,12 +12,12 @@ module.exports.getModels = function() {
         apiConsts.ML_ENDPOINTS.MODELS
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getTrainedModels = function() {
+export const getTrainedModels = function () {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -25,12 +26,12 @@ module.exports.getTrainedModels = function() {
         apiConsts.ML_ENDPOINTS.TRAINED_MODELS
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getTrained = function(id) {
+export const getTrained = function (id) {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -39,12 +40,12 @@ module.exports.getTrained = function(id) {
         apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.deleteTrained = function(id) {
+export const deleteTrained = function (id) {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -53,12 +54,12 @@ module.exports.deleteTrained = function(id) {
         apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id
       )
     )
-      .then(resp => resolve(resp.data))
-      .catch(err => reject(err.response));
+      .then((resp) => resolve(resp.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.train = function(data) {
+export const train = function (data) {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -69,11 +70,11 @@ module.exports.train = function(data) {
       )
     )
       .then(() => resolve()) // TODO: ml should return training id
-      .catch(err => reject(err.response));
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getActiveTrainingById = function(trainId) {
+export const getActiveTrainingById = function (trainId) {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -82,12 +83,12 @@ module.exports.getActiveTrainingById = function(trainId) {
         apiConsts.ML_ENDPOINTS.TRAIN_ONGOING + '/' + trainId
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getAllActiveTrainings = function() {
+export const getAllActiveTrainings = function () {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -96,12 +97,12 @@ module.exports.getAllActiveTrainings = function() {
         apiConsts.ML_ENDPOINTS.TRAIN_ONGOING
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.getTrainedDeployments = function(id) {
+export const getTrainedDeployments = function (id) {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -110,12 +111,12 @@ module.exports.getTrainedDeployments = function(id) {
         apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id + '/deployments'
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };
 
-module.exports.deployTrained = function(id, data) {
+export const deployTrained = function (id, data) {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -125,7 +126,7 @@ module.exports.deployTrained = function(id, data) {
         data
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err.response));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
   });
 };

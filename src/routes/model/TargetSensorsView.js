@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Card, CardBody, CardHeader } from 'reactstrap';
+
 import Loader from '../../modules/loader';
 
 export const TargetSensorsView = ({
@@ -9,11 +11,11 @@ export const TargetSensorsView = ({
   changeAllSelectedSensorStreams,
 }) => {
   return (
-    <div className="card h-100" style={{ border: '0px solid white' }}>
-      <div className="card-body h-100 d-flex flex-column align-items-start flex-column justify-content-between">
-        <div>
-          <h4>Target Sensor Streams</h4>
-        </div>
+    <Card className="text-left">
+      <CardHeader>
+        <h4>Target Sensor Streams</h4>
+      </CardHeader>
+      <CardBody className="d-flex flex-column align-items-start flex-column justify-content-between">
         <Loader loading={!sensorStreams}>
           {sensorStreams && sensorStreams.length > 0 && (
             <fieldset>
@@ -70,7 +72,7 @@ export const TargetSensorsView = ({
             labeling will be dropped.
           </small>
         </div>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 };

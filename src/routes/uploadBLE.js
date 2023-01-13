@@ -22,6 +22,10 @@ import BlePanelRecordingDisplay from '../components/BLE/BlePanelRecordingDisplay
 
 import '../components/BLE/BleActivated.css';
 import { ga_connectBluetooth } from '../services/AnalyticsService';
+import { getLatestEdgeMLVersionNumber } from '../services/ApiServices/ArduinoFirmwareServices';
+import DFUModal from '../components/BLE/DFUModal/DFUModal';
+
+import semverLt from 'semver/functions/lt';
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -38,6 +42,12 @@ class UploadBLE extends Component {
       selectedSensors: new Set(),
       stream: true,
       fullSampleRate: false,
+      hasDFUFunction: false,
+      isEdgeMLInstalled: false,
+      deviceNotUsable: false,
+      showDFUModal: false,
+      latestEdgeMLVersion: undefined,
+      outdatedVersionInstalled: false,
     };
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
@@ -58,16 +68,21 @@ class UploadBLE extends Component {
     this.onChangeSampleRate = this.onChangeSampleRate.bind(this);
     this.onConnection = this.onConnection.bind(this);
     this.connect = this.connect.bind(this);
+    this.checkServicesAndGetLatestFWVersion =
+      this.checkServicesAndGetLatestFWVersion.bind(this);
+    this.toggleDFUModal = this.toggleDFUModal.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
-    this.recordInterval;
+    this.recordInterval = null;
     this.currentData = [];
     this.sensorKeys = [];
 
     // Global vars to manage ble connnection
-    this.sensorConfigCharacteristic;
-    this.sensorDataCharacteristic;
+    this.dfuServiceUuid = '34c2e3b8-34aa-11eb-adc1-0242ac120002';
+
+    this.sensorConfigCharacteristic = null;
+    this.sensorDataCharacteristic = null;
     this.sensorServiceUuid = '34c2e3bb-34aa-11eb-adc1-0242ac120002';
     this.sensorConfigCharacteristicUuid =
       '34c2e3bd-34aa-11eb-adc1-0242ac120002';
@@ -112,6 +127,12 @@ class UploadBLE extends Component {
       connectedDeviceData: undefined,
       selectedSensors: new Set(),
       stream: true,
+      hasDFUFunction: false,
+      isEdgeMLInstalled: false,
+      deviceNotUsable: false,
+      showDFUModal: false,
+      latestEdgeMLVersion: undefined,
+      outdatedVersionInstalled: false,
     });
   }
 
@@ -198,19 +219,27 @@ class UploadBLE extends Component {
   async getDeviceInfo() {
     let options = {
       filters: [{ services: [this.deviceInfoServiceUuid] }],
-      optionalServices: [this.sensorServiceUuid],
+      optionalServices: [
+        this.deviceInfoServiceUuid,
+        this.sensorServiceUuid,
+        this.dfuServiceUuid,
+      ],
     };
     let newOptions = {
       acceptAllDevices: true,
-      optionalServices: [this.deviceInfoServiceUuid, this.sensorServiceUuid],
+      optionalServices: [
+        this.deviceInfoServiceUuid,
+        this.sensorServiceUuid,
+        this.dfuServiceUuid,
+      ],
     };
+    //const bleDevice = await navigator.bluetooth.requestDevice(options);
     const bleDevice = await navigator.bluetooth.requestDevice(options);
-    //const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
+    console.log(bleDevice);
     return bleDevice;
   }
 
   async connectDevice(bleDevice) {
-    bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
     const primaryService = await bleDevice.gatt.connect().then((server) => {
       return server.getPrimaryService(this.sensorServiceUuid);
     });
@@ -235,8 +264,15 @@ class UploadBLE extends Component {
     );
     console.log(deviceInfo);
     this.setState({
-      connectedDeviceData: deviceInfo.device,
+      connectedDeviceData: {
+        ...deviceInfo.device,
+        installedFWVersion: deviceGeneration,
+      },
       deviceSensors: prepareSensorBleObject(deviceInfo.sensors),
+      outdatedVersionInstalled: semverLt(
+        deviceGeneration,
+        this.state.latestEdgeMLVersion
+      ),
     });
     return [bleDevice, primaryService];
   }
@@ -263,11 +299,54 @@ class UploadBLE extends Component {
     });
   }
 
+  async checkServicesAndGetLatestFWVersion(bleDevice) {
+    bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
+    let promisedSetState = (newState) =>
+      new Promise((resolve) => this.setState(newState, resolve));
+    //get latest edge-ml fw version
+    const latestEdgeMLVersion = await getLatestEdgeMLVersionNumber();
+    await promisedSetState({ latestEdgeMLVersion: latestEdgeMLVersion });
+    //check for available services on device
+    let hasDeviceInfo = false;
+    let hasDFUFunction = false;
+    let hasSensorService = false;
+    const server = await bleDevice.gatt.connect();
+    const services = await server.getPrimaryServices();
+    services.forEach((service) => {
+      if (service.uuid === this.deviceInfoServiceUuid) {
+        hasDeviceInfo = true;
+      } else if (service.uuid === this.dfuServiceUuid) {
+        hasDFUFunction = true;
+      } else if (service.uuid === this.sensorServiceUuid) {
+        hasSensorService = true;
+      }
+    });
+
+    if (hasDeviceInfo && hasSensorService && hasDFUFunction) {
+      await promisedSetState({ isEdgeMLInstalled: true, hasDFUFunction: true });
+    } else if (hasDFUFunction) {
+      await promisedSetState({ hasDFUFunction: true });
+    } else if (hasDeviceInfo && hasSensorService) {
+      await promisedSetState({ isEdgeMLInstalled: true });
+    } else {
+      await promisedSetState({ deviceNotUsable: true });
+    }
+    return bleDevice;
+  }
+
   connect() {
     return this.getDeviceInfo()
-      .then(this.connectDevice)
-      .then(this.getSensorCharacteristics)
-      .then(this.onConnection)
+      .then(this.checkServicesAndGetLatestFWVersion)
+      .then((bleDevice) => {
+        if (this.state.isEdgeMLInstalled) {
+          this.connectDevice(bleDevice)
+            .then(this.getSensorCharacteristics)
+            .then(this.onConnection);
+        } else {
+          //handle possibility of flashing firmware or show incompatibility of device
+          this.setState({ connectedBLEDevice: bleDevice });
+        }
+      })
       .catch((err) => {
         console.log(err);
         ga_connectBluetooth(this.state.connectedDeviceData, err, false);
@@ -283,7 +362,9 @@ class UploadBLE extends Component {
     // Case: Connected: Now disconnect
     if (this.state.connectedBLEDevice) {
       this.setState({ bleConnectionChanging: true });
-      await this.bleDeviceProcessor.unSubscribeAllSensors();
+      if (this.state.bleDeviceProcessor !== undefined) {
+        await this.bleDeviceProcessor.unSubscribeAllSensors();
+      }
       this.onDisconnection();
       this.setState({ bleConnectionChanging: false });
     } else {
@@ -294,6 +375,10 @@ class UploadBLE extends Component {
     }
   }
 
+  toggleDFUModal() {
+    this.setState({ showDFUModal: !this.state.showDFUModal });
+  }
+
   render() {
     if (!this.state.bleStatus) {
       return <BleNotActivated></BleNotActivated>;
@@ -301,16 +386,40 @@ class UploadBLE extends Component {
 
     return (
       <div className="bleActivatedContainer">
-        <BlePanelConnectDevice
-          bleConnectionChanging={this.state.bleConnectionChanging}
-          toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
-          connectedBLEDevice={this.state.connectedBLEDevice}
-        ></BlePanelConnectDevice>
-
-        {this.state.deviceSensors && this.state.connectedBLEDevice ? (
+        <div className="mb-3">
+          <BlePanelConnectDevice
+            bleConnectionChanging={this.state.bleConnectionChanging}
+            toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
+            connectedBLEDevice={this.state.connectedBLEDevice}
+            hasDFUFunction={this.state.hasDFUFunction}
+            toggleDFUModal={this.toggleDFUModal}
+            deviceNotUsable={this.state.deviceNotUsable}
+            latestEdgeMLVersion={this.state.latestEdgeMLVersion}
+            isEdgeMLInstalled={
+              this.state.connectedDeviceData
+                ? this.state.connectedDeviceData.installedFWVersion
+                : undefined
+            }
+            outdatedVersionInstalled={this.state.outdatedVersionInstalled}
+            connectedDeviceData={this.state.connectedDeviceData}
+          ></BlePanelConnectDevice>
+        </div>
+        {this.state.showDFUModal ? (
+          <DFUModal
+            connectedBLEDevice={this.state.connectedBLEDevice}
+            isEdgeMLInstalled={this.state.isEdgeMLInstalled}
+            connectedDeviceData={this.state.connectedDeviceData}
+            toggleDFUModal={this.toggleDFUModal}
+            showDFUModal={this.state.showDFUModal}
+            latestEdgeMLVersion={this.state.latestEdgeMLVersion}
+          />
+        ) : null}
+        {this.state.deviceSensors &&
+        this.state.connectedBLEDevice &&
+        this.state.isEdgeMLInstalled ? (
           <Row>
             <Col>
-              <div className="shadow p-3 mb-5 bg-white rounded">
+              <div className="shadow mb-5 bg-white rounded">
                 <BlePanelSensorList
                   maxSampleRate={this.state.connectedDeviceData.maxSampleRate}
                   selectedSensors={this.state.selectedSensors}

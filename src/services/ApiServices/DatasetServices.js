@@ -1,8 +1,9 @@
-const apiConsts = require('./ApiConstants');
-const ax = require('axios');
+import apiConsts from './ApiConstants';
+import ax from 'axios';
+
 const axios = ax.create();
 
-module.exports.getDatasets = () => {
+export const getDatasets = () => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -19,7 +20,24 @@ module.exports.getDatasets = () => {
   });
 };
 
-module.exports.getDataset = (id, callback) => {
+export const getDatasetTimeseries = (id, info) => {
+  console.log(info);
+  const { max_resolution, start, end } = info;
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASET +
+          `${id}/ts/${start}/${end}/${max_resolution}`
+      )
+    )
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
+  });
+};
+
+export const getDataset = (id) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -33,7 +51,27 @@ module.exports.getDataset = (id, callback) => {
   });
 };
 
-module.exports.getDatasetLock = (id) => {
+export const getDatasetMeta = (id) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASET + `${id}/meta`
+      )
+    )
+      .then((dataset) => {
+        console.log(dataset);
+        resolve(dataset.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        reject(err.response);
+      });
+  });
+};
+
+export const getDatasetLock = (id) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -49,16 +87,17 @@ module.exports.getDatasetLock = (id) => {
   });
 };
 
-module.exports.deleteDatasets = (ids) => {
+export const deleteDatasets = (ids) => {
   try {
-    const promises = ids.map((elm) => this.deleteDataset(elm));
+    const promises = ids.map((elm) => deleteDataset(elm));
     return Promise.all(promises);
   } catch (e) {
     console.log(e);
+    return e;
   }
 };
 
-module.exports.deleteDataset = (id) => {
+export const deleteDataset = (id) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -72,7 +111,7 @@ module.exports.deleteDataset = (id) => {
   });
 };
 
-module.exports.updateDataset = (dataset, onlyMetaData) => {
+export const updateDataset = (dataset, onlyMetaData) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -99,7 +138,7 @@ module.exports.updateDataset = (dataset, onlyMetaData) => {
   });
 };
 
-module.exports.changeCanEditDataset = (dataset, lock) => {
+export const changeCanEditDataset = (dataset, lock) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -124,7 +163,7 @@ module.exports.changeCanEditDataset = (dataset, lock) => {
   });
 };
 
-module.exports.createDataset = (dataset) => {
+export const createDataset = (dataset) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -135,7 +174,7 @@ module.exports.createDataset = (dataset) => {
       )
     )
       .then(() => {
-        this.getDatasets().then((datasets) => {
+        getDatasets().then((datasets) => {
           resolve(datasets);
         });
       })
@@ -143,7 +182,7 @@ module.exports.createDataset = (dataset) => {
   });
 };
 
-module.exports.createDatasets = (datasets) => {
+export const createDatasets = (datasets) => {
   return new Promise((resolve, reject) => {
     const promises = datasets.map((dataset) =>
       axios(
@@ -157,15 +196,18 @@ module.exports.createDatasets = (datasets) => {
     );
     Promise.all(promises)
       .then(() => {
-        this.getDatasets().then((datasets) => {
+        getDatasets().then((datasets) => {
           resolve(datasets);
         });
       })
-      .catch((err) => reject(err.response));
+      .catch((err) => {
+        console.log(err);
+        reject(err.response);
+      });
   });
 };
 
-module.exports.appendToDataset = (dataset, data) => {
+export const appendToDataset = (dataset, data) => {
   return axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,

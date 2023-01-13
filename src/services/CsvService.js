@@ -1,8 +1,7 @@
-const { isNumber } = require('./helpers');
-const { generateRandomColor } = require('./ColorService');
-const { addLabeling } = require('./ApiServices/LabelingServices');
+import { isNumber } from './helpers';
+import { generateRandomColor } from './ColorService';
 
-module.exports.processCSV = (files) => {
+export const processCSV = (files) => {
   return new Promise((resolve, reject) => {
     var timeData = [];
     var i = 0;
@@ -30,7 +29,7 @@ module.exports.processCSV = (files) => {
   });
 };
 
-module.exports.generateDataset = (timeData, dataset) => {
+export const generateDataset = (timeData, dataset) => {
   const headerErrors = checkHeaders(timeData);
   if (headerErrors.some((elm) => elm.length > 0)) {
     return headerErrors;
@@ -54,7 +53,7 @@ module.exports.generateDataset = (timeData, dataset) => {
   return { datasets: datasets, labelings: labelings };
 };
 
-module.exports.generateCSV = (dataset, props_labelings, props_labels) => {
+export const generateCSV = (dataset, props_labelings, props_labels) => {
   const csv = [];
   const labelings = {};
   const labelHeaderMap = [];
@@ -291,7 +290,7 @@ function processCSVColumn(timeData) {
   }
 }
 
-module.exports.generateLabeledDataset = (
+export const generateLabeledDataset = (
   labelings,
   labels,
   currentLabeling,
@@ -324,7 +323,7 @@ module.exports.generateLabeledDataset = (
   return newDatasets;
 };
 
-module.exports.extendExistingDataset = (dataset, newDatasets) => {
+export const extendExistingDataset = (dataset, newDatasets) => {
   const fusedDataset = dataset;
   for (var i = 0; i < newDatasets.length; i++) {
     fusedDataset.timeSeries.push(...newDatasets[i].timeSeries);
@@ -338,7 +337,7 @@ module.exports.extendExistingDataset = (dataset, newDatasets) => {
   return fusedDataset;
 };
 
-function checkHeaders(timeData) {
+export function checkHeaders(timeData) {
   const errors = [];
   for (var i = 0; i < timeData.length; i++) {
     const currentErrors = [];
@@ -364,5 +363,3 @@ function checkHeaders(timeData) {
   }
   return errors;
 }
-
-module.exports.checkHeaders = checkHeaders;

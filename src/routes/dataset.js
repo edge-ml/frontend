@@ -7,7 +7,6 @@ import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
 import CustomMetadataPanel from '../components/MetadataPanel/CustomMetadataPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
-import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
 import Snackbar from '../components/Snackbar/Snackbar';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
@@ -15,8 +14,10 @@ import {
   updateDataset,
   deleteDataset,
   getDataset,
+  getDatasetTimeseries,
   getDatasetLock,
   changeCanEditDataset,
+  getDatasetMeta,
 } from '../services/ApiServices/DatasetServices';
 
 import {
@@ -34,6 +35,7 @@ class DatasetPage extends Component {
     super(props);
     this.state = {
       dataset: undefined,
+      previewTimeSeriesData: undefined,
       labelings: [],
       labels: [],
       isReady: false,
@@ -42,16 +44,13 @@ class DatasetPage extends Component {
         selectedLabelingId: undefined,
         selectedLabelTypeId: undefined,
         selectedLabelTypes: undefined,
-        canEdit: undefined,
+        canEdit: true, // Hardcoded for now
         drawingId: undefined,
         drawingPosition: undefined,
         newPosition: undefined,
         fromLastPosition: false,
       },
       hideLabels: false,
-      fuseTimeSeriesModalState: {
-        isOpen: false,
-      },
       modalOpen: false,
     };
 
@@ -67,6 +66,7 @@ class DatasetPage extends Component {
       this.onLabelingsAndLabelsChanged.bind(this);
     this.onDatasetChanged = this.onDatasetChanged.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
+    this.getTimeSeriesWindow = this.getTimeSeriesWindow.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
     this.onScrubbed = this.onScrubbed.bind(this);
@@ -74,13 +74,7 @@ class DatasetPage extends Component {
     this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
     this.updateControlStates = this.updateControlStates.bind(this);
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
-    this.onDatasetUpdated = this.onDatasetUpdated.bind(this);
-    this.setModalOpen = this.setModalOpen.bind(this);
     this.onAddLabeling = this.onAddLabeling.bind(this);
-    this.onSetName = this.onSetName.bind(this);
-    this.onSetUnit = this.onSetUnit.bind(this);
-    this.onSetAllUnit = this.onSetAllUnit.bind(this);
-    this.onSetAllName = this.onSetAllName.bind(this);
     this.onClickPosition = this.onClickPosition.bind(this);
     this.onLabelPositionUpdate = this.onLabelPositionUpdate.bind(this);
     this.showSnackbar = this.showSnackbar.bind(this);
@@ -90,6 +84,13 @@ class DatasetPage extends Component {
       num: [],
       ctrl: false,
       shift: false,
+    };
+
+    this.timeseriesPreviewCache = {
+      start: -100,
+      end: -100,
+      max_resolution: -100,
+      data: [],
     };
   }
 
@@ -121,50 +122,6 @@ class DatasetPage extends Component {
     }, duration);
   }
 
-  onSetName(index, newName) {
-    const dataset = this.state.dataset;
-    dataset.timeSeries[index - 1].name = newName;
-    updateDataset(dataset).then((newDataset) => {
-      this.setState({
-        dataset: newDataset,
-      });
-    });
-  }
-
-  onSetUnit(index, newUnit) {
-    const dataset = this.state.dataset;
-    dataset.timeSeries[index - 1].unit = newUnit;
-    updateDataset(dataset).then((newDataset) => {
-      this.setState({
-        dataset: newDataset,
-      });
-    });
-  }
-
-  onSetAllName(newName) {
-    const dataset = this.state.dataset;
-    for (var i = 0; i < dataset.timeSeries.length; i++) {
-      dataset.timeSeries[i].name = newName;
-    }
-    updateDataset(dataset).then((newDataset) => {
-      this.setState({
-        dataset: newDataset,
-      });
-    });
-  }
-
-  onSetAllUnit(newUnit) {
-    const dataset = this.state.dataset;
-    for (var i = 0; i < dataset.timeSeries.length; i++) {
-      dataset.timeSeries[i].unit = newUnit;
-    }
-    updateDataset(dataset).then((newDataset) => {
-      this.setState({
-        dataset: newDataset,
-      });
-    });
-  }
-
   onAddLabeling() {
     const newHistory = this.props.history.location.pathname.split('/');
     newHistory.length -= 2;
@@ -182,12 +139,14 @@ class DatasetPage extends Component {
 
   async loadData() {
     const dataset = await getDataset(this.props.match.params.id);
+    console.log(dataset);
     const dataset_end = Math.max(...dataset.timeSeries.map((elm) => elm.end));
     const dataset_start = Math.min(
       ...dataset.timeSeries.map((elm) => elm.start)
     );
     dataset.end = dataset_end;
     dataset.start = dataset_start;
+    console.log(dataset.start, dataset.end);
     return dataset;
   }
 
@@ -200,15 +159,46 @@ class DatasetPage extends Component {
         controlStates: { ...this.state.controlStates, canEdit },
       })
     );
+
+    // get a downsampled preview for the timeseries, used for the initial graph + scrollbar
+    // half the window width seems like a good compromise for resolution
+    getDatasetTimeseries(this.props.match.params.id, {
+      max_resolution: window.innerWidth / 2,
+    }).then((timeseriesData) => {
+      console.log(timeseriesData);
+      this.setState({
+        previewTimeSeriesData: timeseriesData,
+      });
+    });
+  }
+
+  async getTimeSeriesWindow(index, start, end, max_resolution) {
+    if (
+      this.timeseriesPreviewCache.start === start &&
+      this.timeseriesPreviewCache.end === end &&
+      this.timeseriesPreviewCache.max_resolution === max_resolution
+    ) {
+      return this.timeseriesPreviewCache.data[index];
+    }
+
+    this.timeseriesPreviewCache.data = await getDatasetTimeseries(
+      this.props.match.params.id,
+      {
+        max_resolution,
+        start,
+        end,
+      }
+    );
+    this.timeseriesPreviewCache.start = start;
+    this.timeseriesPreviewCache.end = end;
+    this.timeseriesPreviewCache.max_resolution = max_resolution;
+
+    return this.getTimeSeriesWindow(index, start, end, max_resolution);
   }
 
   componentWillUnmount() {
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('keydown', this.onKeyDown);
-  }
-
-  onDatasetUpdated() {
-    getDataset(this.props.match.params.id).then(this.onDatasetChanged);
   }
 
   onDatasetChanged(dataset) {
@@ -729,7 +719,7 @@ class DatasetPage extends Component {
       // Delete labeling when no labels are present for this labeling
       if (labeling.labels.length === 0) {
         dataset.labelings = dataset.labelings.filter(
-          (elm) => elm._id != labeling._id
+          (elm) => elm._id !== labeling._id
         );
       }
 
@@ -780,7 +770,15 @@ class DatasetPage extends Component {
   }
 
   render() {
-    if (!this.state.isReady) return <Loader loading={true} />;
+    console.log(this.state.isReady);
+    console.log(this.state.controlStates.canEdit == undefined);
+    console.log(this.state.previewTimeSeriesData);
+    if (
+      !this.state.isReady ||
+      this.state.controlStates.canEdit === undefined ||
+      !this.state.previewTimeSeriesData
+    )
+      return <Loader loading={true} />;
 
     let selectedLabeling = this.state.labelings.filter(
       (labeling) =>
@@ -815,11 +813,11 @@ class DatasetPage extends Component {
 
     console.log(endOffset);
     return (
-      <div style={{ position: 'relative' }}>
+      <div className="w-100 position-relative">
         {' '}
         <Fade in={this.state.fadeIn}>
           <div>
-            <Row className="pt-3">
+            <Row className="pt-3 m-0">
               <Col
                 ref={this.middle_col_width}
                 onMouseUp={this.mouseUpHandler}
@@ -827,7 +825,7 @@ class DatasetPage extends Component {
                 lg={9}
                 className="pr-lg-0"
               >
-                <div>
+                <div className="position-relative">
                   <LabelingSelectionPanel
                     objectType={'labelings'}
                     history={this.props.history}
@@ -841,11 +839,9 @@ class DatasetPage extends Component {
                     }
                   />
                   <TimeSeriesCollectionPanel
-                    onSetName={this.onSetName}
-                    onSetUnit={this.onSetUnit}
-                    onSetAllUnit={this.onSetAllUnit}
-                    onSetAllName={this.onSetAllName}
                     timeSeries={this.state.dataset.timeSeries}
+                    previewTimeSeriesData={this.state.previewTimeSeriesData}
+                    getTimeSeriesWindow={this.getTimeSeriesWindow}
                     labeling={
                       this.state.hideLabels
                         ? { labels: undefined }
@@ -867,18 +863,6 @@ class DatasetPage extends Component {
                     onClickPosition={this.onClickPosition}
                     onLabelPositionUpdate={this.onLabelPositionUpdate}
                   />
-                  <Button
-                    block
-                    outline
-                    onClick={this.onOpenFuseTimeSeriesModal}
-                    style={{
-                      zIndex: 1,
-                      position: 'relative',
-                      marginBottom: '240px',
-                    }}
-                  >
-                    + Fuse Multiple Time Series
-                  </Button>
                   <LabelingPanel
                     hideLabels={this.state.hideLabels}
                     onHideLabels={this.hideLabels}
@@ -921,7 +905,6 @@ class DatasetPage extends Component {
               <Col xs={12} lg={3}>
                 <div className="mt-2">
                   <MetadataPanel
-                    id={this.state.dataset['_id']}
                     start={this.state.dataset.start}
                     end={this.state.dataset.end}
                     user={this.state.dataset.userId}
@@ -939,12 +922,8 @@ class DatasetPage extends Component {
                   <ManagementPanel
                     labels={this.state.labels}
                     labelings={this.state.labelings}
-                    onUpload={(obj) => this.addTimeSeries(obj)}
-                    startTime={this.state.dataset.start}
                     onDeleteDataset={this.onDeleteDataset}
                     dataset={this.state.dataset}
-                    onDatasetComplete={this.onDatasetUpdated}
-                    setModalOpen={this.setModalOpen}
                   />
                 </div>
               </Col>

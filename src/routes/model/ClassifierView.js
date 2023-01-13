@@ -7,6 +7,9 @@ import {
   InputGroupAddon,
   Input,
   FormFeedback,
+  Card,
+  CardBody,
+  CardHeader,
 } from 'reactstrap';
 
 import { faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -31,34 +34,20 @@ export const ClassifierView = ({
   requestInProgress,
 }) => {
   return (
-    <div className="card h-100" style={{ border: '0px solid white' }}>
-      <div className="card-body h-100 d-flex flex-column align-items-start flex-column justify-content-between">
-        <div className="d-flex flex-row justify-content-between w-100">
-          <h4>Classifier</h4>
-          <Select
-            options={models.map((m) => {
-              return { value: m.id, label: m.name };
-            })}
-            value={modelSelection}
-            onChange={changeModelSelection}
-            isSearchable={false}
-            styles={{
-              valueContainer: () => ({
-                width: 200,
-                height: 25,
-              }),
-            }}
-          ></Select>
-        </div>
-        <div
-          className="mt-3 mb-3"
-          style={{
-            width: '100%',
-            height: '0.5px',
-            backgroundColor: 'lightgray',
-          }}
-        ></div>
-        <InputGroup style={{ width: '350px' }}>
+    <Card>
+      <CardHeader className="d-flex flex-row justify-content-between w-100">
+        <h4 className="mr-2">Classifier</h4>
+        <Select
+          options={models.map((m) => {
+            return { value: m.id, label: m.name };
+          })}
+          value={modelSelection}
+          onChange={changeModelSelection}
+          isSearchable={false}
+        ></Select>
+      </CardHeader>
+      <CardBody className="h-100 d-flex flex-column align-items-start flex-column justify-content-between">
+        <InputGroup style={{ maxWidth: '350px' }}>
           <InputGroupAddon addonType="prepend">Model Name</InputGroupAddon>
           <Input
             type={'text'}
@@ -95,7 +84,7 @@ export const ClassifierView = ({
             />
           </div>
         </Button>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 };

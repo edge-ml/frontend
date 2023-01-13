@@ -1,9 +1,10 @@
-var apiConsts = require('./ApiConstants');
-const ax = require('axios');
+import apiConsts from './ApiConstants';
+import ax from 'axios';
+
 const axios = ax.create();
 const axiosNoToken = ax.create();
 
-module.exports.createDatasetLabel = (datasetId, labelingId, label) => {
+export const createDatasetLabel = (datasetId, labelingId, label) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -14,12 +15,12 @@ module.exports.createDatasetLabel = (datasetId, labelingId, label) => {
         label
       )
     )
-      .then(data => resolve(data.data))
-      .catch(err => reject(err));
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err));
   });
 };
 
-module.exports.changeDatasetLabel = (datasetId, labelingId, changedLabel) => {
+export const changeDatasetLabel = (datasetId, labelingId, changedLabel) => {
   return axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.PUT,
@@ -30,7 +31,7 @@ module.exports.changeDatasetLabel = (datasetId, labelingId, changedLabel) => {
   );
 };
 
-module.exports.deleteDatasetLabel = (datasetId, labelingId, labelId) => {
+export const deleteDatasetLabel = (datasetId, labelingId, labelId) => {
   return axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.DELETE,

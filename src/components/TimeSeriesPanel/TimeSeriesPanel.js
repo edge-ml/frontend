@@ -4,6 +4,7 @@ import HighchartsReact from 'highcharts-react-official';
 
 import './TimeSeriesPanel.css';
 import DropdownPanel from './DropdownPanel';
+import { debounce } from '../../services/helpers';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
@@ -11,6 +12,7 @@ const prefixRightPlotLine = 'plotLine_right_';
 class TimeSeriesPanel extends Component {
   constructor(props) {
     super(props);
+    console.log(props.data);
 
     this.chart = React.createRef();
 
@@ -92,6 +94,35 @@ class TimeSeriesPanel extends Component {
 
     this.chart.current.chart.reflow();
   }
+
+  updateData = debounce((chart, min, max, width, offset) => {
+    console.log('up');
+    if (this.props.getTimeSeriesWindow) {
+      // FIXME: this doesn't really work with fusedSeries, ignore them for now
+      const timeSeriesIndex = this.props.index - 1; // -1 cause 0 is the scrollbar
+
+      chart.showLoading('Loading data from server...');
+      this.props
+        .getTimeSeriesWindow(
+          timeSeriesIndex,
+          Math.round(min),
+          Math.round(max),
+          Math.round(width)
+        )
+        .then((timeserie) => {
+          // FIXME: offset/series[0] cause problem with fusedSeries, ignore for now
+          chart.series[0].setData(
+            timeserie.data.map((point) => [
+              point.timestamp + offset,
+              point.datapoint,
+            ]),
+            true,
+            false
+          );
+          chart.hideLoading();
+        });
+    }
+  }, 100);
 
   generateState(props) {
     return {

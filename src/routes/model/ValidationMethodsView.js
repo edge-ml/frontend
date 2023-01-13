@@ -1,6 +1,13 @@
 import React from 'react';
 import Select from 'react-select';
-import { Badge, InputGroup, Input } from 'reactstrap';
+import {
+  Badge,
+  InputGroup,
+  Input,
+  Card,
+  CardBody,
+  CardHeader,
+} from 'reactstrap';
 
 import { withLoader } from '../../modules/loader';
 
@@ -111,15 +118,14 @@ const LOSO = ({
 
 const withCard = (name, Wrapped) => (props) =>
   (
-    <div className="card" style={{ border: '0px solid white' }}>
-      <div className="card-body d-flex flex-column align-items-start flex-column justify-content-between">
-        <div>
-          <h4>{name}</h4>
-        </div>
+    <Card className="text-left">
+      <CardHeader>
+        <h4>{name}</h4>
+      </CardHeader>
+      <CardBody className="d-flex flex-column align-items-start flex-column justify-content-between">
         <Wrapped {...props} />
-      </div>
-      {/* <div className="h-100"/> */}
-    </div>
+      </CardBody>
+    </Card>
   );
 
 export const ValidationMethodsView = withCard(

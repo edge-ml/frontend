@@ -155,7 +155,7 @@ class ListPage extends Component {
     }
     return (
       <div id="dataList">
-        <Container style={{ margin: '5px' }}>
+        <Container>
           <DataUpload
             toggleCreateNewDatasetModal={this.toggleCreateNewDatasetModal}
           ></DataUpload>
