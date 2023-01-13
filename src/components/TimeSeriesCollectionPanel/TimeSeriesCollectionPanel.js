@@ -18,7 +18,7 @@ class TimeSeriesCollectionPanel extends Component {
       end: props.end,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
-      onDelete: props.onDelete
+      onDelete: props.onDelete,
     };
 
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
@@ -31,7 +31,7 @@ class TimeSeriesCollectionPanel extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState(state => ({
+    this.setState((state) => ({
       labeling: props.labeling,
       labelTypes: props.labelTypes,
       timeSeries: props.timeSeries,
@@ -42,7 +42,7 @@ class TimeSeriesCollectionPanel extends Component {
       end: props.end,
       onScrubbed: props.onScrubbed,
       onShift: props.onShift,
-      onDelete: props.onDelete
+      onDelete: props.onDelete,
     }));
   }
 
@@ -74,7 +74,7 @@ class TimeSeriesCollectionPanel extends Component {
           data={
             this.state.timeSeries.length > 0
               ? this.state.timeSeries
-                  .map(ts => ts.data)
+                  .map((ts) => ts.data)
                   .flat()
                   .sort((elmA, elmB) => elmA.timestamp - elmB.timestamp)
               : [10, 10]
@@ -125,19 +125,19 @@ class TimeSeriesCollectionPanel extends Component {
           <TimeSeriesPanel
             key={key}
             index={key + 1}
-            offset={timeSeries.offset}
+            offset={0}
             data={
               timeSeries.data.length === 0
                 ? []
                 : [
                     ...(timeSeries.data[0].timestamp === this.props.start
                       ? []
-                      : [{ timestamp: this.props.start }]),
+                      : [[this.props.start, 0]]),
                     ...timeSeries.data,
                     ...(timeSeries.data[timeSeries.data.length - 1]
                       .timestamp === this.props.end
                       ? []
-                      : [{ timestamp: this.props.end }])
+                      : [[this.props.end, 0]]),
                   ]
             }
             samplingRate={timeSeries.samplingRate ? timeSeries.samplingRate : 1}
@@ -154,7 +154,7 @@ class TimeSeriesCollectionPanel extends Component {
             numSeries={
               this.state.timeSeries.length + this.state.fusedSeries.length + 1
             }
-            onShift={timestamp => this.state.onShift(key, timestamp)}
+            onShift={(timestamp) => this.state.onShift(key, timestamp)}
             onDelete={() => this.state.onDelete(false, key)}
             drawingId={this.props.drawingId}
             drawingPosition={this.props.drawingPosition}
@@ -165,12 +165,12 @@ class TimeSeriesCollectionPanel extends Component {
           />
         ))}
         {this.state.fusedSeries
-          .filter(fusedSeries => fusedSeries.timeSeries.length > 0)
+          .filter((fusedSeries) => fusedSeries.timeSeries.length > 0)
           .map((fusedSeries, key) => {
-            let selectedSeries = this.state.timeSeries.filter(timeSeries => {
+            let selectedSeries = this.state.timeSeries.filter((timeSeries) => {
               return (
                 fusedSeries.timeSeries.filter(
-                  seriesId => seriesId === timeSeries['_id']
+                  (seriesId) => seriesId === timeSeries['_id']
                 ).length !== 0
               );
             });
@@ -180,11 +180,13 @@ class TimeSeriesCollectionPanel extends Component {
                 key={key}
                 fused={true}
                 index={key + this.state.timeSeries.length + 1}
-                offset={selectedSeries.map(series => series.offset)}
-                data={selectedSeries.map(series => series.data)}
-                samplingRate={selectedSeries.map(series => series.samplingRate)}
-                name={selectedSeries.map(series => series.name)}
-                unit={selectedSeries.map(series => series.unit)}
+                offset={selectedSeries.map((series) => series.offset)}
+                data={selectedSeries.map((series) => series.data)}
+                samplingRate={selectedSeries.map(
+                  (series) => series.samplingRate
+                )}
+                name={selectedSeries.map((series) => series.name)}
+                unit={selectedSeries.map((series) => series.unit)}
                 labeling={this.state.labeling}
                 labelTypes={this.state.labelTypes}
                 onLabelClicked={this.state.onLabelClicked}
