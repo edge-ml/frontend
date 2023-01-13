@@ -20,6 +20,7 @@ module.exports = {
       ? 'http://ml.edge-ml.ngrok.io/ml/'
       : 'http://localhost:3003/ml/',
   TS_URI: 'http://localhost:8000/',
+  DATASET_STORE: 'http://localhost:8000',
 
   HTTP_METHODS: {
     GET: 'GET',
@@ -71,6 +72,10 @@ module.exports = {
     TRAINED_MODELS: 'models/trained',
     DEPLOY: 'deploy',
     PARAMETERS: 'parameters',
+  },
+  DATASET_STORE_ENDPOINTS: {
+    DATASET: '/',
+    DATASETS_PROJECT: '/project',
   },
 };
 

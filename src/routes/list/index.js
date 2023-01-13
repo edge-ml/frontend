@@ -121,6 +121,7 @@ class ListPage extends Component {
   }
 
   deleteDatasets() {
+    console.log('Delete datasets');
     deleteDatasets(this.state.datasetsToDelete)
       .then(() => {
         this.setState({

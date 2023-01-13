@@ -19,8 +19,6 @@ import {
   changeCanEditDataset,
 } from '../services/ApiServices/DatasetServices';
 
-import { getTimeSeriesByIdBatch } from '../services/ApiServices/TimeSeriesService';
-
 import {
   changeDatasetLabel,
   createDatasetLabel,
@@ -184,12 +182,12 @@ class DatasetPage extends Component {
 
   async loadData() {
     const dataset = await getDataset(this.props.match.params.id);
-    const timeSeries = await getTimeSeriesByIdBatch(dataset.timeSeries);
-    const dataset_end = Math.max(...timeSeries.map((elm) => elm.end));
-    const dataset_start = Math.min(...timeSeries.map((elm) => elm.start));
+    const dataset_end = Math.max(...dataset.timeSeries.map((elm) => elm.end));
+    const dataset_start = Math.min(
+      ...dataset.timeSeries.map((elm) => elm.start)
+    );
     dataset.end = dataset_end;
     dataset.start = dataset_start;
-    dataset.timeSeries = timeSeries;
     return dataset;
   }
 
@@ -771,6 +769,7 @@ class DatasetPage extends Component {
 
   onDeleteDataset() {
     if (!this.state.dataset || !this.state.dataset['_id']) return;
+    console.log('Deleting datasets');
     deleteDataset(this.state.dataset['_id'])
       .then(() => {
         this.props.navigateTo('datasets');
