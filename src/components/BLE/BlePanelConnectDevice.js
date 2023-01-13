@@ -55,13 +55,7 @@ const getButtonView = (props) => {
     props.hasDFUFunction
   ) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'end',
-        }}
-      >
+      <div>
         <Button color="primary" onClick={props.toggleDFUModal}>
           Flash edge-ml firmware
         </Button>
@@ -88,21 +82,37 @@ function BlePanelConnectDevice(props) {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
+            flexDirection: 'row',
           }}
         >
           {getInfoText(props)}
-          <SpinnerButton
-            loadingtext={
-              props.connectedBLEDevice ? 'Disconnecting...' : 'Connecting...'
-            }
-            color={props.connectedBLEDevice ? 'danger' : 'primary'}
-            loading={props.bleConnectionChanging}
-            onClick={props.toggleBLEDeviceConnection}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              marginRight: '2',
+              padding: '4',
+            }}
           >
-            {props.connectedBLEDevice ? 'Disconnect device' : 'Connect device'}
-          </SpinnerButton>
+            <div className="mr-2">{getButtonView(props)}</div>
+            <div>
+              <SpinnerButton
+                loadingtext={
+                  props.connectedBLEDevice
+                    ? 'Disconnecting...'
+                    : 'Connecting...'
+                }
+                color={props.connectedBLEDevice ? 'danger' : 'primary'}
+                loading={props.bleConnectionChanging}
+                onClick={props.toggleBLEDeviceConnection}
+              >
+                {props.connectedBLEDevice
+                  ? 'Disconnect device'
+                  : 'Connect device'}
+              </SpinnerButton>
+            </div>
+          </div>
         </div>
-        {getButtonView(props)}
       </CardBody>
     </Card>
   );
