@@ -219,7 +219,11 @@ class UploadBLE extends Component {
   async getDeviceInfo() {
     let options = {
       filters: [{ services: [this.deviceInfoServiceUuid] }],
-      optionalServices: [this.sensorServiceUuid],
+      optionalServices: [
+        this.deviceInfoServiceUuid,
+        this.sensorServiceUuid,
+        this.dfuServiceUuid,
+      ],
     };
     let newOptions = {
       acceptAllDevices: true,
@@ -229,8 +233,8 @@ class UploadBLE extends Component {
         this.dfuServiceUuid,
       ],
     };
-    //const bleDevice = await navigator.bluetooth.requestDevice(options);
     const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
+    console.log(bleDevice);
     return bleDevice;
   }
 
@@ -381,18 +385,24 @@ class UploadBLE extends Component {
 
     return (
       <div className="bleActivatedContainer">
-        <BlePanelConnectDevice
-          bleConnectionChanging={this.state.bleConnectionChanging}
-          toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
-          connectedBLEDevice={this.state.connectedBLEDevice}
-          hasDFUFunction={this.state.hasDFUFunction}
-          toggleDFUModal={this.toggleDFUModal}
-          deviceNotUsable={this.state.deviceNotUsable}
-          latestEdgeMLVersion={this.state.latestEdgeMLVersion}
-          isEdgeMLInstalled={this.state.isEdgeMLInstalled}
-          outdatedVersionInstalled={this.state.outdatedVersionInstalled}
-          connectedDeviceData={this.state.connectedDeviceData}
-        ></BlePanelConnectDevice>
+        <div className="mb-3">
+          <BlePanelConnectDevice
+            bleConnectionChanging={this.state.bleConnectionChanging}
+            toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
+            connectedBLEDevice={this.state.connectedBLEDevice}
+            hasDFUFunction={this.state.hasDFUFunction}
+            toggleDFUModal={this.toggleDFUModal}
+            deviceNotUsable={this.state.deviceNotUsable}
+            latestEdgeMLVersion={this.state.latestEdgeMLVersion}
+            isEdgeMLInstalled={
+              this.state.connectedDeviceData
+                ? this.state.connectedDeviceData.installedFWVersion
+                : undefined
+            }
+            outdatedVersionInstalled={this.state.outdatedVersionInstalled}
+            connectedDeviceData={this.state.connectedDeviceData}
+          ></BlePanelConnectDevice>
+        </div>
         {this.state.showDFUModal ? (
           <DFUModal
             connectedBLEDevice={this.state.connectedBLEDevice}
@@ -408,7 +418,7 @@ class UploadBLE extends Component {
         this.state.isEdgeMLInstalled ? (
           <Row>
             <Col>
-              <div className="shadow p-3 mb-5 bg-white rounded">
+              <div className="shadow mb-5 bg-white rounded">
                 <BlePanelSensorList
                   maxSampleRate={this.state.connectedDeviceData.maxSampleRate}
                   selectedSensors={this.state.selectedSensors}

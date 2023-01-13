@@ -33,7 +33,7 @@ export const addLabeling = (newLabeling) => {
       )
     )
       .then(() => {
-        this.subscribeLabelingsAndLabels().then((data) => resolve(data));
+        subscribeLabelingsAndLabels().then((data) => resolve(data));
       })
       .catch((err) => console.log(err));
   });
@@ -48,7 +48,7 @@ export const deleteLabeling = (labelingId, conflictingDatasetIds) => {
         apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS + `/${labelingId}`
       )
     ).then(() => {
-      this.subscribeLabelingsAndLabels()
+      subscribeLabelingsAndLabels()
         .then((data) => resolve(data))
         .catch((err) => console.log(err));
     });
@@ -66,7 +66,7 @@ export const updateLabelingandLabels = (labeling, labels) => {
       )
     )
       .then(() => {
-        this.subscribeLabelingsAndLabels()
+        subscribeLabelingsAndLabels()
           .then((data) => resolve(data))
           .catch((err) => console.log(err));
       })
@@ -86,7 +86,7 @@ export const addLabelTypesToLabeling = (labeling, labels) => {
         labels.filter((elm) => elm.isNewLabel)
       )
     ).then(() => {
-      this.subscribeLabelingsAndLabels()
+      subscribeLabelingsAndLabels()
         .then((data) => resolve(data))
         .catch((err) => console.log(err));
     });
@@ -105,7 +105,7 @@ export const deleteLabelTypesFromLabeling = (labeling, labels) => {
         labels
       )
     ).then(() => {
-      this.subscribeLabelingsAndLabels()
+      subscribeLabelingsAndLabels()
         .then((data) => resolve(data))
         .catch((err) => console.log(err));
     });

@@ -148,7 +148,7 @@ export const createDataset = (dataset) => {
       )
     )
       .then(() => {
-        this.getDatasets().then((datasets) => {
+        getDatasets().then((datasets) => {
           resolve(datasets);
         });
       })
@@ -170,7 +170,7 @@ export const createDatasets = (datasets) => {
     );
     Promise.all(promises)
       .then(() => {
-        this.getDatasets().then((datasets) => {
+        getDatasets().then((datasets) => {
           resolve(datasets);
         });
       })
