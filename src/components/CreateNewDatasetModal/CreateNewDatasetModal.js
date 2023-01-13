@@ -18,7 +18,6 @@ import {
   updateDataset,
   createDatasets,
   processCSVBackend,
-  generateDatasetBackend,
 } from '../../services/ApiServices/DatasetServices';
 
 import {
@@ -83,8 +82,7 @@ class CreateNewDatasetModal extends Component {
     for (let i = 0; i < files.length; ++i) {
       const formData = new FormData();
       formData.append('CSVFile', files[i]);
-      const timeData = await processCSVBackend(formData);
-      const result = await generateDatasetBackend(timeData);
+      const result = await processCSVBackend(formData);
       if (Array.isArray(result)) {
         this.setState({
           uploadErrors: result,

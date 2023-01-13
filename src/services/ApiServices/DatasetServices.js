@@ -207,16 +207,3 @@ export const processCSVBackend = (files) => {
     .then((res) => res.data)
     .catch((err) => err.response);
 };
-
-export const generateDatasetBackend = (timeData) => {
-  return axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.POST,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.GENERATE_DATASET,
-      timeData
-    )
-  )
-    .then((result) => result.data)
-    .catch((err) => err.response);
-};
