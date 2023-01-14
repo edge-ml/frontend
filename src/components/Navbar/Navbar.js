@@ -77,7 +77,7 @@ class Navbar extends Component {
   render() {
     return (
       <div
-        className="d-flex flex-column bg-light align-items-center justify-content-between shadow navbar-base user-select-none"
+        className="d-flex flex-column bg-light align-items-center justify-content-between navbar-base user-select-none"
         color="light"
       >
         <div
