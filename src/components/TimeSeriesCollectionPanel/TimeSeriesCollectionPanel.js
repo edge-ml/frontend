@@ -68,19 +68,16 @@ class TimeSeriesCollectionPanel extends Component {
   }
 
   render() {
-    console.log(this.state.previewTimeSeriesData);
-    console.log(this.state.start, this.state.end);
     return (
       <div className="TimeSeriesCollectionPanel">
         <TimeSeriesPanel
           index={0}
           offset={0}
           data={
-            this.state.timeSeries.length > 0
-              ? this.state.timeSeries
-                  .map((ts) => ts.data)
+            this.state.previewTimeSeriesData.length > 0
+              ? this.state.previewTimeSeriesData
                   .flat()
-                  .sort((elmA, elmB) => elmA.timestamp - elmB.timestamp)
+                  .sort((elmA, elmB) => elmA[0] - elmB[0])
               : [10, 10]
           }
           labeling={this.state.labeling}
@@ -126,25 +123,25 @@ class TimeSeriesCollectionPanel extends Component {
           />
         ) : null}
 
-        {this.state.previewTimeSeriesData.map((timeSeries, key) => {
+        {this.state.timeSeries.map((timeSeries, key) => {
           const previewData = this.state.previewTimeSeriesData[key];
           return (
             <TimeSeriesPanel
               key={key}
               index={key + 1}
-              offset={0}
+              offset={timeSeries.offset}
               data={
-                timeSeries.length === 0
+                previewData.length === 0
                   ? []
                   : [
-                      ...(timeSeries[0][0] === this.props.start
+                      ...(previewData[0].timestamp === this.props.start
                         ? []
-                        : [[this.props.start, 0]]),
-                      ...timeSeries,
-                      ...(timeSeries[timeSeries.length - 1][0] ===
+                        : [{ timestamp: this.props.start }]),
+                      ...previewData,
+                      ...(previewData[previewData.length - 1].timestamp ===
                       this.props.end
                         ? []
-                        : [[this.props.end, 0]]),
+                        : [{ timestamp: this.props.end }]),
                     ]
               }
               samplingRate={

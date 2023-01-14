@@ -12,7 +12,6 @@ const prefixRightPlotLine = 'plotLine_right_';
 class TimeSeriesPanel extends Component {
   constructor(props) {
     super(props);
-    console.log(props.data);
 
     this.chart = React.createRef();
 
@@ -66,7 +65,6 @@ class TimeSeriesPanel extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props);
     let filteredLabels =
       this.props.labeling.labels !== undefined
         ? this.props.labeling.labels.filter(
@@ -111,14 +109,7 @@ class TimeSeriesPanel extends Component {
         )
         .then((timeserie) => {
           // FIXME: offset/series[0] cause problem with fusedSeries, ignore for now
-          chart.series[0].setData(
-            timeserie.data.map((point) => [
-              point.timestamp + offset,
-              point.datapoint,
-            ]),
-            true,
-            false
-          );
+          chart.series[0].setData(timeserie, true, false);
           chart.hideLoading();
         });
     }
@@ -169,7 +160,10 @@ class TimeSeriesPanel extends Component {
                     props.unit === ''
                       ? props.name
                       : props.name + ' (' + props.unit + ')',
-                  data: props.data,
+                  data: props.data.map((point, index) => [
+                    point.timestamp + props.offset,
+                    point.datapoint,
+                  ]),
                   lineWidth: 1,
                 },
               ]
@@ -180,7 +174,10 @@ class TimeSeriesPanel extends Component {
                     ' (' +
                     props.unit[indexOuter] +
                     ')',
-                  data: dataItem,
+                  data: dataItem.map((point, index) => [
+                    point.timestamp + props.offset[indexOuter],
+                    point.datapoint,
+                  ]),
                   lineWidth: 1,
                 };
               }),
@@ -232,6 +229,9 @@ class TimeSeriesPanel extends Component {
                     }
                   });
               }
+
+              const { chart, width, min, max } = e.target;
+              this.updateData(chart, min, max, width, props.offset);
             },
           },
         },

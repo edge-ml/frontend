@@ -138,15 +138,13 @@ class DatasetPage extends Component {
   }
 
   async loadData() {
-    const dataset = await getDataset(this.props.match.params.id);
-    console.log(dataset);
+    const dataset = await getDatasetMeta(this.props.match.params.id);
     const dataset_end = Math.max(...dataset.timeSeries.map((elm) => elm.end));
     const dataset_start = Math.min(
       ...dataset.timeSeries.map((elm) => elm.start)
     );
     dataset.end = dataset_end;
     dataset.start = dataset_start;
-    console.log(dataset.start, dataset.end);
     return dataset;
   }
 
@@ -165,7 +163,6 @@ class DatasetPage extends Component {
     getDatasetTimeseries(this.props.match.params.id, {
       max_resolution: window.innerWidth / 2,
     }).then((timeseriesData) => {
-      console.log(timeseriesData);
       this.setState({
         previewTimeSeriesData: timeseriesData,
       });
@@ -621,7 +618,6 @@ class DatasetPage extends Component {
           newDataset.labelings[labelingIdx].labels[labelIdx - 1];
         newLabel.type = prevLabel.type;
       }
-      console.log('click label', labelIdx, newLabel, this.state);
       this.setState({
         dataset: newDataset,
         controlStates: {
@@ -759,7 +755,6 @@ class DatasetPage extends Component {
 
   onDeleteDataset() {
     if (!this.state.dataset || !this.state.dataset['_id']) return;
-    console.log('Deleting datasets');
     deleteDataset(this.state.dataset['_id'])
       .then(() => {
         this.props.navigateTo('datasets');
@@ -770,9 +765,6 @@ class DatasetPage extends Component {
   }
 
   render() {
-    console.log(this.state.isReady);
-    console.log(this.state.controlStates.canEdit == undefined);
-    console.log(this.state.previewTimeSeriesData);
     if (
       !this.state.isReady ||
       this.state.controlStates.canEdit === undefined ||
@@ -810,8 +802,7 @@ class DatasetPage extends Component {
 
     const startOffset = 0;
     const endOffset = 0;
-
-    console.log(endOffset);
+    console.log(this.state.dataset);
     return (
       <div className="w-100 position-relative">
         {' '}
