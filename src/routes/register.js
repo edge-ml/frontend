@@ -22,6 +22,7 @@ import { clearToken } from '../services/LocalStorageService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { validateEmail } from '../services/helpers';
+import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
 
 class RegisterPage extends Component {
   constructor(props) {
@@ -123,14 +124,27 @@ class RegisterPage extends Component {
         style={{
           paddingLeft: 0,
           paddingRight: 0,
+          background:
+            'linear-gradient(0deg, rgba(11, 12, 89, 1) 0%, rgba(7, 55, 99, 1) 100%)',
         }}
       >
         <Row>
           <Col className="login" xs={11} sm={6} lg={4}>
             <FadeInUp duration="0.3s" playState="running">
-              <Card>
-                <CardHeader hidden={this.state.isLoggedIn}>
-                  <b>Registration</b>
+              <Card
+                style={{
+                  marginBottom: -149,
+                }}
+              >
+                <CardHeader
+                  hidden={this.state.isLoggedIn}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <EdgeMLBrandLogo></EdgeMLBrandLogo>
                 </CardHeader>
                 <CardBody hidden={this.state.isLoggedIn}>
                   <Row>
@@ -139,14 +153,14 @@ class RegisterPage extends Component {
                         <InputGroup>
                           <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                              <MailIcon />
+                              <MailIcon fill="#444" width="15" />
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input
                             type="email"
                             name="email"
                             id="email"
-                            placeholder="Email"
+                            placeholder="email"
                             onChange={this.onEMailChanged}
                           />
                         </InputGroup>
@@ -155,14 +169,14 @@ class RegisterPage extends Component {
                         <InputGroup>
                           <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                              <ShieldIcon />
+                              <ShieldIcon fill="#444" width="15" />
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input
                             type="password"
                             name="password"
                             id="password"
-                            placeholder="Password"
+                            placeholder="password"
                             onChange={this.onPasswordChanged}
                           />
                         </InputGroup>
@@ -171,14 +185,14 @@ class RegisterPage extends Component {
                         <InputGroup>
                           <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                              <ShieldIcon />
+                              <ShieldIcon fill="#444" width="15" />
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input
                             type="password"
                             name="password"
                             id="passwordRepeat"
-                            placeholder="Repeat password"
+                            placeholder="repeat password"
                             onChange={this.onPasswordRepeatChanged}
                           />
                         </InputGroup>
@@ -187,14 +201,14 @@ class RegisterPage extends Component {
                         <InputGroup>
                           <InputGroupAddon addonType="prepend">
                             <InputGroupText>
-                              <PersonIcon />
+                              <PersonIcon fill="#444" width="15" />
                             </InputGroupText>
                           </InputGroupAddon>
                           <Input
                             type="text"
                             name="username"
                             id="username"
-                            placeholder="Username"
+                            placeholder="username"
                             onChange={this.onUserNameChanged}
                           />
                         </InputGroup>
@@ -205,7 +219,13 @@ class RegisterPage extends Component {
                           textAlign: 'left',
                         }}
                       >
-                        <FormGroup check>
+                        <FormGroup
+                          check
+                          style={{
+                            marginTop: 20,
+                            marginBottom: 10,
+                          }}
+                        >
                           <Label check>
                             <Input
                               type="checkbox"
@@ -242,10 +262,13 @@ class RegisterPage extends Component {
                       <Col>
                         <Button
                           id="registerButton"
-                          color="primary"
+                          color="success"
                           block
                           onClick={this.onRegisterClick}
                           disabled={!this.state.ToS_accepted}
+                          style={{
+                            marginBottom: 10,
+                          }}
                         >
                           Register
                         </Button>

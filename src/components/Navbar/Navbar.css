@@ -2,6 +2,8 @@
   width: 160px;
   min-width: 160px;
   height: 100vh;
+  border: 2px solid rgb(230, 230, 234);
+  border-width: 0px 1px 0px 0px;
 }
 
 .dark-hover:hover {

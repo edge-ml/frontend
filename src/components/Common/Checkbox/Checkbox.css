@@ -21,12 +21,13 @@
   position: absolute;
   top: 0;
   left: 0;
-  border: 1px solid black;
-  border-radius: 0.25rem;
+  border: 2px solid rgb(237, 237, 237);
+  border-radius: 0.4rem;
+  background: white;
 }
 
 .checkBoxContainer input:checked ~ .checkBoxCheckmark {
-  background-color: #007bff;
+  background-color: rgb(131, 136, 159);
   border: 0px;
 }
 
@@ -43,7 +44,7 @@
 .checkBoxIcon {
   top: 0;
   left: 0;
-  padding: 2px;
+  padding: 4px;
   position: absolute;
   width: 20px;
   height: 20px;
