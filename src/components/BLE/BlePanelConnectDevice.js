@@ -9,6 +9,8 @@ const getInfoText = (props) => {
   if (props.isEdgeMLInstalled) {
     return (
       <div>
+        {renderDeviceName(props)}
+        {renderDeviceInfo(props)}
         {props.outdatedVersionInstalled && props.hasDFUFunction && (
           <div>
             {' '}
@@ -16,26 +18,48 @@ const getInfoText = (props) => {
             latest version by clicking on the button.
           </div>
         )}
-        {renderDeviceInfo(props)}
       </div>
     );
   } else {
     if (props.hasDFUFunction) {
       return (
         <div>
-          This device does not have the edge-ml firmware installed yet. You can
-          install it by clicking on the button.
+          {renderDeviceName(props)}
+          <div>
+            This device does not have the edge-ml firmware installed yet. You
+            can install it by clicking on the button.
+          </div>
         </div>
       );
     } else {
       return (
-        <div className="text-danger">
-          This device does not have the edge-ml firmware installed. Please
-          install via the guide
+        <div>
+          {renderDeviceName(props)}
+          <div className="text-danger">
+            This device does not have the edge-ml firmware installed. Please
+            install via the guide
+          </div>
         </div>
       );
     }
   }
+};
+
+const renderDeviceName = (props) => {
+  if (!props.connectedBLEDevice) {
+    return null;
+  }
+  return (
+    <div>
+      Connected device:{' '}
+      <b>
+        {props.connectedDeviceData
+          ? props.connectedDeviceData.name
+          : props.connectedBLEDevice.name}
+      </b>
+      ({props.connectedBLEDevice.id})
+    </div>
+  );
 };
 
 const renderDeviceInfo = (props) => {
