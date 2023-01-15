@@ -12,7 +12,7 @@ import DatasetTableEntry from './DatasetTableEntry';
 const DatasetTable = (props) => {
   const [areAllSelected, setAllSelected] = useState(false);
   return (
-    <div className="pl-2 pr-2 pl-md-4 pr-md-4">
+    <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2">
       <Fragment>
         <div className="w-100 d-flex flex-row justify-content-center align-items-center">
           <div className="font-weight-bold h4">DATASETS</div>
@@ -30,7 +30,7 @@ const DatasetTable = (props) => {
         <div style={{ borderRadius: 10 }}>
           <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline">
             <div className="d-flex flex-row align-items-center p-1">
-              <div className="ml-2 mr-3 ">
+              <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
                 <Checkbox
                   isSelected={areAllSelected}
                   onClick={(e) => {

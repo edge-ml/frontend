@@ -52,11 +52,11 @@ const Labelings = (props) => {
   );
 
   return (
-    <div className="mt-1 ml-5 p-lg-0 m-lg-0">
-      <Row className="pl-1 ml-1 p-lg-0 m-lg-0">
+    <div className="mt-1 ml-4 p-lg-0 m-lg-0">
+      <Row className="pl-1 ml-1 p-lg-0 m-lg-0 ">
         <Col>
           {labelings.map((labeling, idx) => (
-            <Badge className="mr-2 badgeSize badgeLabelings pb-2">
+            <Badge className="mr-2 badgeSize badgeLabelings pb-2 mt-2 mb-2">
               <div className="labelingBadgeWrapper">
                 {labeling.name.toUpperCase()}
               </div>
@@ -198,7 +198,7 @@ const DatasetTableEntry = (props) => {
         }}
       >
         <div className="d-flex">
-          <div className="d-flex align-items-center p-2 ml-3 mr-3">
+          <div className="d-flex align-items-center p-2 ml-2 mr-0 ml-md-3 mr-md-3">
             <Checkbox
               isSelected={props.isSelected}
               className="d-inline-block"
@@ -236,7 +236,7 @@ const DatasetTableEntry = (props) => {
                   </Button>
                   <Button
                     color="secondary"
-                    className="btn-edit mr-4"
+                    className="btn-edit mr-3 mr-md-4"
                     onClick={(e) => {
                       history.push({
                         pathname: `datasets/${dataset['_id']}`,
