@@ -50,6 +50,9 @@ const renderDeviceInfo = (props) => {
 };
 
 const getButtonView = (props) => {
+  if (!props.connectedBLEDevice) {
+    return null;
+  }
   if (
     (props.outdatedVersionInstalled || !props.isEdgeMLInstalled) &&
     props.hasDFUFunction

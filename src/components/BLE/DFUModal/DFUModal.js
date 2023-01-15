@@ -289,7 +289,13 @@ class DFUModal extends Component {
               <div className="align-items-center">
                 <div>
                   Connected BLE device:{' '}
-                  {<strong>{this.props.connectedDeviceData.name}</strong>}
+                  {
+                    <strong>
+                      {this.props.connectedDeviceData
+                        ? this.props.connectedDeviceData.name
+                        : this.props.connectedBLEDevice.name}
+                    </strong>
+                  }
                 </div>
                 <div>
                   Latest edge-ml version:{' '}
