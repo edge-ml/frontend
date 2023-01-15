@@ -147,13 +147,13 @@ const DatasetInfo = (props) => {
         </Fragment>
       ) : (
         <div className="d-flex align-items-center">
-          <div className="d-inline">
+          <div className="d-inline" style={{ color: 'rgb(131, 136, 159)' }}>
             <FontAwesomeIcon
               style={{ fontSize: '1rem' }}
               icon={faExclamationTriangle}
             ></FontAwesomeIcon>
           </div>
-          <div className="text-left d-inline ml-1">empty</div>
+          <div className="text-left d-inline ml-1">dataset empty</div>
         </div>
       )}
     </div>
