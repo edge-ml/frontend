@@ -16,8 +16,17 @@ import {
   Check2Circle,
   X,
   XLg,
+  Trash3Fill,
+  Trash3,
+  Trash,
+  TrashFill,
+  Trash2,
+  Trash2Fill,
 } from 'react-bootstrap-icons';
-import { ProgressBar } from 'react-bootstrap';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+
 import { processCSVBackend } from '../../services/ApiServices/CSVServices';
 
 import './UploadDatasetModal.css';
@@ -39,11 +48,28 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       progress: 0,
       status: FileStatus.UPLOADING,
     }));
+    console.log('before fail', files);
     setFiles([...files, ...formatted]);
   };
 
+  const setController = (fileName, cancellationHandler) => {
+    console.log('setting handler');
+    console.log(fileName, cancellationHandler);
+    setFiles((prevState) =>
+      prevState.map((file) => {
+        if (file.name === fileName) {
+          return {
+            ...file,
+            cancellationHandler: cancellationHandler,
+          };
+        }
+        return file;
+      })
+    );
+  };
+
   const handleProgress = (fileName, progress) => {
-    console.log('handling', fileName, progress);
+    // console.log('handling', fileName, progress);
     setFiles((prevState) =>
       prevState.map((file) => {
         if (file.name === fileName) {
@@ -73,21 +99,42 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     );
   };
 
+  const handleCancel = (cancelledFile) => {
+    cancelledFile.cancellationHandler();
+    setFiles((prevState) =>
+      prevState.map((file) => {
+        if (file.name === cancelledFile.name) {
+          return {
+            ...file,
+            status: FileStatus.CANCELLED,
+          };
+        }
+        return file;
+      })
+    );
+  };
+
+  const handleDelete = (deletedFile) => {
+    setFiles((prevState) =>
+      prevState.filter((file) => file.name !== deletedFile.name)
+    );
+  };
+
   const onFileInput = async (inputFiles) => {
     console.log('onFileInput');
     console.log(inputFiles);
-    // const formatted = [...inputFiles].map(f => ({ name: f.name, progress: 0, status: FileStatus.UPLOADING }))
-    // setFiles(formatted);
     addFiles(inputFiles);
     let results = [];
     for (let i = 0; i < inputFiles.length; ++i) {
       const formData = new FormData();
       formData.append('CSVFile', inputFiles[i]);
-      const result = await processCSVBackend(
+      const [cancellationHandler, response] = processCSVBackend(
         formData,
         inputFiles[i].name,
         handleProgress
       );
+      setController(inputFiles[i].name, cancellationHandler);
+      const result = await response;
       if (Array.isArray(result)) {
         handleStatus(inputFiles[i].name, FileStatus.ERROR);
         return;
@@ -154,12 +201,26 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                   }
                 >{`${f.status} ${f.progress.toFixed(2)}%`}</Progress>
                 <div className="d-flex align-items-center">
-                  {f.status === FileStatus.COMPLETE ? (
+                  {f.status === FileStatus.COMPLETE && (
                     <Check2Circle className="fa-2x mr-2" />
-                  ) : (
-                    <Button close className="modal-cancel-button mr-2">
-                      <XLg size={29} onClick={(e) => console.log('pressed')} />
+                  )}
+                  {f.status === FileStatus.UPLOADING && (
+                    <Button close className="modal-icon-button mr-2">
+                      <XLg size={29} onClick={(e) => handleCancel(f)} />
                     </Button>
+                  )}
+                  {f.status === FileStatus.CANCELLED && (
+                    <Button close className="modal-icon-button mr-2">
+                      <Trash2 size={29} onClick={(e) => handleDelete(f)} />
+                    </Button>
+                  )}
+                  {f.status === FileStatus.PROCESSING && (
+                    <FontAwesomeIcon
+                      spin
+                      size="2x"
+                      className="mr-2"
+                      icon={faSpinner}
+                    />
                   )}
                   <Button
                     color="primary"

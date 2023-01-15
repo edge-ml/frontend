@@ -5,7 +5,13 @@ const axios = ax.create();
 
 // TODO: change fileName to fileId to make it unique
 export const processCSVBackend = (formData, fileName, handleProgress) => {
-  return axios({
+  const source = ax.CancelToken.source();
+
+  const cancellationHandler = () => {
+    source.cancel('Operation cancelled by the user.');
+  };
+
+  const req = axios({
     ...apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
       apiConsts.API_URI,
@@ -16,10 +22,10 @@ export const processCSVBackend = (formData, fileName, handleProgress) => {
     ),
     onUploadProgress: (progressEvent) => {
       const progress = (progressEvent.loaded / progressEvent.total) * 100;
-      console.log('pro', fileName, progress);
       handleProgress(fileName, progress);
     },
-  })
-    .then((res) => res.data)
-    .catch((err) => err.response);
+    cancelToken: source.token,
+  });
+
+  return [cancellationHandler, req];
 };
