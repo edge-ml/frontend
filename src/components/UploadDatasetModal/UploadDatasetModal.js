@@ -28,6 +28,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import { processCSVBackend } from '../../services/ApiServices/CSVServices';
+import { DatasetConfigView } from './DatasetConfigView';
 
 import './UploadDatasetModal.css';
 
@@ -120,6 +121,43 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     );
   };
 
+  const initConfig = (fileName, data) => {
+    setFiles((prevState) =>
+      prevState.map((file) => {
+        if (file.name === fileName) {
+          return {
+            ...file,
+            config: {
+              start: data.start,
+              end: data.end,
+              timeSeries: data.timeSeries,
+              labelings: data.labelings,
+              name: file.name.endsWith('.csv')
+                ? file.name.substring(0, file.name.length - 4)
+                : file.name,
+              editingModeActive: false,
+            },
+          };
+        }
+        return file;
+      })
+    );
+  };
+
+  const changeConfig = (fileName, newConfig) => {
+    setFiles((prevState) =>
+      prevState.map((file) => {
+        if (file.name === fileName) {
+          return {
+            ...file,
+            config: newConfig,
+          };
+        }
+        return file;
+      })
+    );
+  };
+
   const onFileInput = async (inputFiles) => {
     console.log('onFileInput');
     console.log(inputFiles);
@@ -140,6 +178,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
         return;
       }
       handleStatus(inputFiles[i].name, FileStatus.COMPLETE);
+      initConfig(inputFiles[i].name, result.data);
       // const fileName = inputFiles[i].name;
       // results.push({
       //     dataset: {
@@ -179,62 +218,84 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
           onFileInput={onFileInput}
         />
         {files ? (
-          <div className="d-flex flex-column align-items-start mt-1">
-            {files.map((f, idx) => (
-              <div className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11">
-                <div className="d-flex flex-column align-items-center mr-2 ml-2 mt-2 col-lg-2">
-                  <FiletypeCsv className="fa-3x" />
-                  <span>{f.name}</span>
-                </div>
-                <Progress
-                  className="w-100 mr-1"
-                  striped
-                  id={`progress-bar-${idx}`}
-                  value={f.progress}
-                  color={
-                    f.status === FileStatus.COMPLETE
-                      ? 'success'
-                      : f.status === FileStatus.ERROR ||
-                        f.status === FileStatus.CANCELLED
-                      ? 'danger'
-                      : 'primary'
-                  }
-                >{`${f.status} ${f.progress.toFixed(2)}%`}</Progress>
-                <div className="d-flex align-items-center">
-                  {f.status === FileStatus.COMPLETE && (
-                    <Check2Circle className="fa-2x mr-2" />
-                  )}
-                  {f.status === FileStatus.UPLOADING && (
-                    <Button close className="modal-icon-button mr-2">
-                      <XLg size={29} onClick={(e) => handleCancel(f)} />
-                    </Button>
-                  )}
-                  {f.status === FileStatus.CANCELLED && (
-                    <Button close className="modal-icon-button mr-2">
-                      <Trash2 size={29} onClick={(e) => handleDelete(f)} />
-                    </Button>
-                  )}
-                  {f.status === FileStatus.PROCESSING && (
-                    <FontAwesomeIcon
-                      spin
-                      size="2x"
-                      className="mr-2"
-                      icon={faSpinner}
-                    />
-                  )}
-                  <Button
-                    color="primary"
-                    disabled={f.status !== FileStatus.COMPLETE}
-                  >
-                    Configure
-                  </Button>
-                </div>
-              </div>
-            ))}
+          <div className="mt-2">
+            {/* <h4 className='text-center mt-2'>Upload Overview</h4> */}
+            {files.map(
+              (f, idx) =>
+                (!f.config || !f.config.editingModeActive) && (
+                  <div className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11">
+                    <div className="d-flex flex-column align-items-center mr-2 ml-2 mt-2 col-lg-2">
+                      <FiletypeCsv className="fa-3x" />
+                      <span>{f.name}</span>
+                    </div>
+                    <Progress
+                      className="w-100 mr-1"
+                      striped
+                      id={`progress-bar-${idx}`}
+                      value={f.progress}
+                      color={
+                        f.status === FileStatus.COMPLETE
+                          ? 'success'
+                          : f.status === FileStatus.ERROR ||
+                            f.status === FileStatus.CANCELLED
+                          ? 'danger'
+                          : 'primary'
+                      }
+                    >{`${f.status} ${f.progress.toFixed(2)}%`}</Progress>
+                    <div className="d-flex align-items-center">
+                      {f.status === FileStatus.COMPLETE && (
+                        <Check2Circle className="fa-2x mr-2" />
+                      )}
+                      {f.status === FileStatus.UPLOADING && (
+                        <Button close className="modal-icon-button mr-2">
+                          <XLg size={29} onClick={(e) => handleCancel(f)} />
+                        </Button>
+                      )}
+                      {f.status === FileStatus.CANCELLED && (
+                        <Button close className="modal-icon-button mr-2">
+                          <Trash2 size={29} onClick={(e) => handleDelete(f)} />
+                        </Button>
+                      )}
+                      {f.status === FileStatus.PROCESSING && (
+                        <FontAwesomeIcon
+                          spin
+                          size="2x"
+                          className="mr-2"
+                          icon={faSpinner}
+                        />
+                      )}
+                      <Button
+                        color="primary"
+                        disabled={f.status !== FileStatus.COMPLETE}
+                        onClick={(e) =>
+                          changeConfig(f.name, {
+                            ...f.config,
+                            editingModeActive: true,
+                          })
+                        }
+                      >
+                        Configure
+                      </Button>
+                    </div>
+                  </div>
+                )
+            )}
+            <div className="mt-1">
+              {/* <h4 className='text-center mt-2'>Configurations</h4> */}
+              {files.map((f, idx) =>
+                f && f.config && f.config.editingModeActive ? (
+                  <DatasetConfigView
+                    fileName={f.name}
+                    file={f}
+                    changeConfig={changeConfig}
+                  />
+                ) : null
+              )}
+            </div>
           </div>
         ) : null}
       </ModalBody>
-      <ModalFooter />
+      {/* <ModalFooter /> */}
     </Modal>
   );
 };
