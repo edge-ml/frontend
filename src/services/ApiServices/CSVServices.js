@@ -3,8 +3,7 @@ import ax from 'axios';
 
 const axios = ax.create();
 
-// TODO: change fileName to fileId to make it unique
-export const processCSVBackend = (formData, fileName, handleProgress) => {
+export const processCSVBackend = (formData, fileId, handleProgress) => {
   const source = ax.CancelToken.source();
 
   const cancellationHandler = () => {
@@ -22,7 +21,7 @@ export const processCSVBackend = (formData, fileName, handleProgress) => {
     ),
     onUploadProgress: (progressEvent) => {
       const progress = (progressEvent.loaded / progressEvent.total) * 100;
-      handleProgress(fileName, progress);
+      handleProgress(fileId, progress);
     },
     cancelToken: source.token,
   });

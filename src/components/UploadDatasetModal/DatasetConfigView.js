@@ -15,9 +15,9 @@ import {
   createDatasets,
 } from '../../services/ApiServices/DatasetServices';
 
-export const DatasetConfigView = ({ fileName, file, changeConfig }) => {
-  console.log('config', file, fileName);
-  const fileConfig = file.config;
+export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
+  // console.log('config', file, fileName);
+  // const fileConfig = file.config;
   // return (<h1>hello world</h1>)
   return (
     <div className="mb-2">
@@ -42,7 +42,7 @@ export const DatasetConfigView = ({ fileName, file, changeConfig }) => {
                   placeholder="Name"
                   value={fileConfig.name}
                   onChange={(e) =>
-                    changeConfig(fileName, {
+                    changeConfig(fileId, {
                       ...fileConfig,
                       name: e.target.value,
                     })
@@ -91,7 +91,7 @@ export const DatasetConfigView = ({ fileName, file, changeConfig }) => {
                         placeholder="Name"
                         value={timeSeries.name}
                         onChange={(e) =>
-                          changeConfig(fileName, {
+                          changeConfig(fileId, {
                             ...fileConfig,
                             timeSeries: fileConfig.timeSeries.map((ts) => {
                               if (ts === timeSeries) {
@@ -125,7 +125,7 @@ export const DatasetConfigView = ({ fileName, file, changeConfig }) => {
                         value={timeSeries.unit}
                         onChange={
                           (e) =>
-                            changeConfig(fileName, {
+                            changeConfig(fileId, {
                               ...fileConfig,
                               timeSeries: fileConfig.timeSeries.map((ts) => {
                                 if (ts === timeSeries) {
@@ -166,7 +166,7 @@ export const DatasetConfigView = ({ fileName, file, changeConfig }) => {
                       size="sm"
                       onClick={
                         () =>
-                          changeConfig(fileName, {
+                          changeConfig(fileId, {
                             ...fileConfig,
                             timeSeries: fileConfig.timeSeries.filter(
                               (ts) => ts !== timeSeries

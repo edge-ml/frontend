@@ -34,6 +34,7 @@ import './UploadDatasetModal.css';
 
 export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
   const [files, setFiles] = useState([]);
+  const [count, setCount] = useState(0);
 
   const FileStatus = Object.freeze({
     UPLOADING: 'Uploading',
@@ -44,21 +45,24 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
   });
 
   const addFiles = (inputFiles) => {
-    const formatted = [...inputFiles].map((f) => ({
+    const formatted = [...inputFiles].map((f, idx) => ({
       name: f.name,
       progress: 0,
       status: FileStatus.UPLOADING,
+      id: count + idx,
     }));
     console.log('before fail', files);
     setFiles([...files, ...formatted]);
+    setCount(count + inputFiles.length);
+    return formatted.map((f) => f.id);
   };
 
-  const setController = (fileName, cancellationHandler) => {
+  const setController = (fileId, cancellationHandler) => {
     console.log('setting handler');
-    console.log(fileName, cancellationHandler);
+    console.log(fileId, cancellationHandler);
     setFiles((prevState) =>
       prevState.map((file) => {
-        if (file.name === fileName) {
+        if (file.id === fileId) {
           return {
             ...file,
             cancellationHandler: cancellationHandler,
@@ -69,11 +73,11 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     );
   };
 
-  const handleProgress = (fileName, progress) => {
+  const handleProgress = (fileId, progress) => {
     // console.log('handling', fileName, progress);
     setFiles((prevState) =>
       prevState.map((file) => {
-        if (file.name === fileName) {
+        if (file.id === fileId) {
           return {
             ...file,
             progress,
@@ -86,10 +90,10 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     );
   };
 
-  const handleStatus = (fileName, status) => {
+  const handleStatus = (fileId, status) => {
     setFiles((prevState) =>
       prevState.map((file) => {
-        if (file.name === fileName) {
+        if (file.id === fileId) {
           return {
             ...file,
             status: status,
@@ -104,7 +108,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     cancelledFile.cancellationHandler();
     setFiles((prevState) =>
       prevState.map((file) => {
-        if (file.name === cancelledFile.name) {
+        if (file.id === cancelledFile.id) {
           return {
             ...file,
             status: FileStatus.CANCELLED,
@@ -115,16 +119,14 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     );
   };
 
-  const handleDelete = (deletedFile) => {
-    setFiles((prevState) =>
-      prevState.filter((file) => file.name !== deletedFile.name)
-    );
+  const handleDelete = (fileId) => {
+    setFiles((prevState) => prevState.filter((file) => file.id !== fileId));
   };
 
-  const initConfig = (fileName, data) => {
+  const initConfig = (fileId, data) => {
     setFiles((prevState) =>
       prevState.map((file) => {
-        if (file.name === fileName) {
+        if (file.id === fileId) {
           return {
             ...file,
             config: {
@@ -144,10 +146,10 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     );
   };
 
-  const changeConfig = (fileName, newConfig) => {
+  const changeConfig = (fileId, newConfig) => {
     setFiles((prevState) =>
       prevState.map((file) => {
-        if (file.name === fileName) {
+        if (file.id === fileId) {
           return {
             ...file,
             config: newConfig,
@@ -161,24 +163,24 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
   const onFileInput = async (inputFiles) => {
     console.log('onFileInput');
     console.log(inputFiles);
-    addFiles(inputFiles);
+    const fileIds = addFiles(inputFiles);
     let results = [];
     for (let i = 0; i < inputFiles.length; ++i) {
       const formData = new FormData();
       formData.append('CSVFile', inputFiles[i]);
       const [cancellationHandler, response] = processCSVBackend(
         formData,
-        inputFiles[i].name,
+        fileIds[i],
         handleProgress
       );
-      setController(inputFiles[i].name, cancellationHandler);
+      setController(fileIds[i], cancellationHandler);
       const result = await response;
       if (Array.isArray(result)) {
-        handleStatus(inputFiles[i].name, FileStatus.ERROR);
+        handleStatus(fileIds[i], FileStatus.ERROR);
         return;
       }
-      handleStatus(inputFiles[i].name, FileStatus.COMPLETE);
-      initConfig(inputFiles[i].name, result.data);
+      handleStatus(fileIds[i], FileStatus.COMPLETE);
+      initConfig(fileIds[i], result.data);
       // const fileName = inputFiles[i].name;
       // results.push({
       //     dataset: {
@@ -253,7 +255,10 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                       )}
                       {f.status === FileStatus.CANCELLED && (
                         <Button close className="modal-icon-button mr-2">
-                          <Trash2 size={29} onClick={(e) => handleDelete(f)} />
+                          <Trash2
+                            size={29}
+                            onClick={(e) => handleDelete(f.id)}
+                          />
                         </Button>
                       )}
                       {f.status === FileStatus.PROCESSING && (
@@ -268,7 +273,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                         color="primary"
                         disabled={f.status !== FileStatus.COMPLETE}
                         onClick={(e) =>
-                          changeConfig(f.name, {
+                          changeConfig(f.id, {
                             ...f.config,
                             editingModeActive: true,
                           })
@@ -285,8 +290,8 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
               {files.map((f, idx) =>
                 f && f.config && f.config.editingModeActive ? (
                   <DatasetConfigView
-                    fileName={f.name}
-                    file={f}
+                    fileId={f.id}
+                    fileConfig={f.config}
                     changeConfig={changeConfig}
                   />
                 ) : null
