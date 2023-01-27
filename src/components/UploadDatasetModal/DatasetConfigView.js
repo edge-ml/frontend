@@ -10,15 +10,7 @@ import {
   Button,
 } from 'reactstrap';
 
-import {
-  updateDataset,
-  createDatasets,
-} from '../../services/ApiServices/DatasetServices';
-
 export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
-  // console.log('config', file, fileName);
-  // const fileConfig = file.config;
-  // return (<h1>hello world</h1>)
   return (
     <div className="mb-2">
       {' '}

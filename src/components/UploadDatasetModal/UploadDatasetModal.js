@@ -1,28 +1,7 @@
-import React, { Component, useState } from 'react';
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Progress,
-} from 'reactstrap';
-import { CloseButton } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Modal, ModalHeader, ModalBody, Button, Progress } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
-import {
-  FiletypeCsv,
-  CheckLg,
-  Check,
-  Check2Circle,
-  X,
-  XLg,
-  Trash3Fill,
-  Trash3,
-  Trash,
-  TrashFill,
-  Trash2,
-  Trash2Fill,
-} from 'react-bootstrap-icons';
+import { FiletypeCsv, Check2Circle, XLg, Trash2 } from 'react-bootstrap-icons';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -51,15 +30,12 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       status: FileStatus.UPLOADING,
       id: count + idx,
     }));
-    console.log('before fail', files);
     setFiles([...files, ...formatted]);
     setCount(count + inputFiles.length);
     return formatted.map((f) => f.id);
   };
 
   const setController = (fileId, cancellationHandler) => {
-    console.log('setting handler');
-    console.log(fileId, cancellationHandler);
     setFiles((prevState) =>
       prevState.map((file) => {
         if (file.id === fileId) {
@@ -74,7 +50,6 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
   };
 
   const handleProgress = (fileId, progress) => {
-    // console.log('handling', fileName, progress);
     setFiles((prevState) =>
       prevState.map((file) => {
         if (file.id === fileId) {
@@ -161,10 +136,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
   };
 
   const onFileInput = async (inputFiles) => {
-    console.log('onFileInput');
-    console.log(inputFiles);
     const fileIds = addFiles(inputFiles);
-    let results = [];
     for (let i = 0; i < inputFiles.length; ++i) {
       const formData = new FormData();
       formData.append('CSVFile', inputFiles[i]);
@@ -181,30 +153,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       }
       handleStatus(fileIds[i], FileStatus.COMPLETE);
       initConfig(fileIds[i], result.data);
-      // const fileName = inputFiles[i].name;
-      // results.push({
-      //     dataset: {
-      //         ...result.datasets[0],
-      //         name: fileName.endsWith('.csv')
-      //             ? fileName.substring(0, fileName.length - 4)
-      //             : fileName,
-      //     },
-      //     labeling: result.labelings[0],
-      // });
     }
-
-    // // console.log('state')
-    // // console.log(this.state.datasets)
-    // // console.log('result');
-    // // console.log(results.map(e => e.dataset));
-    // this.setState({
-    //     files: [...this.state.files, ...files],
-    //     datasets: [...this.state.datasets, ...results.map((e) => e.dataset)],
-    //     labelings: [
-    //         ...this.state.labelings,
-    //         ...results.map((elm) => elm.labeling.map((innerElm) => innerElm)),
-    //     ],
-    // });
   };
 
   return (
@@ -221,7 +170,6 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
         />
         {files ? (
           <div className="mt-2">
-            {/* <h4 className='text-center mt-2'>Upload Overview</h4> */}
             {files.map(
               (f, idx) =>
                 (!f.config || !f.config.editingModeActive) && (
@@ -286,8 +234,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                 )
             )}
             <div className="mt-1">
-              {/* <h4 className='text-center mt-2'>Configurations</h4> */}
-              {files.map((f, idx) =>
+              {files.map((f) =>
                 f && f.config && f.config.editingModeActive ? (
                   <DatasetConfigView
                     fileId={f.id}
@@ -300,7 +247,6 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
           </div>
         ) : null}
       </ModalBody>
-      {/* <ModalFooter /> */}
     </Modal>
   );
 };
