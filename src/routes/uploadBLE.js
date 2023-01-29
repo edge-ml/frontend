@@ -414,6 +414,7 @@ class UploadBLE extends Component {
             toggleDFUModal={this.toggleDFUModal}
             showDFUModal={this.state.showDFUModal}
             latestEdgeMLVersion={this.state.latestEdgeMLVersion}
+            onDisconnection={this.onDisconnection}
           />
         ) : null}
         {this.state.deviceSensors &&

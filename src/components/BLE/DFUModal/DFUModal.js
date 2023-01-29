@@ -66,12 +66,17 @@ class DFUModal extends Component {
   }
 
   resetStateWithError(msg) {
-    this.setState({
-      hasError: true,
-      error: msg,
-      isConnectingGATTDFU: false,
-      dfuState: 'start',
-    });
+    this.setState(
+      {
+        hasError: true,
+        error: msg,
+        isConnectingGATTDFU: false,
+        dfuState: 'start',
+      },
+      () => {
+        this.props.onDisconnection();
+      }
+    );
   }
 
   init(arrayBuffer) {
@@ -197,15 +202,23 @@ class DFUModal extends Component {
     }
     console.log(this.bytesArray);
     console.log('Writing 67 bytes array...');
-    this.dfuCharacteristic.writeValue(this.bytesArray).then((_) => {
-      //show on Progress bar
-      this.setState({ progress: (index / (this.iterations - 1)) * 100 });
+    this.dfuCharacteristic
+      .writeValue(this.bytesArray)
+      .then((_) => {
+        //show on Progress bar
+        this.setState({ progress: (index / (this.iterations - 1)) * 100 });
 
-      this.increaseIndex();
-      if (this.debug == true) {
-        console.log('Written');
-      }
-    });
+        this.increaseIndex();
+        if (this.debug == true) {
+          console.log('Written');
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+        this.resetStateWithError(
+          'An error occured while sending package to BLE device'
+        );
+      });
   }
 
   increaseIndex() {
@@ -244,10 +257,8 @@ class DFUModal extends Component {
 
   async downLoadAndInstallFW() {
     this.downloadFirmware()
-      .then((arrayBuffer) => {
-        this.init(arrayBuffer);
-        this.updateFW();
-      })
+      .then(this.init)
+      .then(this.updateFW)
       .catch((err) => {
         console.log(err);
         this.resetStateWithError(
@@ -295,7 +306,7 @@ class DFUModal extends Component {
 
   renderModalBody() {
     if (this.state.hasError) {
-      return <div>{this.state.error}</div>;
+      return <div className="text-danger">{this.state.error}</div>;
     } else {
       return this.state.isConnectingGATTDFU ? (
         <div>
