@@ -17,6 +17,8 @@ class DFUModal extends Component {
       progress: 0,
       dfuState: 'start', //start, downloadingFW, dfuInProgress, uploadFinished
       isConnectingGATTDFU: false,
+      hasError: false,
+      error: undefined,
     };
 
     this.dfuService = '34c2e3b8-34aa-11eb-adc1-0242ac120002';
@@ -48,12 +50,28 @@ class DFUModal extends Component {
     this.downloadFirmware = this.downloadFirmware.bind(this);
     this.downLoadAndInstallFW = this.downLoadAndInstallFW.bind(this);
     this.renderProgressInfo = this.renderProgressInfo.bind(this);
+    this.resetStateWithError = this.resetStateWithError.bind(this);
+    this.renderModalBody = this.renderModalBody.bind(this);
   }
 
   async componentDidMount() {
     this.setState({ isConnectingGATTDFU: true });
-    await this.connectGATTdfu();
+    try {
+      await this.connectGATTdfu();
+    } catch (e) {
+      console.log(e);
+      this.resetStateWithError('Could not connect to DFU service.', e);
+    }
     this.setState({ isConnectingGATTDFU: false });
+  }
+
+  resetStateWithError(msg) {
+    this.setState({
+      hasError: true,
+      error: msg,
+      isConnectingGATTDFU: false,
+      dfuState: 'start',
+    });
   }
 
   init(arrayBuffer) {
@@ -230,7 +248,12 @@ class DFUModal extends Component {
         this.init(arrayBuffer);
         this.updateFW();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+        this.resetStateWithError(
+          'An error occurred while flashing the firmware.'
+        );
+      });
   }
 
   async downloadFirmware() {
@@ -270,6 +293,79 @@ class DFUModal extends Component {
     }
   }
 
+  renderModalBody() {
+    if (this.state.hasError) {
+      return <div>{this.state.error}</div>;
+    } else {
+      return this.state.isConnectingGATTDFU ? (
+        <div>
+          <Spinner color="primary" />
+        </div>
+      ) : (
+        <div className="align-items-center">
+          <div>
+            Connected BLE device:{' '}
+            {
+              <strong>
+                {this.props.connectedDeviceData
+                  ? this.props.connectedDeviceData.name
+                  : this.props.connectedBLEDevice.name}
+              </strong>
+            }
+          </div>
+          <div>
+            Latest edge-ml version:{' '}
+            <strong>{this.props.latestEdgeMLVersion}</strong>
+          </div>
+          <div>
+            {this.props.isEdgeMLInstalled
+              ? 'This device already has edge-ml installed, but an update is possible. Please do not close this window, while the firmware is flashing.'
+              : 'This device does not have edge-ml installed. Flash now to install the firmware. Please do not close this window, while the firmware is flashing.'}
+          </div>
+          <div className="panelDivider"></div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div>
+              You can download and install the latest version of the edge-ml
+              firmware by clicking on the update button.
+            </div>
+            <Button
+              color="primary"
+              disabled={this.state.dfuState !== 'start'}
+              onClick={this.downLoadAndInstallFW}
+            >
+              Update firmware
+            </Button>
+          </div>
+          <div className="panelDivider"></div>
+
+          <div className="mt-3">
+            <Progress
+              color={
+                this.state.dfuState === 'uploadFinished' ? 'primary' : 'success'
+              }
+              value={this.state.progress}
+            />
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {this.renderProgressInfo(this.state.dfuState)}
+          </div>
+        </div>
+      );
+    }
+  }
+
   render() {
     return (
       <div>
@@ -280,76 +376,7 @@ class DFUModal extends Component {
           keyboard={false}
         >
           <ModalHeader>Update firmware</ModalHeader>
-          <ModalBody>
-            {this.state.isConnectingGATTDFU ? (
-              <div>
-                <Spinner color="primary" />
-              </div>
-            ) : (
-              <div className="align-items-center">
-                <div>
-                  Connected BLE device:{' '}
-                  {
-                    <strong>
-                      {this.props.connectedDeviceData
-                        ? this.props.connectedDeviceData.name
-                        : this.props.connectedBLEDevice.name}
-                    </strong>
-                  }
-                </div>
-                <div>
-                  Latest edge-ml version:{' '}
-                  <strong>{this.props.latestEdgeMLVersion}</strong>
-                </div>
-                <div>
-                  {this.props.isEdgeMLInstalled
-                    ? "This device already has edge-ml installed, but an update is possible. Please don't close this window, while the firmware is flashing."
-                    : "This device does not have edge-ml installed. Flash now to install the firmware. Please don't close this window, while the firmware is flashing."}
-                </div>
-                <div className="panelDivider"></div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div>
-                    You can download and install the latest version of the
-                    edge-ml firmware by clicking on the update button.
-                  </div>
-                  <Button
-                    color="primary"
-                    disabled={!this.state.dfuState === 'start'}
-                    onClick={this.downLoadAndInstallFW}
-                  >
-                    Update firmware
-                  </Button>
-                </div>
-                <div className="panelDivider"></div>
-
-                <div className="mt-3">
-                  <Progress
-                    color={
-                      this.state.dfuState === 'uploadFinished'
-                        ? 'primary'
-                        : 'success'
-                    }
-                    value={this.state.progress}
-                  />
-                </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {this.renderProgressInfo(this.state.dfuState)}
-                </div>
-              </div>
-            )}
-          </ModalBody>
+          <ModalBody>{this.renderModalBody()}</ModalBody>
           <ModalFooter>
             <Button
               color="danger"
