@@ -1,8 +1,3 @@
-const {
-  uniqueNamesGenerator,
-  adjectives,
-  names,
-} = require('unique-names-generator');
 export const parseData = (sensor, data) => {
   var scheme = sensor.parseScheme;
   // 1 byte sensor, 1 byte size, 4 bytes timestamp in milliseconds, the the data starting from 6th byte
@@ -78,10 +73,7 @@ export const getBaseDataset = (sensors, datasetName) => {
     });
   });
   return {
-    name:
-      datasetName === ''
-        ? uniqueNamesGenerator({ dictionaries: [adjectives, names], length: 2 })
-        : datasetName,
+    name: datasetName,
     start: new Date().getTime() + 10000000,
     end: new Date().getTime(),
     timeSeries: timeSeries,

@@ -26,6 +26,8 @@ import { getLatestEdgeMLVersionNumber } from '../services/ApiServices/ArduinoFir
 import DFUModal from '../components/BLE/DFUModal/DFUModal';
 
 import semverLt from 'semver/functions/lt';
+import { adjectives, names } from './export/nameGeneration';
+import { uniqueNamesGenerator } from 'unique-names-generator';
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -172,10 +174,24 @@ class UploadBLE extends Component {
     });
   }
 
+  async setDatasetName(datasetName) {
+    let promisedSetState = (newState) =>
+      new Promise((resolve) => this.setState(newState, resolve));
+    await promisedSetState({ datasetName: datasetName });
+  }
+
   async onClickRecordButton() {
     // ready, startup, recording, finalizing
     switch (this.state.recorderState) {
       case 'ready':
+        if (this.state.datasetName === '') {
+          await this.setDatasetName(
+            uniqueNamesGenerator({
+              dictionaries: [adjectives, names],
+              length: 2,
+            })
+          );
+        }
         this.setState({ recorderState: 'startup' });
         await this.bleDeviceProcessor.startRecording(
           this.state.selectedSensors,
@@ -190,6 +206,7 @@ class UploadBLE extends Component {
         // Upload dataset here
         await new Promise((resolve) => setTimeout(resolve, 1000));
         this.setState({ recorderState: 'ready' });
+        this.setState({ datasetName: '' });
         break;
     }
   }
