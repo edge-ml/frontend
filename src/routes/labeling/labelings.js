@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
-import Loader from '../modules/loader';
-import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
-import { getDatasets } from '../services/ApiServices/DatasetServices';
+import Loader from '../../modules/loader';
+import EditLabelingModal from '../../components/EditLabelingModal/EditLabelingModal';
+import { getDatasets } from '../../services/ApiServices/DatasetServices';
 import {
   updateLabelingandLabels,
   subscribeLabelingsAndLabels,
@@ -10,7 +10,10 @@ import {
   deleteLabeling,
   deleteLabelTypesFromLabeling,
   addLabelTypesToLabeling,
-} from '../services/ApiServices/LabelingServices';
+} from '../../services/ApiServices/LabelingServices';
+import LabelingTable from './LabelingTable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 class LabelingsPage extends Component {
   constructor(props) {
@@ -38,6 +41,7 @@ class LabelingsPage extends Component {
       this.onLabelingsLabelsDatasetsChanged.bind(this);
     this.resetURL = this.resetURL.bind(this);
     this.initComponent = this.initComponent.bind(this);
+    this.onClickEdit = this.onClickEdit.bind(this);
   }
 
   componentDidMount() {
@@ -185,84 +189,40 @@ class LabelingsPage extends Component {
     this.props.history.replace({ pathname: newPath.join('/'), search: null });
   }
 
+  onClickEdit = (labeling) => {
+    this.toggleModal(
+      labeling,
+      this.state.labels.filter((label) =>
+        labeling.labels.includes(label['_id'])
+      ),
+      false
+    );
+  };
+
   render() {
     return (
       <Loader loading={!this.state.isReady}>
         <Container>
           <Row className="mt-3">
             <Col>
-              <Table responsive>
-                <thead>
-                  <tr className={'bg-light'}>
-                    <th>Name</th>
-                    <th>Labels</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.state.labelings.map((labeling, index) => (
-                    <tr key={index}>
-                      <td
-                        className={
-                          labeling.name !== ''
-                            ? 'labelings-column'
-                            : 'labelings-column font-italic'
-                        }
-                      >
-                        {labeling.name !== '' ? labeling.name : 'Untitled'}{' '}
-                      </td>
-                      <td className="labelings-column">
-                        {labeling.labels.map((labelId, index) => {
-                          let label = this.state.labels.filter(
-                            (label) => label['_id'] === labelId
-                          )[0];
-                          if (!label) return null;
-                          return (
-                            <Badge
-                              key={index}
-                              className={
-                                label.name === ''
-                                  ? 'm-1 font-italic font-weight-normal'
-                                  : 'm-1'
-                              }
-                              style={{ backgroundColor: label.color }}
-                            >
-                              {label.name !== '' ? label.name : 'Untitled'}{' '}
-                            </Badge>
-                          );
-                        })}{' '}
-                      </td>
-                      <td>
-                        <Button
-                          id="buttonEditLabeling"
-                          className="btn-secondary mt-0 btn-edit"
-                          block
-                          onClick={(e) => {
-                            this.toggleModal(
-                              labeling,
-                              this.state.labels.filter((label) =>
-                                labeling.labels.includes(label['_id'])
-                              ),
-                              false
-                            );
-                          }}
-                        >
-                          Edit
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+              <LabelingTable
+                labelings={this.state.labelings}
+                onClickEdit={this.onClickEdit}
+                labels={this.state.labels}
+              />
               <Button
                 id="buttonAddLabeling"
-                block
-                className="mb-5"
-                color="secondary"
-                outline
+                className="rounded-circle"
+                size="lg"
+                style={{
+                  position: 'fixed',
+                  bottom: '2rem',
+                  right: '2rem',
+                }}
+                color="primary"
                 onClick={this.onModalAddLabeling}
               >
-                + Add Labeling Set
+                <FontAwesomeIcon icon={faPlus} />
               </Button>
             </Col>
           </Row>
