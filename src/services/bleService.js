@@ -60,7 +60,6 @@ export const prepareSensorBleObject = (sensorArray) => {
   });
   return result;
 };
-
 export const getBaseDataset = (sensors, datasetName) => {
   const timeSeries = [];
   sensors.forEach((sensor) => {
@@ -73,7 +72,6 @@ export const getBaseDataset = (sensors, datasetName) => {
       });
     });
   });
-
   return {
     name: datasetName,
     start: new Date().getTime() + 10000000,

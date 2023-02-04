@@ -4,28 +4,69 @@ import { Button, Card, CardBody, CardHeader } from 'reactstrap';
 
 const getInfoText = (props) => {
   if (!props.connectedBLEDevice) {
-    return <div>Not device connected</div>;
+    return <div>No device connected</div>;
+  }
+  if (props.isEdgeMLInstalled) {
+    return (
+      <div>
+        {renderDeviceName(props)}
+        {renderDeviceInfo(props)}
+        {props.outdatedVersionInstalled && props.hasDFUFunction && (
+          <div>
+            {' '}
+            The edge-ml firmware version is outdated. You can update it to the
+            latest version by clicking on the button.
+          </div>
+        )}
+      </div>
+    );
+  } else {
+    if (props.hasDFUFunction) {
+      return (
+        <div>
+          {renderDeviceName(props)}
+          <div>
+            This device does not have the edge-ml firmware installed yet. You
+            can install it by clicking on the button.
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          {renderDeviceName(props)}
+          <div className="text-danger">
+            This device does not have the edge-ml firmware installed. Please
+            install via the guide
+          </div>
+        </div>
+      );
+    }
+  }
+};
+
+const renderDeviceName = (props) => {
+  if (!props.connectedBLEDevice) {
+    return null;
   }
   return (
     <div>
-      {props.isEdgeMLInstalled ? (
-        <p>
-          The edge-ml firmware version is outdated. You can update it to the
-          latest version by clicking on the button.
-        </p>
-      ) : (
-        <p>
-          edge-ml is not installed. You can install the latest version by
-          clicking on the button.
-        </p>
-      )}
-      <br />
-      Installed version:{' '}
-      <strong>
+      Connected device:{' '}
+      <b>
         {props.connectedDeviceData
-          ? props.connectedDeviceData.installedFWVersion
-          : '-'}
-      </strong>
+          ? props.connectedDeviceData.name
+          : props.connectedBLEDevice.name}
+      </b>
+      ({props.connectedBLEDevice.id})
+    </div>
+  );
+};
+
+const renderDeviceInfo = (props) => {
+  return (
+    <div>
+      Installed version:{' '}
+      <strong>{props.connectedDeviceData.installedFWVersion}</strong>
       <br />
       Latest version: <strong>{props.latestEdgeMLVersion}</strong>
     </div>
@@ -33,18 +74,15 @@ const getInfoText = (props) => {
 };
 
 const getButtonView = (props) => {
+  if (!props.connectedBLEDevice) {
+    return null;
+  }
   if (
-    props.outdatedVersionInstalled ||
-    (props.hasDFUFunction && !props.isEdgeMLInstalled)
+    (props.outdatedVersionInstalled || !props.isEdgeMLInstalled) &&
+    props.hasDFUFunction
   ) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'end',
-        }}
-      >
+      <div>
         <Button color="primary" onClick={props.toggleDFUModal}>
           Flash edge-ml firmware
         </Button>
@@ -56,36 +94,52 @@ const getButtonView = (props) => {
 
 function BlePanelConnectDevice(props) {
   return (
-    <Card className="text-left">
+    <Card className="text-left mb-2">
       <CardHeader>
         <h4>1. Device</h4>
       </CardHeader>
       <CardBody>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          {getInfoText(props)}
-          <SpinnerButton
-            loadingtext={
-              props.connectedBLEDevice ? 'Disconnecting...' : 'Connecting...'
-            }
-            color={props.connectedBLEDevice ? 'danger' : 'primary'}
-            loading={props.bleConnectionChanging}
-            onClick={props.toggleBLEDeviceConnection}
-          >
-            {props.connectedBLEDevice ? 'Disconnect device' : 'Connect device'}
-          </SpinnerButton>
-        </div>
         <small className="text-danger">
           <strong>Warning: </strong>
           If your device can not be found, try to turn bluetooth off and on
           again in your settings.
         </small>
-        {getButtonView(props)}
+        <div className="panelDivider" />
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexDirection: 'row',
+          }}
+        >
+          {getInfoText(props)}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              marginRight: '2',
+              padding: '4',
+            }}
+          >
+            <div className="mr-2">{getButtonView(props)}</div>
+            <div>
+              <SpinnerButton
+                loadingtext={
+                  props.connectedBLEDevice
+                    ? 'Disconnecting...'
+                    : 'Connecting...'
+                }
+                color={props.connectedBLEDevice ? 'danger' : 'primary'}
+                loading={props.bleConnectionChanging}
+                onClick={props.toggleBLEDeviceConnection}
+              >
+                {props.connectedBLEDevice
+                  ? 'Disconnect device'
+                  : 'Connect device'}
+              </SpinnerButton>
+            </div>
+          </div>
+        </div>
       </CardBody>
     </Card>
   );

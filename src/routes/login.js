@@ -11,7 +11,7 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Alert
+  Alert,
 } from 'reactstrap';
 import { PersonIcon, ShieldIcon } from 'react-octicons';
 import update from 'immutability-helper';
@@ -19,15 +19,17 @@ import { FadeInUp } from 'animate-components';
 import { getServerTime } from '../services/helpers.js';
 import {
   loginUser,
-  verify2FA
+  verify2FA,
 } from '../services/ApiServices/AuthentificationServices';
 import jwt_decode from 'jwt-decode';
 
 import {
   getAccessToken,
   getRefreshToken,
-  setToken
+  setToken,
 } from '../services/LocalStorageService';
+import { Redirect, Router } from 'react-router-dom';
+import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo.js';
 
 class LoginPage extends Component {
   constructor(props) {
@@ -40,7 +42,7 @@ class LoginPage extends Component {
       isLoggedIn: false,
       time: undefined,
       loginFailed: false,
-      show2FA: false
+      show2FA: false,
     };
     this.baseState = JSON.parse(JSON.stringify(this.state));
     this.emailChange = this.emailChange.bind(this);
@@ -52,6 +54,7 @@ class LoginPage extends Component {
     this.tick = this.tick.bind(this);
     this.checkLoggedInStatus = this.checkLoggedInStatus.bind(this);
     this.onLoginError = this.onLoginError.bind(this);
+    this.register = this.register.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -79,7 +82,7 @@ class LoginPage extends Component {
           decoded.userName
         );
         this.setState({
-          isLoggedIn: true
+          isLoggedIn: true,
         });
       }
     }
@@ -93,8 +96,8 @@ class LoginPage extends Component {
     this.setState(
       update(this.state, {
         $merge: {
-          userMail: event.target.value
-        }
+          userMail: event.target.value,
+        },
       })
     );
   }
@@ -103,8 +106,8 @@ class LoginPage extends Component {
     this.setState(
       update(this.state, {
         $merge: {
-          password: event.target.value
-        }
+          password: event.target.value,
+        },
       })
     );
   }
@@ -117,20 +120,20 @@ class LoginPage extends Component {
 
   onTokenChanged(e) {
     this.setState({
-      token: e.target.value
+      token: e.target.value,
     });
     if (!e.target || !e.target.value) return;
     if (e.target.value.length === 6) {
       verify2FA(e.target.value)
-        .then(data => {
+        .then((data) => {
           if (data.isTwoFactorAuthenticated) {
             this.props.onUserLoggedIn(data.access_token, data.refresh_token);
             this.setState({
-              isLoggedIn: true
+              isLoggedIn: true,
             });
           }
         })
-        .catch(err => {
+        .catch((err) => {
           this.onLoginError();
         });
     }
@@ -143,7 +146,7 @@ class LoginPage extends Component {
   submit() {
     this.setState({ buttonDisabled: true });
     loginUser(this.state.userMail, this.state.password)
-      .then(data => {
+      .then((data) => {
         const decoded = jwt_decode(data.access_token);
         setToken(data.access_token, data.refresh_token);
         if (!data.twoFactorEnabled) {
@@ -158,25 +161,29 @@ class LoginPage extends Component {
             isLoggedIn: true,
             buttonDisabled: false,
             password: '',
-            userMail: ''
+            userMail: '',
           });
         } else {
           this.setState({
-            show2FA: true
+            show2FA: true,
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log('Error');
         console.log(err);
         this.onLoginError();
       });
   }
 
+  register() {
+    window.location.href = './register';
+  }
+
   onLoginError() {
     this.setState(
       {
-        loginFailed: true
+        loginFailed: true,
       },
       () => {
         //Wait for animation to stop then reset page
@@ -185,7 +192,7 @@ class LoginPage extends Component {
             loginFailed: false,
             buttonDisabled: false,
             password: '',
-            token: ''
+            token: '',
           });
         }, 300);
       }
@@ -195,8 +202,8 @@ class LoginPage extends Component {
   componentDidMount() {
     this.checkLoggedInStatus();
     getServerTime()
-      .then(serverTime => this.setState({ time: serverTime }))
-      .catch(err => {});
+      .then((serverTime) => this.setState({ time: serverTime }))
+      .catch((err) => {});
     this.interval = setInterval(this.tick, 1000);
   }
 
@@ -222,7 +229,9 @@ class LoginPage extends Component {
           className="Page"
           style={{
             paddingLeft: 0,
-            paddingRight: 0
+            paddingRight: 0,
+            background:
+              'linear-gradient(0deg, rgba(11, 12, 89, 1) 0%, rgba(7, 55, 99, 1) 100%)',
           }}
         >
           <Alert color="info" hidden={!this.state.show2FA}>
@@ -237,13 +246,24 @@ class LoginPage extends Component {
                   style={
                     this.state.loginFailed
                       ? {
-                          animation: 'hzejgT 0.3s ease 0s 1 normal none running'
+                          animation:
+                            'hzejgT 0.3s ease 0s 1 normal none running',
+                          marginBottom: -120,
                         }
-                      : null
+                      : {
+                          marginBottom: -120,
+                        }
                   }
                 >
-                  <CardHeader hidden={this.state.show2FA}>
-                    <b>Login</b>
+                  <CardHeader
+                    hidden={this.state.show2FA}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <EdgeMLBrandLogo></EdgeMLBrandLogo>
                   </CardHeader>
                   <CardBody hidden={this.state.show2FA}>
                     <Row>
@@ -251,15 +271,16 @@ class LoginPage extends Component {
                         <Col>
                           <InputGroup>
                             <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <PersonIcon />
+                              <InputGroupText style={{ background: '#ced4da' }}>
+                                <PersonIcon fill="#444" width="15" />
                               </InputGroupText>
                             </InputGroupAddon>
+
                             <Input
                               type="email"
                               name="email"
                               id="email"
-                              placeholder="Email or username"
+                              placeholder="email or username"
                               value={this.state.userMail}
                               onChange={this.emailChange}
                             />
@@ -268,15 +289,15 @@ class LoginPage extends Component {
                         <Col>
                           <InputGroup>
                             <InputGroupAddon addonType="prepend">
-                              <InputGroupText>
-                                <ShieldIcon />
+                              <InputGroupText style={{ background: '#ced4da' }}>
+                                <ShieldIcon fill="#444" width="15" />
                               </InputGroupText>
                             </InputGroupAddon>
                             <Input
                               type="password"
                               name="password"
                               id="password"
-                              placeholder="Password"
+                              placeholder="password"
                               value={this.state.password}
                               onChange={this.passChange}
                               onKeyDown={this.passHandleKey}
@@ -290,21 +311,29 @@ class LoginPage extends Component {
                             disabled={this.state.buttonDisabled}
                             color="primary"
                             block
+                            className="btn-success"
                           >
                             Login
                           </Button>
                         </Col>
                         <Col className="my-2">
-                          <div style={{ display: 'inline-block' }}>
-                            Have no account? Register{' '}
-                            <a
-                              id="btnRegisterNewUser"
-                              style={{ display: 'inline-block' }}
-                              href="/register"
-                            >
-                              here
-                            </a>
-                          </div>
+                          <hr
+                            style={{
+                              marginTop: 25,
+                              marginBottom: 25,
+                            }}
+                          />
+                          Have no account?
+                          <Button
+                            color="secondary"
+                            style={{
+                              marginTop: 10,
+                            }}
+                            onClick={this.register}
+                            block
+                          >
+                            Register
+                          </Button>
                         </Col>
                       </Col>
                     </Row>

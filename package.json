@@ -5,8 +5,9 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
+    "@fortawesome/free-regular-svg-icons": "^6.2.1",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "animate-components": "^1.4.8",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
@@ -35,8 +36,9 @@
     "reactstrap": "^8.9.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
+    "semaphore-async-await": "^1.5.1",
     "semver": "^7.3.7",
-    "semaphore-async-await": "^1.5.1"
+    "unique-names-generator": "^4.7.1"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
