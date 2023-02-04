@@ -25,8 +25,9 @@ export const changeDatasetLabel = (datasetId, labelingId, changedLabel) => {
   return axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.PUT,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS + `/${datasetId}/labels/${labelingId}`,
+      apiConsts.DATASET_STORE,
+      apiConsts.DATASET_STORE_ENDPOINTS.LABEL +
+        `${datasetId}/${labelingId}/${changedLabel._id}`,
       changedLabel
     )
   );
@@ -36,9 +37,9 @@ export const deleteDatasetLabel = (datasetId, labelingId, labelId) => {
   return axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.DELETE,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS +
-        `/${datasetId}/labels/${labelingId}/${labelId}`
+      apiConsts.DATASET_STORE,
+      apiConsts.DATASET_STORE_ENDPOINTS.LABEL +
+        `${datasetId}/${labelingId}/${labelId}`
     )
   );
 };

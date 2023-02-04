@@ -45,6 +45,8 @@ class TimeSeriesPanel extends Component {
     this.generateState = this.generateState.bind(this);
     this.state = this.generateState(props);
     this.pastScrubbValue = 0;
+    this.oldMin = 0;
+    this.oldMAx = 0;
   }
 
   componentWillReceiveProps(props) {
@@ -160,10 +162,7 @@ class TimeSeriesPanel extends Component {
                     props.unit === ''
                       ? props.name
                       : props.name + ' (' + props.unit + ')',
-                  data: props.data.map((point, index) => [
-                    point.timestamp + props.offset,
-                    point.datapoint,
-                  ]),
+                  data: props.data,
                   lineWidth: 1,
                 },
               ]
@@ -174,10 +173,7 @@ class TimeSeriesPanel extends Component {
                     ' (' +
                     props.unit[indexOuter] +
                     ')',
-                  data: dataItem.map((point, index) => [
-                    point.timestamp + props.offset[indexOuter],
-                    point.datapoint,
-                  ]),
+                  data: props.data,
                   lineWidth: 1,
                 };
               }),
@@ -231,7 +227,15 @@ class TimeSeriesPanel extends Component {
               }
 
               const { chart, width, min, max } = e.target;
-              this.updateData(chart, min, max, width, props.offset);
+              if (
+                Math.abs(this.oldMin - min) > 10 ||
+                Math.abs(this.oldMAx - max) > 10 ||
+                this.oldMin == undefined
+              ) {
+                this.oldMAx = max;
+                this.oldMin = min;
+                this.updateData(chart, min, max, width, props.offset);
+              }
             },
           },
         },
