@@ -74,7 +74,9 @@ const Labeling = (props) => {
             <Badge
               key={index}
               className={
-                label.name === '' ? 'm-1 font-italic font-weight-normal' : 'm-1'
+                label.name === ''
+                  ? 'font-italic font-weight-normal badgeSize mx-1'
+                  : 'badgeSize mx-1'
               }
               style={{ backgroundColor: label.color }}
             >
@@ -86,106 +88,3 @@ const Labeling = (props) => {
     );
   }
 };
-
-/**
- *  <div className="mt-1 ml-4 p-lg-0 m-lg-0">
-      <Row className="pl-1 ml-1 p-lg-0 m-lg-0 ">
-        <Col>
-          {labelings.map((labeling, idx) => (
-            <Badge className="mr-2 badgeSize badgeLabelings pb-2 mt-2 mb-2">
-              <div className="labelingBadgeWrapper">
-                {labeling.name.toUpperCase()}
-              </div>
-              <div>
-                {labels[idx].map((label) => (
-                  <Badge
-                    className="badgeSize mx-1"
-                    style={{ backgroundColor: label.color }}
-                  >
-                    {label.name}
-                  </Badge>
-                ))}
-              </div>
-            </Badge>
-          ))}
-        </Col>
-      </Row>
-    </div>
- */
-
-/**{this.state.labelings.map((labeling, index) => (
-  <tr key={index}>
-    <td
-      className={
-        labeling.name !== ''
-          ? 'labelings-column'
-          : 'labelings-column font-italic'
-      }
-    >
-      {labeling.name !== '' ? labeling.name : 'Untitled'}{' '}
-    </td>
-    <td className="labelings-column">
-      {labeling.labels.map((labelId, index) => {
-        let label = this.state.labels.filter(
-          (label) => label['_id'] === labelId
-        )[0];
-        if (!label) return null;
-        return (
-          <Badge
-            key={index}
-            className={
-              label.name === ''
-                ? 'm-1 font-italic font-weight-normal'
-                : 'm-1'
-            }
-            style={{ backgroundColor: label.color }}
-          >
-            {label.name !== '' ? label.name : 'Untitled'}{' '}
-          </Badge>
-        );
-      })}{' '}
-    </td>
-    <td>
-      <Button
-        id="buttonEditLabeling"
-        className="btn-secondary mt-0 btn-edit"
-        block
-        onClick={(e) => {
-          this.toggleModal(
-            labeling,
-            this.state.labels.filter((label) =>
-              labeling.labels.includes(label['_id'])
-            ),
-            false
-          );
-        }}
-      >
-        Edit
-      </Button>
-    </td>
-  </tr>
-))}*/
-
-/*
- return props.labeling.labels.map((labelId, index) => {
-    let label = props.labels.filter((label) => label['_id'] === labelId)[0];
-    if (!label) {
-      return null;
-    }
-    return (
-        <Badge
-          key={index}
-          className={
-            label.name === '' ? 'm-1 font-italic font-weight-normal' : 'm-1'
-          }
-          style={{ backgroundColor: label.color }}
-        >
-          {label.name !== '' ? label.name : 'Untitled'}{' '}
-        </Badge>
-    );
-  });
-*/
-
-/**
- *
- */

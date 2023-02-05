@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import LabelingTableEntry from './LabelingTableEntry';
+import { Row, Col } from 'reactstrap';
 
 const LabelingTable = (props) => {
   return (
@@ -9,7 +10,15 @@ const LabelingTable = (props) => {
           <div className="font-weight-bold h4">LABELING</div>
         </div>
         <div style={{ borderRadius: 10 }}>
-          <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline" />
+          <div className="datasets-header-wrapper d-flex">
+            <div className="w-100">
+              <Row>
+                <Col>
+                  <div>Name</div>
+                </Col>
+              </Row>
+            </div>
+          </div>
           <div
             className="w-100 position-relative"
             style={{
