@@ -29,6 +29,9 @@ import {
 import Loader from '../modules/loader';
 
 import crypto from 'crypto';
+import pmemoize from 'promise-memoize';
+
+const TIMESERIES_CACHE_MAX_AGE = 5000; // ms
 
 class DatasetPage extends Component {
   constructor(props) {
@@ -54,6 +57,11 @@ class DatasetPage extends Component {
       modalOpen: false,
     };
 
+    this.memoizedGetDatasetTimeseries = pmemoize(getDatasetTimeseries, {
+      resolve: 'json',
+      maxAge: TIMESERIES_CACHE_MAX_AGE,
+    });
+
     this.onSelectedLabelingIdChanged =
       this.onSelectedLabelingIdChanged.bind(this);
     this.onSelectedLabelTypeIdChanged =
@@ -66,7 +74,7 @@ class DatasetPage extends Component {
       this.onLabelingsAndLabelsChanged.bind(this);
     this.onDatasetChanged = this.onDatasetChanged.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
-    this.getTimeSeriesWindow = this.getTimeSeriesWindow.bind(this);
+    this.getDatasetWindow = this.getDatasetWindow.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
     this.onScrubbed = this.onScrubbed.bind(this);
@@ -84,13 +92,6 @@ class DatasetPage extends Component {
       num: [],
       ctrl: false,
       shift: false,
-    };
-
-    this.timeseriesPreviewCache = {
-      start: -100,
-      end: -100,
-      max_resolution: -100,
-      data: [],
     };
   }
 
@@ -160,7 +161,7 @@ class DatasetPage extends Component {
 
     // get a downsampled preview for the timeseries, used for the initial graph + scrollbar
     // half the window width seems like a good compromise for resolution
-    getDatasetTimeseries(this.props.match.params.id, {
+    this.memoizedGetDatasetTimeseries(this.props.match.params.id, {
       max_resolution: window.innerWidth / 2,
     }).then((timeseriesData) => {
       this.setState({
@@ -169,28 +170,12 @@ class DatasetPage extends Component {
     });
   }
 
-  async getTimeSeriesWindow(index, start, end, max_resolution) {
-    if (
-      this.timeseriesPreviewCache.start === start &&
-      this.timeseriesPreviewCache.end === end &&
-      this.timeseriesPreviewCache.max_resolution === max_resolution
-    ) {
-      return this.timeseriesPreviewCache.data[index];
-    }
-
-    this.timeseriesPreviewCache.data = await getDatasetTimeseries(
-      this.props.match.params.id,
-      {
-        max_resolution,
-        start,
-        end,
-      }
-    );
-    this.timeseriesPreviewCache.start = start;
-    this.timeseriesPreviewCache.end = end;
-    this.timeseriesPreviewCache.max_resolution = max_resolution;
-
-    return this.getTimeSeriesWindow(index, start, end, max_resolution);
+  async getDatasetWindow(start, end, max_resolution) {
+    return await this.memoizedGetDatasetTimeseries(this.props.match.params.id, {
+      max_resolution,
+      start,
+      end,
+    });
   }
 
   componentWillUnmount() {
@@ -832,7 +817,7 @@ class DatasetPage extends Component {
                   <TimeSeriesCollectionPanel
                     timeSeries={this.state.dataset.timeSeries}
                     previewTimeSeriesData={this.state.previewTimeSeriesData}
-                    getTimeSeriesWindow={this.getTimeSeriesWindow}
+                    getDatasetWindow={this.getDatasetWindow}
                     labeling={
                       this.state.hideLabels
                         ? { labels: undefined }

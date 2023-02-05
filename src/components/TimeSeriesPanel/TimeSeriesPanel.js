@@ -97,14 +97,14 @@ class TimeSeriesPanel extends Component {
   }
 
   updateData = debounce((chart, min, max, width, offset) => {
-    console.log('up');
-    if (this.props.getTimeSeriesWindow) {
+    // console.log('up', min, max, width);
+    if (this.props.onTimeSeriesWindow) {
       // FIXME: this doesn't really work with fusedSeries, ignore them for now
       const timeSeriesIndex = this.props.index - 1; // -1 cause 0 is the scrollbar
 
       chart.showLoading('Loading data from server...');
       this.props
-        .getTimeSeriesWindow(
+        .onTimeSeriesWindow(
           timeSeriesIndex,
           Math.round(min),
           Math.round(max),
