@@ -130,20 +130,7 @@ class TimeSeriesCollectionPanel extends Component {
               key={key}
               index={key + 1}
               offset={timeSeries.offset}
-              data={
-                previewData.length === 0
-                  ? []
-                  : [
-                      ...(previewData[0].timestamp === this.props.start
-                        ? []
-                        : [{ timestamp: this.props.start }]),
-                      ...previewData,
-                      ...(previewData[previewData.length - 1].timestamp ===
-                      this.props.end
-                        ? []
-                        : [{ timestamp: this.props.end }]),
-                    ]
-              }
+              data={previewData}
               samplingRate={
                 timeSeries.samplingRate ? timeSeries.samplingRate : 1
               }
