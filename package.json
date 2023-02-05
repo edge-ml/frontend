@@ -46,7 +46,7 @@
     ]
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --max_old_space_size=4096 start",
     "start:backend": "node backend-src/server.js",
     "start:backend-dev": "$(npm bin)/nodemon backend-src/server.js",
     "build": "react-scripts build",

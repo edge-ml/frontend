@@ -45,8 +45,9 @@ class TimeSeriesPanel extends Component {
     this.generateState = this.generateState.bind(this);
     this.state = this.generateState(props);
     this.pastScrubbValue = 0;
-    this.oldMin = 0;
-    this.oldMAx = 0;
+    this.oldMin = undefined;
+    this.oldMAx = undefined;
+    this.oldWidth = undefined;
   }
 
   componentWillReceiveProps(props) {
@@ -121,9 +122,10 @@ class TimeSeriesPanel extends Component {
     return {
       chartOptions: {
         navigator: {
+          maskFill: '#77777777',
           enabled: this.props.index === 0,
           series: {
-            color: '#FFFFFF',
+            color: '#ffffff',
             lineWidth: 0,
           },
           xAxis: {
@@ -230,7 +232,8 @@ class TimeSeriesPanel extends Component {
               if (
                 Math.abs(this.oldMin - min) > 10 ||
                 Math.abs(this.oldMAx - max) > 10 ||
-                this.oldMin == undefined
+                Math.abs(this.oldWidth - width) > 10 ||
+                this.oldMin === undefined
               ) {
                 this.oldMAx = max;
                 this.oldMin = min;
