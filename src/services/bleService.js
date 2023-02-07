@@ -81,6 +81,7 @@ export const getBaseDataset = (sensors, datasetName) => {
 };
 
 export const parseTimeSeriesData = (
+  dataset,
   recordedData,
   recordingSensors,
   sensors
@@ -96,9 +97,14 @@ export const parseTimeSeriesData = (
     const sensor = sensors[key];
     sensor.parseScheme.forEach((scheme, idx) => {
       const data = sensorData[key].map((elm) => {
-        return { timestamp: elm.time, datapoint: elm.data[idx] };
+        return [elm.time, elm.data[idx]];
       });
-      timeSeries.push({ name: sensor.name + '_' + scheme.name, data: data });
+      timeSeries.push({
+        id: dataset.timeSeries.find(
+          (elm) => elm.name === sensor.name + '_' + scheme.name
+        )._id,
+        data: data,
+      });
     });
   });
   return timeSeries;

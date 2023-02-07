@@ -123,6 +123,7 @@ class BleDeviceProcessor {
 
   async uploadCache(recordedData) {
     recordedData = parseTimeSeriesData(
+      this.newDataset,
       this.recordedData,
       this.recordingSensors,
       this.sensors
@@ -146,6 +147,7 @@ class BleDeviceProcessor {
     clearInterval(this.recordInterval);
     this.unSubscribeAllSensors();
     const recordedData = parseTimeSeriesData(
+      this.newDataset,
       this.recordedData,
       this.recordingSensors,
       this.sensors

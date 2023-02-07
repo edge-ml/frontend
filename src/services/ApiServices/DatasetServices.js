@@ -168,8 +168,8 @@ export const createDataset = (dataset) => {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.DATASETS,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASET,
         dataset
       )
     )
@@ -211,10 +211,10 @@ export const appendToDataset = (dataset, data) => {
   return axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.DATASETS +
-        `/${dataset['_id']}` +
-        '/timeseries/append',
+      apiConsts.DATASET_STORE,
+      apiConsts.DATASET_STORE_ENDPOINTS.DATASET +
+        `${dataset['_id']}` +
+        '/append',
       data
     )
   )
