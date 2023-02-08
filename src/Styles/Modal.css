@@ -1,0 +1,15 @@
+.modal {
+  background-color: #11111188;
+}
+
+.modal-header {
+  background-color: rgb(249, 251, 252);
+}
+
+.modal-footer {
+  background-color: rgb(249, 251, 252);
+}
+
+.modal-content {
+  border-radius: 10px;
+}

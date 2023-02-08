@@ -250,7 +250,7 @@ class CreateNewDatasetModal extends Component {
     return (
       <div>
         <Modal
-          className="modal-xl"
+          className="modal-xl custom-modal"
           data-testid="modal"
           isOpen={this.props.isOpen}
         >
@@ -262,7 +262,7 @@ class CreateNewDatasetModal extends Component {
           <ModalBody>
             <DragDrop
               style={{ height: '100px' }}
-              className="my-2"
+              className="my-2 p-4"
               onFileInput={this.onFileInput}
             ></DragDrop>
             {this.state.files.length === 0
