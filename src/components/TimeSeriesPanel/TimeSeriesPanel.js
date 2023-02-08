@@ -106,9 +106,9 @@ class TimeSeriesPanel extends Component {
       this.props
         .onTimeSeriesWindow(
           timeSeriesIndex,
-          Math.round(min),
-          Math.round(max),
-          Math.round(width)
+          Math.round(min) + 1,
+          Math.round(max) + 1,
+          Math.round(width * 1.3)
         )
         .then((timeserie) => {
           // FIXME: offset/series[0] cause problem with fusedSeries, ignore for now
@@ -237,7 +237,8 @@ class TimeSeriesPanel extends Component {
               ) {
                 this.oldMAx = max;
                 this.oldMin = min;
-                this.updateData(chart, min, max, width, props.offset);
+                this.oldWidth = width;
+                this.updateData(chart, min - 1, max + 1, width, props.offset);
               }
             },
           },
