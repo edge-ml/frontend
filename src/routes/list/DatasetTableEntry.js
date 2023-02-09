@@ -42,13 +42,9 @@ const Labelings = (props) => {
   if (!props.dataset.labelings.length) {
     return null;
   }
+
   const labelings = props.dataset.labelings.map((elm) =>
     props.labelings.find((labeling) => labeling._id === elm.labelingId)
-  );
-  const labels = labelings.map((labeling) =>
-    labeling.labels.map((elm) =>
-      props.labels.find((label) => elm === label._id)
-    )
   );
 
   return (
@@ -61,14 +57,22 @@ const Labelings = (props) => {
                 {labeling.name.toUpperCase()}
               </div>
               <div>
-                {labels[idx].map((label) => (
-                  <Badge
-                    className="badgeSize mx-1"
-                    style={{ backgroundColor: label.color }}
-                  >
-                    {label.name}
-                  </Badge>
-                ))}
+                {labeling.labels.map((label) => {
+                  const labelTypes = props.dataset.labelings[idx].labels.map(
+                    (elm) => elm.type
+                  );
+                  if (!labelTypes.includes(label._id)) {
+                    return null;
+                  }
+                  return (
+                    <Badge
+                      className="badgeSize mx-1"
+                      style={{ backgroundColor: label.color }}
+                    >
+                      {label.name}
+                    </Badge>
+                  );
+                })}
               </div>
             </Badge>
           ))}
@@ -115,7 +119,6 @@ const AdditionalInfo = (props) => {
       <Metadata dataset={dataset}></Metadata>
       <Labelings
         labelings={props.labelings}
-        labels={props.labels}
         dataset={props.dataset}
       ></Labelings>
     </div>
@@ -217,7 +220,6 @@ const DatasetTableEntry = (props) => {
                   <AdditionalInfo
                     dataset={dataset}
                     labelings={props.labelings}
-                    labels={props.labels}
                   ></AdditionalInfo>
                 </div>
               </Col>
@@ -260,7 +262,6 @@ const DatasetTableEntry = (props) => {
           <AdditionalInfo
             dataset={dataset}
             labelings={props.labelings}
-            labels={props.labels}
           ></AdditionalInfo>
         </div>
       </div>

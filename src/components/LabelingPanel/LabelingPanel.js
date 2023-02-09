@@ -21,7 +21,6 @@ class LabelingPanel extends Component {
       from: props.from,
       to: props.to,
       labeling: props.labeling,
-      labels: props.labels,
       selectedLabelTypeId: props.selectedLabelTypeId,
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
@@ -40,7 +39,6 @@ class LabelingPanel extends Component {
       from: props.from,
       to: props.to,
       labeling: props.labeling,
-      labels: props.labels,
       selectedLabelTypeId: props.selectedLabelTypeId,
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
@@ -166,10 +164,7 @@ class LabelingPanel extends Component {
               ? this.state.labeling.labels
                   .slice(0)
                   .reverse()
-                  .map((labelId, index, array) => {
-                    let label = this.state.labels.filter(
-                      (label) => label['_id'] === labelId
-                    )[0];
+                  .map((label, index, array) => {
                     return (
                       <Button
                         className="btn-light m-1 labelingButton"
@@ -179,19 +174,21 @@ class LabelingPanel extends Component {
                         }
                         style={{
                           backgroundColor:
-                            labelId === this.state.selectedLabelTypeId
+                            label._id === this.state.selectedLabelTypeId
                               ? label.color
                               : null,
                           borderColor:
-                            labelId === this.state.selectedLabelTypeId
+                            label._id === this.state.selectedLabelTypeId
                               ? null
                               : label.color,
                           color:
-                            labelId === this.state.selectedLabelTypeId
+                            label._id === this.state.selectedLabelTypeId
                               ? null
                               : label.color,
                         }}
-                        onClick={(e) => this.handleLabelTypeClicked(e, labelId)}
+                        onClick={(e) =>
+                          this.handleLabelTypeClicked(e, label._id)
+                        }
                         key={index}
                       >
                         {label.name} {'(' + (array.length - index) + ')'}

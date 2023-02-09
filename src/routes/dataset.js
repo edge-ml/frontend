@@ -28,7 +28,6 @@ import {
 
 import Loader from '../modules/loader';
 
-import crypto from 'crypto';
 import pmemoize from 'promise-memoize';
 
 const TIMESERIES_CACHE_MAX_AGE = 5000; // ms
@@ -40,7 +39,6 @@ class DatasetPage extends Component {
       dataset: undefined,
       previewTimeSeriesData: undefined,
       labelings: [],
-      labels: [],
       isReady: false,
       controlStates: {
         selectedLabelId: undefined,
@@ -186,26 +184,28 @@ class DatasetPage extends Component {
   onDatasetChanged(dataset) {
     if (!dataset) return;
     this.setState({ dataset }, () =>
-      subscribeLabelingsAndLabels().then((result) => {
-        this.onLabelingsAndLabelsChanged(result.labelings, result.labels);
+      subscribeLabelingsAndLabels().then((labelings) => {
+        this.onLabelingsAndLabelsChanged(labelings);
       })
     );
   }
 
-  onLabelingsAndLabelsChanged(labelings, labels) {
+  onLabelingsAndLabelsChanged(labelings) {
     let selectedLabeling = labelings[0];
     let selectedLabelTypes = undefined;
-    if (labels) {
-      if (selectedLabeling) {
-        selectedLabelTypes = labels.filter((label) =>
-          selectedLabeling.labels.includes(label['_id'])
-        );
-      }
+    if (selectedLabeling.labels.length) {
+      selectedLabelTypes = labelings[0].labels;
     }
+    // if (labels) {
+    //   if (selectedLabeling) {
+    //     selectedLabelTypes = labels.filter((label) =>
+    //       selectedLabeling.labels.includes(label['_id'])
+    //     );
+    //   }
+    // }
 
     this.setState({
       labelings: labelings || [],
-      labels: labels || [],
       controlStates: {
         ...this.state.controlStates,
         selectedLabelingId: selectedLabeling
@@ -501,9 +501,11 @@ class DatasetPage extends Component {
     )[0];
     const oldLabelType = label.type;
     label.type = selectedLabelTypeId;
-    label.name = this.state.labels.find(
-      (elm) => elm._id === selectedLabelTypeId
-    )['name'];
+    label.name = this.state.labelings
+      .map((elm) => elm.labels)
+      .flat()
+      .find((elm) => elm._id === selectedLabelTypeId)['name'];
+    label.name = this.state.selectedDatasetlabeling;
 
     const oldSelectedLabelTypeId = this.state.controlStates.selectedLabelTypeId;
     this.setState({
@@ -560,7 +562,9 @@ class DatasetPage extends Component {
 
     if (!this.state.controlStates.drawingId) {
       // First time to click
-      const randomId = crypto.randomBytes(20).toString('hex');
+      const randomId = Math.floor(Math.random() * 0xffffff)
+        .toString(16)
+        .padEnd(6, '0');
       const newLabel = {
         start: position,
         end: undefined,
@@ -850,7 +854,6 @@ class DatasetPage extends Component {
                     }
                     to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
                     labeling={selectedLabeling}
-                    labels={this.state.controlStates.selectedLabelTypes}
                     selectedLabelTypeId={
                       this.state.controlStates.selectedLabelTypeId
                     }
@@ -896,7 +899,6 @@ class DatasetPage extends Component {
                 <div className="mt-2" />
                 <div className="mt-2" style={{ marginBottom: '230px' }}>
                   <ManagementPanel
-                    labels={this.state.labels}
                     labelings={this.state.labelings}
                     onDeleteDataset={this.onDeleteDataset}
                     dataset={this.state.dataset}

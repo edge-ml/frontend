@@ -87,7 +87,6 @@ const DatasetTable = (props) => {
                 toggleCheck={props.toggleCheck}
                 isSelected={props.datasetsToDelete.includes(dataset['_id'])}
                 labelings={props.labelings}
-                labels={props.labels}
                 deleteEntry={props.deleteEntry}
                 areAllSelected={props.areAllSelected}
               ></DatasetTableEntry>

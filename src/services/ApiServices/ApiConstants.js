@@ -75,6 +75,7 @@ export const DATASET_STORE_ENDPOINTS = {
   DATASET: '/dataset/',
   DATASETS_PROJECT: '/dataset/project',
   LABEL: '/label/',
+  LABELING: '/labelings/',
 };
 
 export const generateApiRequest = (

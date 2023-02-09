@@ -32,7 +32,6 @@ class ListPage extends Component {
       ready: false,
       CreateNewDatasetToggle: false,
       labelings: undefined,
-      label: undefined,
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.deleteDatasets = this.deleteDatasets.bind(this);
@@ -51,10 +50,9 @@ class ListPage extends Component {
   componentDidMount() {
     Promise.all([
       getDatasets(),
-      subscribeLabelingsAndLabels().then((labelingdata) => {
+      subscribeLabelingsAndLabels().then((labelings) => {
         this.setState({
-          labelings: labelingdata.labelings,
-          labels: labelingdata.labels,
+          labelings: labelings,
         });
       }),
     ]).then(([datasets, _]) => {
@@ -181,7 +179,6 @@ class ListPage extends Component {
             downloadAllDatasets={this.downloadAllDatasets}
             toggleCheck={this.toggleCheck}
             labelings={this.state.labelings}
-            labels={this.state.labels}
             deleteEntry={this.deleteEntry}
             selectAll={this.selectAll}
             deselectAll={this.deselectAll}
