@@ -94,6 +94,67 @@ class TimeSeriesPanel extends Component {
     container.style.width = '100%';
 
     this.chart.current.chart.reflow();
+
+    // do not add buttons for the top panel (scroller)
+    if (this.props.index === 0) {
+      return;
+    }
+    const leftButton = document.createElement('button');
+    leftButton.innerHTML = '<';
+    leftButton.style.cssText = `
+      position: absolute;
+      left: 10px;
+      top: 37.5%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      font-size: 30px;
+      cursor: pointer;
+      color: grey;
+      font-family: Monaco, monospace;
+    `
+    leftButton.addEventListener('mousedown', (e) => {
+      e.stopImmediatePropagation();
+      const width = this.chart.current.chart.xAxis[0].max - this.chart.current.chart.xAxis[0].min + 1;
+      this.chart.current.chart.xAxis[0].setExtremes(
+        this.chart.current.chart.xAxis[0].min - width / 4,
+        this.chart.current.chart.xAxis[0].max - width / 4
+      );
+    });
+
+    leftButton.addEventListener("mouseover", function() {
+      leftButton.style.color = "black";
+    });
+    
+    leftButton.addEventListener("mouseout", function() {
+      leftButton.style.color = "grey";
+    });
+
+    const rightButton = document.createElement('button');
+    rightButton.innerHTML = '>';
+    rightButton.style.cssText = `
+      position: absolute;
+      right: 10px;
+      top: 37.5%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      font-size: 30px;
+      cursor: pointer;
+      color: grey;
+      font-family: Monaco, monospace;
+    `
+    rightButton.addEventListener('mousedown', (e) => {
+      e.stopImmediatePropagation()
+      const width = this.chart.current.chart.xAxis[0].max - this.chart.current.chart.xAxis[0].min + 1;
+      this.chart.current.chart.xAxis[0].setExtremes(
+        this.chart.current.chart.xAxis[0].min + width / 4,
+        this.chart.current.chart.xAxis[0].max + width / 4
+      );
+    });
+
+      this.chart.current.chart.renderTo.parentNode.appendChild(leftButton);
+      this.chart.current.chart.renderTo.parentNode.appendChild(rightButton);
   }
 
   updateData = debounce((chart, min, max, width, offset) => {
@@ -306,6 +367,7 @@ class TimeSeriesPanel extends Component {
     if (!this.props.canEdit) {
       return;
     }
+    console.log('mouse down', e)
     let position = this.chart.current.chart.xAxis[0].toValue(
       e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160 // TODO hack hardcoded 2 pixels how to fix?
     );
@@ -807,7 +869,6 @@ class TimeSeriesPanel extends Component {
             onDelete={this.props.onDelete}
           />
         ) : null}
-
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
           <HighchartsReact
             ref={this.chart}
