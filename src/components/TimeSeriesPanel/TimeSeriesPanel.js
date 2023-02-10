@@ -20,8 +20,12 @@ class TimeSeriesPanel extends Component {
     this.onMouseMoved = this.onMouseMoved.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
 
+    // global keyboard handlers
+    this.onKeyDown = this.onKeyDown.bind(this);
+
     document.addEventListener('mousemove', this.onMouseMoved);
     document.addEventListener('mouseup', this.onMouseUp);
+    document.addEventListener('keydown', this.onKeyDown);
 
     // PlotBands
     this.onPlotBandMouseDown = this.onPlotBandMouseDown.bind(this);
@@ -48,6 +52,10 @@ class TimeSeriesPanel extends Component {
     this.oldMin = undefined;
     this.oldMAx = undefined;
     this.oldWidth = undefined;
+
+    // scroll actions
+    this.scrollLeft = this.scrollLeft.bind(this);
+    this.scrollRight = this.scrollRight.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -94,6 +102,69 @@ class TimeSeriesPanel extends Component {
     container.style.width = '100%';
 
     this.chart.current.chart.reflow();
+
+    // do not add buttons for the top panel (scroller)
+    if (this.props.index === 0) {
+      return;
+    }
+    const leftButton = document.createElement('button');
+    leftButton.innerHTML = '<';
+    leftButton.style.cssText = `
+      position: absolute;
+      left: 10px;
+      top: 37.5%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      font-size: 30px;
+      cursor: pointer;
+      color: grey;
+      font-family: Monaco, monospace;
+      user-select: none;
+    `;
+    leftButton.addEventListener('mousedown', (e) => {
+      e.stopImmediatePropagation();
+      this.scrollLeft();
+    });
+
+    leftButton.addEventListener('mouseover', function () {
+      leftButton.style.color = 'black';
+    });
+
+    leftButton.addEventListener('mouseout', function () {
+      leftButton.style.color = 'grey';
+    });
+
+    const rightButton = document.createElement('button');
+    rightButton.innerHTML = '>';
+    rightButton.style.cssText = `
+      position: absolute;
+      right: 10px;
+      top: 37.5%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      font-size: 30px;
+      cursor: pointer;
+      color: grey;
+      font-family: Monaco, monospace;
+      user-select: none;
+    `;
+    rightButton.addEventListener('mousedown', (e) => {
+      e.stopImmediatePropagation();
+      this.scrollRight();
+    });
+
+    rightButton.addEventListener('mouseover', function () {
+      rightButton.style.color = 'black';
+    });
+
+    rightButton.addEventListener('mouseout', function () {
+      rightButton.style.color = 'grey';
+    });
+
+    this.chart.current.chart.renderTo.parentNode.appendChild(leftButton);
+    this.chart.current.chart.renderTo.parentNode.appendChild(rightButton);
   }
 
   updateData = debounce((chart, min, max, width, offset) => {
@@ -306,6 +377,7 @@ class TimeSeriesPanel extends Component {
     if (!this.props.canEdit) {
       return;
     }
+    console.log('mouse down', e);
     let position = this.chart.current.chart.xAxis[0].toValue(
       e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160 // TODO hack hardcoded 2 pixels how to fix?
     );
@@ -519,6 +591,23 @@ class TimeSeriesPanel extends Component {
       undefined,
       this.props.canEdit
     );
+  }
+
+  /***
+   * Global Keyboard Handlers
+   */
+  onKeyDown(e) {
+    e.stopImmediatePropagation();
+    console.log('event', e);
+    switch (e.code) {
+      // remove condition if the fetching can be done instantaneously
+      case 'ArrowRight':
+        !e.repeat ? this.scrollRight() : (() => {})();
+        break;
+      case 'ArrowLeft':
+        !e.repeat ? this.scrollLeft() : (() => {})();
+        break;
+    }
   }
 
   /***
@@ -783,6 +872,29 @@ class TimeSeriesPanel extends Component {
     return plotLine;
   }
 
+  scrollLeft() {
+    const width =
+      this.chart.current.chart.xAxis[0].max -
+      this.chart.current.chart.xAxis[0].min +
+      1;
+    this.chart.current.chart.xAxis[0].setExtremes(
+      this.chart.current.chart.xAxis[0].min - width / 4,
+      this.chart.current.chart.xAxis[0].max - width / 4
+    );
+  }
+
+  scrollRight() {
+    const width =
+      this.chart.current.chart.xAxis[0].max -
+      this.chart.current.chart.xAxis[0].min +
+      1;
+    console.log('width', width);
+    this.chart.current.chart.xAxis[0].setExtremes(
+      this.chart.current.chart.xAxis[0].min + width / 4,
+      this.chart.current.chart.xAxis[0].max + width / 4
+    );
+  }
+
   render() {
     return (
       <div
@@ -807,7 +919,6 @@ class TimeSeriesPanel extends Component {
             onDelete={this.props.onDelete}
           />
         ) : null}
-
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
           <HighchartsReact
             ref={this.chart}
