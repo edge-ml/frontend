@@ -193,7 +193,11 @@ class DatasetPage extends Component {
   onLabelingsAndLabelsChanged(labelings) {
     let selectedLabeling = labelings[0];
     let selectedLabelTypes = undefined;
-    if (selectedLabeling.labels.length) {
+    if (
+      selectedLabeling &&
+      selectedLabeling.labels &&
+      selectedLabeling.labels.length
+    ) {
       selectedLabelTypes = labelings[0].labels;
     }
     // if (labels) {
