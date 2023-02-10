@@ -20,8 +20,12 @@ class TimeSeriesPanel extends Component {
     this.onMouseMoved = this.onMouseMoved.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
 
+    // global keyboard handlers
+    this.onKeyDown = this.onKeyDown.bind(this);
+
     document.addEventListener('mousemove', this.onMouseMoved);
     document.addEventListener('mouseup', this.onMouseUp);
+    document.addEventListener('keydown', this.onKeyDown);
 
     // PlotBands
     this.onPlotBandMouseDown = this.onPlotBandMouseDown.bind(this);
@@ -37,10 +41,10 @@ class TimeSeriesPanel extends Component {
     this.getActivePlotLine = this.getActivePlotLine.bind(this);
     this.labelingToPlotLines = this.labelingToPlotLines.bind(this);
     this.generatePlotLine = this.generatePlotLine.bind(this);
-
+    
     this.getSecondBoundaryByPlotLineIdAndLabelId =
-      this.getSecondBoundaryByPlotLineIdAndLabelId.bind(this);
-
+    this.getSecondBoundaryByPlotLineIdAndLabelId.bind(this);
+    
     // state
     this.generateState = this.generateState.bind(this);
     this.state = this.generateState(props);
@@ -48,7 +52,12 @@ class TimeSeriesPanel extends Component {
     this.oldMin = undefined;
     this.oldMAx = undefined;
     this.oldWidth = undefined;
+    
+    // scroll actions
+    this.scrollLeft = this.scrollLeft.bind(this);
+    this.scrollRight = this.scrollRight.bind(this);
   }
+
 
   componentWillReceiveProps(props) {
     let plotlines = this.state.chartOptions.xAxis.plotLines;
@@ -112,14 +121,11 @@ class TimeSeriesPanel extends Component {
       cursor: pointer;
       color: grey;
       font-family: Monaco, monospace;
+      user-select: none;
     `
     leftButton.addEventListener('mousedown', (e) => {
       e.stopImmediatePropagation();
-      const width = this.chart.current.chart.xAxis[0].max - this.chart.current.chart.xAxis[0].min + 1;
-      this.chart.current.chart.xAxis[0].setExtremes(
-        this.chart.current.chart.xAxis[0].min - width / 4,
-        this.chart.current.chart.xAxis[0].max - width / 4
-      );
+      this.scrollLeft();
     });
 
     leftButton.addEventListener("mouseover", function() {
@@ -143,14 +149,19 @@ class TimeSeriesPanel extends Component {
       cursor: pointer;
       color: grey;
       font-family: Monaco, monospace;
+      user-select: none;
     `
     rightButton.addEventListener('mousedown', (e) => {
       e.stopImmediatePropagation()
-      const width = this.chart.current.chart.xAxis[0].max - this.chart.current.chart.xAxis[0].min + 1;
-      this.chart.current.chart.xAxis[0].setExtremes(
-        this.chart.current.chart.xAxis[0].min + width / 4,
-        this.chart.current.chart.xAxis[0].max + width / 4
-      );
+      this.scrollRight();
+    });
+
+    rightButton.addEventListener("mouseover", function() {
+      rightButton.style.color = "black";
+    });
+    
+    rightButton.addEventListener("mouseout", function() {
+      rightButton.style.color = "grey";
     });
 
       this.chart.current.chart.renderTo.parentNode.appendChild(leftButton);
@@ -584,6 +595,19 @@ class TimeSeriesPanel extends Component {
   }
 
   /***
+   * Global Keyboard Handlers
+   */
+  onKeyDown(e) {
+    e.stopImmediatePropagation();
+    console.log('event', e);
+    switch (e.code) {
+      // remove condition if the fetching can be done instantaneously
+      case "ArrowRight": !e.repeat ? this.scrollRight() : (() => {})(); break; 
+      case "ArrowLeft": !e.repeat ? this.scrollLeft() : (() => {})(); break;
+    }
+  }
+
+  /***
    * PlotBands
    */
   onPlotBandMouseDown(e, id, labelId) {
@@ -843,6 +867,23 @@ class TimeSeriesPanel extends Component {
     )[0];
 
     return plotLine;
+  }
+
+  scrollLeft() {
+    const width = this.chart.current.chart.xAxis[0].max - this.chart.current.chart.xAxis[0].min + 1;
+    this.chart.current.chart.xAxis[0].setExtremes(
+      this.chart.current.chart.xAxis[0].min - width / 4,
+      this.chart.current.chart.xAxis[0].max - width / 4
+    );
+  }
+
+  scrollRight() {
+    const width = this.chart.current.chart.xAxis[0].max - this.chart.current.chart.xAxis[0].min + 1;
+    console.log('width', width);
+    this.chart.current.chart.xAxis[0].setExtremes(
+      this.chart.current.chart.xAxis[0].min + width / 4,
+      this.chart.current.chart.xAxis[0].max + width / 4
+    );
   }
 
   render() {
