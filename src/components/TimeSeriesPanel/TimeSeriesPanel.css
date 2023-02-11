@@ -31,6 +31,12 @@
   background-color: #e6e6e6;
 }
 
+.dropdownBtn:active {
+  -webkit-transform: scale(0.95);
+  transform: scale(0.95);
+  filter: brightness(85%);
+}
+
 .dropdown {
   z-index: 10;
   position: absolute;
@@ -79,4 +85,28 @@
 
 .dropdown button {
   font-size: 0.9rem;
+}
+
+.zoomMenuWrapper {
+  position: absolute;
+  right: 35px;
+  top: 10px;
+  z-index: 5;
+}
+
+.zoomBtn {
+  background-color: #f2f2f2;
+  padding: 0 6px 1px 6px;
+  border-radius: 15%;
+  border: none;
+}
+
+.zoomBtn:hover {
+  background-color: #e6e6e6;
+}
+
+.zoomBtn:active {
+  -webkit-transform: scale(0.95);
+  transform: scale(0.95);
+  filter: brightness(85%);
 }

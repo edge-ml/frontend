@@ -6,8 +6,13 @@ import './TimeSeriesPanel.css';
 import DropdownPanel from './DropdownPanel';
 import { debounce } from '../../services/helpers';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearchPlus, faSearchMinus } from '@fortawesome/free-solid-svg-icons';
+
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
+const ZoomDirection = {IN: 'in', OUT: 'out'}
+const zoomFactor = 0.1;
 
 class TimeSeriesPanel extends Component {
   constructor(props) {
@@ -56,6 +61,9 @@ class TimeSeriesPanel extends Component {
     // scroll actions
     this.scrollLeft = this.scrollLeft.bind(this);
     this.scrollRight = this.scrollRight.bind(this);
+
+    // zoom actions
+    this.zoom = this.zoom.bind(this);
   }
 
 
@@ -886,6 +894,14 @@ class TimeSeriesPanel extends Component {
     );
   }
 
+  zoom(direction) {
+    const width = this.chart.current.chart.xAxis[0].max - this.chart.current.chart.xAxis[0].min + 1;
+    const sign = direction === ZoomDirection.IN ? 1 : -1;
+    this.chart.current.chart.xAxis[0].setExtremes(
+      this.chart.current.chart.xAxis[0].min + sign * width * zoomFactor , 
+      this.chart.current.chart.xAxis[0].max - sign * width * zoomFactor)
+  }
+
   render() {
     return (
       <div
@@ -909,6 +925,16 @@ class TimeSeriesPanel extends Component {
             onShift={this.props.onShift}
             onDelete={this.props.onDelete}
           />
+        ) : null}
+        {this.props.index !== 0 && !this.props.isEmpty ? (
+          <div className='zoomMenuWrapper'>
+              <button className="zoomBtn" style={{marginRight: '1px'}} onClick={e => this.zoom(ZoomDirection.OUT)}>
+                <FontAwesomeIcon icon={faSearchMinus} size="xs" color="#999999" />
+              </button>
+              <button className="zoomBtn" onClick={e => this.zoom(ZoomDirection.IN)}>
+                <FontAwesomeIcon icon={faSearchPlus} size="xs" color="#999999" />
+              </button>
+          </div>
         ) : null}
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
           <HighchartsReact
