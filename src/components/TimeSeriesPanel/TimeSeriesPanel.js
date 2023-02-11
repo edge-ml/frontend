@@ -11,7 +11,11 @@ import { faSearchPlus, faSearchMinus } from '@fortawesome/free-solid-svg-icons';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
-const ZoomDirection = {IN: 'in', OUT: 'out'}
+
+const ScrollDirection = {LEFT: 'left', RIGHT: 'right'};
+const scrollFactor = 0.25;
+
+const ZoomDirection = {IN: 'in', OUT: 'out'};
 const zoomFactor = 0.1;
 
 class TimeSeriesPanel extends Component {
@@ -59,8 +63,7 @@ class TimeSeriesPanel extends Component {
     this.oldWidth = undefined;
 
     // scroll actions
-    this.scrollLeft = this.scrollLeft.bind(this);
-    this.scrollRight = this.scrollRight.bind(this);
+    this.scroll = this.scroll.bind(this);
 
     // zoom actions
     this.zoom = this.zoom.bind(this);
@@ -132,7 +135,7 @@ class TimeSeriesPanel extends Component {
     `;
     leftButton.addEventListener('mousedown', (e) => {
       e.stopImmediatePropagation();
-      this.scrollLeft();
+      this.scroll(ScrollDirection.LEFT);
     });
 
     leftButton.addEventListener('mouseover', function () {
@@ -160,7 +163,7 @@ class TimeSeriesPanel extends Component {
     `;
     rightButton.addEventListener('mousedown', (e) => {
       e.stopImmediatePropagation();
-      this.scrollRight();
+      this.scroll(ScrollDirection.RIGHT);
     });
 
     rightButton.addEventListener('mouseover', function () {
@@ -608,12 +611,12 @@ class TimeSeriesPanel extends Component {
     e.stopImmediatePropagation();
     console.log('event', e);
     switch (e.code) {
-      // remove condition if the fetching can be done instantaneously
+      // remove ternary condition if the fetching can be done instantaneously to enable continuous scrolling
       case 'ArrowRight':
-        !e.repeat ? this.scrollRight() : (() => {})();
+        !e.repeat ? this.scroll(ScrollDirection.RIGHT) : (() => {})();
         break;
       case 'ArrowLeft':
-        !e.repeat ? this.scrollLeft() : (() => {})();
+        !e.repeat ? this.scroll(ScrollDirection.LEFT) : (() => {})();
         break;
     }
   }
@@ -880,26 +883,12 @@ class TimeSeriesPanel extends Component {
     return plotLine;
   }
 
-  scrollLeft() {
-    const width =
-      this.chart.current.chart.xAxis[0].max -
-      this.chart.current.chart.xAxis[0].min +
-      1;
+  scroll(direction) {
+    const width = this.chart.current.chart.xAxis[0].max -this.chart.current.chart.xAxis[0].min + 1;
+    const sign = direction === ScrollDirection.LEFT ? -1 : 1;
     this.chart.current.chart.xAxis[0].setExtremes(
-      this.chart.current.chart.xAxis[0].min - width / 4,
-      this.chart.current.chart.xAxis[0].max - width / 4
-    );
-  }
-
-  scrollRight() {
-    const width =
-      this.chart.current.chart.xAxis[0].max -
-      this.chart.current.chart.xAxis[0].min +
-      1;
-    console.log('width', width);
-    this.chart.current.chart.xAxis[0].setExtremes(
-      this.chart.current.chart.xAxis[0].min + width / 4,
-      this.chart.current.chart.xAxis[0].max + width / 4
+      this.chart.current.chart.xAxis[0].min + sign * width * scrollFactor,
+      this.chart.current.chart.xAxis[0].max + sign * width * scrollFactor
     );
   }
 
