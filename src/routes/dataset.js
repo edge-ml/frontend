@@ -545,6 +545,11 @@ class DatasetPage extends Component {
   }
 
   onClickPosition(position) {
+    // don't add new labels if we don't show them
+    if (this.state.hideLabels) {
+      return;
+    }
+
     const labelingIdx = this.state.dataset.labelings.findIndex(
       (elm) => elm.labelingId === this.state.controlStates.selectedLabelingId
     );
@@ -843,25 +848,29 @@ class DatasetPage extends Component {
                     onClickPosition={this.onClickPosition}
                     onLabelPositionUpdate={this.onLabelPositionUpdate}
                   />
-                  <LabelingPanel
-                    className="StickyLabelingSelectionPanel"
-                    history={this.props.history}
-                    id={this.state.controlStates.selectedLabelId}
-                    from={
-                      selectedDatasetLabel ? selectedDatasetLabel.start : null
-                    }
-                    to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
-                    labeling={selectedLabeling}
-                    labels={this.state.controlStates.selectedLabelTypes}
-                    selectedLabelTypeId={
-                      this.state.controlStates.selectedLabelTypeId
-                    }
-                    onSelectedLabelTypeIdChanged={
-                      this.onSelectedLabelTypeIdChanged
-                    }
-                    onDeleteSelectedLabel={this.onDeleteSelectedLabel}
-                    canEdit={this.state.controlStates.canEdit}
-                  />
+                  <Fade className="LabelingPanel" in={!this.state.hideLabels}>
+                    <LabelingPanel
+                      className="StickyLabelingSelectionPanel"
+                      history={this.props.history}
+                      id={this.state.controlStates.selectedLabelId}
+                      from={
+                        selectedDatasetLabel ? selectedDatasetLabel.start : null
+                      }
+                      to={
+                        selectedDatasetLabel ? selectedDatasetLabel.end : null
+                      }
+                      labeling={selectedLabeling}
+                      labels={this.state.controlStates.selectedLabelTypes}
+                      selectedLabelTypeId={
+                        this.state.controlStates.selectedLabelTypeId
+                      }
+                      onSelectedLabelTypeIdChanged={
+                        this.onSelectedLabelTypeIdChanged
+                      }
+                      onDeleteSelectedLabel={this.onDeleteSelectedLabel}
+                      canEdit={this.state.controlStates.canEdit}
+                    />
+                  </Fade>
                 </div>
                 <div className="dataset-labelingpanel">
                   {this.state.error ? (

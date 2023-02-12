@@ -17,6 +17,8 @@ import { downloadSingleDataset } from '../../services/DatasetService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
 
+const hideLabelsSymbol = 'hide labels' + Math.floor(Math.random() * 1000);
+
 class LabelingSelectionPanel extends Component {
   constructor() {
     super();
@@ -42,7 +44,15 @@ class LabelingSelectionPanel extends Component {
 
   handleLabelingClicked(e, id) {
     if (e) e.preventDefault();
-    this.props.onSelectedLabelingIdChanged(id);
+    if (id === hideLabelsSymbol) {
+      this.props.onHideLabels();
+    } else {
+      // if labels are hidden, show them again
+      if (this.props.hideLabels) {
+        this.props.onHideLabels();
+      }
+      this.props.onSelectedLabelingIdChanged(id);
+    }
   }
 
   render() {
@@ -66,22 +76,13 @@ class LabelingSelectionPanel extends Component {
               {!this.props.canEdit ? 'Locked' : 'Unlocked'}
             </span>
           </Button>
-          <Button
-            className="m-1 btn-light"
-            onClick={this.props.onHideLabels}
-            style={{ minWidth: 120 }}
-          >
-            <span
-              style={{ color: !this.props.hideLabels ? '#007BFF' : 'gray' }}
-            >
-              {!this.props.hideLabels ? 'Show labels' : 'Hide labels'}
-            </span>
-          </Button>
           <Select
             className="m-1"
             placeholder="Labeling"
             value={
-              this.props.selectedLabelingId
+              this.props.hideLabels
+                ? { label: 'Select Labeling', value: hideLabelsSymbol }
+                : this.props.selectedLabelingId
                 ? {
                     value: this.props.selectedLabelingId,
                     label:
@@ -93,10 +94,15 @@ class LabelingSelectionPanel extends Component {
                 : null
             }
             onChange={(x) => this.handleLabelingClicked(null, x.value)}
-            options={this.props.labelings.map((x) => ({
-              value: x._id,
-              label: x.name,
-            }))}
+            options={[
+              ...(this.props.hideLabels
+                ? []
+                : [{ label: 'Hide Labels', value: hideLabelsSymbol }]),
+              ...this.props.labelings.map((x) => ({
+                value: x._id,
+                label: x.name,
+              })),
+            ]}
           />
           <Button
             id="buttonAddLabeling"
