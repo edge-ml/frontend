@@ -203,29 +203,14 @@ class LabelingsPage extends Component {
     return (
       <Loader loading={!this.state.isReady}>
         <Container>
-          <Row className="mt-3">
-            <Col>
-              <LabelingTable
-                labelings={this.state.labelings}
-                onClickEdit={this.onClickEdit}
-                labels={this.state.labels}
-              />
-              <Button
-                id="buttonAddLabeling"
-                className="rounded-circle"
-                size="lg"
-                style={{
-                  position: 'fixed',
-                  bottom: '2rem',
-                  right: '2rem',
-                }}
-                color="primary"
-                onClick={this.onModalAddLabeling}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-              </Button>
-            </Col>
-          </Row>
+          <div className="mt-3">
+            <LabelingTable
+              labelings={this.state.labelings}
+              onClickEdit={this.onClickEdit}
+              labels={this.state.labels}
+              onModalAddLabeling={this.onModalAddLabeling}
+            />
+          </div>
         </Container>
         <EditLabelingModal
           datasets={this.state.datasets}

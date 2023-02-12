@@ -35,9 +35,9 @@ const LabelingTableEntry = (props) => {
               </Col>
               <Col className="d-flex flex-nowrap col-2 align-self-center justify-content-end">
                 <Button
+                  outline
                   className="mr-3 mr-md-4"
                   onClick={() => props.onClickEdit(labeling)}
-                  color="secondary"
                 >
                   <FontAwesomeIcon icon={faPen} />
                 </Button>
