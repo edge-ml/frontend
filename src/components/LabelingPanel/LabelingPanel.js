@@ -72,6 +72,52 @@ class LabelingPanel extends Component {
     return (
       <Card className="LabelingPanel">
         <CardBody className="p-1 d-flex flex-wrap">
+          <div className="labelingBox d-flex flex-wrap">
+            <Button
+              className="labelingButton m-1"
+              color="secondary"
+              onClick={this.onAddLabel}
+            >
+              + Add Label
+            </Button>
+            {this.state.labeling
+              ? this.state.labeling.labels
+                  .slice(0)
+                  .reverse()
+                  .map((labelId, index, array) => {
+                    let label = this.state.labels.filter(
+                      (label) => label['_id'] === labelId
+                    )[0];
+                    return (
+                      <Button
+                        className="btn-light m-1 labelingButton"
+                        disabled={
+                          this.state.selectedLabelTypeId === undefined ||
+                          !this.state.canEdit
+                        }
+                        style={{
+                          backgroundColor:
+                            labelId === this.state.selectedLabelTypeId
+                              ? label.color
+                              : null,
+                          borderColor:
+                            labelId === this.state.selectedLabelTypeId
+                              ? null
+                              : label.color,
+                          color:
+                            labelId === this.state.selectedLabelTypeId
+                              ? null
+                              : label.color,
+                        }}
+                        onClick={(e) => this.handleLabelTypeClicked(e, labelId)}
+                        key={index}
+                      >
+                        {label.name} {'(' + (array.length - index) + ')'}
+                      </Button>
+                    );
+                  })
+              : null}
+          </div>
           <div className="informationBox">
             <InputGroup className="inputGroup m-1">
               <InputGroupAddon addonType="prepend" className="inputGroupAddon">
@@ -113,53 +159,6 @@ class LabelingPanel extends Component {
             >
               Delete
             </Button>
-          </div>
-
-          <div className="labelingBox">
-            <Button
-              className="labelingButton m-1"
-              color="secondary"
-              onClick={this.onAddLabel}
-            >
-              + Edit
-            </Button>
-            {this.state.labeling
-              ? this.state.labeling.labels
-                  .slice(0)
-                  .reverse()
-                  .map((labelId, index, array) => {
-                    let label = this.state.labels.filter(
-                      (label) => label['_id'] === labelId
-                    )[0];
-                    return (
-                      <Button
-                        className="btn-light m-1 labelingButton"
-                        disabled={
-                          this.state.selectedLabelTypeId === undefined ||
-                          !this.state.canEdit
-                        }
-                        style={{
-                          backgroundColor:
-                            labelId === this.state.selectedLabelTypeId
-                              ? label.color
-                              : null,
-                          borderColor:
-                            labelId === this.state.selectedLabelTypeId
-                              ? null
-                              : label.color,
-                          color:
-                            labelId === this.state.selectedLabelTypeId
-                              ? null
-                              : label.color,
-                        }}
-                        onClick={(e) => this.handleLabelTypeClicked(e, labelId)}
-                        key={index}
-                      >
-                        {label.name} {'(' + (array.length - index) + ')'}
-                      </Button>
-                    );
-                  })
-              : null}
           </div>
         </CardBody>
       </Card>

@@ -848,7 +848,11 @@ class DatasetPage extends Component {
                     onClickPosition={this.onClickPosition}
                     onLabelPositionUpdate={this.onLabelPositionUpdate}
                   />
-                  <Fade className="LabelingPanel" in={!this.state.hideLabels}>
+                  <Fade
+                    className="LabelingPanel"
+                    in={!this.state.hideLabels}
+                    unmountOnExit={true}
+                  >
                     <LabelingPanel
                       className="StickyLabelingSelectionPanel"
                       history={this.props.history}

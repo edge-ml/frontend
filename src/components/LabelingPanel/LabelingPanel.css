@@ -7,7 +7,6 @@
 .informationBox {
   display: flex;
   flex-direction: column;
-  flex-grow: 9999;
 }
 
 .informationBox > .inputGroup {
@@ -20,6 +19,16 @@
 @media (max-width: 768px) {
   .informationBox > .inputGroup {
     width: unset;
+  }
+
+  .informationBox {
+    flex-grow: 9999;
+  }
+
+  .labelingBox {
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
 }
 
@@ -34,6 +43,6 @@
   }
 }
 
-.labelingBox {
+.informationBox {
   margin-left: auto; /* override justify start */
 }

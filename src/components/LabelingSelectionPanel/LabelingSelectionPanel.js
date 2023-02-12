@@ -59,87 +59,91 @@ class LabelingSelectionPanel extends Component {
     console.log(this.props);
     return (
       <Card id="labelingSelectionPanel" className="LabelingSelectionPanel">
-        <CardBody className="text-left p-1 d-flex labeling-selection-panel_card-body">
-          <Button
-            disabled={this.props.isCrosshairIntervalActive}
-            className="m-1 btn-light"
-            onClick={this.toggleEdit}
-          >
-            <FontAwesomeIcon
-              style={{ color: !this.props.canEdit ? '#b71c1c' : '#43A047' }}
-              icon={!this.props.canEdit ? faLock : faUnlock}
-              className="mr-2"
-            />
-            <span
-              style={{ color: !this.props.canEdit ? '#b71c1c' : '#43A047' }}
+        <CardBody className="text-left p-1 d-flex flex-wrap labeling-selection-panel_card-body">
+          <div className="labelingSetBox d-flex">
+            <Button
+              disabled={this.props.isCrosshairIntervalActive}
+              className="m-1 btn-light"
+              onClick={this.toggleEdit}
             >
-              {!this.props.canEdit ? 'Locked' : 'Unlocked'}
-            </span>
-          </Button>
-          <Select
-            className="m-1"
-            placeholder="Labeling"
-            value={
-              this.props.hideLabels
-                ? { label: 'Select Labeling', value: hideLabelsSymbol }
-                : this.props.selectedLabelingId
-                ? {
-                    value: this.props.selectedLabelingId,
-                    label:
-                      'Labeling: ' +
-                      this.props.labelings.find(
-                        (x) => x._id === this.props.selectedLabelingId
-                      ).name,
-                  }
-                : null
-            }
-            onChange={(x) => this.handleLabelingClicked(null, x.value)}
-            options={[
-              ...(this.props.hideLabels
-                ? []
-                : [{ label: 'Hide Labels', value: hideLabelsSymbol }]),
-              ...this.props.labelings.map((x) => ({
-                value: x._id,
-                label: x.name,
-              })),
-            ]}
-          />
-          <Button
-            id="buttonAddLabeling"
-            className="m-1"
-            color="secondary"
-            onClick={this.props.onAddLabeling}
-          >
-            + Add Labeling Set
-          </Button>
-          <Button
-            id="buttonDownloadDataset"
-            className="m-1 ml-auto"
-            color="primary"
-            onClick={this.downloadDataSet}
-          >
-            Download as CSV
-          </Button>
-          <Button
-            id="buttonDeleteDataset"
-            className="m-1"
-            color="danger"
-            onClick={() => {
-              if (window.confirm('Are you sure to delete this dataset?')) {
-                this.props.onDeleteDataset();
+              <FontAwesomeIcon
+                style={{ color: !this.props.canEdit ? '#b71c1c' : '#43A047' }}
+                icon={!this.props.canEdit ? faLock : faUnlock}
+                className="mr-2"
+              />
+              <span
+                style={{ color: !this.props.canEdit ? '#b71c1c' : '#43A047' }}
+              >
+                {!this.props.canEdit ? 'Locked' : 'Unlocked'}
+              </span>
+            </Button>
+            <Select
+              className="m-1"
+              placeholder="Labeling"
+              value={
+                this.props.hideLabels
+                  ? { label: 'Select Labeling', value: hideLabelsSymbol }
+                  : this.props.selectedLabelingId
+                  ? {
+                      value: this.props.selectedLabelingId,
+                      label:
+                        'Labeling: ' +
+                        this.props.labelings.find(
+                          (x) => x._id === this.props.selectedLabelingId
+                        ).name,
+                    }
+                  : null
               }
-            }}
-          >
-            Delete Dataset
-          </Button>
-          <Button
-            id="buttonOpenHelpModal"
-            className="m-1"
-            color="secondary"
-            onClick={this.toggleHelpModal}
-          >
-            Help
-          </Button>
+              onChange={(x) => this.handleLabelingClicked(null, x.value)}
+              options={[
+                ...(this.props.hideLabels
+                  ? []
+                  : [{ label: 'Hide Labels', value: hideLabelsSymbol }]),
+                ...this.props.labelings.map((x) => ({
+                  value: x._id,
+                  label: x.name,
+                })),
+              ]}
+            />
+            <Button
+              id="buttonAddLabeling"
+              className="m-1"
+              color="secondary"
+              onClick={this.props.onAddLabeling}
+            >
+              + Add Labeling Set
+            </Button>
+          </div>
+          <div className="managementBox d-flex">
+            <Button
+              id="buttonDownloadDataset"
+              className="m-1"
+              color="primary"
+              onClick={this.downloadDataSet}
+            >
+              Download as CSV
+            </Button>
+            <Button
+              id="buttonDeleteDataset"
+              className="m-1"
+              color="danger"
+              onClick={() => {
+                if (window.confirm('Are you sure to delete this dataset?')) {
+                  this.props.onDeleteDataset();
+                }
+              }}
+            >
+              Delete Dataset
+            </Button>
+            <Button
+              id="buttonOpenHelpModal"
+              className="m-1"
+              color="secondary"
+              onClick={this.toggleHelpModal}
+            >
+              Help
+            </Button>
+          </div>
         </CardBody>
         <HelpModal
           isOpen={this.state.isHelpModalOpen}
