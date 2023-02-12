@@ -10,9 +10,6 @@ import {
 } from 'reactstrap';
 import './LabelingPanel.css';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
-
 class LabelingPanel extends Component {
   constructor(props) {
     super(props);
@@ -26,8 +23,6 @@ class LabelingPanel extends Component {
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
-      onCanEditChanged: props.onCanEditChanged,
-      isCrosshairIntervalActive: props.isCrosshairIntervalActive,
     };
 
     this.toggleEdit = this.toggleEdit.bind(this);
@@ -45,13 +40,12 @@ class LabelingPanel extends Component {
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
-      onCanEditChanged: props.onCanEditChanged,
-      isCrosshairIntervalActive: props.isCrosshairIntervalActive,
     }));
   }
 
   handleLabelTypeClicked(e, id) {
     e.preventDefault();
+    console.log(id);
     this.state.onSelectedLabelTypeIdChanged(id);
   }
 
@@ -79,13 +73,6 @@ class LabelingPanel extends Component {
       <Card className="LabelingPanel">
         <CardBody className="p-1 d-flex flex-wrap">
           <div className="informationBox">
-            <Button className="m-1 btn-light" onClick={this.props.onHideLabels}>
-              <span
-                style={{ color: !this.props.hideLabels ? '#007BFF' : 'gray' }}
-              >
-                {!this.props.hideLabels ? 'Show labels' : 'Hide labels'}
-              </span>
-            </Button>
             <InputGroup className="inputGroup m-1">
               <InputGroupAddon addonType="prepend" className="inputGroupAddon">
                 <InputGroupText className="inputLabel">From</InputGroupText>

@@ -787,7 +787,7 @@ class DatasetPage extends Component {
 
     const startOffset = 0;
     const endOffset = 0;
-    console.log(this.state.dataset);
+    console.log('dsett;', this.state);
     return (
       <div className="w-100 position-relative">
         {' '}
@@ -813,6 +813,11 @@ class DatasetPage extends Component {
                     onSelectedLabelingIdChanged={
                       this.onSelectedLabelingIdChanged
                     }
+                    onCanEditChanged={this.onCanEditChanged}
+                    canEdit={this.state.controlStates.canEdit}
+                    isCrosshairIntervalActive={isCrosshairIntervalActive}
+                    hideLabels={this.state.hideLabels}
+                    onHideLabels={this.hideLabels}
                   />
                   <TimeSeriesCollectionPanel
                     timeSeries={this.state.dataset.timeSeries}
@@ -840,8 +845,6 @@ class DatasetPage extends Component {
                     onLabelPositionUpdate={this.onLabelPositionUpdate}
                   />
                   <LabelingPanel
-                    hideLabels={this.state.hideLabels}
-                    onHideLabels={this.hideLabels}
                     className="StickyLabelingSelectionPanel"
                     history={this.props.history}
                     id={this.state.controlStates.selectedLabelId}
@@ -858,9 +861,7 @@ class DatasetPage extends Component {
                       this.onSelectedLabelTypeIdChanged
                     }
                     onDeleteSelectedLabel={this.onDeleteSelectedLabel}
-                    onCanEditChanged={this.onCanEditChanged}
                     canEdit={this.state.controlStates.canEdit}
-                    isCrosshairIntervalActive={isCrosshairIntervalActive}
                   />
                 </div>
                 <div className="dataset-labelingpanel">
