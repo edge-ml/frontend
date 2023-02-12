@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Col, Row, Fade, Button } from 'reactstrap';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
-import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
 import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
 import CustomMetadataPanel from '../components/MetadataPanel/CustomMetadataPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
@@ -895,14 +894,6 @@ class DatasetPage extends Component {
                   ></CustomMetadataPanel>
                 </div>
                 <div className="mt-2" />
-                <div className="mt-2" style={{ marginBottom: '230px' }}>
-                  <ManagementPanel
-                    labels={this.state.labels}
-                    labelings={this.state.labelings}
-                    onDeleteDataset={this.onDeleteDataset}
-                    dataset={this.state.dataset}
-                  />
-                </div>
               </Col>
             </Row>
           </div>
