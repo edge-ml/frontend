@@ -16,7 +16,7 @@ const LabelingTableEntry = (props) => {
           <div className="w-100">
             <Row className="p-1">
               <Col className="text-left align-self-center col-lg-4 col-xl-3">
-                <div className="text-left d-inline-block m-2">
+                <div className="text-left d-inline-block m-2 text-break">
                   <div
                     className={
                       labeling.name !== ''
@@ -29,20 +29,18 @@ const LabelingTableEntry = (props) => {
                 </div>
               </Col>
               <Col className="d-none d-lg-block align-self-center">
-                <div className="d-flex h-100 justify-content-center">
+                <div className="d-flex flex-wrap h-100 justify-content-start">
                   <Labeling labeling={props.labeling} labels={props.labels} />
                 </div>
               </Col>
-              <Col className="col-2 align-self-center">
-                <div className="d-flex justify-content-end ">
-                  <Button
-                    className="mr-3 mr-md-4 "
-                    onClick={() => props.onClickEdit(labeling)}
-                    color="secondary"
-                  >
-                    <FontAwesomeIcon icon={faPen} />
-                  </Button>
-                </div>
+              <Col className="d-flex flex-nowrap col-2 align-self-center justify-content-end">
+                <Button
+                  className="mr-3 mr-md-4"
+                  onClick={() => props.onClickEdit(labeling)}
+                  color="secondary"
+                >
+                  <FontAwesomeIcon icon={faPen} />
+                </Button>
               </Col>
             </Row>
           </div>
@@ -68,7 +66,7 @@ const Labeling = (props) => {
     return null;
   } else {
     return (
-      <Badge className="mr-2 badgeSize badgeLabelings pb-2 mt-2 mb-2">
+      <div className="mr-2 badgeSize pb-2 mt-2 mb-2">
         {labels.map((label, index) => {
           return (
             <Badge
@@ -76,7 +74,7 @@ const Labeling = (props) => {
               className={
                 label.name === ''
                   ? 'font-italic font-weight-normal badgeSize mx-1'
-                  : 'badgeSize mx-1'
+                  : 'badgeSize mx-1 my-1'
               }
               style={{ backgroundColor: label.color }}
             >
@@ -84,7 +82,7 @@ const Labeling = (props) => {
             </Badge>
           );
         })}
-      </Badge>
+      </div>
     );
   }
 };
