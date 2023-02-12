@@ -903,8 +903,6 @@ class DatasetPage extends Component {
                   />
                 </div>
               </Col>
-              <Col xs={12}></Col>
-              <Col />
             </Row>
           </div>
         </Fade>

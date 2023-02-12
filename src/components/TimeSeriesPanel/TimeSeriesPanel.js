@@ -797,7 +797,7 @@ class TimeSeriesPanel extends Component {
               : '-10px',
         }}
       >
-        {this.props.index !== 0 && !this.props.isEmpty ? (
+        {/* {this.props.index !== 0 && !this.props.isEmpty ? (
           <DropdownPanel
             fused={this.props.fused}
             start={this.props.start}
@@ -805,7 +805,7 @@ class TimeSeriesPanel extends Component {
             onShift={this.props.onShift}
             onDelete={this.props.onDelete}
           />
-        ) : null}
+        ) : null} */}
 
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
           <HighchartsReact

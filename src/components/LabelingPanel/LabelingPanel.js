@@ -79,22 +79,6 @@ class LabelingPanel extends Component {
       <Card className="LabelingPanel">
         <CardBody className="p-1 d-flex flex-wrap">
           <div className="informationBox">
-            <Button
-              disabled={this.props.isCrosshairIntervalActive}
-              className="m-1 btn-light"
-              onClick={this.toggleEdit}
-            >
-              <FontAwesomeIcon
-                style={{ color: !this.state.canEdit ? '#b71c1c' : '#43A047' }}
-                icon={!this.state.canEdit ? faLock : faUnlock}
-                className="mr-2"
-              />
-              <span
-                style={{ color: !this.state.canEdit ? '#b71c1c' : '#43A047' }}
-              >
-                {!this.state.canEdit ? 'Locked' : 'Unlocked'}
-              </span>
-            </Button>
             <Button className="m-1 btn-light" onClick={this.props.onHideLabels}>
               <span
                 style={{ color: !this.props.hideLabels ? '#007BFF' : 'gray' }}
@@ -102,16 +86,6 @@ class LabelingPanel extends Component {
                 {!this.props.hideLabels ? 'Show labels' : 'Hide labels'}
               </span>
             </Button>
-            <InputGroup className="inputGroup m-1">
-              <InputGroupAddon addonType="prepend" className="inputGroupAddon">
-                <InputGroupText className="inputLabel">Id</InputGroupText>
-              </InputGroupAddon>
-              <Input
-                value={this.state.id ? this.state.id : ''}
-                readOnly
-                className="idInput text-center"
-              />
-            </InputGroup>
             <InputGroup className="inputGroup m-1">
               <InputGroupAddon addonType="prepend" className="inputGroupAddon">
                 <InputGroupText className="inputLabel">From</InputGroupText>
