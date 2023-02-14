@@ -138,31 +138,6 @@ export const updateDataset = (dataset, onlyMetaData) => {
   });
 };
 
-export const changeCanEditDataset = (dataset, lock) => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.PUT,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.DATASETS_CAN_EDIT + `/${dataset['_id']}`,
-        { canEdit: lock }
-      )
-    )
-      .then(() =>
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.GET,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.DATASETS_CAN_EDIT + `/${dataset['_id']}`
-          )
-        ).then((updatedLock) => {
-          resolve(updatedLock.data ? updatedLock.data.canEdit : undefined);
-        })
-      )
-      .catch((err) => reject(err.response));
-  });
-};
-
 export const createDataset = (dataset) => {
   return new Promise((resolve, reject) => {
     axios(

@@ -22,6 +22,7 @@ export const createDatasetLabel = (datasetId, labelingId, label) => {
 };
 
 export const changeDatasetLabel = (datasetId, labelingId, changedLabel) => {
+  console.log(changedLabel);
   return axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.PUT,

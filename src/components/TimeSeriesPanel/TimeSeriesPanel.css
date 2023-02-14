@@ -89,7 +89,7 @@
 
 .zoomMenuWrapper {
   position: absolute;
-  right: 35px;
+  right: 0px;
   top: 10px;
   z-index: 5;
 }

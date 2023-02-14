@@ -16,7 +16,6 @@ import {
   getDataset,
   getDatasetTimeseries,
   getDatasetLock,
-  changeCanEditDataset,
   getDatasetMeta,
 } from '../services/ApiServices/DatasetServices';
 
@@ -66,7 +65,6 @@ class DatasetPage extends Component {
       this.onSelectedLabelTypeIdChanged.bind(this);
     this.onSelectedLabelChanged = this.onSelectedLabelChanged.bind(this);
     this.onDeleteSelectedLabel = this.onDeleteSelectedLabel.bind(this);
-    this.onCanEditChanged = this.onCanEditChanged.bind(this);
     this.addTimeSeries = this.addTimeSeries.bind(this);
     this.onLabelingsAndLabelsChanged =
       this.onLabelingsAndLabelsChanged.bind(this);
@@ -77,7 +75,6 @@ class DatasetPage extends Component {
     this.clearKeyBuffer = this.clearKeyBuffer.bind(this);
     this.onScrubbed = this.onScrubbed.bind(this);
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
-    this.onShiftTimeSeries = this.onShiftTimeSeries.bind(this);
     this.updateControlStates = this.updateControlStates.bind(this);
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
     this.onAddLabeling = this.onAddLabeling.bind(this);
@@ -200,14 +197,6 @@ class DatasetPage extends Component {
     ) {
       selectedLabelTypes = labelings[0].labels;
     }
-    // if (labels) {
-    //   if (selectedLabeling) {
-    //     selectedLabelTypes = labels.filter((label) =>
-    //       selectedLabeling.labels.includes(label['_id'])
-    //     );
-    //   }
-    // }
-
     this.setState({
       labelings: labelings || [],
       controlStates: {
@@ -334,7 +323,6 @@ class DatasetPage extends Component {
       // l
     } else if (keyCode === 76) {
       e.preventDefault();
-      this.onCanEditChanged(!this.state.controlStates.canEdit);
 
       // backspace or delete
     } else if (keyCode === 8 || keyCode === 46) {
@@ -434,19 +422,6 @@ class DatasetPage extends Component {
 
   onDeleteTimeSeries(fused, index) {
     let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-
-    updateDataset(dataset).then((newDataset) => {
-      this.setState({
-        dataset: newDataset,
-      });
-    });
-  }
-
-  onShiftTimeSeries(index, timestamp) {
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-
-    let diff = timestamp - (dataset.start + dataset.timeSeries[index].offset);
-    dataset.timeSeries[index].offset += diff;
 
     updateDataset(dataset).then((newDataset) => {
       this.setState({
@@ -601,8 +576,12 @@ class DatasetPage extends Component {
         (elm) => elm._id === this.state.controlStates.drawingId
       );
       const newLabel = newDataset.labelings[labelingIdx].labels[labelIdx];
-      newLabel.start = Math.min(newLabel.start, position);
-      newLabel.end = Math.max(newLabel.start, position);
+      newLabel.end = position;
+      if (newLabel.end < newLabel.start) {
+        const tmp = newLabel.end;
+        newLabel.end = newLabel.start;
+        newLabel.start = tmp;
+      }
       if (
         labelIdx - 1 >= 0 &&
         newDataset.labelings[labelingIdx].labels[labelIdx - 1]
@@ -611,6 +590,8 @@ class DatasetPage extends Component {
           newDataset.labelings[labelingIdx].labels[labelIdx - 1];
         newLabel.type = prevLabel.type;
       }
+      console.log(newLabel);
+      newDataset.labelings[labelingIdx].labels[labelIdx] = newLabel;
       this.setState({
         dataset: newDataset,
         controlStates: {
@@ -659,6 +640,7 @@ class DatasetPage extends Component {
   }
 
   onLabelPositionUpdate(labelId, start, end) {
+    console.log('position update: ', labelId, start, end);
     const newDataset = this.state.dataset;
     const labelingIdx = newDataset.labelings.findIndex(
       (labeling) =>
@@ -669,9 +651,14 @@ class DatasetPage extends Component {
     );
     const newLabel = newDataset.labelings[labelingIdx].labels[labelIdx];
     const backUpLabel = JSON.parse(JSON.stringify(newLabel));
-    newLabel.start = Math.min(start, end);
-    newLabel.end = Math.max(start, end);
-
+    newLabel.start = start;
+    newLabel.end = end;
+    if (newLabel.end < newLabel.start) {
+      const tmp = newLabel.end;
+      newLabel.end = newLabel.start;
+      newLabel.start = tmp;
+    }
+    console.log('Label update: ', newLabel);
     changeDatasetLabel(
       newDataset._id,
       newDataset.labelings[labelingIdx].labelingId,
@@ -736,14 +723,6 @@ class DatasetPage extends Component {
     }
   }
 
-  onCanEditChanged(canEdit) {
-    changeCanEditDataset(this.state.dataset, canEdit).then((newCanEdit) => {
-      this.setState({
-        controlStates: { ...this.state.controlStates, canEdit: newCanEdit },
-      });
-    });
-  }
-
   onScrubbed(position) {}
 
   onDeleteDataset() {
@@ -798,7 +777,6 @@ class DatasetPage extends Component {
     console.log(this.state.dataset);
     return (
       <div className="w-100 position-relative">
-        {' '}
         <Fade in={this.state.fadeIn}>
           <div>
             <Row className="pt-3 m-0">
@@ -838,7 +816,6 @@ class DatasetPage extends Component {
                     end={this.state.dataset.end + endOffset}
                     canEdit={this.state.controlStates.canEdit}
                     onScrubbed={this.onScrubbed}
-                    onShift={this.onShiftTimeSeries}
                     onDelete={this.onDeleteTimeSeries}
                     drawingId={this.state.controlStates.drawingId}
                     drawingPosition={this.state.controlStates.drawingPosition}

@@ -18,7 +18,6 @@ class TimeSeriesCollectionPanel extends Component {
       start: props.start,
       end: props.end,
       onScrubbed: props.onScrubbed,
-      onShift: props.onShift,
       onDelete: props.onDelete,
     };
 
@@ -50,7 +49,6 @@ class TimeSeriesCollectionPanel extends Component {
       start: props.start,
       end: props.end,
       onScrubbed: props.onScrubbed,
-      onShift: props.onShift,
       onDelete: props.onDelete,
     }));
   }
@@ -160,7 +158,6 @@ class TimeSeriesCollectionPanel extends Component {
             numSeries={
               this.state.timeSeries.length + this.state.fusedSeries.length + 1
             }
-            onShift={(timestamp) => this.state.onShift(key, timestamp)}
             onDelete={() => this.state.onDelete(false, key)}
             drawingId={this.props.drawingId}
             drawingPosition={this.props.drawingPosition}
