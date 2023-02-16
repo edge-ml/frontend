@@ -159,6 +159,10 @@ class DatasetPage extends Component {
     this.memoizedGetDatasetTimeseries(this.props.match.params.id, {
       max_resolution: window.innerWidth / 2,
     }).then((timeseriesData) => {
+      console.log(timeseriesData);
+      if (this.state.previewTimeSeriesData) {
+        return;
+      }
       this.setState({
         previewTimeSeriesData: timeseriesData,
       });
@@ -775,6 +779,7 @@ class DatasetPage extends Component {
     const startOffset = 0;
     const endOffset = 0;
     console.log(this.state.dataset);
+
     return (
       <div className="w-100 position-relative">
         <Fade in={this.state.fadeIn}>
