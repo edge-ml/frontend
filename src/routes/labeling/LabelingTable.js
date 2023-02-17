@@ -40,6 +40,7 @@ const LabelingTable = (props) => {
           >
             {props.labelings.map((labeling, index) => (
               <LabelingTableEntry
+                key={labeling._id}
                 labeling={labeling}
                 labels={props.labels}
                 onClickEdit={props.onClickEdit}

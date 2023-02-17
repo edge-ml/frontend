@@ -84,7 +84,7 @@ class DFUModal extends Component {
     this.fwLen = this.arrayFW.length;
 
     console.log('Binary file length: ', this.fwLen);
-    if (this.debug == true) {
+    if (this.debug === true) {
       console.log(this.arrayFW);
     }
     this.crc8();
@@ -105,21 +105,21 @@ class DFUModal extends Component {
       .connect()
       .then((server) => {
         console.log('BLE device connected!');
-        if (this.debug == true) {
+        if (this.debug === true) {
           console.log('Getting server:', server);
         }
         return server.getPrimaryService(this.dfuService);
       })
       .then((service) => {
         this.gattService = service;
-        if (this.debug == true) {
+        if (this.debug === true) {
           console.log('Getting service:', service);
         }
         return service.getCharacteristic(this.dfuInternalCharacteristic);
       })
       .then((characteristic) => {
         this.gattInternalCharacteristic = characteristic;
-        if (this.debug == true) {
+        if (this.debug === true) {
           console.log('Looking for characteristic...');
           console.log(
             'dfu internal characteristic:',
@@ -134,7 +134,7 @@ class DFUModal extends Component {
       })
       .then((characteristic) => {
         this.gattExternalCharacteristic = characteristic;
-        if (this.debug == true) {
+        if (this.debug === true) {
           console.log('Looking for characteristic...');
           console.log(
             'dfu external characteristic:',
@@ -146,16 +146,16 @@ class DFUModal extends Component {
 
   update(index) {
     //clearTimeout(dfuTimeout);
-    if (this.debug == true) {
+    if (this.debug === true) {
       console.log(index);
     }
 
     var filePtr = this.dataLen * index;
-    if (index == this.iterations - 1) {
+    if (index === this.iterations - 1) {
       //Last byte
       this.bytesArray[0] = 1;
       var bytesleft = this.spareBytes + 1; //add CRC to the count
-      if (this.debug == true) {
+      if (this.debug === true) {
         console.log('Packaging last byte with CRC');
         console.log('Total bytes left: ', this.bytesleft);
       }
@@ -177,7 +177,7 @@ class DFUModal extends Component {
         this.crc8bit & 0x00ff,
       ]);
 
-      if (this.debug == true) {
+      if (this.debug === true) {
         console.log('crc[0]: ', crc[0]);
         console.log('crc[1]: ', crc[1]);
       }
@@ -209,7 +209,7 @@ class DFUModal extends Component {
         this.setState({ progress: (index / (this.iterations - 1)) * 100 });
 
         this.increaseIndex();
-        if (this.debug == true) {
+        if (this.debug === true) {
           console.log('Written');
         }
       })
@@ -237,12 +237,12 @@ class DFUModal extends Component {
     this.iterations = Math.floor(this.fwLen / this.dataLen);
     this.spareBytes = this.fwLen % this.dataLen;
     this.iterations++;
-    if (this.debug == true) {
+    if (this.debug === true) {
       console.log('Iterations: ', this.iterations);
       console.log('Spare bytes: ', this.spareBytes);
     }
-    if (this.spareBytes == 0) {
-      if (this.debug == true) {
+    if (this.spareBytes === 0) {
+      if (this.debug === true) {
         console.log('No remaining bytes in last packet to write CRC.');
         console.log('CRC will be sent alone in a new packet');
       }
