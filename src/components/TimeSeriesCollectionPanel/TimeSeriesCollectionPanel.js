@@ -7,6 +7,7 @@ import Highcharts from 'highcharts/highstock';
 class TimeSeriesCollectionPanel extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       timeSeries: props.timeSeries,
       previewTimeSeriesData: props.previewTimeSeriesData,
@@ -20,6 +21,11 @@ class TimeSeriesCollectionPanel extends Component {
       onScrubbed: props.onScrubbed,
       onDelete: props.onDelete,
     };
+
+    this.sortedPreviewTimeSeries = props.previewTimeSeriesData
+      .flat()
+      .sort((elmA, elmB) => elmA[0] - elmB[0])
+      .filter((e, i, a) => e[0] !== (a[i - 1] ? a[i - 1][0] : undefined));
 
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
 
@@ -38,6 +44,7 @@ class TimeSeriesCollectionPanel extends Component {
   }
 
   componentWillReceiveProps(props) {
+    console.log('component update');
     this.setState((state) => ({
       labeling: props.labeling,
       labelTypes: props.labelTypes,
@@ -86,9 +93,7 @@ class TimeSeriesCollectionPanel extends Component {
           offset={0}
           data={
             this.state.previewTimeSeriesData.length > 0
-              ? this.state.previewTimeSeriesData
-                  .flat()
-                  .sort((elmA, elmB) => elmA[0] - elmB[0])
+              ? this.sortedPreviewTimeSeries
               : [10, 10]
           }
           labeling={this.state.labeling}

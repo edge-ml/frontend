@@ -178,7 +178,6 @@ class TimeSeriesPanel extends Component {
   }
 
   updateData = debounce((chart, min, max, width, offset) => {
-    // console.log('up', min, max, width);
     if (this.props.onTimeSeriesWindow) {
       // FIXME: this doesn't really work with fusedSeries, ignore them for now
       const timeSeriesIndex = this.props.index - 1; // -1 cause 0 is the scrollbar
@@ -316,11 +315,6 @@ class TimeSeriesPanel extends Component {
                 Math.abs(this.oldWidth - width) > 2 ||
                 this.oldMin === undefined
               ) {
-                console.log(
-                  Math.abs(this.oldMin - min),
-                  Math.abs(this.oldMAx - max),
-                  Math.abs(this.oldWidth - width)
-                );
                 this.oldMAx = max;
                 this.oldMin = min;
                 this.oldWidth = width;
