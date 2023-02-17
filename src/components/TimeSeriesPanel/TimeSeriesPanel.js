@@ -290,8 +290,8 @@ class TimeSeriesPanel extends Component {
           },
           min: props.start,
           max: props.end,
-          startOnTick: false,
-          endOnTick: false,
+          startOnTick: true,
+          endOnTick: true,
           events: {
             afterSetExtremes: (e) => {
               if (this.chart.current.chart && Highcharts.charts) {
@@ -309,14 +309,18 @@ class TimeSeriesPanel extends Component {
                   });
               }
               const { chart, width } = e.target;
-              const { min, max } =
-                this.chart.current.chart.xAxis[0].getExtremes();
+              const { min, max } = e;
               if (
-                Math.abs(this.oldMin - min) > 10 ||
-                Math.abs(this.oldMAx - max) > 10 ||
-                Math.abs(this.oldWidth - width) > 10 ||
+                Math.abs(this.oldMin - min) > 2 ||
+                Math.abs(this.oldMAx - max) > 2 ||
+                Math.abs(this.oldWidth - width) > 2 ||
                 this.oldMin === undefined
               ) {
+                console.log(
+                  Math.abs(this.oldMin - min),
+                  Math.abs(this.oldMAx - max),
+                  Math.abs(this.oldWidth - width)
+                );
                 this.oldMAx = max;
                 this.oldMin = min;
                 this.oldWidth = width;

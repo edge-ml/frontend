@@ -163,6 +163,7 @@ class DatasetPage extends Component {
       if (this.state.previewTimeSeriesData) {
         return;
       }
+      console.log('Setting preview', timeseriesData);
       this.setState({
         previewTimeSeriesData: timeseriesData,
       });
@@ -817,8 +818,8 @@ class DatasetPage extends Component {
                     labelTypes={this.state.controlStates.selectedLabelTypes}
                     onLabelClicked={this.onSelectedLabelChanged}
                     selectedLabelId={this.state.controlStates.selectedLabelId}
-                    start={this.state.dataset.start + startOffset}
-                    end={this.state.dataset.end + endOffset}
+                    start={this.state.dataset.start}
+                    end={this.state.dataset.end}
                     canEdit={this.state.controlStates.canEdit}
                     onScrubbed={this.onScrubbed}
                     onDelete={this.onDeleteTimeSeries}
