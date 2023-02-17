@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
-import Loader from '../modules/loader';
-import EditLabelingModal from '../components/EditLabelingModal/EditLabelingModal';
-import { getDatasets } from '../services/ApiServices/DatasetServices';
+import Loader from '../../modules/loader';
+import EditLabelingModal from '../../components/EditLabelingModal/EditLabelingModal';
+import { getDatasets } from '../../services/ApiServices/DatasetServices';
 import {
   updateLabelingandLabels,
   subscribeLabelingsAndLabels,
   addLabeling,
   deleteLabeling,
-} from '../services/ApiServices/LabelingServices';
+  deleteLabelTypesFromLabeling,
+  addLabelTypesToLabeling,
+} from '../../services/ApiServices/LabelingServices';
+import LabelingTable from './LabelingTable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 class LabelingsPage extends Component {
   constructor(props) {
@@ -33,6 +38,7 @@ class LabelingsPage extends Component {
     this.onContentChanged = this.onContentChanged.bind(this);
     this.resetURL = this.resetURL.bind(this);
     this.initComponent = this.initComponent.bind(this);
+    this.onClickEdit = this.onClickEdit.bind(this);
   }
 
   componentDidMount() {
@@ -184,78 +190,22 @@ class LabelingsPage extends Component {
     this.props.history.replace({ pathname: newPath.join('/'), search: null });
   }
 
+  onClickEdit = (labeling) => {
+    this.toggleModal(labeling, labeling.labels, false);
+  };
+
   render() {
     return (
       <Loader loading={!this.state.isReady}>
         <Container>
-          <Row className="mt-3">
-            <Col>
-              <Table responsive>
-                <thead>
-                  <tr className={'bg-light'}>
-                    <th>Name</th>
-                    <th>Labels</th>
-                    <th />
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.state.labelings.map((labeling, index) => (
-                    <tr key={index}>
-                      <td
-                        className={
-                          labeling.name !== ''
-                            ? 'labelings-column'
-                            : 'labelings-column font-italic'
-                        }
-                      >
-                        {labeling.name !== '' ? labeling.name : 'Untitled'}{' '}
-                      </td>
-                      <td className="labelings-column">
-                        {labeling.labels.map((label, index) => {
-                          if (!label) return null;
-                          return (
-                            <Badge
-                              key={index}
-                              className={
-                                label.name === ''
-                                  ? 'm-1 font-italic font-weight-normal'
-                                  : 'm-1'
-                              }
-                              style={{ backgroundColor: label.color }}
-                            >
-                              {label.name !== '' ? label.name : 'Untitled'}{' '}
-                            </Badge>
-                          );
-                        })}{' '}
-                      </td>
-                      <td>
-                        <Button
-                          id="buttonEditLabeling"
-                          className="btn-secondary mt-0 btn-edit"
-                          block
-                          onClick={(e) => {
-                            this.toggleModal(labeling, false);
-                          }}
-                        >
-                          Edit
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-              <Button
-                id="buttonAddLabeling"
-                block
-                className="mb-5"
-                color="secondary"
-                outline
-                onClick={this.onModalAddLabeling}
-              >
-                + Add Labeling Set
-              </Button>
-            </Col>
-          </Row>
+          <div className="mt-3">
+            <LabelingTable
+              labelings={this.state.labelings}
+              onClickEdit={this.onClickEdit}
+              labels={this.state.labels}
+              onModalAddLabeling={this.onModalAddLabeling}
+            />
+          </div>
         </Container>
         <EditLabelingModal
           datasets={this.state.datasets}

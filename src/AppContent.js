@@ -3,7 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 
 import ListPage from './routes/list/index';
 import DatasetPage from './routes/dataset';
-import LabelingsPage from './routes/labelings';
+import LabelingsPage from './routes/labeling/labelings';
 import ExperimentsPage from './routes/experiments';
 import ProjectSettings from './routes/projectSettings';
 import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
