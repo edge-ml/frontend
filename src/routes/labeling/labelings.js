@@ -24,6 +24,7 @@ class LabelingsPage extends Component {
       labels: [],
       isReady: false,
       datasets: undefined,
+      labelingsToDelete: [],
       modal: {
         labeling: undefined,
         labels: undefined,
@@ -42,6 +43,10 @@ class LabelingsPage extends Component {
     this.resetURL = this.resetURL.bind(this);
     this.initComponent = this.initComponent.bind(this);
     this.onClickEdit = this.onClickEdit.bind(this);
+    this.toggleCheck = this.toggleCheck.bind(this);
+    this.selectAll = this.selectAll.bind(this);
+    this.deselectAll = this.deselectAll.bind(this);
+    this.selectAllEmpty = this.selectAllEmpty.bind(this);
   }
 
   componentDidMount() {
@@ -199,6 +204,41 @@ class LabelingsPage extends Component {
     );
   };
 
+  selectAll() {
+    this.setState({
+      labelingsToDelete: this.state.labelings.map((elm) => elm._id),
+    });
+  }
+
+  deselectAll() {
+    this.setState({ labelingsToDelete: [] });
+  }
+
+  toggleCheck(e, labelingId) {
+    const checked = this.state.labelingsToDelete.includes(labelingId);
+    if (!checked) {
+      if (!this.state.labelingsToDelete.includes(labelingId)) {
+        this.setState({
+          labelingsToDelete: [...this.state.labelingsToDelete, labelingId],
+        });
+      }
+    } else {
+      this.setState({
+        labelingsToDelete: this.state.labelingsToDelete.filter(
+          (id) => id !== labelingId
+        ),
+      });
+    }
+  }
+
+  selectAllEmpty() {
+    this.setState({
+      labelingsToDelete: this.state.labelings
+        .filter((elm) => elm.labels.length === 0)
+        .map((elm) => elm._id),
+    });
+  }
+
   render() {
     return (
       <Loader loading={!this.state.isReady}>
@@ -209,6 +249,11 @@ class LabelingsPage extends Component {
               onClickEdit={this.onClickEdit}
               labels={this.state.labels}
               onModalAddLabeling={this.onModalAddLabeling}
+              labelingsToDelete={this.state.labelingsToDelete}
+              toggleCheck={this.toggleCheck}
+              selectAll={this.selectAll}
+              deselectAll={this.deselectAll}
+              selectAllEmpty={this.selectAllEmpty}
             />
           </div>
         </Container>

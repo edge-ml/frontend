@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
 import { Row, Col, Button, Badge } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import Checkbox from '../../components/Common/Checkbox';
 const LabelingTableEntry = (props) => {
   const labeling = props.labeling;
   return (
@@ -13,6 +14,13 @@ const LabelingTableEntry = (props) => {
         }}
       >
         <div className="d-flex">
+          <div className="d-flex align-items-center p-2 ml-2 mr-0 ml-md-3 mr-md-3">
+            <Checkbox
+              isSelected={props.isSelected}
+              className="d-inline-block"
+              onClick={(e) => props.toggleCheck(e, labeling['_id'])}
+            ></Checkbox>
+          </div>
           <div className="w-100">
             <Row className="p-1">
               <Col className="text-left align-self-center col-lg-4 col-xl-3">
@@ -34,8 +42,11 @@ const LabelingTableEntry = (props) => {
                 </div>
               </Col>
               <Col className="d-flex flex-nowrap col-2 align-self-center justify-content-end">
+                <Button className="btn-delete mr-2" onClick={null}>
+                  <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
+                </Button>
                 <Button
-                  outline
+                  //outline
                   className="mr-3 mr-md-4"
                   onClick={() => props.onClickEdit(labeling)}
                 >
@@ -70,7 +81,7 @@ const Labeling = (props) => {
         {labels.map((label, index) => {
           return (
             <Badge
-              key={index}
+              key={label._id}
               className={
                 label.name === ''
                   ? 'font-italic font-weight-normal badgeSize mx-1'
