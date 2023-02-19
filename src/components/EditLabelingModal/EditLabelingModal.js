@@ -25,6 +25,7 @@ import {
   hexToForegroundColor,
   generateRandomColor,
 } from '../../services/ColorService';
+import ConfirmationDialogueModal from './ConfirmationDialogueModal';
 
 import './EditLabelingModal.css';
 
@@ -42,7 +43,9 @@ class EditLabelingModal extends Component {
       isNewLabeling: props.isNewLabeling,
       deletedLabels: [],
       allowSaving: false,
-      showConfirmationDialogue: false,
+      showConfirmationDialogueLabeling: false,
+      showConfirmationDialogueLabels: false,
+      confirmString: '',
     };
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onAddLabel = this.onAddLabel.bind(this);
@@ -59,6 +62,10 @@ class EditLabelingModal extends Component {
     this.labelingNameInValid = this.labelingNameInValid.bind(this);
     this.labelsNamesDouble = this.labelsNamesDouble.bind(this);
     this.renderLabelingEditModal = this.renderLabelingEditModal.bind(this);
+    this.onConfirmDeletionLabeling = this.onConfirmDeletionLabeling.bind(this);
+    this.onCancelDeletionLabeling = this.onCancelDeletionLabeling.bind(this);
+    this.onConfirmDeletionLabels = this.onConfirmDeletionLabels.bind(this);
+    this.onCancelDeletionLabels = this.onCancelDeletionLabels.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -72,6 +79,7 @@ class EditLabelingModal extends Component {
         onSave: this.props.onSave,
         onDeleteLabeling: this.props.onDeleteLabeling,
         isNewLabeling: this.props.isNewLabeling,
+        confirmationString: '',
       });
     }
   }
@@ -146,28 +154,12 @@ class EditLabelingModal extends Component {
         Object.keys(conflictingLabels)
           .map((key) => key + ': ' + conflictingLabels[key])
           .join(', ') +
-        '. \nDo you want to proceed? If you choose "Ok", all these labels will be deleted from the dataset(s).';
+        '. \nDo you want to proceed? If you choose "Confirm", all these labels will be deleted from the dataset(s).';
 
-      if (labelConflict && window.confirm(confirmString)) {
-        //label conflict and user chose to delete labels. Deletes them in the backend as well.
-        this.state.onSave(
-          this.state.labeling,
-          this.state.labels,
-          this.state.deletedLabels
-        );
-      } else if (labelConflict) {
-        //label conflict, but user chose not to delete them. Restore all "deletedLabels"
-        let labels = [...this.state.labels, ...this.state.deletedLabels];
-        let labeling = this.state.labeling;
-        labeling.labels = [
-          ...labeling.labels,
-          ...this.state.deletedLabels.map((e) => e['_id']),
-        ];
-
+      if (labelConflict) {
         this.setState({
-          labels: labels,
-          labeling: labeling,
-          deletedLabels: [],
+          showConfirmationDialogueLabels: true,
+          confirmString: confirmString,
         });
       } else {
         //no conflicts, just save
@@ -178,12 +170,44 @@ class EditLabelingModal extends Component {
         );
       }
     } else {
+      //no conflicts, just save
       this.state.onSave(
         this.state.labeling,
         this.state.labels,
         this.state.deletedLabels
       );
     }
+  }
+
+  onCancelDeletionLabeling() {}
+
+  onConfirmDeletionLabeling() {}
+
+  onCancelDeletionLabels() {
+    //label conflict, but user chose not to delete them. Restore all "deletedLabels"
+    let labels = [...this.state.labels, ...this.state.deletedLabels];
+    let labeling = this.state.labeling;
+    labeling.labels = [
+      ...labeling.labels,
+      ...this.state.deletedLabels.map((e) => e['_id']),
+    ];
+
+    this.setState({
+      labels: labels,
+      labeling: labeling,
+      deletedLabels: [],
+      confirmString: '',
+      showConfirmationDialogueLabels: false,
+    });
+  }
+
+  onConfirmDeletionLabels() {
+    //label conflict and user chose to delete labels. Deletes them in the backend as well.
+    this.state.onSave(
+      this.state.labeling,
+      this.state.labels,
+      this.state.deletedLabels
+    );
   }
 
   onDatasetsChanged(datasets) {
@@ -516,8 +540,38 @@ class EditLabelingModal extends Component {
     );
   }
 
+  renderConfirmationDialogueLabeling() {
+    return (
+      <ConfirmationDialogueModal
+        onCancel={this.onCancelDeletionLabeling}
+        onConfirm={this.onConfirmDeletionLabeling}
+        confirmString={this.state.confirmString}
+        title={'Confirm Labeling Set Deletion'}
+        isOpen={this.props.isOpen}
+      />
+    );
+  }
+
+  renderConfirmationDialogueLabels() {
+    return (
+      <ConfirmationDialogueModal
+        onCancel={this.onCancelDeletionLabels}
+        onConfirm={this.onConfirmDeletionLabels}
+        confirmString={this.state.confirmString}
+        title={'Confirm Label Deletion'}
+        isOpen={this.props.isOpen}
+      />
+    );
+  }
+
   render() {
-    return this.renderLabelingEditModal();
+    if (this.state.showConfirmationDialogueLabeling) {
+      return this.renderConfirmationDialogueLabeling();
+    } else if (this.state.showConfirmationDialogueLabels) {
+      return this.renderConfirmationDialogueLabels();
+    } else {
+      return this.renderLabelingEditModal();
+    }
   }
 }
 export default EditLabelingModal;
