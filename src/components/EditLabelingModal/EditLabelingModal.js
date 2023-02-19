@@ -287,7 +287,7 @@ class EditLabelingModal extends Component {
         this.setState({
           showConfirmationDialogueLabeling: true,
           conflictingDatasetIdsForLabelingDeletion: [],
-          confirmString: 'Are you sure to delete this labeling?',
+          confirmString: 'Are you sure to delete this labeling set?',
         });
       }
     } else {
@@ -295,7 +295,7 @@ class EditLabelingModal extends Component {
       this.setState({
         showConfirmationDialogueLabeling: true,
         conflictingDatasetIdsForLabelingDeletion: [],
-        confirmString: 'Are you sure to delete this labeling?',
+        confirmString: 'Are you sure to delete this labeling set?',
       });
     }
   }

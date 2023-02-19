@@ -221,16 +221,36 @@ class LabelingsPage extends Component {
   }
 
   confirmMsgMultLabelingDeletion(conflicts) {
-    let conflictString = ``;
     let count = 1;
-    Object.values(conflicts).forEach((conflict) => {
-      conflictString += `${count}. ${conflict.name}:\n`;
-      conflict.datasets.forEach((dataset) => {
-        conflictString += `  ${dataset.datasetName}\n`;
-      });
-      count++;
+    const conflictItems = Object.values(conflicts).map((conflict) => {
+      const datasetItems = conflict.datasets.map((dataset) => (
+        <div key={dataset.datasetId}>{'  ' + dataset.datasetName}</div>
+      ));
+      return (
+        <div key={conflict.id}>
+          <strong>
+            {count++}. {conflict.name}
+          </strong>
+          {datasetItems}
+        </div>
+      );
     });
-    return conflictString;
+    return (
+      <div>
+        <div>
+          {
+            'You are about to delete multiple labeling sets, which are used in the following dataset(s):\n\n'
+          }
+          {conflictItems}
+          <br />
+          <div>
+            {
+              'Do you want to proceed? If you choose "Confirm", these labeling sets, inlcuding all their labels, will be deleted from the corresponding dataset(s).'
+            }
+          </div>
+        </div>
+      </div>
+    );
   }
 
   onClickDeleteButton() {
@@ -256,11 +276,7 @@ class LabelingsPage extends Component {
           }
         });
       });
-      const confirmString =
-        `You are about to delete multiple labeling sets, which are used in the following dataset(s):\n` +
-        this.confirmMsgMultLabelingDeletion(conflicts) +
-        `\nDo you want to proceed? If you choose \"Confirm\", these labeling sets, ` +
-        `inlcuding all their labels, will be deleted from the corresponding dataset(s).`;
+      const confirmString = this.confirmMsgMultLabelingDeletion(conflicts);
 
       if (labelConflict) {
         //label conflict and user chose to delete labels. Deletes them in the backend too.

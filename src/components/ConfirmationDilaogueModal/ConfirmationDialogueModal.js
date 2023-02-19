@@ -23,20 +23,22 @@ class ConfirmationDialogueModal extends Component {
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button
-              color="secondary"
-              className="m-1 mr-auto"
-              onClick={this.props.onCancel}
-            >
-              Cancel
-            </Button>
-            <Button
-              color="primary"
-              className="m-1"
-              onClick={this.props.onConfirm}
-            >
-              Confirm
-            </Button>
+            <div className="d-flex flex-row justify-content-end">
+              <Button
+                color="danger"
+                className="m-1"
+                onClick={this.props.onConfirm}
+              >
+                Confirm
+              </Button>
+              <Button
+                color="secondary"
+                className="m-1 mr-auto"
+                onClick={this.props.onCancel}
+              >
+                Cancel
+              </Button>
+            </div>
           </ModalFooter>
         </Modal>
       </div>
