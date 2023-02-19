@@ -56,6 +56,9 @@ class EditLabelingModal extends Component {
     this.onEscPresses = this.onEscPresses.bind(this);
     this.labelNameInvalid = this.labelNameInvalid.bind(this);
     this.checkAllowSaving = this.checkAllowSaving.bind(this);
+    this.labelingNameInValid = this.labelingNameInValid.bind(this);
+    this.labelsNamesDouble = this.labelsNamesDouble.bind(this);
+    this.renderLabelingEditModal = this.renderLabelingEditModal.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -325,20 +328,25 @@ class EditLabelingModal extends Component {
     );
   }
 
-  render() {
-    const labelingNameInValid =
+  labelingNameInValid() {
+    return (
       this.state.labeling &&
       this.props.labelings.some(
         (elm) =>
           elm.name === this.state.labeling.name &&
           elm._id != this.state.labeling._id
-      );
+      )
+    );
+  }
 
-    const labelsNamesDouble = !this.state.labels
+  labelsNamesDouble() {
+    return !this.state.labels
       ? false
       : new Set(this.state.labels.map((elm) => elm.name)).size !==
-        this.state.labels.length;
+          this.state.labels.length;
+  }
 
+  renderLabelingEditModal() {
     return (
       <Modal isOpen={this.state.isOpen}>
         <ModalHeader>
@@ -353,7 +361,7 @@ class EditLabelingModal extends Component {
                 <InputGroupText>Labeling Set</InputGroupText>
               </InputGroupAddon>
               <Input
-                invalid={labelingNameInValid}
+                invalid={this.labelingNameInValid()}
                 id="labelingName"
                 placeholder="Name"
                 value={
@@ -366,7 +374,7 @@ class EditLabelingModal extends Component {
               <FormFeedback
                 id="labelingNameFeedback"
                 style={
-                  labelingNameInValid
+                  this.labelingNameInValid()
                     ? { display: 'flex', justifyContent: 'right' }
                     : null
                 }
@@ -497,8 +505,8 @@ class EditLabelingModal extends Component {
             onClick={this.onClickingSave}
             disabled={
               !this.checkAllowSaving() ||
-              labelingNameInValid ||
-              labelsNamesDouble
+              this.labelingNameInValid() ||
+              this.labelsNamesDouble()
             }
           >
             Save
@@ -506,6 +514,10 @@ class EditLabelingModal extends Component {
         </ModalFooter>
       </Modal>
     );
+  }
+
+  render() {
+    return this.renderLabelingEditModal();
   }
 }
 export default EditLabelingModal;
