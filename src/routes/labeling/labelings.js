@@ -257,17 +257,19 @@ class LabelingsPage extends Component {
             />
           </div>
         </Container>
-        <EditLabelingModal
-          datasets={this.state.datasets}
-          labeling={this.state.modal.labeling}
-          labelings={this.state.labelings}
-          labels={this.state.modal.labels}
-          isOpen={this.state.modal.isOpen}
-          onCloseModal={this.onCloseModal}
-          onDeleteLabeling={this.onDeleteLabeling}
-          onSave={this.onSave}
-          isNewLabeling={this.state.modal.isNewLabeling}
-        />
+        {this.state.modal.isOpen ? (
+          <EditLabelingModal
+            datasets={this.state.datasets}
+            labeling={this.state.modal.labeling}
+            labelings={this.state.labelings}
+            labels={this.state.modal.labels}
+            isOpen={this.state.modal.isOpen}
+            onCloseModal={this.onCloseModal}
+            onDeleteLabeling={this.onDeleteLabeling}
+            onSave={this.onSave}
+            isNewLabeling={this.state.modal.isNewLabeling}
+          />
+        ) : null}
       </Loader>
     );
   }

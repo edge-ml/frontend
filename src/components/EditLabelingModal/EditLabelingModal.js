@@ -46,6 +46,7 @@ class EditLabelingModal extends Component {
       showConfirmationDialogueLabeling: false,
       showConfirmationDialogueLabels: false,
       confirmString: '',
+      conflictingDatasetIdsForLabelingDeletion: [],
     };
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onAddLabel = this.onAddLabel.bind(this);
@@ -179,9 +180,20 @@ class EditLabelingModal extends Component {
     }
   }
 
-  onCancelDeletionLabeling() {}
+  onCancelDeletionLabeling() {
+    this.setState({
+      showConfirmationDialogueLabeling: false,
+      conflictingDatasetIdsForLabelingDeletion: [],
+    });
+  }
 
-  onConfirmDeletionLabeling() {}
+  onConfirmDeletionLabeling() {
+    //label conflict and user chose to delete labels. Deletes them in the backend too.
+    this.props.onDeleteLabeling(
+      this.state.labeling['_id'],
+      this.state.conflictingDatasetIdsForLabelingDeletion
+    );
+  }
 
   onCancelDeletionLabels() {
     //label conflict, but user chose not to delete them. Restore all "deletedLabels"
@@ -261,24 +273,30 @@ class EditLabelingModal extends Component {
       const confirmString =
         `You are about to delete a labeling set that is used in the following dataset(s): ` +
         conflictingDatasetNames.join(', ') +
-        `. \nDo you want to proceed? If you choose \"Ok\", this labeling set, ` +
+        `. \nDo you want to proceed? If you choose \"Confirm\", this labeling set, ` +
         `inlcuding all its labels, will be deleted from the corresponding dataset(s).`;
-      if (labelConflict && window.confirm(confirmString)) {
+      if (labelConflict) {
         //label conflict and user chose to delete labels. Deletes them in the backend too.
-        this.props.onDeleteLabeling(id, conflictingDatasetIds);
-      } else if (labelConflict) {
-        //Do nothing, user aborted the delete
+        this.setState({
+          showConfirmationDialogueLabeling: true,
+          conflictingDatasetIdsForLabelingDeletion: conflictingDatasetIds,
+          confirmString: confirmString,
+        });
       } else {
         //No labeling conflict, just ask for permissions to delete
-        if (window.confirm('Are you sure to delete this labeling?')) {
-          this.props.onDeleteLabeling(id, []);
-        }
+        this.setState({
+          showConfirmationDialogueLabeling: true,
+          conflictingDatasetIdsForLabelingDeletion: [],
+          confirmString: 'Are you sure to delete this labeling?',
+        });
       }
     } else {
       //No labeling conflict, just ask for permissions to delete
-      if (window.confirm('Are you sure to delete this labeling?')) {
-        this.props.onDeleteLabeling(id, []);
-      }
+      this.setState({
+        showConfirmationDialogueLabeling: true,
+        conflictingDatasetIdsForLabelingDeletion: [],
+        confirmString: 'Are you sure to delete this labeling?',
+      });
     }
   }
 
