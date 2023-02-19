@@ -455,25 +455,7 @@ class EditLabelingModal extends Component {
             ? this.state.labels.map((label, index) => (
                 <InputGroup key={'label' + index}>
                   <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      {!label.isNewLabel && (
-                        <React.Fragment>
-                          <FontAwesomeIcon
-                            id={'label' + label['_id']}
-                            style={{ color: '#8b8d8f' }}
-                            icon={faInfoCircle}
-                            className="mr-2 fa-s"
-                          />
-                          <UncontrolledTooltip
-                            placement="top-start"
-                            target={'label' + label['_id']}
-                          >
-                            <b>LabelID:</b> {label['_id']}
-                          </UncontrolledTooltip>
-                        </React.Fragment>
-                      )}
-                      Label
-                    </InputGroupText>
+                    <InputGroupText>Label</InputGroupText>
                   </InputGroupAddon>
                   <Input
                     invalid={this.labelNameInvalid(label, index)}
