@@ -55,6 +55,30 @@ export const deleteLabeling = (labelingId, conflictingDatasetIds) => {
   });
 };
 
+export const deleteMultipleLabelings = (labelingIds) => {
+  const requests = [];
+  labelingIds.forEach((id) => {
+    requests.push(
+      axios(
+        apiConsts.generateApiRequest(
+          apiConsts.HTTP_METHODS.DELETE,
+          apiConsts.API_URI,
+          apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS + `/${id}`
+        )
+      )
+    );
+  });
+  return new Promise((resolve, reject) => {
+    Promise.all(requests)
+      .then((responses) => {
+        subscribeLabelingsAndLabels()
+          .then((data) => resolve(data))
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
+  });
+};
+
 export const updateLabelingandLabels = (labeling, labels) => {
   return new Promise((resolve, reject) => {
     axios(

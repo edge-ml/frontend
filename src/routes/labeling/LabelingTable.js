@@ -85,6 +85,7 @@ const LabelingTable = (props) => {
                 index={index}
                 isSelected={props.labelingsToDelete.includes(labeling['_id'])}
                 toggleCheck={props.toggleCheck}
+                onClickDeleteLabelingIcon={props.onClickDeleteLabelingIcon}
               />
             ))}
           </div>

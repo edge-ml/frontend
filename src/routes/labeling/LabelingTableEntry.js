@@ -42,7 +42,12 @@ const LabelingTableEntry = (props) => {
                 </div>
               </Col>
               <Col className="d-flex flex-nowrap col-2 align-self-center justify-content-end">
-                <Button className="btn-delete mr-2" onClick={null}>
+                <Button
+                  className="btn-delete mr-2"
+                  onClick={(e) =>
+                    props.onClickDeleteLabelingIcon(labeling['_id'])
+                  }
+                >
                   <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
                 </Button>
                 <Button
