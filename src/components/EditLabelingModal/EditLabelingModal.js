@@ -13,7 +13,12 @@ import {
   FormFeedback,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faInfoCircle,
+  faTrashAlt,
+  faPen,
+  faPlus,
+} from '@fortawesome/free-solid-svg-icons';
 
 import {
   isValidColor,
@@ -37,6 +42,7 @@ class EditLabelingModal extends Component {
       isNewLabeling: props.isNewLabeling,
       deletedLabels: [],
       allowSaving: false,
+      showConfirmationDialogue: false,
     };
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onAddLabel = this.onAddLabel.bind(this);
@@ -341,32 +347,59 @@ class EditLabelingModal extends Component {
             : 'Add Labeling Set'}
         </ModalHeader>
         <ModalBody>
-          <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText>Labeling Set</InputGroupText>
-            </InputGroupAddon>
-            <Input
-              invalid={labelingNameInValid}
-              id="labelingName"
-              placeholder="Name"
-              value={
-                this.state.labeling && this.state.labeling.name
-                  ? this.state.labeling.name
-                  : ''
-              }
-              onChange={(e) => this.onLabelingNameChanged(e.target.value)}
-            />
-            <FormFeedback
-              id="labelingNameFeedback"
-              style={
-                labelingNameInValid
-                  ? { display: 'flex', justifyContent: 'right' }
-                  : null
-              }
-            >
-              The same name already exists
-            </FormFeedback>
-          </InputGroup>
+          <div className="d-flex flex-row align-items-center">
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>Labeling Set</InputGroupText>
+              </InputGroupAddon>
+              <Input
+                invalid={labelingNameInValid}
+                id="labelingName"
+                placeholder="Name"
+                value={
+                  this.state.labeling && this.state.labeling.name
+                    ? this.state.labeling.name
+                    : ''
+                }
+                onChange={(e) => this.onLabelingNameChanged(e.target.value)}
+              />
+              <FormFeedback
+                id="labelingNameFeedback"
+                style={
+                  labelingNameInValid
+                    ? { display: 'flex', justifyContent: 'right' }
+                    : null
+                }
+              >
+                The same name already exists
+              </FormFeedback>
+            </InputGroup>
+            <div className="d-flex flex-row ml-2">
+              <Button
+                id="buttonAddLabel"
+                className="mr-1"
+                color="secondary"
+                onClick={this.onAddLabel}
+              >
+                <FontAwesomeIcon icon={faPlus} />
+              </Button>
+              {this.state.labeling && !this.state.isNewLabeling ? (
+                <div>
+                  <Button
+                    id="buttonDeleteLabeling"
+                    color="danger"
+                    className="m-0"
+                    outline
+                    onClick={(e) => {
+                      this.onDeleteLabeling(this.state.labeling['_id']);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faTrashAlt} />
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          </div>
           <hr />
           {this.state.labels
             ? this.state.labels.map((label, index) => (
@@ -447,33 +480,6 @@ class EditLabelingModal extends Component {
                 </InputGroup>
               ))
             : null}
-          <Button
-            id="buttonAddLabel"
-            className="m-0"
-            color="secondary"
-            outline
-            block
-            onClick={this.onAddLabel}
-          >
-            + Add Label
-          </Button>
-          {this.state.labeling && !this.state.isNewLabeling ? (
-            <div>
-              <hr />
-              <Button
-                id="buttonDeleteLabeling"
-                color="danger"
-                block
-                className="m-0"
-                outline
-                onClick={(e) => {
-                  this.onDeleteLabeling(this.state.labeling['_id']);
-                }}
-              >
-                Delete
-              </Button>
-            </div>
-          ) : null}
         </ModalBody>
         <ModalFooter>
           <Button
