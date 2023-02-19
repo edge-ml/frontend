@@ -1,0 +1,4 @@
+.modal-scrollableBody {
+  overflow-x: auto;
+  overflow-y: auto;
+}

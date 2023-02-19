@@ -13,7 +13,7 @@ import {
   deleteMultipleLabelings,
 } from '../../services/ApiServices/LabelingServices';
 import LabelingTable from './LabelingTable';
-import ConfirmationDialogueModal from '../../components/EditLabelingModal/ConfirmationDialogueModal';
+import ConfirmationDialogueModal from '../../components/ConfirmationDilaogueModal/ConfirmationDialogueModal';
 
 class LabelingsPage extends Component {
   constructor(props) {
@@ -62,6 +62,9 @@ class LabelingsPage extends Component {
     this.onClickDeleteLabelingIcon = this.onClickDeleteLabelingIcon.bind(this);
     this.resetConfirmationDialogueModalState =
       this.resetConfirmationDialogueModalState.bind(this);
+    this.confirmMsgMultLabelingDeletion =
+      this.confirmMsgMultLabelingDeletion.bind(this);
+    this.onClickDeleteButton = this.onClickDeleteButton.bind(this);
   }
 
   componentDidMount() {
@@ -217,6 +220,88 @@ class LabelingsPage extends Component {
     }
   }
 
+  confirmMsgMultLabelingDeletion(conflicts) {
+    let conflictString = ``;
+    let count = 1;
+    Object.values(conflicts).forEach((conflict) => {
+      conflictString += `${count}. ${conflict.name}:\n`;
+      conflict.datasets.forEach((dataset) => {
+        conflictString += `  ${dataset.datasetName}\n`;
+      });
+      count++;
+    });
+    return conflictString;
+  }
+
+  onClickDeleteButton() {
+    if (this.state.datasets.length > 0) {
+      let labelConflict = false;
+      let conflicts = {};
+      this.state.labelingsToDelete.forEach((id) => {
+        this.state.datasets.forEach((dset) => {
+          if (dset.labelings.some((l) => l.labelingId === id)) {
+            labelConflict = true;
+            if (!conflicts.hasOwnProperty(id)) {
+              conflicts[id] = {
+                name: this.state.labelings.find((l) => l._id === id).name,
+              };
+            }
+            if (!conflicts[id].hasOwnProperty('datasets')) {
+              conflicts[id]['datasets'] = [];
+            }
+            conflicts[id]['datasets'].push({
+              datasetName: dset.name,
+              datasetId: dset._id,
+            });
+          }
+        });
+      });
+      const confirmString =
+        `You are about to delete multiple labeling sets, which are used in the following dataset(s):\n` +
+        this.confirmMsgMultLabelingDeletion(conflicts) +
+        `\nDo you want to proceed? If you choose \"Confirm\", these labeling sets, ` +
+        `inlcuding all their labels, will be deleted from the corresponding dataset(s).`;
+
+      if (labelConflict) {
+        //label conflict and user chose to delete labels. Deletes them in the backend too.
+        this.setState({
+          confirmationDialogueModal: {
+            isOpen: true,
+            onConfirm: () =>
+              this.onClickConfirmlDeleteLabelings(this.state.labelingsToDelete),
+            onCancel: this.onClickCancelDeleteLabeling,
+            confirmString: confirmString,
+            title: 'Confirm Labeling Set Deletion',
+          },
+        });
+      } else {
+        //No labeling conflict, just ask for permissions to delete
+        this.setState({
+          confirmationDialogueModal: {
+            isOpen: true,
+            onConfirm: () =>
+              this.onClickConfirmlDeleteLabelings(this.state.labelingsToDelete),
+            onCancel: this.onClickCancelDeleteLabeling,
+            confirmString: 'Are you sure to delete these labeling sets?',
+            title: 'Confirm Labeling Set Deletion',
+          },
+        });
+      }
+    } else {
+      //No labeling conflict, just ask for permissions to delete
+      this.setState({
+        confirmationDialogueModal: {
+          isOpen: true,
+          onConfirm: () =>
+            this.onClickConfirmlDeleteLabelings(this.state.labelingsToDelete),
+          onCancel: this.onClickCancelDeleteLabeling,
+          confirmString: 'Are you sure to delete these labeling sets?',
+          title: 'Confirm Labeling Set Deletion',
+        },
+      });
+    }
+  }
+
   onClickConfirmlDeleteLabelings(labelingIds) {
     deleteMultipleLabelings(labelingIds).then((result) => {
       this.onLabelingsLabelsDatasetsChanged(result.labelings, result.labels);
@@ -224,7 +309,7 @@ class LabelingsPage extends Component {
     this.resetConfirmationDialogueModalState();
     this.setState({
       labelingsToDelete: this.state.labelingsToDelete.filter(
-        (id) => !labelingIds.include(id)
+        (id) => !labelingIds.includes(id)
       ),
     });
   }
@@ -354,6 +439,7 @@ class LabelingsPage extends Component {
               deselectAll={this.deselectAll}
               selectAllEmpty={this.selectAllEmpty}
               onClickDeleteLabelingIcon={this.onClickDeleteLabelingIcon}
+              onClickDeleteButton={this.onClickDeleteButton}
             />
           </div>
         </Container>

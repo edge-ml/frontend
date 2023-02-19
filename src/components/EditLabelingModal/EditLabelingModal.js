@@ -25,7 +25,7 @@ import {
   hexToForegroundColor,
   generateRandomColor,
 } from '../../services/ColorService';
-import ConfirmationDialogueModal from './ConfirmationDialogueModal';
+import ConfirmationDialogueModal from '../ConfirmationDilaogueModal/ConfirmationDialogueModal';
 
 import './EditLabelingModal.css';
 

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
+import './ConfirmationDialogueModal.css';
 
 class ConfirmationDialogueModal extends Component {
   constructor(props) {
@@ -11,9 +12,16 @@ class ConfirmationDialogueModal extends Component {
   render() {
     return (
       <div>
-        <Modal isOpen={this.props.isOpen}>
+        <Modal
+          isOpen={this.props.isOpen}
+          className="modal-body-scrollable modal-l"
+        >
           <ModalHeader>{this.props.title}</ModalHeader>
-          <ModalBody>{this.props.confirmString}</ModalBody>
+          <ModalBody className="modal-scrollableBody">
+            <div style={{ whiteSpace: 'pre-wrap' }}>
+              {this.props.confirmString}
+            </div>
+          </ModalBody>
           <ModalFooter>
             <Button
               color="secondary"
