@@ -292,7 +292,6 @@ function processCSVColumn(timeData) {
 
 export const generateLabeledDataset = (
   labelings,
-  labels,
   currentLabeling,
   datasets
 ) => {
@@ -306,9 +305,12 @@ export const generateLabeledDataset = (
       )._id;
       for (var h = 0; h < datasetLabels.length; h++) {
         const labelName = currentLabeling[i][j].datasetLabel.labels[h].name;
-        const labelId = labels.find(
-          (elm) => labelName === elm.name && labelIds.includes(elm._id)
-        )._id;
+        const labelId = labelings
+          .map((elm) => elm.labels)
+          .flat()
+          .find(
+            (elm) => labelName === elm.name && labelIds.includes(elm._id)
+          )._id;
         currentLabeling[i][j].datasetLabel.labels[h].type = labelId;
       }
     }

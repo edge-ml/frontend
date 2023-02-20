@@ -12,7 +12,7 @@ import './LabelingSelectionPanel.css';
 import classNames from 'classnames';
 
 import HelpModal from './HelpModal';
-import { downloadSingleDataset } from '../../services/DatasetService';
+import { downloadDatasets } from '../../services/DatasetService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
@@ -35,13 +35,8 @@ class LabelingSelectionPanel extends Component {
   }
 
   downloadDataSet() {
-    downloadSingleDataset(
-      this.props.dataset,
-      this.props.labelings,
-      this.props.labels
-    );
+    downloadDatasets([this.props.dataset._id]);
   }
-
   handleLabelingClicked(e, id) {
     if (e) e.preventDefault();
     if (id === hideLabelsSymbol) {

@@ -211,10 +211,9 @@ class CreateNewDatasetModal extends Component {
           }
         }
         await Promise.all(promises);
-        const result = await subscribeLabelingsAndLabels();
+        const labelings = await subscribeLabelingsAndLabels();
         const newDatasets = generateLabeledDataset(
-          result.labelings,
-          result.labels,
+          labelings,
           this.state.labelings,
           this.state.datasets
         );

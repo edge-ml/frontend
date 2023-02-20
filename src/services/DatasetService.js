@@ -2,22 +2,28 @@ import * as JSZip from 'jszip';
 import { ga_downloadDataset } from './AnalyticsService';
 import { generateCSV } from './CsvService';
 import { getDataset } from '../services/ApiServices/DatasetServices';
+import {
+  generateApiRequest,
+  HTTP_METHODS,
+  DATASET_STORE,
+  DATASET_STORE_ENDPOINTS,
+} from './ApiServices/ApiConstants';
+import ax from 'axios';
 
-const downloadSingleDataset = (dataset, labelings, labels) => {
-  // Download dataset
-  const csv = generateCSV(dataset, labelings, labels);
-  const fileName_dataset = dataset.name + '.csv';
-  const blob_dataset = new Blob([csv], { type: 'application/csv' });
-  downloadFile(blob_dataset, fileName_dataset);
+const axios = ax.create();
 
-  // Download metadata
-  if (Object.keys(dataset.metaData).length !== 0) {
-    const json = JSON.stringify(dataset.metaData);
-    const fileName_metaData = dataset.name + '_metaData.json';
-    const blob_metaData = new Blob([json], { type: 'application/json' });
-    downloadFile(blob_metaData, fileName_metaData);
-  }
-  ga_downloadDataset(dataset);
+const downloadDatasets = async (dataset) => {
+  console.log(dataset);
+  const request_params = generateApiRequest(
+    HTTP_METHODS.POST,
+    DATASET_STORE,
+    DATASET_STORE_ENDPOINTS.CSV,
+    { datasets: dataset }
+  );
+  const response = await axios(request_params);
+  const id = response.data.id;
+  console.log('open window: ', id);
+  window.open(`http://localhost:3004/csv/download/${id}`);
 };
 
 const downloadAllAsZip = async (datasets, labelings, labels) => {
@@ -61,4 +67,4 @@ const downloadFile = (blob, fileName) => {
   document.body.removeChild(link);
 };
 
-export { downloadSingleDataset, downloadAllAsZip, downloadFile };
+export { downloadDatasets, downloadAllAsZip, downloadFile };

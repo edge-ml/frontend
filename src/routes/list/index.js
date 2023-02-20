@@ -17,6 +17,7 @@ import {
   getDatasets,
   deleteDatasets,
 } from '../../services/ApiServices/DatasetServices';
+import { downloadDatasets } from '../../services/DatasetService';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import { downloadAllAsZip } from '../../services/DatasetService';
 import DatasetTable from './DatasetTable';
@@ -61,8 +62,7 @@ class ListPage extends Component {
   }
 
   async downloadAllDatasets() {
-    const { labelings, labels } = await subscribeLabelingsAndLabels();
-    downloadAllAsZip(this.state.datasets, labelings, labels);
+    await downloadDatasets(this.state.datasets.map((elm) => elm._id));
   }
 
   selectAllEmpty() {

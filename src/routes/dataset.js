@@ -796,6 +796,7 @@ class DatasetPage extends Component {
               >
                 <div className="position-relative">
                   <LabelingSelectionPanel
+                    dataset={this.state.dataset}
                     objectType={'labelings'}
                     history={this.props.history}
                     labelings={this.state.labelings}
