@@ -289,8 +289,8 @@ class TimeSeriesPanel extends Component {
           },
           min: props.start,
           max: props.end,
-          startOnTick: true,
-          endOnTick: true,
+          startOnTick: this.props.index == 0,
+          endOnTick: this.props.index == 0,
           events: {
             afterSetExtremes: (e) => {
               if (this.chart.current.chart && Highcharts.charts) {

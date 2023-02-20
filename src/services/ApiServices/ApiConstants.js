@@ -19,7 +19,7 @@ export const ML_URI =
     ? 'http://ml.edge-ml.ngrok.io/ml/'
     : 'http://localhost:3003/ml/';
 
-export const DATASET_STORE = 'http://localhost:8000';
+export const DATASET_STORE = 'http://localhost:3004';
 
 export const HTTP_METHODS = {
   GET: 'GET',
