@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Col, Row, Fade, Button } from 'reactstrap';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
-import ManagementPanel from '../components/ManagementPanel/ManagementPanel';
 import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
 import CustomMetadataPanel from '../components/MetadataPanel/CustomMetadataPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
@@ -458,9 +457,8 @@ class DatasetPage extends Component {
     let labeling = this.state.labelings.filter(
       (labeling) => labeling['_id'] === selectedLabelingId
     )[0];
-    let labelTypes = this.state.labels.filter((label) =>
-      labeling.labels.includes(label['_id'])
-    );
+
+    const labelTypes = labeling.labels;
     this.setState({
       controlStates: {
         ...this.state.controlStates,
@@ -532,6 +530,11 @@ class DatasetPage extends Component {
   }
 
   onClickPosition(position) {
+    // don't add new labels if we don't show them
+    if (this.state.hideLabels) {
+      return;
+    }
+
     const labelingIdx = this.state.dataset.labelings.findIndex(
       (elm) => elm.labelingId === this.state.controlStates.selectedLabelingId
     );
@@ -779,8 +782,6 @@ class DatasetPage extends Component {
 
     const startOffset = 0;
     const endOffset = 0;
-    console.log(this.state.dataset);
-
     return (
       <div className="w-100 position-relative">
         <Fade in={this.state.fadeIn}>
@@ -805,6 +806,11 @@ class DatasetPage extends Component {
                     onSelectedLabelingIdChanged={
                       this.onSelectedLabelingIdChanged
                     }
+                    onCanEditChanged={this.onCanEditChanged}
+                    canEdit={this.state.controlStates.canEdit}
+                    isCrosshairIntervalActive={isCrosshairIntervalActive}
+                    hideLabels={this.state.hideLabels}
+                    onHideLabels={this.hideLabels}
                   />
                   <TimeSeriesCollectionPanel
                     timeSeries={this.state.dataset.timeSeries}
@@ -830,28 +836,33 @@ class DatasetPage extends Component {
                     onClickPosition={this.onClickPosition}
                     onLabelPositionUpdate={this.onLabelPositionUpdate}
                   />
-                  <LabelingPanel
-                    hideLabels={this.state.hideLabels}
-                    onHideLabels={this.hideLabels}
-                    className="StickyLabelingSelectionPanel"
-                    history={this.props.history}
-                    id={this.state.controlStates.selectedLabelId}
-                    from={
-                      selectedDatasetLabel ? selectedDatasetLabel.start : null
-                    }
-                    to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
-                    labeling={selectedLabeling}
-                    selectedLabelTypeId={
-                      this.state.controlStates.selectedLabelTypeId
-                    }
-                    onSelectedLabelTypeIdChanged={
-                      this.onSelectedLabelTypeIdChanged
-                    }
-                    onDeleteSelectedLabel={this.onDeleteSelectedLabel}
-                    onCanEditChanged={this.onCanEditChanged}
-                    canEdit={this.state.controlStates.canEdit}
-                    isCrosshairIntervalActive={isCrosshairIntervalActive}
-                  />
+                  <Fade
+                    className="LabelingPanel"
+                    in={!this.state.hideLabels}
+                    unmountOnExit={true}
+                  >
+                    <LabelingPanel
+                      className="StickyLabelingSelectionPanel"
+                      history={this.props.history}
+                      id={this.state.controlStates.selectedLabelId}
+                      from={
+                        selectedDatasetLabel ? selectedDatasetLabel.start : null
+                      }
+                      to={
+                        selectedDatasetLabel ? selectedDatasetLabel.end : null
+                      }
+                      labeling={selectedLabeling}
+                      labels={this.state.controlStates.selectedLabelTypes}
+                      selectedLabelTypeId={
+                        this.state.controlStates.selectedLabelTypeId
+                      }
+                      onSelectedLabelTypeIdChanged={
+                        this.onSelectedLabelTypeIdChanged
+                      }
+                      onDeleteSelectedLabel={this.onDeleteSelectedLabel}
+                      canEdit={this.state.controlStates.canEdit}
+                    />
+                  </Fade>
                 </div>
                 <div className="dataset-labelingpanel">
                   {this.state.error ? (
@@ -884,16 +895,7 @@ class DatasetPage extends Component {
                   ></CustomMetadataPanel>
                 </div>
                 <div className="mt-2" />
-                <div className="mt-2" style={{ marginBottom: '230px' }}>
-                  <ManagementPanel
-                    labelings={this.state.labelings}
-                    onDeleteDataset={this.onDeleteDataset}
-                    dataset={this.state.dataset}
-                  />
-                </div>
               </Col>
-              <Col xs={12}></Col>
-              <Col />
             </Row>
           </div>
         </Fade>

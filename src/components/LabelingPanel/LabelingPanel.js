@@ -10,9 +10,6 @@ import {
 } from 'reactstrap';
 import './LabelingPanel.css';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons';
-
 class LabelingPanel extends Component {
   constructor(props) {
     super(props);
@@ -25,8 +22,6 @@ class LabelingPanel extends Component {
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
-      onCanEditChanged: props.onCanEditChanged,
-      isCrosshairIntervalActive: props.isCrosshairIntervalActive,
     };
 
     this.toggleEdit = this.toggleEdit.bind(this);
@@ -43,13 +38,12 @@ class LabelingPanel extends Component {
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
       onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
-      onCanEditChanged: props.onCanEditChanged,
-      isCrosshairIntervalActive: props.isCrosshairIntervalActive,
     }));
   }
 
   handleLabelTypeClicked(e, id) {
     e.preventDefault();
+    console.log(id);
     this.state.onSelectedLabelTypeIdChanged(id);
   }
 
@@ -76,40 +70,52 @@ class LabelingPanel extends Component {
     return (
       <Card className="LabelingPanel">
         <CardBody className="p-1 d-flex flex-wrap">
-          <div className="informationBox">
+          <div className="labelingBox d-flex flex-wrap">
             <Button
-              disabled={this.props.isCrosshairIntervalActive}
-              className="m-1 btn-light"
-              onClick={this.toggleEdit}
+              className="labelingButton m-1"
+              color="secondary"
+              onClick={this.onAddLabel}
             >
-              <FontAwesomeIcon
-                style={{ color: !this.state.canEdit ? '#b71c1c' : '#43A047' }}
-                icon={!this.state.canEdit ? faLock : faUnlock}
-                className="mr-2"
-              />
-              <span
-                style={{ color: !this.state.canEdit ? '#b71c1c' : '#43A047' }}
-              >
-                {!this.state.canEdit ? 'Locked' : 'Unlocked'}
-              </span>
+              + Add Label
             </Button>
-            <Button className="m-1 btn-light" onClick={this.props.onHideLabels}>
-              <span
-                style={{ color: !this.props.hideLabels ? '#007BFF' : 'gray' }}
-              >
-                {!this.props.hideLabels ? 'Show labels' : 'Hide labels'}
-              </span>
-            </Button>
-            <InputGroup className="inputGroup m-1">
-              <InputGroupAddon addonType="prepend" className="inputGroupAddon">
-                <InputGroupText className="inputLabel">Id</InputGroupText>
-              </InputGroupAddon>
-              <Input
-                value={this.state.id ? this.state.id : ''}
-                readOnly
-                className="idInput text-center"
-              />
-            </InputGroup>
+            {this.state.labeling
+              ? this.state.labeling.labels
+                  .slice(0)
+                  .reverse()
+                  .map((label, index, array) => {
+                    return (
+                      <Button
+                        className="btn-light m-1 labelingButton"
+                        disabled={
+                          this.state.selectedLabelTypeId === undefined ||
+                          !this.state.canEdit
+                        }
+                        style={{
+                          backgroundColor:
+                            label._id === this.state.selectedLabelTypeId
+                              ? label.color
+                              : null,
+                          borderColor:
+                            label._id === this.state.selectedLabelTypeId
+                              ? null
+                              : label.color,
+                          color:
+                            label._id === this.state.selectedLabelTypeId
+                              ? null
+                              : label.color,
+                        }}
+                        onClick={(e) =>
+                          this.handleLabelTypeClicked(e, label._id)
+                        }
+                        key={index}
+                      >
+                        {label.name} {'(' + (array.length - index) + ')'}
+                      </Button>
+                    );
+                  })
+              : null}
+          </div>
+          <div className="informationBox">
             <InputGroup className="inputGroup m-1">
               <InputGroupAddon addonType="prepend" className="inputGroupAddon">
                 <InputGroupText className="inputLabel">From</InputGroupText>
@@ -150,52 +156,6 @@ class LabelingPanel extends Component {
             >
               Delete
             </Button>
-          </div>
-
-          <div className="labelingBox">
-            <Button
-              className="labelingButton m-1"
-              color="secondary"
-              onClick={this.onAddLabel}
-            >
-              + Edit
-            </Button>
-            {this.state.labeling
-              ? this.state.labeling.labels
-                  .slice(0)
-                  .reverse()
-                  .map((label, index, array) => {
-                    return (
-                      <Button
-                        className="btn-light m-1 labelingButton"
-                        disabled={
-                          this.state.selectedLabelTypeId === undefined ||
-                          !this.state.canEdit
-                        }
-                        style={{
-                          backgroundColor:
-                            label._id === this.state.selectedLabelTypeId
-                              ? label.color
-                              : null,
-                          borderColor:
-                            label._id === this.state.selectedLabelTypeId
-                              ? null
-                              : label.color,
-                          color:
-                            label._id === this.state.selectedLabelTypeId
-                              ? null
-                              : label.color,
-                        }}
-                        onClick={(e) =>
-                          this.handleLabelTypeClicked(e, label._id)
-                        }
-                        key={index}
-                      >
-                        {label.name} {'(' + (array.length - index) + ')'}
-                      </Button>
-                    );
-                  })
-              : null}
           </div>
         </CardBody>
       </Card>
