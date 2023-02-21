@@ -7,6 +7,7 @@ import CustomMetadataPanel from '../components/MetadataPanel/CustomMetadataPanel
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
 import Snackbar from '../components/Snackbar/Snackbar';
+import TSSelectionPanel from '../components/TSSelectionPanel';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
@@ -51,6 +52,7 @@ class DatasetPage extends Component {
       },
       hideLabels: false,
       modalOpen: false,
+      activeSeries: [],
     };
 
     this.memoizedGetDatasetTimeseries = pmemoize(getDatasetTimeseries, {
@@ -82,11 +84,26 @@ class DatasetPage extends Component {
     this.showSnackbar = this.showSnackbar.bind(this);
     this.onUpdateMetaData = this.onUpdateMetaData.bind(this);
     this.hideLabels = this.hideLabels.bind(this);
+    this.onClickSelectSeries = this.onClickSelectSeries.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false,
     };
+    this.maxSeries = 3;
+  }
+
+  onClickSelectSeries(_id) {
+    console.log('click');
+    var series = this.state.activeSeries;
+    if (series.includes(_id)) {
+      series = series.filter((elm) => elm !== _id);
+    } else {
+      series.push(_id);
+    }
+    this.setState({
+      activeSeries: series,
+    });
   }
 
   hideLabels() {
@@ -814,6 +831,7 @@ class DatasetPage extends Component {
                     onHideLabels={this.hideLabels}
                   />
                   <TimeSeriesCollectionPanel
+                    activeSeries={this.state.activeSeries}
                     timeSeries={this.state.dataset.timeSeries}
                     previewTimeSeriesData={this.state.previewTimeSeriesData}
                     getDatasetWindow={this.getDatasetWindow}
@@ -881,6 +899,13 @@ class DatasetPage extends Component {
                 </div>
               </Col>
               <Col xs={12} lg={3}>
+                <div className="mt-2">
+                  <TSSelectionPanel
+                    onClickSelectSeries={this.onClickSelectSeries}
+                    timeSeries={this.state.dataset.timeSeries}
+                    activeSeries={this.state.activeSeries}
+                  ></TSSelectionPanel>
+                </div>
                 <div className="mt-2">
                   <MetadataPanel
                     start={this.state.dataset.start}

@@ -1,0 +1,30 @@
+.tslist {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tslist > * {
+  margin: 2px;
+}
+
+.badge {
+  cursor: pointer;
+  font-size: small;
+}
+
+.badgeActive {
+  background-color: #007bff;
+  font-weight: bold;
+}
+
+.badgeInactive {
+  background-color: #e2e8f0;
+  color: black;
+  font-weight: normal;
+}
+
+.scrollView {
+  overflow-y: auto;
+  height: 30vh;
+}
