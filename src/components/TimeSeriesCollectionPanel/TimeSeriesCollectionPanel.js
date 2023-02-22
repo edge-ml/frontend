@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import './TimeSeriesCollectionPanel.css';
 import TimeSeriesPanel from '../TimeSeriesPanel/TimeSeriesPanel';
 import Highcharts from 'highcharts/highstock';
+import RangeSlider from '../RangeSlider/RangeSlider';
 
 class TimeSeriesCollectionPanel extends Component {
   constructor(props) {
@@ -87,18 +88,32 @@ class TimeSeriesCollectionPanel extends Component {
     return this.lastWindow[index];
   };
 
+  getIndexData = () => {
+    const idx = this.props.activeSeries.map((id) =>
+      this.state.timeSeries.findIndex((elm) => elm._id === id)
+    );
+    const res = idx
+      .map((id) => this.state.previewTimeSeriesData[id])
+      .flat()
+      .sort((elmA, elmB) => elmA[0] - elmB[0])
+      .filter((e, i, a) => e[0] !== (a[i - 1] ? a[i - 1][0] : undefined));
+    console.log(res[0]);
+    return res;
+  };
+
   render() {
     return (
       <div className="TimeSeriesCollectionPanel">
         <TimeSeriesPanel
           index={0}
           offset={0}
-          data={
-            this.state.previewTimeSeriesData.length > 0
-              ? this.sortedPreviewTimeSeries
-              : [10, 10]
-          }
+          // data={
+          //   this.state.previewTimeSeriesData.length > 0
+          //     ? this.sortedPreviewTimeSeries
+          //     : [10, 10]
+          // }
           // data={[[this.state.start, 1], [this.state.end, 1]]}
+          data={this.getIndexData()}
           labeling={this.state.labeling}
           labelTypes={this.state.labelTypes}
           onLabelClicked={this.state.onLabelClicked}
@@ -110,7 +125,11 @@ class TimeSeriesCollectionPanel extends Component {
           numSeries={this.state.activeSeries.length + 1}
           onClickPosition={this.props.onClickPosition}
           onLabelPositionUpdate={this.props.onLabelPositionUpdate}
+          onTimeSeriesWindow={(start, end, res) =>
+            this.onTimeSeriesWindow(0, start, end, res)
+          }
         />
+        {/* <RangeSlider></RangeSlider> */}
 
         {this.state.timeSeries.length === 0 ? (
           <TimeSeriesPanel
@@ -136,7 +155,9 @@ class TimeSeriesCollectionPanel extends Component {
             updateControlStates={this.props.updateControlStates}
             onClickPosition={this.props.onClickPosition}
             onLabelPositionUpdate={this.props.onLabelPositionUpdate}
-            onTimeSeriesWindow={this.onTimeSeriesWindow}
+            onTimeSeriesWindow={(start, end, res) =>
+              this.onTimeSeriesWindow(0, start, end, res)
+            }
           />
         ) : null}
         {this.state.activeSeries.map((elm) => {
@@ -175,7 +196,9 @@ class TimeSeriesCollectionPanel extends Component {
               updateControlStates={this.props.updateControlStates}
               onClickPosition={this.props.onClickPosition}
               onLabelPositionUpdate={this.props.onLabelPositionUpdate}
-              onTimeSeriesWindow={this.onTimeSeriesWindow}
+              onTimeSeriesWindow={(start, end, res) =>
+                this.onTimeSeriesWindow(key, start, end, res)
+              }
             />
           );
         })}

@@ -8,6 +8,8 @@ import LabelingSelectionPanel from '../components/LabelingSelectionPanel/Labelin
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
 import Snackbar from '../components/Snackbar/Snackbar';
 import TSSelectionPanel from '../components/TSSelectionPanel';
+import Highcharts from 'highcharts/highstock';
+import HighchartsReact from 'highcharts-react-official';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
@@ -94,15 +96,28 @@ class DatasetPage extends Component {
   }
 
   onClickSelectSeries(_id) {
-    console.log('click');
     var series = this.state.activeSeries;
     if (series.includes(_id)) {
       series = series.filter((elm) => elm !== _id);
     } else {
       series.push(_id);
     }
+
+    const ts = this.state.dataset.timeSeries.filter((ts) =>
+      series.includes(ts._id)
+    );
+    const newStart = Math.min(...ts.map((elm) => elm.start));
+    const newEnd = Math.max(...ts.map((elm) => elm.end));
+
     this.setState({
       activeSeries: series,
+      shownStart: newStart,
+      shownEnd: newEnd,
+    });
+    Highcharts.charts.forEach((chart) => {
+      if (chart) {
+        chart.xAxis[0].setExtremes(newStart, newEnd, true, false);
+      }
     });
   }
 
@@ -175,11 +190,9 @@ class DatasetPage extends Component {
     this.memoizedGetDatasetTimeseries(this.props.match.params.id, {
       max_resolution: window.innerWidth / 2,
     }).then((timeseriesData) => {
-      console.log(timeseriesData);
       if (this.state.previewTimeSeriesData) {
         return;
       }
-      console.log('Setting preview', timeseriesData);
       this.setState({
         previewTimeSeriesData: timeseriesData,
       });
@@ -195,7 +208,6 @@ class DatasetPage extends Component {
         end,
       }
     );
-    console.log(res);
     return res;
   }
 
@@ -620,7 +632,6 @@ class DatasetPage extends Component {
           newDataset.labelings[labelingIdx].labels[labelIdx - 1];
         newLabel.type = prevLabel.type;
       }
-      console.log(newLabel);
       newDataset.labelings[labelingIdx].labels[labelIdx] = newLabel;
       this.setState({
         dataset: newDataset,
@@ -670,7 +681,6 @@ class DatasetPage extends Component {
   }
 
   onLabelPositionUpdate(labelId, start, end) {
-    console.log('position update: ', labelId, start, end);
     const newDataset = this.state.dataset;
     const labelingIdx = newDataset.labelings.findIndex(
       (labeling) =>
@@ -688,7 +698,6 @@ class DatasetPage extends Component {
       newLabel.end = newLabel.start;
       newLabel.start = tmp;
     }
-    console.log('Label update: ', newLabel);
     changeDatasetLabel(
       newDataset._id,
       newDataset.labelings[labelingIdx].labelingId,
@@ -848,8 +857,8 @@ class DatasetPage extends Component {
                     labelTypes={this.state.controlStates.selectedLabelTypes}
                     onLabelClicked={this.onSelectedLabelChanged}
                     selectedLabelId={this.state.controlStates.selectedLabelId}
-                    start={this.state.dataset.start}
-                    end={this.state.dataset.end}
+                    start={this.state.shownStart || this.state.dataset.start}
+                    end={this.state.shownEnd || this.state.dataset.end}
                     canEdit={this.state.controlStates.canEdit}
                     onScrubbed={this.onScrubbed}
                     onDelete={this.onDeleteTimeSeries}
