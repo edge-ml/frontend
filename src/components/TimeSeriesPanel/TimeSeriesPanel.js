@@ -293,7 +293,11 @@ class TimeSeriesPanel extends Component {
           endOnTick: this.props.isEmpty,
           events: {
             afterSetExtremes: (e) => {
-              if (this.chart.current.chart && Highcharts.charts) {
+              if (
+                this.chart.current.chart &&
+                Highcharts.charts &&
+                this.props.index === 0
+              ) {
                 Highcharts.charts
                   .filter((chart) => {
                     return chart;

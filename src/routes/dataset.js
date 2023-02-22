@@ -187,11 +187,16 @@ class DatasetPage extends Component {
   }
 
   async getDatasetWindow(start, end, max_resolution) {
-    return await this.memoizedGetDatasetTimeseries(this.props.match.params.id, {
-      max_resolution,
-      start,
-      end,
-    });
+    const res = await this.memoizedGetDatasetTimeseries(
+      this.props.match.params.id,
+      {
+        max_resolution,
+        start,
+        end,
+      }
+    );
+    console.log(res);
+    return res;
   }
 
   componentWillUnmount() {
