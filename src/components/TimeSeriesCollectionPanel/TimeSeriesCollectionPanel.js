@@ -104,31 +104,35 @@ class TimeSeriesCollectionPanel extends Component {
   render() {
     return (
       <div className="TimeSeriesCollectionPanel">
-        <TimeSeriesPanel
-          index={0}
-          offset={0}
-          // data={
-          //   this.state.previewTimeSeriesData.length > 0
-          //     ? this.sortedPreviewTimeSeries
-          //     : [10, 10]
-          // }
-          // data={[[this.state.start, 1], [this.state.end, 1]]}
-          data={this.getIndexData()}
-          labeling={this.state.labeling}
-          labelTypes={this.state.labelTypes}
-          onLabelClicked={this.state.onLabelClicked}
-          selectedLabelId={this.state.selectedLabelId}
-          start={this.state.start}
-          end={this.state.end}
-          canEdit={this.props.canEdit}
-          onScrubbed={this.state.onScrubbed}
-          numSeries={this.state.activeSeries.length + 1}
-          onClickPosition={this.props.onClickPosition}
-          onLabelPositionUpdate={this.props.onLabelPositionUpdate}
-          onTimeSeriesWindow={(start, end, res) =>
-            this.onTimeSeriesWindow(0, start, end, res)
-          }
-        />
+        {this.state.activeSeries.length ? (
+          <TimeSeriesPanel
+            index={0}
+            offset={0}
+            // data={
+            //   this.state.previewTimeSeriesData.length > 0
+            //     ? this.sortedPreviewTimeSeries
+            //     : [10, 10]
+            // }
+            // data={[[this.state.start, 1], [this.state.end, 1]]}
+            data={this.getIndexData()}
+            labeling={this.state.labeling}
+            labelTypes={this.state.labelTypes}
+            onLabelClicked={this.state.onLabelClicked}
+            selectedLabelId={this.state.selectedLabelId}
+            start={this.state.start}
+            end={this.state.end}
+            canEdit={this.props.canEdit}
+            onScrubbed={this.state.onScrubbed}
+            numSeries={this.state.activeSeries.length + 1}
+            onClickPosition={this.props.onClickPosition}
+            onLabelPositionUpdate={this.props.onLabelPositionUpdate}
+            onTimeSeriesWindow={(start, end, res) =>
+              this.onTimeSeriesWindow(0, start, end, res)
+            }
+          />
+        ) : (
+          <div>Select some time-series on the right</div>
+        )}
         {/* <RangeSlider></RangeSlider> */}
 
         {this.state.timeSeries.length === 0 ? (

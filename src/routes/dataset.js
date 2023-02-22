@@ -172,6 +172,11 @@ class DatasetPage extends Component {
     );
     dataset.end = dataset_end;
     dataset.start = dataset_start;
+    if (dataset.timeSeries.length < 6) {
+      this.setState({
+        activeSeries: dataset.timeSeries.map((elm) => elm._id),
+      });
+    }
     return dataset;
   }
 
