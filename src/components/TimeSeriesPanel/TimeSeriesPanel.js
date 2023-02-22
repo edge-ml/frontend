@@ -64,6 +64,7 @@ class TimeSeriesPanel extends Component {
     // zoom actions
     this.zoom = this.zoom.bind(this);
     this.mouseDown = false;
+    this.changeNavigator = false;
   }
 
   componentWillReceiveProps(props) {
@@ -191,6 +192,28 @@ class TimeSeriesPanel extends Component {
     }
   }, 200);
 
+  afterSetExtremesFunc(min, max, width) {
+    Highcharts.charts.forEach((chart) => {
+      if (chart && this.props.index === 0) {
+        chart.showLoading('Loading data from server...');
+        this.props
+          .onTimeSeriesWindow(
+            Math.round(min),
+            Math.round(max),
+            Math.round(width)
+          )
+          .then((ts) => {
+            if (this.props.index !== 0) {
+              chart.series[0].setData(ts, false, false);
+            }
+            chart.xAxis[0].setExtremes(min, max, false, false);
+            chart.hideLoading();
+            chart.redraw(false);
+          });
+      }
+    });
+  }
+
   generateState(props) {
     return {
       chartOptions: {
@@ -287,27 +310,10 @@ class TimeSeriesPanel extends Component {
           endOnTick: !this.props.isEmpty,
           events: {
             afterSetExtremes: (e) => {
-              console.log(e);
-              console.log(this.mouseDown);
-              Highcharts.charts.forEach((chart) => {
-                if (chart && this.props.index === 0) {
-                  chart.showLoading('Loading data from server...');
-                  this.props
-                    .onTimeSeriesWindow(
-                      Math.round(e.min),
-                      Math.round(e.max),
-                      Math.round(e.target.width)
-                    )
-                    .then((ts) => {
-                      if (this.props.index !== 0) {
-                        chart.series[0].setData(ts, false, false);
-                      }
-                      chart.xAxis[0].setExtremes(e.min, e.max, false, false);
-                      chart.hideLoading();
-                      chart.redraw(false);
-                    });
-                }
-              });
+              this.min = e.min;
+              this.max = e.max;
+              this.width = e.target.width;
+              this.changeNavigator = true;
             },
           },
           // events: {
@@ -570,6 +576,10 @@ class TimeSeriesPanel extends Component {
   }
 
   onMouseUp(e, id) {
+    if (this.changeNavigator) {
+      this.afterSetExtremesFunc(this.min, this.max, this.width);
+      this.changeNavigator = false;
+    }
     this.mouseDown = false;
     const activePlotLine = this.getActivePlotLine();
     if (!activePlotLine) return;
