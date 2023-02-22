@@ -1,7 +1,10 @@
 .LabelingPanel {
   z-index: 10;
-  position: relative;
-  width: 100%;
+  width: calc(100vw - (160px + 2 * 14.4px));
+  border-radius: 0.25rem;
+  position: fixed;
+  bottom: 15px;
+  background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
 }
 
 .informationBox {
@@ -39,8 +42,12 @@
 
   .LabelingPanel {
     bottom: 15px;
-    position: sticky;
   }
+}
+
+.labelingButton {
+  background-color: white;
+  opacity: 1;
 }
 
 .informationBox {

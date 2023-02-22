@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row, Fade, Button } from 'reactstrap';
+import { Col, Row, Fade, Button, Container } from 'reactstrap';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
 import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
@@ -30,6 +30,14 @@ import {
 import Loader from '../modules/loader';
 
 import pmemoize from 'promise-memoize';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faArrowRight,
+  faCaretRight,
+  faChevronLeft,
+  faChevronRight,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 
 const TIMESERIES_CACHE_MAX_AGE = 5000; // ms
 
@@ -55,6 +63,7 @@ class DatasetPage extends Component {
       hideLabels: false,
       modalOpen: false,
       activeSeries: [],
+      metaDataExtended: false,
     };
 
     this.memoizedGetDatasetTimeseries = pmemoize(getDatasetTimeseries, {
@@ -87,6 +96,7 @@ class DatasetPage extends Component {
     this.onUpdateMetaData = this.onUpdateMetaData.bind(this);
     this.hideLabels = this.hideLabels.bind(this);
     this.onClickSelectSeries = this.onClickSelectSeries.bind(this);
+    this.toggleMetaData = this.toggleMetaData.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
@@ -118,6 +128,13 @@ class DatasetPage extends Component {
       if (chart) {
         chart.xAxis[0].setExtremes(newStart, newEnd, true, false);
       }
+    });
+  }
+
+  toggleMetaData(state) {
+    console.log('click');
+    this.setState({
+      metaDataExtended: state,
     });
   }
 
@@ -184,11 +201,6 @@ class DatasetPage extends Component {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
     this.loadData().then((data) => this.onDatasetChanged(data));
-    getDatasetLock(this.props.match.params.id).then((canEdit) =>
-      this.setState({
-        controlStates: { ...this.state.controlStates, canEdit },
-      })
-    );
 
     // get a downsampled preview for the timeseries, used for the initial graph + scrollbar
     // half the window width seems like a good compromise for resolution
@@ -819,131 +831,154 @@ class DatasetPage extends Component {
     const startOffset = 0;
     const endOffset = 0;
     return (
-      <div className="w-100 position-relative">
-        <Fade in={this.state.fadeIn}>
-          <div>
-            <Row className="pt-3 m-0">
-              <Col
-                ref={this.middle_col_width}
-                onMouseUp={this.mouseUpHandler}
-                xs={12}
-                lg={9}
-                className="pr-lg-0"
-              >
-                <div className="position-relative">
-                  <LabelingSelectionPanel
-                    dataset={this.state.dataset}
-                    objectType={'labelings'}
-                    history={this.props.history}
-                    labelings={this.state.labelings}
-                    onAddLabeling={this.onAddLabeling}
-                    selectedLabelingId={
-                      this.state.controlStates.selectedLabelingId
-                    }
-                    onSelectedLabelingIdChanged={
-                      this.onSelectedLabelingIdChanged
-                    }
-                    onCanEditChanged={this.onCanEditChanged}
-                    canEdit={this.state.controlStates.canEdit}
-                    isCrosshairIntervalActive={isCrosshairIntervalActive}
-                    hideLabels={this.state.hideLabels}
-                    onHideLabels={this.hideLabels}
-                  />
-                  <TimeSeriesCollectionPanel
-                    activeSeries={this.state.activeSeries}
-                    timeSeries={this.state.dataset.timeSeries}
-                    previewTimeSeriesData={this.state.previewTimeSeriesData}
-                    getDatasetWindow={this.getDatasetWindow}
-                    labeling={
-                      this.state.hideLabels
-                        ? { labels: undefined }
-                        : selectedDatasetlabeling
-                    }
-                    labelTypes={this.state.controlStates.selectedLabelTypes}
-                    onLabelClicked={this.onSelectedLabelChanged}
-                    selectedLabelId={this.state.controlStates.selectedLabelId}
-                    start={this.state.shownStart || this.state.dataset.start}
-                    end={this.state.shownEnd || this.state.dataset.end}
-                    canEdit={this.state.controlStates.canEdit}
-                    onScrubbed={this.onScrubbed}
-                    onDelete={this.onDeleteTimeSeries}
-                    drawingId={this.state.controlStates.drawingId}
-                    drawingPosition={this.state.controlStates.drawingPosition}
-                    newPosition={this.state.controlStates.newPosition}
-                    updateControlStates={this.updateControlStates}
-                    onClickPosition={this.onClickPosition}
-                    onLabelPositionUpdate={this.onLabelPositionUpdate}
-                  />
-                  <Fade
-                    className="LabelingPanel"
-                    in={!this.state.hideLabels}
-                    unmountOnExit={true}
-                  >
-                    <LabelingPanel
-                      className="StickyLabelingSelectionPanel"
+      <div className="dataset-full-page">
+        <div className="w-100 position-relative">
+          <Fade in={this.state.fadeIn}>
+            <div>
+              <Row className="pt-3 m-0 pr-3">
+                <Col
+                  ref={this.middle_col_width}
+                  onMouseUp={this.mouseUpHandler}
+                  xs={12}
+                  lg={12}
+                  className="pr-lg-0"
+                >
+                  <div className="position-relative">
+                    <LabelingSelectionPanel
+                      dataset={this.state.dataset}
+                      objectType={'labelings'}
                       history={this.props.history}
-                      id={this.state.controlStates.selectedLabelId}
-                      from={
-                        selectedDatasetLabel ? selectedDatasetLabel.start : null
+                      labelings={this.state.labelings}
+                      onAddLabeling={this.onAddLabeling}
+                      selectedLabelingId={
+                        this.state.controlStates.selectedLabelingId
                       }
-                      to={
-                        selectedDatasetLabel ? selectedDatasetLabel.end : null
+                      onSelectedLabelingIdChanged={
+                        this.onSelectedLabelingIdChanged
                       }
-                      labeling={selectedLabeling}
-                      labels={this.state.controlStates.selectedLabelTypes}
-                      selectedLabelTypeId={
-                        this.state.controlStates.selectedLabelTypeId
-                      }
-                      onSelectedLabelTypeIdChanged={
-                        this.onSelectedLabelTypeIdChanged
-                      }
-                      onDeleteSelectedLabel={this.onDeleteSelectedLabel}
+                      onCanEditChanged={this.onCanEditChanged}
                       canEdit={this.state.controlStates.canEdit}
+                      isCrosshairIntervalActive={isCrosshairIntervalActive}
+                      hideLabels={this.state.hideLabels}
+                      onHideLabels={this.hideLabels}
                     />
-                  </Fade>
-                </div>
-                <div className="dataset-labelingpanel">
-                  {this.state.error ? (
-                    <Fade>
-                      <div className="dataset-snackbar-center">
-                        <Snackbar
-                          text={this.state.error}
-                          closeSnackbar={() => {
-                            this.setState({ error: undefined });
-                          }}
-                        ></Snackbar>
-                      </div>
+                    <TimeSeriesCollectionPanel
+                      activeSeries={this.state.activeSeries}
+                      timeSeries={this.state.dataset.timeSeries}
+                      previewTimeSeriesData={this.state.previewTimeSeriesData}
+                      getDatasetWindow={this.getDatasetWindow}
+                      labeling={
+                        this.state.hideLabels
+                          ? { labels: undefined }
+                          : selectedDatasetlabeling
+                      }
+                      labelTypes={this.state.controlStates.selectedLabelTypes}
+                      onLabelClicked={this.onSelectedLabelChanged}
+                      selectedLabelId={this.state.controlStates.selectedLabelId}
+                      start={this.state.shownStart || this.state.dataset.start}
+                      end={this.state.shownEnd || this.state.dataset.end}
+                      canEdit={this.state.controlStates.canEdit}
+                      onScrubbed={this.onScrubbed}
+                      onDelete={this.onDeleteTimeSeries}
+                      drawingId={this.state.controlStates.drawingId}
+                      drawingPosition={this.state.controlStates.drawingPosition}
+                      newPosition={this.state.controlStates.newPosition}
+                      updateControlStates={this.updateControlStates}
+                      onClickPosition={this.onClickPosition}
+                      onLabelPositionUpdate={this.onLabelPositionUpdate}
+                    />
+                    <Fade
+                      className="LabelingPanel"
+                      in={!this.state.hideLabels}
+                      unmountOnExit={true}
+                    >
+                      <LabelingPanel
+                        className="StickyLabelingSelectionPanel"
+                        history={this.props.history}
+                        id={this.state.controlStates.selectedLabelId}
+                        from={
+                          selectedDatasetLabel
+                            ? selectedDatasetLabel.start
+                            : null
+                        }
+                        to={
+                          selectedDatasetLabel ? selectedDatasetLabel.end : null
+                        }
+                        labeling={selectedLabeling}
+                        labels={this.state.controlStates.selectedLabelTypes}
+                        selectedLabelTypeId={
+                          this.state.controlStates.selectedLabelTypeId
+                        }
+                        onSelectedLabelTypeIdChanged={
+                          this.onSelectedLabelTypeIdChanged
+                        }
+                        onDeleteSelectedLabel={this.onDeleteSelectedLabel}
+                        canEdit={this.state.controlStates.canEdit}
+                      />
                     </Fade>
-                  ) : null}
-                </div>
-              </Col>
-              <Col xs={12} lg={3}>
-                <div className="mt-2">
-                  <TSSelectionPanel
-                    onClickSelectSeries={this.onClickSelectSeries}
-                    timeSeries={this.state.dataset.timeSeries}
-                    activeSeries={this.state.activeSeries}
-                  ></TSSelectionPanel>
-                </div>
-                <div className="mt-2">
-                  <MetadataPanel
-                    start={this.state.dataset.start}
-                    end={this.state.dataset.end}
-                    user={this.state.dataset.userId}
-                    name={this.state.dataset.name}
-                  />
-                </div>
-                <div className="mt-2">
-                  <CustomMetadataPanel
-                    metaData={this.state.dataset.metaData}
-                    onUpdateMetaData={this.onUpdateMetaData}
-                  ></CustomMetadataPanel>
-                </div>
-                <div className="mt-2" />
-              </Col>
-            </Row>
-          </div>
-        </Fade>
+                  </div>
+                  <div className="dataset-labelingpanel">
+                    {this.state.error ? (
+                      <Fade>
+                        <div className="dataset-snackbar-center">
+                          <Snackbar
+                            text={this.state.error}
+                            closeSnackbar={() => {
+                              this.setState({ error: undefined });
+                            }}
+                          ></Snackbar>
+                        </div>
+                      </Fade>
+                    ) : null}
+                  </div>
+                </Col>
+              </Row>
+            </div>
+          </Fade>
+        </div>
+        <div
+          className="full-page-extend-metaData cursor-pointer"
+          onClick={() => this.toggleMetaData(true)}
+        >
+          <FontAwesomeIcon size="2x" icon={faChevronLeft}></FontAwesomeIcon>
+        </div>
+        {this.state.metaDataExtended ? (
+          <Container>
+            <div className="dataset-side-panel">
+              <div
+                className="dataset-side-panel-close cursor-pointer"
+                onClick={() => this.toggleMetaData(false)}
+              >
+                <FontAwesomeIcon
+                  size="lg"
+                  icon={faTimes}
+                  inverse
+                ></FontAwesomeIcon>
+              </div>
+              <div className="mt-2">
+                <TSSelectionPanel
+                  onClickSelectSeries={this.onClickSelectSeries}
+                  timeSeries={this.state.dataset.timeSeries}
+                  activeSeries={this.state.activeSeries}
+                ></TSSelectionPanel>
+              </div>
+              <div className="mt-2">
+                <MetadataPanel
+                  start={this.state.dataset.start}
+                  end={this.state.dataset.end}
+                  user={this.state.dataset.userId}
+                  name={this.state.dataset.name}
+                />
+              </div>
+              <div className="mt-2">
+                <CustomMetadataPanel
+                  metaData={this.state.dataset.metaData}
+                  onUpdateMetaData={this.onUpdateMetaData}
+                ></CustomMetadataPanel>
+              </div>
+            </div>
+          </Container>
+        ) : null}
       </div>
     );
   }

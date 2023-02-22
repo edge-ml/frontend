@@ -56,22 +56,6 @@ class LabelingSelectionPanel extends Component {
       <Card id="labelingSelectionPanel" className="LabelingSelectionPanel">
         <CardBody className="text-left p-1 d-flex flex-wrap labeling-selection-panel_card-body">
           <div className="labelingSetBox d-flex">
-            <Button
-              disabled={this.props.isCrosshairIntervalActive}
-              className="m-1 btn-light"
-              onClick={this.toggleEdit}
-            >
-              <FontAwesomeIcon
-                style={{ color: !this.props.canEdit ? '#b71c1c' : '#43A047' }}
-                icon={!this.props.canEdit ? faLock : faUnlock}
-                className="mr-2"
-              />
-              <span
-                style={{ color: !this.props.canEdit ? '#b71c1c' : '#43A047' }}
-              >
-                {!this.props.canEdit ? 'Locked' : 'Unlocked'}
-              </span>
-            </Button>
             <Select
               className="m-1"
               placeholder="Labeling"

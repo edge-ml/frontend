@@ -26,5 +26,5 @@
 
 .scrollView {
   overflow-y: auto;
-  height: 30vh;
+  max-height: 300px;
 }

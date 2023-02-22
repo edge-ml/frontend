@@ -131,7 +131,9 @@ class TimeSeriesCollectionPanel extends Component {
             }
           />
         ) : (
-          <div>Select some time-series on the right</div>
+          <div className="user-info-select-timeSeries">
+            Select some time-series on the panel on the right
+          </div>
         )}
         {/* <RangeSlider></RangeSlider> */}
 

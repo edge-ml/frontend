@@ -85,7 +85,7 @@ class LabelingPanel extends Component {
                   .map((label, index, array) => {
                     return (
                       <Button
-                        className="btn-light m-1 labelingButton"
+                        className="m-1 labelingButton"
                         disabled={
                           this.state.selectedLabelTypeId === undefined ||
                           !this.state.canEdit
@@ -94,7 +94,7 @@ class LabelingPanel extends Component {
                           backgroundColor:
                             label._id === this.state.selectedLabelTypeId
                               ? label.color
-                              : null,
+                              : 'white',
                           borderColor:
                             label._id === this.state.selectedLabelTypeId
                               ? null

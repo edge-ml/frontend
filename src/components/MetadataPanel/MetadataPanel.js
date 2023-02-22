@@ -19,10 +19,10 @@ class MetadataPanel extends Component {
 
   render() {
     return (
-      <Card>
-        <CardHeader>
-          <b>Metadata</b>
-        </CardHeader>
+      <div className="sidepanel-card">
+        <div className="sidepanel-heading">
+          <h5>Metadata</h5>
+        </div>
         <CardBody>
           <div>
             <InputGroup>
@@ -75,7 +75,7 @@ class MetadataPanel extends Component {
             </InputGroup>
           </div>
         </CardBody>
-      </Card>
+      </div>
     );
   }
 }

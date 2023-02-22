@@ -3,6 +3,7 @@
   position: sticky;
   top: 15px;
   z-index: 10;
+  background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
 }
 
 /* mobile (md-breakpoint), account for 50px header with sticky */
