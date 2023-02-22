@@ -195,7 +195,7 @@ class TimeSeriesPanel extends Component {
     return {
       chartOptions: {
         navigator: {
-          maskFill: '#77777777',
+          maskFill: '#0080ff22',
           enabled: this.props.index === 0,
           series: {
             color: '#ffffff',
@@ -207,6 +207,7 @@ class TimeSeriesPanel extends Component {
           yAxis: {
             isInternal: true,
           },
+          stickyTracking: false,
         },
         rangeSelector: {
           enabled: false,
@@ -238,7 +239,7 @@ class TimeSeriesPanel extends Component {
                       ? props.name
                       : props.name + ' (' + props.unit + ')',
                   data: props.data,
-                  lineWidth: 1,
+                  lineWidth: 1.5,
                 },
               ]
             : props.data.map((dataItem, indexOuter) => {
@@ -249,7 +250,7 @@ class TimeSeriesPanel extends Component {
                     props.unit[indexOuter] +
                     ')',
                   data: props.data,
-                  lineWidth: 1,
+                  lineWidth: 1.5,
                 };
               }),
         xAxis: {
