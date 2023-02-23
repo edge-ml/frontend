@@ -431,3 +431,17 @@ div.card {
   border-radius: 6px;
   border-width: 2px;
 }
+
+.edgeml-border {
+  border: 2 px solid rgb(230, 230, 234) !important;
+  border-width: 2px !important;
+  border-radius: 10px !important;
+}
+
+.edgeml-gray-one {
+  background-color: #ddd;
+}
+
+.edgeml-fade-one {
+  background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
+}

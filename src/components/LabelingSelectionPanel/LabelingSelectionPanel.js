@@ -53,7 +53,10 @@ class LabelingSelectionPanel extends Component {
   render() {
     console.log(this.props);
     return (
-      <Card id="labelingSelectionPanel" className="LabelingSelectionPanel">
+      <Card
+        id="labelingSelectionPanel"
+        className="LabelingSelectionPanel edgeml-border edgeml-fade-one"
+      >
         <CardBody className="text-left p-1 d-flex flex-wrap labeling-selection-panel_card-body">
           <div className="labelingSetBox d-flex">
             <Select

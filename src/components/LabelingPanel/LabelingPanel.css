@@ -4,7 +4,6 @@
   border-radius: 0.25rem;
   position: fixed;
   bottom: 15px;
-  background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
 }
 
 .informationBox {
@@ -47,7 +46,11 @@
 
 .labelingButton {
   background-color: white;
-  opacity: 1;
+  border: none;
+}
+
+.labelingButton:disabled {
+  opacity: 0.8;
 }
 
 .informationBox {

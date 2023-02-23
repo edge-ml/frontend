@@ -68,7 +68,7 @@ class LabelingPanel extends Component {
 
   render() {
     return (
-      <Card className="LabelingPanel">
+      <Card className="LabelingPanel edgeml-border edgeml-fade-one">
         <CardBody className="p-1 d-flex flex-wrap">
           <div className="labelingBox d-flex flex-wrap">
             <Button
