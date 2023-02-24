@@ -203,7 +203,8 @@ class TimeSeriesPanel extends Component {
             Math.round(width)
           )
           .then((ts) => {
-            if (this.props.index !== 0) {
+            if (chart.index !== 0) {
+              console.log('Setting data');
               chart.series[0].setData(ts, false, false);
             }
             chart.xAxis[0].setExtremes(min, max, false, false);
