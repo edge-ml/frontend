@@ -89,8 +89,8 @@ const Labeling = (props) => {
               key={label._id}
               className={
                 label.name === ''
-                  ? 'font-italic font-weight-normal badgeSize mx-1'
-                  : 'badgeSize mx-1 my-1'
+                  ? 'font-italic font-weight-normal badgeSize mx-1 border border-dark'
+                  : 'badgeSize mx-1 my-1 border border-dark'
               }
               style={{ backgroundColor: label.color }}
             >

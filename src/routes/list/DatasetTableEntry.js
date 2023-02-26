@@ -63,7 +63,7 @@ const Labelings = (props) => {
               <div>
                 {labels[idx].map((label) => (
                   <Badge
-                    className="badgeSize mx-1"
+                    className="badgeSize mx-1 border border-dark"
                     style={{ backgroundColor: label.color }}
                   >
                     {label.name}
