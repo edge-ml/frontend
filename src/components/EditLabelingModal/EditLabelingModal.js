@@ -486,7 +486,7 @@ class EditLabelingModal extends Component {
                   <InputGroupAddon addonType="append">
                     <Button
                       id={'buttonDeleteLabel' + index}
-                      className="m-0"
+                      className="m-0 no-border-radius"
                       color="danger"
                       outline
                       onClick={(e) => {

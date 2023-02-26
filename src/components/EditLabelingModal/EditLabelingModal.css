@@ -8,3 +8,7 @@
 .tooltip > .tooltip-inner {
   font-size: 13px;
 }
+
+.no-border-radius {
+  border-radius: 0 !important;
+}
