@@ -378,7 +378,8 @@ class EditLabelingModal extends Component {
       this.state.labels &&
       this.state.labeling &&
       this.state.labels.every((elm) => elm.name !== '') &&
-      this.state.labeling.name !== ''
+      this.state.labeling.name !== '' &&
+      !(this.state.isNewLabeling && this.state.labels.length === 0)
     );
   }
 
