@@ -65,6 +65,8 @@ class LabelingsPage extends Component {
     this.confirmMsgMultLabelingDeletion =
       this.confirmMsgMultLabelingDeletion.bind(this);
     this.onClickDeleteButton = this.onClickDeleteButton.bind(this);
+    this.getConfirmStringLabelingSet =
+      this.getConfirmStringLabelingSet.bind(this);
   }
 
   componentDidMount() {
@@ -164,6 +166,20 @@ class LabelingsPage extends Component {
     });
   }
 
+  getConfirmStringLabelingSet(conflictingDatasetNames) {
+    return (
+      <div>
+        <div>{`You are about to delete a labeling set that is used in the following dataset(s): `}</div>
+        <br />
+        <div>
+          <strong>{conflictingDatasetNames.join(', ')}</strong>
+        </div>
+        <br />
+        <div>{`Do you want to proceed? If you choose \"Confirm\", this labeling set, inlcuding all its labels, will be deleted from the corresponding dataset(s).`}</div>
+      </div>
+    );
+  }
+
   onClickDeleteLabelingIcon(id) {
     if (this.state.datasets.length > 0) {
       let labelConflict = false;
@@ -177,11 +193,9 @@ class LabelingsPage extends Component {
         }
       });
 
-      const confirmString =
-        `You are about to delete a labeling set that is used in the following dataset(s): ` +
-        conflictingDatasetNames.join(', ') +
-        `. \nDo you want to proceed? If you choose \"Confirm\", this labeling set, ` +
-        `inlcuding all its labels, will be deleted from the corresponding dataset(s).`;
+      const confirmString = this.getConfirmStringLabelingSet(
+        conflictingDatasetNames
+      );
 
       if (labelConflict) {
         //label conflict and user chose to delete labels. Deletes them in the backend too.
@@ -470,6 +484,7 @@ class LabelingsPage extends Component {
             onDeleteLabeling={this.onDeleteLabeling}
             onSave={this.onSave}
             isNewLabeling={this.state.modal.isNewLabeling}
+            getConfirmStringLabelingSet={this.getConfirmStringLabelingSet}
           />
         ) : null}
         {this.state.confirmationDialogueModal.isOpen ? (

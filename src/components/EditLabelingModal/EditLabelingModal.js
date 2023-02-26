@@ -302,11 +302,9 @@ class EditLabelingModal extends Component {
         }
       });
 
-      const confirmString =
-        `You are about to delete a labeling set that is used in the following dataset(s): ` +
-        conflictingDatasetNames.join(', ') +
-        `. \nDo you want to proceed? If you choose \"Confirm\", this labeling set, ` +
-        `inlcuding all its labels, will be deleted from the corresponding dataset(s).`;
+      const confirmString = this.props.getConfirmStringLabelingSet(
+        conflictingDatasetNames
+      );
       if (labelConflict) {
         //label conflict and user chose to delete labels. Deletes them in the backend too.
         this.setState({
