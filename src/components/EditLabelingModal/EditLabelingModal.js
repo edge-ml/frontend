@@ -67,6 +67,7 @@ class EditLabelingModal extends Component {
     this.onCancelDeletionLabeling = this.onCancelDeletionLabeling.bind(this);
     this.onConfirmDeletionLabels = this.onConfirmDeletionLabels.bind(this);
     this.onCancelDeletionLabels = this.onCancelDeletionLabels.bind(this);
+    this.getConfirmStringLabels = this.getConfirmStringLabels.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -125,6 +126,39 @@ class EditLabelingModal extends Component {
     this.state.onCloseModal();
   }
 
+  getConfirmStringLabels(conflictingLabels) {
+    let count = 1;
+    const conflictDatasets = Object.keys(conflictingLabels).map((key) => {
+      const labelItems = conflictingLabels[key].labels.map((label) => {
+        return <div key={label._id}>{' ' + label.name}</div>;
+      });
+      return (
+        <div key={key}>
+          <strong>
+            {count++}. {conflictingLabels[key].datasetName}
+          </strong>
+          {labelItems}
+        </div>
+      );
+    });
+    return (
+      <div>
+        <div>
+          {
+            'You are about to delete the labels that are used in the following dataset(s):'
+          }
+        </div>
+        {conflictDatasets}
+        <br />
+        <div>
+          {
+            'Do you want to proceed? If you choose "Confirm", all these labels will be deleted from the dataset(s).'
+          }
+        </div>
+      </div>
+    );
+  }
+
   onClickingSave() {
     if (this.state.deletedLabels.length > 0 && this.state.datasets.length > 0) {
       let conflictingLabels = {};
@@ -137,25 +171,23 @@ class EditLabelingModal extends Component {
             //delLabel contains an unique identifier corresponding to the type in the dataset label
             const found = l.labels.find((e) => e.type === delLabel['_id']);
             if (found) {
-              const labelName = this.props.labels.find(
+              const label = this.props.labels.find(
                 (elm) => elm._id === found.type
               );
-              labels.push(labelName.name);
+              labels.push(label);
               labelConflict = true;
             }
           });
         });
         //if conflicting labels found, store their name, to ask user for confirmation
         if (labels.length > 0) {
-          conflictingLabels[dset.name] = labels;
+          conflictingLabels[dset._id] = {
+            datasetName: dset.name,
+            labels: labels,
+          };
         }
       });
-      const confirmString =
-        'You are about to delete the labels that are used in the following dataset(s): ' +
-        Object.keys(conflictingLabels)
-          .map((key) => key + ': ' + conflictingLabels[key])
-          .join(', ') +
-        '. \nDo you want to proceed? If you choose "Confirm", all these labels will be deleted from the dataset(s).';
+      const confirmString = this.getConfirmStringLabels(conflictingLabels);
 
       if (labelConflict) {
         this.setState({
