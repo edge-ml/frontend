@@ -23,7 +23,7 @@ class LabelingsPage extends Component {
       labelings: [],
       labels: [],
       isReady: false,
-      datasets: undefined,
+      datasets: [],
       labelingsToDelete: [],
       modal: {
         labeling: undefined,
@@ -181,45 +181,32 @@ class LabelingsPage extends Component {
   }
 
   onClickDeleteLabelingIcon(id) {
-    if (this.state.datasets.length > 0) {
-      let labelConflict = false;
-      let conflictingDatasetNames = [];
-      let conflictingDatasetIds = [];
-      this.state.datasets.forEach((dset) => {
-        if (dset.labelings.some((l) => l.labelingId === id)) {
-          labelConflict = true;
-          conflictingDatasetNames.push(dset.name);
-          conflictingDatasetIds.push(dset._id);
-        }
-      });
-
-      const confirmString = this.getConfirmStringLabelingSet(
-        conflictingDatasetNames
-      );
-
-      if (labelConflict) {
-        //label conflict and user chose to delete labels. Deletes them in the backend too.
-        this.setState({
-          confirmationDialogueModal: {
-            isOpen: true,
-            onConfirm: () => this.onClickConfirmlDeleteLabelings([id]),
-            onCancel: this.onClickCancelDeleteLabeling,
-            confirmString: confirmString,
-            title: 'Confirm Labeling Set Deletion',
-          },
-        });
-      } else {
-        //No labeling conflict, just ask for permissions to delete
-        this.setState({
-          confirmationDialogueModal: {
-            isOpen: true,
-            onConfirm: () => this.onClickConfirmlDeleteLabelings([id]),
-            onCancel: this.onClickCancelDeleteLabeling,
-            confirmString: 'Are you sure to delete this labeling?',
-            title: 'Confirm Labeling Set Deletion',
-          },
-        });
+    let labelConflict = false;
+    let conflictingDatasetNames = [];
+    let conflictingDatasetIds = [];
+    this.state.datasets.forEach((dset) => {
+      if (dset.labelings.some((l) => l.labelingId === id)) {
+        labelConflict = true;
+        conflictingDatasetNames.push(dset.name);
+        conflictingDatasetIds.push(dset._id);
       }
+    });
+
+    const confirmString = this.getConfirmStringLabelingSet(
+      conflictingDatasetNames
+    );
+
+    if (labelConflict) {
+      //label conflict and user chose to delete labels. Deletes them in the backend too.
+      this.setState({
+        confirmationDialogueModal: {
+          isOpen: true,
+          onConfirm: () => this.onClickConfirmlDeleteLabelings([id]),
+          onCancel: this.onClickCancelDeleteLabeling,
+          confirmString: confirmString,
+          title: 'Confirm Labeling Set Deletion',
+        },
+      });
     } else {
       //No labeling conflict, just ask for permissions to delete
       this.setState({
@@ -268,55 +255,41 @@ class LabelingsPage extends Component {
   }
 
   onClickDeleteButton() {
-    if (this.state.datasets.length > 0) {
-      let labelConflict = false;
-      let conflicts = {};
-      this.state.labelingsToDelete.forEach((id) => {
-        this.state.datasets.forEach((dset) => {
-          if (dset.labelings.some((l) => l.labelingId === id)) {
-            labelConflict = true;
-            if (!conflicts.hasOwnProperty(id)) {
-              conflicts[id] = {
-                name: this.state.labelings.find((l) => l._id === id).name,
-              };
-            }
-            if (!conflicts[id].hasOwnProperty('datasets')) {
-              conflicts[id]['datasets'] = [];
-            }
-            conflicts[id]['datasets'].push({
-              datasetName: dset.name,
-              datasetId: dset._id,
-            });
+    let labelConflict = false;
+    let conflicts = {};
+    this.state.labelingsToDelete.forEach((id) => {
+      this.state.datasets.forEach((dset) => {
+        if (dset.labelings.some((l) => l.labelingId === id)) {
+          labelConflict = true;
+          if (!conflicts.hasOwnProperty(id)) {
+            conflicts[id] = {
+              name: this.state.labelings.find((l) => l._id === id).name,
+            };
           }
-        });
+          if (!conflicts[id].hasOwnProperty('datasets')) {
+            conflicts[id]['datasets'] = [];
+          }
+          conflicts[id]['datasets'].push({
+            datasetName: dset.name,
+            datasetId: dset._id,
+          });
+        }
       });
-      const confirmString = this.confirmMsgMultLabelingDeletion(conflicts);
+    });
+    const confirmString = this.confirmMsgMultLabelingDeletion(conflicts);
 
-      if (labelConflict) {
-        //label conflict and user chose to delete labels. Deletes them in the backend too.
-        this.setState({
-          confirmationDialogueModal: {
-            isOpen: true,
-            onConfirm: () =>
-              this.onClickConfirmlDeleteLabelings(this.state.labelingsToDelete),
-            onCancel: this.onClickCancelDeleteLabeling,
-            confirmString: confirmString,
-            title: 'Confirm Labeling Set Deletion',
-          },
-        });
-      } else {
-        //No labeling conflict, just ask for permissions to delete
-        this.setState({
-          confirmationDialogueModal: {
-            isOpen: true,
-            onConfirm: () =>
-              this.onClickConfirmlDeleteLabelings(this.state.labelingsToDelete),
-            onCancel: this.onClickCancelDeleteLabeling,
-            confirmString: 'Are you sure to delete these labeling sets?',
-            title: 'Confirm Labeling Set Deletion',
-          },
-        });
-      }
+    if (labelConflict) {
+      //label conflict and user chose to delete labels. Deletes them in the backend too.
+      this.setState({
+        confirmationDialogueModal: {
+          isOpen: true,
+          onConfirm: () =>
+            this.onClickConfirmlDeleteLabelings(this.state.labelingsToDelete),
+          onCancel: this.onClickCancelDeleteLabeling,
+          confirmString: confirmString,
+          title: 'Confirm Labeling Set Deletion',
+        },
+      });
     } else {
       //No labeling conflict, just ask for permissions to delete
       this.setState({

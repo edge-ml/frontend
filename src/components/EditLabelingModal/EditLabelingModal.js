@@ -160,48 +160,39 @@ class EditLabelingModal extends Component {
   }
 
   onClickingSave() {
-    if (this.state.deletedLabels.length > 0 && this.state.datasets.length > 0) {
-      let conflictingLabels = {};
-      let labelConflict = false;
-      this.state.datasets.forEach((dset) => {
-        let labels = [];
-        this.state.deletedLabels.forEach((delLabel) => {
-          dset.labelings.forEach((l) => {
-            //check if dataset contains label from state.deletedLabels
-            //delLabel contains an unique identifier corresponding to the type in the dataset label
-            const found = l.labels.find((e) => e.type === delLabel['_id']);
-            if (found) {
-              const label = this.props.labels.find(
-                (elm) => elm._id === found.type
-              );
-              labels.push(label);
-              labelConflict = true;
-            }
-          });
+    let conflictingLabels = {};
+    let labelConflict = false;
+    this.state.datasets.forEach((dset) => {
+      let labels = [];
+      this.state.deletedLabels.forEach((delLabel) => {
+        dset.labelings.forEach((l) => {
+          //check if dataset contains label from state.deletedLabels
+          //delLabel contains an unique identifier corresponding to the type in the dataset label
+          const found = l.labels.find((e) => e.type === delLabel['_id']);
+          if (found) {
+            const label = this.props.labels.find(
+              (elm) => elm._id === found.type
+            );
+            labels.push(label);
+            labelConflict = true;
+          }
         });
-        //if conflicting labels found, store their name, to ask user for confirmation
-        if (labels.length > 0) {
-          conflictingLabels[dset._id] = {
-            datasetName: dset.name,
-            labels: labels,
-          };
-        }
       });
-      const confirmString = this.getConfirmStringLabels(conflictingLabels);
-
-      if (labelConflict) {
-        this.setState({
-          showConfirmationDialogueLabels: true,
-          confirmString: confirmString,
-        });
-      } else {
-        //no conflicts, just save
-        this.state.onSave(
-          this.state.labeling,
-          this.state.labels,
-          this.state.deletedLabels
-        );
+      //if conflicting labels found, store their name, to ask user for confirmation
+      if (labels.length > 0) {
+        conflictingLabels[dset._id] = {
+          datasetName: dset.name,
+          labels: labels,
+        };
       }
+    });
+    const confirmString = this.getConfirmStringLabels(conflictingLabels);
+
+    if (labelConflict) {
+      this.setState({
+        showConfirmationDialogueLabels: true,
+        confirmString: confirmString,
+      });
     } else {
       //no conflicts, just save
       this.state.onSave(
@@ -289,37 +280,28 @@ class EditLabelingModal extends Component {
   }
 
   onDeleteLabeling(id) {
-    if (this.state.datasets.length > 0) {
-      let labelConflict = false;
-      let conflictingDatasetNames = [];
-      let conflictingDatasetIds = [];
-      let labeling = this.state.labeling;
-      this.state.datasets.forEach((dset) => {
-        if (dset.labelings.some((l) => l.labelingId === labeling['_id'])) {
-          labelConflict = true;
-          conflictingDatasetNames.push(dset.name);
-          conflictingDatasetIds.push(dset._id);
-        }
-      });
-
-      const confirmString = this.props.getConfirmStringLabelingSet(
-        conflictingDatasetNames
-      );
-      if (labelConflict) {
-        //label conflict and user chose to delete labels. Deletes them in the backend too.
-        this.setState({
-          showConfirmationDialogueLabeling: true,
-          conflictingDatasetIdsForLabelingDeletion: conflictingDatasetIds,
-          confirmString: confirmString,
-        });
-      } else {
-        //No labeling conflict, just ask for permissions to delete
-        this.setState({
-          showConfirmationDialogueLabeling: true,
-          conflictingDatasetIdsForLabelingDeletion: [],
-          confirmString: 'Are you sure to delete this labeling set?',
-        });
+    let labelConflict = false;
+    let conflictingDatasetNames = [];
+    let conflictingDatasetIds = [];
+    let labeling = this.state.labeling;
+    this.state.datasets.forEach((dset) => {
+      if (dset.labelings.some((l) => l.labelingId === labeling['_id'])) {
+        labelConflict = true;
+        conflictingDatasetNames.push(dset.name);
+        conflictingDatasetIds.push(dset._id);
       }
+    });
+
+    const confirmString = this.props.getConfirmStringLabelingSet(
+      conflictingDatasetNames
+    );
+    if (labelConflict) {
+      //label conflict and user chose to delete labels. Deletes them in the backend too.
+      this.setState({
+        showConfirmationDialogueLabeling: true,
+        conflictingDatasetIdsForLabelingDeletion: conflictingDatasetIds,
+        confirmString: confirmString,
+      });
     } else {
       //No labeling conflict, just ask for permissions to delete
       this.setState({
