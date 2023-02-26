@@ -27,73 +27,77 @@ const DatasetTable = (props) => {
             <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon> Download All
           </Button>
         </div>
-        <div style={{ borderRadius: 10 }}>
-          <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline">
-            <div className="d-flex flex-row align-items-center p-1">
-              <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
-                <Checkbox
-                  isSelected={areAllSelected}
-                  onClick={(e) => {
-                    setAllSelected(!areAllSelected);
-                    if (areAllSelected) {
-                      props.deselectAll();
-                    } else {
-                      props.selectAll();
-                    }
-                  }}
-                ></Checkbox>
+        {props.datasets.lenght > 0 ? (
+          <div style={{ borderRadius: 10 }}>
+            <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline">
+              <div className="d-flex flex-row align-items-center p-1">
+                <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
+                  <Checkbox
+                    isSelected={areAllSelected}
+                    onClick={(e) => {
+                      setAllSelected(!areAllSelected);
+                      if (areAllSelected) {
+                        props.deselectAll();
+                      } else {
+                        props.selectAll();
+                      }
+                    }}
+                  ></Checkbox>
+                </div>
+                <Button
+                  className="ml-3 btn-delete"
+                  id="deleteDatasetsButton"
+                  size="sm"
+                  color="secondary"
+                  onClick={props.openDeleteModal}
+                >
+                  <FontAwesomeIcon
+                    className="mr-2"
+                    icon={faTrashAlt}
+                  ></FontAwesomeIcon>
+                  Delete
+                </Button>
+                <Button
+                  id="selectAllEmptyButton"
+                  size="sm"
+                  color="secondary"
+                  onClick={props.selectAllEmpty}
+                  /* disabled={props.datasets.every((elm) => elm.end != 0)}*/
+                  className="ml-2"
+                >
+                  <FontAwesomeIcon
+                    className="mr-2"
+                    icon={faFilter}
+                  ></FontAwesomeIcon>
+                  Select Empty Datasets
+                </Button>
               </div>
-              <Button
-                className="ml-3 btn-delete"
-                id="deleteDatasetsButton"
-                size="sm"
-                color="secondary"
-                onClick={props.openDeleteModal}
-              >
-                <FontAwesomeIcon
-                  className="mr-2"
-                  icon={faTrashAlt}
-                ></FontAwesomeIcon>
-                Delete
-              </Button>
-              <Button
-                id="selectAllEmptyButton"
-                size="sm"
-                color="secondary"
-                onClick={props.selectAllEmpty}
-                /* disabled={props.datasets.every((elm) => elm.end != 0)}*/
-                className="ml-2"
-              >
-                <FontAwesomeIcon
-                  className="mr-2"
-                  icon={faFilter}
-                ></FontAwesomeIcon>
-                Select Empty Datasets
-              </Button>
+            </div>
+            <div
+              className="w-100 position-relative"
+              style={{
+                border: '2px solid rgb(230, 230, 234)',
+                borderRadius: '0px 0px 10px 10px',
+                overflow: 'hidden',
+              }}
+            >
+              {props.datasets.map((dataset, index) => (
+                <DatasetTableEntry
+                  dataset={dataset}
+                  index={index}
+                  toggleCheck={props.toggleCheck}
+                  isSelected={props.datasetsToDelete.includes(dataset['_id'])}
+                  labelings={props.labelings}
+                  labels={props.labels}
+                  deleteEntry={props.deleteEntry}
+                  areAllSelected={props.areAllSelected}
+                ></DatasetTableEntry>
+              ))}
             </div>
           </div>
-          <div
-            className="w-100 position-relative"
-            style={{
-              border: '2px solid rgb(230, 230, 234)',
-              borderRadius: '0px 0px 10px 10px',
-              overflow: 'hidden',
-            }}
-          >
-            {props.datasets.map((dataset, index) => (
-              <DatasetTableEntry
-                dataset={dataset}
-                index={index}
-                toggleCheck={props.toggleCheck}
-                isSelected={props.datasetsToDelete.includes(dataset['_id'])}
-                labelings={props.labelings}
-                labels={props.labels}
-                deleteEntry={props.deleteEntry}
-                areAllSelected={props.areAllSelected}
-              ></DatasetTableEntry>
-            ))}
-          </div>
-        </div>
+        ) : (
+          <div>{'No datasets available yet.'}</div>
+        )}
       </Fragment>
     </div>
   );
