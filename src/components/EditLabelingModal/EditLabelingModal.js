@@ -425,14 +425,6 @@ class EditLabelingModal extends Component {
               </FormFeedback>
             </InputGroup>
             <div className="d-flex flex-row ml-2">
-              <Button
-                id="buttonAddLabel"
-                className="mr-1"
-                color="secondary"
-                onClick={this.onAddLabel}
-              >
-                <FontAwesomeIcon icon={faPlus} />
-              </Button>
               {this.state.labeling && !this.state.isNewLabeling ? (
                 <div>
                   <Button
@@ -512,6 +504,16 @@ class EditLabelingModal extends Component {
                 </InputGroup>
               ))
             : null}
+          <Button
+            id="buttonAddLabel"
+            className="m-0"
+            color="secondary"
+            outline
+            block
+            onClick={this.onAddLabel}
+          >
+            + Add Label
+          </Button>
         </ModalBody>
         <ModalFooter>
           <Button
