@@ -57,7 +57,7 @@ class EditLabelingModal extends Component {
     this.onLabelColorChanged = this.onLabelColorChanged.bind(this);
     this.onClickingSave = this.onClickingSave.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
-    this.onEscPresses = this.onEscPresses.bind(this);
+    this.onKeyPressed = this.onKeyPressed.bind(this);
     this.labelNameInvalid = this.labelNameInvalid.bind(this);
     this.checkAllowSaving = this.checkAllowSaving.bind(this);
     this.labelingNameInValid = this.labelingNameInValid.bind(this);
@@ -87,11 +87,11 @@ class EditLabelingModal extends Component {
   }
 
   componentDidMount() {
-    document.addEventListener('keydown', this.onEscPresses, false);
+    document.addEventListener('keydown', this.onKeyPressed, false);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.onEscPresses, false);
+    document.removeEventListener('keydown', this.onKeyPressed, false);
   }
 
   labelNameInvalid(label, labelIdx) {
@@ -101,9 +101,26 @@ class EditLabelingModal extends Component {
     );
   }
 
-  onEscPresses(e) {
-    if (e.keyCode === 27) {
-      this.onCloseModal();
+  onKeyPressed(e) {
+    switch (e.key) {
+      case 'Escape':
+        if (this.state.showConfirmationDialogueLabeling) {
+          this.onCancelDeletionLabeling();
+        } else if (this.state.showConfirmationDialogueLabels) {
+          this.onCancelDeletionLabels();
+        } else {
+          this.onCloseModal();
+        }
+        break;
+      case 'Enter':
+        if (this.state.showConfirmationDialogueLabeling) {
+          this.onConfirmDeletionLabeling();
+        } else if (this.state.showConfirmationDialogueLabels) {
+          this.onConfirmDeletionLabels();
+        } else {
+          this.onClickingSave();
+        }
+        break;
     }
   }
 
