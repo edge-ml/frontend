@@ -26,6 +26,7 @@ import {
   generateRandomColor,
 } from '../../services/ColorService';
 import ConfirmationDialogueModal from '../ConfirmationDilaogueModal/ConfirmationDialogueModal';
+import EmptyLabelingSetFeedBack from './EmptyLabelingSetFeedBack';
 
 import './EditLabelingModal.css';
 
@@ -396,7 +397,7 @@ class EditLabelingModal extends Component {
       this.state.labeling &&
       this.state.labels.every((elm) => elm.name !== '') &&
       this.state.labeling.name !== '' &&
-      !(this.state.isNewLabeling && this.state.labels.length === 0)
+      this.state.labels.length !== 0
     );
   }
 
@@ -544,6 +545,9 @@ class EditLabelingModal extends Component {
           >
             + Add Label
           </Button>
+          <EmptyLabelingSetFeedBack
+            isLabelingSetEmpty={this.state.labels.length === 0}
+          />
         </ModalBody>
         <ModalFooter>
           <Button
