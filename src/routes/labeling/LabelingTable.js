@@ -46,6 +46,7 @@ const LabelingTable = (props) => {
                   id="deleteDatasetsButton"
                   size="sm"
                   color="secondary"
+                  disabled={props.labelingsToDelete.length === 0}
                   onClick={props.onClickDeleteButton}
                 >
                   <FontAwesomeIcon
