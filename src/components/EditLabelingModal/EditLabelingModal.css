@@ -12,3 +12,10 @@
 .no-border-radius {
   border-radius: 0 !important;
 }
+
+.alert-danger {
+  color: red;
+  background-color: transparent;
+  border: none;
+  position: relative;
+}
