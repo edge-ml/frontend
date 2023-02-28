@@ -27,7 +27,7 @@ const DatasetTable = (props) => {
             <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon> Download All
           </Button>
         </div>
-        {props.datasets.lenght > 0 ? (
+        {props.datasets.length > 0 ? (
           <div style={{ borderRadius: 10 }}>
             <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline">
               <div className="d-flex flex-row align-items-center p-1">
