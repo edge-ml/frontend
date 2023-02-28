@@ -1,2 +1,18 @@
-.TagsPanel {
+.customMetaDataItem {
+  display: flex;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid gray;
+}
+
+.customMetaDataItem_key {
+  display: flex;
+  font-weight: bold;
+  align-items: center;
+}
+
+.customMetaDataItem_value {
+  text-align: end;
 }

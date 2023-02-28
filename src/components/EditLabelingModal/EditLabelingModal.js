@@ -254,7 +254,7 @@ class EditLabelingModal extends Component {
   }
 
   onLabelColorChanged(index, color) {
-    if (color === undefined || color.length > 6) return;
+    //if (color === undefined || color.length > 6) return;
 
     const labeling = this.state.labeling;
     labeling.labels[index].color = color;
@@ -379,7 +379,7 @@ class EditLabelingModal extends Component {
                         : null,
                       color: hexToForegroundColor(label.color),
                     }}
-                    value={label.color.split('#')[1]}
+                    value={label.color}
                     onChange={(e) =>
                       this.onLabelColorChanged(index, e.target.value)
                     }

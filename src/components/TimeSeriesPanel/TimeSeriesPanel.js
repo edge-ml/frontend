@@ -104,7 +104,9 @@ class TimeSeriesPanel extends Component {
         this.props.canEdit
       );
     }
-
+    if (!this.chart.current) {
+      return;
+    }
     const container = this.chart.current.container.current;
 
     container.style.height = this.props.index === 0 ? '80px' : '200px';
@@ -940,6 +942,14 @@ class TimeSeriesPanel extends Component {
   }
 
   render() {
+    if (!this.props.data.length && this.props.index === 0) {
+      return null;
+    }
+
+    if (!this.props.data.length) {
+      return <div className="noDataLabel">{this.props.name}: No data</div>;
+    }
+
     return (
       <div
         className="mt-2"

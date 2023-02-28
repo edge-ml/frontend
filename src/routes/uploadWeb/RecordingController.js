@@ -44,13 +44,14 @@ export class RecordingController extends EventEmitter {
 
     try {
       if (Object.values(this._deltaTimeseries).flat().length === 0) return; // nothing to _upload
-      await appendToDataset(
-        this.newDataset,
-        Object.entries(this._deltaTimeseries).map(([name, data]) => ({
-          name,
-          data,
-        }))
+
+      const data = Object.entries(this._deltaTimeseries).map(
+        ([name, data]) => ({ name, data })
       );
+      const ts = this.newDataset.timeSeries.map((elm) => {
+        return { id: elm['_id'], data: data };
+      });
+      await appendToDataset(this.newDataset, ts);
       this._deltaTimeseries = {};
     } finally {
       this._uploadLock.release();
@@ -72,10 +73,7 @@ export class RecordingController extends EventEmitter {
         this._fullTimeseries[key] = this._fullTimeseries[key] || [];
 
         // create single data point
-        const point = {
-          timestamp,
-          datapoint: val, // this 'datapoint' naming here is bad, but it's how it's done in the server, so it's kept for simplicity
-        };
+        const point = [timestamp, val]; // this 'datapoint' naming here is bad, but it's how it's done in the server, so it's kept for simplicity
         this._deltaTimeseries[key].push(point);
         this._fullTimeseries[key].push(point);
       }

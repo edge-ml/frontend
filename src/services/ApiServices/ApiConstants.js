@@ -1,25 +1,27 @@
 import localStorageService from './../LocalStorageService';
 
+const currentHost = window.location.host.split(':')[0];
+
 export const AUTH_URI =
   process.env.NODE_ENV === 'production'
     ? '/auth/'
     : window.location.host === 'edge-ml.ngrok.io'
     ? 'http://auth.edge-ml.ngrok.io/auth/'
-    : 'http://localhost:3002/auth/';
+    : `http://${currentHost}:3002/auth/`;
 export const API_URI =
   process.env.NODE_ENV === 'production'
     ? '/api/'
     : window.location.host === 'edge-ml.ngrok.io'
     ? 'http://backend.edge-ml.ngrok.io/api/'
-    : 'http://localhost:3001/api/';
+    : `http://${currentHost}:3001/api/`;
 export const ML_URI =
   process.env.NODE_ENV === 'production'
     ? '/ml/'
     : window.location.host === 'edge-ml.ngrok.io'
     ? 'http://ml.edge-ml.ngrok.io/ml/'
-    : 'http://localhost:3003/ml/';
+    : `http://${currentHost}:3003/ml/`;
 
-export const DATASET_STORE = 'http://localhost:3004';
+export const DATASET_STORE = `http://${currentHost}:3004`;
 
 export const HTTP_METHODS = {
   GET: 'GET',

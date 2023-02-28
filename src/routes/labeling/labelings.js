@@ -8,8 +8,6 @@ import {
   subscribeLabelingsAndLabels,
   addLabeling,
   deleteLabeling,
-  deleteLabelTypesFromLabeling,
-  addLabelTypesToLabeling,
 } from '../../services/ApiServices/LabelingServices';
 import LabelingTable from './LabelingTable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -62,8 +60,7 @@ class LabelingsPage extends Component {
             let labeling = this.state.labelings.filter(
               (labeling) => labeling['_id'] === id
             )[0];
-            let labels = labeling.labels;
-            this.toggleModal(labeling, labels, false);
+            this.toggleModal(labeling, false);
           }
         }
       }
@@ -139,11 +136,16 @@ class LabelingsPage extends Component {
   }
 
   async onSave(labeling) {
+    console.log('onSAve');
+    console.log(labeling);
+    console.log(this.state.modal.isNewLabeling);
     var newLabeling = undefined;
     if (this.state.modal.isNewLabeling) {
       newLabeling = await addLabeling(labeling);
     } else {
+      console.log(labeling);
       newLabeling = await updateLabelingandLabels(labeling);
+      console.log(newLabeling);
     }
     this.onContentChanged(newLabeling);
     this.onCloseModal();
@@ -191,7 +193,7 @@ class LabelingsPage extends Component {
   }
 
   onClickEdit = (labeling) => {
-    this.toggleModal(labeling, labeling.labels, false);
+    this.toggleModal(labeling, false);
   };
 
   render() {

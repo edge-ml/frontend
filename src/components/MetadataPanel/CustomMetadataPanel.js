@@ -53,19 +53,11 @@ class CustomMetadataPanel extends Component {
 
   additionalMetaData() {
     return Object.keys(this.props.metaData).map((key) => (
-      <div>
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText className="timeInputGroupText">
-              {key}
-            </InputGroupText>
-          </InputGroupAddon>
-          <Input
-            className="text-right"
-            value={this.props.metaData[key]}
-            readOnly
-          />
-        </InputGroup>
+      <div className="customMetaDataItem">
+        <div className="customMetaDataItem_key">{key}</div>
+        <div className="customMetaDataItem_value">
+          {this.props.metaData[key]}
+        </div>
       </div>
     ));
   }

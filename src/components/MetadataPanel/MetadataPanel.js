@@ -17,6 +17,15 @@ class MetadataPanel extends Component {
     this.state = {};
   }
 
+  metaDataItem(key, value) {
+    return (
+      <div className="customMetaDataItem">
+        <div className="customMetaDataItem_key">{key}</div>
+        <div className="customMetaDataItem_value">{value}</div>
+      </div>
+    );
+  }
+
   render() {
     return (
       <div className="sidepanel-card">
@@ -24,56 +33,16 @@ class MetadataPanel extends Component {
           <h5>Metadata</h5>
         </div>
         <CardBody>
-          <div>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  Name
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input className="text-right" value={this.props.name} readOnly />
-            </InputGroup>
-          </div>
-          <div>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  Start
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                className="text-right"
-                value={
-                  this.props.start ? unixTimeToString(this.props.start) : ''
-                }
-                readOnly
-              />
-            </InputGroup>
-          </div>
-          <div>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  End
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                className="text-right"
-                value={this.props.end ? unixTimeToString(this.props.end) : ''}
-                readOnly
-              />
-            </InputGroup>
-          </div>
-          <div>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText className="timeInputGroupText">
-                  User
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input className="text-right" value={this.props.user} readOnly />
-            </InputGroup>
-          </div>
+          {this.metaDataItem('Name', this.props.name)}
+          {this.metaDataItem(
+            'Start',
+            this.props.start ? unixTimeToString(this.props.start) : ''
+          )}
+          {this.metaDataItem(
+            'End',
+            this.props.end ? unixTimeToString(this.props.end) : ''
+          )}
+          {this.metaDataItem('User', this.props.user)}
         </CardBody>
       </div>
     );
