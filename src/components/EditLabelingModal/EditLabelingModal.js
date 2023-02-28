@@ -82,7 +82,7 @@ class EditLabelingModal extends Component {
         onSave: this.props.onSave,
         onDeleteLabeling: this.props.onDeleteLabeling,
         isNewLabeling: this.props.isNewLabeling,
-        confirmationString: '',
+        confirmString: '',
       });
     }
   }
