@@ -9,7 +9,7 @@ export const getDatasets = () => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS_PROJECT
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS
       )
     )
       .then((result) => resolve(result.data))
@@ -28,7 +28,7 @@ export const getDatasetTimeseries = (id, info) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASET +
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
           `${id}/ts/${start}/${end}/${max_resolution}`
       )
     )
@@ -43,7 +43,7 @@ export const getDataset = (id) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASET + `${id}`
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
       )
     )
       .then((dataset) => resolve(dataset.data))
@@ -57,7 +57,7 @@ export const getDatasetMeta = (id) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASET + `${id}/meta`
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
       )
     )
       .then((dataset) => {
@@ -103,7 +103,7 @@ export const deleteDataset = (id) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.DELETE,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASET + `${id}`
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
       )
     )
       .then(resolve())
@@ -144,7 +144,7 @@ export const createDataset = (dataset) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASET,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS,
         dataset
       )
     )
@@ -164,7 +164,7 @@ export const createDatasets = (datasets) => {
         apiConsts.generateApiRequest(
           apiConsts.HTTP_METHODS.POST,
           apiConsts.DATASET_STORE,
-          apiConsts.DATASET_STORE_ENDPOINTS.DATASET,
+          apiConsts.DATASET_STORE_ENDPOINTS.DATASETS,
           dataset
         )
       )
@@ -187,7 +187,7 @@ export const appendToDataset = (dataset, data) => {
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
       apiConsts.DATASET_STORE,
-      apiConsts.DATASET_STORE_ENDPOINTS.DATASET +
+      apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
         `${dataset['_id']}` +
         '/append',
       data

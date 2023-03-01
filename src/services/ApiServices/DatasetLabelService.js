@@ -12,7 +12,8 @@ export const createDatasetLabel = (datasetId, labelingId, label) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.LABEL + `${datasetId}/${labelingId}/`,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASET_LABELS +
+          `${datasetId}/${labelingId}/`,
         label
       )
     )
@@ -27,7 +28,7 @@ export const changeDatasetLabel = (datasetId, labelingId, changedLabel) => {
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.PUT,
       apiConsts.DATASET_STORE,
-      apiConsts.DATASET_STORE_ENDPOINTS.LABEL +
+      apiConsts.DATASET_STORE_ENDPOINTS.DATASET_LABELS +
         `${datasetId}/${labelingId}/${changedLabel._id}`,
       changedLabel
     )
@@ -39,7 +40,7 @@ export const deleteDatasetLabel = (datasetId, labelingId, labelId) => {
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.DELETE,
       apiConsts.DATASET_STORE,
-      apiConsts.DATASET_STORE_ENDPOINTS.LABEL +
+      apiConsts.DATASET_STORE_ENDPOINTS.DATASET_LABELS +
         `${datasetId}/${labelingId}/${labelId}`
     )
   );

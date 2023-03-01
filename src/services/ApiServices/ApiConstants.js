@@ -74,11 +74,10 @@ export const ML_ENDPOINTS = {
 };
 
 export const DATASET_STORE_ENDPOINTS = {
-  DATASET: '/dataset/',
-  DATASETS_PROJECT: '/dataset/project',
-  LABEL: '/label/',
+  DATASETS: '/datasets/',
+  DATASET_LABELINGS: '/datasets/labelings/',
   LABELING: '/labelings/',
-  CSV: '/csv',
+  CSV: '/datasets/csv/',
 };
 
 export const generateApiRequest = (

@@ -23,7 +23,7 @@ const downloadDatasets = async (dataset) => {
   const response = await axios(request_params);
   const id = response.data.id;
   console.log('open window: ', id);
-  window.open(`http://localhost:3004/csv/download/${id}`);
+  window.open(`${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}download/${id}`);
 };
 
 const downloadAllAsZip = async (datasets, labelings, labels) => {
