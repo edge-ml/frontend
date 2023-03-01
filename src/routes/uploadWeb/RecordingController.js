@@ -8,7 +8,7 @@ import {
   getDatasets,
 } from '../../services/ApiServices/DatasetServices';
 
-const DEFAULT_DELTA_UPLOAD_INTERVAL = 500;
+const DEFAULT_DELTA_UPLOAD_INTERVAL = 2000;
 
 export class RecordingController extends EventEmitter {
   constructor(
@@ -45,13 +45,21 @@ export class RecordingController extends EventEmitter {
     try {
       if (Object.values(this._deltaTimeseries).flat().length === 0) return; // nothing to _upload
 
-      const data = Object.entries(this._deltaTimeseries).map(
-        ([name, data]) => ({ name, data })
-      );
-      const ts = this.newDataset.timeSeries.map((elm) => {
-        return { id: elm['_id'], data: data };
+      let data = Object.entries(this._deltaTimeseries).map(([name, data]) => ({
+        name,
+        data,
+      }));
+      // const ts = this.newDataset.timeSeries.map((elm) => {
+      //   return { id: elm['_id'], data: elm };
+      // });
+      data = data.map((elm) => {
+        return {
+          _id: this.newDataset.timeSeries.find((d) => d.name === elm.name)._id,
+          ...elm,
+        };
       });
-      await appendToDataset(this.newDataset, ts);
+
+      await appendToDataset(this.newDataset, data);
       this._deltaTimeseries = {};
     } finally {
       this._uploadLock.release();
@@ -73,7 +81,7 @@ export class RecordingController extends EventEmitter {
         this._fullTimeseries[key] = this._fullTimeseries[key] || [];
 
         // create single data point
-        const point = [timestamp, val]; // this 'datapoint' naming here is bad, but it's how it's done in the server, so it's kept for simplicity
+        const point = [timestamp, val];
         this._deltaTimeseries[key].push(point);
         this._fullTimeseries[key].push(point);
       }
@@ -92,13 +100,13 @@ export class RecordingController extends EventEmitter {
       await createDataset({
         name: this._datasetName,
         start: new Date().getTime() + 10000000,
-        end: new Date().getTime(),
+        end: 0,
         timeSeries: this._sensors
           .map((sensor) =>
             sensor.components.map((component) => ({
               name: component,
               start: new Date().getTime() + 10000000,
-              end: new Date().getTime(),
+              end: 0,
               data: [],
             }))
           )

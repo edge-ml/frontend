@@ -141,7 +141,7 @@ class Navbar extends Component {
                       {[
                         ['Datasets', faDatabase],
                         ['Labelings', faPen],
-                        ['Model', faBrain],
+                        // ['Model', faBrain],
                         ['Validation', faCheck],
                         ['Deploy', faFileExport],
                         ['Settings', faCogs],

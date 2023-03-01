@@ -424,8 +424,11 @@ class TimeSeriesPanel extends Component {
       return;
     }
     console.log('mouse down', e);
+    const clickLocation = e.pageX - e.target.getBoundingClientRect().left;
+    console.log('----------------------------------');
+    console.log(clickLocation);
     let position = this.chart.current.chart.xAxis[0].toValue(
-      e.pageX - this.chart.current.chart.plotBox.x * 1.5 - 160 // TODO hack hardcoded 2 pixels how to fix?
+      clickLocation // TODO hack hardcoded 2 pixels how to fix? This only works in full screen
     );
 
     // Check if a label has been clicked

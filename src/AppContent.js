@@ -12,6 +12,7 @@ import ValidationPage from './routes/validation';
 import ExportPage from './routes/export';
 import UploadBLE from './routes/uploadBLE';
 import { UploadWebPage } from './routes/uploadWeb';
+import UnderConstruction from './components/UnderConstruction';
 
 class AppContent extends Component {
   constructor(props) {
@@ -65,31 +66,34 @@ class AppContent extends Component {
             </ProjectRefresh>
           )}
         />
-        <Route
+        {/* <Route
           exact
           path={this.props.match.path + '/model'}
           render={(props) => (
-            <ProjectRefresh project={this.props.project}>
-              <ModelPage {...props}></ModelPage>
-            </ProjectRefresh>
+            // <ProjectRefresh project={this.props.project}>
+            //   <ModelPage {...props}></ModelPage>
+            // </ProjectRefresh>
+            <UnderConstruction></UnderConstruction>
           )}
-        />
+        /> */}
         <Route
           exact
           path={this.props.match.path + '/validation'}
           render={(props) => (
-            <ProjectRefresh project={this.props.project}>
-              <ValidationPage {...props}></ValidationPage>
-            </ProjectRefresh>
+            // <ProjectRefresh project={this.props.project}>
+            //   <ValidationPage {...props}></ValidationPage>
+            // </ProjectRefresh>
+            <UnderConstruction></UnderConstruction>
           )}
         />
         <Route
           exact
           path={this.props.match.path + '/deploy'}
           render={(props) => (
-            <ProjectRefresh project={this.props.project}>
-              <ExportPage {...props}></ExportPage>
-            </ProjectRefresh>
+            // <ProjectRefresh project={this.props.project}>
+            //   <ExportPage {...props}></ExportPage>
+            // </ProjectRefresh>
+            <UnderConstruction></UnderConstruction>
           )}
         />
         <Route

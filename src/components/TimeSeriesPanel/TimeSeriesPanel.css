@@ -118,3 +118,7 @@
   border-radius: 10px;
   margin-top: 8px;
 }
+
+.chartWrapper > div {
+  overflow: unset !important;
+}

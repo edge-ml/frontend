@@ -682,7 +682,8 @@ class DatasetPage extends Component {
             },
           });
         })
-        .catch(() => {
+        .catch((e) => {
+          console.log(e);
           this.showSnackbar('Could not create label', 5000);
           // Delete label again
           newDataset.labelings[labelingIdx].labels.splice(labelIdx, 1);
