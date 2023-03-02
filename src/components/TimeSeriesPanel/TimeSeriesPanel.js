@@ -539,17 +539,21 @@ class TimeSeriesPanel extends Component {
     };
   }
 
-  onMouseMoved(e) {
+  /*onMouseMoved(e) {
     const activePlotLine = this.getActivePlotLine();
     if (!activePlotLine) return;
 
     e.preventDefault();
-
+    console.log("on mouse move")
     const bounds = this.calcBounds(e);
     const leftNeighbour = bounds.leftNeighbour;
-    const distanceToLeftNeighbour = bounds.distanceToLeftNeighbour;
     const rightNeighbour = bounds.rightNeighbour;
+    const distanceToLeftNeighbour = bounds.distanceToLeftNeighbour; 
     const distanceToRightNeighbour = bounds.distanceToRightNeighbour;
+
+    
+
+
     const activePlotbandOptions = this.getActivePlotBand().options;
     const offset_translatePlotLine =
       -activePlotLine.svgElem.getBBox().x +
@@ -558,11 +562,25 @@ class TimeSeriesPanel extends Component {
       -this.chart.current.chart.plotBox.x * 1.5 - 160;
 
     // move the currencly active plotline with the mousepointer
+
+    // const minX = Math.max(
+    //   -distanceToLeftNeighbour,
+    //   Math.min(e.chartX + offset_translatePlotLine)
+    // );
+
+    // const maxX = Math.min(
+    //   -distanceToRightNeighbour,
+    //   Math.min(e.chartX + offset_translatePlotLine)
+    // )
+
+
+    
+
+    const offset = e.chartX;
+
+
     activePlotLine.svgElem.translate(
-      Math.max(
-        -distanceToLeftNeighbour,
-        Math.min(e.chartX + offset_translatePlotLine)
-      ),
+      offset,
       0
     );
 
@@ -582,6 +600,71 @@ class TimeSeriesPanel extends Component {
       to: activePlotLine.options.isLeftPlotline
         ? fixedPosition
         : draggedPosition,
+      color: activePlotbandOptions.color,
+      className: activePlotbandOptions.className,
+      id: activePlotbandOptions.id,
+      labelId: activePlotbandOptions.labelId,
+      label: activePlotbandOptions.label,
+      zIndex: activePlotbandOptions.zIndex,
+      isSelected: activePlotbandOptions.isSelected,
+    });
+  }*/
+
+  onMouseMoved(e) {
+    const activePlotLine = this.getActivePlotLine();
+    if (!activePlotLine) return;
+    e.preventDefault();
+    const dragPosition = e.chartX;
+
+    const bounds = this.calcBounds(e);
+    const leftBound = bounds.leftNeighbour;
+    const rightBound = bounds.rightNeighbour;
+
+    const box_offset = -activePlotLine.svgElem.getBBox().x;
+    const offset =
+      Math.min(Math.max(dragPosition, leftBound + 1), rightBound - 1) +
+      box_offset;
+
+    const activePlotband = this.getActivePlotBand();
+    const activePlotbandOptions = activePlotband.options;
+
+    activePlotLine.svgElem.translate(offset, 0);
+
+    console.log(this.chart.current.container.current.getBoundingClientRect());
+    const offset_translatePlotBand =
+      -this.chart.current.container.current.getBoundingClientRect().left;
+
+    // let band_start = Math.min(activePlotbandOptions.to, activePlotbandOptions.from)
+    // let band_end = Math.max(activePlotbandOptions.to, activePlotbandOptions.from)
+
+    // if (activePlotLine.options.isLeftPlotline) {
+    //   band_start -= offset;
+    // }
+    // else {
+    //   band_end -= offset
+    // }
+
+    let fixedPosition = activePlotLine.options.isLeftPlotline
+      ? activePlotbandOptions.to
+      : activePlotbandOptions.from;
+
+    // let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
+    //   this.chart.current.chart.plotBox.x + Math.min(Math.max(dragPosition, leftBound), rightBound)
+    // );
+
+    console.log(e.pageX, leftBound, offset_translatePlotBand);
+
+    let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
+      Math.max(
+        leftBound,
+        Math.min(e.pageX + offset_translatePlotBand, rightBound)
+      )
+    );
+
+    this.chart.current.chart.xAxis[0].removePlotBand(activePlotbandOptions.id);
+    this.chart.current.chart.xAxis[0].addPlotBand({
+      from: Math.min(fixedPosition, draggedPosition),
+      to: Math.max(fixedPosition, draggedPosition),
       color: activePlotbandOptions.color,
       className: activePlotbandOptions.className,
       id: activePlotbandOptions.id,
