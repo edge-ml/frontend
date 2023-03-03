@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-import { throttle } from '../../services/helpers';
 import Semaphore from 'semaphore-async-await';
 
 import {
@@ -8,68 +7,52 @@ import {
   getDatasets,
 } from '../../services/ApiServices/DatasetServices';
 
-const DEFAULT_DELTA_UPLOAD_INTERVAL = 2000;
+const UDDATE_INTERVAL = 10000;
 
 export class RecordingController extends EventEmitter {
   constructor(
     sensors,
     sampleRates,
     datasetName,
-    uploadInterval = DEFAULT_DELTA_UPLOAD_INTERVAL
+    uploadInterval = UDDATE_INTERVAL
   ) {
     super();
     this._sensors = sensors;
     this._sampleRates = sampleRates;
     this._uploadInterval = uploadInterval;
     this._datasetName = datasetName;
-
-    this._uploadLock = new Semaphore(1);
     this._deltaTimeseries = {}; // data is stored in a mutable way to improve perf, delta since last _upload
     this._fullTimeseries = {}; // all (at least a significant part) of uploaded data, used for graph only
     this._errors = {};
 
     this._isRecording = false;
-
-    this._uploadThrottled = throttle(this._upload, this._uploadInterval);
+    this.dataPointCtr = 0;
   }
 
   getTimeseries = () => this._fullTimeseries;
   getErrors = () => ({ ...this._errors });
 
-  _upload = async () => {
-    // lock to ensure no datapoint goes missing (new datapoint could come while uploading, which is done out of the event loop)
-    // more info on why this is needed: https://github.com/jsoendermann/semaphore-async-await#but-javascript-is-single-threaded-and-doesnt-need-semaphores
-    // we are uploading deltas, so we can miss stuff
-    await this._uploadLock.acquire();
+  _upload = async (series) => {
+    let data = Object.entries(series).map(([name, data]) => ({
+      name,
+      data,
+    }));
+    data = data.map((elm) => {
+      return {
+        _id: this.newDataset.timeSeries.find((d) => d.name === elm.name)._id,
+        ...elm,
+      };
+    });
 
-    try {
-      if (Object.values(this._deltaTimeseries).flat().length === 0) return; // nothing to _upload
-
-      let data = Object.entries(this._deltaTimeseries).map(([name, data]) => ({
-        name,
-        data,
-      }));
-      // const ts = this.newDataset.timeSeries.map((elm) => {
-      //   return { id: elm['_id'], data: elm };
-      // });
-      data = data.map((elm) => {
-        return {
-          _id: this.newDataset.timeSeries.find((d) => d.name === elm.name)._id,
-          ...elm,
-        };
-      });
-
-      await appendToDataset(this.newDataset, data);
-      this._deltaTimeseries = {};
-    } finally {
-      this._uploadLock.release();
-    }
+    await appendToDataset(this.newDataset, data);
+    this._deltaTimeseries = {};
   };
 
   _onSensorError =
     (sensor, isWarning = false) =>
     (error) => {
       this._errors[sensor.name] = { error, isWarning };
+      console.log('Sensor error!');
       this.emit('error', this);
     };
   _onSensorData =
@@ -79,6 +62,7 @@ export class RecordingController extends EventEmitter {
         // init timeseries, if not done already
         this._deltaTimeseries[key] = this._deltaTimeseries[key] || [];
         this._fullTimeseries[key] = this._fullTimeseries[key] || [];
+        this.dataPointCtr++;
 
         // create single data point
         const point = [timestamp, val];
@@ -87,8 +71,12 @@ export class RecordingController extends EventEmitter {
       }
 
       this.emit('received-data', this);
-      // does NOT _upload with every datapoint, it's throttled
-      this._uploadThrottled();
+
+      if (this.dataPointCtr > this.uploadInterval) {
+        this._upload(this._deltaTimeseries);
+        this._deltaTimeseries = {};
+        this.dataPointCtr = 0;
+      }
     };
 
   async start() {
@@ -143,7 +131,7 @@ export class RecordingController extends EventEmitter {
   async stop() {
     if (!this._isRecording) return;
     await this._stop();
-    await this._upload();
+    await this._upload(this._deltaTimeseries);
     this._isRecording = false;
   }
 

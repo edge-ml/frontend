@@ -30,10 +30,7 @@ export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
             },
             series: Object.entries(value).map(([component, data]) => ({
               name: component,
-              data: data.map(({ timestamp, datapoint }) => [
-                timestamp,
-                datapoint,
-              ]),
+              data: data,
               marker: {
                 enabled: false,
               },
