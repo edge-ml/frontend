@@ -226,6 +226,7 @@ class TimeSeriesPanel extends Component {
             lineWidth: 0,
           },
           xAxis: {
+            crosshair: false,
             isInternal: true,
           },
           yAxis: {
@@ -252,18 +253,20 @@ class TimeSeriesPanel extends Component {
                     },
                   },
                   data: props.data,
+                  enableMouseTracking: false,
                 },
               ]
             : !Array.isArray(props.name)
             ? [
                 {
-                  showInLegend: !props.isEmpty,
+                  showInLegend: false,
                   name:
                     props.unit === ''
                       ? props.name
                       : props.name + ' (' + props.unit + ')',
                   data: props.data,
                   lineWidth: 1.5,
+                  enableMouseTracking: false,
                 },
               ]
             : props.data.map((dataItem, indexOuter) => {
@@ -275,6 +278,7 @@ class TimeSeriesPanel extends Component {
                     ')',
                   data: props.data,
                   lineWidth: 1.5,
+                  enableMouseTracking: false,
                 };
               }),
         xAxis: {
@@ -302,9 +306,7 @@ class TimeSeriesPanel extends Component {
                   props.labelTypes,
                   props.selectedLabelId
                 ),
-          crosshair: {
-            snap: false,
-          },
+          crosshair: false,
           min: props.start,
           max: props.end,
           startOnTick: !this.props.isEmpty,
@@ -721,6 +723,7 @@ class TimeSeriesPanel extends Component {
             style: {
               color: labelType.color,
               fontWeight: 'bold',
+              cursor: undefined,
             },
             isPlotline: false,
             isSelected: selectedLabelId === label['_id'],
@@ -998,6 +1001,13 @@ class TimeSeriesPanel extends Component {
           </div>
         ) : null}
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
+          {this.props.index !== 0 ? (
+            <div className="font-weight-bold">
+              {this.props.unit === ''
+                ? this.props.name
+                : this.props.name + ' (' + this.props.unit + ')'}
+            </div>
+          ) : null}
           <HighchartsReact
             ref={this.chart}
             highcharts={Highcharts}
