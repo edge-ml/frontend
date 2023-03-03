@@ -118,7 +118,7 @@ class TimeSeriesPanel extends Component {
     if (this.props.index === 0) {
       return;
     }
-    const leftButton = document.createElement('button');
+    /*const leftButton = document.createElement('button');
     leftButton.innerHTML = '<';
     leftButton.style.cssText = `
       position: absolute;
@@ -175,7 +175,7 @@ class TimeSeriesPanel extends Component {
     });
 
     this.chart.current.chart.renderTo.parentNode.appendChild(leftButton);
-    this.chart.current.chart.renderTo.parentNode.appendChild(rightButton);
+    this.chart.current.chart.renderTo.parentNode.appendChild(rightButton);*/
   }
 
   updateData = debounce((chart, min, max, width, offset) => {
@@ -183,7 +183,6 @@ class TimeSeriesPanel extends Component {
       // FIXME: this doesn't really work with fusedSeries, ignore them for now
 
       chart.showLoading('Loading data from server...');
-      console.log(this.props.tsIndex);
       this.props
         .onTimeSeriesWindow(Math.round(min), Math.round(max), Math.round(width))
         .then((timeserie) => {
@@ -206,7 +205,6 @@ class TimeSeriesPanel extends Component {
           )
           .then((ts) => {
             if (chart.index !== 0) {
-              console.log('Setting data');
               chart.series[0].setData(ts, false, false);
             }
             chart.xAxis[0].setExtremes(min, max, false, false);
@@ -423,10 +421,7 @@ class TimeSeriesPanel extends Component {
     if (!this.props.canEdit) {
       return;
     }
-    console.log('mouse down', e);
     const clickLocation = e.pageX - e.target.getBoundingClientRect().left;
-    console.log('----------------------------------');
-    console.log(clickLocation);
     let position = this.chart.current.chart.xAxis[0].toValue(
       clickLocation // TODO hack hardcoded 2 pixels how to fix? This only works in full screen
     );
@@ -539,58 +534,53 @@ class TimeSeriesPanel extends Component {
     };
   }
 
-  /*onMouseMoved(e) {
+  onMouseMoved(e) {
     const activePlotLine = this.getActivePlotLine();
     if (!activePlotLine) return;
-
     e.preventDefault();
-    console.log("on mouse move")
+    const dragPosition = e.chartX;
+
     const bounds = this.calcBounds(e);
-    const leftNeighbour = bounds.leftNeighbour;
-    const rightNeighbour = bounds.rightNeighbour;
-    const distanceToLeftNeighbour = bounds.distanceToLeftNeighbour; 
-    const distanceToRightNeighbour = bounds.distanceToRightNeighbour;
+    const leftBound = bounds.leftNeighbour;
+    const rightBound = bounds.rightNeighbour;
 
-    
+    const box_offset = -activePlotLine.svgElem.getBBox().x;
+    let offset =
+      Math.min(Math.max(dragPosition, leftBound + 1), rightBound - 1) +
+      box_offset -
+      1;
 
+    const activePlotband = this.getActivePlotBand();
+    const activePlotbandOptions = activePlotband.options;
 
-    const activePlotbandOptions = this.getActivePlotBand().options;
-    const offset_translatePlotLine =
-      -activePlotLine.svgElem.getBBox().x +
-      this.chart.current.chart.plotBox.x * 0.08;
-    const offset_translatePlotBand =
-      -this.chart.current.chart.plotBox.x * 1.5 - 160;
+    const chartBBox =
+      this.chart.current.container.current.getBoundingClientRect();
 
-    // move the currencly active plotline with the mousepointer
+    if (e.chartX <= 10) {
+      offset = box_offset + 10;
+    } else if (e.chartX > chartBBox.right - chartBBox.left) {
+      offset = chartBBox.right - chartBBox.left + box_offset;
+    }
 
-    // const minX = Math.max(
-    //   -distanceToLeftNeighbour,
-    //   Math.min(e.chartX + offset_translatePlotLine)
-    // );
+    activePlotLine.svgElem.translate(offset, 0);
 
-    // const maxX = Math.min(
-    //   -distanceToRightNeighbour,
-    //   Math.min(e.chartX + offset_translatePlotLine)
-    // )
+    const start_plot = chartBBox.left;
 
+    // console.log(e.chartX, (chartBBox.right - chartBBox.left), box_offset, offset)
 
-    
+    // console.log(chartBBox.right, offset, box_offset, e.chartX, start_plot, e.pageX + start_plot)
 
-    const offset = e.chartX;
-
-
-    activePlotLine.svgElem.translate(
-      offset,
-      0
-    );
-
-    // instead of moving the plotband along with the plotline, it is deleted and redrawn with the new mousepointer coordinates
     let fixedPosition = activePlotLine.options.isLeftPlotline
       ? activePlotbandOptions.to
       : activePlotbandOptions.from;
+
     let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-      Math.max(leftNeighbour, Math.min(e.pageX + offset_translatePlotBand))
+      Math.max(leftBound, Math.min(e.pageX - start_plot, rightBound))
     );
+
+    draggedPosition = Math.max(0, draggedPosition);
+
+    console.log(draggedPosition, fixedPosition);
 
     this.chart.current.chart.xAxis[0].removePlotBand(activePlotbandOptions.id);
     this.chart.current.chart.xAxis[0].addPlotBand({
@@ -608,71 +598,6 @@ class TimeSeriesPanel extends Component {
       zIndex: activePlotbandOptions.zIndex,
       isSelected: activePlotbandOptions.isSelected,
     });
-  }*/
-
-  onMouseMoved(e) {
-    const activePlotLine = this.getActivePlotLine();
-    if (!activePlotLine) return;
-    e.preventDefault();
-    const dragPosition = e.chartX;
-
-    const bounds = this.calcBounds(e);
-    const leftBound = bounds.leftNeighbour;
-    const rightBound = bounds.rightNeighbour;
-
-    const box_offset = -activePlotLine.svgElem.getBBox().x;
-    const offset =
-      Math.min(Math.max(dragPosition, leftBound + 1), rightBound - 1) +
-      box_offset;
-
-    const activePlotband = this.getActivePlotBand();
-    const activePlotbandOptions = activePlotband.options;
-
-    activePlotLine.svgElem.translate(offset, 0);
-
-    console.log(this.chart.current.container.current.getBoundingClientRect());
-    const offset_translatePlotBand =
-      -this.chart.current.container.current.getBoundingClientRect().left;
-
-    // let band_start = Math.min(activePlotbandOptions.to, activePlotbandOptions.from)
-    // let band_end = Math.max(activePlotbandOptions.to, activePlotbandOptions.from)
-
-    // if (activePlotLine.options.isLeftPlotline) {
-    //   band_start -= offset;
-    // }
-    // else {
-    //   band_end -= offset
-    // }
-
-    let fixedPosition = activePlotLine.options.isLeftPlotline
-      ? activePlotbandOptions.to
-      : activePlotbandOptions.from;
-
-    // let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-    //   this.chart.current.chart.plotBox.x + Math.min(Math.max(dragPosition, leftBound), rightBound)
-    // );
-
-    console.log(e.pageX, leftBound, offset_translatePlotBand);
-
-    let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-      Math.max(
-        leftBound,
-        Math.min(e.pageX + offset_translatePlotBand, rightBound)
-      )
-    );
-
-    this.chart.current.chart.xAxis[0].removePlotBand(activePlotbandOptions.id);
-    this.chart.current.chart.xAxis[0].addPlotBand({
-      from: Math.min(fixedPosition, draggedPosition),
-      to: Math.max(fixedPosition, draggedPosition),
-      color: activePlotbandOptions.color,
-      className: activePlotbandOptions.className,
-      id: activePlotbandOptions.id,
-      labelId: activePlotbandOptions.labelId,
-      label: activePlotbandOptions.label,
-      zIndex: activePlotbandOptions.zIndex,
-      isSelected: activePlotbandOptions.isSelected,
-    });
   }
 
   onMouseUp(e, id) {
@@ -682,23 +607,29 @@ class TimeSeriesPanel extends Component {
     }
     this.mouseDown = false;
     const activePlotLine = this.getActivePlotLine();
-    if (!activePlotLine) return;
+    if (!activePlotLine) {
+      return;
+    }
 
     const bounds = this.calcBounds(e, activePlotLine);
     const leftNeighbour = bounds.leftNeighbour;
     const rightNeighbour = bounds.rightNeighbour;
     const offset =
-      -this.chart.current.chart.plotBox.x * 1.5 +
-      this.chart.current.chart.plotBox.x * 0.08 -
-      160;
+      -this.chart.current.container.current.getBoundingClientRect().left;
 
     activePlotLine.options.isActive = false;
 
-    // add + 1 to the distance so that the plotlines do not directly overlap
-    // if they were to overlap, one could not drag both labels again, but had to drag one a bit away first and then move the other
-    let newValue = this.chart.current.chart.xAxis[0].toValue(
-      Math.max(leftNeighbour + 1, e.pageX + offset)
+    // Clip between neighbours
+    let val = Math.min(
+      Math.max(leftNeighbour + 1, e.pageX + offset),
+      rightNeighbour - 1
     );
+
+    // Clip between start and end of chart
+    val = Math.max(10, val);
+    console.log('New val:', val);
+
+    let newValue = this.chart.current.chart.xAxis[0].toValue(val);
 
     let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(
       activePlotLine.options.id,
@@ -729,7 +660,6 @@ class TimeSeriesPanel extends Component {
    */
   onKeyDown(e) {
     e.stopImmediatePropagation();
-    console.log('event', e);
     switch (e.code) {
       // remove ternary condition if the fetching can be done instantaneously to enable continuous scrolling
       case 'ArrowRight':
