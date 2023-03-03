@@ -40,7 +40,8 @@ export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
             },
             xAxis: {
               labels: {
-                enabled: true,
+                enabled: false,
+                crosshair: false,
                 rotation: 20,
                 overflow: 'allow',
               },

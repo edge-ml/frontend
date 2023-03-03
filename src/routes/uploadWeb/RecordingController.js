@@ -7,7 +7,7 @@ import {
   getDatasets,
 } from '../../services/ApiServices/DatasetServices';
 
-const UDDATE_INTERVAL = 10000;
+const UDDATE_INTERVAL = 5000;
 
 export class RecordingController extends EventEmitter {
   constructor(
@@ -33,6 +33,7 @@ export class RecordingController extends EventEmitter {
   getErrors = () => ({ ...this._errors });
 
   _upload = async (series) => {
+    console.log('Uploading data');
     let data = Object.entries(series).map(([name, data]) => ({
       name,
       data,
@@ -71,8 +72,7 @@ export class RecordingController extends EventEmitter {
       }
 
       this.emit('received-data', this);
-
-      if (this.dataPointCtr > this.uploadInterval) {
+      if (this.dataPointCtr > this._uploadInterval) {
         this._upload(this._deltaTimeseries);
         this._deltaTimeseries = {};
         this.dataPointCtr = 0;
