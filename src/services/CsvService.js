@@ -299,7 +299,6 @@ export const generateLabeledDataset = (
     for (var j = 0; j < currentLabeling[i].length; j++) {
       const datasetLabels = currentLabeling[i][j].datasetLabel.labels;
       const labelName = currentLabeling[i][j].datasetLabel.name;
-      const labelIds = labelings.find((elm) => elm.name === labelName).labels;
       currentLabeling[i][j].datasetLabel.labelingId = labelings.find(
         (elm) => elm.name === labelName
       )._id;
@@ -308,9 +307,7 @@ export const generateLabeledDataset = (
         const labelId = labelings
           .map((elm) => elm.labels)
           .flat()
-          .find(
-            (elm) => labelName === elm.name && labelIds.includes(elm._id)
-          )._id;
+          .find((elm) => labelName === elm.name)._id;
         currentLabeling[i][j].datasetLabel.labels[h].type = labelId;
       }
     }
