@@ -103,23 +103,20 @@ class EditLabelingModal extends Component {
   }
 
   onKeyPressed(e) {
-    switch (e.code) {
-      case 'Escape':
-        if (
-          !this.state.showConfirmationDialogueLabeling &&
-          !this.state.showConfirmationDialogueLabels
-        ) {
+    if (
+      !this.state.showConfirmationDialogueLabeling &&
+      !this.state.showConfirmationDialogueLabels
+    ) {
+      switch (e.code) {
+        case 'Escape':
           this.onCloseModal();
-        }
-        break;
-      case 'Enter':
-        if (
-          !this.state.showConfirmationDialogueLabeling &&
-          !this.state.showConfirmationDialogueLabels
-        ) {
+          break;
+        case 'Enter':
           this.onClickingSave();
-        }
-        break;
+          break;
+        case 'Delete':
+          this.onDeleteLabeling(this.state.labeling['_id']);
+      }
     }
   }
 
