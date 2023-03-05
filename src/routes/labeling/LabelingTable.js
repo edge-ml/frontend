@@ -55,19 +55,6 @@ const LabelingTable = (props) => {
                   ></FontAwesomeIcon>
                   Delete
                 </Button>
-                <Button
-                  id="selectAllEmptyButton"
-                  size="sm"
-                  color="secondary"
-                  onClick={props.selectAllEmpty}
-                  className="ml-2"
-                >
-                  <FontAwesomeIcon
-                    className="mr-2"
-                    icon={faFilter}
-                  ></FontAwesomeIcon>
-                  Select Empty Labeling Sets
-                </Button>
               </div>
             </div>
             <div

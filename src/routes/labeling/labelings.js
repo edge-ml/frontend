@@ -53,8 +53,6 @@ class LabelingsPage extends Component {
     this.toggleCheck = this.toggleCheck.bind(this);
     this.selectAll = this.selectAll.bind(this);
     this.deselectAll = this.deselectAll.bind(this);
-    this.selectAllEmpty = this.selectAllEmpty.bind(this);
-
     this.onClickCancelDeleteLabeling =
       this.onClickCancelDeleteLabeling.bind(this);
     this.onClickConfirmlDeleteLabelings =
@@ -418,14 +416,6 @@ class LabelingsPage extends Component {
     }
   }
 
-  selectAllEmpty() {
-    this.setState({
-      labelingsToDelete: this.state.labelings
-        .filter((elm) => elm.labels.length === 0)
-        .map((elm) => elm._id),
-    });
-  }
-
   render() {
     return (
       <Loader loading={!this.state.isReady}>
@@ -440,7 +430,6 @@ class LabelingsPage extends Component {
               toggleCheck={this.toggleCheck}
               selectAll={this.selectAll}
               deselectAll={this.deselectAll}
-              selectAllEmpty={this.selectAllEmpty}
               onClickDeleteLabelingIcon={this.onClickDeleteLabelingIcon}
               onClickDeleteButton={this.onClickDeleteButton}
             />
