@@ -52,6 +52,7 @@ class DFUModal extends Component {
     this.renderProgressInfo = this.renderProgressInfo.bind(this);
     this.resetStateWithError = this.resetStateWithError.bind(this);
     this.renderModalBody = this.renderModalBody.bind(this);
+    this.onKeyPressed = this.onKeyPressed.bind(this);
   }
 
   async componentDidMount() {
@@ -63,6 +64,29 @@ class DFUModal extends Component {
       this.resetStateWithError('Could not connect to DFU service.', e);
     }
     this.setState({ isConnectingGATTDFU: false });
+    document.addEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  onKeyPressed(e) {
+    switch (e.code) {
+      case 'Escape':
+        if (
+          this.state.dfuState !== 'downloadingFW' &&
+          this.state.dfuState !== 'dfuInProgress'
+        ) {
+          this.props.toggleDFUModal();
+        }
+        break;
+      case 'Enter':
+        if (this.state.dfuState === 'start') {
+          this.downLoadAndInstallFW();
+        }
+        break;
+    }
   }
 
   resetStateWithError(msg) {
@@ -334,24 +358,9 @@ class DFUModal extends Component {
               : 'This device does not have edge-ml installed. Flash now to install the firmware. Please do not close this window, while the firmware is flashing.'}
           </div>
           <div className="panelDivider"></div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div>
-              You can download and install the latest version of the edge-ml
-              firmware by clicking on the update button.
-            </div>
-            <Button
-              color="primary"
-              disabled={this.state.dfuState !== 'start'}
-              onClick={this.downLoadAndInstallFW}
-            >
-              Update firmware
-            </Button>
+          <div>
+            You can download and install the latest version of the edge-ml
+            firmware by clicking on the update button.
           </div>
           <div className="panelDivider"></div>
 
@@ -390,7 +399,16 @@ class DFUModal extends Component {
           <ModalBody>{this.renderModalBody()}</ModalBody>
           <ModalFooter>
             <Button
+              color="primary"
+              outline
+              disabled={this.state.dfuState !== 'start'}
+              onClick={this.downLoadAndInstallFW}
+            >
+              Update firmware
+            </Button>
+            <Button
               color="danger"
+              outline
               onClick={this.props.toggleDFUModal}
               disabled={
                 this.state.dfuState === 'downloadingFW' ||
