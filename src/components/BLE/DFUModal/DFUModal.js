@@ -407,7 +407,7 @@ class DFUModal extends Component {
               Update firmware
             </Button>
             <Button
-              color="danger"
+              color="secondary"
               outline
               onClick={this.props.toggleDFUModal}
               disabled={

@@ -3,6 +3,7 @@ import { Button, Card, CardHeader, CardBody } from 'reactstrap';
 import HelpModal from './HelpModal';
 import CreateNewDatasetModal from '../CreateNewDatasetModal/CreateNewDatasetModal';
 import { downloadSingleDataset } from '../../services/DatasetService';
+import ConfirmationDialogueModal from '../ConfirmationDilaogueModal/ConfirmationDialogueModal';
 import './ManagementPanel.css';
 
 class ManagementPanel extends Component {
@@ -11,12 +12,14 @@ class ManagementPanel extends Component {
     this.state = {
       isUploadModalOpen: false,
       isHelpModalOpen: false,
+      isDeleteDatasetModalOpen: false,
     };
 
     this.toggleUploadModal = this.toggleUploadModal.bind(this);
     this.toggleHelpModal = this.toggleHelpModal.bind(this);
     this.downloadDataSet = this.downloadDataSet.bind(this);
     this.onDatasetComplete = this.onDatasetComplete.bind(this);
+    this.toggleDeleteDatasetModal = this.toggleDeleteDatasetModal.bind(this);
   }
 
   onDatasetComplete() {
@@ -33,6 +36,13 @@ class ManagementPanel extends Component {
 
   toggleHelpModal() {
     this.setState({ isHelpModalOpen: !this.state.isHelpModalOpen });
+  }
+
+  toggleDeleteDatasetModal() {
+    this.props.setModalOpen(!this.state.isDeleteDatasetModalOpen);
+    this.setState({
+      isDeleteDatasetModalOpen: !this.state.isDeleteDatasetModalOpen,
+    });
   }
 
   downloadDataSet() {
@@ -73,11 +83,7 @@ class ManagementPanel extends Component {
             block
             outline
             color="danger"
-            onClick={() => {
-              if (window.confirm('Are you sure to delete this dataset?')) {
-                this.props.onDeleteDataset();
-              }
-            }}
+            onClick={this.toggleDeleteDatasetModal}
           >
             Delete Dataset
           </Button>
@@ -102,6 +108,15 @@ class ManagementPanel extends Component {
           isOpen={this.state.isHelpModalOpen}
           onCloseModal={this.toggleHelpModal}
         />
+        {this.state.isDeleteDatasetModalOpen ? (
+          <ConfirmationDialogueModal
+            onCancel={this.toggleDeleteDatasetModal}
+            onConfirm={this.props.onDeleteDataset}
+            confirmString={'Are you sure to delete this dataset?'}
+            title={'Confirm Dataset Deletion'}
+            isOpen={this.state.isDeleteDatasetModalOpen}
+          />
+        ) : null}
       </Card>
     );
   }

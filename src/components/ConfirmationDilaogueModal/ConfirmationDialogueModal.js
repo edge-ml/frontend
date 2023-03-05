@@ -47,6 +47,7 @@ class ConfirmationDialogueModal extends Component {
           <ModalFooter>
             <div className="d-flex flex-row justify-content-end">
               <Button
+                outline
                 color="danger"
                 className="m-1"
                 onClick={this.props.onConfirm}
@@ -54,6 +55,7 @@ class ConfirmationDialogueModal extends Component {
                 Confirm
               </Button>
               <Button
+                outline
                 color="secondary"
                 className="m-1 mr-auto"
                 onClick={this.props.onCancel}
