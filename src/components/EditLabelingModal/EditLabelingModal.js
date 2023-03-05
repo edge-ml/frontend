@@ -103,22 +103,20 @@ class EditLabelingModal extends Component {
   }
 
   onKeyPressed(e) {
-    switch (e.key) {
+    switch (e.code) {
       case 'Escape':
-        if (this.state.showConfirmationDialogueLabeling) {
-          this.onCancelDeletionLabeling();
-        } else if (this.state.showConfirmationDialogueLabels) {
-          this.onCancelDeletionLabels();
-        } else {
+        if (
+          !this.state.showConfirmationDialogueLabeling &&
+          !this.state.showConfirmationDialogueLabels
+        ) {
           this.onCloseModal();
         }
         break;
       case 'Enter':
-        if (this.state.showConfirmationDialogueLabeling) {
-          this.onConfirmDeletionLabeling();
-        } else if (this.state.showConfirmationDialogueLabels) {
-          this.onConfirmDeletionLabels();
-        } else {
+        if (
+          !this.state.showConfirmationDialogueLabeling &&
+          !this.state.showConfirmationDialogueLabels
+        ) {
           this.onClickingSave();
         }
         break;

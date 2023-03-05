@@ -8,7 +8,29 @@ class ConfirmationDialogueModal extends Component {
     this.state = {
       isOpen: this.props.isOpen,
     };
+    this.onKeyPressed = this.onKeyPressed.bind(this);
   }
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  //important that this is called when modal is not shown! Modal has to be rendered conditionally.
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  onKeyPressed(e) {
+    switch (e.code) {
+      case 'Escape':
+        this.props.onCancel();
+        break;
+      case 'Enter':
+        this.props.onConfirm();
+        break;
+    }
+  }
+
   render() {
     return (
       <div>
