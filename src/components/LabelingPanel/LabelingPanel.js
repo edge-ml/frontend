@@ -24,7 +24,6 @@ class LabelingPanel extends Component {
       labels: props.labels,
       selectedLabelTypeId: props.selectedLabelTypeId,
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
-      onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
       onCanEditChanged: props.onCanEditChanged,
       isCrosshairIntervalActive: props.isCrosshairIntervalActive,
@@ -43,7 +42,6 @@ class LabelingPanel extends Component {
       labels: props.labels,
       selectedLabelTypeId: props.selectedLabelTypeId,
       onSelectedLabelTypeIdChanged: props.onSelectedLabelTypeIdChanged,
-      onDeleteSelectedLabel: props.onDeleteSelectedLabel,
       canEdit: props.canEdit,
       onCanEditChanged: props.onCanEditChanged,
       isCrosshairIntervalActive: props.isCrosshairIntervalActive,
@@ -148,7 +146,7 @@ class LabelingPanel extends Component {
               className="deleteButton m-1"
               outline
               color="danger"
-              onClick={(e) => this.state.onDeleteSelectedLabel()}
+              onClick={this.props.onOpenDeleteLabelModal}
             >
               Delete
             </Button>

@@ -9,6 +9,7 @@ import LabelingSelectionPanel from '../components/LabelingSelectionPanel/Labelin
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
 import CombineTimeSeriesModal from '../components/CombineTimeSeriesModal/CombineTimeSeriesModal';
 import Snackbar from '../components/Snackbar/Snackbar';
+import ConfirmationDialogueModal from '../components/ConfirmationDilaogueModal/ConfirmationDialogueModal';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
@@ -50,6 +51,9 @@ class DatasetPage extends Component {
       },
       hideLabels: false,
       fuseTimeSeriesModalState: {
+        isOpen: false,
+      },
+      deleteLabelModalState: {
         isOpen: false,
       },
       modalOpen: false,
@@ -94,6 +98,8 @@ class DatasetPage extends Component {
       ctrl: false,
       shift: false,
     };
+    this.onCloseDeleteLabelModal = this.onCloseDeleteLabelModal.bind(this);
+    this.onOpenDeleteLabelModal = this.onOpenDeleteLabelModal.bind(this);
   }
 
   hideLabels() {
@@ -365,7 +371,7 @@ class DatasetPage extends Component {
         controlStates.selectedLabelTypeId
       ) {
         if (controlStates.canEdit) {
-          this.onDeleteSelectedLabel();
+          this.onOpenDeleteLabelModal();
         } else {
           window.alert('Editing not unlocked. Press "L" to unlock.');
         }
@@ -749,53 +755,52 @@ class DatasetPage extends Component {
   }
 
   onDeleteSelectedLabel() {
-    if (window.confirm('Are you sure to delete this label?')) {
-      let dataset = this.state.dataset;
-      let labeling = dataset.labelings.filter(
-        (labeling) =>
-          labeling.labelingId === this.state.controlStates.selectedLabelingId
-      )[0];
+    let dataset = this.state.dataset;
+    let labeling = dataset.labelings.filter(
+      (labeling) =>
+        labeling.labelingId === this.state.controlStates.selectedLabelingId
+    )[0];
 
-      /*labeling.labels = labeling.labels.filter(
+    /*labeling.labels = labeling.labels.filter(
         (label) => label["_id"] !== this.state.controlStates.selectedLabelId
       );*/
-      const labelIdxToDelete = labeling.labels.findIndex(
-        (label) => label['_id'] === this.state.controlStates.selectedLabelId
+    const labelIdxToDelete = labeling.labels.findIndex(
+      (label) => label['_id'] === this.state.controlStates.selectedLabelId
+    );
+
+    const labelToDelete = labeling.labels[labelIdxToDelete];
+
+    labeling.labels.splice(labelIdxToDelete, 1);
+
+    // Delete labeling when no labels are present for this labeling
+    if (labeling.labels.length === 0) {
+      dataset.labelings = dataset.labelings.filter(
+        (elm) => elm._id != labeling._id
       );
-
-      const labelToDelete = labeling.labels[labelIdxToDelete];
-
-      labeling.labels.splice(labelIdxToDelete, 1);
-
-      // Delete labeling when no labels are present for this labeling
-      if (labeling.labels.length === 0) {
-        dataset.labelings = dataset.labelings.filter(
-          (elm) => elm._id != labeling._id
-        );
-      }
-
-      const labelingIdToDelete = this.state.controlStates.selectedLabelingId;
-      const labelIdToDelete = this.state.controlStates.selectedLabelId;
-
-      this.setState({
-        dataset,
-        controlStates: {
-          ...this.state.controlStates,
-          selectedLabelId: undefined,
-          selectedLabelTypeId: undefined,
-        },
-      });
-      deleteDatasetLabel(dataset._id, labelingIdToDelete, labelIdToDelete)
-        .then(() => {})
-        .catch(() => {
-          this.showSnackbar('Cannot delete label', 5000);
-          // Restore label
-          labeling.labels.push(labelToDelete);
-          this.setState({
-            dataset: dataset,
-          });
-        });
     }
+
+    const labelingIdToDelete = this.state.controlStates.selectedLabelingId;
+    const labelIdToDelete = this.state.controlStates.selectedLabelId;
+
+    this.setState({
+      dataset,
+      controlStates: {
+        ...this.state.controlStates,
+        selectedLabelId: undefined,
+        selectedLabelTypeId: undefined,
+      },
+    });
+    deleteDatasetLabel(dataset._id, labelingIdToDelete, labelIdToDelete)
+      .then(() => {})
+      .catch(() => {
+        this.showSnackbar('Cannot delete label', 5000);
+        // Restore label
+        labeling.labels.push(labelToDelete);
+        this.setState({
+          dataset: dataset,
+        });
+      });
+    this.onCloseDeleteLabelModal();
   }
 
   onCanEditChanged(canEdit) {
@@ -817,6 +822,17 @@ class DatasetPage extends Component {
       .catch((err) => {
         window.alert(err);
       });
+  }
+
+  onCloseDeleteLabelModal() {
+    this.setState({
+      deleteLabelModalState: { isOpen: false },
+      modalOpen: false,
+    });
+  }
+
+  onOpenDeleteLabelModal() {
+    this.setState({ deleteLabelModalState: { isOpen: true }, modalOpen: true });
   }
 
   render() {
@@ -934,10 +950,10 @@ class DatasetPage extends Component {
                     onSelectedLabelTypeIdChanged={
                       this.onSelectedLabelTypeIdChanged
                     }
-                    onDeleteSelectedLabel={this.onDeleteSelectedLabel}
                     onCanEditChanged={this.onCanEditChanged}
                     canEdit={this.state.controlStates.canEdit}
                     isCrosshairIntervalActive={isCrosshairIntervalActive}
+                    onOpenDeleteLabelModal={this.onOpenDeleteLabelModal}
                   />
                 </div>
                 <div className="dataset-labelingpanel">
@@ -992,6 +1008,15 @@ class DatasetPage extends Component {
                 onFuseCanceled={this.onFuseCanceled}
                 isOpen={this.state.fuseTimeSeriesModalState.isOpen}
               />
+              {this.state.deleteLabelModalState.isOpen ? (
+                <ConfirmationDialogueModal
+                  onCancel={this.onCloseDeleteLabelModal}
+                  onConfirm={this.onDeleteSelectedLabel}
+                  confirmString={'Do you want to delete the selected label?'}
+                  title={'Confirm Label Deletion'}
+                  isOpen={this.state.deleteLabelModalState.isOpen}
+                />
+              ) : null}
             </Row>
           </div>
         </Fade>
