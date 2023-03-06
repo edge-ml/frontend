@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import LabelingTableEntry from './LabelingTableEntry';
-import { Button } from 'reactstrap';
+import { Button, Container } from 'reactstrap';
 import Checkbox from '../../components/Common/Checkbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -80,7 +80,12 @@ const LabelingTable = (props) => {
             </div>
           </div>
         ) : (
-          <div>{'No labeling sets available yet.'}</div>
+          <Container
+            className="d-flex flex-column justify-content-center align-items-center"
+            style={{ height: '75vh' }}
+          >
+            <div className="text-center">No labeling sets available yet.</div>
+          </Container>
         )}
       </Fragment>
     </div>

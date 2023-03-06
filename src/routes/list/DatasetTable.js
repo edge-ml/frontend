@@ -5,7 +5,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Fragment, useState } from 'react';
-import { Button } from 'reactstrap';
+import { Button, Container } from 'reactstrap';
 import Checkbox from '../../components/Common/Checkbox';
 import DatasetTableEntry from './DatasetTableEntry';
 
@@ -96,7 +96,12 @@ const DatasetTable = (props) => {
             </div>
           </div>
         ) : (
-          <div>{'No datasets available yet.'}</div>
+          <Container
+            className="d-flex flex-column justify-content-center align-items-center"
+            style={{ height: '50vh' }}
+          >
+            <div className="text-center">No datasets available yet.</div>
+          </Container>
         )}
       </Fragment>
     </div>
