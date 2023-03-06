@@ -21,7 +21,12 @@ export const ML_URI =
     ? 'http://ml.edge-ml.ngrok.io/ml/'
     : `http://${currentHost}:3003/ml/`;
 
-export const DATASET_STORE = `http://${currentHost}:3004`;
+export const DATASET_STORE =
+  process.env.NODE_ENV === 'production'
+    ? '/ds/'
+    : window.location.host === 'edge-ml.ngrok.io'
+    ? 'http://ds.edge-ml.ngrok.io/ds/'
+    : `http://${currentHost}:3004/ds/`;
 
 export const HTTP_METHODS = {
   GET: 'GET',
