@@ -105,7 +105,7 @@ class LabelingSelectionPanel extends Component {
             >
               Download as CSV
             </Button>
-            <Button
+            {/* <Button
               id="buttonDeleteDataset"
               className="m-1"
               color="danger"
@@ -116,7 +116,7 @@ class LabelingSelectionPanel extends Component {
               }}
             >
               Delete Dataset
-            </Button>
+            </Button> */}
             <Button
               id="buttonOpenHelpModal"
               className="m-1"
