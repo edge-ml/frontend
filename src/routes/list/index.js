@@ -85,11 +85,13 @@ class ListPage extends Component {
     });
   }
 
-  onDatasetsChanged(datasets) {
+  async onDatasetsChanged(datasets) {
+    const labelings = await subscribeLabelingsAndLabels();
     console.log(datasets);
     if (!datasets) return;
     this.setState({
       modalID: null,
+      labelings: labelings,
       modal: false,
       ready: true,
       datasets: datasets,
