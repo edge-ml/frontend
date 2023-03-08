@@ -532,7 +532,7 @@ class TimeSeriesPanel extends Component {
       : activePlotbandOptions.from;
 
     let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-      Math.max(leftBound, Math.min(e.pageX - start_plot, rightBound))
+      Math.max(leftBound, Math.min(mousePos, rightBound))
     );
 
     draggedPosition = Math.max(0, draggedPosition);

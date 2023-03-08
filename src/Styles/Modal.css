@@ -34,6 +34,7 @@
   width: 33vw;
   z-index: 1000;
   background-color: white;
+  position: fixed;
 }
 
 .dataset-side-panel-close-button {
