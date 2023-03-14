@@ -12,7 +12,10 @@ export const getDatasets = () => {
         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS
       )
     )
-      .then((result) => resolve(result.data))
+      .then((result) => {
+        console.log(result);
+        resolve(result.data);
+      })
       .catch((err) => {
         console.log(err.response);
         reject(err.response);

@@ -1,0 +1,18 @@
+.content {
+  padding: 8px;
+}
+
+.labelingRow {
+  padding: 8px;
+  background-color: #eeeeee;
+}
+
+.labelingRow * {
+  display: inline;
+  padding: 4px;
+}
+
+.fotter {
+  display: flex;
+  justify-content: space-between;
+}

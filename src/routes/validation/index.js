@@ -15,6 +15,7 @@ import { SelectedModelModalView } from '../../components/SelectedModelModalView/
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import { TrainedModelsView } from './TrainedModelsView';
 import { OngoingTrainingsView } from './OngoingTrainingsView';
+import TrainingWizard from '../../components/TrainingWizard';
 
 const REFRESH_INTERVAL = 500;
 
@@ -30,73 +31,74 @@ const ValidationPage = () => {
   const location = useLocation();
   const history = useHistory();
 
-  const baseModels = useAsyncMemo(getModels, [], []);
-  const models = useAsyncMemo(getTrainedModels, [modelsInvalidate], []);
-  const trainings = useAsyncMemo(
-    getAllActiveTrainings,
-    [trainingsInvalidate],
-    []
-  );
+  // const baseModels = useAsyncMemo(getModels, [], []);
+  // const models = useAsyncMemo(getTrainedModels, [modelsInvalidate], []);
+  // const trainings = useAsyncMemo(
+  //   getAllActiveTrainings,
+  //   [trainingsInvalidate],
+  //   []
+  // );
 
-  useEffect(() => {
-    if (trainings.length !== 0) {
-      setTimeout(() => {
-        trainingsRefresh();
-      }, REFRESH_INTERVAL);
-    }
-  }, [trainings, trainingsInvalidate]);
+  // useEffect(() => {
+  //   if (trainings.length !== 0) {
+  //     setTimeout(() => {
+  //       trainingsRefresh();
+  //     }, REFRESH_INTERVAL);
+  //   }
+  // }, [trainings, trainingsInvalidate]);
 
-  useEffect(() => {
-    modelsRefresh();
-  }, [trainings.length]);
+  // useEffect(() => {
+  //   modelsRefresh();
+  // }, [trainings.length]);
 
-  const viewModel = async (id) => {
-    const model = await getTrained(id);
-    const { labels } = await subscribeLabelingsAndLabels();
-    setLabels(labels);
-    setViewedModel(model);
-    setModalState(true);
-  };
+  // const viewModel = async (id) => {
+  //   const model = await getTrained(id);
+  //   const { labels } = await subscribeLabelingsAndLabels();
+  //   setLabels(labels);
+  //   setViewedModel(model);
+  //   setModalState(true);
+  // };
 
-  const deployModel = (id) => {
-    history.push({
-      pathname: location.pathname.replace('Validation', 'Deploy'),
-      state: { id },
-    });
-  };
+  // const deployModel = (id) => {
+  //   history.push({
+  //     pathname: location.pathname.replace('Validation', 'Deploy'),
+  //     state: { id },
+  //   });
+  // };
 
-  const closeModal = () => {
-    setModalState(false);
-  };
+  // const closeModal = () => {
+  //   setModalState(false);
+  // };
 
-  const showConfirmation = (ids) => {
-    setModelsToDelete(ids);
-    setDeleteModalState(true);
-  };
+  // const showConfirmation = (ids) => {
+  //   setModelsToDelete(ids);
+  //   setDeleteModalState(true);
+  // };
 
-  const closeConfirmation = () => {
-    setDeleteModalState(false);
-  };
+  // const closeConfirmation = () => {
+  //   setDeleteModalState(false);
+  // };
 
-  const deleteModel = (model) => async () => {
-    const succ = await deleteTrained(model.id);
-    if (succ) {
-      setModalState(false);
-      modelsRefresh();
-    }
-  };
+  // const deleteModel = (model) => async () => {
+  //   const succ = await deleteTrained(model.id);
+  //   if (succ) {
+  //     setModalState(false);
+  //     modelsRefresh();
+  //   }
+  // };
 
-  const deleteMultiple = async (ids) => {
-    const succ = (
-      await Promise.all([...ids].map((id) => deleteTrained(id)))
-    ).reduce((prev, cur) => prev || cur, false);
-    if (succ) {
-      modelsRefresh();
-    }
-  };
+  // const deleteMultiple = async (ids) => {
+  //   const succ = (
+  //     await Promise.all([...ids].map((id) => deleteTrained(id)))
+  //   ).reduce((prev, cur) => prev || cur, false);
+  //   if (succ) {
+  //     modelsRefresh();
+  //   }
+  // };
 
   return (
-    <Loader loading={!(models && baseModels)}>
+    <Loader loading={false}>
+      {/*} <Loader loading={!(models && baseModels)}>
       {models ? (
         <ValidationView
           trained={
@@ -131,7 +133,8 @@ const ValidationPage = () => {
           onClosed={closeConfirmation}
           onDelete={deleteMultiple}
         />
-      ) : null}
+      ) : null} */}
+      <TrainingWizard></TrainingWizard>
     </Loader>
   );
 };
