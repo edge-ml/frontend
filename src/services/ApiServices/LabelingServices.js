@@ -54,8 +54,27 @@ export const deleteLabeling = (labelingId, conflictingDatasetIds) => {
   });
 };
 
-export const updateLabelingandLabels = (labeling) => {
-  console.log(labeling);
+export const deleteMultipleLabelings = (labelingIds) => {
+  return new Promise((resolve, reject) => {
+    Promise.all(
+      labelingIds.map((id) =>
+        axios(
+          apiConsts.generateApiRequest(
+            apiConsts.HTTP_METHODS.DELETE,
+            apiConsts.DATASET_STORE,
+            apiConsts.DATASET_STORE_ENDPOINTS.LABELING + `${id}`
+          )
+        )
+      )
+    ).then(() => {
+      subscribeLabelingsAndLabels()
+        .then((data) => resolve(data))
+        .catch((err) => console.log(err));
+    });
+  });
+};
+
+export const updateLabelingandLabels = (labeling, labels) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
