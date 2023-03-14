@@ -13,7 +13,7 @@ export const createDatasetLabel = (datasetId, labelingId, label) => {
         apiConsts.HTTP_METHODS.POST,
         apiConsts.DATASET_STORE,
         apiConsts.DATASET_STORE_ENDPOINTS.DATASET_LABELINGS +
-          `${datasetId}/${labelingId}/`,
+          `${datasetId}/${labelingId}`,
         label
       )
     )
