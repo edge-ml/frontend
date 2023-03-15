@@ -1,21 +1,53 @@
 import { useEffect, useState } from 'react';
+import { Badge } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../../../services/ApiServices/LabelingServices';
 import '../index.css';
+import Checkbox from '../../../components/Common/Checkbox';
+import classNames from 'classnames';
 
-const Wizard_SelectLabeling = ({ labelings }) => {
+const Wizard_SelectLabeling = ({
+  labelings,
+  datasets,
+  setLabeling,
+  selectedLabeling,
+}) => {
+  const countDatasets = (labeling) => {
+    return datasets
+      .map((elm) => elm.labelings.map((l) => l.labelingId))
+      .flat()
+      .filter((elm) => elm === labeling._id).length;
+  };
+
   return (
     <div className="content">
       <h3>1. Select Labeling</h3>
       <div>
         {labelings.map((labeling) => (
-          <div className="labelingRow">
-            <input type="checkbox"></input>
-            <div>{labeling.name}</div>
+          <div
+            className={classNames('labelingRow', {
+              disabled: countDatasets(labeling) === 0,
+            })}
+          >
+            <Checkbox
+              onClick={() => setLabeling(labeling)}
+              isSelected={
+                selectedLabeling ? selectedLabeling._id === labeling._id : false
+              }
+            ></Checkbox>
+            <div className="labelingName">{labeling.name} </div>
             <div>
               {labeling.labels.map((label) => (
-                <div>{label.name}</div>
+                <Badge
+                  className="badge"
+                  style={{ backgroundColor: label.color }}
+                >
+                  {label.name}
+                </Badge>
               ))}
             </div>
+            <div>{`(${countDatasets(labeling)} ${
+              countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
+            })`}</div>
           </div>
         ))}
       </div>

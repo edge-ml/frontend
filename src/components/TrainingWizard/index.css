@@ -2,9 +2,32 @@
   padding: 8px;
 }
 
+.fotter {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Labeling-page */
+
+.badge {
+  margin: 4px;
+  border: 1px solid black;
+}
+
+.checkBoxContainer {
+  display: flex;
+}
+
+.labelingName {
+  font-weight: bold;
+  font-size: large;
+}
+
 .labelingRow {
+  display: flex;
+  align-items: center;
   padding: 8px;
-  background-color: #eeeeee;
+  background-color: #cccccc;
 }
 
 .labelingRow * {
@@ -12,7 +35,43 @@
   padding: 4px;
 }
 
-.fotter {
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* dataset-page */
+
+.datasetRow {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: #cccccc;
+}
+
+.datasetRow * {
+  display: inline;
+  padding: 4px;
+}
+
+.datasetName {
+  font-weight: bold;
+  font-size: large;
+}
+
+.advancedHeading {
+  display: flex;
+  align-items: center;
+}
+
+.advancedHeading * {
+  display: inline;
+}
+
+.faIconAdvancedHyperparameters {
+  margin-left: 8px;
+}
+
+.buttonShowAdvancedHyperparameters {
+  cursor: pointer;
 }
