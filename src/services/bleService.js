@@ -100,7 +100,7 @@ export const parseTimeSeriesData = (
         return [elm.time, elm.data[idx]];
       });
       timeSeries.push({
-        id: dataset.timeSeries.find(
+        _id: dataset.timeSeries.find(
           (elm) => elm.name === sensor.name + '_' + scheme.name
         )._id,
         data: data,
