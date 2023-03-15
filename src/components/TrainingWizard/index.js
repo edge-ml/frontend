@@ -26,7 +26,7 @@ const TrainingWizard = () => {
   const [labeling, setLableing] = useState();
   const [selectedClassifier, setSelectedClassifier] = useState();
 
-  const [screen, setScreen] = useState(1);
+  const [screen, setScreen] = useState(0);
 
   useEffect(() => {
     getDatasets().then((datasets) => {
@@ -48,20 +48,36 @@ const TrainingWizard = () => {
     setDatasets(newDatasets);
   };
 
+  const onBack = () => setScreen(Math.max(screen - 1, 0));
+  const onNext = () => setScreen(Math.min(screen + 1, screens.length - 1));
+
+  const onTrain = () => {
+    console.log('Training');
+  };
+
   const screens = [
     <Wizard_SelectLabeling
       datasets={datasets}
       labelings={labelings}
       setLabeling={setLableing}
       selectedLabeling={labeling}
+      onNext={onNext}
+      onBack={onBack}
     ></Wizard_SelectLabeling>,
     <Wizard_SelectDataset
       datasets={datasets}
       labelings={labelings}
       selectedLabeling={labeling}
       toggleSelectDataset={toggleSelectDataset}
+      onNext={onNext}
+      onBack={onBack}
     ></Wizard_SelectDataset>,
-    <Wizard_Hyperparameters classifier={classifier}></Wizard_Hyperparameters>,
+    <Wizard_Hyperparameters
+      classifier={classifier}
+      onTrain={onTrain}
+      onNext={onNext}
+      onBack={onBack}
+    ></Wizard_Hyperparameters>,
   ];
 
   const isReady = () => {
@@ -72,26 +88,7 @@ const TrainingWizard = () => {
   return (
     <Modal isOpen={true} size="xl">
       <ModalHeader>Train a model</ModalHeader>
-      {isReady() ? (
-        <div>
-          <ModalBody>{screens[screen]}</ModalBody>
-          <ModalFooter className="fotter">
-            <Button onClick={() => setScreen(Math.max(screen - 1, 0))}>
-              Back
-            </Button>
-            <div>
-              {screen + 1}/{screens.length}
-            </div>
-            <Button
-              onClick={() =>
-                setScreen(Math.min(screen + 1, screens.length - 1))
-              }
-            >
-              Next
-            </Button>
-          </ModalFooter>
-        </div>
-      ) : null}
+      {isReady() ? screens[screen] : null}
     </Modal>
   );
 };
