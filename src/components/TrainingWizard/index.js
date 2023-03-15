@@ -18,15 +18,21 @@ import { getModels } from '../../services/ApiServices/MlService';
 import Loader from '../../modules/loader';
 
 const TrainingWizard = () => {
+  // Data obtained from the server
   const [datasets, setDatasets] = useState([]);
   const [labelings, setLabelings] = useState([]);
   const [classifier, setClassifier] = useState([]);
 
-  // User selections
+  // User selections made in the wizard
   const [labeling, setLableing] = useState();
   const [selectedClassifier, setSelectedClassifier] = useState();
+  const [modelName, setModelName] = useState('');
 
+  // Current state of the wizard
   const [screen, setScreen] = useState(0);
+  // Navigate the wizard
+  const onBack = () => setScreen(Math.max(screen - 1, 0));
+  const onNext = () => setScreen(Math.min(screen + 1, screens.length - 1));
 
   useEffect(() => {
     getDatasets().then((datasets) => {
@@ -42,19 +48,15 @@ const TrainingWizard = () => {
   const toggleSelectDataset = (id) => {
     const newDatasets = datasets;
     const idx = datasets.findIndex((elm) => elm._id === id);
-    console.log(newDatasets);
-    console.log(idx);
     newDatasets[idx].selected = !newDatasets[idx].selected;
     setDatasets(newDatasets);
   };
-
-  const onBack = () => setScreen(Math.max(screen - 1, 0));
-  const onNext = () => setScreen(Math.min(screen + 1, screens.length - 1));
 
   const onTrain = () => {
     console.log('Training');
   };
 
+  // The steps in the wizard
   const screens = [
     <Wizard_SelectLabeling
       datasets={datasets}
@@ -77,13 +79,14 @@ const TrainingWizard = () => {
       onTrain={onTrain}
       onNext={onNext}
       onBack={onBack}
+      modelName={modelName}
+      setModelName={setModelName}
     ></Wizard_Hyperparameters>,
   ];
 
   const isReady = () => {
     return datasets.length > 0 && labelings.length > 0 && classifier.length > 0;
   };
-  console.log(isReady());
 
   return (
     <Modal isOpen={true} size="xl">

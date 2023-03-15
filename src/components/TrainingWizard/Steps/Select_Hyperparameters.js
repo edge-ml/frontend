@@ -13,13 +13,22 @@ import {
   ModalBody,
   Button,
   ModalFooter,
+  InputGroup,
+  InputGroupAddon,
 } from 'reactstrap';
 import { getModels } from '../../../services/ApiServices/MlService';
 import NumberHyperparameter from '../../Hyperparameters/NumberHyperparameter';
 import SelectionHyperparameter from '../../Hyperparameters/SelectionHyperparameter';
 import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
-const Wizard_Hyperparameters = ({ classifier, onBack, onNext, onTrain }) => {
+const Wizard_Hyperparameters = ({
+  classifier,
+  onBack,
+  onNext,
+  onTrain,
+  modelName,
+  setModelName,
+}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -37,7 +46,6 @@ const Wizard_Hyperparameters = ({ classifier, onBack, onNext, onTrain }) => {
     <div>
       <ModalBody>
         <div>
-          {console.log(classifier)}
           <h3>3. Select Classifier</h3>
           <Dropdown isOpen={dropdownOpen} toggle={toggle}>
             <DropdownToggle caret size="lg">
@@ -51,6 +59,17 @@ const Wizard_Hyperparameters = ({ classifier, onBack, onNext, onTrain }) => {
               ))}
             </DropdownMenu>
           </Dropdown>
+          <div>
+            <InputGroup style={{ maxWidth: '350px' }}>
+              <InputGroupAddon addonType="prepend">Model Name</InputGroupAddon>
+              <Input
+                type={'text'}
+                value={modelName}
+                onChange={(e) => setModelName(e.target.value)}
+                invalid={!modelName}
+              ></Input>
+            </InputGroup>
+          </div>
           <div>
             <h4>Basic hyperparameters</h4>
             <HyperparameterView
