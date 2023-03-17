@@ -28,20 +28,43 @@ const Wizard_Hyperparameters = ({
   onTrain,
   modelName,
   setModelName,
+  setModelInfo,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [hyperparameters, setHyerparameters] = useState([]);
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
   const [selectedClassifier, setSelectedClassifier] = useState(0);
 
-  const hyperparameters = classifier[selectedClassifier].hyperparameters;
-  const hyperparameters_basic = Object.keys(
-    classifier[selectedClassifier].hyperparameters
-  ).filter((elm) => !hyperparameters[elm].is_advanced);
-  console.log(hyperparameters_basic);
+  console.log(classifier);
 
+  useEffect(() => {
+    const hyperparameters = classifier[selectedClassifier].hyperparameters;
+    const newHyperparameters = hyperparameters.map((elm) => {
+      if (elm.parameter_type === 'selection') {
+        return { ...elm, value: { value: elm.default, label: elm.default } };
+      } else {
+        return { ...elm, value: elm.default };
+      }
+    });
+    setHyerparameters(newHyperparameters);
+  }, [classifier, selectedClassifier]);
+
+  const handleHyperparameterChange = ({ parameter_name, state }) => {
+    const params = hyperparameters;
+    const idx = params.findIndex(
+      (elm) => elm.parameter_name === parameter_name
+    );
+    params[idx].value = state;
+    setHyerparameters([...params]);
+    setModelInfo({
+      hyperparameters: hyperparameters,
+      classifier: classifier[selectedClassifier].name,
+    });
+  };
+  console.log(hyperparameters);
   return (
     <div>
       <ModalBody>
@@ -73,9 +96,10 @@ const Wizard_Hyperparameters = ({
           <div>
             <h4>Basic hyperparameters</h4>
             <HyperparameterView
+              handleHyperparameterChange={handleHyperparameterChange}
               model={classifier[selectedClassifier]}
               isAdvanced={false}
-              hyperparameters={[]}
+              hyperparameters={hyperparameters}
             ></HyperparameterView>
             <div className="advancedHeading">
               <h4>Advanced hyperparameters</h4>
@@ -100,6 +124,8 @@ const Wizard_Hyperparameters = ({
             </div>
             <Collapse isOpen={showAdvanced}>
               <HyperparameterView
+                handleHyperparameterChange={handleHyperparameterChange}
+                hyperparameters={hyperparameters}
                 model={classifier[selectedClassifier]}
                 isAdvanced={true}
               ></HyperparameterView>
@@ -110,62 +136,43 @@ const Wizard_Hyperparameters = ({
       <ModalFooter className="fotter">
         <Button onClick={onBack}>Back</Button>
         <div>2/3</div>
-        <Button onClick={onTrain} color="primary">
-          Train
-        </Button>
+        <Button onClick={onTrain}>Next</Button>
       </ModalFooter>
     </div>
   );
 };
 
 export const HyperparameterView = ({
-  model,
   handleHyperparameterChange,
   hyperparameters,
   isAdvanced,
 }) => {
-  console.log(model);
-
   return (
     <Container fluid>
       <Row>
-        {model &&
-          Object.keys(model.hyperparameters)
-            .filter((h) => model.hyperparameters[h].is_advanced == isAdvanced)
+        {hyperparameters.length > 0 &&
+          hyperparameters
+            .filter((h) => h.is_advanced == isAdvanced)
             .map((h) => {
-              if (model.hyperparameters[h].parameter_type === 'number') {
+              if (h.parameter_type === 'number') {
                 return (
-                  <Col className="col-md-4 col-12 pl-0">
+                  <Col className="col-md-6 col-12 pl-0">
                     <NumberHyperparameter
-                      {...model.hyperparameters[h]}
-                      id={'input_' + model.hyperparameters[h].parameter_name}
+                      {...h}
+                      id={'input_' + h.parameter_name}
                       handleChange={handleHyperparameterChange}
-                      // value={
-                      //   hyperparameters.find(
-                      //     (e) =>
-                      //       e.parameter_name ===
-                      //       model.hyperparameters[h].parameter_name
-                      //   ).state
-                      // }
+                      value={h.value}
                     />
                   </Col>
                 );
-              } else if (
-                model.hyperparameters[h].parameter_type === 'selection'
-              ) {
+              } else if (h.parameter_type === 'selection') {
                 return (
-                  <Col className="col-md-4 col-12 pl-0">
+                  <Col className="col-md-6 col-12 pl-0">
                     <SelectionHyperparameter
-                      {...model.hyperparameters[h]}
-                      id={'input_' + model.hyperparameters[h].parameter_name}
+                      {...h}
+                      id={'input_' + h.parameter_name}
                       handleChange={handleHyperparameterChange}
-                      // value={
-                      //   model.hyperparameters.find(
-                      //     (e) =>
-                      //       e.parameter_name ===
-                      //       model.hyperparameters[h].parameter_name
-                      //   ).state
-                      // }
+                      value={h.value}
                     />
                   </Col>
                 );

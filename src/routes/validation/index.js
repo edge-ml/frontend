@@ -16,12 +16,15 @@ import { subscribeLabelingsAndLabels } from '../../services/ApiServices/Labeling
 import { TrainedModelsView } from './TrainedModelsView';
 import { OngoingTrainingsView } from './OngoingTrainingsView';
 import TrainingWizard from '../../components/TrainingWizard';
+import { Button } from 'reactstrap';
 
 const REFRESH_INTERVAL = 500;
 
 const ValidationPage = () => {
   const [modelsInvalidate, modelsRefresh] = useIncrement();
   const [trainingsInvalidate, trainingsRefresh] = useIncrement();
+
+  const [modalOpen, setModalOpen] = useState(false);
 
   const [labels, setLabels] = useState([]);
   const [viewedModel, setViewedModel] = useState(null);
@@ -98,6 +101,7 @@ const ValidationPage = () => {
 
   return (
     <Loader loading={false}>
+      <Button onClick={() => setModalOpen(true)}>Train a model</Button>
       {/*} <Loader loading={!(models && baseModels)}>
       {models ? (
         <ValidationView
@@ -134,7 +138,10 @@ const ValidationPage = () => {
           onDelete={deleteMultiple}
         />
       ) : null} */}
-      <TrainingWizard></TrainingWizard>
+      <TrainingWizard
+        modalOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+      ></TrainingWizard>
     </Loader>
   );
 };

@@ -60,9 +60,13 @@ const Wizard_SelectLabeling = ({
         </div>
       </ModalBody>
       <ModalFooter className="fotter">
-        <Button onClick={onBack}>Back</Button>
         <div>1/3</div>
-        <Button onClick={onNext}>Next</Button>
+        <Button
+          onClick={onNext}
+          disabled={!(selectedLabeling && selectedLabeling._id)}
+        >
+          Next
+        </Button>
       </ModalFooter>
     </div>
   );
