@@ -6,8 +6,9 @@ import Wizard_SelectDataset from './Steps/Select_Datasets';
 import Wizard_Hyperparameters from './Steps/Select_Hyperparameters';
 import { getDatasets } from '../../services/ApiServices/DatasetServices';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
-import { getModels, train } from '../../services/ApiServices/MlService';
+import { getTrainconfig, train } from '../../services/ApiServices/MlService';
 import SelectEvaluation from './Steps/Select_Evaluation';
+import Select_Normalizer from './Steps/Select_Normalizer';
 
 const TrainingWizard = ({ modalOpen, onClose }) => {
   // Data obtained from the server
@@ -15,15 +16,17 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const [labelings, setLabelings] = useState([]);
   const [classifiers, setClassifiers] = useState([]);
   const [evaluation, setEvaluation] = useState([]);
+  const [normalizer, setNormalizer] = useState([]);
 
   // User selections made in the wizard
   const [labeling, setLableing] = useState();
   const [modelName, setModelName] = useState('');
   const [modelInfo, setModelInfo] = useState(undefined);
   const [selectedEval, setSelectedEval] = useState(undefined);
+  const [selectednormalizer, setSelectednormalizer] = useState(undefined);
 
   // Current state of the wizard
-  const [screen, setScreen] = useState(3);
+  const [screen, setScreen] = useState(0);
   // Navigate the wizard
   const onBack = () => setScreen(Math.max(screen - 1, 0));
   const onNext = () => setScreen(Math.min(screen + 1, screens.length - 1));
@@ -38,9 +41,11 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setDatasets(newDatasets);
     });
     subscribeLabelingsAndLabels().then((labelings) => setLabelings(labelings));
-    getModels().then((result) => {
+    getTrainconfig().then((result) => {
+      console.log(result);
       setEvaluation(result.evaluation);
       setClassifiers(result.classifier);
+      setNormalizer(result.normalizer);
     });
   }, []);
 
@@ -65,6 +70,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       name: modelName,
       modelInfo: modelInfo,
       evaluation: selectedEval,
+      normalizer: selectednormalizer,
     };
     const model_id = await train(data);
     onClose();
@@ -87,11 +93,12 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       onNext={onNext}
       onBack={onBack}
     ></Wizard_SelectDataset>,
-    // <UnifySensors
-    //   datasets={datasets}
-    //   onNext={onNext}
-    //   onBack={onBack}>
-    // </UnifySensors>,
+    <Select_Normalizer
+      onNext={onNext}
+      onBack={onBack}
+      normalizer={normalizer}
+      setNormalizer={setSelectednormalizer}
+    ></Select_Normalizer>,
     <Wizard_Hyperparameters
       classifier={classifiers}
       onTrain={onTrain}
@@ -111,11 +118,17 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     ></SelectEvaluation>,
   ];
 
+  console.log(datasets.slength);
+  console.log(labelings.length);
+  console.log(classifiers);
+  console.log(classifiers.length);
   const isReady = () => {
     return (
       datasets.length > 0 && labelings.length > 0 && classifiers.length > 0
     );
   };
+
+  console.log(normalizer);
 
   return (
     <Modal isOpen={true} size="xl">

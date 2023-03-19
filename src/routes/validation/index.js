@@ -34,6 +34,14 @@ const ValidationPage = () => {
   const location = useLocation();
   const history = useHistory();
 
+  const [models, setModels] = useState([]);
+
+  useEffect(() => {
+    getModels().then((models) => {
+      setModels(models);
+    });
+  }, []);
+
   // const baseModels = useAsyncMemo(getModels, [], []);
   // const models = useAsyncMemo(getTrainedModels, [modelsInvalidate], []);
   // const trainings = useAsyncMemo(
@@ -102,6 +110,11 @@ const ValidationPage = () => {
   return (
     <Loader loading={false}>
       <Button onClick={() => setModalOpen(true)}>Train a model</Button>
+      <div>
+        {models.map((model) => {
+          return <div>{model.name}</div>;
+        })}
+      </div>
       {/*} <Loader loading={!(models && baseModels)}>
       {models ? (
         <ValidationView
@@ -138,10 +151,12 @@ const ValidationPage = () => {
           onDelete={deleteMultiple}
         />
       ) : null} */}
-      <TrainingWizard
-        modalOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-      ></TrainingWizard>
+      {modalOpen ? (
+        <TrainingWizard
+          modalOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+        ></TrainingWizard>
+      ) : null}
     </Loader>
   );
 };
