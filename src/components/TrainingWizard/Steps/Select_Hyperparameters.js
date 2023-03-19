@@ -41,12 +41,12 @@ const Wizard_Hyperparameters = ({
   console.log(classifier);
 
   useEffect(() => {
-    const hyperparameters = classifier[selectedClassifier].hyperparameters;
+    const hyperparameters = classifier[selectedClassifier].parameters;
     const newHyperparameters = hyperparameters.map((elm) => {
       if (elm.parameter_type === 'selection') {
-        return { ...elm, value: { value: elm.default, label: elm.default } };
+        return { ...elm, value: { value: elm.value, label: elm.value } };
       } else {
-        return { ...elm, value: elm.default };
+        return { ...elm, value: elm.value };
       }
     });
     setHyerparameters(newHyperparameters);
@@ -136,7 +136,7 @@ const Wizard_Hyperparameters = ({
       <ModalFooter className="fotter">
         <Button onClick={onBack}>Back</Button>
         <div>2/3</div>
-        <Button onClick={onTrain}>Next</Button>
+        <Button onClick={onNext}>Next</Button>
       </ModalFooter>
     </div>
   );
@@ -147,6 +147,7 @@ export const HyperparameterView = ({
   hyperparameters,
   isAdvanced,
 }) => {
+  console.log(hyperparameters);
   return (
     <Container fluid>
       <Row>

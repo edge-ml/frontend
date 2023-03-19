@@ -10,7 +10,7 @@ const NumberHyperparameter = (props) => {
         <Input
           type="number"
           value={props.value}
-          defaultValue={props.default}
+          defaultValue={props.value}
           step={props.step_size}
           min={props.number_min}
           max={props.number_max}

@@ -9,7 +9,7 @@ export const getModels = function () {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.MODELS
+        apiConsts.ML_ENDPOINTS.TRAIN
       )
     )
       .then((data) => resolve(data.data))

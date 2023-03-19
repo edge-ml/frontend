@@ -14,7 +14,7 @@ const SelectionHyperparameter = (props) => {
         })}
         isMulti={props.multi_select}
         value={props.value}
-        defaultValue={props.default}
+        defaultValue={props.value}
         onChange={(e) => {
           props.handleChange({
             parameter_name: props.parameter_name,

@@ -7,23 +7,28 @@ import Wizard_Hyperparameters from './Steps/Select_Hyperparameters';
 import { getDatasets } from '../../services/ApiServices/DatasetServices';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import { getModels, train } from '../../services/ApiServices/MlService';
+import SelectEvaluation from './Steps/Select_Evaluation';
 
 const TrainingWizard = ({ modalOpen, onClose }) => {
   // Data obtained from the server
   const [datasets, setDatasets] = useState([]);
   const [labelings, setLabelings] = useState([]);
   const [classifiers, setClassifiers] = useState([]);
+  const [evaluation, setEvaluation] = useState([]);
 
   // User selections made in the wizard
   const [labeling, setLableing] = useState();
   const [modelName, setModelName] = useState('');
   const [modelInfo, setModelInfo] = useState(undefined);
+  const [selectedEval, setSelectedEval] = useState(undefined);
 
   // Current state of the wizard
-  const [screen, setScreen] = useState(0);
+  const [screen, setScreen] = useState(3);
   // Navigate the wizard
   const onBack = () => setScreen(Math.max(screen - 1, 0));
   const onNext = () => setScreen(Math.min(screen + 1, screens.length - 1));
+
+  const onEvaluationChanged = (evl) => setEvaluation(evl);
 
   useEffect(() => {
     getDatasets().then((datasets) => {
@@ -33,7 +38,10 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setDatasets(newDatasets);
     });
     subscribeLabelingsAndLabels().then((labelings) => setLabelings(labelings));
-    getModels().then((models) => setClassifiers(models));
+    getModels().then((result) => {
+      setEvaluation(result.evaluation);
+      setClassifiers(result.classifier);
+    });
   }, []);
 
   const toggleSelectDataset = (id) => {
@@ -44,8 +52,6 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   };
 
   const onTrain = async () => {
-    console.log('Training');
-    console.log(modelInfo);
     const data = {
       datasets: datasets
         .filter((elm) => elm.selected)
@@ -58,11 +64,11 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       labeling: labeling._id,
       name: modelName,
       modelInfo: modelInfo,
+      evaluation: selectedEval,
     };
     const model_id = await train(data);
     onClose();
   };
-
   // The steps in the wizard
   const screens = [
     <Wizard_SelectLabeling
@@ -95,6 +101,14 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setModelName={setModelName}
       setModelInfo={setModelInfo}
     ></Wizard_Hyperparameters>,
+    <SelectEvaluation
+      onTrain={onTrain}
+      onNext={onNext}
+      onBack={onBack}
+      evaluation={evaluation}
+      onEvaluationChanged={onEvaluationChanged}
+      setSelectedEval={setSelectedEval}
+    ></SelectEvaluation>,
   ];
 
   const isReady = () => {
@@ -104,7 +118,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={modalOpen} size="xl">
+    <Modal isOpen={true} size="xl">
       <ModalHeader>Train a model</ModalHeader>
       {isReady() ? screens[screen] : null}
     </Modal>
