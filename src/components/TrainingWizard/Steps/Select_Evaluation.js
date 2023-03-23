@@ -77,7 +77,7 @@ const SelectEvaluation = ({
       <ModalFooter className="fotter">
         <Button onClick={onBack}>Back</Button>
         <div>2/3</div>
-        <Button onClick={onTrain}>Next</Button>
+        <Button onClick={onNext}>Next</Button>
       </ModalFooter>
     </div>
   );

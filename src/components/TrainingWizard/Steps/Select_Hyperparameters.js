@@ -26,45 +26,31 @@ const Wizard_Hyperparameters = ({
   onBack,
   onNext,
   onTrain,
-  modelName,
-  setModelName,
-  setModelInfo,
+  setSelectedClassifier,
+  setClassifier,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [hyperparameters, setHyerparameters] = useState([]);
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
 
-  const [selectedClassifier, setSelectedClassifier] = useState(0);
+  const [classififier_index, set_classifier_index] = useState(0);
 
   console.log(classifier);
 
-  useEffect(() => {
-    const hyperparameters = classifier[selectedClassifier].parameters;
-    const newHyperparameters = hyperparameters.map((elm) => {
-      if (elm.parameter_type === 'selection') {
-        return { ...elm, value: { value: elm.value, label: elm.value } };
-      } else {
-        return { ...elm, value: elm.value };
-      }
-    });
-    setHyerparameters(newHyperparameters);
-  }, [classifier, selectedClassifier]);
-
   const handleHyperparameterChange = ({ parameter_name, state }) => {
-    const params = hyperparameters;
-    const idx = params.findIndex(
-      (elm) => elm.parameter_name === parameter_name
-    );
-    params[idx].value = state;
-    setHyerparameters([...params]);
-    setModelInfo({
-      hyperparameters: hyperparameters,
-      classifier: classifier[selectedClassifier].name,
-    });
+    // const params = hyperparameters;
+    // const idx = params.findIndex(
+    //   (elm) => elm.parameter_name === parameter_name
+    // );
+    // params[idx].value = state;
+    // setHyerparameters([...params]);
+    // setModelInfo({
+    //   hyperparameters: hyperparameters,
+    //   classifier: classifier[selectedClassifier].name,
+    // });
   };
-  console.log(hyperparameters);
+
   return (
     <div>
       <ModalBody>
@@ -72,34 +58,28 @@ const Wizard_Hyperparameters = ({
           <h3>3. Select Classifier</h3>
           <Dropdown isOpen={dropdownOpen} toggle={toggle}>
             <DropdownToggle caret size="lg">
-              {classifier[selectedClassifier].name}
+              {classifier[classififier_index].name}
             </DropdownToggle>
             <DropdownMenu>
               {classifier.map((cls, idx) => (
-                <DropdownItem onClick={() => setSelectedClassifier(idx)}>
+                <DropdownItem
+                  onClick={() => {
+                    setSelectedClassifier(idx);
+                    set_classifier_index(idx);
+                  }}
+                >
                   {cls.name}
                 </DropdownItem>
               ))}
             </DropdownMenu>
           </Dropdown>
           <div>
-            <InputGroup style={{ maxWidth: '350px' }}>
-              <InputGroupAddon addonType="prepend">Model Name</InputGroupAddon>
-              <Input
-                type={'text'}
-                value={modelName}
-                onChange={(e) => setModelName(e.target.value)}
-                invalid={!modelName}
-              ></Input>
-            </InputGroup>
-          </div>
-          <div>
             <h4>Basic hyperparameters</h4>
             <HyperparameterView
               handleHyperparameterChange={handleHyperparameterChange}
-              model={classifier[selectedClassifier]}
+              model={classifier[classififier_index]}
               isAdvanced={false}
-              hyperparameters={hyperparameters}
+              hyperparameters={classifier[classififier_index].parameters}
             ></HyperparameterView>
             <div className="advancedHeading">
               <h4>Advanced hyperparameters</h4>
@@ -125,8 +105,7 @@ const Wizard_Hyperparameters = ({
             <Collapse isOpen={showAdvanced}>
               <HyperparameterView
                 handleHyperparameterChange={handleHyperparameterChange}
-                hyperparameters={hyperparameters}
-                model={classifier[selectedClassifier]}
+                hyperparameters={classifier[classififier_index].parameters}
                 isAdvanced={true}
               ></HyperparameterView>
             </Collapse>

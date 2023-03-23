@@ -107,13 +107,42 @@ const ValidationPage = () => {
   //   }
   // };
 
+  const metric = (metric) => Math.round(metric * 100 * 100) / 100;
+
+  console.log(models);
   return (
     <Loader loading={false}>
-      <Button onClick={() => setModalOpen(true)}>Train a model</Button>
-      <div>
-        {models.map((model) => {
-          return <div>{model.name}</div>;
-        })}
+      <div className="p-2 pl-md-4 pr-md-4">
+        <div className="w-100 d-flex flex-row justify-content-between align-items-center">
+          <div className="font-weight-bold h4">DATASETS</div>
+          <Button onClick={() => setModalOpen(true)}>Train a model</Button>
+        </div>
+        <div>
+          {models.map((model) => {
+            return (
+              <div style={{ backgroundColor: 'beige' }} className="m-2">
+                <div>
+                  <b>{model.name}</b>
+                </div>
+                {model.status === 'done' ? (
+                  <div>
+                    <div>{model.model.classifier.name}</div>
+                    <div className="d-flex">
+                      <div className="">
+                        <b>Acc: </b>
+                        {metric(model.model.metrics.accuracy_score)}
+                      </div>
+                      <div>
+                        <b>F1: </b>
+                        {metric(model.model.metrics.f1_score)}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
       </div>
       {/*} <Loader loading={!(models && baseModels)}>
       {models ? (

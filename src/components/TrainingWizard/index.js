@@ -9,6 +9,8 @@ import { subscribeLabelingsAndLabels } from '../../services/ApiServices/Labeling
 import { getTrainconfig, train } from '../../services/ApiServices/MlService';
 import SelectEvaluation from './Steps/Select_Evaluation';
 import Select_Normalizer from './Steps/Select_Normalizer';
+import Select_Windowing from './Steps/Select_Windowing';
+import Select_Name from './Steps/Select_Name';
 
 const TrainingWizard = ({ modalOpen, onClose }) => {
   // Data obtained from the server
@@ -17,13 +19,15 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const [classifiers, setClassifiers] = useState([]);
   const [evaluation, setEvaluation] = useState([]);
   const [normalizer, setNormalizer] = useState([]);
+  const [windowing, setWindowing] = useState([]);
 
   // User selections made in the wizard
   const [labeling, setLableing] = useState();
   const [modelName, setModelName] = useState('');
-  const [modelInfo, setModelInfo] = useState(undefined);
+  const [selectedClassifier, setSelectedClassifier] = useState(undefined);
   const [selectedEval, setSelectedEval] = useState(undefined);
   const [selectednormalizer, setSelectednormalizer] = useState(undefined);
+  const [selectedWindowing, setSelectedWindowing] = useState(undefined);
 
   // Current state of the wizard
   const [screen, setScreen] = useState(0);
@@ -46,6 +50,13 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setEvaluation(result.evaluation);
       setClassifiers(result.classifier);
       setNormalizer(result.normalizer);
+      setWindowing(result.windowing);
+
+      // Set default values for the pages
+      setSelectedClassifier(result.classifier[0]);
+      setSelectedEval(result.evaluation[0]);
+      setSelectednormalizer(result.normalizer[0]);
+      setSelectedWindowing(result.windowing[0]);
     });
   }, []);
 
@@ -57,6 +68,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   };
 
   const onTrain = async () => {
+    console.log(selectedWindowing);
     const data = {
       datasets: datasets
         .filter((elm) => elm.selected)
@@ -68,9 +80,10 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
         }),
       labeling: labeling._id,
       name: modelName,
-      modelInfo: modelInfo,
+      classifier: selectedClassifier,
       evaluation: selectedEval,
       normalizer: selectednormalizer,
+      windowing: selectedWindowing,
     };
     const model_id = await train(data);
     onClose();
@@ -93,6 +106,13 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       onNext={onNext}
       onBack={onBack}
     ></Wizard_SelectDataset>,
+    <Select_Windowing
+      onNext={onNext}
+      onBack={onBack}
+      windowers={windowing}
+      setSelectedWindower={setSelectedWindowing}
+      setWindower={setWindowing}
+    ></Select_Windowing>,
     <Select_Normalizer
       onNext={onNext}
       onBack={onBack}
@@ -106,7 +126,8 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       onBack={onBack}
       modelName={modelName}
       setModelName={setModelName}
-      setModelInfo={setModelInfo}
+      setSelectedClassifier={setSelectedClassifier}
+      setClassifier={setClassifiers}
     ></Wizard_Hyperparameters>,
     <SelectEvaluation
       onTrain={onTrain}
@@ -116,6 +137,13 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       onEvaluationChanged={onEvaluationChanged}
       setSelectedEval={setSelectedEval}
     ></SelectEvaluation>,
+    <Select_Name
+      onTrain={onTrain}
+      onNext={onNext}
+      onBack={onBack}
+      modelName={modelName}
+      setModelName={setModelName}
+    ></Select_Name>,
   ];
 
   console.log(datasets.slength);
@@ -129,6 +157,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   };
 
   console.log(normalizer);
+  console.log(windowing);
 
   return (
     <Modal isOpen={true} size="xl">

@@ -26,36 +26,38 @@ const Wizard_SelectLabeling = ({
         <div className="content">
           <h3>1. Select Labeling</h3>
           <div>
-            {labelings.map((labeling) => (
-              <div
-                className={classNames('labelingRow', {
-                  disabled: countDatasets(labeling) === 0,
-                })}
-              >
-                <Checkbox
-                  onClick={() => setLabeling(labeling)}
-                  isSelected={
-                    selectedLabeling
-                      ? selectedLabeling._id === labeling._id
-                      : false
-                  }
-                ></Checkbox>
-                <div className="labelingName">{labeling.name} </div>
-                <div>
-                  {labeling.labels.map((label) => (
-                    <Badge
-                      className="badge"
-                      style={{ backgroundColor: label.color }}
-                    >
-                      {label.name}
-                    </Badge>
-                  ))}
+            {labelings
+              .filter((elm) => countDatasets(elm))
+              .map((labeling) => (
+                <div
+                  className={classNames('labelingRow', {
+                    disabled: countDatasets(labeling) === 0,
+                  })}
+                >
+                  <Checkbox
+                    onClick={() => setLabeling(labeling)}
+                    isSelected={
+                      selectedLabeling
+                        ? selectedLabeling._id === labeling._id
+                        : false
+                    }
+                  ></Checkbox>
+                  <div className="labelingName">{labeling.name} </div>
+                  <div>
+                    {labeling.labels.map((label) => (
+                      <Badge
+                        className="badge"
+                        style={{ backgroundColor: label.color }}
+                      >
+                        {label.name}
+                      </Badge>
+                    ))}
+                  </div>
+                  <div>{`(${countDatasets(labeling)} ${
+                    countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
+                  })`}</div>
                 </div>
-                <div>{`(${countDatasets(labeling)} ${
-                  countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
-                })`}</div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </ModalBody>
