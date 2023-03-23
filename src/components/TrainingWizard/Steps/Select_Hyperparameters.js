@@ -51,6 +51,7 @@ const Wizard_Hyperparameters = ({
     // });
   };
 
+  console.log(classifier[classififier_index]);
   return (
     <div>
       <ModalBody>
@@ -64,7 +65,7 @@ const Wizard_Hyperparameters = ({
               {classifier.map((cls, idx) => (
                 <DropdownItem
                   onClick={() => {
-                    setSelectedClassifier(idx);
+                    setSelectedClassifier(classifier[classififier_index]);
                     set_classifier_index(idx);
                   }}
                 >

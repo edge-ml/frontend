@@ -35,6 +35,7 @@ const ValidationPage = () => {
   const history = useHistory();
 
   const [models, setModels] = useState([]);
+  const [modalModel, setModalModel] = useState(undefined);
 
   useEffect(() => {
     getModels().then((models) => {
@@ -109,6 +110,14 @@ const ValidationPage = () => {
 
   const metric = (metric) => Math.round(metric * 100 * 100) / 100;
 
+  const onViewModel = (model) => {
+    setModalModel(model);
+  };
+
+  const closeViewModal = () => {
+    setModalModel(undefined);
+  };
+
   console.log(models);
   return (
     <Loader loading={false}>
@@ -137,6 +146,7 @@ const ValidationPage = () => {
                         {metric(model.model.metrics.f1_score)}
                       </div>
                     </div>
+                    <Button onClick={() => onViewModel(model)}>View</Button>
                   </div>
                 ) : null}
               </div>
@@ -144,47 +154,14 @@ const ValidationPage = () => {
           })}
         </div>
       </div>
-      {/*} <Loader loading={!(models && baseModels)}>
-      {models ? (
-        <ValidationView
-          trained={
-            <TrainedModelsView
-              models={models}
-              onViewModel={viewModel}
-              onDeployModel={deployModel}
-              handleDelete={showConfirmation}
-            />
-          }
-          ongoing={
-            trainings.length ? (
-              <OngoingTrainingsView trainings={trainings} />
-            ) : null
-          }
-        />
-      ) : null}
-      {baseModels && viewedModel && modalState ? (
-        <SelectedModelModalView
-          isOpen={modalState}
-          baseModels={baseModels}
-          model={viewedModel}
-          labels={labels}
-          onClosed={closeModal}
-          onDelete={deleteModel(viewedModel)}
-        />
-      ) : null}
-      {baseModels && modelsToDelete.length ? (
-        <DeleteConfirmationModalView
-          isOpen={deleteModalState}
-          modelsToDelete={modelsToDelete}
-          onClosed={closeConfirmation}
-          onDelete={deleteMultiple}
-        />
-      ) : null} */}
       {modalOpen ? (
         <TrainingWizard
           modalOpen={modalOpen}
           onClose={() => setModalOpen(false)}
         ></TrainingWizard>
+      ) : null}
+      {modalModel ? (
+        <SelectedModelModalView model={modalModel}></SelectedModelModalView>
       ) : null}
     </Loader>
   );
