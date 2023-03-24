@@ -17,30 +17,39 @@ import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 import { humanFileSize, toPercentage } from '../../services/helpers';
 import ConfusionMatrixView from '../ConfusionMatrix/ConfusionMatrixView';
 import { CrossValidationTable } from './CrossValidationTable';
+import Loader from '../../modules/loader';
 
 export const SelectedModelModalView = ({
   model,
   labels,
   onDelete = null,
-  onClosed = () => {},
+  onClosed,
   ...props
 }) => {
   console.log(model);
+  console.log(!model);
   return (
     <Modal isOpen={model} size="xl" toggle={onClosed} {...props}>
-      <ModalHeader>Model: {model.name}</ModalHeader>
-      <ModalBody>
-        <General_info model={model}></General_info>
-        <Perofrmance_info model={model}></Perofrmance_info>
-      </ModalBody>
-      <ModalFooter>
-        {onDelete ? (
-          <Button className="mr-auto" onClick={onDelete} color="danger">
-            Delete
-          </Button>
+      <Loader loading={!model}>
+        {model ? (
+          <div>
+            <ModalHeader>Model: {model.name}</ModalHeader>
+            <ModalBody>
+              <General_info model={model}></General_info>
+              <Button>Deploy</Button>
+              <Perofrmance_info model={model}></Perofrmance_info>
+            </ModalBody>
+            <ModalFooter>
+              {onDelete ? (
+                <Button className="mr-auto" onClick={onDelete} color="danger">
+                  Delete
+                </Button>
+              ) : null}
+              <Button onClick={onClosed}>Close</Button>
+            </ModalFooter>
+          </div>
         ) : null}
-        <Button onClick={onClosed}>Close</Button>
-      </ModalFooter>
+      </Loader>
     </Modal>
   );
 };
@@ -58,23 +67,104 @@ const General_info = ({ model }) => {
   );
 };
 
-const metric = (metric) => Math.round(metric * 100 * 100) / 100;
+const Classification_report = ({ report }) => {
+  console.log(report);
+  const keys = Object.keys(report);
+  console.log(keys);
+  const metrics = Object.keys(report[keys[0]]);
+  console.log(metrics);
+  return (
+    <div>
+      <Table>
+        <thead>
+          <tr>
+            <th></th>
+            {metrics.map((key) => (
+              <th>{key}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {keys.map((key) => (
+            <tr>
+              <th>{key}</th>
+              {metrics.map((met) => (
+                <th>{metric(report[key][met])}</th>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </div>
+  );
+};
+
+const Training_config = ({ model }) => {
+  const { windower, normalizer, classifier, evaluation } = model;
+
+  const Detail_view = ({ stage }) => {
+    return (
+      <div>
+        <div>Method: {stage.name}</div>
+        {stage.parameters &&
+          stage.parameters.map((param) => {
+            return (
+              <div>
+                {param.name}: {param.value}
+              </div>
+            );
+          })}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <div>
+        <h5>Windowing</h5>
+        <Detail_view stage={windower}></Detail_view>
+      </div>
+      <div>
+        <h5>Normalizer</h5>
+        <Detail_view stage={normalizer}></Detail_view>
+      </div>
+      <div>
+        <h5>Classifier</h5>
+        <Detail_view stage={classifier}></Detail_view>
+      </div>
+      <div>
+        <h5>Evaluation</h5>
+        <Detail_view stage={evaluation}></Detail_view>
+      </div>
+    </div>
+  );
+};
+
+const metric = (metric) => {
+  const val = Math.round(metric * 100 * 100) / 100;
+  return isNaN(val) ? '' : val;
+};
 
 const Perofrmance_info = ({ model }) => {
+  console.log(model);
   console.log(model.model.metrics);
   const metrics = model.model.metrics;
+  console.log(model.model);
   return (
     <div>
       <h4>Performance metrics</h4>
       <div>Accuracy: {metric(metrics.accuracy_score)}</div>
       <div>Precision: {metric(metrics.precision_score)}</div>
       <div>Recall: {metric(metrics.recall_score)}</div>
-
+      <Classification_report
+        report={metrics.classification_report}
+      ></Classification_report>
       <ConfusionMatrixView
         matrix={JSON.parse(metrics.confusion_matrix)}
         labelMap
         labelIds
       ></ConfusionMatrixView>
+      <Training_config model={model.model}></Training_config>
     </div>
   );
 };

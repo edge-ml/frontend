@@ -11,6 +11,7 @@ import SelectEvaluation from './Steps/Select_Evaluation';
 import Select_Normalizer from './Steps/Select_Normalizer';
 import Select_Windowing from './Steps/Select_Windowing';
 import Select_Name from './Steps/Select_Name';
+import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
 
 const TrainingWizard = ({ modalOpen, onClose }) => {
   // Data obtained from the server
@@ -20,6 +21,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const [evaluation, setEvaluation] = useState([]);
   const [normalizer, setNormalizer] = useState([]);
   const [windowing, setWindowing] = useState([]);
+  const [featureExtractors, setFeatureExtractors] = useState([]);
 
   // User selections made in the wizard
   const [labeling, setLableing] = useState();
@@ -28,9 +30,12 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const [selectedEval, setSelectedEval] = useState(undefined);
   const [selectednormalizer, setSelectednormalizer] = useState(undefined);
   const [selectedWindowing, setSelectedWindowing] = useState(undefined);
+  const [selectedFeatureExtractor, setSelectedFeatureExtractor] =
+    useState(undefined);
 
   // Current state of the wizard
   const [screen, setScreen] = useState(0);
+
   // Navigate the wizard
   const onBack = () => setScreen(Math.max(screen - 1, 0));
   const onNext = () => setScreen(Math.min(screen + 1, screens.length - 1));
@@ -51,12 +56,15 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setClassifiers(result.classifier);
       setNormalizer(result.normalizer);
       setWindowing(result.windowing);
+      setFeatureExtractors(result.featureExtractors);
 
       // Set default values for the pages
       setSelectedClassifier(result.classifier[0]);
       setSelectedEval(result.evaluation[0]);
       setSelectednormalizer(result.normalizer[0]);
       setSelectedWindowing(result.windowing[0]);
+      console.log(result.featureExtractors);
+      setSelectedFeatureExtractor(result.featureExtractors[0]);
     });
   }, []);
 
@@ -84,6 +92,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       evaluation: selectedEval,
       normalizer: selectednormalizer,
       windowing: selectedWindowing,
+      featureExtractor: selectedFeatureExtractor,
     };
     const model_id = await train(data);
     onClose();
@@ -113,6 +122,12 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setSelectedWindower={setSelectedWindowing}
       setWindower={setWindowing}
     ></Select_Windowing>,
+    <Select_FeatureExtractor
+      onBack={onBack}
+      onNext={onNext}
+      featureExtractors={featureExtractors}
+      setFeatureExtractor={setSelectedFeatureExtractor}
+    ></Select_FeatureExtractor>,
     <Select_Normalizer
       onNext={onNext}
       onBack={onBack}
@@ -146,7 +161,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     ></Select_Name>,
   ];
 
-  console.log(datasets.slength);
+  console.log(datasets.length);
   console.log(labelings.length);
   console.log(classifiers);
   console.log(classifiers.length);

@@ -38,17 +38,14 @@ const Wizard_Hyperparameters = ({
 
   console.log(classifier);
 
-  const handleHyperparameterChange = ({ parameter_name, state }) => {
-    // const params = hyperparameters;
-    // const idx = params.findIndex(
-    //   (elm) => elm.parameter_name === parameter_name
-    // );
-    // params[idx].value = state;
-    // setHyerparameters([...params]);
-    // setModelInfo({
-    //   hyperparameters: hyperparameters,
-    //   classifier: classifier[selectedClassifier].name,
-    // });
+  const handleHyperparameterChange = ({ parameter_name, value }) => {
+    const newClassifier = [...classifier];
+    const idx = newClassifier[classififier_index].parameters.findIndex(
+      (elm) => elm.parameter_name === parameter_name
+    );
+    newClassifier[classififier_index].parameters[idx].value = value;
+    setClassifier(newClassifier);
+    setSelectedClassifier(newClassifier[classififier_index]);
   };
 
   console.log(classifier[classififier_index]);
@@ -104,6 +101,7 @@ const Wizard_Hyperparameters = ({
               </div>
             </div>
             <Collapse isOpen={showAdvanced}>
+              {console.log('show advanced')}
               <HyperparameterView
                 handleHyperparameterChange={handleHyperparameterChange}
                 hyperparameters={classifier[classififier_index].parameters}
@@ -127,13 +125,14 @@ export const HyperparameterView = ({
   hyperparameters,
   isAdvanced,
 }) => {
-  console.log(hyperparameters);
+  console.log(hyperparameters[0].is_advanced, isAdvanced);
+  console.log(hyperparameters.filter((h) => h.is_advanced === isAdvanced));
   return (
     <Container fluid>
       <Row>
         {hyperparameters.length > 0 &&
           hyperparameters
-            .filter((h) => h.is_advanced == isAdvanced)
+            .filter((h) => h.is_advanced === isAdvanced)
             .map((h) => {
               if (h.parameter_type === 'number') {
                 return (
@@ -147,6 +146,7 @@ export const HyperparameterView = ({
                   </Col>
                 );
               } else if (h.parameter_type === 'selection') {
+                console.log(h.value);
                 return (
                   <Col className="col-md-6 col-12 pl-0">
                     <SelectionHyperparameter

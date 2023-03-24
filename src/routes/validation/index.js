@@ -1,20 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import Loader from '../../modules/loader';
-import { useAsyncMemo, useIncrement } from '../../services/ReactHooksService';
-import {
-  getTrainedModels,
-  getModels,
-  getTrained,
-  deleteTrained,
-  getAllActiveTrainings,
-} from '../../services/ApiServices/MlService';
-import { ValidationView } from './ValidationView';
-import { DeleteConfirmationModalView } from './DeleteConfirmationModalView';
+import { useIncrement } from '../../services/ReactHooksService';
+import { getModels } from '../../services/ApiServices/MlService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
-import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
-import { TrainedModelsView } from './TrainedModelsView';
-import { OngoingTrainingsView } from './OngoingTrainingsView';
 import TrainingWizard from '../../components/TrainingWizard';
 import { Button } from 'reactstrap';
 
@@ -42,71 +31,6 @@ const ValidationPage = () => {
       setModels(models);
     });
   }, []);
-
-  // const baseModels = useAsyncMemo(getModels, [], []);
-  // const models = useAsyncMemo(getTrainedModels, [modelsInvalidate], []);
-  // const trainings = useAsyncMemo(
-  //   getAllActiveTrainings,
-  //   [trainingsInvalidate],
-  //   []
-  // );
-
-  // useEffect(() => {
-  //   if (trainings.length !== 0) {
-  //     setTimeout(() => {
-  //       trainingsRefresh();
-  //     }, REFRESH_INTERVAL);
-  //   }
-  // }, [trainings, trainingsInvalidate]);
-
-  // useEffect(() => {
-  //   modelsRefresh();
-  // }, [trainings.length]);
-
-  // const viewModel = async (id) => {
-  //   const model = await getTrained(id);
-  //   const { labels } = await subscribeLabelingsAndLabels();
-  //   setLabels(labels);
-  //   setViewedModel(model);
-  //   setModalState(true);
-  // };
-
-  // const deployModel = (id) => {
-  //   history.push({
-  //     pathname: location.pathname.replace('Validation', 'Deploy'),
-  //     state: { id },
-  //   });
-  // };
-
-  // const closeModal = () => {
-  //   setModalState(false);
-  // };
-
-  // const showConfirmation = (ids) => {
-  //   setModelsToDelete(ids);
-  //   setDeleteModalState(true);
-  // };
-
-  // const closeConfirmation = () => {
-  //   setDeleteModalState(false);
-  // };
-
-  // const deleteModel = (model) => async () => {
-  //   const succ = await deleteTrained(model.id);
-  //   if (succ) {
-  //     setModalState(false);
-  //     modelsRefresh();
-  //   }
-  // };
-
-  // const deleteMultiple = async (ids) => {
-  //   const succ = (
-  //     await Promise.all([...ids].map((id) => deleteTrained(id)))
-  //   ).reduce((prev, cur) => prev || cur, false);
-  //   if (succ) {
-  //     modelsRefresh();
-  //   }
-  // };
 
   const metric = (metric) => Math.round(metric * 100 * 100) / 100;
 
@@ -156,13 +80,14 @@ const ValidationPage = () => {
       </div>
       {modalOpen ? (
         <TrainingWizard
-          modalOpen={modalOpen}
+          modalOpen={true}
           onClose={() => setModalOpen(false)}
         ></TrainingWizard>
       ) : null}
-      {modalModel ? (
-        <SelectedModelModalView model={modalModel}></SelectedModelModalView>
-      ) : null}
+      <SelectedModelModalView
+        model={modalModel}
+        onClosed={() => setModalModel(false)}
+      ></SelectedModelModalView>
     </Loader>
   );
 };
