@@ -13,8 +13,8 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
   const req = axios({
     ...apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
-      apiConsts.API_URI,
-      apiConsts.API_ENDPOINTS.PROCESS_CSV,
+      apiConsts.DATASET_STORE,
+      apiConsts.DATASET_STORE_ENDPOINTS.CREATE_DATASET,
       formData,
       {},
       'multipart/form-data'

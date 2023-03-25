@@ -80,6 +80,7 @@ export const DATASET_STORE_ENDPOINTS = {
   DATASET_LABELINGS: '/datasets/labelings/',
   LABELING: '/labelings/',
   CSV: '/datasets/csv/',
+  CREATE_DATASET: '/datasets/create'
 };
 
 export const generateApiRequest = (
