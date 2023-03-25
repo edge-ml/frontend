@@ -1,0 +1,22 @@
+.labelInfo {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.labelBorder {
+  border-left: black solid 1px;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 0;
+  right: 0.3rem;
+}
+
+.modal-icon-button {
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+  height: 32px;
+  width: 32px;
+}

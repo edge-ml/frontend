@@ -22,6 +22,7 @@ import { subscribeLabelingsAndLabels } from '../../services/ApiServices/Labeling
 import { downloadAllAsZip } from '../../services/DatasetService';
 import DatasetTable from './DatasetTable';
 import DataUpload from './DataUpload';
+import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
 
 class ListPage extends Component {
   constructor(props) {
@@ -85,16 +86,22 @@ class ListPage extends Component {
     });
   }
 
-  onDatasetsChanged(datasets) {
-    console.log(datasets);
+  async onDatasetsChanged(datasets) {
     if (!datasets) return;
-    this.setState({
-      modalID: null,
-      modal: false,
-      ready: true,
-      datasets: datasets,
-      isCreateNewDatasetOpen: false,
-    });
+    try {
+      const labelingData = await subscribeLabelingsAndLabels();
+      this.setState({
+        modalID: null,
+        modal: false,
+        ready: true,
+        datasets: datasets,
+        isCreateNewDatasetOpen: false,
+        labelings: labelingData.labelings,
+        labels: labelingData.labels,
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   toggleCheck(e, datasetId) {
@@ -218,7 +225,7 @@ class ListPage extends Component {
             </Button>
           </ModalFooter>
         </Modal>
-        <CreateNewDatasetModal
+        <UploadDatasetModal
           isOpen={this.state.isCreateNewDatasetOpen}
           onCloseModal={this.toggleCreateNewDatasetModal}
           onDatasetComplete={this.onDatasetsChanged}
