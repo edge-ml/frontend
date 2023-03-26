@@ -60,6 +60,27 @@ class CreateNewDatasetModal extends Component {
     this.onDatasetNameChange = this.onDatasetNameChange.bind(this);
     this.onSetAll = this.onSetAll.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
+    this.onKeyPressed = this.onKeyPressed.bind(this);
+  }
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  //important that this is called when modal is not shown! Modal has to be rendered conditionally.
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  onKeyPressed(e) {
+    switch (e.code) {
+      case 'Escape':
+        this.onCloseModal();
+        break;
+      case 'Enter':
+        this.onUpload();
+        break;
+    }
   }
 
   onDatasetNameChange(e, fileIndex) {

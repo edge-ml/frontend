@@ -99,12 +99,14 @@ class ManagementPanel extends Component {
             Help
           </Button>
         </CardBody>
-        <CreateNewDatasetModal
-          isOpen={this.state.isUploadModalOpen}
-          onCloseModal={this.toggleUploadModal}
-          dataset={this.props.dataset}
-          onDatasetComplete={this.onDatasetComplete}
-        />
+        {this.state.isUploadModalOpen ? (
+          <CreateNewDatasetModal
+            isOpen={this.state.isUploadModalOpen}
+            onCloseModal={this.toggleUploadModal}
+            dataset={this.props.dataset}
+            onDatasetComplete={this.onDatasetComplete}
+          />
+        ) : null}
         {this.state.isHelpModalOpen ? (
           <HelpModal
             isOpen={this.state.isHelpModalOpen}
