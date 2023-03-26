@@ -219,11 +219,13 @@ class ListPage extends Component {
             </Button>
           </ModalFooter>
         </Modal>
-        <CreateNewDatasetModal
-          isOpen={this.state.isCreateNewDatasetOpen}
-          onCloseModal={this.toggleCreateNewDatasetModal}
-          onDatasetComplete={this.onDatasetsChanged}
-        />
+        {this.state.isCreateNewDatasetOpen ? (
+          <CreateNewDatasetModal
+            isOpen={this.state.isCreateNewDatasetOpen}
+            onCloseModal={this.toggleCreateNewDatasetModal}
+            onDatasetComplete={this.onDatasetsChanged}
+          />
+        ) : null}
       </div>
     );
   }

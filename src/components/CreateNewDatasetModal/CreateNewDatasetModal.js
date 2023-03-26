@@ -75,10 +75,14 @@ class CreateNewDatasetModal extends Component {
   onKeyPressed(e) {
     switch (e.code) {
       case 'Escape':
-        this.onCloseModal();
+        if (!this.state.onUploading) {
+          this.onCloseModal();
+        }
         break;
       case 'Enter':
-        this.onUpload();
+        if (!this.state.onUploading) {
+          this.onUpload();
+        }
         break;
     }
   }
