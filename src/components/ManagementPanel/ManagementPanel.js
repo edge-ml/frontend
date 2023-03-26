@@ -30,11 +30,12 @@ class ManagementPanel extends Component {
   }
 
   toggleUploadModal() {
-    this.setState({ isUploadModalOpen: !this.state.isUploadModalOpen });
     this.props.setModalOpen(!this.state.isUploadModalOpen);
+    this.setState({ isUploadModalOpen: !this.state.isUploadModalOpen });
   }
 
   toggleHelpModal() {
+    this.props.setModalOpen(!this.state.isHelpModalOpen);
     this.setState({ isHelpModalOpen: !this.state.isHelpModalOpen });
   }
 
@@ -104,10 +105,12 @@ class ManagementPanel extends Component {
           dataset={this.props.dataset}
           onDatasetComplete={this.onDatasetComplete}
         />
-        <HelpModal
-          isOpen={this.state.isHelpModalOpen}
-          onCloseModal={this.toggleHelpModal}
-        />
+        {this.state.isHelpModalOpen ? (
+          <HelpModal
+            isOpen={this.state.isHelpModalOpen}
+            onCloseModal={this.toggleHelpModal}
+          />
+        ) : null}
         {this.state.isDeleteDatasetModalOpen ? (
           <ConfirmationDialogueModal
             onCancel={this.toggleDeleteDatasetModal}

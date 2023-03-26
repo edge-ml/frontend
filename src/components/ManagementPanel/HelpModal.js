@@ -3,6 +3,28 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import './ManagementPanel.css';
 
 class HelpModal extends Component {
+  constructor(props) {
+    super(props);
+    this.onKeyPressed = this.onKeyPressed.bind(this);
+  }
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  //important that this is called when modal is not shown! Modal has to be rendered conditionally.
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  onKeyPressed(e) {
+    switch (e.code) {
+      case 'Escape':
+        this.props.onCloseModal();
+        break;
+    }
+  }
+
   render() {
     return (
       <Modal isOpen={this.props.isOpen}>
