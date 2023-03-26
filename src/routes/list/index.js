@@ -21,6 +21,7 @@ import { subscribeLabelingsAndLabels } from '../../services/ApiServices/Labeling
 import { downloadAllAsZip } from '../../services/DatasetService';
 import DatasetTable from './DatasetTable';
 import DataUpload from './DataUpload';
+import ConfirmationDialogueModal from '../../components/ConfirmationDilaogueModal/ConfirmationDialogueModal';
 
 class ListPage extends Component {
   constructor(props) {
@@ -46,6 +47,8 @@ class ListPage extends Component {
     this.selectAllEmpty = this.selectAllEmpty.bind(this);
     this.selectAll = this.selectAll.bind(this);
     this.deselectAll = this.deselectAll.bind(this);
+    this.getDatasetDeletionConfirmation =
+      this.getDatasetDeletionConfirmation.bind(this);
   }
 
   componentDidMount() {
@@ -162,6 +165,23 @@ class ListPage extends Component {
     );
   }
 
+  getDatasetDeletionConfirmation() {
+    return (
+      <div>
+        <div>Are you sure to delete the following dataset(s)?</div>
+        {this.state.datasetsToDelete.map((id) => {
+          const dataset = this.state.datasets.find((elm) => elm._id === id);
+          return (
+            <React.Fragment key={id}>
+              <br />
+              <b>{dataset.name}</b>
+            </React.Fragment>
+          );
+        })}
+      </div>
+    );
+  }
+
   render() {
     if (!this.state.ready) {
       return <Loader loading={!this.state.ready}></Loader>;
@@ -186,39 +206,15 @@ class ListPage extends Component {
             deselectAll={this.deselectAll}
           ></DatasetTable>
         </Container>
-
-        <Modal
-          isOpen={this.state.modal}
-          toggle={this.toggleModal}
-          className={this.props.className}
-        >
-          <ModalHeader toggle={this.toggleModal}>Delete Dataset</ModalHeader>
-          <ModalBody>
-            Are you sure to delete the following datasets?
-            {this.state.datasetsToDelete.map((id) => {
-              const dataset = this.state.datasets.find((elm) => elm._id === id);
-              return (
-                <React.Fragment key={id}>
-                  <br />
-                  <b>{dataset.name}</b>
-                </React.Fragment>
-              );
-            })}
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              id="deleteDatasetsButtonFinal"
-              outline
-              color="danger"
-              onClick={this.deleteDatasets}
-            >
-              Yes
-            </Button>{' '}
-            <Button outline color="secondary" onClick={this.toggleModal}>
-              No
-            </Button>
-          </ModalFooter>
-        </Modal>
+        {this.state.modal ? (
+          <ConfirmationDialogueModal
+            isOpen={this.state.modal}
+            title={'Delete Datasets'}
+            confirmString={this.getDatasetDeletionConfirmation()}
+            onCancel={this.toggleModal}
+            onConfirm={this.deleteDatasets}
+          />
+        ) : null}
         {this.state.isCreateNewDatasetOpen ? (
           <CreateNewDatasetModal
             isOpen={this.state.isCreateNewDatasetOpen}
