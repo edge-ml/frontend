@@ -8,7 +8,7 @@ import {
   CardBody,
   CardHeader,
   Button,
-  CardFooter
+  CardFooter,
 } from 'reactstrap';
 import MetaDataEditModal from './MetaDataEditModal';
 import './MetadataPanel.css';
@@ -17,7 +17,7 @@ class CustomMetadataPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      editModalOpen: false
+      editModalOpen: false,
     };
     this.additionalMetadata = this.additionalMetaData.bind(this);
     this.onEdit = this.onEdit.bind(this);
@@ -26,33 +26,36 @@ class CustomMetadataPanel extends Component {
   }
 
   onCancelEdit() {
+    this.props.setModalOpen(false);
     console.log('cancel edit');
     this.setState({
-      editModalOpen: false
+      editModalOpen: false,
     });
   }
 
   onEdit() {
+    this.props.setModalOpen(true);
     this.setState({
-      editModalOpen: true
+      editModalOpen: true,
     });
   }
 
   onSave(newMetaData) {
     const metaDataAsObj = {};
     newMetaData
-      .filter(elm => elm.key !== '')
-      .forEach(elm => {
+      .filter((elm) => elm.key !== '')
+      .forEach((elm) => {
         metaDataAsObj[elm.key] = elm.data;
       });
     this.props.onUpdateMetaData({ metaData: metaDataAsObj });
     this.setState({
-      editModalOpen: false
+      editModalOpen: false,
     });
+    this.props.setModalOpen(false);
   }
 
   additionalMetaData() {
-    return Object.keys(this.props.metaData).map(key => (
+    return Object.keys(this.props.metaData).map((key) => (
       <div>
         <InputGroup>
           <InputGroupAddon addonType="prepend">

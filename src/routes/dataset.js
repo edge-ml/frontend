@@ -984,6 +984,7 @@ class DatasetPage extends Component {
                   <CustomMetadataPanel
                     metaData={this.state.dataset.metaData}
                     onUpdateMetaData={this.onUpdateMetaData}
+                    setModalOpen={this.setModalOpen}
                   ></CustomMetadataPanel>
                 </div>
                 <div className="mt-2" />

@@ -13,7 +13,7 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter
+  ModalFooter,
 } from 'reactstrap';
 import './MetadataPanel.css';
 
@@ -21,7 +21,7 @@ class MetaDataEditModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      metaData: []
+      metaData: [],
     };
     this.onAddMetaData = this.onAddMetaData.bind(this);
     this.renderMetaData = this.renderMetaData.bind(this);
@@ -30,16 +30,33 @@ class MetaDataEditModal extends Component {
     this.onEditValue = this.onEditValue.bind(this);
     this.onDeleteMetaData = this.onDeleteMetaData.bind(this);
     this.checkError = this.checkError.bind(this);
+    this.onKeyPressed = this.onKeyPressed.bind(this);
+  }
+
+  onKeyPressed(e) {
+    switch (e.code) {
+      case 'Escape':
+        this.onClose();
+        break;
+      case 'Enter':
+        this.props.onSave(this.state.metaData);
+        break;
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps !== this.props) {
-      const metaData = Object.keys(this.props.metaData).map(elm => {
+      const metaData = Object.keys(this.props.metaData).map((elm) => {
         return { key: elm, data: this.props.metaData[elm] };
       });
       this.setState({
-        metaData: metaData
+        metaData: metaData,
       });
+      if (this.props.isOpen) {
+        document.addEventListener('keydown', this.onKeyPressed, false);
+      } else {
+        document.removeEventListener('keydown', this.onKeyPressed, false);
+      }
     }
   }
 
@@ -48,7 +65,7 @@ class MetaDataEditModal extends Component {
     const metaData = this.state.metaData;
     metaData[idx].key = value;
     this.setState({
-      metaData: metaData
+      metaData: metaData,
     });
   }
 
@@ -57,13 +74,13 @@ class MetaDataEditModal extends Component {
     const metaData = this.state.metaData;
     metaData[idx].data = value;
     this.setState({
-      metaData: metaData
+      metaData: metaData,
     });
   }
 
   onClose() {
     this.setState({
-      newMetaData: {}
+      newMetaData: {},
     });
     this.props.onClose();
   }
@@ -72,7 +89,7 @@ class MetaDataEditModal extends Component {
     var newMetaData = this.state.metaData;
     newMetaData.push({ key: undefined, data: undefined });
     this.setState({
-      newMetaData: newMetaData
+      newMetaData: newMetaData,
     });
   }
 
@@ -80,12 +97,12 @@ class MetaDataEditModal extends Component {
     var newMetaData = this.state.metaData;
     newMetaData.splice(idx, 1);
     this.setState({
-      metaData: newMetaData
+      metaData: newMetaData,
     });
   }
 
   checkError(elm) {
-    const found = this.state.metaData.filter(d => d.key == elm.key);
+    const found = this.state.metaData.filter((d) => d.key == elm.key);
     return found.length > 1;
   }
 
@@ -98,10 +115,10 @@ class MetaDataEditModal extends Component {
               style={{
                 background: 'lightGrey',
                 borderBottomRightRadius: 0,
-                borderTopRightRadius: 0
+                borderTopRightRadius: 0,
               }}
               value={elm.key}
-              onChange={e => this.onEditKey(e, idx)}
+              onChange={(e) => this.onEditKey(e, idx)}
               invalid={this.checkError(elm)}
               placeholder="key"
             ></Input>
@@ -110,7 +127,7 @@ class MetaDataEditModal extends Component {
             className="shadow-none"
             // style={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
             value={elm.data}
-            onChange={e => this.onEditValue(e, idx)}
+            onChange={(e) => this.onEditValue(e, idx)}
             invalid={this.checkError(elm)}
             placeholder="data"
           ></Input>
@@ -118,10 +135,10 @@ class MetaDataEditModal extends Component {
             <Button
               style={{
                 borderBottomRightRadius: '0.25rem',
-                borderTopRightRadius: '0.25rem'
+                borderTopRightRadius: '0.25rem',
               }}
               color="danger"
-              onClick={e => this.onDeleteMetaData(idx)}
+              onClick={(e) => this.onDeleteMetaData(idx)}
             >
               X
             </Button>
