@@ -23,17 +23,28 @@
   padding: 8px;
 }
 
+.dataset-side-panel-wrapper {
+  overflow-x: hidden;
+  position: fixed;
+  top: 0vw;
+  z-index: 10;
+}
+
 .dataset-side-panel {
   background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
   padding: 8px;
   height: 100vh;
-  position: absolute;
-  right: 0px;
+  position: relative;
+  right: -91vw;
   top: 0px;
   bottom: 0px;
   width: 33vw;
-  z-index: 1000;
   background-color: white;
+  transition: transform 500ms ease-in-out;
+}
+
+.dataset-side-panel.open {
+  transform: translateX(-36.5vw);
 }
 
 .dataset-side-panel-close-button {

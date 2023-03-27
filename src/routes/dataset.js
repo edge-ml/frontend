@@ -943,43 +943,41 @@ class DatasetPage extends Component {
         >
           <FontAwesomeIcon size="2x" icon={faChevronLeft}></FontAwesomeIcon>
         </div>
-        {this.state.metaDataExtended ? (
-          <Container>
-            <div className="dataset-side-panel">
-              <div
-                className="dataset-side-panel-close cursor-pointer"
-                onClick={() => this.toggleMetaData(false)}
-              >
-                <FontAwesomeIcon
-                  size="lg"
-                  icon={faTimes}
-                  inverse
-                ></FontAwesomeIcon>
-              </div>
-              <div className="mt-2">
-                <TSSelectionPanel
-                  onClickSelectSeries={this.onClickSelectSeries}
-                  timeSeries={this.state.dataset.timeSeries}
-                  activeSeries={this.state.activeSeries}
-                ></TSSelectionPanel>
-              </div>
-              <div className="mt-2">
-                <MetadataPanel
-                  start={this.state.dataset.start}
-                  end={this.state.dataset.end}
-                  user={this.state.dataset.userId}
-                  name={this.state.dataset.name}
-                />
-              </div>
-              <div className="mt-2">
-                <CustomMetadataPanel
-                  metaData={this.state.dataset.metaData}
-                  onUpdateMetaData={this.onUpdateMetaData}
-                ></CustomMetadataPanel>
-              </div>
+        <Container className='dataset-side-panel-wrapper'>
+          <div className={this.state.metaDataExtended ? "dataset-side-panel open" : "dataset-side-panel"}>
+            <div
+              className="dataset-side-panel-close cursor-pointer"
+              onClick={() => this.toggleMetaData(false)}
+            >
+              <FontAwesomeIcon
+                size="lg"
+                icon={faTimes}
+                inverse
+              ></FontAwesomeIcon>
             </div>
-          </Container>
-        ) : null}
+            <div className="mt-2">
+              <TSSelectionPanel
+                onClickSelectSeries={this.onClickSelectSeries}
+                timeSeries={this.state.dataset.timeSeries}
+                activeSeries={this.state.activeSeries}
+              ></TSSelectionPanel>
+            </div>
+            <div className="mt-2">
+              <MetadataPanel
+                start={this.state.dataset.start}
+                end={this.state.dataset.end}
+                user={this.state.dataset.userId}
+                name={this.state.dataset.name}
+              />
+            </div>
+            <div className="mt-2">
+              <CustomMetadataPanel
+                metaData={this.state.dataset.metaData}
+                onUpdateMetaData={this.onUpdateMetaData}
+              ></CustomMetadataPanel>
+            </div>
+          </div>
+        </Container>
       </div>
     );
   }
