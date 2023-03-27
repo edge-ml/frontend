@@ -23,39 +23,6 @@
   padding: 8px;
 }
 
-.dataset-side-panel-wrapper {
-  overflow-x: hidden;
-  position: fixed;
-  top: 0vw;
-  z-index: 10;
-}
-
-.dataset-side-panel {
-  background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
-  padding: 8px;
-  height: 100vh;
-  position: relative;
-  right: -91vw;
-  top: 0px;
-  bottom: 0px;
-  width: 33vw;
-  background-color: white;
-  transition: transform 500ms ease-in-out;
-}
-
-.dataset-side-panel.open {
-  transform: translateX(-36.5vw);
-}
-
-.dataset-side-panel-close-button {
-  display: flex;
-  justify-content: end;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
 .sidepanel-card {
   background-color: white;
   border-radius: 10px 10px 10px 10px;

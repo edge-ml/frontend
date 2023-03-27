@@ -11,6 +11,8 @@ import TSSelectionPanel from '../components/TSSelectionPanel';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 
+import { MetaDataSidebar } from '../components/MetaDataSidebar/MetaDataSidebar';
+
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
   updateDataset,
@@ -32,10 +34,7 @@ import Loader from '../modules/loader';
 import pmemoize from 'promise-memoize';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faArrowRight,
-  faCaretRight,
   faChevronLeft,
-  faChevronRight,
   faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -946,41 +945,19 @@ class DatasetPage extends Component {
             <FontAwesomeIcon size="2x" icon={faChevronLeft}></FontAwesomeIcon>
           </div>
         }
-        <Container className='dataset-side-panel-wrapper'>
-          <div className={this.state.metaDataExtended ? "dataset-side-panel open" : "dataset-side-panel"}>
-            <div
-              className="dataset-side-panel-close cursor-pointer"
-              onClick={() => this.toggleMetaData(false)}
-            >
-              <FontAwesomeIcon
-                size="lg"
-                icon={faTimes}
-                inverse
-              ></FontAwesomeIcon>
-            </div>
-            <div className="mt-2">
-              <TSSelectionPanel
-                onClickSelectSeries={this.onClickSelectSeries}
-                timeSeries={this.state.dataset.timeSeries}
-                activeSeries={this.state.activeSeries}
-              ></TSSelectionPanel>
-            </div>
-            <div className="mt-2">
-              <MetadataPanel
-                start={this.state.dataset.start}
-                end={this.state.dataset.end}
-                user={this.state.dataset.userId}
-                name={this.state.dataset.name}
-              />
-            </div>
-            <div className="mt-2">
-              <CustomMetadataPanel
-                metaData={this.state.dataset.metaData}
-                onUpdateMetaData={this.onUpdateMetaData}
-              ></CustomMetadataPanel>
-            </div>
-          </div>
-        </Container>
+        <MetaDataSidebar
+          metaDataExtended={this.state.metaDataExtended}
+          toggleMetaData={this.toggleMetaData}
+          onClickSelectSeries={this.onClickSelectSeries}
+          timeSeries={this.state.dataset.timeSeries}
+          activeSeries={this.state.activeSeries}
+          start={this.state.dataset.start}
+          end={this.state.dataset.end}
+          user={this.state.dataset.userId}
+          name={this.state.dataset.name}
+          metaData={this.state.dataset.metaData}
+          onUpdateMetaData={this.onUpdateMetaData}
+        />
       </div>
     );
   }
