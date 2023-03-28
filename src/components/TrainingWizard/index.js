@@ -142,10 +142,10 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const screens = [
     Wizard_SelectLabeling,
     Wizard_SelectDataset,
+    Wizard_Hyperparameters,
     Select_Windowing,
     Select_FeatureExtractor,
     Select_Normalizer,
-    Wizard_Hyperparameters,
     SelectEvaluation,
     Select_Name,
   ];
