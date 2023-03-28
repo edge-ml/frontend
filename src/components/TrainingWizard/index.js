@@ -63,7 +63,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setSelectedEval(result.evaluation[0]);
       setSelectednormalizer(result.normalizer[0]);
       setSelectedWindowing(result.windowing[0]);
-      console.log(result.featureExtractors);
+      console.log(result.evaluation);
       setSelectedFeatureExtractor(result.featureExtractors[0]);
     });
   }, []);
