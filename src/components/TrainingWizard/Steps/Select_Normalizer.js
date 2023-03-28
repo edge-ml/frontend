@@ -9,16 +9,19 @@ import {
   DropdownMenu,
 } from 'reactstrap';
 
-const Select_Normalizer = ({ onBack, onNext, normalizer, setNormalizer }) => {
+const Select_Normalizer = ({
+  onBack,
+  onNext,
+  normalizer,
+  setNormalizer,
+  footer,
+}) => {
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const [selectedNormalizer, setSelectedNormalizer] = useState(0);
 
   if (!normalizer.length) {
     return;
   }
-  console.log(normalizer);
-  console.log(normalizer[0]);
-  console.log(selectedNormalizer);
   return (
     <div>
       <ModalBody>
@@ -44,11 +47,7 @@ const Select_Normalizer = ({ onBack, onNext, normalizer, setNormalizer }) => {
           </DropdownMenu>
         </Dropdown>
       </ModalBody>
-      <ModalFooter className="fotter">
-        <Button onClick={onBack}>Back</Button>
-        <div>2/3</div>
-        <Button onClick={onNext}>Next</Button>
-      </ModalFooter>
+      {footer}
     </div>
   );
 };

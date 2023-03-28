@@ -1,4 +1,4 @@
-import { Modal, ModalHeader } from 'reactstrap';
+import { Modal, ModalHeader, ModalFooter, Button } from 'reactstrap';
 import Wizard_SelectLabeling from './Steps/Select_Labeling';
 import './index.css';
 import { useEffect, useState } from 'react';
@@ -12,6 +12,20 @@ import Select_Normalizer from './Steps/Select_Normalizer';
 import Select_Windowing from './Steps/Select_Windowing';
 import Select_Name from './Steps/Select_Name';
 import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
+
+export const WizardFooter = ({ onNext, onBack, onTrain, step, maxSteps }) => {
+  return (
+    <ModalFooter className="fotter">
+      <Button onClick={onBack}>Back</Button>
+      <div>
+        {step + 1}/{maxSteps}
+      </div>
+      <Button onClick={step + 1 === maxSteps ? onTrain : onNext}>
+        {step + 1 === maxSteps ? 'Train' : 'Next'}
+      </Button>
+    </ModalFooter>
+  );
+};
 
 const TrainingWizard = ({ modalOpen, onClose }) => {
   // Data obtained from the server
@@ -57,7 +71,8 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setNormalizer(result.normalizer);
       setWindowing(result.windowing);
       setFeatureExtractors(result.featureExtractors);
-
+      console.log('FeatureExtractors:');
+      console.log(result.featureExtractors);
       // Set default values for the pages
       setSelectedClassifier(result.classifier[0]);
       setSelectedEval(result.evaluation[0]);
@@ -97,87 +112,75 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     const model_id = await train(data);
     onClose();
   };
+
+  const props = {
+    datasets: datasets,
+    labelings: labelings,
+    setLabeling: setLableing,
+    selectedLabeling: labeling,
+    toggleSelectDataset: toggleSelectDataset,
+    windowers: windowing,
+    setSelectedWindower: setSelectedWindowing,
+    setWindower: setWindowing,
+    featureExtractors: featureExtractors,
+    setFeatureExtractor: setSelectedFeatureExtractor,
+    normalizer: normalizer,
+    setNormalizer: setSelectednormalizer,
+    setModelName: setModelName,
+    setSelectedClassifier: setSelectedClassifier,
+    setClassifier: setClassifiers,
+    classifier: classifiers,
+    evaluation: evaluation,
+    onEvaluationChanged: onEvaluationChanged,
+    setSelectedEval: setSelectedEval,
+    modelName: modelName,
+    setModelName: setModelName,
+  };
+
   // The steps in the wizard
+
   const screens = [
-    <Wizard_SelectLabeling
-      datasets={datasets}
-      labelings={labelings}
-      setLabeling={setLableing}
-      selectedLabeling={labeling}
-      onNext={onNext}
-      onBack={onBack}
-    ></Wizard_SelectLabeling>,
-    <Wizard_SelectDataset
-      datasets={datasets}
-      labelings={labelings}
-      selectedLabeling={labeling}
-      toggleSelectDataset={toggleSelectDataset}
-      onNext={onNext}
-      onBack={onBack}
-    ></Wizard_SelectDataset>,
-    <Select_Windowing
-      onNext={onNext}
-      onBack={onBack}
-      windowers={windowing}
-      setSelectedWindower={setSelectedWindowing}
-      setWindower={setWindowing}
-    ></Select_Windowing>,
-    <Select_FeatureExtractor
-      onBack={onBack}
-      onNext={onNext}
-      featureExtractors={featureExtractors}
-      setFeatureExtractor={setSelectedFeatureExtractor}
-    ></Select_FeatureExtractor>,
-    <Select_Normalizer
-      onNext={onNext}
-      onBack={onBack}
-      normalizer={normalizer}
-      setNormalizer={setSelectednormalizer}
-    ></Select_Normalizer>,
-    <Wizard_Hyperparameters
-      classifier={classifiers}
-      onTrain={onTrain}
-      onNext={onNext}
-      onBack={onBack}
-      modelName={modelName}
-      setModelName={setModelName}
-      setSelectedClassifier={setSelectedClassifier}
-      setClassifier={setClassifiers}
-    ></Wizard_Hyperparameters>,
-    <SelectEvaluation
-      onTrain={onTrain}
-      onNext={onNext}
-      onBack={onBack}
-      evaluation={evaluation}
-      onEvaluationChanged={onEvaluationChanged}
-      setSelectedEval={setSelectedEval}
-    ></SelectEvaluation>,
-    <Select_Name
-      onTrain={onTrain}
-      onNext={onNext}
-      onBack={onBack}
-      modelName={modelName}
-      setModelName={setModelName}
-    ></Select_Name>,
+    Wizard_SelectLabeling,
+    Wizard_SelectDataset,
+    Select_Windowing,
+    Select_FeatureExtractor,
+    Select_Normalizer,
+    Wizard_Hyperparameters,
+    SelectEvaluation,
+    Select_Name,
   ];
 
-  console.log(datasets.length);
-  console.log(labelings.length);
-  console.log(classifiers);
-  console.log(classifiers.length);
   const isReady = () => {
     return (
-      datasets.length > 0 && labelings.length > 0 && classifiers.length > 0
+      datasets.length > 0 &&
+      labelings.length > 0 &&
+      classifiers.length > 0 &&
+      evaluation.length > 0 &&
+      normalizer.length > 0 &&
+      windowing.length > 0 &&
+      featureExtractors.length > 0
     );
   };
 
-  console.log(normalizer);
-  console.log(windowing);
+  const rendered_screens = screens.map((screen, idx) =>
+    screen({
+      ...props,
+      footer: (
+        <WizardFooter
+          step={idx}
+          maxSteps={screens.length}
+          onNext={onNext}
+          onBack={onBack}
+          onTrain={onTrain}
+        ></WizardFooter>
+      ),
+    })
+  );
 
   return (
     <Modal isOpen={true} size="xl">
       <ModalHeader>Train a model</ModalHeader>
-      {isReady() ? screens[screen] : null}
+      {isReady() ? rendered_screens[screen] : null}
     </Modal>
   );
 };

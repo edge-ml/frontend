@@ -17,6 +17,7 @@ const Select_Windowing = ({
   windowers,
   setSelectedWindower,
   setWindower,
+  footer,
 }) => {
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const [window_index, set_window_index] = useState(0);
@@ -64,11 +65,7 @@ const Select_Windowing = ({
           hyperparameters={windowers[window_index].parameters}
         ></HyperparameterView>
       </ModalBody>
-      <ModalFooter className="fotter">
-        <Button onClick={onBack}>Back</Button>
-        <div>2/3</div>
-        <Button onClick={onNext}>Next</Button>
-      </ModalFooter>
+      {footer}
     </div>
   );
 };

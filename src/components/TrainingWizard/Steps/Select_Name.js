@@ -1,13 +1,6 @@
-import {
-  Input,
-  ModalBody,
-  Button,
-  ModalFooter,
-  InputGroup,
-  InputGroupAddon,
-} from 'reactstrap';
+import { Input, ModalBody, InputGroup, InputGroupAddon } from 'reactstrap';
 
-const Select_Name = ({ onBack, onNext, onTrain, modelName, setModelName }) => {
+const Select_Name = ({ modelName, setModelName, footer }) => {
   return (
     <div>
       <ModalBody>
@@ -23,11 +16,7 @@ const Select_Name = ({ onBack, onNext, onTrain, modelName, setModelName }) => {
           </InputGroup>
         </div>
       </ModalBody>
-      <ModalFooter className="fotter">
-        <Button onClick={onBack}>Back</Button>
-        <div>2/3</div>
-        <Button onClick={onTrain}>Next</Button>
-      </ModalFooter>
+      {footer}
     </div>
   );
 };

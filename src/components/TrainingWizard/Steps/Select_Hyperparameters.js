@@ -28,6 +28,7 @@ const Wizard_Hyperparameters = ({
   onTrain,
   setSelectedClassifier,
   setClassifier,
+  footer,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -48,7 +49,10 @@ const Wizard_Hyperparameters = ({
     setSelectedClassifier(newClassifier[classififier_index]);
   };
 
-  console.log(classifier[classififier_index]);
+  if (classifier.length === 0) {
+    return null;
+  }
+
   return (
     <div>
       <ModalBody>
@@ -111,11 +115,7 @@ const Wizard_Hyperparameters = ({
           </div>
         </div>
       </ModalBody>
-      <ModalFooter className="fotter">
-        <Button onClick={onBack}>Back</Button>
-        <div>2/3</div>
-        <Button onClick={onNext}>Next</Button>
-      </ModalFooter>
+      {footer}
     </div>
   );
 };
@@ -125,8 +125,6 @@ export const HyperparameterView = ({
   hyperparameters,
   isAdvanced,
 }) => {
-  console.log(hyperparameters[0].is_advanced, isAdvanced);
-  console.log(hyperparameters.filter((h) => h.is_advanced === isAdvanced));
   return (
     <Container fluid>
       <Row>

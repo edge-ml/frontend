@@ -1,9 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ModalBody,
-  ModalFooter,
   Row,
-  Button,
   Col,
   Container,
   DropdownMenu,
@@ -15,24 +13,22 @@ import NumberHyperparameter from '../../Hyperparameters/NumberHyperparameter';
 import SelectionHyperparameter from '../../Hyperparameters/SelectionHyperparameter';
 
 const SelectEvaluation = ({
-  onNext,
-  onBack,
-  onTrain,
   evaluation,
   onEvaluationChanged,
   setSelectedEval,
+  footer,
 }) => {
   console.log(evaluation);
 
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const [selectedEvaluation, setSelectedEvaluation] = useState(0);
 
-  useEffect(() => {
-    const data = {
-      name: evaluation[selectedEvaluation].name,
-      parameters: evaluation[selectedEvaluation].parameters,
-    };
-  }, [selectedEvaluation]);
+  // useEffect(() => {
+  //   const data = {
+  //     name: evaluation[selectedEvaluation].name,
+  //     parameters: evaluation[selectedEvaluation].parameters,
+  //   };
+  // }, [selectedEvaluation]);
 
   const handleHyperparameterChange = ({ parameter_name, state }) => {
     const newEval = [...evaluation];
@@ -44,7 +40,8 @@ const SelectEvaluation = ({
     setSelectedEval(newEval[selectedEvaluation]);
   };
 
-  if (!evaluation) {
+  console.log(evaluation.length);
+  if (evaluation.length === 0) {
     return;
   }
 
@@ -74,11 +71,7 @@ const SelectEvaluation = ({
           ></HyperparameterView>
         ) : null}
       </ModalBody>
-      <ModalFooter className="fotter">
-        <Button onClick={onBack}>Back</Button>
-        <div>2/3</div>
-        <Button onClick={onNext}>Next</Button>
-      </ModalFooter>
+      {footer}
     </div>
   );
 };
@@ -86,7 +79,6 @@ const SelectEvaluation = ({
 export const HyperparameterView = ({
   handleHyperparameterChange,
   hyperparameters,
-  isAdvanced,
 }) => {
   return (
     <Container fluid>

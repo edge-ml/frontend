@@ -11,6 +11,7 @@ const Wizard_SelectDataset = ({
   toggleSelectDataset,
   onNext,
   onBack,
+  footer,
 }) => {
   const checkUsable = (dataset) => {
     return (
@@ -70,11 +71,7 @@ const Wizard_SelectDataset = ({
           ) : null}
         </div>
       </ModalBody>
-      <ModalFooter className="fotter">
-        <Button onClick={onBack}>Back</Button>
-        <div>2/3</div>
-        <Button onClick={onNext}>Next</Button>
-      </ModalFooter>
+      {footer}
     </div>
   );
 };

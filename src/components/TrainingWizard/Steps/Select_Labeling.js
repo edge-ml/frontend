@@ -12,6 +12,7 @@ const Wizard_SelectLabeling = ({
   selectedLabeling,
   onNext,
   onBack,
+  footer,
 }) => {
   const countDatasets = (labeling) => {
     return datasets
@@ -61,15 +62,7 @@ const Wizard_SelectLabeling = ({
           </div>
         </div>
       </ModalBody>
-      <ModalFooter className="fotter">
-        <div>1/3</div>
-        <Button
-          onClick={onNext}
-          disabled={!(selectedLabeling && selectedLabeling._id)}
-        >
-          Next
-        </Button>
-      </ModalFooter>
+      {footer}
     </div>
   );
 };

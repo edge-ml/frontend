@@ -14,11 +14,15 @@ const Select_FeatureExtractor = ({
   onNext,
   featureExtractors,
   setFeatureExtractor,
+  footer,
 }) => {
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const [featureExtractor_index, setFeatureExtractor_index] = useState(0);
 
-  console.log(featureExtractors);
+  if (featureExtractors.length === 0) {
+    return null;
+  }
+
   return (
     <div>
       <ModalBody>
@@ -44,11 +48,7 @@ const Select_FeatureExtractor = ({
           </DropdownMenu>
         </Dropdown>
       </ModalBody>
-      <ModalFooter className="fotter">
-        <Button onClick={onBack}>Back</Button>
-        <div>2/3</div>
-        <Button onClick={onNext}>Next</Button>
-      </ModalFooter>
+      {footer}
     </div>
   );
 };
