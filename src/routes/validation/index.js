@@ -59,15 +59,15 @@ const ValidationPage = () => {
                 </div>
                 {model.status === 'done' ? (
                   <div>
-                    <div>{model.model.classifier.name}</div>
+                    <div>{model.pipeline.classifier.name}</div>
                     <div className="d-flex">
                       <div className="">
                         <b>Acc: </b>
-                        {metric(model.model.metrics.accuracy_score)}
+                        {metric(model.evaluator.metrics.accuracy_score)}
                       </div>
                       <div>
                         <b>F1: </b>
-                        {metric(model.model.metrics.f1_score)}
+                        {metric(model.evaluator.metrics.f1_score)}
                       </div>
                     </div>
                     <Button onClick={() => onViewModel(model)}>View</Button>

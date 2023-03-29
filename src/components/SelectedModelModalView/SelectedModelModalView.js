@@ -26,8 +26,6 @@ export const SelectedModelModalView = ({
   onClosed,
   ...props
 }) => {
-  console.log(model);
-  console.log(!model);
   return (
     <Modal isOpen={model} size="xl" toggle={onClosed} {...props}>
       <Loader loading={!model}>
@@ -37,7 +35,7 @@ export const SelectedModelModalView = ({
             <ModalBody>
               <General_info model={model}></General_info>
               <Button>Deploy</Button>
-              <Perofrmance_info model={model}></Perofrmance_info>
+              <PerformanceInfo model={model}></PerformanceInfo>
             </ModalBody>
             <ModalFooter>
               {onDelete ? (
@@ -60,7 +58,7 @@ const General_info = ({ model }) => {
       <h4>General info</h4>
       <div>
         <div>Name: {model.name}</div>
-        <div>Classifier: {model.trainRequest.classifier.name}</div>
+        <div>Classifier: {model.pipeline.classifier.name}</div>
         <div>Used labels: TODO</div>
       </div>
     </div>
@@ -100,8 +98,10 @@ const Classification_report = ({ report }) => {
 };
 
 const Training_config = ({ model }) => {
-  const { windower, normalizer, classifier, evaluation } = model;
-
+  const { windower, featureExtractor, normalizer, classifier } = model.pipeline;
+  console.log(windower);
+  console.log(normalizer);
+  console.log(classifier);
   const Detail_view = ({ stage }) => {
     return (
       <div>
@@ -125,16 +125,16 @@ const Training_config = ({ model }) => {
         <Detail_view stage={windower}></Detail_view>
       </div>
       <div>
+        <h5>Feature Extraction</h5>
+        <Detail_view stage={featureExtractor}></Detail_view>
+      </div>
+      <div>
         <h5>Normalizer</h5>
         <Detail_view stage={normalizer}></Detail_view>
       </div>
       <div>
         <h5>Classifier</h5>
         <Detail_view stage={classifier}></Detail_view>
-      </div>
-      <div>
-        <h5>Evaluation</h5>
-        <Detail_view stage={evaluation}></Detail_view>
       </div>
     </div>
   );
@@ -145,11 +145,8 @@ const metric = (metric) => {
   return isNaN(val) ? '' : val;
 };
 
-const Perofrmance_info = ({ model }) => {
-  console.log(model);
-  console.log(model.model.metrics);
-  const metrics = model.model.metrics;
-  console.log(model.model);
+const PerformanceInfo = ({ model }) => {
+  const metrics = model.evaluator.metrics;
   return (
     <div>
       <h4>Performance metrics</h4>
@@ -164,7 +161,7 @@ const Perofrmance_info = ({ model }) => {
         labelMap
         labelIds
       ></ConfusionMatrixView>
-      <Training_config model={model.model}></Training_config>
+      <Training_config model={model}></Training_config>
     </div>
   );
 };
