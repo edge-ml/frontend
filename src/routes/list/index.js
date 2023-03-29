@@ -96,7 +96,7 @@ class ListPage extends Component {
         ready: true,
         datasets: datasets,
         isCreateNewDatasetOpen: false,
-        labelings: labelingData.labelings,
+        labelings: labelingData,
         labels: labelingData.labels,
       });
     } catch (e) {
