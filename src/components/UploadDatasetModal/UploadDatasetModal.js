@@ -176,7 +176,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                   <div className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11">
                     <div className="d-flex flex-column align-items-center mr-2 ml-2 mt-2 col-lg-2">
                       <FiletypeCsv className="fa-3x" />
-                      <span>{f.name}</span>
+                      <span className='text-center'>{f.name}</span>
                     </div>
                     <Progress
                       className="w-100 mr-1"
