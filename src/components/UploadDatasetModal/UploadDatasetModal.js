@@ -8,8 +8,10 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import { processCSVBackend } from '../../services/ApiServices/CSVServices';
 import { DatasetConfigView } from './DatasetConfigView';
-
+import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import './UploadDatasetModal.css';
+
+import { updateDataset } from '../../services/ApiServices/DatasetServices';
 
 export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
   const [files, setFiles] = useState([]);
@@ -29,6 +31,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       progress: 0,
       status: FileStatus.UPLOADING,
       id: count + idx,
+      backendId: undefined,
     }));
     setFiles([...files, ...formatted]);
     setCount(count + inputFiles.length);
@@ -98,17 +101,22 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     setFiles((prevState) => prevState.filter((file) => file.id !== fileId));
   };
 
-  const initConfig = (fileId, data) => {
+  const initConfig = (fileId, data, projectLabelings) => {
     setFiles((prevState) =>
       prevState.map((file) => {
         if (file.id === fileId) {
           return {
             ...file,
+            backendId: data._id,
             config: {
               start: data.start,
               end: data.end,
               timeSeries: data.timeSeries,
-              labelings: data.labelings,
+              labelings: data.labelings.map(labeling => 
+                ({ 
+                  ...labeling, 
+                  name: projectLabelings.find(projectLabeling => projectLabeling._id === labeling.labelingId).name
+                })),
               name: file.name.endsWith('.csv')
                 ? file.name.substring(0, file.name.length - 4)
                 : file.name,
@@ -152,9 +160,21 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
         return;
       }
       handleStatus(fileIds[i], FileStatus.COMPLETE);
-      initConfig(fileIds[i], result.data);
+      const projectLabelings = await subscribeLabelingsAndLabels()
+      initConfig(fileIds[i], result.data, projectLabelings);
     }
   };
+
+  const confirmConfig = async (backendId, fileConfig) => {
+    const updatedDataset = await updateDataset({
+      _id: backendId, 
+      name: fileConfig.name,
+      start: fileConfig.start,
+      end: fileConfig.end,
+      labelings: fileConfig.labelings,
+      timeSeries: fileConfig.timeSeries,
+    })
+  }
 
   return (
     <Modal className="modal-xl" data-testid="modal" isOpen={isOpen}>
@@ -240,6 +260,8 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                     fileId={f.id}
                     fileConfig={f.config}
                     changeConfig={changeConfig}
+                    confirmConfig={confirmConfig}
+                    backendId={f.backendId}
                   />
                 ) : null
               )}

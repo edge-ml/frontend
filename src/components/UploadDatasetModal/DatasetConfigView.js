@@ -10,7 +10,13 @@ import {
   Button,
 } from 'reactstrap';
 
-export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
+export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmConfig, backendId }) => {
+  const onDeleteLabeling = (labelingToDelete) => {
+    changeConfig(fileId, {
+      ...fileConfig, 
+      labelings: fileConfig.labelings.filter(l => l.labelingId !== labelingToDelete.labelingId)})
+  }
+
   return (
     <div className="mb-2">
       {' '}
@@ -47,7 +53,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                 id="confirmButton"
                 color="primary"
                 size="md"
-                onClick={() => console.log('delete dataset event')}
+                onClick={() => confirmConfig(backendId, fileConfig)}
               >
                 Confirm
               </Button>
@@ -156,6 +162,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                       id="deleteButton"
                       color="danger"
                       size="sm"
+                      disabled={fileConfig.timeSeries.length === 1}
                       onClick={
                         () =>
                           changeConfig(fileId, {
@@ -164,10 +171,6 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                               (ts) => ts !== timeSeries
                             ),
                           })
-                        // this.onDeleteTimeSeries(
-                        //   fileIndex,
-                        //   seriesIndex
-                        // )
                       }
                     >
                       Delete
@@ -193,19 +196,13 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                 className="mx-2"
                 style={{ display: 'inline' }}
               >
-                {labeling.datasetLabel.name}
+                {labeling.name}
               </div>
               <Button
                 color="danger"
                 size="sm"
                 className="mx-2"
-                onClick={
-                  () => console.log('delete label event triggered')
-                  // this.onDeleteLabeling(
-                  //   fileIndex,
-                  //   labelingIndex
-                  // )
-                }
+                onClick={() => onDeleteLabeling(labeling)}
               >
                 Delete
               </Button>
