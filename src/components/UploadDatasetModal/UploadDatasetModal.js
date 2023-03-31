@@ -121,6 +121,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                 ? file.name.substring(0, file.name.length - 4)
                 : file.name,
               editingModeActive: false,
+              editComplete: false,
             },
           };
         }
@@ -237,18 +238,28 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                           icon={faSpinner}
                         />
                       )}
-                      <Button
+                      {f?.config?.editComplete ?
+                        <Button
+                          color="success"
+                          onClick={() => handleDelete(f.id)}
+                        >
+                          Complete
+                        </Button>
+                        :
+                        <Button
                         color="primary"
-                        disabled={f.status !== FileStatus.COMPLETE}
+                        disabled={f.status !== FileStatus.COMPLETE || f?.config?.editComplete}
                         onClick={(e) =>
                           changeConfig(f.id, {
                             ...f.config,
                             editingModeActive: true,
                           })
                         }
-                      >
+                        >
                         Configure
                       </Button>
+                      }
+                      <Button close className='ml-2' onClick={() => handleDelete(f.id)}></Button>
                     </div>
                   </div>
                 )

@@ -17,6 +17,13 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
       labelings: fileConfig.labelings.filter(l => l.labelingId !== labelingToDelete.labelingId)})
   }
 
+  const onCloseConfig = () => {
+    changeConfig(fileId, {
+      ...fileConfig,
+      editingModeActive: false,
+    })
+  }
+
   return (
     <div className="mb-2">
       {' '}
@@ -49,20 +56,24 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
               </InputGroup>
             </th>
             <th colSpan="2" style={{ textAlign: 'end', paddingRight: '0px' }}>
-              <Button
-                id="confirmButton"
-                color="primary"
-                size="md"
-                onClick={() => {
-                  changeConfig(fileId, {
-                    ...fileConfig,
-                    editingModeActive: false,
-                  })
-                  confirmConfig(backendId, fileConfig)
-                }}
-              >
-                Confirm
-              </Button>
+              <div className='d-flex justify-content-end'>
+                <Button
+                  id="confirmButton"
+                  color="primary"
+                  size="md"
+                  onClick={() => {
+                    changeConfig(fileId, {
+                      ...fileConfig,
+                      editingModeActive: false,
+                      editComplete: true,
+                    })
+                    confirmConfig(backendId, fileConfig)
+                  }}
+                >
+                  Confirm
+                </Button>
+                <Button close className='ml-2' onClick={onCloseConfig}/>
+              </div>
             </th>
           </tr>
         </thead>
