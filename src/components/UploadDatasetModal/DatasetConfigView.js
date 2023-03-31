@@ -53,7 +53,13 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
                 id="confirmButton"
                 color="primary"
                 size="md"
-                onClick={() => confirmConfig(backendId, fileConfig)}
+                onClick={() => {
+                  changeConfig(fileId, {
+                    ...fileConfig,
+                    editingModeActive: false,
+                  })
+                  confirmConfig(backendId, fileConfig)
+                }}
               >
                 Confirm
               </Button>
