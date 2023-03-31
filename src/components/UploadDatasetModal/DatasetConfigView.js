@@ -24,6 +24,13 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
     })
   }
 
+  const onSetAllUnits = (unit) => {
+    changeConfig(fileId, {
+      ...fileConfig,
+      timeSeries: fileConfig.timeSeries.map(ts => ({ ...ts, unit: unit }))
+    })
+  }
+
   return (
     <div className="mb-2">
       {' '}
@@ -152,24 +159,16 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
                                 return ts;
                               }),
                             })
-                          // this.onUnitChange(
-                          //   e,
-                          //   fileIndex,
-                          //   seriesIndex
-                          // )
                         }
                       />
                     </InputGroup>
                   </td>
                   <td style={{ textAlign: 'right' }}>
                     <Button
-                      id="deleteButton"
+                      id="setAllButton"
                       color="primary"
                       size="sm"
-                      onClick={
-                        () => console.log('set all event triggered')
-                        // this.onSetAll(fileIndex, seriesIndex)
-                      }
+                      onClick={() => onSetAllUnits(fileConfig.timeSeries[seriesIndex].unit)}
                     >
                       Set all
                     </Button>
