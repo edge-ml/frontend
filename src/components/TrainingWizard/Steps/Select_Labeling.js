@@ -9,6 +9,8 @@ const Wizard_SelectLabeling = ({
   labelings,
   datasets,
   setLabeling,
+  toggleZeroClass,
+  zeroClass,
   selectedLabeling,
   onNext,
   onBack,
@@ -59,6 +61,13 @@ const Wizard_SelectLabeling = ({
                   })`}</div>
                 </div>
               ))}
+          </div>
+          <div className="d-flex">
+            <Checkbox
+              onClick={() => toggleZeroClass(!zeroClass)}
+              isSelected={zeroClass}
+            ></Checkbox>
+            <div>Use 0-Class</div>
           </div>
         </div>
       </ModalBody>

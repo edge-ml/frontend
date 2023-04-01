@@ -158,8 +158,7 @@ const PerformanceInfo = ({ model }) => {
       ></Classification_report>
       <ConfusionMatrixView
         matrix={JSON.parse(metrics.confusion_matrix)}
-        labelMap
-        labelIds
+        labels={model.pipeline.labels}
       ></ConfusionMatrixView>
       <Training_config model={model}></Training_config>
     </div>

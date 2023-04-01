@@ -39,6 +39,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
 
   // User selections made in the wizard
   const [labeling, setLableing] = useState();
+  const [zeroClass, toggleZeroClass] = useState(false);
   const [modelName, setModelName] = useState('');
   const [selectedClassifier, setSelectedClassifier] = useState(undefined);
   const [selectedEval, setSelectedEval] = useState(undefined);
@@ -101,7 +102,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
             timeSeries: elm.timeSeries.map((ts) => ts._id),
           };
         }),
-      labeling: labeling._id,
+      labeling: { _id: labeling._id, useZeroClass: zeroClass },
       name: modelName,
       classifier: selectedClassifier,
       evaluation: selectedEval,
@@ -135,6 +136,8 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     setSelectedEval: setSelectedEval,
     modelName: modelName,
     setModelName: setModelName,
+    zeroClass: zeroClass,
+    toggleZeroClass: toggleZeroClass,
   };
 
   // The steps in the wizard

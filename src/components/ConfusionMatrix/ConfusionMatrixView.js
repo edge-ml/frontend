@@ -1,9 +1,7 @@
 import React from 'react';
 
-export const ConfusionMatrixView = ({ matrix, labelMap, labelIds }) => {
+export const ConfusionMatrixView = ({ matrix, labels }) => {
   var cm = matrix;
-  console.log(cm);
-  var labels = ['W', 'Square'];
 
   const maxValue = Math.max(...cm.flat());
   const cmLen = cm.length;
