@@ -430,3 +430,17 @@ div.card {
   border-radius: 6px;
   border-width: 2px;
 }
+
+.header-wrapper {
+  background: rgb(249, 251, 252);
+  border: 2px solid rgb(230, 230, 234);
+  border-radius: 10px 10px 0px 0px;
+  border-width: 2px 2px 0px 2px;
+  padding: 10px;
+}
+
+.body-wrapper {
+  border: 2px solid rgb(230, 230, 234);
+  border-radius: 0px 0px 10px 10px;
+  overflow: hidden;
+}

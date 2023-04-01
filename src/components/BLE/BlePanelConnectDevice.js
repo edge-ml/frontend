@@ -94,11 +94,11 @@ const getButtonView = (props) => {
 
 function BlePanelConnectDevice(props) {
   return (
-    <Card className="text-left mb-2">
-      <CardHeader>
+    <div style={{ borderRadius: 10 }} className="p-2">
+      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
         <h4>1. Device</h4>
-      </CardHeader>
-      <CardBody>
+      </div>
+      <div className="body-wrapper p-2">
         <small className="text-danger">
           <strong>Warning: </strong>
           If your device can not be found, try to turn bluetooth off and on
@@ -140,8 +140,8 @@ function BlePanelConnectDevice(props) {
             </div>
           </div>
         </div>
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 }
 
