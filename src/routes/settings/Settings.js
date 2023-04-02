@@ -7,12 +7,9 @@ import EditName from './EditName';
 import GenerateCode from './GenerateCode';
 import UserEdit from './UserEdit';
 
-import { Prompt, withRouter } from 'react-router-dom';
+import { Prompt } from 'react-router-dom';
 
-import {
-  deleteProject,
-  updateProject,
-} from './../../services/ApiServices/ProjectService';
+import { updateProject } from './../../services/ApiServices/ProjectService';
 import {
   getDeviceApiKey,
   setDeviceApiKey,
@@ -39,7 +36,7 @@ const options = [
       {
         index: 1,
         name: 'Delete Project',
-        description: 'Completely remove the project',
+        description: 'Delete or remove the project',
         tags: ['delete', 'remove'],
         isModal: false,
       },
@@ -247,19 +244,11 @@ class Settings extends Component {
   }
 
   onDeleteProject() {
-    var doDelete = window.confirm('Do you want to delete this project?');
-    if (doDelete) {
-      this.props.onDeleteProject(this.state.project);
-    }
+    this.props.onDeleteProject(this.state.project);
   }
 
   onLeaveProject() {
-    var doLeave = window.confirm(
-      'Do you want to leave this project? If you change your mind, you will have to ask the project admin to add you again.'
-    );
-    if (doLeave) {
-      this.props.onLeaveProject(this.state.project);
-    }
+    this.props.onLeaveProject(this.state.project);
   }
 
   setVisibleOptions(options) {
