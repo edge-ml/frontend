@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row } from 'reactstrap';
+import { Col, Row, Container } from 'reactstrap';
 
 import BleNotActivated from '../components/BLE/BleNotActivated';
 import BlePanelSensorList from '../components/BLE/BlePanelSensorList';
@@ -420,45 +420,52 @@ class UploadBLE extends Component {
         {this.state.deviceSensors &&
         this.state.connectedBLEDevice &&
         this.state.isEdgeMLInstalled ? (
-          <Row>
-            <Col>
-              <div>
-                <BlePanelSensorList
-                  maxSampleRate={this.state.connectedDeviceData.maxSampleRate}
-                  selectedSensors={this.state.selectedSensors}
-                  onChangeSampleRate={this.onChangeSampleRate}
-                  sensors={this.state.deviceSensors}
-                  onToggleSensor={this.onToggleSensor}
-                  disabled={this.state.recorderState !== 'ready'}
-                ></BlePanelSensorList>
-              </div>
-            </Col>
-            <Col>
-              <BlePanelRecorderSettings
-                onDatasetNameChanged={this.onDatasetNameChanged}
-                onGlobalSampleRateChanged={this.onGlobalSampleRateChanged}
-                datasetName={this.state.datasetName}
-                sampleRate={this.state.sampleRate}
-                onClickRecordButton={this.onClickRecordButton}
-                recorderState={this.state.recorderState}
-                sensorsSelected={this.state.selectedSensors.size > 0}
-                onToggleStream={this.onToggleStream}
-                onToggleSampleRate={this.onToggleSampleRate}
-                fullSampleRate={this.state.fullSampleRate}
-              ></BlePanelRecorderSettings>
-              {this.state.recorderState === 'recording' && this.state.stream ? (
+          <div>
+            <Row>
+              <Col>
                 <div>
-                  <BlePanelRecordingDisplay
-                    deviceSensors={this.state.deviceSensors}
+                  <BlePanelSensorList
+                    maxSampleRate={this.state.connectedDeviceData.maxSampleRate}
                     selectedSensors={this.state.selectedSensors}
-                    lastData={this.currentData}
-                    sensorKeys={this.sensorKeys}
-                    fullSampleRate={this.state.fullSampleRate}
-                  ></BlePanelRecordingDisplay>
+                    onChangeSampleRate={this.onChangeSampleRate}
+                    sensors={this.state.deviceSensors}
+                    onToggleSensor={this.onToggleSensor}
+                    disabled={this.state.recorderState !== 'ready'}
+                  ></BlePanelSensorList>
                 </div>
-              ) : null}
-            </Col>
-          </Row>
+              </Col>
+              <Col>
+                <BlePanelRecorderSettings
+                  onDatasetNameChanged={this.onDatasetNameChanged}
+                  onGlobalSampleRateChanged={this.onGlobalSampleRateChanged}
+                  datasetName={this.state.datasetName}
+                  sampleRate={this.state.sampleRate}
+                  onClickRecordButton={this.onClickRecordButton}
+                  recorderState={this.state.recorderState}
+                  sensorsSelected={this.state.selectedSensors.size > 0}
+                  onToggleStream={this.onToggleStream}
+                  onToggleSampleRate={this.onToggleSampleRate}
+                  fullSampleRate={this.state.fullSampleRate}
+                ></BlePanelRecorderSettings>
+              </Col>
+            </Row>
+            <Row className="p-2">
+              <Col xs={12}>
+                {this.state.recorderState === 'recording' &&
+                this.state.stream ? (
+                  <div>
+                    <BlePanelRecordingDisplay
+                      deviceSensors={this.state.deviceSensors}
+                      selectedSensors={this.state.selectedSensors}
+                      lastData={this.currentData}
+                      sensorKeys={this.sensorKeys}
+                      fullSampleRate={this.state.fullSampleRate}
+                    ></BlePanelRecordingDisplay>
+                  </div>
+                ) : null}
+              </Col>
+            </Row>
+          </div>
         ) : null}
       </div>
     );
