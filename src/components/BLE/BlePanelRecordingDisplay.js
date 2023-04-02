@@ -4,8 +4,6 @@ import React, { Component } from 'react';
 import Highcharts from 'highcharts/highstock';
 import BlePanelSensorstreamGraph from './BlePanelSensorstreamGraph';
 
-import { Card, CardBody, CardHeader } from 'reactstrap';
-
 class BlePanelRecordingDisplay extends Component {
   constructor(props) {
     super(props);
@@ -75,11 +73,11 @@ class BlePanelRecordingDisplay extends Component {
 
   render() {
     return (
-      <Card className="text-left">
-        <CardHeader>
+      <div className="mr-2 mt-3">
+        <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
           <h4>4. Recording</h4>
-        </CardHeader>
-        <CardBody>
+        </div>
+        <div className="body-wrapper">
           <ul>
             {Array.from(this.props.selectedSensors).map((sensorKey) => {
               return (
@@ -99,8 +97,8 @@ class BlePanelRecordingDisplay extends Component {
               );
             })}
           </ul>
-        </CardBody>
-      </Card>
+        </div>
+      </div>
     );
   }
 }

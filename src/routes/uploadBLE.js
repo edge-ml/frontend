@@ -447,7 +447,7 @@ class UploadBLE extends Component {
                 fullSampleRate={this.state.fullSampleRate}
               ></BlePanelRecorderSettings>
               {this.state.recorderState === 'recording' && this.state.stream ? (
-                <div className="shadow p-3 mb-5 bg-white rounded">
+                <div>
                   <BlePanelRecordingDisplay
                     deviceSensors={this.state.deviceSensors}
                     selectedSensors={this.state.selectedSensors}

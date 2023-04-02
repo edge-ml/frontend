@@ -12,7 +12,7 @@ function BlePanelSensorList(props) {
     sampleRateSum += props.sensors[elm].sampleRate;
   });
   return (
-    <div className="p-2">
+    <div className="ml-2">
       <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
         <h4>2. Configure sensors</h4>
       </div>

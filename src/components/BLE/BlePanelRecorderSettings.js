@@ -53,14 +53,14 @@ function BlePanelRecorderSettings(props) {
   };
 
   return (
-    <Card
-      className="text-left"
+    <div
+      className="mr-2"
       style={props.disabled ? { opacity: '0.4', pointerEvents: 'none' } : null}
     >
-      <CardHeader>
+      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
         <h4>3. Record dataset</h4>
-      </CardHeader>
-      <CardBody>
+      </div>
+      <div className="body-wrapper p-3">
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>{'Dataset name'}</InputGroupText>
@@ -166,8 +166,8 @@ function BlePanelRecorderSettings(props) {
             Showing sensor data at full sample rate can affect performance.
           </small>
         ) : null}
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 }
 
