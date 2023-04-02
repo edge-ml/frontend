@@ -40,6 +40,7 @@ export const RecorderSettings = ({
     </InputGroup>
     <hr />
     <StartStopButton
+      outline
       selectedSensors={selectedSensors}
       datasetName={datasetName}
       recorderState={recorderState}

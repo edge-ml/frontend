@@ -5,6 +5,7 @@ import {
 } from '../../services/ReactHooksService';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Checkbox from '../../components/Common/Checkbox';
 
 import React from 'react';
 
@@ -93,13 +94,10 @@ export const SensorList = ({
                   <tr>
                     <Td>
                       {' '}
-                      <Input
-                        onChange={(e) =>
-                          setSensor(name, !selectedSensors[name])
-                        }
+                      <Checkbox
+                        isSelected={selectedSensors[name]}
                         className="position-relative ml-0"
-                        checked={selectedSensors[name]}
-                        type="checkbox"
+                        onClick={(e) => setSensor(name, !selectedSensors[name])}
                       />
                     </Td>
                     <Td>{name}</Td>
