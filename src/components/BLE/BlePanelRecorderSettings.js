@@ -9,10 +9,8 @@ import {
 import SpinnerButton from '../Common/SpinnerButton';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
+import Checkbox from '../Common/Checkbox';
 import './BleActivated.css';
-
-import { Card, CardBody, CardHeader } from 'reactstrap';
 
 function BlePanelRecorderSettings(props) {
   const [nameError, setNameError] = useState(false);
@@ -139,25 +137,23 @@ function BlePanelRecorderSettings(props) {
           </div>
           <small>
             <div>
-              <div>
-                <Input
-                  onChange={props.onToggleStream}
+              <div className="d-flex flex-row">
+                <Checkbox
+                  onClick={props.onToggleStream}
                   className="stream-check"
-                  type="checkbox"
                   id="stream-check"
                 />
-                <label htmlFor="stream-check">Disable sensor streaming</label>
+                <div className="ml-2">Disable sensor streaming</div>
               </div>
-              <div>
-                <Input
-                  onChange={props.onToggleSampleRate}
+              <div className="d-flex flex-row mt-2">
+                <Checkbox
+                  onClick={props.onToggleSampleRate}
                   className="sampleRate-check"
-                  type="checkbox"
                   id="sampleRate-check"
                 />
-                <label htmlFor="sampleRate-check">
+                <div className="ml-2">
                   Show sensor data at full sampling rate
-                </label>
+                </div>
               </div>
             </div>
           </small>
