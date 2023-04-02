@@ -1,6 +1,6 @@
 import React from 'react';
 import SpinnerButton from '../Common/SpinnerButton';
-import { Button, Card, CardBody, CardHeader } from 'reactstrap';
+import { Button } from 'reactstrap';
 
 const getInfoText = (props) => {
   if (!props.connectedBLEDevice) {
@@ -83,7 +83,7 @@ const getButtonView = (props) => {
   ) {
     return (
       <div>
-        <Button color="primary" onClick={props.toggleDFUModal}>
+        <Button outline color="primary" onClick={props.toggleDFUModal}>
           Flash edge-ml firmware
         </Button>
       </div>
@@ -124,12 +124,14 @@ function BlePanelConnectDevice(props) {
             <div className="mr-2">{getButtonView(props)}</div>
             <div>
               <SpinnerButton
+                outline
                 loadingtext={
                   props.connectedBLEDevice
                     ? 'Disconnecting...'
                     : 'Connecting...'
                 }
                 color={props.connectedBLEDevice ? 'danger' : 'primary'}
+                spinnercolor={props.connectedBLEDevice ? 'danger' : 'primary'}
                 loading={props.bleConnectionChanging}
                 onClick={props.toggleBLEDeviceConnection}
               >

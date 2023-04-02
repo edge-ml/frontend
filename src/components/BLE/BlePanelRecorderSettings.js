@@ -108,6 +108,7 @@ function BlePanelRecorderSettings(props) {
           }}
         >
           <SpinnerButton
+            outline
             style={
               buttonErrorAnimate
                 ? {
@@ -116,6 +117,7 @@ function BlePanelRecorderSettings(props) {
                 : null
             }
             color={buttonColor}
+            spinnercolor={buttonColor}
             onClick={onClickRecordButton}
             loading={buttonLoading}
             loadingtext={buttonLoadingText}
