@@ -1,0 +1,29 @@
+/* 768 corresponds to md in bootstrap grid */
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+
+  .container-container {
+    width: calc(100% - 160px);
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-exclude {
+    display: none;
+  }
+
+  .mobile-navbar-slider {
+    margin-left: -100%;
+  }
+
+  .navbar-shown .mobile-navbar-slider {
+    margin-left: 0;
+  }
+
+  .container-container {
+    width: 100%;
+  }
+}

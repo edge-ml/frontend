@@ -73,28 +73,31 @@ class BlePanelRecordingDisplay extends Component {
 
   render() {
     return (
-      <div>
-        <div className="panelHeader">4. Recording</div>
-        <div className="panelDivider"></div>
-        <ul>
-          {Array.from(this.props.selectedSensors).map((sensorKey) => {
-            return (
-              <li key={sensorKey}>
-                <BlePanelSensorstreamGraph
-                  options={
-                    this.allOptions[
-                      this.props.sensorKeys.indexOf(sensorKey.toString())
-                    ]
-                  }
-                  fullSampleRate={this.props.fullSampleRate}
-                  sampleRate={this.props.deviceSensors[sensorKey].sampleRate}
-                  lastData={this.props.lastData}
-                  index={this.props.sensorKeys.indexOf(sensorKey.toString())}
-                ></BlePanelSensorstreamGraph>
-              </li>
-            );
-          })}
-        </ul>
+      <div className="mr-2 mt-3">
+        <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
+          <h4>4. Recording</h4>
+        </div>
+        <div className="body-wrapper">
+          <ul>
+            {Array.from(this.props.selectedSensors).map((sensorKey) => {
+              return (
+                <li key={sensorKey}>
+                  <BlePanelSensorstreamGraph
+                    options={
+                      this.allOptions[
+                        this.props.sensorKeys.indexOf(sensorKey.toString())
+                      ]
+                    }
+                    fullSampleRate={this.props.fullSampleRate}
+                    sampleRate={this.props.deviceSensors[sensorKey].sampleRate}
+                    lastData={this.props.lastData}
+                    index={this.props.sensorKeys.indexOf(sensorKey.toString())}
+                  ></BlePanelSensorstreamGraph>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     );
   }

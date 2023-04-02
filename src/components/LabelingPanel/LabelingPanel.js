@@ -77,12 +77,11 @@ class LabelingPanel extends Component {
   render() {
     return (
       <Card className="LabelingPanel">
-        <CardBody className="p-1">
+        <CardBody className="p-1 d-flex flex-wrap">
           <div className="informationBox">
             <Button
               disabled={this.props.isCrosshairIntervalActive}
               className="m-1 btn-light"
-              style={{ float: 'left' }}
               onClick={this.toggleEdit}
             >
               <FontAwesomeIcon
@@ -96,11 +95,7 @@ class LabelingPanel extends Component {
                 {!this.state.canEdit ? 'Locked' : 'Unlocked'}
               </span>
             </Button>
-            <Button
-              className="m-1 btn-light"
-              style={{ float: 'left' }}
-              onClick={this.props.onHideLabels}
-            >
+            <Button className="m-1 btn-light" onClick={this.props.onHideLabels}>
               <span
                 style={{ color: !this.props.hideLabels ? '#007BFF' : 'gray' }}
               >

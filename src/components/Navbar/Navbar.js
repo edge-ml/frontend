@@ -19,6 +19,7 @@ import {
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 import './Navbar.css';
+import EdgeMLBrandLogo from '../EdgeMLBrandLogo/EdgeMLBrandLogo';
 
 const navbarProjectId = (id) => `navbar-project-${id}`;
 
@@ -76,39 +77,25 @@ class Navbar extends Component {
   render() {
     return (
       <div
-        className="d-flex flex-column bg-light align-items-center justify-content-between shadow navbar-base user-select-none"
+        className="d-flex flex-column bg-light align-items-center justify-content-between navbar-base user-select-none"
         color="light"
       >
         <div
           className="w-100 d-flex flex-column justify-content-center align-items-center"
           style={{ minHeight: 0 }}
         >
-          <NavbarBrand
-            style={{ marginRight: '8px' }}
-            className="dark-hover mt-2"
-          >
-            <a
-              className="home-link"
-              href={
-                this.props.projectAvailable
-                  ? '/' +
-                    this.props.projectAvailable.admin.userName +
-                    '/' +
-                    this.props.projectAvailable.name +
-                    '/' +
-                    'datasets'
-                  : null
-              }
-            >
-              <img
-                style={{ marginRight: '8px', width: '32px' }}
-                src={require('../../logo.svg')}
-              />
-              <b>
-                <div style={{ color: 'black' }}>edge-ml</div>
-              </b>
-            </a>
-          </NavbarBrand>
+          <EdgeMLBrandLogo
+            href={
+              this.props.projectAvailable
+                ? '/' +
+                  this.props.projectAvailable.admin.userName +
+                  '/' +
+                  this.props.projectAvailable.name +
+                  '/' +
+                  'datasets'
+                : null
+            }
+          />
           <div className="w-100 mt-3 overflow-auto">
             {this.props.projects.map((project, index) => {
               return (

@@ -10,9 +10,9 @@ function Snackbar(props) {
   return (
     <Card
       className="snackbar"
-      onClick={e => {
+      onClick={(e) => {
         props.closeSnackbar();
-        () => e.preventDefault();
+        // () => e.preventDefault(); // FIXME: what was this originally here for?
       }}
     >
       <div className="fontawesome-wrapper">
@@ -30,6 +30,6 @@ function Snackbar(props) {
 
 Snackbar.defaultProps = {
   text: '',
-  closeSnackbar: () => {}
+  closeSnackbar: () => {},
 };
 export default Snackbar;

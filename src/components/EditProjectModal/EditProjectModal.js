@@ -11,12 +11,12 @@ import {
   Input,
   Table,
   Col,
-  Row
+  Row,
 } from 'reactstrap';
 
 import {
   updateProject,
-  createProject
+  createProject,
 } from './../../services/ApiServices/ProjectService';
 
 import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteInput';
@@ -35,7 +35,7 @@ class EditProjectModal extends Component {
       userSearchValue: '',
       originalProject: undefined,
       project: undefined,
-      originalUsers: []
+      originalUsers: [],
     };
     this.onNameChanged = this.onNameChanged.bind(this);
     this.onSave = this.onSave.bind(this);
@@ -44,22 +44,21 @@ class EditProjectModal extends Component {
     this.generateTableEntry = this.generateTableEntry.bind(this);
     this.onAddUserName = this.onAddUserName.bind(this);
     this.deleteUserName = this.deleteUserName.bind(this);
-    this.onChangeUserNameSuggestion = this.onChangeUserNameSuggestion.bind(
-      this
-    );
+    this.onChangeUserNameSuggestion =
+      this.onChangeUserNameSuggestion.bind(this);
   }
 
   onChangeUserNameSuggestion(e) {
     this.setState({
-      userSearchValue: e.target.value
+      userSearchValue: e.target.value,
     });
   }
 
   deleteUserName(userName) {
     const project = this.state.project;
-    project.users = project.users.filter(elm => elm.userName !== userName);
+    project.users = project.users.filter((elm) => elm.userName !== userName);
     this.setState({
-      project: project
+      project: project,
     });
   }
 
@@ -69,7 +68,7 @@ class EditProjectModal extends Component {
     project.users.push({ userName: e.target.value });
     this.setState({
       project: project,
-      userSearchValue: ''
+      userSearchValue: '',
     });
   }
 
@@ -78,30 +77,31 @@ class EditProjectModal extends Component {
     const project = { ...this.state.project };
     project.users[index].userName = e.target.value;
     this.setState({
-      project: project
+      project: project,
     });
   }
 
   onSave() {
     if (this.props.isNewProject) {
       createProject(this.state.project)
-        .then(data => {
+        .then((data) => {
           const projectIndex = data.findIndex(
-            elm => elm.name === this.state.project.name
+            (elm) => elm.name === this.state.project.name
           );
           this.props.projectChanged(data, projectIndex);
+          this.setState({ error: undefined });
         })
-        .catch(err => {
+        .catch((err) => {
           this.setState({
-            error: err
+            error: err,
           });
         });
     } else {
       updateProject(this.state.project)
-        .then(data => {
+        .then((data) => {
           this.props.projectChanged(data);
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
         });
     }
@@ -110,7 +110,7 @@ class EditProjectModal extends Component {
   componentWillReceiveProps(nextProps) {
     const newProject = { name: '', users: [] };
     this.setState({
-      project: newProject
+      project: newProject,
     });
   }
 
@@ -118,7 +118,7 @@ class EditProjectModal extends Component {
     var tmpProject = { ...this.state.project };
     tmpProject.name = newName;
     this.setState({
-      project: tmpProject
+      project: tmpProject,
     });
   }
 
@@ -128,7 +128,7 @@ class EditProjectModal extends Component {
         error: undefined,
         originalProject: undefined,
         project: undefined,
-        originalUsers: []
+        originalUsers: [],
       },
       () => {
         this.props.onClose();
@@ -180,7 +180,7 @@ class EditProjectModal extends Component {
               id="inputProjectName"
               placeholder={'Project-name'}
               value={this.state.project.name}
-              onChange={e => this.onNameChanged(e.target.value)}
+              onChange={(e) => this.onNameChanged(e.target.value)}
             />
           </InputGroup>
           <InputGroup>
@@ -216,8 +216,8 @@ class EditProjectModal extends Component {
                 onChange={this.onChangeUserNameSuggestion}
                 getsuggestions={getUserNameSuggestions}
                 filter={[
-                  ...this.state.project.users.map(elm => elm.userName),
-                  this.props.userName
+                  ...this.state.project.users.map((elm) => elm.userName),
+                  this.props.userName,
                 ]}
               ></AutoCompleteInput>
             </Col>

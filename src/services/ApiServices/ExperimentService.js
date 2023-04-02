@@ -1,8 +1,9 @@
-var apiConsts = require('./ApiConstants');
-const ax = require('axios');
+import apiConsts from './ApiConstants';
+import ax from 'axios';
+
 const axios = ax.create();
 
-module.exports.subscribeExperiments = () => {
+export const subscribeExperiments = () => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -11,12 +12,12 @@ module.exports.subscribeExperiments = () => {
         apiConsts.API_ENDPOINTS.EXPERIMENTS
       )
     )
-      .then(experiments => resolve(experiments.data))
-      .catch(err => reject(err));
+      .then((experiments) => resolve(experiments.data))
+      .catch((err) => reject(err));
   });
 };
 
-module.exports.addExperiment = newExperiment => {
+export const addExperiment = (newExperiment) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -34,14 +35,14 @@ module.exports.addExperiment = newExperiment => {
             apiConsts.API_ENDPOINTS.EXPERIMENTS
           )
         )
-          .then(experiments => resolve(experiments.data))
-          .catch(err => reject(err))
+          .then((experiments) => resolve(experiments.data))
+          .catch((err) => reject(err))
       )
-      .catch(err => reject(err));
+      .catch((err) => reject(err));
   });
 };
 
-module.exports.updateExperiment = experiment => {
+export const updateExperiment = (experiment) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -60,12 +61,12 @@ module.exports.updateExperiment = experiment => {
           )
         )
       )
-      .then(experiments => resolve(experiments.data))
-      .catch(err => reject(err));
+      .then((experiments) => resolve(experiments.data))
+      .catch((err) => reject(err));
   });
 };
 
-module.exports.deleteExperiment = experimentId => {
+export const deleteExperiment = (experimentId) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -82,9 +83,9 @@ module.exports.deleteExperiment = experimentId => {
             apiConsts.API_ENDPOINTS.EXPERIMENTS
           )
         )
-          .then(experiments => resolve(experiments.data))
-          .catch(err => reject(err))
+          .then((experiments) => resolve(experiments.data))
+          .catch((err) => reject(err))
       )
-      .catch(err => reject(err));
+      .catch((err) => reject(err));
   });
 };

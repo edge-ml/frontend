@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { NavbarBrand } from 'reactstrap';
 import { Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -17,6 +17,7 @@ import {
   faLightbulb,
 } from '@fortawesome/free-solid-svg-icons';
 import Navbar from './components/Navbar/Navbar';
+import MobileHeader from './components/MobileHeader/MobileHeader';
 
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
@@ -40,6 +41,7 @@ import {
   leaveProject,
 } from './services/ApiServices/ProjectService';
 import Loader from './modules/loader';
+import AppView from './AppView';
 
 class App extends Component {
   constructor(props) {
@@ -57,6 +59,7 @@ class App extends Component {
       projectEditModalNew: false,
       userSettingsModalOpen: false,
       navbarWidth: '160px',
+      mobileNavbarShown: false,
     };
     this.baseState = JSON.parse(JSON.stringify(this.state));
     this.logoutHandler = this.logoutHandler.bind(this);
@@ -76,6 +79,8 @@ class App extends Component {
     this.navigateTo = this.navigateTo.bind(this);
     this.onDeleteProject = this.onDeleteProject.bind(this);
     this.onLeaveProject = this.onLeaveProject.bind(this);
+    this.onMobileNavbarClose = this.onMobileNavbarClose.bind(this);
+    this.onMobileNavbarToggle = this.onMobileNavbarToggle.bind(this);
 
     this.props.history.listen(() => {
       const splitUrl = this.props.history.location.pathname
@@ -88,6 +93,18 @@ class App extends Component {
         });
       }
     });
+  }
+
+  onMobileNavbarClose() {
+    this.setState({
+      mobileNavbarShown: false,
+    });
+  }
+
+  onMobileNavbarToggle() {
+    this.setState((prevState) => ({
+      mobileNavbarShown: !prevState.mobileNavbarShown,
+    }));
   }
 
   onDeleteProject(project) {
@@ -340,7 +357,7 @@ class App extends Component {
       this.state.userSettingsModalOpen;
 
     return (
-      <div>
+      <Fragment>
         <EditProjectModal
           project={
             this.state.projects ? this.state.projects[projectIndex] : undefined
@@ -372,63 +389,71 @@ class App extends Component {
             on2FA={this.on2FA}
           >
             <Loader loading={!(this.state.isLoggedIn && this.state.projects)}>
-              <div className="d-flex">
-                <Navbar
-                  userName={this.state.userName}
-                  enable2FA={this.enable2FA}
-                  userMail={this.state.userMail}
-                  onLogout={this.onLogout}
-                  currentProjectId={this.state.currentProjectId}
-                  twoFAEnabled={this.state.twoFAEnabled}
-                  location={this.props.location}
-                  projectAvailable={projectAvailable}
-                  projects={this.state.projects}
-                  selectedProjectId={this.state.selectedProjectId}
-                  onProjectClick={this.onProjectClick}
-                  navigateTo={this.navigateTo}
-                  onProjectEditModal={this.onProjectEditModal}
-                ></Navbar>
-                {projectAvailable ? null : (
-                  <NoProjectPage
-                    onCreateProject={(e) => {
-                      e.preventDefault();
-                      this.onProjectEditModal(true);
-                    }}
-                  ></NoProjectPage>
-                )}
-                <div
-                  style={{
-                    marginLeft: this.state.navbarWidth,
-                    width: `calc(100% - ${this.state.navbarWidth})`,
-                  }}
-                >
-                  <Route
-                    {...this.props}
-                    path="/:userName/:projectID"
-                    render={(props) => (
-                      <AppContent
-                        {...props}
-                        userName={this.state.userName}
-                        userMail={this.state.userMail}
-                        onDeleteProject={this.onDeleteProject}
-                        onLeaveProject={this.onLeaveProject}
-                        modalOpen={modalOpen}
-                        project={
-                          this.state.projects.filter(
-                            (x) => x._id === this.state.currentProjectId
-                          )[0]
-                        }
-                        onProjectsChanged={this.onProjectsChanged}
-                        navigateTo={this.navigateTo}
-                      />
+              <AppView
+                mobileNavbarShown={this.state.mobileNavbarShown}
+                onMobileNavbarClose={this.onMobileNavbarClose}
+                mobileHeader={
+                  <MobileHeader
+                    mobileNavbarShown={this.state.mobileNavbarShown}
+                    onMenuButton={this.onMobileNavbarToggle}
+                    projectAvailable={projectAvailable}
+                  />
+                }
+                navbar={
+                  <Navbar
+                    userName={this.state.userName}
+                    enable2FA={this.enable2FA}
+                    userMail={this.state.userMail}
+                    onLogout={this.onLogout}
+                    currentProjectId={this.state.currentProjectId}
+                    twoFAEnabled={this.state.twoFAEnabled}
+                    location={this.props.location}
+                    projectAvailable={projectAvailable}
+                    projects={this.state.projects}
+                    selectedProjectId={this.state.selectedProjectId}
+                    onProjectClick={this.onProjectClick}
+                    navigateTo={this.navigateTo}
+                    onProjectEditModal={this.onProjectEditModal}
+                  ></Navbar>
+                }
+                content={
+                  <Fragment>
+                    {projectAvailable ? null : (
+                      <NoProjectPage
+                        onCreateProject={(e) => {
+                          e.preventDefault();
+                          this.onProjectEditModal(true);
+                        }}
+                      ></NoProjectPage>
                     )}
-                  ></Route>
-                </div>
-              </div>
+                    <Route
+                      {...this.props}
+                      path="/:userName/:projectID"
+                      render={(props) => (
+                        <AppContent
+                          {...props}
+                          userName={this.state.userName}
+                          userMail={this.state.userMail}
+                          onDeleteProject={this.onDeleteProject}
+                          onLeaveProject={this.onLeaveProject}
+                          modalOpen={modalOpen}
+                          project={
+                            this.state.projects.filter(
+                              (x) => x._id === this.state.currentProjectId
+                            )[0]
+                          }
+                          onProjectsChanged={this.onProjectsChanged}
+                          navigateTo={this.navigateTo}
+                        />
+                      )}
+                    ></Route>
+                  </Fragment>
+                }
+              />
             </Loader>
           </AuthWall>
         ) : null}
-      </div>
+      </Fragment>
     );
   }
 }

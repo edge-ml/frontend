@@ -1,47 +1,39 @@
-@media (min-width: 992px) {
-  .LabelingPanel {
-    bottom: 15px;
-    width: calc(0.75 * 100vw - 147px);
-    z-index: 10;
-    position: fixed;
-  }
+.LabelingPanel {
+  z-index: 10;
+  position: relative;
+  width: 100%;
 }
 
-@media (max-width: 992px) {
-  .LabelingPanel {
-    bottom: 15px;
-    width: calc(100% - 184px);
-    z-index: 10;
-    position: fixed;
-    left: 171px;
-  }
-}
-
-.LabelingPanel > .informationBox {
-  float: left;
-  padding: 0px;
-  margin: 0px;
+.informationBox {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 9999;
 }
 
 .informationBox > .inputGroup {
   padding: 0px;
   margin: 0px;
   width: 160px;
-  float: left;
 }
 
-.informationBox > .deleteButton {
-  float: left;
+/* md mobile */
+@media (max-width: 768px) {
+  .informationBox > .inputGroup {
+    width: unset;
+  }
 }
 
-.informationBox > .playButton {
-  float: left;
+@media (min-width: 768px) {
+  .informationBox {
+    flex-direction: row;
+  }
+
+  .LabelingPanel {
+    bottom: 15px;
+    position: sticky;
+  }
 }
 
-.LabelingPanel > .labelingBox {
-  float: right;
-}
-
-.labelingBox > .labelingButton {
-  float: right;
+.labelingBox {
+  margin-left: auto; /* override justify start */
 }

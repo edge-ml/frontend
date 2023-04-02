@@ -1,4 +1,4 @@
-module.exports.ga_downloadDataset = (dataset) => {
+export const ga_downloadDataset = (dataset) => {
   try {
     const len_dataset = dataset.timeSeries.map((elm) => elm.data.length);
     const gtmData = { event: 'download_dataset', len_dataset: len_dataset };
@@ -8,7 +8,7 @@ module.exports.ga_downloadDataset = (dataset) => {
   }
 };
 
-module.exports.ga_uploadDataset = (dataset, method) => {
+export const ga_uploadDataset = (dataset, method) => {
   try {
     const len_dataset = dataset.timeSeries.map((elm) => elm.data.length);
     const gtmData = {
@@ -22,7 +22,7 @@ module.exports.ga_uploadDataset = (dataset, method) => {
   }
 };
 
-module.exports.ga_uploadataset_len = (len_dataset, method, device) => {
+export const ga_uploadataset_len = (len_dataset, method, device) => {
   try {
     const gtmData = {
       event: 'upload_dataset',
@@ -37,7 +37,7 @@ module.exports.ga_uploadataset_len = (len_dataset, method, device) => {
   }
 };
 
-module.exports.ga_connectBluetooth = (device, error, success) => {
+export const ga_connectBluetooth = (device, error, success) => {
   try {
     const gtmData = {
       success: success,
@@ -51,7 +51,7 @@ module.exports.ga_connectBluetooth = (device, error, success) => {
   }
 };
 
-module.exports.ga_copyCode = (language) => {
+export const ga_copyCode = (language) => {
   try {
     const gtmData = { event: 'copy_code', language_code: language };
     window.dataLayer.push(gtmData);

@@ -1,8 +1,7 @@
-const { isNumber } = require('./helpers');
-const { generateRandomColor } = require('./ColorService');
-const { addLabeling } = require('./ApiServices/LabelingServices');
+import { isNumber } from './helpers';
+import { generateRandomColor } from './ColorService';
 
-module.exports.processCSV = files => {
+export const processCSV = (files) => {
   return new Promise((resolve, reject) => {
     var timeData = [];
     var i = 0;
@@ -30,9 +29,9 @@ module.exports.processCSV = files => {
   });
 };
 
-module.exports.generateDataset = (timeData, dataset) => {
+export const generateDataset = (timeData, dataset) => {
   const headerErrors = checkHeaders(timeData);
-  if (headerErrors.some(elm => elm.length > 0)) {
+  if (headerErrors.some((elm) => elm.length > 0)) {
     return headerErrors;
   }
   const datasets = [];
@@ -48,48 +47,49 @@ module.exports.generateDataset = (timeData, dataset) => {
       errors.push(dataset);
     }
   }
-  if (errors.some(elm => elm.length > 0)) {
+  if (errors.some((elm) => elm.length > 0)) {
     return errors;
   }
   return { datasets: datasets, labelings: labelings };
 };
 
-module.exports.generateCSV = (dataset, props_labelings, props_labels) => {
+export const generateCSV = (dataset, props_labelings, props_labels) => {
   const csv = [];
   const labelings = {};
   const labelHeaderMap = [];
 
   const header = ['time'];
-  dataset.timeSeries.forEach(t => {
+  dataset.timeSeries.forEach((t) => {
     header.push('sensor_' + t.name + '[' + t.unit + ']');
   });
 
   const labelsUsed =
-    dataset.labelings && dataset.labelings.some(elm => elm.labels.length > 0);
+    dataset.labelings && dataset.labelings.some((elm) => elm.labels.length > 0);
   if (labelsUsed) {
-    dataset.labelings.forEach(l => {
-      const labelingName = props_labelings.find(elm => elm._id === l.labelingId)
-        .name;
+    dataset.labelings.forEach((l) => {
+      const labelingName = props_labelings.find(
+        (elm) => elm._id === l.labelingId
+      ).name;
       labelings[l.labelingId] = [];
-      l.labels.forEach(label => {
-        const labelName = props_labels.find(elm => elm._id === label.type)[
+      l.labels.forEach((label) => {
+        const labelName = props_labels.find((elm) => elm._id === label.type)[
           'name'
         ];
         labelings[l.labelingId].push({
           labelingName: labelingName,
           name: labelName,
           start: Math.round(label.start),
-          end: Math.round(label.end)
+          end: Math.round(label.end),
         });
       });
     });
 
     for (const [labelingId, labels] of Object.entries(labelings)) {
-      const labelNames = new Set(labels.map(elm => elm.name));
-      labelNames.forEach(elm => {
+      const labelNames = new Set(labels.map((elm) => elm.name));
+      labelNames.forEach((elm) => {
         labelHeaderMap.push({
           labelingName: labels[0].labelingName,
-          labelName: elm
+          labelName: elm,
         });
         header.push('label_' + labels[0].labelingName + '_' + elm);
       });
@@ -106,7 +106,7 @@ module.exports.generateCSV = (dataset, props_labelings, props_labels) => {
       }
       return { timestamp: Number.POSITIVE_INFINITY };
     });
-    const minTimeStamp = Math.min(...timeStamps.map(elm => elm.timestamp));
+    const minTimeStamp = Math.min(...timeStamps.map((elm) => elm.timestamp));
     const sensorData = timeStamps.map((elm, index) => {
       if (elm.timestamp === minTimeStamp) {
         tPtr[index]++;
@@ -117,11 +117,11 @@ module.exports.generateCSV = (dataset, props_labelings, props_labels) => {
     return {
       timeStamp: minTimeStamp,
       data: sensorData,
-      changed: minTimeStamp !== Number.POSITIVE_INFINITY
+      changed: minTimeStamp !== Number.POSITIVE_INFINITY,
     };
   };
-  const getLabelData = timestamp => {
-    return labelHeaderMap.map(labelHeader => {
+  const getLabelData = (timestamp) => {
+    return labelHeaderMap.map((labelHeader) => {
       for (const [_, labels] of Object.entries(labelings)) {
         for (let l of labels) {
           if (
@@ -145,14 +145,14 @@ module.exports.generateCSV = (dataset, props_labelings, props_labels) => {
     csv.push([
       nextSensorLine.timeStamp,
       ...nextSensorLine.data,
-      ...nextLabelLine
+      ...nextLabelLine,
     ]);
     nextSensorLine = getNextSensorData();
     nextLabelLine = getLabelData(nextSensorLine.timeStamp);
     i = i + 1;
   }
 
-  return csv.map(elm => elm.join(',')).join('\n');
+  return csv.map((elm) => elm.join(',')).join('\n');
 };
 
 function extractTimeSeries(timeData, i) {
@@ -163,7 +163,7 @@ function extractTimeSeries(timeData, i) {
       : '',
     end: parseInt(timeData[timeData.length - 1][0], 10),
     start: parseInt(timeData[1][0], 10),
-    data: []
+    data: [],
   };
   for (var j = 1; j < timeData.length; j++) {
     if (timeData[j][0] === '') {
@@ -177,12 +177,12 @@ function extractTimeSeries(timeData, i) {
     }
     if (!isNumber(timeData[j][i])) {
       throw {
-        error: `Sensor value is not a number in row ${j + 1}, column ${i + 1}`
+        error: `Sensor value is not a number in row ${j + 1}, column ${i + 1}`,
       };
     }
     timeSeries.data.push({
       timestamp: parseInt(timeData[j][0], 10),
-      datapoint: parseFloat(timeData[j][i])
+      datapoint: parseFloat(timeData[j][i]),
     });
   }
   return timeSeries;
@@ -195,20 +195,20 @@ function extractLabel(timeData, i) {
   const labelName = timeData[0][i].split('_')[2];
 
   const labeling = {
-    name: labelingName
+    name: labelingName,
   };
 
   const labels = [
     {
       name: labelName,
       color: generateRandomColor(),
-      isNewLabel: true
-    }
+      isNewLabel: true,
+    },
   ];
 
   const datasetLabel = {
     name: labelingName,
-    labels: []
+    labels: [],
   };
 
   for (var j = 1; j < timeData.length; j++) {
@@ -220,7 +220,7 @@ function extractLabel(timeData, i) {
       datasetLabel.labels.push({
         start: start,
         end: timeData[j - 1][0],
-        name: labelName
+        name: labelName,
       });
       j--;
     }
@@ -238,11 +238,14 @@ function processCSVColumn(timeData) {
     }
     for (var i = 1; i <= numDatasets; i++) {
       const csvLength = timeData[0].length;
-      const csvLenghError = timeData.findIndex(elm => elm.length !== csvLength);
+      const csvLenghError = timeData.findIndex(
+        (elm) => elm.length !== csvLength
+      );
       if (csvLenghError > 0) {
         throw {
-          error: `Each row needs the same number of elements, at line ${csvLenghError +
-            1}`
+          error: `Each row needs the same number of elements, at line ${
+            csvLenghError + 1
+          }`,
         };
       }
       if (timeData.length < 2) {
@@ -258,24 +261,24 @@ function processCSVColumn(timeData) {
     }
 
     const uniquelabelingNames = new Set(
-      labelings.map(elm => elm.labeling.name)
+      labelings.map((elm) => elm.labeling.name)
     );
     const resultingLabelings = [];
-    uniquelabelingNames.forEach(labelingName => {
+    uniquelabelingNames.forEach((labelingName) => {
       const labelingToAppend = {
         datasetLabel: { name: labelingName, labels: [] },
         labeling: { name: labelingName },
-        labels: []
+        labels: [],
       };
       labelingToAppend.labels.push(
         ...labelings
-          .filter(elm => elm.labeling.name === labelingName)
-          .map(data => data.labels)
+          .filter((elm) => elm.labeling.name === labelingName)
+          .map((data) => data.labels)
           .flat(1)
       );
       labelingToAppend.datasetLabel.labels = labelings
-        .filter(elm => elm.labeling.name === labelingName)
-        .map(data => data.datasetLabel.labels)
+        .filter((elm) => elm.labeling.name === labelingName)
+        .map((data) => data.datasetLabel.labels)
         .flat(1);
       resultingLabelings.push(labelingToAppend);
     });
@@ -283,7 +286,7 @@ function processCSVColumn(timeData) {
     const result = {
       start: timeSeries[0].start,
       end: parseInt(timeData[timeData.length - 1][0], 10),
-      timeSeries: timeSeries
+      timeSeries: timeSeries,
     };
     return { dataset: result, labeling: resultingLabelings };
   } catch (err) {
@@ -291,7 +294,7 @@ function processCSVColumn(timeData) {
   }
 }
 
-module.exports.generateLabeledDataset = (
+export const generateLabeledDataset = (
   labelings,
   labels,
   currentLabeling,
@@ -301,14 +304,14 @@ module.exports.generateLabeledDataset = (
     for (var j = 0; j < currentLabeling[i].length; j++) {
       const datasetLabels = currentLabeling[i][j].datasetLabel.labels;
       const labelName = currentLabeling[i][j].datasetLabel.name;
-      const labelIds = labelings.find(elm => elm.name === labelName).labels;
+      const labelIds = labelings.find((elm) => elm.name === labelName).labels;
       currentLabeling[i][j].datasetLabel.labelingId = labelings.find(
-        elm => elm.name === labelName
+        (elm) => elm.name === labelName
       )._id;
       for (var h = 0; h < datasetLabels.length; h++) {
         const labelName = currentLabeling[i][j].datasetLabel.labels[h].name;
         const labelId = labels.find(
-          elm => labelName === elm.name && labelIds.includes(elm._id)
+          (elm) => labelName === elm.name && labelIds.includes(elm._id)
         )._id;
         currentLabeling[i][j].datasetLabel.labels[h].type = labelId;
       }
@@ -318,13 +321,13 @@ module.exports.generateLabeledDataset = (
   for (var i = 0; i < datasets.length; i++) {
     newDatasets.push({
       ...datasets[i],
-      labelings: currentLabeling[i].map(elm => elm.datasetLabel)
+      labelings: currentLabeling[i].map((elm) => elm.datasetLabel),
     });
   }
   return newDatasets;
 };
 
-module.exports.extendExistingDataset = (dataset, newDatasets) => {
+export const extendExistingDataset = (dataset, newDatasets) => {
   const fusedDataset = dataset;
   for (var i = 0; i < newDatasets.length; i++) {
     fusedDataset.timeSeries.push(...newDatasets[i].timeSeries);
@@ -338,7 +341,7 @@ module.exports.extendExistingDataset = (dataset, newDatasets) => {
   return fusedDataset;
 };
 
-function checkHeaders(timeData) {
+export function checkHeaders(timeData) {
   const errors = [];
   for (var i = 0; i < timeData.length; i++) {
     const currentErrors = [];
@@ -354,7 +357,7 @@ function checkHeaders(timeData) {
         !/sensor_[^\[\]]+(\[.*\])?/gm.test(header[j])
       ) {
         currentErrors.push({
-          error: `Wrong header format in colum ${j + 1}`
+          error: `Wrong header format in colum ${j + 1}`,
         });
       }
     }
@@ -364,5 +367,3 @@ function checkHeaders(timeData) {
   }
   return errors;
 }
-
-module.exports.checkHeaders = checkHeaders;

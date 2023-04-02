@@ -1,7 +1,18 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faAngleRight,
+  faCross,
+  faEllipsisV,
   faExclamationTriangle,
+  faEye,
+  faInfoCircle,
+  faList,
+  faPen,
+  faPenAlt,
+  faQuestion,
+  faTimes,
+  faTrash,
+  faTrashAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
 import React, { Fragment, useState } from 'react';
@@ -11,6 +22,7 @@ import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 
 import Checkbox from '../../components/Common/Checkbox';
+import { hexToRgb } from '../../services/ColorService';
 
 const displayTime = (time) => {
   const date = new Date(time);
@@ -40,23 +52,24 @@ const Labelings = (props) => {
   );
 
   return (
-    <div className="mt-1">
-      <Row>
-        <Col className="col-auto pr-0">
-          <b>Labelings: </b>
-        </Col>
+    <div className="mt-1 ml-4 p-lg-0 m-lg-0">
+      <Row className="pl-1 ml-1 p-lg-0 m-lg-0 ">
         <Col>
           {labelings.map((labeling, idx) => (
-            <Badge className="mr-2 badgeSize badgeLabelings">
-              <b>{labeling.name + ': '}</b>
-              {labels[idx].map((label) => (
-                <Badge
-                  className="badgeSize mx-1"
-                  style={{ backgroundColor: label.color }}
-                >
-                  {label.name}
-                </Badge>
-              ))}
+            <Badge className="mr-2 badgeSize badgeLabelings pb-2 mt-2 mb-2">
+              <div className="labelingBadgeWrapper">
+                {labeling.name.toUpperCase()}
+              </div>
+              <div>
+                {labels[idx].map((label) => (
+                  <Badge
+                    className="badgeSize mx-1 border border-dark"
+                    style={{ backgroundColor: label.color }}
+                  >
+                    {label.name}
+                  </Badge>
+                ))}
+              </div>
             </Badge>
           ))}
         </Col>
@@ -119,24 +132,28 @@ const DatasetInfo = (props) => {
       </div>
       {duration != 0 ? (
         <Fragment>
-          <div>
-            <b>Start: </b>
-            {displayTime(dataset.start)}
+          <div style={{ color: 'rgb(131, 136, 159)' }}>
+            <small>
+              <b>START </b>
+              {displayTime(dataset.start)}
+            </small>
           </div>
-          <div>
-            <b>Duration: </b>
-            {format_time(duration)}
+          <div style={{ color: 'rgb(131, 136, 159)' }}>
+            <small>
+              <b>DURATION </b>
+              {format_time(duration)}
+            </small>
           </div>
         </Fragment>
       ) : (
         <div className="d-flex align-items-center">
-          <div className="d-inline">
+          <div className="d-inline" style={{ color: 'rgb(131, 136, 159)' }}>
             <FontAwesomeIcon
               style={{ fontSize: '1rem' }}
               icon={faExclamationTriangle}
             ></FontAwesomeIcon>
           </div>
-          <div className="text-left d-inline ml-1">empty</div>
+          <div className="text-left d-inline ml-1">dataset empty</div>
         </div>
       )}
     </div>
@@ -146,7 +163,7 @@ const DatasetInfo = (props) => {
 const ExpandButton = (props) => {
   return (
     <div
-      className="p-2 align-self-stretch d-flex"
+      className=" align-self-stretch d-flex"
       onClick={(e) => {
         e.stopPropagation();
         props.setOpen(!props.isOpen);
@@ -157,10 +174,11 @@ const ExpandButton = (props) => {
           collapse_arrow: props.isOpen,
         })}
       >
-        <FontAwesomeIcon
-          style={{ fontSize: '2rem' }}
-          icon={faAngleRight}
-        ></FontAwesomeIcon>
+        <Button color="secondary">
+          <FontAwesomeIcon
+            icon={!props.isOpen ? faList : faTimes}
+          ></FontAwesomeIcon>
+        </Button>
       </div>
     </div>
   );
@@ -171,12 +189,16 @@ const DatasetTableEntry = (props) => {
   const history = useHistory();
 
   const [isOpen, setOpen] = useState(false);
-
   return (
     <Fragment>
-      <div className="card mt-2 datasetCard">
+      <div
+        className="datasetCard"
+        style={{
+          background: props.index % 2 === 1 ? 'rgb(249, 251, 252)' : '',
+        }}
+      >
         <div className="d-flex">
-          <div className="d-flex align-items-center p-2">
+          <div className="d-flex align-items-center p-2 ml-2 mr-0 ml-md-3 mr-md-3">
             <Checkbox
               isSelected={props.isSelected}
               className="d-inline-block"
@@ -200,15 +222,21 @@ const DatasetTableEntry = (props) => {
               </Col>
               <Col className="col-2 ">
                 <div className="d-flex justify-content-end align-items-center h-100">
+                  <div className="d-block d-lg-none mr-2">
+                    <ExpandButton
+                      isOpen={isOpen}
+                      setOpen={setOpen}
+                    ></ExpandButton>
+                  </div>
                   <Button
-                    color="danger"
+                    className="btn-delete mr-2"
                     onClick={() => props.deleteEntry(dataset._id)}
                   >
-                    Delete
+                    <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
                   </Button>
                   <Button
-                    color="primary"
-                    className="btn-secondary m-2 btn-edit"
+                    color="secondary"
+                    className="btn-edit mr-3 mr-md-4"
                     onClick={(e) => {
                       history.push({
                         pathname: `datasets/${dataset['_id']}`,
@@ -216,15 +244,8 @@ const DatasetTableEntry = (props) => {
                       });
                     }}
                   >
-                    View
+                    <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
                   </Button>
-
-                  <div className="d-block d-lg-none m-2">
-                    <ExpandButton
-                      isOpen={isOpen}
-                      setOpen={setOpen}
-                    ></ExpandButton>
-                  </div>
                 </div>
               </Col>
             </Row>
@@ -235,9 +256,6 @@ const DatasetTableEntry = (props) => {
             showInfo: !isOpen,
           })}
         >
-          <div className="mx-2">
-            <div className="dividerMetaData"></div>
-          </div>
           <AdditionalInfo
             dataset={dataset}
             labelings={props.labelings}

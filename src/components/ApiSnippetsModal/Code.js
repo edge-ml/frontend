@@ -1,4 +1,4 @@
-module.exports.codeArduino = (
+export const codeArduino = (
   backendUrl,
   deviceApiKey,
   datasetName
@@ -55,7 +55,7 @@ void loop()
   // Don't need the loop in this example.
 }`;
 
-module.exports.codeNode = (
+export const codeNode = (
   backendUrl,
   deviceApiKey,
   datasetName,
@@ -89,7 +89,7 @@ try {
   console.log(e);
 }`;
 
-module.exports.codeJs = (
+export const codeJs = (
   backendUrl,
   deviceApiKey,
   datasetName,
@@ -127,7 +127,7 @@ module.exports.codeJs = (
   }
 </script>`;
 
-module.exports.codeJava = (
+export const codeJava = (
   backendUrl,
   deviceApiKey,
   datasetName,

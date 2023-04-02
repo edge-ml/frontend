@@ -11,19 +11,19 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Alert
+  Alert,
 } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
 import {
   updateDataset,
-  createDatasets
+  createDatasets,
 } from '../../services/ApiServices/DatasetServices';
 
 import {
   processCSV,
   generateDataset,
   extendExistingDataset,
-  generateLabeledDataset
+  generateLabeledDataset,
 } from '../../services/CsvService';
 
 import './CreateNewDatasetModal.css';
@@ -31,7 +31,7 @@ import './CreateNewDatasetModal.css';
 import {
   addLabeling,
   subscribeLabelingsAndLabels,
-  updateLabelingAndLabels
+  updateLabelingAndLabels,
 } from '../../services/ApiServices/LabelingServices';
 import ErrorModal from './ErrorModal';
 import SpinnerButton from '../Common/SpinnerButton';
@@ -46,7 +46,7 @@ class CreateNewDatasetModal extends Component {
       labelings: [],
       uploadErrors: [],
       errorFiles: [],
-      onUploading: false
+      onUploading: false,
     };
     this.baseState = JSON.parse(JSON.stringify(this.state));
     this.onUpload = this.onUpload.bind(this);
@@ -66,17 +66,17 @@ class CreateNewDatasetModal extends Component {
     const datasets = this.state.datasets;
     datasets[fileIndex].name = e.target.value;
     this.setState({
-      datasets: datasets
+      datasets: datasets,
     });
   }
 
   onFileInput(files) {
-    processCSV(files).then(timeData => {
+    processCSV(files).then((timeData) => {
       const result = generateDataset(timeData);
       if (Array.isArray(result)) {
         this.setState({
           uploadErrors: result,
-          errorFiles: files
+          errorFiles: files,
         });
         return;
       }
@@ -95,15 +95,15 @@ class CreateNewDatasetModal extends Component {
         datasets: [...this.state.datasets, ...datasets],
         labelings: [
           ...this.state.labelings,
-          ...result.labelings.map(elm => elm.map(innerElm => innerElm))
-        ]
+          ...result.labelings.map((elm) => elm.map((innerElm) => innerElm)),
+        ],
       });
     });
   }
 
   onError(errorMsgs) {
     this.setState({
-      error: errorMsgs
+      error: errorMsgs,
     });
   }
 
@@ -116,7 +116,7 @@ class CreateNewDatasetModal extends Component {
     const datasets = this.state.datasets;
     datasets[fileIndex].timeSeries[seriesIndex].unit = e.target.value;
     this.setState({
-      datasets: datasets
+      datasets: datasets,
     });
   }
 
@@ -124,7 +124,7 @@ class CreateNewDatasetModal extends Component {
     const datasets = this.state.datasets;
     datasets[fileIndex].timeSeries[seriesIndex].name = e.target.value;
     this.setState({
-      datasets: datasets
+      datasets: datasets,
     });
   }
 
@@ -138,7 +138,7 @@ class CreateNewDatasetModal extends Component {
     this.setState({
       files: files,
       datasets: datasets,
-      labelings: labelings
+      labelings: labelings,
     });
   }
 
@@ -146,14 +146,14 @@ class CreateNewDatasetModal extends Component {
     const unit = this.state.datasets[fileIndex].timeSeries[seriesIndex].unit;
     const name = this.state.datasets[fileIndex].timeSeries[seriesIndex].name;
     const datasets = this.state.datasets;
-    datasets.forEach(elm => {
+    datasets.forEach((elm) => {
       if (elm.timeSeries.length > seriesIndex) {
         elm.timeSeries[seriesIndex].unit = unit;
         elm.timeSeries[seriesIndex].name = name;
       }
     });
     this.setState({
-      datasets: datasets
+      datasets: datasets,
     });
   }
 
@@ -168,7 +168,7 @@ class CreateNewDatasetModal extends Component {
     const datasets = this.state.datasets;
     datasets[fileIndex].timeSeries = timeSeries;
     this.setState({
-      datasets: datasets
+      datasets: datasets,
     });
   }
 
@@ -178,22 +178,22 @@ class CreateNewDatasetModal extends Component {
     const labelings = this.state.labelings;
     labelings[fileIndex] = label;
     this.setState({
-      labelings: labelings
+      labelings: labelings,
     });
   }
 
   async onUpload() {
     try {
       this.setState({ onUploading: true });
-      const nameValid = this.state.datasets.every(elm =>
-        elm.timeSeries.every(timeElm => timeElm.name !== '')
+      const nameValid = this.state.datasets.every((elm) =>
+        elm.timeSeries.every((timeElm) => timeElm.name !== '')
       );
       if (!nameValid) {
         window.alert('Every timeSeries needs a name');
         return;
       }
 
-      const valid = this.state.datasets.every(elm => !elm.error);
+      const valid = this.state.datasets.every((elm) => !elm.error);
       if (!valid) {
         window.alert('Fix the errors to upload the dataset');
         return;
@@ -205,7 +205,7 @@ class CreateNewDatasetModal extends Component {
             promises.push(
               addLabeling({
                 ...this.state.labelings[i][j].labeling,
-                labels: this.state.labelings[i][j].labels
+                labels: this.state.labelings[i][j].labels,
               })
             );
           }
@@ -285,7 +285,7 @@ class CreateNewDatasetModal extends Component {
                                   type="text"
                                   placeholder="Name"
                                   value={this.state.datasets[fileIndex].name}
-                                  onChange={e =>
+                                  onChange={(e) =>
                                     this.onDatasetNameChange(e, fileIndex)
                                   }
                                 />
@@ -323,7 +323,7 @@ class CreateNewDatasetModal extends Component {
                                     <td
                                       style={{
                                         paddingTop: 0,
-                                        paddingBottom: 0
+                                        paddingBottom: 0,
                                       }}
                                     >
                                       <InputGroup size="sm">
@@ -343,7 +343,7 @@ class CreateNewDatasetModal extends Component {
                                             this.state.datasets[fileIndex]
                                               .timeSeries[seriesIndex].name
                                           }
-                                          onChange={e =>
+                                          onChange={(e) =>
                                             this.onNameChange(
                                               e,
                                               fileIndex,
@@ -356,7 +356,7 @@ class CreateNewDatasetModal extends Component {
                                     <td
                                       style={{
                                         paddingTop: 0,
-                                        paddingBottom: 0
+                                        paddingBottom: 0,
                                       }}
                                     >
                                       <InputGroup size="sm">
@@ -377,7 +377,7 @@ class CreateNewDatasetModal extends Component {
                                             this.state.datasets[fileIndex]
                                               .timeSeries[seriesIndex].unit
                                           }
-                                          onChange={e =>
+                                          onChange={(e) =>
                                             this.onUnitChange(
                                               e,
                                               fileIndex,
@@ -430,7 +430,7 @@ class CreateNewDatasetModal extends Component {
                               <div
                                 key={labeling + labelingIndex}
                                 className={classnames('labelInfo', {
-                                  labelBorder: labelingIndex !== 0
+                                  labelBorder: labelingIndex !== 0,
                                 })}
                               >
                                 <div
@@ -472,26 +472,26 @@ class CreateNewDatasetModal extends Component {
             ) : null}
           </ModalBody>
           <ModalFooter>
+            <Button
+              id="cancelButton"
+              color="secondary"
+              className="m-1 mr-auto"
+              onClick={this.onCloseModal}
+            >
+              Cancel
+            </Button>
+
             <SpinnerButton
               id="uploadButton"
               data-testid="uploadButton"
               color="primary"
-              className="m-1 mr-auto"
+              className="m-1"
               onClick={this.onUpload}
               loading={this.state.onUploading}
               loadingtext="Upload..."
             >
               Upload
             </SpinnerButton>
-
-            <Button
-              id="cancelButton"
-              olor="secondary"
-              className="m-1"
-              onClick={this.onCloseModal}
-            >
-              Cancel
-            </Button>
           </ModalFooter>
         </Modal>
         <ErrorModal

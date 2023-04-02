@@ -44,6 +44,8 @@ class ListPage extends Component {
     this.downloadAllDatasets = this.downloadAllDatasets.bind(this);
     this.deleteEntry = this.deleteEntry.bind(this);
     this.selectAllEmpty = this.selectAllEmpty.bind(this);
+    this.selectAll = this.selectAll.bind(this);
+    this.deselectAll = this.deselectAll.bind(this);
   }
 
   componentDidMount() {
@@ -70,6 +72,18 @@ class ListPage extends Component {
       datasetsToDelete: this.state.datasets
         .filter((elm) => Math.max(elm.end - elm.start, 0) === 0)
         .map((elm) => elm._id),
+    });
+  }
+
+  selectAll() {
+    this.setState({
+      datasetsToDelete: this.state.datasets.map((elm) => elm._id),
+    });
+  }
+
+  deselectAll() {
+    this.setState({
+      datasetsToDelete: [],
     });
   }
 
@@ -154,7 +168,7 @@ class ListPage extends Component {
     }
     return (
       <div id="dataList">
-        <Container style={{ margin: '5px' }}>
+        <Container style={{ padding: 0 }}>
           <DataUpload
             toggleCreateNewDatasetModal={this.toggleCreateNewDatasetModal}
           ></DataUpload>
@@ -168,6 +182,8 @@ class ListPage extends Component {
             labelings={this.state.labelings}
             labels={this.state.labels}
             deleteEntry={this.deleteEntry}
+            selectAll={this.selectAll}
+            deselectAll={this.deselectAll}
           ></DatasetTable>
         </Container>
 

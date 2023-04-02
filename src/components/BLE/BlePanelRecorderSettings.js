@@ -9,7 +9,7 @@ import {
 import SpinnerButton from '../Common/SpinnerButton';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
+import Checkbox from '../Common/Checkbox';
 import './BleActivated.css';
 
 function BlePanelRecorderSettings(props) {
@@ -52,11 +52,13 @@ function BlePanelRecorderSettings(props) {
 
   return (
     <div
+      className="mr-2"
       style={props.disabled ? { opacity: '0.4', pointerEvents: 'none' } : null}
     >
-      <div className="shadow p-3 mb-5 bg-white rounded">
-        <div style={{ fontSize: 'x-large' }}>3. Record dataset</div>
-        <div className="panelDivider"></div>
+      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
+        <h4>3. Record dataset</h4>
+      </div>
+      <div className="body-wrapper p-3">
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>{'Dataset name'}</InputGroupText>
@@ -95,7 +97,7 @@ function BlePanelRecorderSettings(props) {
             Samplerate must be between 0 and 50
           </FormFeedback>
         </InputGroup>*/}
-        <div className="panelDivider"></div>
+        <hr />
         <div
           style={{
             display: 'flex',
@@ -104,6 +106,7 @@ function BlePanelRecorderSettings(props) {
           }}
         >
           <SpinnerButton
+            outline
             style={
               buttonErrorAnimate
                 ? {
@@ -112,6 +115,7 @@ function BlePanelRecorderSettings(props) {
                 : null
             }
             color={buttonColor}
+            spinnercolor={buttonColor}
             onClick={onClickRecordButton}
             loading={buttonLoading}
             loadingtext={buttonLoadingText}
@@ -133,25 +137,23 @@ function BlePanelRecorderSettings(props) {
           </div>
           <small>
             <div>
-              <div>
-                <Input
-                  onChange={props.onToggleStream}
+              <div className="d-flex flex-row">
+                <Checkbox
+                  onClick={props.onToggleStream}
                   className="stream-check"
-                  type="checkbox"
                   id="stream-check"
                 />
-                <label htmlFor="stream-check">Disable sensor streaming</label>
+                <div className="ml-2">Disable sensor streaming</div>
               </div>
-              <div>
-                <Input
-                  onChange={props.onToggleSampleRate}
+              <div className="d-flex flex-row mt-2">
+                <Checkbox
+                  onClick={props.onToggleSampleRate}
                   className="sampleRate-check"
-                  type="checkbox"
                   id="sampleRate-check"
                 />
-                <label htmlFor="sampleRate-check">
+                <div className="ml-2">
                   Show sensor data at full sampling rate
-                </label>
+                </div>
               </div>
             </div>
           </small>
