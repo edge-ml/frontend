@@ -372,7 +372,7 @@ class Settings extends Component {
           />
         );
       default:
-        null;
+        return null;
     }
   }
 

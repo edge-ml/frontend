@@ -73,6 +73,8 @@ class GenerateCode extends Component {
             </InputGroup>
             <div>
               <Button
+                outline
+                className="my-1"
                 disabled={!this.props.project.enableDeviceApi}
                 color="primary"
                 onClick={this.props.onEnableDeviceApi}
@@ -80,7 +82,8 @@ class GenerateCode extends Component {
                 {this.state.props ? 'Change key' : 'Generate key'}
               </Button>
               <Button
-                className="mx-2"
+                outline
+                className="mx-2 my-1"
                 color="danger"
                 disabled={!this.props.project.enableDeviceApi}
                 onClick={this.props.onDisableDeviceApi}
@@ -88,6 +91,8 @@ class GenerateCode extends Component {
                 Remove key
               </Button>
               <Button
+                outline
+                className="my-1"
                 color="primary"
                 disabled={
                   !this.props.project.enableDeviceApi || !this.props.deviceKey

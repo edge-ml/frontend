@@ -8,6 +8,8 @@ import {
   Button,
 } from 'reactstrap';
 
+import './Settings.css';
+
 const EditName = (props) => {
   const [projectName, setProjectName] = useState(props.projectName);
 
@@ -24,12 +26,15 @@ const EditName = (props) => {
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
         />
-        <Button
-          color="primary"
-          onClick={() => props.onProjectNameSave(projectName)}
-        >
-          Save
-        </Button>
+        <div className="ml-2">
+          <Button
+            outline
+            color="primary"
+            onClick={() => props.onProjectNameSave(projectName)}
+          >
+            Save
+          </Button>
+        </div>
       </InputGroup>
       <InputGroup>
         <InputGroupAddon addonType="prepend">

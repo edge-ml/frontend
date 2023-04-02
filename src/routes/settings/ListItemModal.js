@@ -6,9 +6,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  CardBody,
-  CardTitle,
-  CardSubtitle,
 } from 'reactstrap';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -29,22 +26,19 @@ class ListItemModal extends Component {
   render() {
     return (
       <div>
-        <Card className="my-2 p-2">
-          <CardTitle className="text-left">
+        <div className="p-2">
+          <div className="header-wrapper d-flex flex-column align-content-center">
             <h5>{this.props.value.name}</h5>
-          </CardTitle>
-          <CardSubtitle className="text-left">
-            {this.props.value.description}
-          </CardSubtitle>
-          <CardBody>
-            <Button color="primary" onClick={this.toggleModal}>
-              <FontAwesomeIcon
-                className="mr-2"
-                icon={faArrowRight}
-              ></FontAwesomeIcon>
-            </Button>
-          </CardBody>
-        </Card>
+            <div>{this.props.value.description}</div>
+          </div>
+          <div className="body-wrapper p-2">
+            <div className="p-3">
+              <Button outline color="primary" onClick={this.toggleModal}>
+                <FontAwesomeIcon icon={faArrowRight}></FontAwesomeIcon>
+              </Button>
+            </div>
+          </div>
+        </div>
         {this.state.modalOpen && (
           <Modal isOpen={this.state.modalOpen}>
             <ModalHeader>{this.props.value.name}</ModalHeader>

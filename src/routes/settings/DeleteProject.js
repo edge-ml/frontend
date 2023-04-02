@@ -5,6 +5,7 @@ const DeleteProject = (props) => (
   <div className="align-space-between">
     {props.project.users ? ( // users exists only on admin?
       <Button
+        outline
         id="buttonDeleteProject"
         onClick={props.onDeleteProject}
         color="danger"
@@ -13,6 +14,7 @@ const DeleteProject = (props) => (
       </Button>
     ) : props.userName !== props.adminUserName ? (
       <Button
+        outline
         id="buttonLeaveProject"
         onClick={props.onLeaveProject}
         color="danger"
