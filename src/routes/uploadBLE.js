@@ -388,7 +388,7 @@ class UploadBLE extends Component {
 
     return (
       <div className="bleActivatedContainer">
-        <div className="mb-3">
+        <div className="mb-2">
           <BlePanelConnectDevice
             bleConnectionChanging={this.state.bleConnectionChanging}
             toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
@@ -422,7 +422,7 @@ class UploadBLE extends Component {
         this.state.isEdgeMLInstalled ? (
           <Row>
             <Col>
-              <div className="shadow mb-5 bg-white rounded">
+              <div>
                 <BlePanelSensorList
                   maxSampleRate={this.state.connectedDeviceData.maxSampleRate}
                   selectedSensors={this.state.selectedSensors}

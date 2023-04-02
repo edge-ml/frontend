@@ -94,7 +94,7 @@ const getButtonView = (props) => {
 
 function BlePanelConnectDevice(props) {
   return (
-    <div style={{ borderRadius: 10 }} className="p-2">
+    <div className="p-2">
       <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
         <h4>1. Device</h4>
       </div>
