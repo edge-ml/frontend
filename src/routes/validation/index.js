@@ -6,6 +6,7 @@ import { getModels } from '../../services/ApiServices/MlService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 import TrainingWizard from '../../components/TrainingWizard';
 import { Button } from 'reactstrap';
+import DownloadModal from './DownloadModal';
 
 const REFRESH_INTERVAL = 500;
 
@@ -25,6 +26,8 @@ const ValidationPage = () => {
 
   const [models, setModels] = useState([]);
   const [modalModel, setModalModel] = useState(undefined);
+  const [modelDownload, setModelDownload] = useState(undefined);
+  const [modelDeploy, setModelDeploy] = useState(undefined);
 
   useEffect(() => {
     getModels().then((models) => {
@@ -71,6 +74,12 @@ const ValidationPage = () => {
                       </div>
                     </div>
                     <Button onClick={() => onViewModel(model)}>View</Button>
+                    <Button onClick={() => setModelDownload(model)}>
+                      Download
+                    </Button>
+                    <Button onClick={() => setModelDeploy(model)}>
+                      Deploy
+                    </Button>
                   </div>
                 ) : null}
               </div>
@@ -88,6 +97,10 @@ const ValidationPage = () => {
         model={modalModel}
         onClosed={() => setModalModel(false)}
       ></SelectedModelModalView>
+      <DownloadModal
+        model={modelDownload}
+        onClose={() => setModelDownload(undefined)}
+      ></DownloadModal>
     </Loader>
   );
 };
