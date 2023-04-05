@@ -13,18 +13,19 @@ const Hyperparameter = (props) => (
   <InputGroup className="position-relative w-100 d-flex">
     <InputGroupAddon className="w-50" addonType="prepend">
       <InputGroupText className="w-100">
+        {console.log(props)}
         <FontAwesomeIcon
-          id={'hyperparameter' + props.id}
+          id={'hyperparameter' + props.parameter_name}
           style={{ color: '#8b8d8f' }}
           icon={faInfoCircle}
           className="mr-2 fa-s"
         />
-        <UncontrolledTooltip
+        {/* <UncontrolledTooltip
           placement="top-start"
-          target={'hyperparameter' + props.id}
+          target={'hyperparameter' + props.parameter_name}
         >
           <b>Description:</b> {props.description}
-        </UncontrolledTooltip>
+        </UncontrolledTooltip> */}
         <span className="text-truncate">{props.display_name}</span>
       </InputGroupText>
     </InputGroupAddon>

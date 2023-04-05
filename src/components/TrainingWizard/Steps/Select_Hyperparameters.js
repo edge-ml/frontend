@@ -1,25 +1,16 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  Input,
-  Row,
-  Col,
-  Container,
   Collapse,
   ModalBody,
-  Button,
-  ModalFooter,
-  InputGroup,
-  InputGroupAddon,
 } from 'reactstrap';
-import { getModels } from '../../../services/ApiServices/MlService';
-import NumberHyperparameter from '../../Hyperparameters/NumberHyperparameter';
-import SelectionHyperparameter from '../../Hyperparameters/SelectionHyperparameter';
 import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
+
+import { HyperparameterView } from '../../Hyperparameters/HyperparameterView';
 
 const Wizard_Hyperparameters = ({
   classifier,
@@ -117,48 +108,6 @@ const Wizard_Hyperparameters = ({
       </ModalBody>
       {footer}
     </div>
-  );
-};
-
-export const HyperparameterView = ({
-  handleHyperparameterChange,
-  hyperparameters,
-  isAdvanced,
-}) => {
-  return (
-    <Container fluid>
-      <Row>
-        {hyperparameters.length > 0 &&
-          hyperparameters
-            .filter((h) => h.is_advanced === isAdvanced)
-            .map((h) => {
-              if (h.parameter_type === 'number') {
-                return (
-                  <Col className="col-md-6 col-12 pl-0">
-                    <NumberHyperparameter
-                      {...h}
-                      id={'input_' + h.parameter_name}
-                      handleChange={handleHyperparameterChange}
-                      value={h.value}
-                    />
-                  </Col>
-                );
-              } else if (h.parameter_type === 'selection') {
-                console.log(h.value);
-                return (
-                  <Col className="col-md-6 col-12 pl-0">
-                    <SelectionHyperparameter
-                      {...h}
-                      id={'input_' + h.parameter_name}
-                      handleChange={handleHyperparameterChange}
-                      value={h.value}
-                    />
-                  </Col>
-                );
-              }
-            })}
-      </Row>
-    </Container>
   );
 };
 

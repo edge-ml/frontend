@@ -5,10 +5,14 @@ import { useIncrement } from '../../services/ReactHooksService';
 import { getModels } from '../../services/ApiServices/MlService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 import TrainingWizard from '../../components/TrainingWizard';
-import { Button } from 'reactstrap';
+import { Button, Container } from 'reactstrap';
 import DownloadModal from './DownloadModal';
-
-const REFRESH_INTERVAL = 500;
+import { Table, TableEntry } from '../../components/Common/Table';
+import Checkbox from '../../components/Common/Checkbox';
+import { Col, Row } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt, faFilter } from '@fortawesome/free-solid-svg-icons';
+import DeployModal from './DeployModal';
 
 const ValidationPage = () => {
   const [modelsInvalidate, modelsRefresh] = useIncrement();
@@ -21,8 +25,6 @@ const ValidationPage = () => {
   const [modalState, setModalState] = useState(false);
   const [modelsToDelete, setModelsToDelete] = useState([]);
   const [deleteModalState, setDeleteModalState] = useState(false);
-  const location = useLocation();
-  const history = useHistory();
 
   const [models, setModels] = useState([]);
   const [modalModel, setModalModel] = useState(undefined);
@@ -41,51 +43,98 @@ const ValidationPage = () => {
     setModalModel(model);
   };
 
-  const closeViewModal = () => {
-    setModalModel(undefined);
-  };
-
   console.log(models);
   return (
-    <Loader loading={false}>
+    <Container>
       <div className="p-2 pl-md-4 pr-md-4">
         <div className="w-100 d-flex flex-row justify-content-between align-items-center">
-          <div className="font-weight-bold h4">DATASETS</div>
+          <div className="font-weight-bold h4 justify-self-start">Models</div>
           <Button onClick={() => setModalOpen(true)}>Train a model</Button>
         </div>
-        <div>
-          {models.map((model) => {
-            return (
-              <div style={{ backgroundColor: 'beige' }} className="m-2">
-                <div>
-                  <b>{model.name}</b>
-                </div>
-                {model.status === 'done' ? (
-                  <div>
-                    <div>{model.pipeline.classifier.name}</div>
-                    <div className="d-flex">
-                      <div className="">
-                        <b>Acc: </b>
-                        {metric(model.evaluator.metrics.accuracy_score)}
-                      </div>
-                      <div>
-                        <b>F1: </b>
-                        {metric(model.evaluator.metrics.f1_score)}
-                      </div>
-                    </div>
-                    <Button onClick={() => onViewModel(model)}>View</Button>
-                    <Button onClick={() => setModelDownload(model)}>
-                      Download
-                    </Button>
-                    <Button onClick={() => setModelDeploy(model)}>
-                      Deploy
-                    </Button>
-                  </div>
-                ) : null}
+        <Table
+          header={
+            <>
+              <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
+                <Checkbox isSelected={false}></Checkbox>
               </div>
+              <Button
+                className="ml-3 btn-delete"
+                id="deleteDatasetsButton"
+                size="sm"
+                color="secondary"
+              >
+                <FontAwesomeIcon
+                  className="mr-2"
+                  icon={faTrashAlt}
+                ></FontAwesomeIcon>
+                Delete
+              </Button>
+              <Button
+                id="selectAllEmptyButton"
+                size="sm"
+                color="secondary"
+                /* disabled={props.datasets.every((elm) => elm.end != 0)}*/
+                className="ml-2"
+              >
+                <FontAwesomeIcon
+                  className="mr-2"
+                  icon={faFilter}
+                ></FontAwesomeIcon>
+                Select Empty Datasets
+              </Button>
+            </>
+          }
+        >
+          {models.map((model, index) => {
+            return (
+              <TableEntry index={index}>
+                <div className="m-2 d-flex">
+                  <div className="d-flex align-items-center p-2 ml-2 mr-0 ml-md-3 mr-md-3">
+                    <Checkbox></Checkbox>
+                  </div>
+                  <div className="w-100">
+                    <Row>
+                      <Col>
+                        <b>{model.name}</b>
+                        <div>{model.pipeline.classifier.name}</div>
+                      </Col>
+                      <Col>
+                        <div className="">
+                          <b>Acc: </b>
+                          {metric(model.evaluator.metrics.accuracy_score)}
+                        </div>
+                        <div>
+                          <b>F1: </b>
+                          {metric(model.evaluator.metrics.f1_score)}
+                        </div>
+                      </Col>
+                      <Col>
+                        <Button
+                          className="btn-edit mr-3 mr-md-4"
+                          onClick={() => onViewModel(model)}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          className="btn-edit mr-3 mr-md-4"
+                          onClick={() => setModelDownload(model)}
+                        >
+                          Download
+                        </Button>
+                        <Button
+                          className="btn-edit mr-3 mr-md-4"
+                          onClick={() => setModelDeploy(model)}
+                        >
+                          Deploy
+                        </Button>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>
+              </TableEntry>
             );
           })}
-        </div>
+        </Table>
       </div>
       {modalOpen ? (
         <TrainingWizard
@@ -101,7 +150,11 @@ const ValidationPage = () => {
         model={modelDownload}
         onClose={() => setModelDownload(undefined)}
       ></DownloadModal>
-    </Loader>
+      <DeployModal
+        model={modelDeploy}
+        onClose={() => setModelDeploy(undefined)}
+      ></DeployModal>
+    </Container>
   );
 };
 

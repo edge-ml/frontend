@@ -144,3 +144,34 @@ export const deployTrained = function (id, data) {
       .catch((err) => reject(err.response));
   });
 };
+
+export const getDeployDevices = function (id) {
+  console.log('Getting devices');
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.ML_URI,
+        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + id
+      )
+    )
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
+  });
+};
+
+export const deployModel = function (id, tsMap, parameters, selectedDevice) {
+  console.log('Getting devices');
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.ML_URI,
+        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + id,
+        { tsMap: tsMap, parameters: parameters, device: selectedDevice }
+      )
+    )
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
+  });
+};

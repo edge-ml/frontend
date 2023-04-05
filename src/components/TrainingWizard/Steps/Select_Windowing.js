@@ -8,9 +8,7 @@ import {
   DropdownItem,
   DropdownMenu,
 } from 'reactstrap';
-
-import { HyperparameterView } from './Select_Hyperparameters';
-
+import { HyperparameterView } from '../../Hyperparameters/HyperparameterView';
 const Select_Windowing = ({
   onBack,
   onNext,

@@ -1,0 +1,7 @@
+.dropdown {
+  z-index: unset !important;
+}
+
+.dropdown-menu {
+  position: relative;
+}

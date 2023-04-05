@@ -17,7 +17,7 @@ const NumberHyperparameter = (props) => {
           onChange={(e) => {
             props.handleChange({
               parameter_name: props.parameter_name,
-              state: parseInt(e.target.value, 10),
+              state: e.target.value,
             });
           }}
           className={`hyperparameter-input-container w-100 text-center 
