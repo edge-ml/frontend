@@ -11,6 +11,8 @@ import {
   DropdownToggle,
   Input,
   UncontrolledDropdown,
+  InputGroup,
+  InputGroupText,
 } from 'reactstrap';
 import {
   getDeployDevices,
@@ -52,8 +54,14 @@ const DeployModal = ({ model, onClose }) => {
     setSelectedSensors([...selectedSensors]);
   };
 
-  const onDeploy = () => {
-    deployModel(model._id, selectedSensors, parameters, selectedDevice);
+  const onDeploy = async () => {
+    const res = await deployModel(
+      model._id,
+      selectedSensors,
+      parameters,
+      selectedDevice
+    );
+    console.log(res);
   };
 
   const handleHyperparameterChange = ({ parameter_name, state }) => {
@@ -89,7 +97,9 @@ const DeployModal = ({ model, onClose }) => {
           <div className="p-2">
             {model.timeSeries.map((elm, ts_idx) => (
               <div className="d-flex align-items-center">
-                <div className="mr-3 pr-3">{elm}</div>
+                <div className="mr-3 pr-3">
+                  <strong>{elm}</strong>
+                </div>
                 <UncontrolledDropdown style={{ position: 'relative' }}>
                   <DropdownToggle caret size="sm">
                     {selectedSensors[ts_idx].sensor_id !== undefined
@@ -119,8 +129,8 @@ const DeployModal = ({ model, onClose }) => {
               </div>
             ))}
           </div>
-          <div>
-            {console.log(parameters)}
+          <div className="mt-4">
+            <h5>Settings</h5>
             <HyperparameterView
               hyperparameters={parameters}
               isAdvanced={false}

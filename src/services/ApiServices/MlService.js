@@ -163,14 +163,14 @@ export const getDeployDevices = function (id) {
 export const deployModel = function (id, tsMap, parameters, selectedDevice) {
   console.log('Getting devices');
   return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.POST,
-        apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + id,
-        { tsMap: tsMap, parameters: parameters, device: selectedDevice }
-      )
-    )
+    const request = apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.POST,
+      apiConsts.ML_URI,
+      apiConsts.ML_ENDPOINTS.DEPLOY + '/' + id,
+      { tsMap: tsMap, parameters: parameters, device: selectedDevice }
+    );
+    request['responseType'] = 'arraybuffer';
+    axios(request)
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
   });
