@@ -238,9 +238,10 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       handleProgress
     );
     setController(file.id, cancellationHandler);
-    const result = await response;
-    if (Array.isArray(result)) {
-      handleStatus(file.id, FileStatus.ERROR);
+    try {
+      const result = await response;
+    } catch (err) {
+      handleStatus(file.id, FileStatus.ERROR)
       return;
     }
     handleStatus(file.id, FileStatus.COMPLETE);
@@ -302,7 +303,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                           ? 'danger'
                           : 'primary'
                       }
-                    >{`${f.status} ${f.progress.toFixed(2)}%`}</Progress>
+                    >{f.status === FileStatus.ERROR ? f.status : `${f.status} ${f.progress.toFixed(2)}%`}</Progress>
                     <div className="d-flex align-items-center">
                       {f.status === FileStatus.COMPLETE && (
                         <Button close className="modal-icon-button mr-2" onClick={() => handleDelete(f.id)}>
