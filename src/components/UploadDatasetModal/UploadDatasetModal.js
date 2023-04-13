@@ -176,6 +176,10 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
 
   const parseHeader = (header) => {
     const fields = header.split(',');
+    const invalid = fields.find(f => !f.startsWith('sensor_') && !f.startsWith('label_') && f != 'time');
+    if (invalid || fields.length < 2) {
+      return [undefined, undefined];
+    }
     const unitPattern = /\[([^\[\]]*)\]$/;
     const timeSeries = fields
       .filter(f => f.startsWith('sensor_'))
@@ -225,6 +229,10 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     for (let i = 0; i < inputFiles.length; ++i) {
       const header = await extractHeader(inputFiles[i])
       const [timeSeries, labelings] = parseHeader(header);
+      if (!timeSeries || !labelings) {
+        setFiles(prevFiles => prevFiles.map(f => f.id === fileIds[i] ? {...f, status: FileStatus.ERROR, progress: 100} : f));
+        continue;
+      }
       initConfig(fileIds[i], timeSeries, labelings);
     }
   };
