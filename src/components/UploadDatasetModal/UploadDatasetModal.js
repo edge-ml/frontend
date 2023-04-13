@@ -305,7 +305,8 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                           ? 'danger'
                           : 'primary'
                       }
-                    >{f.status === FileStatus.ERROR ? f.status : `${f.status} ${f.progress.toFixed(2)}%`}</Progress>
+                    >{f.status === FileStatus.ERROR ? f.status : `${f.status} ${f.progress.toFixed(2)}%`}
+                    </Progress>
                     <div className="d-flex align-items-center">
                       {f.status === FileStatus.COMPLETE && (
                         <Button close className="modal-icon-button mr-2" onClick={() => handleDelete(f.id)}>
@@ -345,6 +346,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                         <FontAwesomeIcon
                           spin
                           size="2x"
+                          style={{marginLeft: '1px'}}
                           className="mr-2"
                           icon={faSpinner}
                         />
