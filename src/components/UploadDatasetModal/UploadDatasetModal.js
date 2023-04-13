@@ -175,7 +175,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
   }
 
   const parseHeader = (header) => {
-    const fields = header.split(',');
+    const fields = header.split(',').map(f => f.trim());
     const invalid = fields.find(f => !f.startsWith('sensor_') && !f.startsWith('label_') && f != 'time');
     if (invalid || fields.length < 2) {
       return [undefined, undefined];
