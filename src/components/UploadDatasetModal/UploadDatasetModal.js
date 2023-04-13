@@ -181,10 +181,12 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       .filter(f => f.startsWith('sensor_'))
       .map((f, idx) => {
         const match = f.match(unitPattern);
+        const name = match ? f.slice(7, match.index) : f.slice(7);
+        const unit = match ? match[1] : '';
         return {
-          name: f.slice(7, match.index),
-          originalName: f.slice(7, match.index),
-          unit: match[1],
+          name: name,
+          originalName: name,
+          unit: unit,
           removed: false,
           index: idx
         };
@@ -331,7 +333,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                           <XLg size={29} onClick={(e) => handleCancel(f)} />
                         </Button>
                       )}
-                      {f.status === FileStatus.CANCELLED && (
+                      {f.status === FileStatus.CANCELLED || f.status === FileStatus.ERROR && (
                         <Button close title='Removes item from list' className="modal-icon-button mr-2">
                           <Trash2
                             size={29}
