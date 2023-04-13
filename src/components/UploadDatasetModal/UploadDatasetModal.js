@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, Button, Progress, ModalFooter } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
-import { FiletypeCsv, Check2Circle, XLg, Trash2 } from 'react-bootstrap-icons';
+import { FiletypeCsv, Check2Circle, XLg, Trash2, Gear, Upload } from 'react-bootstrap-icons';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -18,6 +18,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
   const [count, setCount] = useState(0);
 
   const FileStatus = Object.freeze({
+    CONFIGURATION: 'Configuration',
     UPLOADING: 'Uploading',
     PROCESSING: 'Processing',
     COMPLETE: 'Complete',
@@ -29,7 +30,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     const formatted = [...inputFiles].map((f, idx) => ({
       name: f.name,
       progress: 0,
-      status: FileStatus.UPLOADING,
+      status: FileStatus.CONFIGURATION,
       id: count + idx,
       csv: inputFiles[idx],
     }));
@@ -114,7 +115,6 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                 ? file.name.substring(0, file.name.length - 4)
                 : file.name,
               editingModeActive: false,
-              editComplete: false,
             },
 
           };
@@ -220,50 +220,39 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
 
   const onFileInput = async (inputFiles) => {
     const fileIds = addFiles(inputFiles);
-    console.log(files)
-
     for (let i = 0; i < inputFiles.length; ++i) {
       const header = await extractHeader(inputFiles[i])
       const [timeSeries, labelings] = parseHeader(header);
       initConfig(fileIds[i], timeSeries, labelings);
     }
-
-    // for (let i = 0; i < inputFiles.length; ++i) {
-    //   const formData = new FormData();
-    //   formData.append('CSVFile', inputFiles[i]);
-    //   formData.append('CSVConfig', files[i].config);
-    // //   const [cancellationHandler, response] = processCSVBackend(
-    // //     formData,
-    // //     fileIds[i],
-    // //     handleProgress
-    // //   );
-    // //   setController(fileIds[i], cancellationHandler);
-    // //   const result = await response;
-    // //   if (Array.isArray(result)) {
-    // //     handleStatus(fileIds[i], FileStatus.ERROR);
-    // //     return;
-    // //   }
-    // //   handleStatus(fileIds[i], FileStatus.COMPLETE);
-    // }
   };
 
-  const handleUpload = async () => {
+  const handleUpload = async (file) => {
+    const formData = new FormData();
+    formData.append('CSVFile', file.csv);
+    formData.append('CSVConfig', JSON.stringify(file.config));
+    setFiles(prevFiles => prevFiles.map(f => f === file ? { ...f, status: FileStatus.UPLOADING } : f));
+    const [cancellationHandler, response] = processCSVBackend(
+      formData,
+      file.id,
+      handleProgress
+    );
+    setController(file.id, cancellationHandler);
+    const result = await response;
+    if (Array.isArray(result)) {
+      handleStatus(file.id, FileStatus.ERROR);
+      return;
+    }
+    handleStatus(file.id, FileStatus.COMPLETE);
+  }
+
+  const handleUploadAll = () => {
+    setFiles(prevFiles => prevFiles.map(f => ({...f, config: {...f.config, editingModeActive: false}})))
     for (const file of files) {
-      const formData = new FormData();
-      formData.append('CSVFile', file.csv);
-      formData.append('CSVConfig', JSON.stringify(file.config));
-      const [cancellationHandler, response] = processCSVBackend(
-        formData,
-        file.id,
-        handleProgress
-      );
-      setController(file.id, cancellationHandler);
-      const result = await response;
-      if (Array.isArray(result)) {
-        handleStatus(file.id, FileStatus.ERROR);
-        return;
+      if (file.status !== FileStatus.CONFIGURATION) {
+        continue;
       }
-      handleStatus(file.id, FileStatus.COMPLETE);
+      handleUpload(file)
     }
   }
 
@@ -294,14 +283,14 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
           <div className="mt-2">
             {files.map(
               (f, idx) =>
-                (!f.config || !f.config.editingModeActive) && (
+                (!f.config || !f.config.editingModeActive) ? (
                   <div className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11">
                     <div className="d-flex flex-column align-items-center mr-2 ml-2 mt-2 col-lg-2">
                       <FiletypeCsv className="fa-3x" />
                       <span className='text-center'>{f.name}</span>
                     </div>
                     <Progress
-                      className="w-100 mr-1"
+                      className="w-75 mr-1 flex-shrink-0" //remove shrink and set w-100 to align the second button otherwise
                       striped
                       id={`progress-bar-${idx}`}
                       value={f.progress}
@@ -316,15 +305,33 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                     >{`${f.status} ${f.progress.toFixed(2)}%`}</Progress>
                     <div className="d-flex align-items-center">
                       {f.status === FileStatus.COMPLETE && (
-                        <Check2Circle className="fa-2x mr-2" />
+                        <Button close className="modal-icon-button mr-2" onClick={() => handleDelete(f.id)}>
+                          <Check2Circle 
+                            size={33}
+                            title='Removes item from list'
+                            />
+                        </Button>
+                      )}
+                      {f.status === FileStatus.CONFIGURATION && (
+                        <div className='d-flex'>
+                          <Button close className="modal-icon-button mr-1">
+                            <Gear size={29} title='Opens configuration menu' onClick={(e) => changeConfig(f.id, {
+                              ...f.config,
+                              editingModeActive: true,
+                            })} />
+                          </Button>
+                          <Button close className='modal-icon-button mr-2' onClick={(e) => handleUpload(f)}>
+                            <Upload size={29} title='Initiates upload for this file'/>
+                          </Button>
+                        </div>
                       )}
                       {f.status === FileStatus.UPLOADING && (
-                        <Button close className="modal-icon-button mr-2">
+                        <Button close title='Cancels ongoing upload' className="modal-icon-button mr-2">
                           <XLg size={29} onClick={(e) => handleCancel(f)} />
                         </Button>
                       )}
                       {f.status === FileStatus.CANCELLED && (
-                        <Button close className="modal-icon-button mr-2">
+                        <Button close title='Removes item from list' className="modal-icon-button mr-2">
                           <Trash2
                             size={29}
                             onClick={(e) => handleDelete(f.id)}
@@ -339,50 +346,31 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                           icon={faSpinner}
                         />
                       )}
-                      {f?.config?.editComplete ?
-                        <Button
-                          color="success"
-                          onClick={() => handleDelete(f.id)}
-                        >
-                          Complete
-                        </Button>
-                        :
-                        <Button
-                        color="primary"
-                        // disabled={f.status !== FileStatus.COMPLETE || f?.config?.editComplete}
-                        onClick={(e) =>
-                          changeConfig(f.id, {
-                            ...f.config,
-                            editingModeActive: true,
-                          })
-                        }
-                        >
-                        Configure
-                      </Button>
-                      }
-                      <Button close className='ml-2' onClick={() => handleDelete(f.id)}></Button>
                     </div>
                   </div>
+                ) : 
+                (
+                    <DatasetConfigView
+                      fileId={f.id}
+                      fileConfig={f.config}
+                      changeConfig={changeConfig}
+                      confirmConfig={confirmConfig}
+                      backendId={f.backendId}
+                    />
                 )
             )}
-            <div className="mt-1">
-              {files.map((f) =>
-                f && f.config && f.config.editingModeActive ? (
-                  <DatasetConfigView
-                    fileId={f.id}
-                    fileConfig={f.config}
-                    changeConfig={changeConfig}
-                    confirmConfig={confirmConfig}
-                    backendId={f.backendId}
-                  />
-                ) : null
-              )}
-            </div>
           </div>
         ) : null}
       </ModalBody>
       <ModalFooter>
-        <Button color='primary' onClick={handleUpload}>Upload All</Button>
+        <div>
+          <Button color='primary'
+            disabled={!files.find(f => f.status === FileStatus.CONFIGURATION)}
+            onClick={handleUploadAll}
+          >
+            Upload All
+          </Button>
+        </div>
       </ModalFooter>
     </Modal>
   );

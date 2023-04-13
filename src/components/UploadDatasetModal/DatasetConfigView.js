@@ -34,7 +34,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
   }
 
   return (
-    <div className="mb-2">
+    <div className="mb-2 mt-2">
       {' '}
       {/* TODO: change key to file.id */}
       <Table>
@@ -74,7 +74,6 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
                     changeConfig(fileId, {
                       ...fileConfig,
                       editingModeActive: false,
-                      editComplete: true,
                     })
                     onCloseConfig();
                   }}
@@ -227,6 +226,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
           );
         })}
       </div>
+      <hr />
     </div>
   );
 };
