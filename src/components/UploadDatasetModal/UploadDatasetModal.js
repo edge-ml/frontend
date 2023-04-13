@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, ModalHeader, ModalBody, Button, Progress } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Button, Progress, ModalFooter } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
 import { FiletypeCsv, Check2Circle, XLg, Trash2 } from 'react-bootstrap-icons';
 
@@ -31,7 +31,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       progress: 0,
       status: FileStatus.UPLOADING,
       id: count + idx,
-      backendId: undefined,
+      csv: inputFiles[idx],
     }));
     setFiles([...files, ...formatted]);
     setCount(count + inputFiles.length);
@@ -101,28 +101,22 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     setFiles((prevState) => prevState.filter((file) => file.id !== fileId));
   };
 
-  const initConfig = (fileId, data, projectLabelings) => {
+  const initConfig = (fileId, timeSeries, labelings) => {
     setFiles((prevState) =>
       prevState.map((file) => {
         if (file.id === fileId) {
           return {
             ...file,
-            backendId: data._id,
             config: {
-              start: data.start,
-              end: data.end,
-              timeSeries: data.timeSeries,
-              labelings: data.labelings.map(labeling => 
-                ({ 
-                  ...labeling, 
-                  name: projectLabelings.find(projectLabeling => projectLabeling._id === labeling.labelingId).name
-                })),
+              timeSeries: timeSeries,
+              labelings: labelings,
               name: file.name.endsWith('.csv')
                 ? file.name.substring(0, file.name.length - 4)
                 : file.name,
               editingModeActive: false,
               editComplete: false,
             },
+
           };
         }
         return file;
@@ -144,27 +138,134 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     );
   };
 
+  const extractHeader = (file) => {
+    return new Promise((resolve, reject) => {
+      const CHUNK_SIZE = 128;
+      const decoder = new TextDecoder();
+      let offset = 0;
+      let results = '';
+      const fr = new FileReader();
+  
+      fr.onload = function() {
+        results += decoder.decode(fr.result, {stream: true});
+        const lines = results.split('\n');
+        if (lines.length > 1) {
+          resolve(lines[0]);
+        }
+        results = lines.pop();
+        offset += CHUNK_SIZE;
+        seek();
+      };
+  
+      fr.onerror = function() {
+        reject(fr.error);
+      };
+  
+      seek();
+  
+      function seek() {
+        if (offset >= file.size) {
+          resolve(results);
+          return;
+        }
+        const slice = file.slice(offset, offset + CHUNK_SIZE);
+        fr.readAsArrayBuffer(slice);
+      }
+    });
+  }
+
+  const parseHeader = (header) => {
+    const fields = header.split(',');
+    const unitPattern = /\[([^\[\]]*)\]$/;
+    const timeSeries = fields
+      .filter(f => f.startsWith('sensor_'))
+      .map((f, idx) => {
+        const match = f.match(unitPattern);
+        return {
+          name: f.slice(7, match.index),
+          originalName: f.slice(7, match.index),
+          unit: match[1],
+          removed: false,
+          index: idx
+        };
+      });
+      const labelings = fields
+      .filter(f => f.startsWith('label_'))
+      .map(f => {
+        const [, labeling, label] = f.split('_');
+        return {
+          name: label,
+          labelingItBelongs: labeling
+        };
+      })
+      .reduce((acc, label, index) => { // reduce over labels
+        const idx = acc.findIndex(labeling => labeling.name === label.labelingItBelongs);
+        if (idx >= 0) {
+          acc[idx].labels.push(label.name);
+          acc[idx].indices.push(index);
+        } else {
+          acc.push({ // push resulting labelings
+            name: label.labelingItBelongs,
+            originalName: label.labelingItBelongs,
+            removed: false,
+            labels: [label.name],
+            indices: [index]
+          });
+        }
+        return acc;
+      }, [])
+      .map((labeling, index) => ({...labeling, index: index}))
+    return [timeSeries, labelings];
+  }
+
   const onFileInput = async (inputFiles) => {
     const fileIds = addFiles(inputFiles);
+    console.log(files)
+
     for (let i = 0; i < inputFiles.length; ++i) {
+      const header = await extractHeader(inputFiles[i])
+      const [timeSeries, labelings] = parseHeader(header);
+      initConfig(fileIds[i], timeSeries, labelings);
+    }
+
+    // for (let i = 0; i < inputFiles.length; ++i) {
+    //   const formData = new FormData();
+    //   formData.append('CSVFile', inputFiles[i]);
+    //   formData.append('CSVConfig', files[i].config);
+    // //   const [cancellationHandler, response] = processCSVBackend(
+    // //     formData,
+    // //     fileIds[i],
+    // //     handleProgress
+    // //   );
+    // //   setController(fileIds[i], cancellationHandler);
+    // //   const result = await response;
+    // //   if (Array.isArray(result)) {
+    // //     handleStatus(fileIds[i], FileStatus.ERROR);
+    // //     return;
+    // //   }
+    // //   handleStatus(fileIds[i], FileStatus.COMPLETE);
+    // }
+  };
+
+  const handleUpload = async () => {
+    for (const file of files) {
       const formData = new FormData();
-      formData.append('CSVFile', inputFiles[i]);
+      formData.append('CSVFile', file.csv);
+      formData.append('CSVConfig', JSON.stringify(file.config));
       const [cancellationHandler, response] = processCSVBackend(
         formData,
-        fileIds[i],
+        file.id,
         handleProgress
       );
-      setController(fileIds[i], cancellationHandler);
+      setController(file.id, cancellationHandler);
       const result = await response;
       if (Array.isArray(result)) {
-        handleStatus(fileIds[i], FileStatus.ERROR);
+        handleStatus(file.id, FileStatus.ERROR);
         return;
       }
-      handleStatus(fileIds[i], FileStatus.COMPLETE);
-      const projectLabelings = await subscribeLabelingsAndLabels()
-      initConfig(fileIds[i], result.data, projectLabelings);
+      handleStatus(file.id, FileStatus.COMPLETE);
     }
-  };
+  }
 
   const confirmConfig = async (backendId, fileConfig) => {
     const updatedDataset = await updateDataset({
@@ -248,7 +349,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                         :
                         <Button
                         color="primary"
-                        disabled={f.status !== FileStatus.COMPLETE || f?.config?.editComplete}
+                        // disabled={f.status !== FileStatus.COMPLETE || f?.config?.editComplete}
                         onClick={(e) =>
                           changeConfig(f.id, {
                             ...f.config,
@@ -280,6 +381,9 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
           </div>
         ) : null}
       </ModalBody>
+      <ModalFooter>
+        <Button color='primary' onClick={handleUpload}>Upload All</Button>
+      </ModalFooter>
     </Modal>
   );
 };

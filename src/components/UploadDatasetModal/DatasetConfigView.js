@@ -11,10 +11,12 @@ import {
 } from 'reactstrap';
 
 export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmConfig, backendId }) => {
-  const onDeleteLabeling = (labelingToDelete) => {
+  const onDeleteLabeling = (labelingToDeleteOriginalName) => {
     changeConfig(fileId, {
       ...fileConfig, 
-      labelings: fileConfig.labelings.filter(l => l.labelingId !== labelingToDelete.labelingId)})
+      labelings: fileConfig.labelings
+                            .map(l => l.originalName !== labelingToDeleteOriginalName ? l : { ...l, removed: true })
+    })
   }
 
   const onCloseConfig = () => {
@@ -74,12 +76,11 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
                       editingModeActive: false,
                       editComplete: true,
                     })
-                    confirmConfig(backendId, fileConfig)
+                    onCloseConfig();
                   }}
                 >
                   Confirm
                 </Button>
-                <Button close className='ml-2' onClick={onCloseConfig}/>
               </div>
             </th>
           </tr>
@@ -95,6 +96,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
         ) : (
           <tbody>
             {fileConfig.timeSeries.map((timeSeries, seriesIndex) => {
+              if (timeSeries.removed) return null;
               return (
                 <tr key={seriesIndex}>
                   <td
@@ -183,9 +185,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
                         () =>
                           changeConfig(fileId, {
                             ...fileConfig,
-                            timeSeries: fileConfig.timeSeries.filter(
-                              (ts) => ts !== timeSeries
-                            ),
+                            timeSeries: fileConfig.timeSeries.map(ts => ts !== timeSeries ? ts : {...ts, removed: true}),
                           })
                       }
                     >
@@ -200,6 +200,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
       </Table>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         {fileConfig.labelings.map((labeling, labelingIndex) => {
+          if (labeling.removed) return null;
           return (
             <div
             // key={labeling + labelingIndex}
@@ -218,7 +219,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig, confirmCon
                 color="danger"
                 size="sm"
                 className="mx-2"
-                onClick={() => onDeleteLabeling(labeling)}
+                onClick={() => onDeleteLabeling(labeling.originalName)}
               >
                 Delete
               </Button>
