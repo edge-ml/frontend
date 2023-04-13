@@ -295,7 +295,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
             {files.map(
               (f, idx) =>
                 (!f.config || !f.config.editingModeActive) ? (
-                  <div className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11">
+                  <div key={f.id} className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11">
                     <div className="d-flex flex-column align-items-center mr-2 ml-2 mt-2 col-lg-2">
                       <FiletypeCsv className="fa-3x" />
                       <span className='text-center'>{f.name}</span>
@@ -303,7 +303,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                     <Progress
                       className="w-75 mr-1 flex-shrink-0" //remove shrink and set w-100 to align the second button otherwise
                       striped
-                      id={`progress-bar-${idx}`}
+                      id={`progress-bar-${f.id}`}
                       value={f.progress}
                       color={
                         f.status === FileStatus.COMPLETE
