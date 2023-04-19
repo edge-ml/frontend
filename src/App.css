@@ -399,10 +399,17 @@ div.card {
   border-color: rgb(226, 232, 240);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-secondary:focus {
   background: rgb(226, 232, 240);
   color: black;
   border-color: rgb(226, 232, 240);
+}
+
+.btn-secondary:active {
+  color: #fff;
+  background-color: #5a6268;
+  border-color: #545b62;
 }
 
 .btn-success {
