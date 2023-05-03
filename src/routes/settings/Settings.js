@@ -385,13 +385,13 @@ class Settings extends Component {
     }
     return (
       <Container className="my-5">
-        <h3>{'Project Settings'}</h3>
-        <Input
+        <h2>{'Project Settings'}</h2>
+        {/*<Input
           type="text"
           className="form-control mt-3"
           placeholder="Search..."
           onChange={this.onChangeSearch}
-        ></Input>
+        ></Input>*/}
         {this.mapOptions()}
         <Prompt
           when={changes}
