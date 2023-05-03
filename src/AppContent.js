@@ -78,7 +78,7 @@ class AppContent extends Component {
         /> */}
         <Route
           exact
-          path={this.props.match.path + '/validation'}
+          path={this.props.match.path + '/models'}
           render={(props) => (
             // <ProjectRefresh project={this.props.project}>
             //   <ValidationPage {...props}></ValidationPage>
@@ -86,7 +86,7 @@ class AppContent extends Component {
             <UnderConstruction></UnderConstruction>
           )}
         />
-        <Route
+        {/* <Route
           exact
           path={this.props.match.path + '/deploy'}
           render={(props) => (
@@ -95,7 +95,7 @@ class AppContent extends Component {
             // </ProjectRefresh>
             <UnderConstruction></UnderConstruction>
           )}
-        />
+        /> */}
         <Route
           exact
           path={this.props.match.path + '/settings'}

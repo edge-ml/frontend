@@ -14,6 +14,7 @@ import {
   faLightbulb,
   faCheck,
   faFileExport,
+  faMicrochip,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -142,8 +143,7 @@ class Navbar extends Component {
                         ['Datasets', faDatabase],
                         ['Labelings', faPen],
                         // ['Model', faBrain],
-                        ['Validation', faCheck],
-                        ['Deploy', faFileExport],
+                        ['Models', faMicrochip],
                         ['Settings', faCogs],
                       ].map((elm, indx) => (
                         <div
