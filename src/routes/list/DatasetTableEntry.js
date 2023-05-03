@@ -29,13 +29,20 @@ const displayTime = (time) => {
   return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
 };
 
+// s as unix timestamp in milliseconds
 const format_time = (s) => {
-  const dtFormat = new Intl.DateTimeFormat('en-GB', {
-    timeStyle: 'medium',
-    timeZone: 'UTC',
-  });
+  const seconds = s / 1000;
 
-  return dtFormat.format(new Date(s));
+  // Calculate the number of minutes and seconds from the remaining seconds
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60).toLocaleString('en-US', {minimumIntegerDigits: 2});
+
+  // Calculate the number of hours, minutes, and seconds from the remaining minutes
+  const hours = Math.floor(minutes / 60).toLocaleString('en-US', {minimumIntegerDigits: 2});
+  const remainingMinutes = (minutes % 60).toLocaleString('en-US', {minimumIntegerDigits: 2});
+
+  
+  return `${hours}:${remainingMinutes}:${remainingSeconds}`;
 };
 
 const Labelings = (props) => {
@@ -127,8 +134,10 @@ const AdditionalInfo = (props) => {
 
 const DatasetInfo = (props) => {
   const { dataset } = props;
-  const duration = Math.max(dataset.end - dataset.start, 0) || 0;
-  console.log('duration: ', duration);
+  const start = Math.min(...dataset.timeSeries.map(ts => ts.start));
+  const end = Math.min(...dataset.timeSeries.map(ts => ts.end));
+  const duration = end - start;
+  console.log('duration', duration);
   return (
     <div className="text-left d-inline-block m-2">
       <div className="font-weight-bold font-size-lg h5 d-inline">
@@ -139,7 +148,7 @@ const DatasetInfo = (props) => {
           <div style={{ color: 'rgb(131, 136, 159)' }}>
             <small>
               <b>START </b>
-              {displayTime(dataset.start)}
+              {displayTime(start)}
             </small>
           </div>
           <div style={{ color: 'rgb(131, 136, 159)' }}>
