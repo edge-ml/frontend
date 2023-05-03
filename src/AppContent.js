@@ -5,7 +5,6 @@ import ListPage from './routes/list/index';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labeling/labelings';
 import ExperimentsPage from './routes/experiments';
-import ProjectSettings from './routes/projectSettings';
 import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
 import ModelPage from './routes/model';
 import ValidationPage from './routes/validation';
