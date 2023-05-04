@@ -67,7 +67,7 @@ const SelectEvaluation = ({
         {evaluation[0] ? (
           <HyperparameterView
             handleHyperparameterChange={handleHyperparameterChange}
-            hyperparameters={evaluation[0].parameters}
+            hyperparameters={evaluation[selectedEvaluation].parameters}
           ></HyperparameterView>
         ) : null}
       </ModalBody>
