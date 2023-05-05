@@ -168,7 +168,11 @@ class TimeSeriesCollectionPanel extends Component {
               key={key}
               index={key + 1}
               offset={timeSeries.offset}
-              data={this.state.previewTimeSeriesData[key]}
+              data={
+                this.state.previewTimeSeriesData
+                  ? this.state.previewTimeSeriesData[key]
+                  : []
+              }
               samplingRate={
                 timeSeries.samplingRate ? timeSeries.samplingRate : 1
               }
