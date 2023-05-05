@@ -958,6 +958,7 @@ class TimeSeriesPanel extends Component {
             options={this.state.chartOptions}
             oneToOne={true}
             constructorType={'stockChart'}
+            containerProps={{ style: { height: '100%' } }}
           />
         </div>
       </div>
