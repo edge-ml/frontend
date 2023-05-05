@@ -127,8 +127,10 @@ const AdditionalInfo = (props) => {
 
 const DatasetInfo = (props) => {
   const { dataset } = props;
-  const duration = Math.max(dataset.end - dataset.start, 0) || 0;
-  console.log('duration: ', duration);
+  const datasetStart = Math.min(...dataset.timeSeries.map((elm) => elm.start));
+  const datasetEnd = Math.min(...dataset.timeSeries.map((elm) => elm.end));
+
+  const duration = Math.max(datasetEnd - datasetStart, 0) || 0;
   return (
     <div className="text-left d-inline-block m-2">
       <div className="font-weight-bold font-size-lg h5 d-inline">
@@ -139,7 +141,7 @@ const DatasetInfo = (props) => {
           <div style={{ color: 'rgb(131, 136, 159)' }}>
             <small>
               <b>START </b>
-              {displayTime(dataset.start)}
+              {displayTime(datasetStart)}
             </small>
           </div>
           <div style={{ color: 'rgb(131, 136, 159)' }}>

@@ -994,8 +994,12 @@ class DatasetPage extends Component {
               </div>
               <div className="mt-2">
                 <MetadataPanel
-                  start={this.state.dataset.start}
-                  end={this.state.dataset.end}
+                  start={Math.min(
+                    ...this.state.dataset.timeSeries.map((elm) => elm.start)
+                  )}
+                  end={Math.max(
+                    ...this.state.dataset.timeSeries.map((elm) => elm.end)
+                  )}
                   user={this.state.dataset.userId}
                   name={this.state.dataset.name}
                 />
