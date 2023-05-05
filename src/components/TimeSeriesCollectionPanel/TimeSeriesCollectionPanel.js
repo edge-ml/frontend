@@ -89,11 +89,12 @@ class TimeSeriesCollectionPanel extends Component {
   };
 
   getIndexData = () => {
-    const res = this.state.previewTimeSeriesData
-      .flat()
-      .sort((elmA, elmB) => elmA[0] - elmB[0])
-      .filter((e, i, a) => e[0] !== (a[i - 1] ? a[i - 1][0] : undefined));
-    return res;
+    const N = 1000;
+    const start = this.props.datasetStart;
+    const end = this.props.datasetEnd;
+    const step = (end - start) / (N - 1);
+    const arr = Array.from({ length: N }, (_, i) => [start + i * step, -1]);
+    return arr;
   };
   render() {
     return (

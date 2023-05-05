@@ -893,6 +893,12 @@ class DatasetPage extends Component {
                       onHideLabels={this.hideLabels}
                     />
                     <TimeSeriesCollectionPanel
+                      datasetStart={Math.min(
+                        ...this.state.dataset.timeSeries.map((elm) => elm.start)
+                      )}
+                      datasetEnd={Math.max(
+                        ...this.state.dataset.timeSeries.map((elm) => elm.end)
+                      )}
                       activeSeries={this.state.activeSeries}
                       timeSeries={this.state.dataset.timeSeries}
                       previewTimeSeriesData={this.state.previewTimeSeriesData}
