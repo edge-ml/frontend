@@ -352,6 +352,7 @@ class TimeSeriesPanel extends Component {
             },
           },
         },
+        height: '200px',
         yAxis: {
           height: this.props.index === 0 ? 0 : undefined,
           gridLineWidth: this.props.index === 0 ? 0 : 1,
