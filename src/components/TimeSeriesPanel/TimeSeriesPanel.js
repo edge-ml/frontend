@@ -955,7 +955,7 @@ class TimeSeriesPanel extends Component {
           <HighchartsReact
             ref={this.chart}
             highcharts={Highcharts}
-            options={this.state.chartOptions}
+            options={this.generateState(this.props).chartOptions}
             oneToOne={true}
             constructorType={'stockChart'}
             containerProps={{ style: { height: '100%' } }}
