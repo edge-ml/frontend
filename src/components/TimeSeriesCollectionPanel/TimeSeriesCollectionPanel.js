@@ -163,8 +163,6 @@ class TimeSeriesCollectionPanel extends Component {
         ) : null}
         {this.state.activeSeries.map((elm, key) => {
           const timeSeries = this.state.timeSeries.find((ts) => ts._id === elm);
-          console.log(key);
-          console.log(this.state.previewTimeSeriesData[key][0]);
           return (
             <TimeSeriesPanel
               key={key}
