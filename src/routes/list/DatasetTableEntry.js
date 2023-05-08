@@ -131,12 +131,13 @@ const DatasetInfo = (props) => {
   const datasetEnd = Math.min(...dataset.timeSeries.map((elm) => elm.end));
 
   const duration = Math.max(datasetEnd - datasetStart, 0) || 0;
+  const empty = dataset.length <= 0;
   return (
     <div className="text-left d-inline-block m-2">
       <div className="font-weight-bold font-size-lg h5 d-inline">
         {dataset.name}
       </div>
-      {duration != 0 ? (
+      {!empty ? (
         <Fragment>
           <div style={{ color: 'rgb(131, 136, 159)' }}>
             <small>
@@ -159,7 +160,7 @@ const DatasetInfo = (props) => {
               icon={faExclamationTriangle}
             ></FontAwesomeIcon>
           </div>
-          <div className="text-left d-inline ml-1">dataset empty</div>
+          <div className="text-left d-inline ml-1">Dataset is empty</div>
         </div>
       )}
     </div>
