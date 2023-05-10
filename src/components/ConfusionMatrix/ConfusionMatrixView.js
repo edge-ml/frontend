@@ -15,7 +15,7 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
   };
 
   return (
-    <div>
+    <div className="ml-5">
       <table>
         <tr>
           <td></td>
