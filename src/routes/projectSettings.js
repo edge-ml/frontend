@@ -42,7 +42,8 @@ class ProjectSettings extends Component {
       this.state = {
         error: undefined,
         project: JSON.parse(JSON.stringify(props.project)),
-        deviceKey: undefined,
+        readApiKey: undefined,
+        writeApiKey: undefined,
         userSearchValue: '',
         codeSnippetModalOpen: props.codeSnippetModalOpen || false,
         alertText: undefined,
@@ -76,9 +77,9 @@ class ProjectSettings extends Component {
     this.init = this.init.bind(this);
     this.init();
     if (this.props.codeSnippetModalOpen) {
-      getDeviceApiKey.apply().then((key) => {
-        if (!key.deviceApiKey || !props.project.enableDeviceApi) {
-          if (!key.deviceApiKey) {
+      getDeviceApiKey.then((apiKeys) => {
+        if (!apiKeys.readApiKey || !props.project.enableDeviceApi) {
+          if (!apiKeys.readApiKey) {
             this.onEnableDeviceApi();
           }
           if (!props.project.enableDeviceApi) {
@@ -114,9 +115,10 @@ class ProjectSettings extends Component {
   }
 
   async init() {
-    const apiKey = await getDeviceApiKey();
+    const apiKeys = await getDeviceApiKey();
     this.setState({
-      deviceKey: apiKey.deviceApiKey,
+      readApiKey: apiKeys.readApiKey,
+      writeApiKey: apiKeys.writeApiKey,
     });
   }
 
@@ -129,17 +131,19 @@ class ProjectSettings extends Component {
   }
 
   onEnableDeviceApi() {
-    setDeviceApiKey().then((data) => {
+    setDeviceApiKey().then((apiKeys) => {
       this.setState({
-        deviceKey: data.deviceApiKey,
+        readApiKey: apiKeys.readApiKey,
+        writeApiKey: apiKeys.writeApiKey,
       });
     });
   }
 
   onDisableDeviceApi() {
-    deleteDeviceApiKey().then((data) => {
+    deleteDeviceApiKey().then(() => {
       this.setState({
-        deviceKey: undefined,
+        readApiKey: undefined,
+        writeApiKey: undefined,
       });
     });
   }
@@ -351,12 +355,26 @@ class ProjectSettings extends Component {
             </InputGroup>
             <InputGroup>
               <InputGroupAddon addonType="prepend">
-                <InputGroupText>{'Key'}</InputGroupText>
+                <InputGroupText>{'Read Key'}</InputGroupText>
+              </InputGroupAddon>
+              {/* TODO: device-api disabled message does not show up when toggle beside the Device-API set to disabled*/}
+              <Input
+                value={
+                  this.state.readApiKey
+                    ? this.state.readApiKey
+                    : 'Device-API is disabled for your user'
+                }
+                readOnly
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>{'Write Key'}</InputGroupText>
               </InputGroupAddon>
               <Input
                 value={
-                  this.state.deviceKey
-                    ? this.state.deviceKey
+                  this.state.writeApiKey
+                    ? this.state.writeApiKey
                     : 'Device-API is disabled for your user'
                 }
                 readOnly
@@ -368,7 +386,7 @@ class ProjectSettings extends Component {
                 color="primary"
                 onClick={this.onEnableDeviceApi}
               >
-                {this.state.deviceKey ? 'Change key' : 'Generate key'}
+                {this.state.readApiKey ? 'Change keys' : 'Generate keys'}
               </Button>
               <Button
                 className="mx-2"
@@ -376,12 +394,12 @@ class ProjectSettings extends Component {
                 disabled={!this.props.project.enableDeviceApi}
                 onClick={this.onDisableDeviceApi}
               >
-                Remove key
+                Remove keys
               </Button>
               <Button
                 color="primary"
                 disabled={
-                  !this.props.project.enableDeviceApi || !this.state.deviceKey
+                  !this.props.project.enableDeviceApi || !this.state.readApiKey
                 }
                 onClick={() => this.toggleCodeSnippetModal(true)}
               >
@@ -479,7 +497,8 @@ class ProjectSettings extends Component {
           isOpen={this.state.codeSnippetModalOpen}
           onCancel={() => this.toggleCodeSnippetModal(false)}
           backendUrl={backendUrl}
-          deviceApiKey={this.state.deviceKey}
+          readApiKey={this.state.readApiKey}
+          writeApiKey={this.state.writeApiKey}
         ></CodeSnippetModal>
         <Prompt
           when={changes}
