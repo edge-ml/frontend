@@ -213,14 +213,16 @@ const PerformanceInfo = ({ model }) => {
       <h5>
         <b>Performance metrics</b>
       </h5>
-      <div>
-        <b>Accuracy</b>: {metric(metrics.accuracy_score)}
-      </div>
-      <div>
-        <b>Precision</b>: {metric(metrics.precision_score)}
-      </div>
-      <div>
-        <b>Recall</b>: {metric(metrics.recall_score)}
+      <div className="ml-2">
+        <div>
+          <b>Accuracy</b>: {metric(metrics.accuracy_score)}
+        </div>
+        <div>
+          <b>Precision</b>: {metric(metrics.precision_score)}
+        </div>
+        <div>
+          <b>Recall</b>: {metric(metrics.recall_score)}
+        </div>
       </div>
       <div className="d-flex align-items-center m-2">
         <Classification_report
