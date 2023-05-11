@@ -61,7 +61,7 @@ export const codeNode = (
   datasetName,
   useServerTime,
   nodeTime
-) => `const datasetCollector = require("explorer-node").datasetCollector;
+) => `const datasetCollector = require("edge-ml").datasetCollector;
 
 // Generate collector function
 try {
@@ -69,8 +69,9 @@ try {
   (url = "${backendUrl}"),
   (key = "${deviceApiKey}"),
   (name = "${datasetName}"),
-  (useDeviceTime = ${useServerTime})
-  (metaData = { "KEY": "VALUE" })
+  (useDeviceTime = ${useServerTime}),
+  (timeSeries = ["sensorName_001", "sensorName_002"]),
+  (metaData = { "KEY": "VALUE" }),
   (datasetLabel = "labeling_label")
   );
 } catch (e) {
@@ -80,7 +81,8 @@ try {
 
 try {
   // time should be a unix timestamp
-  collector.addDataPoint(${nodeTime}sensorName = "sensorName", value = 1.23);
+  collector.addDataPoint(${nodeTime}sensorName = "sensorName_001", value = 1.23);
+  collector.addDataPoint(${nodeTime}sensorName = "sensorName_002", value = 2.34);
 
   // Tells the library that all data has been recorded.
   // Uploads all remaining data points to the server
@@ -102,12 +104,13 @@ export const codeJs = (
   // Generate collector function
   try {
     const collector = await datasetCollector(
-    (url = "${backendUrl}"),
-    (key = "${deviceApiKey}"),
-    (name = "${datasetName}"),
-    (useDeviceTime = ${useServerTime})
-    (metaData = { "KEY": "VALUE" })
-    (datasetLabel = "labeling_label")
+      (url = "${backendUrl}"),
+      (key = "${deviceApiKey}"),
+      (name = "${datasetName}"),
+      (useDeviceTime = ${useServerTime}),
+      (timeSeries = ["sensorName_001", "sensorName_002"]),
+      (metaData = { "KEY": "VALUE" }),
+      (datasetLabel = "labeling_label")
     );
   } catch (e) {
     // Error occurred, cannot use the collector as a function to upload
@@ -116,7 +119,8 @@ export const codeJs = (
 
   try {
     // time should be a unix timestamp
-    collector.addDataPoint(${nodeTime}sensorName = "sensorName", value = 1.23);
+    collector.addDataPoint(${nodeTime}sensorName = "sensorName_001", value = 1.23);
+    collector.addDataPoint(${nodeTime}sensorName = "sensorName_002", value = 2.34);
 
     // Tells the library that all data has been recorded.
     // Uploads all remaining data points to the server

@@ -211,10 +211,9 @@ class CreateNewDatasetModal extends Component {
           }
         }
         await Promise.all(promises);
-        const result = await subscribeLabelingsAndLabels();
+        const labelings = await subscribeLabelingsAndLabels();
         const newDatasets = generateLabeledDataset(
-          result.labelings,
-          result.labels,
+          labelings,
           this.state.labelings,
           this.state.datasets
         );
@@ -232,6 +231,7 @@ class CreateNewDatasetModal extends Component {
       }
       this.setState({ onUploading: false });
     } catch (e) {
+      console.log(e);
       this.setState({ onUploading: false });
       if (e.status === 413) {
         // HTTP Payload Too Large
@@ -249,7 +249,7 @@ class CreateNewDatasetModal extends Component {
     return (
       <div>
         <Modal
-          className="modal-xl"
+          className="modal-xl custom-modal"
           data-testid="modal"
           isOpen={this.props.isOpen}
         >
@@ -261,7 +261,7 @@ class CreateNewDatasetModal extends Component {
           <ModalBody>
             <DragDrop
               style={{ height: '100px' }}
-              className="my-2"
+              className="my-2 p-4"
               onFileInput={this.onFileInput}
             ></DragDrop>
             {this.state.files.length === 0

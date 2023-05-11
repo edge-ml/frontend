@@ -1,25 +1,36 @@
 .LabelingPanel {
   z-index: 10;
-  position: relative;
-  width: 100%;
+  width: calc(100vw - (160px + 2 * 14.4px));
+  border-radius: 0.25rem;
+  position: fixed;
+  bottom: 15px;
 }
 
 .informationBox {
   display: flex;
   flex-direction: column;
-  flex-grow: 9999;
 }
 
 .informationBox > .inputGroup {
   padding: 0px;
   margin: 0px;
-  width: 160px;
+  width: 150px;
 }
 
 /* md mobile */
 @media (max-width: 768px) {
   .informationBox > .inputGroup {
     width: unset;
+  }
+
+  .informationBox {
+    flex-grow: 9999;
+  }
+
+  .labelingBox {
+    flex-basis: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
 }
 
@@ -30,10 +41,18 @@
 
   .LabelingPanel {
     bottom: 15px;
-    position: sticky;
   }
 }
 
-.labelingBox {
+.labelingButton {
+  background-color: white;
+  border: none;
+}
+
+.labelingButton:disabled {
+  opacity: 0.8;
+}
+
+.informationBox {
   margin-left: auto; /* override justify start */
 }

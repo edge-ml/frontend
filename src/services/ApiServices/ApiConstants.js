@@ -1,23 +1,32 @@
 import localStorageService from './../LocalStorageService';
 
+const currentHost = window.location.host.split(':')[0];
+
 export const AUTH_URI =
   process.env.NODE_ENV === 'production'
     ? '/auth/'
     : window.location.host === 'edge-ml.ngrok.io'
     ? 'http://auth.edge-ml.ngrok.io/auth/'
-    : 'http://localhost:3002/auth/';
+    : `http://${currentHost}:3002/auth/`;
 export const API_URI =
   process.env.NODE_ENV === 'production'
     ? '/api/'
     : window.location.host === 'edge-ml.ngrok.io'
     ? 'http://backend.edge-ml.ngrok.io/api/'
-    : 'http://localhost:3001/api/';
+    : `http://${currentHost}:3001/api/`;
 export const ML_URI =
   process.env.NODE_ENV === 'production'
     ? '/ml/'
     : window.location.host === 'edge-ml.ngrok.io'
     ? 'http://ml.edge-ml.ngrok.io/ml/'
-    : 'http://localhost:3003/ml/';
+    : `http://${currentHost}:3003/ml/`;
+
+export const DATASET_STORE =
+  process.env.NODE_ENV === 'production'
+    ? '/ds/'
+    : window.location.host === 'edge-ml.ngrok.io'
+    ? 'http://ds.edge-ml.ngrok.io/ds/'
+    : `http://${currentHost}:3004/ds/`;
 
 export const HTTP_METHODS = {
   GET: 'GET',
@@ -69,9 +78,16 @@ export const ML_ENDPOINTS = {
   PARAMETERS: 'parameters',
 };
 
+export const DATASET_STORE_ENDPOINTS = {
+  DATASETS: 'datasets/',
+  DATASET_LABELINGS: 'datasets/labelings/',
+  LABELING: 'labelings/',
+  CSV: 'datasets/csv/',
+};
+
 export const generateApiRequest = (
   method = this.HTTP_METHODS.GET,
-  baseUri = this.API_URI,
+  baseUri = API_URI,
   endpoint = this.API_ENDPOINTS.DEFAULT,
   body = {},
   params = {}
@@ -94,10 +110,12 @@ const expObj = {
   AUTH_URI,
   API_URI,
   ML_URI,
+  DATASET_STORE,
   HTTP_METHODS,
   AUTH_ENDPOINTS,
   API_ENDPOINTS,
   ML_ENDPOINTS,
+  DATASET_STORE_ENDPOINTS,
   generateApiRequest,
 };
 

@@ -69,14 +69,17 @@ const LabelingTableEntry = (props) => {
 export default LabelingTableEntry;
 
 const Labeling = (props) => {
-  let labels = [];
-  props.labeling.labels.forEach((labelId, index) => {
-    let label = props.labels.filter((label) => label['_id'] === labelId)[0];
-    if (!label) {
-      return null;
-    }
-    labels.push(label);
-  });
+  console.log(props);
+  // '  let labels = [];
+  //   props.labeling.labels.forEach((labelId, index) => {
+  //     let label = props.labels.filter((label) => label['_id'] === labelId)[0];
+  //     if (!label) {
+  //       return null;
+  //     }
+  //     labels.push(label);
+  //   });'
+
+  const labels = props.labeling.labels;
 
   if (labels.length === 0) {
     return null;

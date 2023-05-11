@@ -36,9 +36,7 @@ class EditLabelingModal extends Component {
     this.state = {
       datasets: props.datasets,
       labeling: props.labeling,
-      labels: props.labels,
       isOpen: props.isOpen,
-      onCloseModal: props.onCloseModal,
       onSave: props.onSave,
       onDeleteLabeling: props.onDeleteLabeling,
       isNewLabeling: props.isNewLabeling,
@@ -49,7 +47,6 @@ class EditLabelingModal extends Component {
       confirmString: '',
       conflictingDatasetIdsForLabelingDeletion: [],
     };
-    this.onCloseModal = this.onCloseModal.bind(this);
     this.onAddLabel = this.onAddLabel.bind(this);
     this.onDeleteLabel = this.onDeleteLabel.bind(this);
     this.onLabelingNameChanged = this.onLabelingNameChanged.bind(this);
@@ -71,19 +68,21 @@ class EditLabelingModal extends Component {
     this.getConfirmStringLabels = this.getConfirmStringLabels.bind(this);
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props !== prevProps) {
+  componentWillReceiveProps(nextProps) {
+    console.log('Exec');
+    if (this.props !== nextProps) {
       this.setState({
-        datasets: this.props.datasets,
-        labeling: this.props.labeling,
-        labels: this.props.labels,
-        isOpen: this.props.isOpen,
-        onCloseModal: this.props.onCloseModal,
-        onSave: this.props.onSave,
-        onDeleteLabeling: this.props.onDeleteLabeling,
-        isNewLabeling: this.props.isNewLabeling,
-        confirmString: '',
+        ...JSON.parse(JSON.stringify(nextProps)), // TODO: Make this nice
       });
+      // this.setState({
+      //   datasets: nextProps.datasets,
+      //   labeling: nextProps.labeling,
+      //   labels: nextProps.labels,
+      //   isOpen: nextProps.isOpen,
+      //   onSave: nextProps.onSave,
+      //   onDeleteLabeling: nextProps.onDeleteLabeling,
+      //   isNewLabeling: nextProps.isNewLabeling,
+      // });
     }
   }
 
@@ -96,7 +95,7 @@ class EditLabelingModal extends Component {
   }
 
   labelNameInvalid(label, labelIdx) {
-    return this.state.labels.some(
+    return this.state.labeling.labels.some(
       (elm, idx) =>
         elm.name === label.name && idx !== labelIdx && label.name !== ''
     );
@@ -198,7 +197,7 @@ class EditLabelingModal extends Component {
       //no conflicts, just save
       this.state.onSave(
         this.state.labeling,
-        this.state.labels,
+        this.state.labeling.labels,
         this.state.deletedLabels
       );
     }
@@ -274,9 +273,10 @@ class EditLabelingModal extends Component {
       color: generateRandomColor(),
       isNewLabel: true,
     };
-
+    const oldLabeling = this.state.labeling;
+    oldLabeling.labels.push(newLabel);
     this.setState({
-      labels: [...this.state.labels, newLabel],
+      labeling: oldLabeling,
     });
   }
 
@@ -313,74 +313,42 @@ class EditLabelingModal extends Component {
     }
   }
 
-  onDeleteLabel(labelToDelete) {
-    let labels = this.state.labels.filter((label) => label !== labelToDelete);
-    let labeling = this.state.labeling;
-    labeling.labels = labeling.labels.filter(
-      (label) => label !== labelToDelete['_id']
-    );
+  onDeleteLabel(index) {
+    const labeling = this.state.labeling;
+    labeling.labels.splice(index, 1);
+    console.log(labeling.labels);
+    console.log(index);
 
-    if (labelToDelete.isNewLabel) {
-      this.setState({
-        labels,
-        labeling,
-      });
-    } else {
-      this.setState({
-        labels,
-        labeling,
-        deletedLabels: [...this.state.deletedLabels, labelToDelete],
-      });
-    }
+    this.setState({
+      labeling: labeling,
+    });
   }
 
-  onLabelNameChanged(labelToChange, name) {
-    if (labelToChange.isNewLabel) {
-      this.setState({
-        labels: this.state.labels.map((label) =>
-          label !== labelToChange ? label : Object.assign({}, label, { name })
-        ),
-      });
-    } else {
-      this.setState({
-        labels: this.state.labels.map((label) =>
-          label !== labelToChange
-            ? label
-            : Object.assign({}, label, { name, updated: true })
-        ),
-      });
-    }
+  onLabelNameChanged(index, name) {
+    const labeling = this.state.labeling;
+    labeling.labels[index].name = name;
+    this.setState({
+      labeling: labeling,
+    });
   }
 
-  onLabelColorChanged(labelToChange, color) {
-    if (color === undefined || color.length > 6) return;
+  onLabelColorChanged(index, color) {
+    //if (color === undefined || color.length > 6) return;
 
-    if (labelToChange.isNewLabel) {
-      this.setState({
-        labels: this.state.labels.map((label) =>
-          label !== labelToChange
-            ? label
-            : Object.assign({}, label, { color: '#' + color })
-        ),
-      });
-    } else {
-      this.setState({
-        labels: this.state.labels.map((label) =>
-          label !== labelToChange
-            ? label
-            : Object.assign({}, label, { color: '#' + color, updated: true })
-        ),
-      });
-    }
+    const labeling = this.state.labeling;
+    labeling.labels[index].color = color;
+    this.setState({
+      labeling: labeling,
+    });
   }
 
   checkAllowSaving() {
     return (
-      this.state.labels &&
+      this.state.labeling.labels &&
       this.state.labeling &&
-      this.state.labels.every((elm) => elm.name !== '') &&
+      this.state.labeling.labels.every((elm) => elm.name !== '') &&
       this.state.labeling.name !== '' &&
-      this.state.labels.length !== 0
+      this.state.labeling.labels.length !== 0
     );
   }
 
@@ -396,10 +364,10 @@ class EditLabelingModal extends Component {
   }
 
   labelsNamesDouble() {
-    return !this.state.labels
+    return !this.state.labeling.labels
       ? false
-      : new Set(this.state.labels.map((elm) => elm.name)).size !==
-          this.state.labels.length;
+      : new Set(this.state.labeling.labels.map((elm) => elm.name)).size !==
+          this.state.labeling.labels.length;
   }
 
   renderLabelingEditModal() {
@@ -457,8 +425,8 @@ class EditLabelingModal extends Component {
             </div>
           </div>
           <hr />
-          {this.state.labels
-            ? this.state.labels.map((label, index) => (
+          {this.state.labeling.labels
+            ? this.state.labeling.labels.map((label, index) => (
                 <InputGroup key={'label' + index}>
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>Label</InputGroupText>
@@ -469,7 +437,7 @@ class EditLabelingModal extends Component {
                     placeholder="Name"
                     value={label.name}
                     onChange={(e) =>
-                      this.onLabelNameChanged(label, e.target.value)
+                      this.onLabelNameChanged(index, e.target.value)
                     }
                   />
                   <InputGroupAddon addonType="append">
@@ -492,9 +460,9 @@ class EditLabelingModal extends Component {
                         : null,
                       color: hexToForegroundColor(label.color),
                     }}
-                    value={label.color.split('#')[1]}
+                    value={label.color}
                     onChange={(e) =>
-                      this.onLabelColorChanged(label, e.target.value)
+                      this.onLabelColorChanged(index, e.target.value)
                     }
                   />
                   <InputGroupAddon addonType="append">
@@ -504,7 +472,7 @@ class EditLabelingModal extends Component {
                       color="danger"
                       outline
                       onClick={(e) => {
-                        this.onDeleteLabel(label);
+                        this.onDeleteLabel(index);
                       }}
                     >
                       ✕
@@ -529,7 +497,7 @@ class EditLabelingModal extends Component {
             + Add Label
           </Button>
           <EmptyLabelingSetFeedBack
-            isLabelingSetEmpty={this.state.labels.length === 0}
+            isLabelingSetEmpty={this.state.labeling.labels.length === 0}
           />
         </ModalBody>
         <ModalFooter>
@@ -537,7 +505,7 @@ class EditLabelingModal extends Component {
             id="buttonClose"
             color="secondary"
             className="m-1 mr-auto"
-            onClick={this.onCloseModal}
+            onClick={this.props.onCloseModal}
           >
             Cancel
           </Button>

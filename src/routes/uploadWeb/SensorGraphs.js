@@ -31,10 +31,7 @@ export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
             },
             series: Object.entries(value).map(([component, data]) => ({
               name: component,
-              data: data.map(({ timestamp, datapoint }) => [
-                timestamp,
-                datapoint,
-              ]),
+              data: data,
               marker: {
                 enabled: false,
               },
@@ -44,7 +41,8 @@ export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
             },
             xAxis: {
               labels: {
-                enabled: true,
+                enabled: false,
+                crosshair: false,
                 rotation: 20,
                 overflow: 'allow',
               },

@@ -17,6 +17,7 @@ import {
   getDatasets,
   deleteDatasets,
 } from '../../services/ApiServices/DatasetServices';
+import { downloadDatasets } from '../../services/DatasetService';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import { downloadAllAsZip } from '../../services/DatasetService';
 import DatasetTable from './DatasetTable';
@@ -32,7 +33,6 @@ class ListPage extends Component {
       ready: false,
       CreateNewDatasetToggle: false,
       labelings: undefined,
-      label: undefined,
     };
     this.toggleModal = this.toggleModal.bind(this);
     this.deleteDatasets = this.deleteDatasets.bind(this);
@@ -51,10 +51,9 @@ class ListPage extends Component {
   componentDidMount() {
     Promise.all([
       getDatasets(),
-      subscribeLabelingsAndLabels().then((labelingdata) => {
+      subscribeLabelingsAndLabels().then((labelings) => {
         this.setState({
-          labelings: labelingdata.labelings,
-          labels: labelingdata.labels,
+          labelings: labelings,
         });
       }),
     ]).then(([datasets, _]) => {
@@ -63,8 +62,7 @@ class ListPage extends Component {
   }
 
   async downloadAllDatasets() {
-    const { labelings, labels } = await subscribeLabelingsAndLabels();
-    downloadAllAsZip(this.state.datasets, labelings, labels);
+    await downloadDatasets(this.state.datasets.map((elm) => elm._id));
   }
 
   selectAllEmpty() {
@@ -87,10 +85,13 @@ class ListPage extends Component {
     });
   }
 
-  onDatasetsChanged(datasets) {
+  async onDatasetsChanged(datasets) {
+    const labelings = await subscribeLabelingsAndLabels();
+    console.log(datasets);
     if (!datasets) return;
     this.setState({
       modalID: null,
+      labelings: labelings,
       modal: false,
       ready: true,
       datasets: datasets,
@@ -135,6 +136,7 @@ class ListPage extends Component {
   }
 
   deleteDatasets() {
+    console.log('Delete datasets');
     deleteDatasets(this.state.datasetsToDelete)
       .then(() => {
         this.setState({
@@ -180,7 +182,6 @@ class ListPage extends Component {
             downloadAllDatasets={this.downloadAllDatasets}
             toggleCheck={this.toggleCheck}
             labelings={this.state.labelings}
-            labels={this.state.labels}
             deleteEntry={this.deleteEntry}
             selectAll={this.selectAll}
             deselectAll={this.deselectAll}

@@ -8,7 +8,7 @@ import {
   CardBody,
   CardHeader,
   Button,
-  CardFooter
+  CardFooter,
 } from 'reactstrap';
 import MetaDataEditModal from './MetaDataEditModal';
 import './MetadataPanel.css';
@@ -17,7 +17,7 @@ class CustomMetadataPanel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      editModalOpen: false
+      editModalOpen: false,
     };
     this.additionalMetadata = this.additionalMetaData.bind(this);
     this.onEdit = this.onEdit.bind(this);
@@ -28,44 +28,36 @@ class CustomMetadataPanel extends Component {
   onCancelEdit() {
     console.log('cancel edit');
     this.setState({
-      editModalOpen: false
+      editModalOpen: false,
     });
   }
 
   onEdit() {
     this.setState({
-      editModalOpen: true
+      editModalOpen: true,
     });
   }
 
   onSave(newMetaData) {
     const metaDataAsObj = {};
     newMetaData
-      .filter(elm => elm.key !== '')
-      .forEach(elm => {
+      .filter((elm) => elm.key !== '')
+      .forEach((elm) => {
         metaDataAsObj[elm.key] = elm.data;
       });
     this.props.onUpdateMetaData({ metaData: metaDataAsObj });
     this.setState({
-      editModalOpen: false
+      editModalOpen: false,
     });
   }
 
   additionalMetaData() {
-    return Object.keys(this.props.metaData).map(key => (
-      <div>
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText className="timeInputGroupText">
-              {key}
-            </InputGroupText>
-          </InputGroupAddon>
-          <Input
-            className="text-right"
-            value={this.props.metaData[key]}
-            readOnly
-          />
-        </InputGroup>
+    return Object.keys(this.props.metaData).map((key) => (
+      <div className="customMetaDataItem">
+        <div className="customMetaDataItem_key">{key}</div>
+        <div className="customMetaDataItem_value">
+          {this.props.metaData[key]}
+        </div>
       </div>
     ));
   }
@@ -73,10 +65,10 @@ class CustomMetadataPanel extends Component {
   render() {
     return (
       <div>
-        <Card>
-          <CardHeader>
-            <b>Custom Metadata</b>
-          </CardHeader>
+        <div className="sidepanel-card">
+          <div className="sidepanel-heading">
+            <h5>Custom Metadata</h5>
+          </div>
           <CardBody>
             {Object.keys(this.props.metaData).length ? (
               <div>
@@ -86,14 +78,14 @@ class CustomMetadataPanel extends Component {
               <div>No custom metadata</div>
             )}
           </CardBody>
-          <CardFooter>
+          <div>
             <div className="text-right">
               <Button color="primary" size="sm" onClick={this.onEdit}>
                 + Edit
               </Button>
             </div>
-          </CardFooter>
-        </Card>
+          </div>
+        </div>
         <MetaDataEditModal
           onClose={this.onCancelEdit}
           onSave={this.onSave}

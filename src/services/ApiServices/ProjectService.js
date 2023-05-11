@@ -6,6 +6,8 @@ const axios = ax.create();
 
 export const getProjects = () => {
   return new Promise((resolve, reject) => {
+    console.log(apiConsts.API_URI);
+    console.log(apiConsts.API_ENDPOINTS.PROJECTS);
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,

@@ -42,13 +42,9 @@ const Labelings = (props) => {
   if (!props.dataset.labelings.length) {
     return null;
   }
+
   const labelings = props.dataset.labelings.map((elm) =>
     props.labelings.find((labeling) => labeling._id === elm.labelingId)
-  );
-  const labels = labelings.map((labeling) =>
-    labeling.labels.map((elm) =>
-      props.labels.find((label) => elm === label._id)
-    )
   );
 
   return (
@@ -61,14 +57,22 @@ const Labelings = (props) => {
                 {labeling.name.toUpperCase()}
               </div>
               <div>
-                {labels[idx].map((label) => (
-                  <Badge
-                    className="badgeSize mx-1 border border-dark"
-                    style={{ backgroundColor: label.color }}
-                  >
-                    {label.name}
-                  </Badge>
-                ))}
+                {labeling.labels.map((label) => {
+                  const labelTypes = props.dataset.labelings[idx].labels.map(
+                    (elm) => elm.type
+                  );
+                  if (!labelTypes.includes(label._id)) {
+                    return null;
+                  }
+                  return (
+                    <Badge
+                      className="badgeSize mx-1"
+                      style={{ backgroundColor: label.color }}
+                    >
+                      {label.name}
+                    </Badge>
+                  );
+                })}
               </div>
             </Badge>
           ))}
@@ -115,7 +119,6 @@ const AdditionalInfo = (props) => {
       <Metadata dataset={dataset}></Metadata>
       <Labelings
         labelings={props.labelings}
-        labels={props.labels}
         dataset={props.dataset}
       ></Labelings>
     </div>
@@ -124,18 +127,22 @@ const AdditionalInfo = (props) => {
 
 const DatasetInfo = (props) => {
   const { dataset } = props;
-  const duration = Math.max(dataset.end - dataset.start, 0);
+  const datasetStart = Math.min(...dataset.timeSeries.map((elm) => elm.start));
+  const datasetEnd = Math.min(...dataset.timeSeries.map((elm) => elm.end));
+
+  const duration = Math.max(datasetEnd - datasetStart, 0) || 0;
+  const empty = dataset.length <= 0;
   return (
     <div className="text-left d-inline-block m-2">
       <div className="font-weight-bold font-size-lg h5 d-inline">
         {dataset.name}
       </div>
-      {duration != 0 ? (
+      {!empty ? (
         <Fragment>
           <div style={{ color: 'rgb(131, 136, 159)' }}>
             <small>
               <b>START </b>
-              {displayTime(dataset.start)}
+              {displayTime(datasetStart)}
             </small>
           </div>
           <div style={{ color: 'rgb(131, 136, 159)' }}>
@@ -153,7 +160,7 @@ const DatasetInfo = (props) => {
               icon={faExclamationTriangle}
             ></FontAwesomeIcon>
           </div>
-          <div className="text-left d-inline ml-1">dataset empty</div>
+          <div className="text-left d-inline ml-1">Dataset is empty</div>
         </div>
       )}
     </div>
@@ -216,7 +223,6 @@ const DatasetTableEntry = (props) => {
                   <AdditionalInfo
                     dataset={dataset}
                     labelings={props.labelings}
-                    labels={props.labels}
                   ></AdditionalInfo>
                 </div>
               </Col>
@@ -259,7 +265,6 @@ const DatasetTableEntry = (props) => {
           <AdditionalInfo
             dataset={dataset}
             labelings={props.labelings}
-            labels={props.labels}
           ></AdditionalInfo>
         </div>
       </div>

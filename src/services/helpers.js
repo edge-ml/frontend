@@ -24,22 +24,15 @@ export const betterModulo = (x, n) => {
   return ((x % n) + n) % n;
 };
 
-export const unixTimeToString = (ms) => {
-  var milliseconds = parseInt((ms % 1000) / 100),
-    seconds = parseInt((ms / 1000) % 60),
-    minutes = parseInt((ms / (1000 * 60)) % 60),
-    hours = parseInt((ms / (1000 * 60 * 60)) % 24);
-
-  hours = hours < 10 ? '0' + hours : hours;
-  minutes = minutes < 10 ? '0' + minutes : minutes;
-  seconds = seconds < 10 ? '0' + seconds : seconds;
-  if (milliseconds < 10) {
-    milliseconds = '00' + milliseconds;
-  } else if (milliseconds < 100) {
-    milliseconds = '0' + milliseconds;
-  }
-
-  return hours + ':' + minutes + ':' + seconds + ':' + milliseconds;
+export const unixTimeToString = (timestamp) => {
+  const date = new Date(timestamp);
+  const hours = ('0' + date.getHours()).slice(-2);
+  const minutes = ('0' + date.getMinutes()).slice(-2);
+  const seconds = ('0' + date.getSeconds()).slice(-2);
+  const milliseconds = ('00' + date.getMilliseconds()).slice(-3);
+  return timestamp === 0
+    ? '00:00:00.000'
+    : `${hours}:${minutes}:${seconds}.${milliseconds}`;
 };
 
 export const toPercentage = (p) => (p * 100).toFixed(2) + '%';

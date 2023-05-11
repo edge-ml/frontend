@@ -106,9 +106,9 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
       }
       return { timestamp: Number.POSITIVE_INFINITY };
     });
-    const minTimeStamp = Math.min(...timeStamps.map((elm) => elm.timestamp));
+    const minTimeStamp = Math.min(...timeStamps.map((elm) => elm[0]));
     const sensorData = timeStamps.map((elm, index) => {
-      if (elm.timestamp === minTimeStamp) {
+      if (elm[0] === minTimeStamp) {
         tPtr[index]++;
         return elm.datapoint;
       }
@@ -139,16 +139,12 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
   };
 
   var nextSensorLine = getNextSensorData();
-  var nextLabelLine = getLabelData(nextSensorLine.timeStamp);
+  var nextLabelLine = getLabelData(nextSensorLine[0]);
   var i = 0;
   while (nextSensorLine.changed) {
-    csv.push([
-      nextSensorLine.timeStamp,
-      ...nextSensorLine.data,
-      ...nextLabelLine,
-    ]);
+    csv.push([nextSensorLine[0], ...nextSensorLine.data, ...nextLabelLine]);
     nextSensorLine = getNextSensorData();
-    nextLabelLine = getLabelData(nextSensorLine.timeStamp);
+    nextLabelLine = getLabelData(nextSensorLine[0]);
     i = i + 1;
   }
 
@@ -180,10 +176,10 @@ function extractTimeSeries(timeData, i) {
         error: `Sensor value is not a number in row ${j + 1}, column ${i + 1}`,
       };
     }
-    timeSeries.data.push({
-      timestamp: parseInt(timeData[j][0], 10),
-      datapoint: parseFloat(timeData[j][i]),
-    });
+    timeSeries.data.push([
+      parseInt(timeData[j][0], 10),
+      parseFloat(timeData[j][i]),
+    ]);
   }
   return timeSeries;
 }
@@ -296,7 +292,6 @@ function processCSVColumn(timeData) {
 
 export const generateLabeledDataset = (
   labelings,
-  labels,
   currentLabeling,
   datasets
 ) => {
@@ -304,15 +299,15 @@ export const generateLabeledDataset = (
     for (var j = 0; j < currentLabeling[i].length; j++) {
       const datasetLabels = currentLabeling[i][j].datasetLabel.labels;
       const labelName = currentLabeling[i][j].datasetLabel.name;
-      const labelIds = labelings.find((elm) => elm.name === labelName).labels;
       currentLabeling[i][j].datasetLabel.labelingId = labelings.find(
         (elm) => elm.name === labelName
       )._id;
       for (var h = 0; h < datasetLabels.length; h++) {
         const labelName = currentLabeling[i][j].datasetLabel.labels[h].name;
-        const labelId = labels.find(
-          (elm) => labelName === elm.name && labelIds.includes(elm._id)
-        )._id;
+        const labelId = labelings
+          .map((elm) => elm.labels)
+          .flat()
+          .find((elm) => labelName === elm.name)._id;
         currentLabeling[i][j].datasetLabel.labels[h].type = labelId;
       }
     }

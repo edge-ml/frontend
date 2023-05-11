@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+@import url('../src/Styles/Modal.css');
+
 html {
   font-size: 90%;
 }
@@ -186,8 +189,6 @@ button {
 }
 
 div.card {
-  /*box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);*/
-  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
   text-align: center;
   border: 0px transparent solid;
   border-radius: 0.25rem;
@@ -398,10 +399,17 @@ div.card {
   border-color: rgb(226, 232, 240);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-secondary:focus {
   background: rgb(226, 232, 240);
   color: black;
   border-color: rgb(226, 232, 240);
+}
+
+.btn-secondary:active {
+  color: #fff;
+  background-color: #5a6268;
+  border-color: #545b62;
 }
 
 .btn-success {
@@ -443,4 +451,18 @@ div.card {
   border: 2px solid rgb(230, 230, 234);
   border-radius: 0px 0px 10px 10px;
   overflow: hidden;
+}
+
+.edgeml-border {
+  border: 2 px solid rgb(230, 230, 234) !important;
+  border-width: 2px !important;
+  border-radius: 10px !important;
+}
+
+.edgeml-gray-one {
+  background-color: #ddd;
+}
+
+.edgeml-fade-one {
+  background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
 }

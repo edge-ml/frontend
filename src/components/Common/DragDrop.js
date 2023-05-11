@@ -36,8 +36,12 @@ class DragDrop extends Component {
           style={{
             cursor: 'pointer !important',
             border: '3px dashed black',
-            borderRadius: '0.25rem',
+            borderRadius: '10px',
             height: 'inherit',
+            padding: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            textAlign: 'center',
           }}
           onDrop={this.onDrop}
           onDragOver={this.onCancel}
@@ -77,6 +81,8 @@ class DragDrop extends Component {
               height: 'inherit',
               fontSize: 'larger',
               fontWeight: 'bold',
+              justifyContent: 'center',
+              width: '100%',
             }}
           >
             {' '}

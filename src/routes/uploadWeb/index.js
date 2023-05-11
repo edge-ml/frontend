@@ -160,17 +160,17 @@ export const UploadWebPage = () => {
           selectedSensors={selectedSensors}
         />
       }
-      graph={
-        Object.keys(visibleStore).length !== 0 ||
-        recorderState === 'recording' ||
-        recorderState === 'stopping' ? (
-          <SensorGraphs
-            sensorStore={visibleStore}
-            dataPreview={dataPreview}
-            setDataPreview={setDataPreview}
-          />
-        ) : null
-      }
+      // graph={
+      //   Object.keys(visibleStore).length !== 0 ||
+      //   recorderState === 'recording' ||
+      //   recorderState === 'stopping' ? (
+      //     <SensorGraphs
+      //       sensorStore={visibleStore}
+      //       dataPreview={dataPreview}
+      //       setDataPreview={setDataPreview}
+      //     />
+      //   ) : null
+      // }
       fabs={
         <FloatingActionButtons
           recorderState={recorderState}

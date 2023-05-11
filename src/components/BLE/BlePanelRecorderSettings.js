@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  FormFeedback,
-} from 'reactstrap';
+import { Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import SpinnerButton from '../Common/SpinnerButton';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -13,20 +7,17 @@ import Checkbox from '../Common/Checkbox';
 import './BleActivated.css';
 
 function BlePanelRecorderSettings(props) {
-  const [nameError, setNameError] = useState(false);
   const [samplingRateError, setSamplingRateError] = useState(false);
   const [sensorNotSelectedError, setSensorNotSelectedError] = useState(false);
   const [buttonErrorAnimate, setButtonErrorAnimate] = useState(false);
 
   const onClickRecordButton = (e) => {
-    const tmpNameError = props.datasetName === '';
     const tmpSamplingRateError = props.sampleRate <= 0 || props.sampleRate > 50;
 
-    setNameError(tmpNameError);
     setSamplingRateError(tmpSamplingRateError);
     setSensorNotSelectedError(!props.sensorsSelected);
 
-    if (tmpNameError || tmpSamplingRateError || !props.sensorsSelected) {
+    if (tmpSamplingRateError || !props.sensorsSelected) {
       setButtonErrorAnimate(true);
       return;
     }
@@ -46,7 +37,6 @@ function BlePanelRecorderSettings(props) {
       : 'Stopping recording';
 
   const onDatasetNameChanged = (e) => {
-    setNameError(false);
     props.onDatasetNameChanged(e);
   };
 
@@ -64,16 +54,12 @@ function BlePanelRecorderSettings(props) {
             <InputGroupText>{'Dataset name'}</InputGroupText>
           </InputGroupAddon>
           <Input
-            invalid={nameError}
             id="bleDatasetName"
             placeholder={'dataset name'}
             onChange={onDatasetNameChanged}
             value={props.datasetName}
             disabled={props.recorderState !== 'ready'}
           />
-          <FormFeedback className={classNames({ invalidFeedBack: nameError })}>
-            A dataset needs a name
-          </FormFeedback>
         </InputGroup>
         {/* TODO reenable this when sample rate issues have been resolved
         <InputGroup>

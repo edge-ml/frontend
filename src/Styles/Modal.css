@@ -1,0 +1,72 @@
+.modal {
+  background-color: #11111188;
+}
+
+.modal-header {
+  background-color: rgb(249, 251, 252);
+}
+
+.modal-footer {
+  background-color: rgb(249, 251, 252);
+}
+
+.modal-content {
+  border-radius: 10px;
+}
+
+.full-page-extend-metaData {
+  position: fixed;
+  z-index: 1000;
+  right: 0;
+  top: 50%;
+  transform: translate(0px, -50%);
+  padding: 8px;
+}
+
+.dataset-side-panel {
+  background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
+  padding: 8px;
+  height: 100vh;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 33vw;
+  z-index: 1000;
+  background-color: white;
+  position: fixed;
+}
+
+.dataset-side-panel-close-button {
+  display: flex;
+  justify-content: end;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.sidepanel-card {
+  background-color: white;
+  border-radius: 10px 10px 10px 10px;
+  border-width: 2px 2px 2px 2px;
+  padding: 8px;
+}
+
+.sidepanel-heading {
+  display: flex;
+  justify-content: center;
+  border-bottom: 2px solid rgb(230, 230, 234);
+}
+
+.sidepanel-heading > * {
+  font-weight: bold;
+}
+
+.sidepanel-content {
+  padding: 8px;
+}
+
+.dataset-full-page {
+  height: 100vh;
+}

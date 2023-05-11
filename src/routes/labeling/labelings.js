@@ -8,8 +8,6 @@ import {
   subscribeLabelingsAndLabels,
   addLabeling,
   deleteLabeling,
-  deleteLabelTypesFromLabeling,
-  addLabelTypesToLabeling,
   deleteMultipleLabelings,
 } from '../../services/ApiServices/LabelingServices';
 import LabelingTable from './LabelingTable';
@@ -21,13 +19,11 @@ class LabelingsPage extends Component {
 
     this.state = {
       labelings: [],
-      labels: [],
       isReady: false,
       datasets: [],
       labelingsToDelete: [],
       modal: {
         labeling: undefined,
-        labels: undefined,
         isOpen: false,
         isNewLabeling: false,
       },
@@ -45,8 +41,7 @@ class LabelingsPage extends Component {
     this.onCloseModal = this.onCloseModal.bind(this);
     this.onSave = this.onSave.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
-    this.onLabelingsLabelsDatasetsChanged =
-      this.onLabelingsLabelsDatasetsChanged.bind(this);
+    this.onContentChanged = this.onContentChanged.bind(this);
     this.resetURL = this.resetURL.bind(this);
     this.initComponent = this.initComponent.bind(this);
     this.onClickEdit = this.onClickEdit.bind(this);
@@ -74,10 +69,9 @@ class LabelingsPage extends Component {
   initComponent() {
     Promise.all([getDatasets(), subscribeLabelingsAndLabels()]).then(
       (result) => {
-        this.onLabelingsLabelsDatasetsChanged(
-          result[1].labelings,
-          result[1].labels,
-          result[0]
+        this.onContentChanged(
+          result[1], // labelings,
+          result[0] // datasets
         );
         if (this.props.location.pathname.includes('/labelings/new')) {
           this.onModalAddLabeling();
@@ -89,29 +83,26 @@ class LabelingsPage extends Component {
             let labeling = this.state.labelings.filter(
               (labeling) => labeling['_id'] === id
             )[0];
-            let labels = this.state.labels.filter((label) =>
-              labeling.labels.includes(label['_id'])
-            );
-            this.toggleModal(labeling, labels, false);
+            this.toggleModal(labeling, false);
           }
         }
       }
     );
   }
 
-  onLabelingsLabelsDatasetsChanged(labelings, labels, datasets) {
-    if (labelings === undefined) labelings = this.state.labelings;
-    if (datasets === undefined) datasets = this.state.datasets;
-    if (labels === undefined) labels = this.state.labels;
+  onContentChanged(labelings, datasets) {
+    console.log(labelings);
+    labelings = labelings || this.state.labelings;
+    datasets = datasets || this.state.datasets;
+    console.log(labelings);
     this.setState({
       labelings: labelings,
-      labels: labels,
       datasets: datasets,
       isReady: true,
     });
   }
 
-  toggleModal(labeling, labels, isNewLabeling) {
+  toggleModal(labeling, isNewLabeling) {
     if (isNewLabeling) {
       if (!this.props.history.location.pathname.includes('labelings/new')) {
         this.props.history.replace({
@@ -129,11 +120,10 @@ class LabelingsPage extends Component {
         search: '?id=' + labeling['_id'],
       });
     }
-
+    console.log(labeling);
     this.setState({
       modal: {
-        labeling: this.state.modal.isOpen ? undefined : labeling,
-        labels: this.state.modal.isOpen ? undefined : labels,
+        labeling: labeling,
         isOpen: true,
         isNewLabeling: isNewLabeling,
       },
@@ -146,14 +136,12 @@ class LabelingsPage extends Component {
         name: '',
         labels: [],
       },
-      [],
       true
     );
   }
 
   onCloseModal() {
     this.resetURL();
-
     this.setState({
       modal: {
         labeling: undefined,
@@ -305,7 +293,8 @@ class LabelingsPage extends Component {
 
   onClickConfirmlDeleteLabelings(labelingIds) {
     deleteMultipleLabelings(labelingIds).then((result) => {
-      this.onLabelingsLabelsDatasetsChanged(result.labelings, result.labels);
+      console.log(result);
+      this.onContentChanged(result);
     });
     this.resetConfirmationDialogueModalState();
     this.setState({
@@ -333,43 +322,60 @@ class LabelingsPage extends Component {
 
   onDeleteLabeling(labelingId, conflictingDatasetIds) {
     this.onCloseModal();
-    deleteLabeling(labelingId, conflictingDatasetIds).then((result) =>
-      this.onLabelingsLabelsDatasetsChanged(result.labelings, result.labels)
-    );
+    deleteLabeling(labelingId, conflictingDatasetIds).then((labelings) => {
+      this.onContentChanged(labelings);
+      console.log(labelings);
+    });
   }
 
-  async onSave(labeling, labels, deletedLabels) {
-    deletedLabels = deletedLabels.map((elm) => elm._id);
-    if (!labeling || !labels) return;
-
-    if (labeling.updated || labels.some((elm) => elm.updated)) {
-      const result = await updateLabelingandLabels(labeling, labels);
-      this.onLabelingsLabelsDatasetsChanged(result.labelings, result.labels);
-    }
-
+  async onSave(labeling) {
+    console.log('onSAve');
+    console.log(labeling);
+    console.log(this.state.modal.isNewLabeling);
+    var newLabeling = undefined;
     if (this.state.modal.isNewLabeling) {
-      addLabeling({ ...labeling, labels: labels }).then((result) =>
-        this.onLabelingsLabelsDatasetsChanged(result.labelings, result.labels)
-      );
+      newLabeling = await addLabeling(labeling);
     } else {
-      //add new labels to labeling/delete labels from labeling
-      addLabelTypesToLabeling(labeling, labels).then((result) => {
-        if (deletedLabels !== []) {
-          deleteLabelTypesFromLabeling(labeling, deletedLabels).then(
-            (newResult) =>
-              this.onLabelingsLabelsDatasetsChanged(
-                newResult.labelings,
-                newResult.labels
-              )
-          );
-        } else {
-          this.onLabelingsLabelsDatasetsChanged(result.labeling, result.labels);
-        }
-      });
+      console.log(labeling);
+      newLabeling = await updateLabelingandLabels(labeling);
+      console.log(newLabeling);
     }
-
+    this.onContentChanged(newLabeling);
     this.onCloseModal();
   }
+
+  // async onSave(labeling, labels, deletedLabels) {
+  //   deletedLabels = deletedLabels.map((elm) => elm._id);
+  //   if (!labeling || !labels) return;
+
+  //   if (labeling.updated || labels.some((elm) => elm.updated)) {
+  //     const labelings = await updateLabelingandLabels(labeling, labels);
+  //     this.onContentChanged(labelings);
+  //   }
+
+  //   if (this.state.modal.isNewLabeling) {
+  //     addLabeling({ ...labeling, labels: labels }).then((labelings) =>
+  //       this.onContentChanged(labelings)
+  //     );
+  //   } else {
+  //     //add new labels to labeling/delete labels from labeling
+  //     addLabelTypesToLabeling(labeling, labels).then((result) => {
+  //       if (deletedLabels !== []) {
+  //         deleteLabelTypesFromLabeling(labeling, deletedLabels).then(
+  //           (newResult) =>
+  //             this.onContentChanged(
+  //               newResult.labelings,
+  //               newResult.labels
+  //             )
+  //         );
+  //       } else {
+  //         this.onContentChanged(result.labeling, result.labels);
+  //       }
+  //     });
+  //   }
+
+  //   this.onCloseModal();
+  // }
 
   resetURL() {
     const newPath = this.props.history.location.pathname.split('/');
@@ -380,13 +386,7 @@ class LabelingsPage extends Component {
   }
 
   onClickEdit = (labeling) => {
-    this.toggleModal(
-      labeling,
-      this.state.labels.filter((label) =>
-        labeling.labels.includes(label['_id'])
-      ),
-      false
-    );
+    this.toggleModal(labeling, false);
   };
 
   selectAll() {

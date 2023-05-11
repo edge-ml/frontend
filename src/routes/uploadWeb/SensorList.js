@@ -121,7 +121,7 @@ export const SensorList = ({
                     <React.Fragment>
                       <tr style={tableVisibilityStyle(name)}>
                         <Td className="p-0" />
-                        <Td className="p-0" colspan="2">
+                        <Td className="p-0" colSpan="2">
                           <div className="d-flex align-items-center">
                             <small>
                               <b>Sample Rate:</b>
