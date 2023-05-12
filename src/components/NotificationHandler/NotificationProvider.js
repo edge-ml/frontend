@@ -53,11 +53,11 @@ export const NotificationProvider = ({ children }) => {
         .then((newStats) => {
           const newNotifications = prevNotifications.map((elm, i) => {
             const newStatus = newStats[i];
-            if (newStatus <= 100 && newStatus > elm.status) {
-              return { ...elm, status: newStatus };
-            } else {
-              return elm;
+            console.log(newStatus, elm.status);
+            if (newStatus > 100) {
+              return { ...elm, error: true, status: newStatus };
             }
+            return elm;
           });
           setActiveNotifications(newNotifications);
         })

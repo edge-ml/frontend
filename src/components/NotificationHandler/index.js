@@ -28,14 +28,16 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                 <Badge className="m-1">{elm.name}</Badge>
               ))}
             </div>
-            <div>Processed: {elm.status}%</div>
-            {elm.status !== 100 ? (
+            {elm.error ? <div>Error</div> : <div>Processed: {elm.status}</div>}
+            {elm.status < 100 ? (
               <Spinner></Spinner>
             ) : (
               <div>
-                <Button onClick={() => datasetDownloadfromId(elm.downloadId)}>
-                  Download
-                </Button>
+                {elm.error ? null : (
+                  <Button onClick={() => datasetDownloadfromId(elm.downloadId)}>
+                    Download
+                  </Button>
+                )}
                 <Button
                   onClick={() => removeNotification(elm.downloadId)}
                   color="secondary m-2"
