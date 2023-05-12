@@ -227,7 +227,6 @@ class TimeSeriesPanel extends Component {
       this.props
         .onTimeSeriesWindow(Math.round(min), Math.round(max), Math.round(width))
         .then((ts) => {
-          console.log(ts);
           chart.series[0].setData(ts, false, false);
           chart.xAxis[0].setExtremes(min, max, true, false);
           chart.hideLoading();

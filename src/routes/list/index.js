@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Container,
   Button,
@@ -8,7 +8,7 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import CreateNewDatasetModal from '../../components/CreateNewDatasetModal/CreateNewDatasetModal';
-
+import NotificationContext from '../../components/NotificationHandler/NotificationProvider';
 import Loader from '../../modules/loader';
 
 import './index.css';
@@ -17,89 +17,102 @@ import {
   getDatasets,
   deleteDatasets,
 } from '../../services/ApiServices/DatasetServices';
-import { downloadDatasets } from '../../services/DatasetService';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import { downloadAllAsZip } from '../../services/DatasetService';
 import DatasetTable from './DatasetTable';
 import DataUpload from './DataUpload';
 
-class ListPage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      modal: false,
-      datasets: undefined,
-      datasetsToDelete: [],
-      ready: false,
-      CreateNewDatasetToggle: false,
-      labelings: undefined,
-    };
-    this.toggleModal = this.toggleModal.bind(this);
-    this.deleteDatasets = this.deleteDatasets.bind(this);
-    this.onDatasetsChanged = this.onDatasetsChanged.bind(this);
-    this.toggleCheck = this.toggleCheck.bind(this);
-    this.openDeleteModal = this.openDeleteModal.bind(this);
-    this.toggleCreateNewDatasetModal =
-      this.toggleCreateNewDatasetModal.bind(this);
-    this.downloadAllDatasets = this.downloadAllDatasets.bind(this);
-    this.deleteEntry = this.deleteEntry.bind(this);
-    this.selectAllEmpty = this.selectAllEmpty.bind(this);
-    this.selectAll = this.selectAll.bind(this);
-    this.deselectAll = this.deselectAll.bind(this);
-  }
+const ListPage = (props) => {
+  const [modal, setModal] = useState(false);
+  const [datasets, setDatasets] = useState(undefined);
+  const [datasetsToDelete, setDatasetsToDelete] = useState([]);
+  const [ready, setReady] = useState(false);
+  const [isCreateNewDatasetOpen, setIsCreateNewDatasetOpen] = useState(false);
+  const [labelings, setLabelings] = useState(undefined);
 
-  componentDidMount() {
+  const { registerDownload } = useContext(NotificationContext);
+
+  const toggleModal = () => {
+    setModal(!modal);
+    setDatasetsToDelete(modal ? [] : datasetsToDelete);
+  };
+
+  const deleteDatasets = () => {
+    console.log('Delete datasets');
+    deleteDatasets(datasetsToDelete)
+      .then(() => {
+        setModal(false);
+        setDatasets(
+          datasets.filter(
+            (dataset) => !datasetsToDelete.includes(dataset['_id'])
+          )
+        );
+        setDatasetsToDelete([]);
+      })
+      .catch((err) => {
+        window.alert('Error deleting datasets');
+        setModal(false);
+      });
+  };
+
+  const deleteEntry = (datasetId) => {
+    setDatasetsToDelete([datasetId]);
+    openDeleteModal();
+  };
+
+  const toggleCreateNewDatasetModal = () => {
+    setIsCreateNewDatasetOpen(!isCreateNewDatasetOpen);
+  };
+
+  const openDeleteModal = () => {
+    if (datasetsToDelete.length > 0) {
+      toggleModal();
+    }
+  };
+
+  const selectAllEmpty = () => {
+    setDatasetsToDelete(
+      datasets
+        .filter((elm) => Math.max(elm.end - elm.start, 0) === 0)
+        .map((elm) => elm._id)
+    );
+  };
+
+  const selectAll = () => {
+    setDatasetsToDelete(datasets.map((elm) => elm._id));
+  };
+
+  const deselectAll = () => {
+    setDatasetsToDelete([]);
+  };
+
+  useEffect(() => {
     Promise.all([
       getDatasets(),
       subscribeLabelingsAndLabels().then((labelings) => {
-        this.setState({
-          labelings: labelings,
-        });
+        setLabelings(labelings);
       }),
-    ]).then(([datasets, _]) => {
-      this.onDatasetsChanged(datasets);
-    });
-  }
+    ])
+      .then(([datasets, _]) => {
+        onDatasetsChanged(datasets);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
-  async downloadAllDatasets() {
-    await downloadDatasets(this.state.datasets.map((elm) => elm._id));
-  }
-
-  selectAllEmpty() {
-    this.setState({
-      datasetsToDelete: this.state.datasets
-        .filter((elm) => Math.max(elm.end - elm.start, 0) === 0)
-        .map((elm) => elm._id),
-    });
-  }
-
-  selectAll() {
-    this.setState({
-      datasetsToDelete: this.state.datasets.map((elm) => elm._id),
-    });
-  }
-
-  deselectAll() {
-    this.setState({
-      datasetsToDelete: [],
-    });
-  }
-
-  async onDatasetsChanged(datasets) {
+  const onDatasetsChanged = async (datasets) => {
     const labelings = await subscribeLabelingsAndLabels();
     console.log(datasets);
     if (!datasets) return;
-    this.setState({
-      modalID: null,
-      labelings: labelings,
-      modal: false,
-      ready: true,
-      datasets: datasets,
-      isCreateNewDatasetOpen: false,
-    });
-  }
+    setDatasets(datasets);
+    setLabelings(labelings);
+    setModal(false);
+    setReady(true);
+    setIsCreateNewDatasetOpen(false);
+  };
 
-  toggleCheck(e, datasetId) {
+  const toggleCheck = (e, datasetId) => {
     const checked = this.state.datasetsToDelete.includes(datasetId);
     if (!checked) {
       if (!this.state.datasetsToDelete.includes(datasetId)) {
@@ -114,120 +127,71 @@ class ListPage extends Component {
         ),
       });
     }
+  };
+
+  const downloadAllDatasets = async () => {
+    registerDownload(datasets);
+  };
+
+  if (!ready) {
+    return <Loader loading={!ready} />;
   }
 
-  toggleCreateNewDatasetModal() {
-    this.setState({
-      isCreateNewDatasetOpen: !this.state.isCreateNewDatasetOpen,
-    });
-  }
+  return (
+    <div id="dataList">
+      <Container style={{ padding: 0 }}>
+        <DataUpload
+          toggleCreateNewDatasetModal={toggleCreateNewDatasetModal}
+        ></DataUpload>
+        <DatasetTable
+          datasets={datasets}
+          datasetsToDelete={datasetsToDelete}
+          openDeleteModal={openDeleteModal}
+          selectAllEmpty={selectAllEmpty}
+          downloadAllDatasets={downloadAllDatasets}
+          toggleCheck={toggleCheck}
+          labelings={labelings}
+          deleteEntry={deleteEntry}
+          selectAll={selectAll}
+          deselectAll={deselectAll}
+        ></DatasetTable>
+      </Container>
 
-  openDeleteModal() {
-    if (this.state.datasetsToDelete.length > 0) {
-      this.toggleModal();
-    }
-  }
-
-  toggleModal() {
-    this.setState({
-      modal: !this.state.modal,
-      datasetsToDelete: this.state.modal ? [] : this.state.datasetsToDelete,
-    });
-  }
-
-  deleteDatasets() {
-    console.log('Delete datasets');
-    deleteDatasets(this.state.datasetsToDelete)
-      .then(() => {
-        this.setState({
-          modal: false,
-          datasets: this.state.datasets.filter(
-            (dataset) => !this.state.datasetsToDelete.includes(dataset['_id'])
-          ),
-          datasetsToDelete: [],
-        });
-      })
-      .catch((err) => {
-        window.alert('Error deleting datasets');
-        this.setState({
-          modal: false,
-        });
-      });
-  }
-
-  deleteEntry(datasetId) {
-    this.setState(
-      {
-        datasetsToDelete: [datasetId],
-      },
-      () => this.openDeleteModal()
-    );
-  }
-
-  render() {
-    if (!this.state.ready) {
-      return <Loader loading={!this.state.ready}></Loader>;
-    }
-    return (
-      <div id="dataList">
-        <Container style={{ padding: 0 }}>
-          <DataUpload
-            toggleCreateNewDatasetModal={this.toggleCreateNewDatasetModal}
-          ></DataUpload>
-          <DatasetTable
-            datasets={this.state.datasets}
-            datasetsToDelete={this.state.datasetsToDelete}
-            openDeleteModal={this.openDeleteModal}
-            selectAllEmpty={this.selectAllEmpty}
-            downloadAllDatasets={this.downloadAllDatasets}
-            toggleCheck={this.toggleCheck}
-            labelings={this.state.labelings}
-            deleteEntry={this.deleteEntry}
-            selectAll={this.selectAll}
-            deselectAll={this.deselectAll}
-          ></DatasetTable>
-        </Container>
-
-        <Modal
-          isOpen={this.state.modal}
-          toggle={this.toggleModal}
-          className={this.props.className}
-        >
-          <ModalHeader toggle={this.toggleModal}>Delete Dataset</ModalHeader>
-          <ModalBody>
-            Are you sure to delete the following datasets?
-            {this.state.datasetsToDelete.map((id) => {
-              const dataset = this.state.datasets.find((elm) => elm._id === id);
-              return (
-                <React.Fragment key={id}>
-                  <br />
-                  <b>{dataset.name}</b>
-                </React.Fragment>
-              );
-            })}
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              id="deleteDatasetsButtonFinal"
-              outline
-              color="danger"
-              onClick={this.deleteDatasets}
-            >
-              Yes
-            </Button>{' '}
-            <Button outline color="secondary" onClick={this.toggleModal}>
-              No
-            </Button>
-          </ModalFooter>
-        </Modal>
-        <CreateNewDatasetModal
-          isOpen={this.state.isCreateNewDatasetOpen}
-          onCloseModal={this.toggleCreateNewDatasetModal}
-          onDatasetComplete={this.onDatasetsChanged}
-        />
-      </div>
-    );
-  }
-}
+      <Modal isOpen={modal} toggle={toggleModal} className={props.className}>
+        <ModalHeader toggle={toggleModal}>Delete Dataset</ModalHeader>
+        <ModalBody>
+          Are you sure to delete the following datasets?
+          {datasetsToDelete.map((id) => {
+            const dataset = datasets.find((elm) => elm._id === id);
+            return (
+              <React.Fragment key={id}>
+                <br />
+                <b>{dataset.name}</b>
+              </React.Fragment>
+            );
+          })}
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            id="deleteDatasetsButtonFinal"
+            outline
+            color="danger"
+            onClick={deleteDatasets}
+          >
+            Yes
+          </Button>{' '}
+          <Button outline color="secondary" onClick={toggleModal}>
+            No
+          </Button>
+        </ModalFooter>
+      </Modal>
+      <CreateNewDatasetModal
+        isOpen={isCreateNewDatasetOpen}
+        onCloseModal={toggleCreateNewDatasetModal}
+        onDatasetComplete={onDatasetsChanged}
+      />
+    </div>
+  );
+};
 
 export default ListPage;
