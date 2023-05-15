@@ -60,12 +60,25 @@ class GenerateCode extends Component {
             </InputGroup>
             <InputGroup>
               <InputGroupAddon addonType="prepend">
-                <InputGroupText>{'Key'}</InputGroupText>
+                <InputGroupText>{'Read Key'}</InputGroupText>
               </InputGroupAddon>
               <Input
                 value={
-                  this.props.deviceKey
-                    ? this.props.deviceKey
+                  this.props.readApiKey
+                    ? this.props.readApiKey
+                    : 'Device-API is disabled for your user'
+                }
+                readOnly
+              />
+            </InputGroup>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>{'Write Key'}</InputGroupText>
+              </InputGroupAddon>
+              <Input
+                value={
+                  this.props.writeApiKey
+                    ? this.props.writeApiKey
                     : 'Device-API is disabled for your user'
                 }
                 readOnly

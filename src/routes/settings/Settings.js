@@ -79,7 +79,8 @@ class Settings extends Component {
       this.state = {
         error: undefined,
         project: JSON.parse(JSON.stringify(props.project)),
-        deviceKey: undefined,
+        writeApiKey: undefined,
+        readApiKey: undefined,
         userSearchValue: '',
         codeSnippetModalOpen: props.codeSnippetModalOpen || false,
         alertText: undefined,
@@ -115,9 +116,9 @@ class Settings extends Component {
     this.init = this.init.bind(this);
     this.init();
     if (this.props.codeSnippetModalOpen) {
-      getDeviceApiKey.apply().then((key) => {
-        if (!key.deviceApiKey || !props.project.enableDeviceApi) {
-          if (!key.deviceApiKey) {
+      getDeviceApiKey().then((key) => {
+        if (!key.readApiKey || !props.project.enableDeviceApi) {
+          if (!key.readApiKey) {
             this.onEnableDeviceApi();
           }
           if (!props.project.enableDeviceApi) {
@@ -134,16 +135,19 @@ class Settings extends Component {
         ? window.location.origin
         : API_URI.replace('/api/', '');
     const apiKey = await getDeviceApiKey();
+    console.log(apiKey);
     this.setState({
-      deviceKey: apiKey.deviceApiKey,
+      writeApiKey: apiKey.writeApiKey,
+      readApiKey: apiKey.readApiKey,
       backendUrl: backendUrl,
     });
   }
 
   onEnableDeviceApi() {
-    setDeviceApiKey().then((data) => {
+    setDeviceApiKey().then((apiKey) => {
       this.setState({
-        deviceKey: data.deviceApiKey,
+        writeApiKey: apiKey.writeApiKey,
+        readApiKey: apiKey.readApiKey,
       });
     });
   }
@@ -151,7 +155,8 @@ class Settings extends Component {
   onDisableDeviceApi() {
     deleteDeviceApiKey().then((data) => {
       this.setState({
-        deviceKey: undefined,
+        writeApiKey: undefined,
+        readApiKey: undefined,
       });
     });
   }
@@ -341,7 +346,8 @@ class Settings extends Component {
             project={this.state.project}
             onProjectsChanged={this.props.onProjectsChanged}
             codeSnippetModalOpen={this.state.codeSnippetModalOpen}
-            deviceKey={this.state.deviceKey}
+            readApiKey={this.state.readApiKey}
+            writeApiKey={this.state.writeApiKey}
             onDeviceApiSwitch={this.onDeviceApiSwitch}
             onEnableDeviceApi={this.onEnableDeviceApi}
             onDisableDeviceApi={this.onDisableDeviceApi}
@@ -366,7 +372,6 @@ class Settings extends Component {
   }
 
   render() {
-    console.log(this.props);
     var changes = false;
     if (this.props.project && this.props.project.users) {
       var originalUsers = this.props.project.users.map((elm) => elm.userName);
@@ -386,12 +391,6 @@ class Settings extends Component {
     return (
       <Container className="my-5">
         <h2>{'Project Settings'}</h2>
-        {/*<Input
-          type="text"
-          className="form-control mt-3"
-          placeholder="Search..."
-          onChange={this.onChangeSearch}
-        ></Input>*/}
         {this.mapOptions()}
         <Prompt
           when={changes}
