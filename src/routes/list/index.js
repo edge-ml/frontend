@@ -34,7 +34,6 @@ const ListPage = (props) => {
 
   const toggleModal = () => {
     setModal(!modal);
-    setDatasetsToDelete(modal ? [] : datasetsToDelete);
   };
 
   const deleteSelectedDatasets = () => {
@@ -56,23 +55,20 @@ const ListPage = (props) => {
 
   const deleteEntry = (datasetId) => {
     setDatasetsToDelete([datasetId]);
-    openDeleteModal();
+    toggleModal();
   };
 
   const toggleCreateNewDatasetModal = () => {
     setIsCreateNewDatasetOpen(!isCreateNewDatasetOpen);
   };
 
-  const openDeleteModal = () => {
-    toggleModal();
-  };
-
   const selectAllEmpty = () => {
-    console.log(datasets);
     setDatasetsToDelete(
       datasets
         .filter((elm) =>
-          elm.timeSeries.map((x) => x.length).every((y) => y === 0)
+          elm.timeSeries
+            .map((x) => x.length)
+            .every((y) => y === 0 || y === null)
         )
         .map((elm) => elm._id)
     );
@@ -140,7 +136,7 @@ const ListPage = (props) => {
         <DatasetTable
           datasets={datasets}
           datasetsToDelete={datasetsToDelete}
-          openDeleteModal={openDeleteModal}
+          openDeleteModal={toggleModal}
           selectAllEmpty={selectAllEmpty}
           downloadAllDatasets={downloadAllDatasets}
           toggleCheck={toggleCheck}
