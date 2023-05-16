@@ -25,6 +25,11 @@ import Checkbox from '../../components/Common/Checkbox';
 import { hexToRgb } from '../../services/ColorService';
 
 const displayTime = (time) => {
+  const minTimestamp = -8640000000000000;
+  const maxTimestamp = 8640000000000000;
+  if (time < minTimestamp || time > maxTimestamp) {
+    return '-';
+  }
   const date = new Date(time);
   return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
 };
@@ -131,7 +136,9 @@ const DatasetInfo = (props) => {
   const datasetEnd = Math.min(...dataset.timeSeries.map((elm) => elm.end));
 
   const duration = Math.max(datasetEnd - datasetStart, 0) || 0;
-  const empty = dataset.length <= 0;
+  const empty = dataset.timeSeries
+    .map((elm) => elm.length)
+    .every((elm) => elm === 0);
   return (
     <div className="text-left d-inline-block m-2">
       <div className="font-weight-bold font-size-lg h5 d-inline">

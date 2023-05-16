@@ -37,17 +37,16 @@ const ListPage = (props) => {
     setDatasetsToDelete(modal ? [] : datasetsToDelete);
   };
 
-  const deleteDatasets = () => {
-    console.log('Delete datasets');
+  const deleteSelectedDatasets = () => {
     deleteDatasets(datasetsToDelete)
       .then(() => {
         setModal(false);
+        setDatasetsToDelete([]);
         setDatasets(
           datasets.filter(
             (dataset) => !datasetsToDelete.includes(dataset['_id'])
           )
         );
-        setDatasetsToDelete([]);
       })
       .catch((err) => {
         window.alert('Error deleting datasets');
@@ -65,15 +64,16 @@ const ListPage = (props) => {
   };
 
   const openDeleteModal = () => {
-    if (datasetsToDelete.length > 0) {
-      toggleModal();
-    }
+    toggleModal();
   };
 
   const selectAllEmpty = () => {
+    console.log(datasets);
     setDatasetsToDelete(
       datasets
-        .filter((elm) => Math.max(elm.end - elm.start, 0) === 0)
+        .filter((elm) =>
+          elm.timeSeries.map((x) => x.length).every((y) => y === 0)
+        )
         .map((elm) => elm._id)
     );
   };
@@ -113,19 +113,13 @@ const ListPage = (props) => {
   };
 
   const toggleCheck = (e, datasetId) => {
-    const checked = this.state.datasetsToDelete.includes(datasetId);
+    const checked = datasetsToDelete.includes(datasetId);
     if (!checked) {
-      if (!this.state.datasetsToDelete.includes(datasetId)) {
-        this.setState({
-          datasetsToDelete: [...this.state.datasetsToDelete, datasetId],
-        });
+      if (!datasetsToDelete.includes(datasetId)) {
+        setDatasetsToDelete([...datasetsToDelete, datasetId]);
       }
     } else {
-      this.setState({
-        datasetsToDelete: this.state.datasetsToDelete.filter(
-          (id) => id !== datasetId
-        ),
-      });
+      setDatasetsToDelete(datasetsToDelete.filter((id) => id !== datasetId));
     }
   };
 
@@ -161,8 +155,12 @@ const ListPage = (props) => {
         <ModalHeader toggle={toggleModal}>Delete Dataset</ModalHeader>
         <ModalBody>
           Are you sure to delete the following datasets?
+          {console.log(datasetsToDelete)}
           {datasetsToDelete.map((id) => {
             const dataset = datasets.find((elm) => elm._id === id);
+            if (!dataset) {
+              return;
+            }
             return (
               <React.Fragment key={id}>
                 <br />
@@ -176,7 +174,7 @@ const ListPage = (props) => {
             id="deleteDatasetsButtonFinal"
             outline
             color="danger"
-            onClick={deleteDatasets}
+            onClick={deleteSelectedDatasets}
           >
             Yes
           </Button>{' '}
