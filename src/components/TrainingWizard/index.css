@@ -1,5 +1,5 @@
 .training-wizard-body {
-  min-height: 30vh;
+  min-height: max(15vh, 200px);
   max-height: calc(100vh - 200px);
   overflow: auto;
 }

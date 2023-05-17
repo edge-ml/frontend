@@ -35,7 +35,11 @@ const Select_Windowing = ({
 
   return (
     <Fragment>
-      <h3>Select windowing</h3>
+      <div className="w-100 d-flex justify-content-between align-items-center mb-2">
+        <div className="font-weight-bold h4 justify-self-start">
+          4. Select Windowing
+        </div>
+      </div>
       <Dropdown
         isOpen={dropDownOpen}
         toggle={() => setDropDownOpen(!dropDownOpen)}

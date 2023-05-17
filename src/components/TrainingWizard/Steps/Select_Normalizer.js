@@ -24,7 +24,11 @@ const Select_Normalizer = ({
   }
   return (
     <Fragment>
-      <h3>Select normalization</h3>
+      <div className="w-100 d-flex justify-content-between align-items-center mb-2">
+        <div className="font-weight-bold h4 justify-self-start">
+          6. Select Normalization
+        </div>
+      </div>
       <Dropdown
         isOpen={dropDownOpen}
         toggle={() => setDropDownOpen(!dropDownOpen)}
