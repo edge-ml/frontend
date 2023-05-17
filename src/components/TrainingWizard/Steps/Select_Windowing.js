@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import {
   ModalBody,
   Button,
@@ -34,37 +34,34 @@ const Select_Windowing = ({
   };
 
   return (
-    <div>
-      <ModalBody>
-        <h3>Select windowing</h3>
-        <Dropdown
-          isOpen={dropDownOpen}
-          toggle={() => setDropDownOpen(!dropDownOpen)}
-        >
-          <DropdownToggle caret size="lg">
-            {windowers[window_index].name}
-          </DropdownToggle>
-          <DropdownMenu>
-            {windowers.map((n, idx) => (
-              <DropdownItem
-                onClick={() => {
-                  set_window_index(idx);
-                  setSelectedWindower(windowers[idx]);
-                }}
-              >
-                {n.name}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
-        <HyperparameterView
-          handleHyperparameterChange={onParameterChanged}
-          isAdvanced={false}
-          hyperparameters={windowers[window_index].parameters}
-        ></HyperparameterView>
-      </ModalBody>
-      {footer}
-    </div>
+    <Fragment>
+      <h3>Select windowing</h3>
+      <Dropdown
+        isOpen={dropDownOpen}
+        toggle={() => setDropDownOpen(!dropDownOpen)}
+      >
+        <DropdownToggle caret size="lg">
+          {windowers[window_index].name}
+        </DropdownToggle>
+        <DropdownMenu>
+          {windowers.map((n, idx) => (
+            <DropdownItem
+              onClick={() => {
+                set_window_index(idx);
+                setSelectedWindower(windowers[idx]);
+              }}
+            >
+              {n.name}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+      <HyperparameterView
+        handleHyperparameterChange={onParameterChanged}
+        isAdvanced={false}
+        hyperparameters={windowers[window_index].parameters}
+      ></HyperparameterView>
+    </Fragment>
   );
 };
 

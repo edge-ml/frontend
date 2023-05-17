@@ -1,7 +1,7 @@
-import { Modal, ModalHeader, ModalFooter, Button } from 'reactstrap';
+import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from 'reactstrap';
 import Wizard_SelectLabeling from './Steps/Select_Labeling';
 import './index.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import Wizard_SelectDataset from './Steps/Select_Datasets';
 import Wizard_Hyperparameters from './Steps/Select_Hyperparameters';
 import { getDatasets } from '../../services/ApiServices/DatasetServices';
@@ -16,11 +16,16 @@ import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
 export const WizardFooter = ({ onNext, onBack, onTrain, step, maxSteps }) => {
   return (
     <ModalFooter className="fotter">
-      <Button onClick={onBack}>Back</Button>
+      <Button color="secondary" onClick={onBack}>
+        Back
+      </Button>
       <div>
         {step + 1}/{maxSteps}
       </div>
-      <Button onClick={step + 1 === maxSteps ? onTrain : onNext}>
+      <Button
+        color="primary"
+        onClick={step + 1 === maxSteps ? onTrain : onNext}
+      >
         {step + 1 === maxSteps ? 'Train' : 'Next'}
       </Button>
     </ModalFooter>
@@ -165,20 +170,18 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     );
   };
 
-  const rendered_screens = screens.map((screen, idx) =>
-    screen({
-      ...props,
-      footer: (
-        <WizardFooter
-          step={idx}
-          maxSteps={screens.length}
-          onNext={onNext}
-          onBack={onBack}
-          onTrain={onTrain}
-        ></WizardFooter>
-      ),
-    })
-  );
+  const rendered_screens = screens.map((screen, idx) => (
+    <Fragment>
+      <ModalBody>{screen({ ...props })}</ModalBody>
+      <WizardFooter
+        step={idx}
+        maxSteps={screens.length}
+        onNext={onNext}
+        onBack={onBack}
+        onTrain={onTrain}
+      />
+    </Fragment>
+  ));
 
   return (
     <Modal isOpen={true} size="xl">

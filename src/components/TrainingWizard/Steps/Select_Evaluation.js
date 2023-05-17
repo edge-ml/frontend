@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import {
   ModalBody,
   Row,
@@ -46,33 +46,30 @@ const SelectEvaluation = ({
   }
 
   return (
-    <div>
-      <ModalBody>
-        <h3>Select an evaluation strategy</h3>
-        <Dropdown
-          isOpen={dropDownOpen}
-          toggle={() => setDropDownOpen(!dropDownOpen)}
-        >
-          <DropdownToggle caret size="lg">
-            {evaluation[selectedEvaluation].name}
-          </DropdownToggle>
-          <DropdownMenu>
-            {evaluation.map((evl, idx) => (
-              <DropdownItem onClick={() => setSelectedEvaluation(idx)}>
-                {evl.name}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
-        {evaluation[0] ? (
-          <HyperparameterView
-            handleHyperparameterChange={handleHyperparameterChange}
-            hyperparameters={evaluation[selectedEvaluation].parameters}
-          ></HyperparameterView>
-        ) : null}
-      </ModalBody>
-      {footer}
-    </div>
+    <Fragment>
+      <h3>Select an evaluation strategy</h3>
+      <Dropdown
+        isOpen={dropDownOpen}
+        toggle={() => setDropDownOpen(!dropDownOpen)}
+      >
+        <DropdownToggle caret size="lg">
+          {evaluation[selectedEvaluation].name}
+        </DropdownToggle>
+        <DropdownMenu>
+          {evaluation.map((evl, idx) => (
+            <DropdownItem onClick={() => setSelectedEvaluation(idx)}>
+              {evl.name}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+      {evaluation[0] ? (
+        <HyperparameterView
+          handleHyperparameterChange={handleHyperparameterChange}
+          hyperparameters={evaluation[selectedEvaluation].parameters}
+        ></HyperparameterView>
+      ) : null}
+    </Fragment>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import {
   ModalBody,
   Button,
@@ -23,32 +23,29 @@ const Select_Normalizer = ({
     return;
   }
   return (
-    <div>
-      <ModalBody>
-        <h3>Select normalization</h3>
-        <Dropdown
-          isOpen={dropDownOpen}
-          toggle={() => setDropDownOpen(!dropDownOpen)}
-        >
-          <DropdownToggle caret size="lg">
-            {normalizer[selectedNormalizer].name}
-          </DropdownToggle>
-          <DropdownMenu>
-            {normalizer.map((n, idx) => (
-              <DropdownItem
-                onClick={() => {
-                  setSelectedNormalizer(idx);
-                  setNormalizer(normalizer[idx]);
-                }}
-              >
-                {n.name}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
-      </ModalBody>
-      {footer}
-    </div>
+    <Fragment>
+      <h3>Select normalization</h3>
+      <Dropdown
+        isOpen={dropDownOpen}
+        toggle={() => setDropDownOpen(!dropDownOpen)}
+      >
+        <DropdownToggle caret size="lg">
+          {normalizer[selectedNormalizer].name}
+        </DropdownToggle>
+        <DropdownMenu>
+          {normalizer.map((n, idx) => (
+            <DropdownItem
+              onClick={() => {
+                setSelectedNormalizer(idx);
+                setNormalizer(normalizer[idx]);
+              }}
+            >
+              {n.name}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+    </Fragment>
   );
 };
 

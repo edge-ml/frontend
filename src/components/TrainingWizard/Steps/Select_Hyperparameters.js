@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import {
   Dropdown,
   DropdownItem,
@@ -45,69 +45,64 @@ const Wizard_Hyperparameters = ({
   }
 
   return (
-    <div>
-      <ModalBody>
-        <div>
-          <h3>3. Select Classifier</h3>
-          <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-            <DropdownToggle caret size="lg">
-              {classifier[classififier_index].name}
-            </DropdownToggle>
-            <DropdownMenu>
-              {classifier.map((cls, idx) => (
-                <DropdownItem
-                  onClick={() => {
-                    setSelectedClassifier(classifier[classififier_index]);
-                    set_classifier_index(idx);
-                  }}
-                >
-                  {cls.name}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-          <div>
-            <h4>Basic hyperparameters</h4>
-            <HyperparameterView
-              handleHyperparameterChange={handleHyperparameterChange}
-              model={classifier[classififier_index]}
-              isAdvanced={false}
-              hyperparameters={classifier[classififier_index].parameters}
-            ></HyperparameterView>
-            <div className="advancedHeading">
-              <h4>Advanced hyperparameters</h4>
-              <div
-                className="buttonShowAdvancedHyperparameters"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-              >
-                {showAdvanced ? (
-                  <FontAwesomeIcon
-                    className="faIconAdvancedHyperparameters"
-                    size="lg"
-                    icon={faCaretDown}
-                  />
-                ) : (
-                  <FontAwesomeIcon
-                    className="faIconAdvancedHyperparameters"
-                    size="lg"
-                    icon={faCaretRight}
-                  />
-                )}
-              </div>
-            </div>
-            <Collapse isOpen={showAdvanced}>
-              {console.log('show advanced')}
-              <HyperparameterView
-                handleHyperparameterChange={handleHyperparameterChange}
-                hyperparameters={classifier[classififier_index].parameters}
-                isAdvanced={true}
-              ></HyperparameterView>
-            </Collapse>
+    <Fragment>
+      <h3>3. Select Classifier</h3>
+      <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+        <DropdownToggle caret size="lg">
+          {classifier[classififier_index].name}
+        </DropdownToggle>
+        <DropdownMenu>
+          {classifier.map((cls, idx) => (
+            <DropdownItem
+              onClick={() => {
+                setSelectedClassifier(classifier[classififier_index]);
+                set_classifier_index(idx);
+              }}
+            >
+              {cls.name}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+      <div>
+        <h4>Basic hyperparameters</h4>
+        <HyperparameterView
+          handleHyperparameterChange={handleHyperparameterChange}
+          model={classifier[classififier_index]}
+          isAdvanced={false}
+          hyperparameters={classifier[classififier_index].parameters}
+        ></HyperparameterView>
+        <div className="advancedHeading">
+          <h4>Advanced hyperparameters</h4>
+          <div
+            className="buttonShowAdvancedHyperparameters"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+          >
+            {showAdvanced ? (
+              <FontAwesomeIcon
+                className="faIconAdvancedHyperparameters"
+                size="lg"
+                icon={faCaretDown}
+              />
+            ) : (
+              <FontAwesomeIcon
+                className="faIconAdvancedHyperparameters"
+                size="lg"
+                icon={faCaretRight}
+              />
+            )}
           </div>
         </div>
-      </ModalBody>
-      {footer}
-    </div>
+        <Collapse isOpen={showAdvanced}>
+          {console.log('show advanced')}
+          <HyperparameterView
+            handleHyperparameterChange={handleHyperparameterChange}
+            hyperparameters={classifier[classififier_index].parameters}
+            isAdvanced={true}
+          ></HyperparameterView>
+        </Collapse>
+      </div>
+    </Fragment>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import {
   ModalBody,
   Button,
@@ -24,32 +24,29 @@ const Select_FeatureExtractor = ({
   }
 
   return (
-    <div>
-      <ModalBody>
-        <h3>Select feature extraction</h3>
-        <Dropdown
-          isOpen={dropDownOpen}
-          toggle={() => setDropDownOpen(!dropDownOpen)}
-        >
-          <DropdownToggle caret size="lg">
-            {featureExtractors[featureExtractor_index].name}
-          </DropdownToggle>
-          <DropdownMenu>
-            {featureExtractors.map((n, idx) => (
-              <DropdownItem
-                onClick={() => {
-                  setFeatureExtractor_index(idx);
-                  setFeatureExtractor(featureExtractors[idx]);
-                }}
-              >
-                {n.name}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
-      </ModalBody>
-      {footer}
-    </div>
+    <Fragment>
+      <h3>Select feature extraction</h3>
+      <Dropdown
+        isOpen={dropDownOpen}
+        toggle={() => setDropDownOpen(!dropDownOpen)}
+      >
+        <DropdownToggle caret size="lg">
+          {featureExtractors[featureExtractor_index].name}
+        </DropdownToggle>
+        <DropdownMenu>
+          {featureExtractors.map((n, idx) => (
+            <DropdownItem
+              onClick={() => {
+                setFeatureExtractor_index(idx);
+                setFeatureExtractor(featureExtractors[idx]);
+              }}
+            >
+              {n.name}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+    </Fragment>
   );
 };
 
