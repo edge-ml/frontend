@@ -13,12 +13,24 @@ import Select_Windowing from './Steps/Select_Windowing';
 import Select_Name from './Steps/Select_Name';
 import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
 
-export const WizardFooter = ({ onNext, onBack, onTrain, step, maxSteps }) => {
+export const WizardFooter = ({
+  onNext,
+  onBack,
+  onClose,
+  onTrain,
+  step,
+  maxSteps,
+}) => {
   return (
     <ModalFooter className="fotter">
-      <Button color="secondary" onClick={onBack}>
-        Back
-      </Button>
+      <div>
+        <Button color="secondary" onClick={onClose} className="mr-2">
+          Cancel
+        </Button>
+        <Button color="secondary" onClick={onBack}>
+          Back
+        </Button>
+      </div>
       <div>
         {step + 1}/{maxSteps}
       </div>
@@ -178,6 +190,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
         maxSteps={screens.length}
         onNext={onNext}
         onBack={onBack}
+        onClose={onClose}
         onTrain={onTrain}
       />
     </Fragment>
