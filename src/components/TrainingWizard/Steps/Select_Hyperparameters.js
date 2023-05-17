@@ -44,9 +44,20 @@ const Wizard_Hyperparameters = ({
     return null;
   }
 
+  const advancedCnt = classifier[classififier_index].parameters.filter(
+    (p) => p.is_advanced
+  ).length;
+  const basicCnt = classifier[classififier_index].parameters.filter(
+    (p) => !p.is_advanced
+  ).length;
+
   return (
     <Fragment>
-      <h3>3. Select Classifier</h3>
+      <div className="w-100 d-flex justify-content-between align-items-center mb-2">
+        <div className="font-weight-bold h4 justify-self-start">
+          3. Select Classifier
+        </div>
+      </div>
       <Dropdown isOpen={dropdownOpen} toggle={toggle}>
         <DropdownToggle caret size="lg">
           {classifier[classififier_index].name}
@@ -65,42 +76,61 @@ const Wizard_Hyperparameters = ({
         </DropdownMenu>
       </Dropdown>
       <div>
-        <h4>Basic hyperparameters</h4>
-        <HyperparameterView
-          handleHyperparameterChange={handleHyperparameterChange}
-          model={classifier[classififier_index]}
-          isAdvanced={false}
-          hyperparameters={classifier[classififier_index].parameters}
-        ></HyperparameterView>
-        <div className="advancedHeading">
-          <h4>Advanced hyperparameters</h4>
-          <div
-            className="buttonShowAdvancedHyperparameters"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-          >
-            {showAdvanced ? (
-              <FontAwesomeIcon
-                className="faIconAdvancedHyperparameters"
-                size="lg"
-                icon={faCaretDown}
-              />
-            ) : (
-              <FontAwesomeIcon
-                className="faIconAdvancedHyperparameters"
-                size="lg"
-                icon={faCaretRight}
-              />
-            )}
+        <div className="w-100 align-items-center mb-2">
+          <div className="font-weight-bold h5 justify-self-start">
+            Hyperparameters
           </div>
         </div>
-        <Collapse isOpen={showAdvanced}>
-          {console.log('show advanced')}
+        {basicCnt > 0 ? (
           <HyperparameterView
             handleHyperparameterChange={handleHyperparameterChange}
+            model={classifier[classififier_index]}
+            isAdvanced={false}
             hyperparameters={classifier[classififier_index].parameters}
-            isAdvanced={true}
           ></HyperparameterView>
-        </Collapse>
+        ) : (
+          <div className="mb-3">
+            {advancedCnt > 0
+              ? 'No basic hyperparameters. You can find advanced hyperparameters in the following section.'
+              : 'No hyperparameters'}
+          </div>
+        )}
+        {advancedCnt > 0 ? (
+          <Fragment>
+            <div className="advancedHeading">
+              <div className="w-100 align-items-center mb-2">
+                <div className="font-weight-bold h5 justify-self-start">
+                  Advanced Hyperparameters
+                </div>
+                <div
+                  className="buttonShowAdvancedHyperparameters"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                >
+                  {showAdvanced ? (
+                    <FontAwesomeIcon
+                      className="faIconAdvancedHyperparameters"
+                      size="lg"
+                      icon={faCaretDown}
+                    />
+                  ) : (
+                    <FontAwesomeIcon
+                      className="faIconAdvancedHyperparameters"
+                      size="lg"
+                      icon={faCaretRight}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+            <Collapse isOpen={showAdvanced}>
+              <HyperparameterView
+                handleHyperparameterChange={handleHyperparameterChange}
+                hyperparameters={classifier[classififier_index].parameters}
+                isAdvanced={true}
+              ></HyperparameterView>
+            </Collapse>
+          </Fragment>
+        ) : null}
       </div>
     </Fragment>
   );

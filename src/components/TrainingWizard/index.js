@@ -184,7 +184,9 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
 
   const rendered_screens = screens.map((screen, idx) => (
     <Fragment>
-      <ModalBody>{screen({ ...props })}</ModalBody>
+      <div className="training-wizard-body">
+        <ModalBody>{screen({ ...props })}</ModalBody>
+      </div>
       <WizardFooter
         step={idx}
         maxSteps={screens.length}

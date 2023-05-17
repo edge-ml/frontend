@@ -8,6 +8,7 @@ const NumberHyperparameter = (props) => {
     <Hyperparameter {...props}>
       <InputGroupAddon className="w-100" addonType="append">
         <Input
+          style={{ minHeight: '38px' }}
           type="number"
           value={props.value}
           defaultValue={props.value}

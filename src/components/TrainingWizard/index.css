@@ -1,3 +1,14 @@
+.training-wizard-body {
+  min-height: 30vh;
+  max-height: calc(100vh - 200px);
+  overflow: auto;
+}
+
+.training-inner-flow {
+  max-height: 40vh;
+  overflow: auto;
+}
+
 .fotter {
   display: flex;
   justify-content: space-between;
