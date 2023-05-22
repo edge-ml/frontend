@@ -5,7 +5,6 @@ import ListPage from './routes/list/index';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labeling/labelings';
 import ExperimentsPage from './routes/experiments';
-import ProjectSettings from './routes/projectSettings';
 import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
 import ModelPage from './routes/model';
 import ValidationPage from './routes/validation';
@@ -13,6 +12,7 @@ import ExportPage from './routes/export';
 import UploadBLE from './routes/uploadBLE';
 import { UploadWebPage } from './routes/uploadWeb';
 import UnderConstruction from './components/UnderConstruction';
+import Settings from './routes/settings/Settings';
 
 class AppContent extends Component {
   constructor(props) {
@@ -78,7 +78,7 @@ class AppContent extends Component {
         /> */}
         <Route
           exact
-          path={this.props.match.path + '/validation'}
+          path={this.props.match.path + '/models'}
           render={(props) => (
             <ProjectRefresh project={this.props.project}>
               <ValidationPage {...props}></ValidationPage>
@@ -86,7 +86,7 @@ class AppContent extends Component {
             // <UnderConstruction></UnderConstruction>
           )}
         />
-        <Route
+        {/* <Route
           exact
           path={this.props.match.path + '/deploy'}
           render={(props) => (
@@ -95,13 +95,13 @@ class AppContent extends Component {
             // </ProjectRefresh>
             <UnderConstruction></UnderConstruction>
           )}
-        />
+        /> */}
         <Route
           exact
           path={this.props.match.path + '/settings'}
           render={(props) => (
             <ProjectRefresh project={this.props.project}>
-              <ProjectSettings
+              <Settings
                 onProjectsChanged={this.props.onProjectsChanged}
                 userName={this.props.userName}
                 onDeleteProject={this.props.onDeleteProject}
@@ -117,7 +117,7 @@ class AppContent extends Component {
           path={this.props.match.path + '/settings/getCode'}
           render={(props) => (
             <ProjectRefresh project={this.props.project}>
-              <ProjectSettings
+              <Settings
                 onProjectsChanged={this.props.onProjectsChanged}
                 codeSnippetModalOpen={true}
                 userName={this.props.userName}

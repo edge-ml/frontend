@@ -178,41 +178,61 @@ class TimeSeriesPanel extends Component {
     this.chart.current.chart.renderTo.parentNode.appendChild(rightButton);*/
   }
 
-  updateData = debounce((chart, min, max, width, offset) => {
-    if (this.props.onTimeSeriesWindow) {
-      // FIXME: this doesn't really work with fusedSeries, ignore them for now
+  // updateData = debounce((chart, min, max, width, offset) => {
+  //   if (this.props.onTimeSeriesWindow) {
+  //     // FIXME: this doesn't really work with fusedSeries, ignore them for now
 
-      chart.showLoading('Loading data from server...');
-      this.props
-        .onTimeSeriesWindow(Math.round(min), Math.round(max), Math.round(width))
-        .then((timeserie) => {
-          // FIXME: offset/series[0] cause problem with fusedSeries, ignore for now
-          chart.series[0].setData(timeserie, true, false);
-          chart.hideLoading();
-        });
-    }
-  }, 200);
+  //     chart.showLoading('Loading data from server...');
+  //     this.props
+  //       .onTimeSeriesWindow(Math.round(min), Math.round(max), Math.round(width))
+  //       .then((timeserie) => {
+  //         // FIXME: offset/series[0] cause problem with fusedSeries, ignore for now
+  //         chart.series[0].setData(timeserie, true, false);
+  //         chart.hideLoading();
+  //       });
+  //   }
+  // }, 200);
 
   afterSetExtremesFunc(min, max, width) {
-    Highcharts.charts.forEach((chart) => {
-      if (chart && this.props.index === 0) {
-        chart.showLoading('Loading data from server...');
-        this.props
-          .onTimeSeriesWindow(
-            Math.round(min),
-            Math.round(max),
-            Math.round(width)
-          )
-          .then((ts) => {
-            if (chart.index !== 0) {
-              chart.series[0].setData(ts, false, false);
-            }
-            chart.xAxis[0].setExtremes(min, max, false, false);
-            chart.hideLoading();
-            chart.redraw(false);
-          });
+    // var idx = 0;
+    // Highcharts.charts.forEach((chart) => {
+    //   if (chart && this.props.index === 0) {
+    //     chart.showLoading('Loading data from server...');
+    //     this.props
+    //       .onTimeSeriesWindow(
+    //         Math.round(min),
+    //         Math.round(max),
+    //         Math.round(width)
+    //       )
+    //       .then((ts) => {
+    //         if (chart.index !== 0) {
+    //           console.log(ts)
+    //           console.log(idx)
+    //           console.log(ts[idx]);
+    //           chart.series[0].setData(ts[idx], false, false);
+    //           idx += 1;
+    //         }
+    //         chart.xAxis[0].setExtremes(min, max, false, false);
+    //         chart.hideLoading();
+    //         chart.redraw(false);
+    //       });
+    //   }
+    // });
+    console.log(this.chart && this.chart.current && this.chart.current.chart);
+    if (this.chart && this.chart.current && this.chart.current.chart) {
+      const chart = this.chart.current.chart;
+      if (this.props.index !== 0) {
+        chart.showLoading('Loading from server...');
       }
-    });
+      this.props
+        .onTimeSeriesWindow(Math.round(min), Math.round(max), Math.round(width))
+        .then((ts) => {
+          chart.series[0].setData(ts, false, false);
+          chart.xAxis[0].setExtremes(min, max, true, false);
+          chart.hideLoading();
+          chart.redraw(true);
+        });
+    }
   }
 
   generateState(props) {
@@ -330,35 +350,8 @@ class TimeSeriesPanel extends Component {
               });
             },
           },
-          // events: {
-          //   afterSetExtremes: (e) => {
-          //     if (
-          //       this.chart.current.chart &&
-          //       Highcharts.charts &&
-          //       this.props.index === 0
-          //     ) {
-          //       if (this.props.index === 0) {
-          //         Highcharts.charts
-          //           .filter((chart) => {
-          //             return chart;
-          //           })
-          //           .forEach((chart) => {
-          //             if (chart.index !== this.chart.current.chart.index) {
-          //               chart.xAxis[0].setExtremes(e.min, e.max, true, false);
-          //             }
-
-          //           });
-          //       }
-          //     }
-          //     if (this.props.index !== 0) {
-          //       const { chart, width } = e.target;
-          //       const { min, max } = e;
-          //       this.updateData(chart, min, max, width, props.offset);
-          //     }
-          //     return false;
-          //   },
-          // },
         },
+        height: '200px',
         yAxis: {
           height: this.props.index === 0 ? 0 : undefined,
           gridLineWidth: this.props.index === 0 ? 0 : 1,
@@ -961,9 +954,10 @@ class TimeSeriesPanel extends Component {
           <HighchartsReact
             ref={this.chart}
             highcharts={Highcharts}
-            options={this.state.chartOptions}
+            options={this.generateState(this.props).chartOptions}
             oneToOne={true}
             constructorType={'stockChart'}
+            containerProps={{ style: { height: '100%' } }}
           />
         </div>
       </div>

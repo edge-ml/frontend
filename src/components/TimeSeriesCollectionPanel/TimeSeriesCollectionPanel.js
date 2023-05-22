@@ -24,10 +24,10 @@ class TimeSeriesCollectionPanel extends Component {
       activeSeries: props.activeSeries,
     };
 
-    this.sortedPreviewTimeSeries = props.previewTimeSeriesData
-      .flat()
-      .sort((elmA, elmB) => elmA[0] - elmB[0])
-      .filter((e, i, a) => e[0] !== (a[i - 1] ? a[i - 1][0] : undefined));
+    // this.sortedPreviewTimeSeries = props.previewTimeSeriesData
+    //   .flat()
+    //   .sort((elmA, elmB) => elmA[0] - elmB[0])
+    //   .filter((e, i, a) => e[0] !== (a[i - 1] ? a[i - 1][0] : undefined));
 
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
 
@@ -89,18 +89,13 @@ class TimeSeriesCollectionPanel extends Component {
   };
 
   getIndexData = () => {
-    const idx = this.props.activeSeries.map((id) =>
-      this.state.timeSeries.findIndex((elm) => elm._id === id)
-    );
-    const res = idx
-      .map((id) => this.state.previewTimeSeriesData[id])
-      .flat()
-      .sort((elmA, elmB) => elmA[0] - elmB[0])
-      .filter((e, i, a) => e[0] !== (a[i - 1] ? a[i - 1][0] : undefined));
-    console.log(res[0]);
-    return res;
+    const N = 1000;
+    const start = this.props.datasetStart;
+    const end = this.props.datasetEnd;
+    const step = (end - start) / (N - 1);
+    const arr = Array.from({ length: N }, (_, i) => [start + i * step, -1]);
+    return arr;
   };
-
   render() {
     return (
       <div className="TimeSeriesCollectionPanel">
@@ -166,18 +161,17 @@ class TimeSeriesCollectionPanel extends Component {
             }
           />
         ) : null}
-        {this.state.activeSeries.map((elm) => {
-          const key = this.state.timeSeries.findIndex((ts) => ts._id === elm);
-          const timeSeries = this.state.timeSeries[key];
+        {this.state.activeSeries.map((elm, key) => {
+          const timeSeries = this.state.timeSeries.find((ts) => ts._id === elm);
           return (
             <TimeSeriesPanel
               key={key}
               index={key + 1}
               offset={timeSeries.offset}
               data={
-                this.lastWindow
-                  ? this.lastWindow[key]
-                  : this.state.previewTimeSeriesData[key]
+                this.state.previewTimeSeriesData
+                  ? this.state.previewTimeSeriesData[key]
+                  : []
               }
               samplingRate={
                 timeSeries.samplingRate ? timeSeries.samplingRate : 1

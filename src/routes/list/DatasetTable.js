@@ -48,6 +48,7 @@ const DatasetTable = (props) => {
                   className="ml-3 btn-delete"
                   id="deleteDatasetsButton"
                   size="sm"
+                  disabled={props.datasetsToDelete.length === 0}
                   color="secondary"
                   onClick={props.openDeleteModal}
                 >

@@ -19,6 +19,7 @@ import {
   getDatasetTimeseries,
   getDatasetLock,
   getDatasetMeta,
+  getTimeSeriesDataPartial,
 } from '../services/ApiServices/DatasetServices';
 
 import {
@@ -66,7 +67,7 @@ class DatasetPage extends Component {
       metaDataExtended: false,
     };
 
-    this.memoizedGetDatasetTimeseries = pmemoize(getDatasetTimeseries, {
+    this.memoizedGetDatasetTimeseries = pmemoize(getTimeSeriesDataPartial, {
       resolve: 'json',
       maxAge: TIMESERIES_CACHE_MAX_AGE,
     });
@@ -119,11 +120,18 @@ class DatasetPage extends Component {
     const newStart = Math.min(...ts.map((elm) => elm.start));
     const newEnd = Math.max(...ts.map((elm) => elm.end));
 
-    this.setState({
-      activeSeries: series,
-      shownStart: newStart,
-      shownEnd: newEnd,
+    this.memoizedGetDatasetTimeseries(this.props.match.params.id, series, {
+      max_resolution: window.innerWidth / 2,
+    }).then((tsData) => {
+      console.log(tsData);
+      this.setState({
+        previewTimeSeriesData: tsData,
+        activeSeries: series,
+        shownStart: newStart,
+        shownEnd: newEnd,
+      });
     });
+
     Highcharts.charts.forEach((chart) => {
       if (chart) {
         chart.xAxis[0].setExtremes(newStart, newEnd, true, false);
@@ -197,16 +205,34 @@ class DatasetPage extends Component {
     return dataset;
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
-    this.loadData().then((data) => this.onDatasetChanged(data));
+    // this.loadData().then((data) => this.onDatasetChanged(data));
 
-    // get a downsampled preview for the timeseries, used for the initial graph + scrollbar
-    // half the window width seems like a good compromise for resolution
-    this.memoizedGetDatasetTimeseries(this.props.match.params.id, {
-      max_resolution: window.innerWidth / 2,
-    }).then((timeseriesData) => {
+    var activeSeries = [];
+    const dataset = await getDatasetMeta(this.props.match.params.id);
+    const dataset_end = Math.max(...dataset.timeSeries.map((elm) => elm.end));
+    const dataset_start = Math.min(
+      ...dataset.timeSeries.map((elm) => elm.start)
+    );
+    dataset.end = dataset_end;
+    dataset.start = dataset_start;
+    if (dataset.timeSeries.length < 6) {
+      activeSeries = dataset.timeSeries.map((elm) => elm._id);
+      this.setState({
+        activeSeries: activeSeries,
+      });
+    }
+    this.onDatasetChanged(dataset);
+
+    this.memoizedGetDatasetTimeseries(
+      this.props.match.params.id,
+      activeSeries,
+      {
+        max_resolution: window.innerWidth / 2,
+      }
+    ).then((timeseriesData) => {
       if (this.state.previewTimeSeriesData) {
         return;
       }
@@ -217,14 +243,17 @@ class DatasetPage extends Component {
   }
 
   async getDatasetWindow(start, end, max_resolution) {
+    console.log(start, end, max_resolution);
     const res = await this.memoizedGetDatasetTimeseries(
       this.props.match.params.id,
+      this.state.activeSeries,
       {
         max_resolution,
         start,
         end,
       }
     );
+    console.log(res);
     return res;
   }
 
@@ -796,8 +825,8 @@ class DatasetPage extends Component {
   render() {
     if (
       !this.state.isReady ||
-      this.state.controlStates.canEdit === undefined ||
-      !this.state.previewTimeSeriesData
+      this.state.controlStates.canEdit === undefined
+      // ||  !this.state.previewTimeSeriesData
     )
       return <Loader loading={true} />;
 
@@ -864,6 +893,12 @@ class DatasetPage extends Component {
                       onHideLabels={this.hideLabels}
                     />
                     <TimeSeriesCollectionPanel
+                      datasetStart={Math.min(
+                        ...this.state.dataset.timeSeries.map((elm) => elm.start)
+                      )}
+                      datasetEnd={Math.max(
+                        ...this.state.dataset.timeSeries.map((elm) => elm.end)
+                      )}
                       activeSeries={this.state.activeSeries}
                       timeSeries={this.state.dataset.timeSeries}
                       previewTimeSeriesData={this.state.previewTimeSeriesData}
@@ -965,8 +1000,12 @@ class DatasetPage extends Component {
               </div>
               <div className="mt-2">
                 <MetadataPanel
-                  start={this.state.dataset.start}
-                  end={this.state.dataset.end}
+                  start={Math.min(
+                    ...this.state.dataset.timeSeries.map((elm) => elm.start)
+                  )}
+                  end={Math.max(
+                    ...this.state.dataset.timeSeries.map((elm) => elm.end)
+                  )}
                   user={this.state.dataset.userId}
                   name={this.state.dataset.name}
                 />

@@ -25,6 +25,11 @@ import Checkbox from '../../components/Common/Checkbox';
 import { hexToRgb } from '../../services/ColorService';
 
 const displayTime = (time) => {
+  const minTimestamp = -8640000000000000;
+  const maxTimestamp = 8640000000000000;
+  if (time < minTimestamp || time > maxTimestamp) {
+    return '-';
+  }
   const date = new Date(time);
   return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
 };
@@ -127,19 +132,24 @@ const AdditionalInfo = (props) => {
 
 const DatasetInfo = (props) => {
   const { dataset } = props;
-  const duration = Math.max(dataset.end - dataset.start, 0) || 0;
-  console.log('duration: ', duration);
+  const datasetStart = Math.min(...dataset.timeSeries.map((elm) => elm.start));
+  const datasetEnd = Math.min(...dataset.timeSeries.map((elm) => elm.end));
+
+  const duration = Math.max(datasetEnd - datasetStart, 0) || 0;
+  const empty = dataset.timeSeries
+    .map((elm) => elm.length)
+    .every((elm) => elm === 0 || elm === null);
   return (
     <div className="text-left d-inline-block m-2">
       <div className="font-weight-bold font-size-lg h5 d-inline">
         {dataset.name}
       </div>
-      {duration != 0 ? (
+      {!empty ? (
         <Fragment>
           <div style={{ color: 'rgb(131, 136, 159)' }}>
             <small>
               <b>START </b>
-              {displayTime(dataset.start)}
+              {displayTime(datasetStart)}
             </small>
           </div>
           <div style={{ color: 'rgb(131, 136, 159)' }}>
@@ -157,7 +167,7 @@ const DatasetInfo = (props) => {
               icon={faExclamationTriangle}
             ></FontAwesomeIcon>
           </div>
-          <div className="text-left d-inline ml-1">dataset empty</div>
+          <div className="text-left d-inline ml-1">Dataset is empty</div>
         </div>
       )}
     </div>

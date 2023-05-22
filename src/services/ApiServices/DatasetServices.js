@@ -40,6 +40,25 @@ export const getDatasetTimeseries = (id, info) => {
   });
 };
 
+export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
+  console.log(info);
+  console.log(ts_ids);
+  const { max_resolution, start, end } = info;
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
+          `${id}/ts/${start}/${end}/${max_resolution}`,
+        ts_ids
+      )
+    )
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
+  });
+};
+
 export const getDataset = (id) => {
   return new Promise((resolve, reject) => {
     axios(

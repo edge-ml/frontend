@@ -12,7 +12,7 @@ import ax from 'axios';
 
 const axios = ax.create();
 
-const downloadDatasets = async (dataset) => {
+const downloadDatasetsRegister = async (dataset) => {
   console.log(dataset);
   const request_params = generateApiRequest(
     HTTP_METHODS.POST,
@@ -21,9 +21,27 @@ const downloadDatasets = async (dataset) => {
     { datasets: dataset }
   );
   const response = await axios(request_params);
-  const id = response.data.id;
-  console.log('open window: ', id);
-  window.open(`${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}download/${id}`);
+  return response.data;
+};
+
+const datasetDownloadStatus = async (downloadId) => {
+  try {
+    const request_params = generateApiRequest(
+      HTTP_METHODS.GET,
+      DATASET_STORE,
+      DATASET_STORE_ENDPOINTS.CSV + `status/${downloadId}`
+    );
+    const response = await axios(request_params);
+    return response.data;
+  } catch {
+    return 404;
+  }
+};
+
+const datasetDownloadfromId = async (downloadId) => {
+  window.open(
+    `${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}download/${downloadId}`
+  );
 };
 
 const downloadAllAsZip = async (datasets, labelings, labels) => {
@@ -67,4 +85,10 @@ const downloadFile = (blob, fileName) => {
   document.body.removeChild(link);
 };
 
-export { downloadDatasets, downloadAllAsZip, downloadFile };
+export {
+  downloadDatasetsRegister,
+  datasetDownloadfromId,
+  downloadAllAsZip,
+  downloadFile,
+  datasetDownloadStatus,
+};
