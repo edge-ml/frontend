@@ -4,6 +4,11 @@ import { subscribeLabelingsAndLabels } from '../../../services/ApiServices/Label
 import '../index.css';
 import Checkbox from '../../../components/Common/Checkbox';
 import classNames from 'classnames';
+import {
+  EdgeMLTable,
+  EdgeMLTableHeader,
+  EdgeMLTableBody,
+} from '../../Common/EdgeMLTable';
 
 const Wizard_SelectLabeling = ({
   labelings,
@@ -28,47 +33,56 @@ const Wizard_SelectLabeling = ({
       <ModalBody>
         <div className="content">
           <h3>1. Select Labeling</h3>
-          <div>
-            {labelings
-              .filter((elm) => countDatasets(elm))
-              .map((labeling) => (
-                <div
-                  className={classNames('labelingRow', {
-                    disabled: countDatasets(labeling) === 0,
-                  })}
-                >
-                  <Checkbox
-                    onClick={() => setLabeling(labeling)}
-                    isSelected={
-                      selectedLabeling
-                        ? selectedLabeling._id === labeling._id
-                        : false
-                    }
-                  ></Checkbox>
-                  <div className="labelingName">{labeling.name} </div>
-                  <div>
-                    {labeling.labels.map((label) => (
-                      <Badge
-                        className="badge"
-                        style={{ backgroundColor: label.color }}
-                      >
-                        {label.name}
-                      </Badge>
-                    ))}
+          <EdgeMLTable>
+            <EdgeMLTableHeader>
+              <div>
+                <h4>
+                  <b>Labeling</b>
+                </h4>
+              </div>
+              <div className="d-flex justify-content-center align-items-center">
+                <Checkbox
+                  onClick={() => toggleZeroClass(!zeroClass)}
+                  isSelected={zeroClass}
+                ></Checkbox>
+                <div className="ml-2">Use 0-Class</div>
+              </div>
+            </EdgeMLTableHeader>
+            <EdgeMLTableBody>
+              {labelings
+                .filter((elm) => countDatasets(elm))
+                .map((labeling) => (
+                  <div
+                    className={classNames('labelingRow', {
+                      disabled: countDatasets(labeling) === 0,
+                    })}
+                  >
+                    <Checkbox
+                      onClick={() => setLabeling(labeling)}
+                      isSelected={
+                        selectedLabeling
+                          ? selectedLabeling._id === labeling._id
+                          : false
+                      }
+                    ></Checkbox>
+                    <div className="labelingName">{labeling.name} </div>
+                    <div>
+                      {labeling.labels.map((label) => (
+                        <Badge
+                          className="badge"
+                          style={{ backgroundColor: label.color }}
+                        >
+                          {label.name}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div>{`(${countDatasets(labeling)} ${
+                      countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
+                    })`}</div>
                   </div>
-                  <div>{`(${countDatasets(labeling)} ${
-                    countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
-                  })`}</div>
-                </div>
-              ))}
-          </div>
-          <div className="d-flex">
-            <Checkbox
-              onClick={() => toggleZeroClass(!zeroClass)}
-              isSelected={zeroClass}
-            ></Checkbox>
-            <div>Use 0-Class</div>
-          </div>
+                ))}
+            </EdgeMLTableBody>
+          </EdgeMLTable>
         </div>
       </ModalBody>
       {footer}

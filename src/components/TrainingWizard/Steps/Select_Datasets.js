@@ -4,6 +4,11 @@ import Checkbox from '../../Common/Checkbox';
 import classNames from 'classnames';
 import { Badge, Button, ModalBody, ModalFooter } from 'reactstrap';
 import { unixTimeToString } from '../../../services/helpers';
+import {
+  EdgeMLTable,
+  EdgeMLTableBody,
+  EdgeMLTableHeader,
+} from '../../Common/EdgeMLTable';
 
 const Wizard_SelectDataset = ({
   datasets,
@@ -35,33 +40,45 @@ const Wizard_SelectDataset = ({
         <div>
           <h3>2. Select datasets</h3>
           <div>
-            {datasets
-              .filter((elm) => !checkUsable(elm))
-              .map((dataset) => {
-                return (
-                  <div
-                    className={classNames('datasetRow', {
-                      disabled: checkUsable(dataset),
-                    })}
-                  >
-                    <Checkbox
-                      isSelected={dataset.selected}
-                      onClick={() => toggleSelectDataset(dataset._id)}
-                    ></Checkbox>
-                    <div className="datasetName">{dataset.name}</div>
-                    <div>
-                      {dataset.timeSeries.map((ts) => (
-                        <Badge>
-                          {ts.name}, {ts.length},{' '}
-                          {unixTimeToString(ts.end - ts.start)}{' '}
-                          {Math.round(ts.samplingRate.mean * 100) / 100},{' '}
-                          {Math.round(ts.samplingRate.var * 100) / 100}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+            <EdgeMLTable>
+              <EdgeMLTableHeader>
+                <h4>
+                  <b>Dataset</b>
+                </h4>
+              </EdgeMLTableHeader>
+              <EdgeMLTableBody>
+                {datasets
+                  .filter((elm) => !checkUsable(elm))
+                  .map((dataset) => {
+                    return (
+                      <div
+                        className={classNames('datasetRow d-flex', {
+                          disabled: checkUsable(dataset),
+                        })}
+                      >
+                        <Checkbox
+                          isSelected={dataset.selected}
+                          onClick={() => toggleSelectDataset(dataset._id)}
+                        ></Checkbox>
+                        <div className="datasetName">{dataset.name}</div>
+                        <div>
+                          {dataset.timeSeries.map((ts) => (
+                            // <Badge>
+                            //   {ts.name}, {ts.length},{' '}
+                            //   {unixTimeToString(ts.end - ts.start)}{' '}
+                            //   {Math.round(ts.samplingRate.mean * 100) / 100},{' '}
+                            //   {Math.round(ts.samplingRate.var * 100) / 100}
+                            // </Badge>
+                            <Badge>{`${ts.name} (${
+                              Math.round(ts.samplingRate.mean * 100) / 100
+                            })`}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </EdgeMLTableBody>
+            </EdgeMLTable>
           </div>
           {datasets.filter((elm) => elm.selected).length ? (
             <div>

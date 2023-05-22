@@ -12,6 +12,8 @@ import Select_Normalizer from './Steps/Select_Normalizer';
 import Select_Windowing from './Steps/Select_Windowing';
 import Select_Name from './Steps/Select_Name';
 import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 export const WizardFooter = ({ onNext, onBack, onTrain, step, maxSteps }) => {
   return (
@@ -66,20 +68,16 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     });
     subscribeLabelingsAndLabels().then((labelings) => setLabelings(labelings));
     getTrainconfig().then((result) => {
-      console.log(result);
       setEvaluation(result.evaluation);
       setClassifiers(result.classifier);
       setNormalizer(result.normalizer);
       setWindowing(result.windowing);
       setFeatureExtractors(result.featureExtractors);
-      console.log('FeatureExtractors:');
-      console.log(result.featureExtractors);
       // Set default values for the pages
       setSelectedClassifier(result.classifier[0]);
       setSelectedEval(result.evaluation[0]);
       setSelectednormalizer(result.normalizer[0]);
       setSelectedWindowing(result.windowing[0]);
-      console.log(result.evaluation);
       setSelectedFeatureExtractor(result.featureExtractors[0]);
     });
   }, []);
@@ -182,7 +180,20 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
 
   return (
     <Modal isOpen={true} size="xl">
-      <ModalHeader>Train a model</ModalHeader>
+      <ModalHeader>
+        <div>Train a model</div>
+        <div
+          style={{
+            position: 'absolute',
+            top: '0',
+            right: '8px',
+            cursor: 'pointer',
+          }}
+          onClick={onClose}
+        >
+          <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
+        </div>
+      </ModalHeader>
       {isReady() ? rendered_screens[screen] : null}
     </Modal>
   );
