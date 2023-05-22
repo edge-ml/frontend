@@ -13,6 +13,20 @@ const DownloadModal = ({ model, onClose }) => {
     downloadBlob(blob, `${model.name}_${'C'}.${'zip'}`);
   };
 
+  const getCode = () => {
+    console.log(model);
+    return `#include "model.hpp"
+#include <iostream>
+
+int main() {
+  cout << "SamplingRate: " << get_sampling_rate() << endl;
+  add_datapoint(${model.timeSeries.map((elm) => 'val_' + elm).join(', ')});
+  int res = predict();
+  cout << "Result: " << res << " <==> " << class_to_label(res) << endl;
+  return 0;
+}`;
+  };
+
   return (
     <Modal isOpen={model} size="xl">
       <ModalHeader>Download: {model.name}</ModalHeader>
@@ -26,7 +40,7 @@ const DownloadModal = ({ model, onClose }) => {
         <div className="pt-2"></div>
         <div>
           <b>Code</b>
-          <CodeView language={'cpp'} code="#import <stdio.h>"></CodeView>
+          <CodeView language={'cpp'} code={getCode()}></CodeView>
         </div>
       </ModalBody>
       <ModalFooter>

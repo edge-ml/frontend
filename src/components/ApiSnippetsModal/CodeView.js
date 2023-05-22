@@ -18,7 +18,7 @@ const CodeView = ({ language, code }) => {
 
   return (
     <div className="Code">
-      <pre className={`language-${language}`}>
+      <pre className={`language-${language}`} style={{ borderRadius: '10px' }}>
         <code className={`language-${language}`} data-prismjs-copy="Copy">
           {code}
         </code>

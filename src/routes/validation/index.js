@@ -15,16 +15,7 @@ import { faTrashAlt, faFilter } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 
 const ValidationPage = () => {
-  const [modelsInvalidate, modelsRefresh] = useIncrement();
-  const [trainingsInvalidate, trainingsRefresh] = useIncrement();
-
-  const [modalOpen, setModalOpen] = useState(true);
-
-  const [labels, setLabels] = useState([]);
-  const [viewedModel, setViewedModel] = useState(null);
-  const [modalState, setModalState] = useState(false);
-  const [modelsToDelete, setModelsToDelete] = useState([]);
-  const [deleteModalState, setDeleteModalState] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const [models, setModels] = useState([]);
   const [modalModel, setModalModel] = useState(undefined);
