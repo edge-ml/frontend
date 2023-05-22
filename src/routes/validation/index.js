@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import Loader from '../../modules/loader';
 import { useIncrement } from '../../services/ReactHooksService';
@@ -43,117 +43,105 @@ const ValidationPage = () => {
     setModalModel(model);
   };
 
-  console.log(models);
   return (
     <Container>
-      <div className="p-2 pl-md-4 pr-md-4">
-        <div className="w-100 d-flex flex-row justify-content-between align-items-center">
-          <div className="font-weight-bold h4 justify-self-start">Models</div>
-          <Button onClick={() => setModalOpen(true)}>Train a model</Button>
-        </div>
-        <Table
-          header={
-            <>
-              <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
-                <Checkbox isSelected={false}></Checkbox>
-              </div>
-              <Button
-                className="ml-3 btn-delete"
-                id="deleteDatasetsButton"
-                size="sm"
-                color="secondary"
-              >
-                <FontAwesomeIcon
-                  className="mr-2"
-                  icon={faTrashAlt}
-                ></FontAwesomeIcon>
-                Delete
-              </Button>
-              <Button
-                id="selectAllEmptyButton"
-                size="sm"
-                color="secondary"
-                /* disabled={props.datasets.every((elm) => elm.end != 0)}*/
-                className="ml-2"
-              >
-                <FontAwesomeIcon
-                  className="mr-2"
-                  icon={faFilter}
-                ></FontAwesomeIcon>
-                Select Empty Datasets
-              </Button>
-            </>
-          }
-        >
-          {models.map((model, index) => {
-            return (
-              <TableEntry index={index}>
-                <div className="m-2 d-flex">
-                  <div className="d-flex align-items-center p-2 ml-2 mr-0 ml-md-3 mr-md-3">
-                    <Checkbox></Checkbox>
-                  </div>
-                  <div className="w-100">
-                    <Row>
-                      <Col>
-                        <b>{model.name}</b>
-                        <div>{model.pipeline.classifier.name}</div>
-                      </Col>
-                      <Col>
-                        <div className="">
-                          <b>Acc: </b>
-                          {metric(model.evaluator.metrics.accuracy_score)}
-                        </div>
-                        <div>
-                          <b>F1: </b>
-                          {metric(model.evaluator.metrics.f1_score)}
-                        </div>
-                      </Col>
-                      <Col>
-                        <Button
-                          className="btn-edit mr-3 mr-md-4"
-                          onClick={() => onViewModel(model)}
-                        >
-                          View
-                        </Button>
-                        <Button
-                          className="btn-edit mr-3 mr-md-4"
-                          onClick={() => setModelDownload(model)}
-                        >
-                          Download
-                        </Button>
-                        <Button
-                          className="btn-edit mr-3 mr-md-4"
-                          onClick={() => setModelDeploy(model)}
-                        >
-                          Deploy
-                        </Button>
-                      </Col>
-                    </Row>
-                  </div>
+      <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
+        <Fragment>
+          <div className="w-100 d-flex justify-content-between align-items-center mb-2">
+            <div className="font-weight-bold h4 justify-self-start">Models</div>
+            <Button onClick={() => setModalOpen(true)}>Train a model</Button>
+          </div>
+          <Table
+            header={
+              <>
+                <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
+                  <Checkbox isSelected={false}></Checkbox>
                 </div>
-              </TableEntry>
-            );
-          })}
-        </Table>
+                <Button
+                  className="ml-3 btn-delete"
+                  id="deleteDatasetsButton"
+                  size="sm"
+                  color="secondary"
+                >
+                  <FontAwesomeIcon
+                    className="mr-2"
+                    icon={faTrashAlt}
+                  ></FontAwesomeIcon>
+                  Delete
+                </Button>
+              </>
+            }
+          >
+            {models.map((model, index) => {
+              return (
+                <TableEntry index={index}>
+                  <div className="m-2 d-flex">
+                    <div className="d-flex align-items-center p-2 ml-2 mr-0 ml-md-3 mr-md-3">
+                      <Checkbox></Checkbox>
+                    </div>
+                    <div className="w-100">
+                      <Row>
+                        <Col>
+                          <b>{model.name}</b>
+                          <div>{model.pipeline.classifier.name}</div>
+                        </Col>
+                        <Col>
+                          <div className="">
+                            <b>Acc: </b>
+                            {metric(model.evaluator.metrics.accuracy_score)}
+                          </div>
+                          <div>
+                            <b>F1: </b>
+                            {metric(model.evaluator.metrics.f1_score)}
+                          </div>
+                        </Col>
+                        <Col>
+                          <Button
+                            className="btn-edit mr-3 mr-md-4"
+                            onClick={() => onViewModel(model)}
+                          >
+                            View
+                          </Button>
+                          <Button
+                            className="btn-edit mr-3 mr-md-4"
+                            onClick={() => setModelDownload(model)}
+                          >
+                            Download
+                          </Button>
+                          <Button
+                            className="btn-edit mr-3 mr-md-4"
+                            onClick={() => setModelDeploy(model)}
+                          >
+                            Deploy
+                          </Button>
+                        </Col>
+                      </Row>
+                    </div>
+                  </div>
+                </TableEntry>
+              );
+            })}
+          </Table>
+          {modalOpen ? (
+            <TrainingWizard
+              modalOpen={true}
+              onClose={() => setModalOpen(false)}
+            ></TrainingWizard>
+          ) : null}
+          <SelectedModelModalView
+            model={modalModel}
+            onClosed={() => setModalModel(false)}
+          ></SelectedModelModalView>
+          <DownloadModal
+            model={modelDownload}
+            onClose={() => setModelDownload(undefined)}
+          ></DownloadModal>
+          <DeployModal
+            model={modelDeploy}
+            onClose={() => setModelDeploy(undefined)}
+          ></DeployModal>
+        </Fragment>
       </div>
-      {modalOpen ? (
-        <TrainingWizard
-          modalOpen={true}
-          onClose={() => setModalOpen(false)}
-        ></TrainingWizard>
-      ) : null}
-      <SelectedModelModalView
-        model={modalModel}
-        onClosed={() => setModalModel(false)}
-      ></SelectedModelModalView>
-      <DownloadModal
-        model={modelDownload}
-        onClose={() => setModelDownload(undefined)}
-      ></DownloadModal>
-      <DeployModal
-        model={modelDeploy}
-        onClose={() => setModelDeploy(undefined)}
-      ></DeployModal>
     </Container>
   );
 };

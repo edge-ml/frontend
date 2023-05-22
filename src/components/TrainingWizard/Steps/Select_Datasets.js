@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { getDatasets } from '../../../services/ApiServices/DatasetServices';
 import Checkbox from '../../Common/Checkbox';
 import classNames from 'classnames';
@@ -35,8 +35,38 @@ const Wizard_SelectDataset = ({
   );
 
   return (
-    <div>
-      <ModalBody>
+    <Fragment>
+      <h3>2. Select datasets</h3>
+      <div>
+        {datasets
+          .filter((elm) => !checkUsable(elm))
+          .map((dataset) => {
+            return (
+              <div
+                className={classNames('datasetRow', {
+                  disabled: checkUsable(dataset),
+                })}
+              >
+                <Checkbox
+                  isSelected={dataset.selected}
+                  onClick={() => toggleSelectDataset(dataset._id)}
+                ></Checkbox>
+                <div className="datasetName">{dataset.name}</div>
+                <div>
+                  {dataset.timeSeries.map((ts) => (
+                    <Badge>
+                      {ts.name}, {ts.length},{' '}
+                      {unixTimeToString(ts.end - ts.start)}{' '}
+                      {Math.round(ts.samplingRate.mean * 100) / 100},{' '}
+                      {Math.round(ts.samplingRate.var * 100) / 100}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+      </div>
+      {datasets.filter((elm) => elm.selected).length ? (
         <div>
           <h3>2. Select datasets</h3>
           <div>
@@ -87,9 +117,8 @@ const Wizard_SelectDataset = ({
             </div>
           ) : null}
         </div>
-      </ModalBody>
-      {footer}
-    </div>
+      ) : null}
+    </Fragment>
   );
 };
 

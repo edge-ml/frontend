@@ -18,6 +18,7 @@ import { humanFileSize, toPercentage } from '../../services/helpers';
 import ConfusionMatrixView from '../ConfusionMatrix/ConfusionMatrixView';
 import { CrossValidationTable } from './CrossValidationTable';
 import Loader from '../../modules/loader';
+import { Collapse } from 'react-bootstrap/lib/Navbar';
 
 export const SelectedModelModalView = ({
   model,
@@ -34,7 +35,6 @@ export const SelectedModelModalView = ({
             <ModalHeader>Model: {model.name}</ModalHeader>
             <ModalBody>
               <General_info model={model}></General_info>
-              <Button>Deploy</Button>
               <PerformanceInfo model={model}></PerformanceInfo>
             </ModalBody>
             <ModalFooter>
@@ -52,33 +52,44 @@ export const SelectedModelModalView = ({
   );
 };
 
-const General_info = ({ model }) => {
+const General_info = ({ model, onDeploy }) => {
   return (
     <div>
-      <h4>General info</h4>
-      <div>
-        <div>Name: {model.name}</div>
-        <div>Classifier: {model.pipeline.classifier.name}</div>
-        <div>Used labels: TODO</div>
+      <h5>
+        <b>General information</b>
+      </h5>
+      <div className="d-flex justify-content-between m-2">
+        <div>
+          <div>
+            <b>Name</b>: {model.name}
+          </div>
+          <div>
+            <b>Classifier</b>: {model.pipeline.classifier.name}
+          </div>
+          <div>
+            <b>Used labels</b>: TODO
+          </div>
+        </div>
+        <div>
+          <Button className="mr-2">Download</Button>
+          <Button>Deploy</Button>
+        </div>
       </div>
     </div>
   );
 };
 
 const Classification_report = ({ report }) => {
-  console.log(report);
   const keys = Object.keys(report);
-  console.log(keys);
   const metrics = Object.keys(report[keys[0]]);
-  console.log(metrics);
   return (
     <div>
-      <Table>
+      <Table borderless size="sm" striped>
         <thead>
           <tr>
             <th></th>
             {metrics.map((key) => (
-              <th>{key}</th>
+              <th className="text-center">{key}</th>
             ))}
           </tr>
         </thead>
@@ -87,7 +98,7 @@ const Classification_report = ({ report }) => {
             <tr>
               <th>{key}</th>
               {metrics.map((met) => (
-                <th>{metric(report[key][met])}</th>
+                <td className="px-4">{metric(report[key][met])}</td>
               ))}
             </tr>
           ))}
@@ -99,42 +110,92 @@ const Classification_report = ({ report }) => {
 
 const Training_config = ({ model }) => {
   const { windower, featureExtractor, normalizer, classifier } = model.pipeline;
-  console.log(windower);
-  console.log(normalizer);
-  console.log(classifier);
+
+  const Advanced_params = ({ params }) => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggle = () => setIsOpen(!isOpen);
+
+    if (params.filter((elm) => elm.is_advanced).length === 0) {
+      return <div></div>;
+    }
+
+    return (
+      <div>
+        <div className="cursor-pointer" onClick={toggle}>
+          <FontAwesomeIcon
+            icon={isOpen ? faCaretDown : faCaretRight}
+          ></FontAwesomeIcon>
+          <div className="d-inline ml-1">Advanced Parameters</div>
+        </div>
+        {isOpen ? (
+          <div className="ml-3">
+            {params &&
+              params
+                .filter((elm) => elm.is_advanced)
+                .map((param) => {
+                  return (
+                    <div>
+                      {param.name}: {param.value}
+                    </div>
+                  );
+                })}
+          </div>
+        ) : null}
+      </div>
+    );
+  };
+
   const Detail_view = ({ stage }) => {
+    console.log(stage.parameters);
     return (
       <div>
         <div>Method: {stage.name}</div>
         {stage.parameters &&
-          stage.parameters.map((param) => {
-            return (
-              <div>
-                {param.name}: {param.value}
-              </div>
-            );
-          })}
+          stage.parameters
+            .filter((elm) => !elm.is_advanced)
+            .map((param) => {
+              return (
+                <div>
+                  {param.name}: {param.value}
+                </div>
+              );
+            })}
+        <Advanced_params params={stage.parameters}></Advanced_params>
       </div>
     );
   };
 
   return (
     <div>
-      <div>
-        <h5>Windowing</h5>
-        <Detail_view stage={windower}></Detail_view>
-      </div>
-      <div>
-        <h5>Feature Extraction</h5>
-        <Detail_view stage={featureExtractor}></Detail_view>
-      </div>
-      <div>
-        <h5>Normalizer</h5>
-        <Detail_view stage={normalizer}></Detail_view>
-      </div>
-      <div>
-        <h5>Classifier</h5>
-        <Detail_view stage={classifier}></Detail_view>
+      <h5>
+        <b>Training configuration</b>
+      </h5>
+      <div className="d-flex justify-content-between">
+        <div className="m-2">
+          <h6 className="text-center">
+            <b>Windowing</b>
+          </h6>
+          <Detail_view stage={windower}></Detail_view>
+        </div>
+        <div className="m-2">
+          <h6 className="text-center">
+            <b>Feature Extraction</b>
+          </h6>
+          <Detail_view stage={featureExtractor}></Detail_view>
+        </div>
+        <div className="m-2">
+          <h6 className="text-center">
+            <b>Normalizer</b>
+          </h6>
+          <Detail_view stage={normalizer}></Detail_view>
+        </div>
+        <div className="m-2">
+          <h6 className="text-center">
+            <b>Classifier</b>
+          </h6>
+          <Detail_view stage={classifier}></Detail_view>
+        </div>
       </div>
     </div>
   );
@@ -148,18 +209,30 @@ const metric = (metric) => {
 const PerformanceInfo = ({ model }) => {
   const metrics = model.evaluator.metrics;
   return (
-    <div>
-      <h4>Performance metrics</h4>
-      <div>Accuracy: {metric(metrics.accuracy_score)}</div>
-      <div>Precision: {metric(metrics.precision_score)}</div>
-      <div>Recall: {metric(metrics.recall_score)}</div>
-      <Classification_report
-        report={metrics.classification_report}
-      ></Classification_report>
-      <ConfusionMatrixView
-        matrix={JSON.parse(metrics.confusion_matrix)}
-        labels={model.pipeline.labels}
-      ></ConfusionMatrixView>
+    <div className="my-4">
+      <h5>
+        <b>Performance metrics</b>
+      </h5>
+      <div className="ml-2">
+        <div>
+          <b>Accuracy</b>: {metric(metrics.accuracy_score)}
+        </div>
+        <div>
+          <b>Precision</b>: {metric(metrics.precision_score)}
+        </div>
+        <div>
+          <b>Recall</b>: {metric(metrics.recall_score)}
+        </div>
+      </div>
+      <div className="d-flex align-items-center m-2">
+        <Classification_report
+          report={metrics.classification_report}
+        ></Classification_report>
+        <ConfusionMatrixView
+          matrix={JSON.parse(metrics.confusion_matrix)}
+          labels={model.pipeline.labels}
+        ></ConfusionMatrixView>
+      </div>
       <Training_config model={model}></Training_config>
     </div>
   );

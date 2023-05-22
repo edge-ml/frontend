@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import {
   Dropdown,
   DropdownItem,
@@ -44,70 +44,95 @@ const Wizard_Hyperparameters = ({
     return null;
   }
 
+  const advancedCnt = classifier[classififier_index].parameters.filter(
+    (p) => p.is_advanced
+  ).length;
+  const basicCnt = classifier[classififier_index].parameters.filter(
+    (p) => !p.is_advanced
+  ).length;
+
   return (
-    <div>
-      <ModalBody>
-        <div>
-          <h3>3. Select Classifier</h3>
-          <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-            <DropdownToggle caret size="lg">
-              {classifier[classififier_index].name}
-            </DropdownToggle>
-            <DropdownMenu>
-              {classifier.map((cls, idx) => (
-                <DropdownItem
-                  onClick={() => {
-                    setSelectedClassifier(classifier[classififier_index]);
-                    set_classifier_index(idx);
-                  }}
-                >
-                  {cls.name}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-          <div>
-            <h4>Basic hyperparameters</h4>
-            <HyperparameterView
-              handleHyperparameterChange={handleHyperparameterChange}
-              model={classifier[classififier_index]}
-              isAdvanced={false}
-              hyperparameters={classifier[classififier_index].parameters}
-            ></HyperparameterView>
+    <Fragment>
+      <div className="w-100 d-flex justify-content-between align-items-center mb-2">
+        <div className="font-weight-bold h4 justify-self-start">
+          3. Select Classifier
+        </div>
+      </div>
+      <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+        <DropdownToggle caret size="lg">
+          {classifier[classififier_index].name}
+        </DropdownToggle>
+        <DropdownMenu>
+          {classifier.map((cls, idx) => (
+            <DropdownItem
+              onClick={() => {
+                setSelectedClassifier(classifier[classififier_index]);
+                set_classifier_index(idx);
+              }}
+            >
+              {cls.name}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+      <div>
+        <div className="w-100 align-items-center mb-2">
+          <div className="font-weight-bold h5 justify-self-start">
+            Hyperparameters
+          </div>
+        </div>
+        {basicCnt > 0 ? (
+          <HyperparameterView
+            handleHyperparameterChange={handleHyperparameterChange}
+            model={classifier[classififier_index]}
+            isAdvanced={false}
+            hyperparameters={classifier[classififier_index].parameters}
+          ></HyperparameterView>
+        ) : (
+          <div className="mb-3">
+            {advancedCnt > 0
+              ? 'No basic hyperparameters. You can find advanced hyperparameters in the following section.'
+              : 'No hyperparameters'}
+          </div>
+        )}
+        {advancedCnt > 0 ? (
+          <Fragment>
             <div className="advancedHeading">
-              <h4>Advanced hyperparameters</h4>
-              <div
-                className="buttonShowAdvancedHyperparameters"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-              >
-                {showAdvanced ? (
-                  <FontAwesomeIcon
-                    className="faIconAdvancedHyperparameters"
-                    size="lg"
-                    icon={faCaretDown}
-                  />
-                ) : (
-                  <FontAwesomeIcon
-                    className="faIconAdvancedHyperparameters"
-                    size="lg"
-                    icon={faCaretRight}
-                  />
-                )}
+              <div className="w-100 align-items-center mb-2">
+                <div className="font-weight-bold h5 justify-self-start">
+                  Advanced Hyperparameters
+                </div>
+                <div
+                  className="buttonShowAdvancedHyperparameters"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                >
+                  {showAdvanced ? (
+                    <FontAwesomeIcon
+                      className="faIconAdvancedHyperparameters"
+                      size="lg"
+                      icon={faCaretDown}
+                    />
+                  ) : (
+                    <FontAwesomeIcon
+                      className="faIconAdvancedHyperparameters"
+                      size="lg"
+                      icon={faCaretRight}
+                    />
+                  )}
+                </div>
               </div>
             </div>
             <Collapse isOpen={showAdvanced}>
-              {console.log('show advanced')}
               <HyperparameterView
                 handleHyperparameterChange={handleHyperparameterChange}
                 hyperparameters={classifier[classififier_index].parameters}
                 isAdvanced={true}
               ></HyperparameterView>
             </Collapse>
-          </div>
-        </div>
-      </ModalBody>
-      {footer}
-    </div>
+          </Fragment>
+        ) : null}
+      </div>
+    </Fragment>
   );
 };
 
