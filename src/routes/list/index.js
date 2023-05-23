@@ -30,7 +30,7 @@ const ListPage = (props) => {
   const [isCreateNewDatasetOpen, setIsCreateNewDatasetOpen] = useState(false);
   const [labelings, setLabelings] = useState(undefined);
 
-  const { registerDownload } = useContext(NotificationContext);
+  const { registerProjectDownload } = useContext(NotificationContext);
 
   const toggleModal = () => {
     setModal(!modal);
@@ -120,7 +120,7 @@ const ListPage = (props) => {
   };
 
   const downloadAllDatasets = async () => {
-    registerDownload(datasets);
+    registerProjectDownload();
   };
 
   if (!ready) {

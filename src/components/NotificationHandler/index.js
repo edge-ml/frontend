@@ -21,16 +21,19 @@ const NotificationHandler = ({ onClose, isOpen }) => {
     <Modal isOpen={isOpen} size="xl">
       <ModalHeader>Datasets</ModalHeader>
       <ModalBody>
+        {console.log(activeNotifications)}
         {activeNotifications.map((elm) => (
-          <div className="d-flex justify-content-between">
+          <div className="d-flex justify-content-between align-items-center">
+            {console.log(elm)}
             <div>
-              {elm.datasets.map((elm) => (
-                <Badge className="m-1">{elm.name}</Badge>
-              ))}
+              <b>{elm.projectName ? elm.projectName : elm.datasetName}</b>
             </div>
-            {elm.error ? <div>Error</div> : <div>Processed: {elm.status}</div>}
+            {elm.error ? <div>Error</div> : null}
             {elm.status < 100 ? (
-              <Spinner></Spinner>
+              <div className="d-flex  align-items-center">
+                <Spinner></Spinner>
+                <div className="ml-2">{elm.status}%</div>
+              </div>
             ) : (
               <div>
                 {elm.error ? null : (
@@ -38,14 +41,14 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                     Download
                   </Button>
                 )}
-                <Button
-                  onClick={() => removeNotification(elm.downloadId)}
-                  color="secondary m-2"
-                >
-                  <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
-                </Button>
               </div>
             )}
+            <Button
+              onClick={() => removeNotification(elm.downloadId)}
+              color="secondary m-2"
+            >
+              <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
+            </Button>
           </div>
         ))}
       </ModalBody>

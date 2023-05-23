@@ -82,7 +82,7 @@ export const DATASET_STORE_ENDPOINTS = {
   DATASETS: 'datasets/',
   DATASET_LABELINGS: 'datasets/labelings/',
   LABELING: 'labelings/',
-  CSV: 'datasets/csv/',
+  CSV: 'download/',
 };
 
 export const generateApiRequest = (

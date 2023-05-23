@@ -11,14 +11,14 @@ const hideLabelsSymbol = 'hide labels' + Math.floor(Math.random() * 1000);
 
 const LabelingSelectionPanel = (props) => {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  const { registerDownload } = useContext(NotificationContext);
+  const { registerDatasetDownload } = useContext(NotificationContext);
 
   const toggleHelpModal = () => {
     setIsHelpModalOpen(!isHelpModalOpen);
   };
 
   const downloadDataSet = () => {
-    registerDownload([props.dataset]);
+    registerDatasetDownload(props.dataset);
   };
 
   const handleLabelingClicked = (e, id) => {

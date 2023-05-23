@@ -12,24 +12,47 @@ import ax from 'axios';
 
 const axios = ax.create();
 
-const downloadDatasetsRegister = async (dataset) => {
+const registerDatasetDownload = async (dataset) => {
   console.log(dataset);
   const request_params = generateApiRequest(
     HTTP_METHODS.POST,
     DATASET_STORE,
-    DATASET_STORE_ENDPOINTS.CSV,
-    { datasets: dataset }
+    DATASET_STORE_ENDPOINTS.CSV + `dataset/${dataset._id}`
   );
   const response = await axios(request_params);
   return response.data;
 };
 
-const datasetDownloadStatus = async (downloadId) => {
+const registerProjectDownload = async () => {
+  const request_params = generateApiRequest(
+    HTTP_METHODS.POST,
+    DATASET_STORE,
+    DATASET_STORE_ENDPOINTS.CSV + 'project'
+  );
+  const response = await axios(request_params);
+  return response.data;
+};
+
+const datasetDownloadStatus = async () => {
   try {
     const request_params = generateApiRequest(
       HTTP_METHODS.GET,
       DATASET_STORE,
-      DATASET_STORE_ENDPOINTS.CSV + `status/${downloadId}`
+      DATASET_STORE_ENDPOINTS.CSV + 'status/'
+    );
+    const response = await axios(request_params);
+    return response.data;
+  } catch {
+    return 404;
+  }
+};
+
+const cancelDownload = async (downloadId) => {
+  try {
+    const request_params = generateApiRequest(
+      HTTP_METHODS.DELETE,
+      DATASET_STORE,
+      DATASET_STORE_ENDPOINTS.CSV + `${downloadId}`
     );
     const response = await axios(request_params);
     return response.data;
@@ -39,9 +62,7 @@ const datasetDownloadStatus = async (downloadId) => {
 };
 
 const datasetDownloadfromId = async (downloadId) => {
-  window.open(
-    `${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}download/${downloadId}`
-  );
+  window.open(`${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}${downloadId}`);
 };
 
 const downloadAllAsZip = async (datasets, labelings, labels) => {
@@ -86,9 +107,11 @@ const downloadFile = (blob, fileName) => {
 };
 
 export {
-  downloadDatasetsRegister,
+  registerDatasetDownload,
   datasetDownloadfromId,
   downloadAllAsZip,
   downloadFile,
   datasetDownloadStatus,
+  registerProjectDownload,
+  cancelDownload,
 };
