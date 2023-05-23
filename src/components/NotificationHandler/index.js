@@ -8,7 +8,7 @@ import {
   Spinner,
 } from 'reactstrap';
 import NotificationContext from '../NotificationHandler/NotificationProvider';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { datasetDownloadfromId } from '../../services/DatasetService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -17,11 +17,16 @@ const NotificationHandler = ({ onClose, isOpen }) => {
   const { activeNotifications, removeNotification } =
     useContext(NotificationContext);
 
+  useEffect(() => {
+    if (activeNotifications.length <= 0) {
+      onClose();
+    }
+  }, [activeNotifications]);
+
   return (
     <Modal isOpen={isOpen} size="xl">
       <ModalHeader>Datasets</ModalHeader>
       <ModalBody>
-        {console.log(activeNotifications)}
         {activeNotifications.map((elm) => (
           <div className="d-flex justify-content-between align-items-center">
             <div>

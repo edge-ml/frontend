@@ -265,7 +265,7 @@ const Navbar = (props) => {
         userMail={props.userMail}
       ></UserSettingsModal>
       <NotificationHandler
-        onClose={toggleNotificationModal}
+        onClose={() => setNotificationModalOpen(false)}
         isOpen={notificationModalOpen}
       ></NotificationHandler>
     </div>

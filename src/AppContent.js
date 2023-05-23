@@ -81,9 +81,9 @@ class AppContent extends Component {
           path={this.props.match.path + '/models'}
           render={(props) => (
             <ProjectRefresh project={this.props.project}>
-              <ValidationPage {...props}></ValidationPage>
+              {/* <ValidationPage {...props}></ValidationPage> */}
+              <UnderConstruction></UnderConstruction>
             </ProjectRefresh>
-            // <UnderConstruction></UnderConstruction>
           )}
         />
         {/* <Route
