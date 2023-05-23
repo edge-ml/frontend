@@ -24,7 +24,6 @@ const NotificationHandler = ({ onClose, isOpen }) => {
         {console.log(activeNotifications)}
         {activeNotifications.map((elm) => (
           <div className="d-flex justify-content-between align-items-center">
-            {console.log(elm)}
             <div>
               <b>{elm.projectName ? elm.projectName : elm.datasetName}</b>
             </div>
@@ -36,6 +35,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
               </div>
             ) : (
               <div>
+                {console.log(elm)}
                 {elm.error ? null : (
                   <Button onClick={() => datasetDownloadfromId(elm.downloadId)}>
                     Download
@@ -44,8 +44,9 @@ const NotificationHandler = ({ onClose, isOpen }) => {
               </div>
             )}
             <Button
+              className="m-2"
               onClick={() => removeNotification(elm.downloadId)}
-              color="secondary m-2"
+              color="danger"
             >
               <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
             </Button>

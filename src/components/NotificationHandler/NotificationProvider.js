@@ -11,13 +11,8 @@ const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
   const [activeNotifications, setActiveNotifications] = useState([]);
-
-  // const registerDownload = async (datasets) => {
-  //   const datasetIds = datasets.map((elm) => elm._id);
-  //   const res = await downloadDatasetsRegister(datasetIds);
-  //   const newNotification = { datasets, status: 0, downloadId: res.id };
-  //   setActiveNotifications((prevState) => [...prevState, newNotification]);
-  // };
+  const [hasNewNotifications, setHasNewNotifications] = useState(true);
+  var updateHandle = undefined;
 
   const registerProjectDownload = async () => {
     const res = await reg_project_download();
@@ -39,47 +34,25 @@ export const NotificationProvider = ({ children }) => {
     setActiveNotifications(newNotifications);
   };
 
-  // const updateNotifications = () => {
-  //   setActiveNotifications((prevNotifications) => {
-  //     const updatePromises = prevNotifications.map((elm) => {
-  //       if (elm.status < 100) {
-  //         return datasetDownloadStatus(elm.downloadId);
-  //       } else {
-  //         return Promise.resolve(elm.status);
-  //       }
-  //     });
-
-  //     Promise.all(updatePromises)
-  //       .then((newStats) => {
-  //         const newNotifications = prevNotifications.map((elm, i) => {
-  //           const newStatus = newStats[i];
-  //           console.log(newStatus, elm.status);
-  //           if (newStatus > 100) {
-  //             return { ...elm, error: true, status: newStatus };
-  //           }
-  //           return {...elm, status: newStatus};
-  //         });
-  //         setActiveNotifications(newNotifications);
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error updating notifications:', error);
-  //       });
-  //     return prevNotifications; // Return the previous state to avoid unnecessary re-renders
-  //   });
-  // };
-
   const updateNotifications = async () => {
     const status = await datasetDownloadStatus();
     console.log(status);
     setActiveNotifications(status);
+    setHasNewNotifications(status.length > 0); // Update the flag
   };
 
   useEffect(() => {
-    const updateHandle = setInterval(updateNotifications, 2000);
+    updateHandle = setInterval(updateNotifications, 2000);
     return () => {
       clearInterval(updateHandle);
     };
   }, []);
+
+  useEffect(() => {
+    if (!hasNewNotifications) {
+      clearInterval(updateHandle);
+    }
+  }, [hasNewNotifications]);
 
   return (
     <NotificationContext.Provider
