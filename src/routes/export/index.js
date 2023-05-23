@@ -116,7 +116,7 @@ const ExportPage = () => {
         <SelectedModelModalView
           isOpen={modelModalState}
           baseModels={baseModels}
-          model={selectedModel}
+          pipeline={selectedModel.pipeline}
           labels={labels}
           onClosed={closeModelModal}
         />

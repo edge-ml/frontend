@@ -6,13 +6,9 @@ import 'prismjs/components/prism-c';
 import 'prismjs/components/prism-cpp';
 import 'prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard';
 import { Button } from 'reactstrap';
+import CodeView from './CodeView';
 
 import { codeJava, codeArduino, codeNode, codeJs } from './Code';
-
-const onCopytoClipBoard = (code) => {
-  console.log(code.code);
-  navigator.clipboard.writeText(code.code);
-};
 
 const generateCode = (
   platform,
@@ -82,18 +78,8 @@ const CodeSnippet = (props) => {
   useEffect(() => {
     Prism.highlightAll();
   }, []);
-  return (
-    <div className="Code">
-      <pre className={`language-${code.language}`}>
-        <code className={`language-${code.language}`} data-prismjs-copy="Copy">
-          {code.code}
-        </code>
-      </pre>
-      <Button color="primary" onClick={() => onCopytoClipBoard(code)}>
-        Copy Code
-      </Button>
-    </div>
-  );
+
+  return <CodeView code={code.code} language={code.language}></CodeView>;
 };
 
 export default CodeSnippet;

@@ -1,138 +1,139 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import Loader from '../../modules/loader';
-import { useAsyncMemo, useIncrement } from '../../services/ReactHooksService';
-import {
-  getTrainedModels,
-  getModels,
-  getTrained,
-  deleteTrained,
-  getAllActiveTrainings,
-} from '../../services/ApiServices/MlService';
-import { ValidationView } from './ValidationView';
-import { DeleteConfirmationModalView } from './DeleteConfirmationModalView';
+import { useIncrement } from '../../services/ReactHooksService';
+import { getModels } from '../../services/ApiServices/MlService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
-import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
-import { TrainedModelsView } from './TrainedModelsView';
-import { OngoingTrainingsView } from './OngoingTrainingsView';
-
-const REFRESH_INTERVAL = 500;
+import TrainingWizard from '../../components/TrainingWizard';
+import { Button, Container } from 'reactstrap';
+import DownloadModal from './DownloadModal';
+import { Table, TableEntry } from '../../components/Common/Table';
+import Checkbox from '../../components/Common/Checkbox';
+import { Col, Row } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt, faFilter } from '@fortawesome/free-solid-svg-icons';
+import DeployModal from './DeployModal';
 
 const ValidationPage = () => {
-  const [modelsInvalidate, modelsRefresh] = useIncrement();
-  const [trainingsInvalidate, trainingsRefresh] = useIncrement();
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const [labels, setLabels] = useState([]);
-  const [viewedModel, setViewedModel] = useState(null);
-  const [modalState, setModalState] = useState(false);
-  const [modelsToDelete, setModelsToDelete] = useState([]);
-  const [deleteModalState, setDeleteModalState] = useState(false);
-  const location = useLocation();
-  const history = useHistory();
-
-  const baseModels = useAsyncMemo(getModels, [], []);
-  const models = useAsyncMemo(getTrainedModels, [modelsInvalidate], []);
-  const trainings = useAsyncMemo(
-    getAllActiveTrainings,
-    [trainingsInvalidate],
-    []
-  );
+  const [models, setModels] = useState([]);
+  const [modalModel, setModalModel] = useState(undefined);
+  const [modelDownload, setModelDownload] = useState(undefined);
+  const [modelDeploy, setModelDeploy] = useState(undefined);
 
   useEffect(() => {
-    if (trainings.length !== 0) {
-      setTimeout(() => {
-        trainingsRefresh();
-      }, REFRESH_INTERVAL);
-    }
-  }, [trainings, trainingsInvalidate]);
-
-  useEffect(() => {
-    modelsRefresh();
-  }, [trainings.length]);
-
-  const viewModel = async (id) => {
-    const model = await getTrained(id);
-    const { labels } = await subscribeLabelingsAndLabels();
-    setLabels(labels);
-    setViewedModel(model);
-    setModalState(true);
-  };
-
-  const deployModel = (id) => {
-    history.push({
-      pathname: location.pathname.replace('Validation', 'Deploy'),
-      state: { id },
+    getModels().then((models) => {
+      setModels(models);
     });
-  };
+  }, []);
 
-  const closeModal = () => {
-    setModalState(false);
-  };
+  const metric = (metric) => Math.round(metric * 100 * 100) / 100;
 
-  const showConfirmation = (ids) => {
-    setModelsToDelete(ids);
-    setDeleteModalState(true);
-  };
-
-  const closeConfirmation = () => {
-    setDeleteModalState(false);
-  };
-
-  const deleteModel = (model) => async () => {
-    const succ = await deleteTrained(model.id);
-    if (succ) {
-      setModalState(false);
-      modelsRefresh();
-    }
-  };
-
-  const deleteMultiple = async (ids) => {
-    const succ = (
-      await Promise.all([...ids].map((id) => deleteTrained(id)))
-    ).reduce((prev, cur) => prev || cur, false);
-    if (succ) {
-      modelsRefresh();
-    }
+  const onViewModel = (model) => {
+    setModalModel(model);
   };
 
   return (
-    <Loader loading={!(models && baseModels)}>
-      {models ? (
-        <ValidationView
-          trained={
-            <TrainedModelsView
-              models={models}
-              onViewModel={viewModel}
-              onDeployModel={deployModel}
-              handleDelete={showConfirmation}
-            />
-          }
-          ongoing={
-            trainings.length ? (
-              <OngoingTrainingsView trainings={trainings} />
-            ) : null
-          }
-        />
-      ) : null}
-      {baseModels && viewedModel && modalState ? (
-        <SelectedModelModalView
-          isOpen={modalState}
-          baseModels={baseModels}
-          model={viewedModel}
-          labels={labels}
-          onClosed={closeModal}
-          onDelete={deleteModel(viewedModel)}
-        />
-      ) : null}
-      {baseModels && modelsToDelete.length ? (
-        <DeleteConfirmationModalView
-          isOpen={deleteModalState}
-          modelsToDelete={modelsToDelete}
-          onClosed={closeConfirmation}
-          onDelete={deleteMultiple}
-        />
-      ) : null}
-    </Loader>
+    <Container>
+      <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
+        <Fragment>
+          <div className="w-100 d-flex justify-content-between align-items-center mb-2">
+            <div className="font-weight-bold h4 justify-self-start">Models</div>
+            <Button onClick={() => setModalOpen(true)}>Train a model</Button>
+          </div>
+          <Table
+            header={
+              <>
+                <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
+                  <Checkbox isSelected={false}></Checkbox>
+                </div>
+                <Button
+                  className="ml-3 btn-delete"
+                  id="deleteDatasetsButton"
+                  size="sm"
+                  color="secondary"
+                >
+                  <FontAwesomeIcon
+                    className="mr-2"
+                    icon={faTrashAlt}
+                  ></FontAwesomeIcon>
+                  Delete
+                </Button>
+              </>
+            }
+          >
+            {models.map((model, index) => {
+              return (
+                <TableEntry index={index}>
+                  <div className="m-2 d-flex">
+                    <div className="d-flex align-items-center p-2 ml-2 mr-0 ml-md-3 mr-md-3">
+                      <Checkbox></Checkbox>
+                    </div>
+                    <div className="w-100">
+                      <Row>
+                        <Col>
+                          <b>{model.name}</b>
+                          <div>{model.pipeline.classifier.name}</div>
+                        </Col>
+                        <Col>
+                          <div className="">
+                            <b>Acc: </b>
+                            {metric(model.evaluator.metrics.accuracy_score)}
+                          </div>
+                          <div>
+                            <b>F1: </b>
+                            {metric(model.evaluator.metrics.f1_score)}
+                          </div>
+                        </Col>
+                        <Col>
+                          <Button
+                            className="btn-edit mr-3 mr-md-4"
+                            onClick={() => onViewModel(model)}
+                          >
+                            View
+                          </Button>
+                          <Button
+                            className="btn-edit mr-3 mr-md-4"
+                            onClick={() => setModelDownload(model)}
+                          >
+                            Download
+                          </Button>
+                          <Button
+                            className="btn-edit mr-3 mr-md-4"
+                            onClick={() => setModelDeploy(model)}
+                          >
+                            Deploy
+                          </Button>
+                        </Col>
+                      </Row>
+                    </div>
+                  </div>
+                </TableEntry>
+              );
+            })}
+          </Table>
+          {modalOpen ? (
+            <TrainingWizard
+              modalOpen={true}
+              onClose={() => setModalOpen(false)}
+            ></TrainingWizard>
+          ) : null}
+          <SelectedModelModalView
+            model={modalModel}
+            onClosed={() => setModalModel(false)}
+          ></SelectedModelModalView>
+          <DownloadModal
+            model={modelDownload}
+            onClose={() => setModelDownload(undefined)}
+          ></DownloadModal>
+          <DeployModal
+            model={modelDeploy}
+            onClose={() => setModelDeploy(undefined)}
+          ></DeployModal>
+        </Fragment>
+      </div>
+    </Container>
   );
 };
 

@@ -1,0 +1,84 @@
+.training-wizard-body {
+  min-height: max(15vh, 200px);
+  max-height: calc(100vh - 200px);
+  overflow: auto;
+}
+
+.training-inner-flow {
+  max-height: 40vh;
+  overflow: auto;
+}
+
+.fotter {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Labeling-page */
+
+.badge {
+  margin: 4px;
+  border: 1px solid black;
+}
+
+.checkBoxContainer {
+  display: flex;
+}
+
+.labelingName {
+  font-weight: bold;
+  font-size: large;
+}
+
+.labelingRow {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #cccccc;
+}
+
+.labelingRow * {
+  display: inline;
+  padding: 4px;
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* dataset-page */
+
+.datasetRow {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #cccccc;
+}
+
+.datasetRow * {
+  display: inline;
+  padding: 4px;
+}
+
+.datasetName {
+  font-weight: bold;
+  font-size: large;
+}
+
+.advancedHeading {
+  display: flex;
+  align-items: center;
+}
+
+.advancedHeading * {
+  display: inline;
+}
+
+.faIconAdvancedHyperparameters {
+  margin-left: 8px;
+}
+
+.buttonShowAdvancedHyperparameters {
+  cursor: pointer;
+}

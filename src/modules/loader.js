@@ -3,6 +3,9 @@ import { BeatLoader as LoaderAnimation } from 'react-spinners';
 
 class Loader extends Component {
   render() {
+    {
+      console.log(this.props.loading);
+    }
     if (this.props.loading) {
       return (
         <div
