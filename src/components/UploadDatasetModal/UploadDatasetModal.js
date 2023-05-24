@@ -346,8 +346,11 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                               editingModeActive: true,
                             })} />
                           </Button>
-                          <Button close className='modal-icon-button mr-2' onClick={(e) => handleUpload(f)}>
-                            <Upload size={29} title='Initiates upload for this file'/>
+                          <Button close title='Removes item from list' className="modal-icon-button mr-2">
+                            <Trash2
+                              size={29}
+                              onClick={(e) => handleDelete(f.id)}
+                            />
                           </Button>
                         </div>
                       )}
