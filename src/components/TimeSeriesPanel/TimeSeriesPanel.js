@@ -398,7 +398,8 @@ class TimeSeriesPanel extends Component {
     // Check if a label has been clicked
     if (this.props.labeling && this.props.labeling.labels) {
       const onLabel = this.props.labeling.labels.find(
-        (elm) => elm.start <= position && elm.end >= position
+        (elm) =>
+          elm.start && elm.end && elm.start <= position && elm.end >= position
       );
       if (onLabel) {
         // Label has been clicked

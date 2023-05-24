@@ -285,6 +285,7 @@ class DatasetPage extends Component {
           ? selectedLabeling['_id']
           : undefined,
         selectedLabelTypes: selectedLabelTypes,
+        selectedLabelTypeId: labelings[0].labels[0]._id,
       },
       isReady: true,
     });
@@ -308,6 +309,22 @@ class DatasetPage extends Component {
     if (e.shiftKey) {
       if (e.keyCode >= 48 && e.keyCode <= 57) {
         const number = parseInt(String.fromCharCode(e.keyCode));
+
+        // If no label is selected, just chnage the used labeltype
+        if (!this.state.controlStates.selectedLabelId) {
+          const newType = this.state.labelings.find(
+            (elm) => elm._id === this.state.controlStates.selectedLabelingId
+          ).labels[number - 1]._id;
+          this.setState({
+            controlStates: {
+              ...this.state.controlStates,
+              selectedLabelTypeId: newType,
+            },
+          });
+          e.stopPropagation();
+          return;
+        }
+
         const labelingIdx = this.state.dataset.labelings.findIndex(
           (elm) =>
             elm.labelingId === this.state.controlStates.selectedLabelingId
@@ -454,6 +471,7 @@ class DatasetPage extends Component {
   }
 
   onSelectedLabelingIdChanged(selectedLabelingId) {
+    console.log(selectedLabelingId);
     let labeling = this.state.labelings.filter(
       (labeling) => labeling['_id'] === selectedLabelingId
     )[0];
@@ -471,46 +489,40 @@ class DatasetPage extends Component {
   }
 
   onSelectedLabelTypeIdChanged(selectedLabelTypeId) {
-    if (this.state.controlStates.selectedLabelId === undefined) return;
-
-    let dataset = JSON.parse(JSON.stringify(this.state.dataset));
-    let labeling = dataset.labelings.filter(
-      (labeling) =>
-        labeling.labelingId === this.state.controlStates.selectedLabelingId
-    )[0];
-    let label = labeling.labels.filter(
-      (label) => label['_id'] === this.state.controlStates.selectedLabelId
-    )[0];
-    const oldLabelType = label.type;
-    label.type = selectedLabelTypeId;
-    label.name = this.state.labelings
-      .map((elm) => elm.labels)
-      .flat()
-      .find((elm) => elm._id === selectedLabelTypeId)['name'];
-    label.name = this.state.selectedDatasetlabeling;
-
-    const oldSelectedLabelTypeId = this.state.controlStates.selectedLabelTypeId;
     this.setState({
-      dataset: dataset,
       controlStates: {
         ...this.state.controlStates,
         selectedLabelTypeId: selectedLabelTypeId,
       },
     });
-    changeDatasetLabel(dataset._id, labeling.labelingId, label).catch(() => {
-      this.showSnackbar('Could not change label type', 5000);
-      label.type = oldLabelType;
+    if (this.state.controlStates.selectedLabelId) {
+      const labelingIdx = this.state.dataset.labelings.findIndex(
+        (elm) => elm.labelingId === this.state.controlStates.selectedLabelingId
+      );
+
+      const labelIdx = this.state.dataset.labelings[
+        labelingIdx
+      ].labels.findIndex(
+        (elm) => elm._id === this.state.controlStates.selectedLabelId
+      );
+      const newDataset = this.state.dataset;
+      newDataset.labelings[labelingIdx].labels[labelIdx].type =
+        selectedLabelTypeId;
+      const newControllState = this.state.controlStates;
+      newControllState.selectedLabelTypeId = selectedLabelTypeId;
       this.setState({
-        dataset: dataset,
-        controlStates: {
-          ...this.state.controlStates,
-          selectedLabelTypeId: oldSelectedLabelTypeId,
-        },
+        dataset: newDataset,
       });
-    });
+      changeDatasetLabel(
+        newDataset._id,
+        this.state.controlStates.selectedLabelingId,
+        newDataset.labelings[labelingIdx].labels[labelIdx]
+      );
+    }
   }
 
   onSelectedLabelChanged(selectedLabelId) {
+    console.log('onlableClick');
     let labeling = this.state.dataset.labelings.filter(
       (labeling) =>
         labeling.labelingId === this.state.controlStates.selectedLabelingId
@@ -524,12 +536,15 @@ class DatasetPage extends Component {
       controlStates: {
         ...this.state.controlStates,
         selectedLabelId: selectedLabelId,
-        selectedLabelTypeId: label ? label.type : undefined,
+        selectedLabelTypeId: label
+          ? label.type
+          : this.state.controlStates.selectedLabelTypeId,
       },
     });
   }
 
   onClickPosition(position) {
+    console.log(position);
     // don't add new labels if we don't show them
     if (this.state.hideLabels) {
       return;
@@ -595,9 +610,8 @@ class DatasetPage extends Component {
         labelIdx - 1 >= 0 &&
         newDataset.labelings[labelingIdx].labels[labelIdx - 1]
       ) {
-        const prevLabel =
-          newDataset.labelings[labelingIdx].labels[labelIdx - 1];
-        newLabel.type = prevLabel.type;
+        console.log(this.state.controlStates.selectedLabelTypeId);
+        newLabel.type = this.state.controlStates.selectedLabelTypeId;
       }
       newDataset.labelings[labelingIdx].labels[labelIdx] = newLabel;
       this.setState({
@@ -713,7 +727,6 @@ class DatasetPage extends Component {
         controlStates: {
           ...this.state.controlStates,
           selectedLabelId: undefined,
-          selectedLabelTypeId: undefined,
         },
       });
       deleteDatasetLabel(dataset._id, labelingIdToDelete, labelIdToDelete)
@@ -758,6 +771,7 @@ class DatasetPage extends Component {
     let selectedDatasetlabeling = this.state.dataset.labelings.filter(
       (labeling) => selectedLabeling['_id'] === labeling.labelingId
     )[0];
+    console.log(selectedDatasetlabeling);
 
     if (!selectedDatasetlabeling) selectedDatasetlabeling = {};
     let selectedDatasetLabel =

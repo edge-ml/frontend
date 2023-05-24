@@ -108,7 +108,7 @@ class LabelingPanel extends Component {
                         }
                         key={index}
                       >
-                        {label.name} {'(' + (array.length - index) + ')'}
+                        {label.name} {'(' + (index + 1) + ')'}
                       </Button>
                     );
                   })
