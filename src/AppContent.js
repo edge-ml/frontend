@@ -66,36 +66,15 @@ class AppContent extends Component {
             </ProjectRefresh>
           )}
         />
-        {/* <Route
-          exact
-          path={this.props.match.path + '/model'}
-          render={(props) => (
-            // <ProjectRefresh project={this.props.project}>
-            //   <ModelPage {...props}></ModelPage>
-            // </ProjectRefresh>
-            <UnderConstruction></UnderConstruction>
-          )}
-        /> */}
         <Route
           exact
           path={this.props.match.path + '/models'}
           render={(props) => (
             <ProjectRefresh project={this.props.project}>
-              {/* <ValidationPage {...props}></ValidationPage> */}
-              <UnderConstruction></UnderConstruction>
+              <ValidationPage {...props}></ValidationPage>
             </ProjectRefresh>
           )}
         />
-        {/* <Route
-          exact
-          path={this.props.match.path + '/deploy'}
-          render={(props) => (
-            // <ProjectRefresh project={this.props.project}>
-            //   <ExportPage {...props}></ExportPage>
-            // </ProjectRefresh>
-            <UnderConstruction></UnderConstruction>
-          )}
-        /> */}
         <Route
           exact
           path={this.props.match.path + '/settings'}

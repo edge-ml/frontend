@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import {
   EdgeMLTable,
   EdgeMLTableHeader,
-  EdgeMLTableBody,
+  EdgeMLTableEntry,
 } from '../../Common/EdgeMLTable';
 
 const Wizard_SelectLabeling = ({
@@ -48,40 +48,38 @@ const Wizard_SelectLabeling = ({
                 <div className="ml-2">Use 0-Class</div>
               </div>
             </EdgeMLTableHeader>
-            <EdgeMLTableBody>
-              {labelings
-                .filter((elm) => countDatasets(elm))
-                .map((labeling) => (
-                  <div
-                    className={classNames('labelingRow', {
-                      disabled: countDatasets(labeling) === 0,
-                    })}
-                  >
-                    <Checkbox
-                      onClick={() => setLabeling(labeling)}
-                      isSelected={
-                        selectedLabeling
-                          ? selectedLabeling._id === labeling._id
-                          : false
-                      }
-                    ></Checkbox>
-                    <div className="labelingName">{labeling.name} </div>
-                    <div>
-                      {labeling.labels.map((label) => (
-                        <Badge
-                          className="badge"
-                          style={{ backgroundColor: label.color }}
-                        >
-                          {label.name}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div>{`(${countDatasets(labeling)} ${
-                      countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
-                    })`}</div>
+            {labelings
+              .filter((elm) => countDatasets(elm))
+              .map((labeling) => (
+                <EdgeMLTableEntry
+                  className={classNames('labelingRow', {
+                    disabled: countDatasets(labeling) === 0,
+                  })}
+                >
+                  <Checkbox
+                    onClick={() => setLabeling(labeling)}
+                    isSelected={
+                      selectedLabeling
+                        ? selectedLabeling._id === labeling._id
+                        : false
+                    }
+                  ></Checkbox>
+                  <div className="labelingName">{labeling.name} </div>
+                  <div>
+                    {labeling.labels.map((label) => (
+                      <Badge
+                        className="badge"
+                        style={{ backgroundColor: label.color }}
+                      >
+                        {label.name}
+                      </Badge>
+                    ))}
                   </div>
-                ))}
-            </EdgeMLTableBody>
+                  <div>{`(${countDatasets(labeling)} ${
+                    countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
+                  })`}</div>
+                </EdgeMLTableEntry>
+              ))}
           </EdgeMLTable>
         </div>
       </ModalBody>

@@ -17,6 +17,17 @@ export const getModels = function () {
   });
 };
 
+export const deleteModel = async (modelId) => {
+  const res = await axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.DELETE,
+      apiConsts.ML_URI,
+      apiConsts.ML_ENDPOINTS.MODELS + `/${modelId}`
+    )
+  );
+  return res.data;
+};
+
 export const getTrainconfig = () => {
   return new Promise((resolve, reject) => {
     axios(

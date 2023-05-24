@@ -1,17 +1,25 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import Loader from '../../modules/loader';
-import { useIncrement } from '../../services/ReactHooksService';
-import { getModels } from '../../services/ApiServices/MlService';
+import { getModels, deleteModel } from '../../services/ApiServices/MlService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 import TrainingWizard from '../../components/TrainingWizard';
-import { Button, Container } from 'reactstrap';
+import {
+  Button,
+  Container,
+  Modal,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
+} from 'reactstrap';
 import DownloadModal from './DownloadModal';
 import { Table, TableEntry } from '../../components/Common/Table';
 import Checkbox from '../../components/Common/Checkbox';
-import { Col, Row } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt, faFilter } from '@fortawesome/free-solid-svg-icons';
+import {
+  faTrashAlt,
+  faDownload,
+  faInfoCircle,
+  faMicrochip,
+} from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 
 const ValidationPage = () => {
@@ -21,6 +29,8 @@ const ValidationPage = () => {
   const [modalModel, setModalModel] = useState(undefined);
   const [modelDownload, setModelDownload] = useState(undefined);
   const [modelDeploy, setModelDeploy] = useState(undefined);
+  const [selectedModels, setSelectedModels] = useState([]);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     getModels().then((models) => {
@@ -32,6 +42,35 @@ const ValidationPage = () => {
 
   const onViewModel = (model) => {
     setModalModel(model);
+  };
+
+  const clickCheckBox = (model) => {
+    const id = model._id;
+    if (selectedModels.includes(id)) {
+      setSelectedModels(selectedModels.filter((elm) => elm != id));
+    } else {
+      setSelectedModels([...selectedModels, id]);
+    }
+  };
+
+  const onOpenDeleteModal = () => {
+    toggleDeleteModal();
+  };
+
+  const onDeleteSelectedModels = () => {
+    selectedModels.forEach((elm) => {
+      deleteModel(elm);
+    });
+    setSelectedModels([]);
+  };
+
+  const toggleDeleteModal = () => {
+    setDeleteModalOpen(!deleteModalOpen);
+  };
+
+  const onWizardClose = () => {
+    setModalOpen(false);
+    getModels().then((models) => setModels(models));
   };
 
   return (
@@ -52,7 +91,8 @@ const ValidationPage = () => {
                   className="ml-3 btn-delete"
                   id="deleteDatasetsButton"
                   size="sm"
-                  color="secondary"
+                  divor="secondary"
+                  onClick={onOpenDeleteModal}
                 >
                   <FontAwesomeIcon
                     className="mr-2"
@@ -66,49 +106,89 @@ const ValidationPage = () => {
             {models.map((model, index) => {
               return (
                 <TableEntry index={index}>
-                  <div className="m-2 d-flex">
-                    <div className="d-flex align-items-center p-2 ml-2 mr-0 ml-md-3 mr-md-3">
-                      <Checkbox></Checkbox>
-                    </div>
-                    <div className="w-100">
-                      <Row>
-                        <Col>
+                  {model.status === 'done' ? (
+                    <div className="p-2 d-flex">
+                      <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
+                        <Checkbox
+                          onClick={() => clickCheckBox(model)}
+                        ></Checkbox>
+                      </div>
+                      <div
+                        className="w-100 d-flex justify-content-between align-items-center"
+                        onClick={() => onViewModel(model)}
+                      >
+                        <div>
                           <b>{model.name}</b>
                           <div>{model.pipeline.classifier.name}</div>
-                        </Col>
-                        <Col>
+                        </div>
+                        <div>
                           <div className="">
                             <b>Acc: </b>
-                            {metric(model.evaluator.metrics.accuracy_score)}
+                            {metric(model.evaluator.metrics.accuracy_score)}%
                           </div>
                           <div>
                             <b>F1: </b>
-                            {metric(model.evaluator.metrics.f1_score)}
+                            {metric(model.evaluator.metrics.f1_score)}%
                           </div>
-                        </Col>
-                        <Col>
+                        </div>
+                        <div>
                           <Button
                             className="btn-edit mr-3 mr-md-4"
-                            onClick={() => onViewModel(model)}
+                            onClick={(e) => {
+                              onViewModel(model);
+                              e.stopPropagation();
+                            }}
                           >
-                            View
+                            <FontAwesomeIcon
+                              icon={faInfoCircle}
+                            ></FontAwesomeIcon>
                           </Button>
                           <Button
                             className="btn-edit mr-3 mr-md-4"
-                            onClick={() => setModelDownload(model)}
+                            onClick={(e) => {
+                              setModelDownload(model);
+                              e.stopPropagation();
+                            }}
                           >
-                            Download
+                            <FontAwesomeIcon
+                              icon={faDownload}
+                            ></FontAwesomeIcon>
                           </Button>
                           <Button
                             className="btn-edit mr-3 mr-md-4"
-                            onClick={() => setModelDeploy(model)}
+                            onClick={(e) => {
+                              setModelDeploy(model);
+                              e.stopPropagation();
+                            }}
                           >
-                            Deploy
+                            <FontAwesomeIcon
+                              icon={faMicrochip}
+                            ></FontAwesomeIcon>
                           </Button>
-                        </Col>
-                      </Row>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="p-2 d-flex">
+                      <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
+                        <Checkbox
+                          onClick={() => clickCheckBox(model)}
+                        ></Checkbox>
+                      </div>
+                      <div className="w-100 d-flex justify-content-start align-items-center">
+                        <div>
+                          <b>{model.name}</b>
+                          <div>{model.trainRequest.classifier.name}</div>
+                        </div>
+                        <div
+                          className="ml-5 flex-grow-1 d-flex justify-content-center"
+                          style={{ color: 'red' }}
+                        >
+                          An error occured while training!
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </TableEntry>
               );
             })}
@@ -116,7 +196,7 @@ const ValidationPage = () => {
           {modalOpen ? (
             <TrainingWizard
               modalOpen={true}
-              onClose={() => setModalOpen(false)}
+              onClose={onWizardClose}
             ></TrainingWizard>
           ) : null}
           <SelectedModelModalView
@@ -133,6 +213,37 @@ const ValidationPage = () => {
           ></DeployModal>
         </Fragment>
       </div>
+      <Modal isOpen={deleteModalOpen} toggle={toggleDeleteModal}>
+        <ModalHeader toggle={toggleDeleteModal}>Delete models</ModalHeader>
+        <ModalBody>
+          Are you sure to delete the following models?
+          {selectedModels.map((id) => {
+            const model = models.find((elm) => elm._id === id);
+            if (!model) {
+              return;
+            }
+            return (
+              <React.Fragment key={id}>
+                <br />
+                <b>{model.name}</b>
+              </React.Fragment>
+            );
+          })}
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            id="deleteDatasetsButtonFinal"
+            outline
+            color="danger"
+            onClick={onDeleteSelectedModels}
+          >
+            Yes
+          </Button>{' '}
+          <Button outline color="secondary" onClick={toggleDeleteModal}>
+            No
+          </Button>
+        </ModalFooter>
+      </Modal>
     </Container>
   );
 };
