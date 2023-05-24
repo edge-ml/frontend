@@ -46,7 +46,6 @@ class TimeSeriesCollectionPanel extends Component {
   }
 
   componentWillReceiveProps(props) {
-    console.log('component update');
     this.setState((state) => ({
       labeling: props.labeling,
       labelTypes: props.labelTypes,

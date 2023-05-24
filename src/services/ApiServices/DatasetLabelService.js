@@ -5,8 +5,6 @@ const axios = ax.create();
 const axiosNoToken = ax.create();
 
 export const createDatasetLabel = (datasetId, labelingId, label) => {
-  console.log(label);
-  console.log(labelingId);
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(

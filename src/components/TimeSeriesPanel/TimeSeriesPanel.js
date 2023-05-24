@@ -30,7 +30,6 @@ class TimeSeriesPanel extends Component {
 
     // global keyboard handlers
     this.onKeyDown = this.onKeyDown.bind(this);
-
     document.addEventListener('mousemove', this.onMouseMoved);
     document.addEventListener('mouseup', this.onMouseUp);
     document.addEventListener('keydown', this.onKeyDown);
@@ -194,31 +193,6 @@ class TimeSeriesPanel extends Component {
   // }, 200);
 
   afterSetExtremesFunc(min, max, width) {
-    // var idx = 0;
-    // Highcharts.charts.forEach((chart) => {
-    //   if (chart && this.props.index === 0) {
-    //     chart.showLoading('Loading data from server...');
-    //     this.props
-    //       .onTimeSeriesWindow(
-    //         Math.round(min),
-    //         Math.round(max),
-    //         Math.round(width)
-    //       )
-    //       .then((ts) => {
-    //         if (chart.index !== 0) {
-    //           console.log(ts)
-    //           console.log(idx)
-    //           console.log(ts[idx]);
-    //           chart.series[0].setData(ts[idx], false, false);
-    //           idx += 1;
-    //         }
-    //         chart.xAxis[0].setExtremes(min, max, false, false);
-    //         chart.hideLoading();
-    //         chart.redraw(false);
-    //       });
-    //   }
-    // });
-    console.log(this.chart && this.chart.current && this.chart.current.chart);
     if (this.chart && this.chart.current && this.chart.current.chart) {
       const chart = this.chart.current.chart;
       if (this.props.index !== 0) {
@@ -604,16 +578,15 @@ class TimeSeriesPanel extends Component {
    * Global Keyboard Handlers
    */
   onKeyDown(e) {
-    e.stopImmediatePropagation();
-    switch (e.code) {
-      // remove ternary condition if the fetching can be done instantaneously to enable continuous scrolling
-      case 'ArrowRight':
-        !e.repeat ? this.scroll(ScrollDirection.RIGHT) : (() => {})();
-        break;
-      case 'ArrowLeft':
-        !e.repeat ? this.scroll(ScrollDirection.LEFT) : (() => {})();
-        break;
-    }
+    // switch (e.code) {
+    //   // remove ternary condition if the fetching can be done instantaneously to enable continuous scrolling
+    //   case 'ArrowRight':
+    //     !e.repeat ? this.scroll(ScrollDirection.RIGHT) : (() => {})();
+    //     break;
+    //   case 'ArrowLeft':
+    //     !e.repeat ? this.scroll(ScrollDirection.LEFT) : (() => {})();
+    //     break;
+    // }
   }
 
   /***

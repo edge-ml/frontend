@@ -123,7 +123,6 @@ class DatasetPage extends Component {
     this.memoizedGetDatasetTimeseries(this.props.match.params.id, series, {
       max_resolution: window.innerWidth / 2,
     }).then((tsData) => {
-      console.log(tsData);
       this.setState({
         previewTimeSeriesData: tsData,
         activeSeries: series,
@@ -140,7 +139,6 @@ class DatasetPage extends Component {
   }
 
   toggleMetaData(state) {
-    console.log('click');
     this.setState({
       metaDataExtended: state,
     });
@@ -243,7 +241,6 @@ class DatasetPage extends Component {
   }
 
   async getDatasetWindow(start, end, max_resolution) {
-    console.log(start, end, max_resolution);
     const res = await this.memoizedGetDatasetTimeseries(
       this.props.match.params.id,
       this.state.activeSeries,
@@ -253,7 +250,6 @@ class DatasetPage extends Component {
         end,
       }
     );
-    console.log(res);
     return res;
   }
 
@@ -302,127 +298,51 @@ class DatasetPage extends Component {
     ) {
       return;
     }
-    let keyCode = e.keyCode ? e.keyCode : e.which;
 
-    if ((e.ctrlKey || e.shiftKey) && keyCode > 47 && keyCode < 58) {
-      e.preventDefault();
+    // Delete label on backspace / delete
+    if (e.keyCode === 8 || e.keyCode === 46) {
+      this.onDeleteSelectedLabel();
+    }
 
-      this.pressedKeys.ctrl = e.ctrlKey;
-      this.pressedKeys.shift = e.shiftKey;
-
-      this.pressedKeys.num.push(keyCode - 48);
-
-      if (this.pressedKeys.ctrl && this.pressedKeys.shift) {
-        let index =
-          this.pressedKeys.num.reduce((total, current, index) => {
-            return (
-              total +
-              current * Math.pow(10, this.pressedKeys.num.length - index - 1)
-            );
-          }, 0) - 1;
-
-        if (index >= 0 && index < this.state.labelings.length) {
-          this.onSelectedLabelingIdChanged(this.state.labelings[index]['_id']);
-        } else {
-          while (
-            index >= this.state.labelings.length &&
-            this.pressedKeys.num.length > 1
-          ) {
-            this.pressedKeys.num.shift();
-            index =
-              this.pressedKeys.num.reduce((total, current, index) => {
-                return (
-                  total +
-                  current *
-                    Math.pow(10, this.pressedKeys.num.length - index - 1)
-                );
-              }, 0) - 1;
-          }
-
-          if (index >= this.state.labelings.length || index < 0) {
-            this.clearKeyBuffer();
-          } else {
-            this.onSelectedLabelingIdChanged(
-              this.state.labelings[index]['_id']
-            );
-          }
-        }
-      } else if (this.pressedKeys.ctrl && !this.pressedKeys.shift) {
-        let index =
-          this.pressedKeys.num.reduce((total, current, index) => {
-            return (
-              total +
-              current * Math.pow(10, this.pressedKeys.num.length - index - 1)
-            );
-          }, 0) - 1;
-        let controlStates = this.state.controlStates;
-
+    // Change label-type
+    if (e.shiftKey) {
+      if (e.keyCode >= 48 && e.keyCode <= 57) {
+        const number = parseInt(String.fromCharCode(e.keyCode));
+        const labelingIdx = this.state.dataset.labelings.findIndex(
+          (elm) =>
+            elm.labelingId === this.state.controlStates.selectedLabelingId
+        );
         if (
-          controlStates.selectedLabelingId &&
-          controlStates.selectedLabelTypeId
+          this.state.labelings.find(
+            (elm) => elm._id === this.state.controlStates.selectedLabelingId
+          ).labels.length < number
         ) {
-          if (controlStates.canEdit) {
-            let labeling = this.state.labelings.filter((labeling) => {
-              return labeling['_id'] === controlStates.selectedLabelingId;
-            })[0];
-
-            let labels = this.state.labels.filter((label) =>
-              labeling.labels.includes(label['_id'])
-            );
-
-            if (index >= 0 && index < labels.length) {
-              this.onSelectedLabelTypeIdChanged(labels[index]['_id']);
-            } else {
-              while (
-                index >= labels.length &&
-                this.pressedKeys.num.length > 1
-              ) {
-                this.pressedKeys.num.shift();
-                index =
-                  this.pressedKeys.num.reduce((total, current, index) => {
-                    return (
-                      total +
-                      current *
-                        Math.pow(10, this.pressedKeys.num.length - index - 1)
-                    );
-                  }, 0) - 1;
-              }
-
-              if (index >= labels.length || index < 0) {
-                this.clearKeyBuffer();
-              } else {
-                this.onSelectedLabelTypeIdChanged(labels[index]['_id']);
-              }
-            }
-          } else {
-            window.alert('Editing not unlocked. Press "L" to unlock.');
-            this.clearKeyBuffer();
-          }
-        } else if (!controlStates.selectedLabelTypeId) {
-          window.alert('No label selected.');
-          this.clearKeyBuffer();
+          e.stopPropagation();
+          return;
         }
-      }
-
-      // l
-    } else if (keyCode === 76) {
-      e.preventDefault();
-
-      // backspace or delete
-    } else if (keyCode === 8 || keyCode === 46) {
-      e.preventDefault();
-      let controlStates = this.state.controlStates;
-      if (
-        controlStates.selectedLabelingId &&
-        controlStates.selectedLabelTypeId
-      ) {
-        if (controlStates.canEdit) {
-          this.onDeleteSelectedLabel();
-        } else {
-          window.alert('Editing not unlocked. Press "L" to unlock.');
-        }
+        const labelIdx = this.state.dataset.labelings[
+          labelingIdx
+        ].labels.findIndex(
+          (elm) => elm._id === this.state.controlStates.selectedLabelId
+        );
+        const newDataset = this.state.dataset;
+        const newType = this.state.labelings.find(
+          (elm) => elm._id === this.state.controlStates.selectedLabelingId
+        ).labels[number - 1]._id;
+        newDataset.labelings[labelingIdx].labels[labelIdx].type = newType;
+        const newControllState = this.state.controlStates;
+        newControllState.selectedLabelTypeId = newType;
+        this.setState({
+          dataset: newDataset,
+        });
+        changeDatasetLabel(
+          newDataset._id,
+          this.state.controlStates.selectedLabelingId,
+          newDataset.labelings[labelingIdx].labels[labelIdx]
+        );
       }
     }
+    e.stopPropagation();
   }
 
   onKeyUp(e) {
@@ -632,6 +552,7 @@ class DatasetPage extends Component {
       const randomId = Math.floor(Math.random() * 0xffffff)
         .toString(16)
         .padEnd(6, '0');
+
       const newLabel = {
         start: position,
         end: undefined,
@@ -712,7 +633,6 @@ class DatasetPage extends Component {
           });
         })
         .catch((e) => {
-          console.log(e);
           this.showSnackbar('Could not create label', 5000);
           // Delete label again
           newDataset.labelings[labelingIdx].labels.splice(labelIdx, 1);
@@ -849,19 +769,12 @@ class DatasetPage extends Component {
 
     let isCrosshairIntervalActive = this.crosshairInterval ? true : false;
 
-    // const startOffset = Math.min(
-    //   ...this.state.dataset.timeSeries.map((elm) => elm.offset),
-    //   0
-    // );
-    // const endOffset = Math.max(
-    //   ...this.state.dataset.timeSeries.map((elm) => elm.offset),
-    //   0
-    // );
-
-    const startOffset = 0;
-    const endOffset = 0;
     return (
-      <div className="dataset-full-page">
+      <div
+        className="dataset-full-page"
+        onKeyDown={this.onKeyDown}
+        tabIndex={0}
+      >
         <div className="w-100 position-relative">
           <Fade in={this.state.fadeIn}>
             <div>

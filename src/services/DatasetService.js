@@ -61,7 +61,6 @@ const cancelDownload = async (downloadId) => {
 };
 
 const datasetDownloadfromId = async (downloadId) => {
-  console.log(downloadId);
   window.open(`${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}${downloadId}`);
 };
 
