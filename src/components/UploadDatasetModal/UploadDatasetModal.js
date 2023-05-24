@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, Button, Progress, ModalFooter } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
-import { FiletypeCsv, Check2Circle, XLg, Trash2, Gear, Upload } from 'react-bootstrap-icons';
+import { FiletypeCsv, Check2Circle, XLg, Gear } from 'react-bootstrap-icons';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 import { processCSVBackend } from '../../services/ApiServices/CSVServices';
 import { DatasetConfigView } from './DatasetConfigView';
@@ -346,10 +346,10 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                               editingModeActive: true,
                             })} />
                           </Button>
-                          <Button close title='Removes item from list' className="modal-icon-button mr-2">
-                            <Trash2
-                              size={29}
-                              onClick={(e) => handleDelete(f.id)}
+                          <Button close title='Removes item from list' className="modal-icon-button mr-2" onClick={(e) => handleDelete(f.id)} >
+                            <FontAwesomeIcon
+                              style={{fontSize: '1.2em'}}
+                              icon={faTrashAlt}
                             />
                           </Button>
                         </div>
@@ -360,10 +360,10 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                         </Button>
                       )}
                       {f.status === FileStatus.CANCELLED || f.status === FileStatus.ERROR && (
-                        <Button close title='Removes item from list' className="modal-icon-button mr-2">
-                          <Trash2
-                            size={29}
-                            onClick={(e) => handleDelete(f.id)}
+                        <Button close title='Removes item from list' className="modal-icon-button mr-2" onClick={(e) => handleDelete(f.id)} >
+                          <FontAwesomeIcon
+                            style={{fontSize: '1.2em'}}
+                            icon={faTrashAlt}
                           />
                         </Button>
                       )}
