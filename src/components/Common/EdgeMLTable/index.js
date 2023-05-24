@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 
-const EdgeMLTable = ({ children }) => {
+const EdgeMLTable = ({ children, className, style }) => {
   const header = React.Children.toArray(children).find(
     (child) => child.type === EdgeMLTableHeader
   );
@@ -12,8 +12,8 @@ const EdgeMLTable = ({ children }) => {
     });
 
   return (
-    <div style={{ borderRadius: 10 }}>
-      <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline">
+    <div style={{ borderRadius: 10, ...style }} className={className}>
+      <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline align-items-center font-weight-bold fs-medium">
         {header}
       </div>
       <div

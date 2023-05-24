@@ -13,6 +13,11 @@ import {
   UncontrolledDropdown,
   InputGroup,
   InputGroupText,
+  ButtonToggle,
+  FormGroup,
+  Label,
+  Form,
+  CustomInput,
 } from 'reactstrap';
 import {
   getDeployDevices,
@@ -21,6 +26,11 @@ import {
 
 import './index.css';
 import { HyperparameterView } from '../../components/Hyperparameters/HyperparameterView';
+import {
+  EdgeMLTable,
+  EdgeMLTableEntry,
+  EdgeMLTableHeader,
+} from '../../components/Common/EdgeMLTable';
 
 const DeployModal = ({ model, onClose }) => {
   const [devices, setDevices] = useState([]);
@@ -61,7 +71,6 @@ const DeployModal = ({ model, onClose }) => {
       parameters,
       selectedDevice
     );
-    console.log(res);
   };
 
   const handleHyperparameterChange = ({ parameter_name, state }) => {
@@ -92,53 +101,97 @@ const DeployModal = ({ model, onClose }) => {
             ))}
           </DropdownMenu>
         </Dropdown>
-        <div>
-          <h5>Configure TimeSeries</h5>
-          <div className="p-2">
-            {model.timeSeries.map((elm, ts_idx) => (
-              <div className="d-flex align-items-center">
-                <div className="mr-3 pr-3">
-                  <strong>{elm}</strong>
-                </div>
-                <UncontrolledDropdown style={{ position: 'relative' }}>
-                  <DropdownToggle caret size="sm">
-                    {selectedSensors[ts_idx].sensor_id !== undefined
-                      ? selectedDevice.sensors[
-                          selectedSensors[ts_idx].sensor_id
-                        ].name +
-                        '_' +
-                        selectedDevice.sensors[
-                          selectedSensors[ts_idx].sensor_id
-                        ].components[selectedSensors[ts_idx].component_id].name
-                      : 'Unset'}
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    {selectedDevice.sensors.map((sensor, sensor_idx) =>
-                      sensor.components.map((component, component_idx) => (
-                        <DropdownItem
-                          onClick={() =>
-                            selectSensor(ts_idx, sensor_idx, component_idx)
-                          }
-                        >
-                          {sensor.name + '_' + component.name}
-                        </DropdownItem>
-                      ))
-                    )}
-                  </DropdownMenu>
-                </UncontrolledDropdown>
+        <div className="d-flex">
+          <EdgeMLTable className="m-2" style={{ width: '500px' }}>
+            <EdgeMLTableHeader>
+              <div className="d-flex justify-content-center w-100">
+                Configure TimeSeries
               </div>
+            </EdgeMLTableHeader>
+
+            {model.timeSeries.map((elm, ts_idx) => (
+              <EdgeMLTableEntry>
+                <div className="d-flex align-items-center justify-content-between mx-2">
+                  <strong className="pl-2">{elm}</strong>
+                  <UncontrolledDropdown
+                    direction="left"
+                    style={{ position: 'relative' }}
+                  >
+                    <DropdownToggle caret size="sm">
+                      {selectedSensors[ts_idx].sensor_id !== undefined
+                        ? selectedDevice.sensors[
+                            selectedSensors[ts_idx].sensor_id
+                          ].name +
+                          '_' +
+                          selectedDevice.sensors[
+                            selectedSensors[ts_idx].sensor_id
+                          ].components[selectedSensors[ts_idx].component_id]
+                            .name
+                        : 'Unset'}
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      {selectedDevice.sensors.map((sensor, sensor_idx) =>
+                        sensor.components.map((component, component_idx) => (
+                          <DropdownItem
+                            onClick={() =>
+                              selectSensor(ts_idx, sensor_idx, component_idx)
+                            }
+                          >
+                            {sensor.name + '_' + component.name}
+                          </DropdownItem>
+                        ))
+                      )}
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </div>
+              </EdgeMLTableEntry>
             ))}
-          </div>
-          <div className="mt-4">
-            <h5>Settings</h5>
-            <HyperparameterView
-              hyperparameters={parameters}
-              isAdvanced={false}
-              handleHyperparameterChange={handleHyperparameterChange}
-            ></HyperparameterView>
-          </div>
+          </EdgeMLTable>
+          <EdgeMLTable className="m-2" style={{ width: '400px' }}>
+            <EdgeMLTableHeader>
+              <div className="d-flex justify-content-center w-100">
+                <div>Use BLE</div>
+                <FormGroup style={{ margin: 0 }}>
+                  <CustomInput
+                    className="ml-2"
+                    inline
+                    type="switch"
+                    id="exampleCustomSwitch"
+                    // checked={this.props.project.enableDeviceApi}
+                    // onChange={(e) => this.props.onDeviceApiSwitch(e.target.checked)}
+                  />
+                </FormGroup>
+              </div>
+            </EdgeMLTableHeader>
+            <EdgeMLTableEntry>
+              <div className="d-flex p-2 align-items-center">
+                <div className="font-weight-bold" style={{ width: '200px' }}>
+                  Service-UUID
+                </div>
+                <Input></Input>
+              </div>
+            </EdgeMLTableEntry>
+            <EdgeMLTableEntry>
+              <div className="d-flex p-2 algin-items-center">
+                <div className="font-weight-bold" style={{ width: '200px' }}>
+                  Characteristic-UUID
+                </div>
+                <Input></Input>
+              </div>
+            </EdgeMLTableEntry>
+          </EdgeMLTable>
         </div>
-        <Button onClick={onDeploy}>Deploy</Button>
+        <div className="m-2">
+          <div className="font-weight-bold fs-medium">Settings</div>
+          <HyperparameterView
+            hyperparameters={parameters}
+            isAdvanced={false}
+            handleHyperparameterChange={handleHyperparameterChange}
+          ></HyperparameterView>
+        </div>
+        <div className="w-100 d-flex justify-content-end">
+          <Button onClick={onDeploy}>Deploy</Button>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button onClick={onClose}>Close</Button>
