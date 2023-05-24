@@ -47,9 +47,10 @@ class ListPage extends Component {
     this.selectAllEmpty = this.selectAllEmpty.bind(this);
     this.selectAll = this.selectAll.bind(this);
     this.deselectAll = this.deselectAll.bind(this);
+    this.refreshDatasetList = this.refreshDatasetList.bind(this);
   }
 
-  componentDidMount() {
+  refreshDatasetList() {
     Promise.all([
       getDatasets(),
       subscribeLabelingsAndLabels().then((labelings) => {
@@ -60,6 +61,10 @@ class ListPage extends Component {
     ]).then(([datasets, _]) => {
       this.onDatasetsChanged(datasets);
     });
+  }
+
+  componentDidMount() {
+    this.refreshDatasetList()
   }
 
   async downloadAllDatasets() {
@@ -121,10 +126,13 @@ class ListPage extends Component {
     }
   }
 
-  toggleCreateNewDatasetModal() {
+  toggleCreateNewDatasetModal(refreshDatasets = false) {
     this.setState({
       isCreateNewDatasetOpen: !this.state.isCreateNewDatasetOpen,
     });
+    if (refreshDatasets) {
+      this.refreshDatasetList()
+    }
   }
 
   openDeleteModal() {

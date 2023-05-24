@@ -252,18 +252,28 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       const result = await response;
     } catch (err) {
       handleStatus(file.id, FileStatus.ERROR)
-      return;
+      return false;
     }
     handleStatus(file.id, FileStatus.COMPLETE);
+    return true;
   }
 
-  const handleUploadAll = () => {
+  const handleUploadAll = async () => {
     setFiles(prevFiles => prevFiles.map(f => ({...f, config: {...f.config, editingModeActive: false}})))
+    const uploadResults = []
     for (const file of files) {
       if (file.status !== FileStatus.CONFIGURATION) {
         continue;
       }
-      handleUpload(file)
+      uploadResults.push(handleUpload(file))
+    }
+    console.log(uploadResults)
+    const allPromisesResolved = (await Promise.all(uploadResults)).every(result => result !== false);
+    if (allPromisesResolved) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setFiles([]);
+      setCount(0);
+      onCloseModal(true);
     }
   }
 
@@ -282,7 +292,11 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     <Modal className="modal-xl" data-testid="modal" isOpen={isOpen}>
       <ModalHeader>
         <span>Create new dataset</span>
-        <Button className="modal-close-button" close onClick={onCloseModal} />
+        <Button
+          className="modal-close-button"
+          close
+          onClick={e => files.find(f => f.status === FileStatus.COMPLETE) ? 
+                                    onCloseModal(true) : onCloseModal(false)} />
       </ModalHeader>
       <ModalBody>
         <DragDrop
