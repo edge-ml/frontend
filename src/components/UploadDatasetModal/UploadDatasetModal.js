@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, Button, Progress, ModalFooter } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
-import { FiletypeCsv, Check2Circle, XLg, Gear } from 'react-bootstrap-icons';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faTrashAlt, faCog, faCheckCircle, faBan } from '@fortawesome/free-solid-svg-icons';
+import { faFile } from '@fortawesome/free-regular-svg-icons';
 
 import { processCSVBackend } from '../../services/ApiServices/CSVServices';
 import { DatasetConfigView } from './DatasetConfigView';
-import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
+
 import './UploadDatasetModal.css';
 
 import { updateDataset } from '../../services/ApiServices/DatasetServices';
@@ -311,7 +311,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                 (!f.config || !f.config.editingModeActive) ? (
                   <div key={f.id} className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11">
                     <div className="d-flex flex-column align-items-center mr-2 ml-2 mt-2 col-lg-2">
-                      <FiletypeCsv className="fa-3x" />
+                      <FontAwesomeIcon icon={faFile} size='3x'/>
                       <span className='text-center'>{f.name}</span>
                     </div>
                     <Progress
@@ -332,18 +332,16 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                     <div className="d-flex align-items-center">
                       {f.status === FileStatus.COMPLETE && (
                         <Button close className="modal-icon-button mr-2" onClick={() => handleDelete(f.id)}>
-                          <Check2Circle 
-                            size={33}
-                            title='Removes item from list'
-                            />
+                          <FontAwesomeIcon icon={faCheckCircle} style={{fontSize: '1.2em'}} title='Removes item from list' />
                         </Button>
                       )}
                       {f.status === FileStatus.CONFIGURATION && (
                         <div className='d-flex'>
                           <Button close className="modal-icon-button mr-1">
-                            <Gear size={29} title='Opens configuration menu' onClick={(e) => changeConfig(f.id, {
-                              ...f.config,
-                              editingModeActive: true,
+                            <FontAwesomeIcon icon={faCog} title='Opens configuration menu' style={{fontSize: '1.2em'}} 
+                              onClick={(e) => changeConfig(f.id, {
+                                ...f.config,
+                                editingModeActive: true,
                             })} />
                           </Button>
                           <Button close title='Removes item from list' className="modal-icon-button mr-2" onClick={(e) => handleDelete(f.id)} >
@@ -356,7 +354,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                       )}
                       {f.status === FileStatus.UPLOADING && (
                         <Button close title='Cancels ongoing upload' className="modal-icon-button mr-2">
-                          <XLg size={29} onClick={(e) => handleCancel(f)} />
+                          <FontAwesomeIcon icon={faBan} style={{fontSize: '1.2em'}} onClick={(e) => handleCancel(f)}/>
                         </Button>
                       )}
                       {f.status === FileStatus.CANCELLED || f.status === FileStatus.ERROR && (
