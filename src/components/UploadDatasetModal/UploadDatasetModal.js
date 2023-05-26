@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Modal, ModalHeader, ModalBody, Button, Progress, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Button, Progress, ModalFooter, Alert, ButtonGroup } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faTrashAlt, faCog, faCheckCircle, faBan } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faTrashAlt, faCog, faCheckCircle, faCheck, faBan } from '@fortawesome/free-solid-svg-icons';
 import { faFile } from '@fortawesome/free-regular-svg-icons';
 
 import { processCSVBackend } from '../../services/ApiServices/CSVServices';
@@ -16,6 +16,7 @@ import { updateDataset } from '../../services/ApiServices/DatasetServices';
 export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
   const [files, setFiles] = useState([]);
   const [count, setCount] = useState(0);
+  const [showWarning, setShowWarning] = useState(false);
 
   const FileStatus = Object.freeze({
     CONFIGURATION: 'Configuration',
@@ -274,6 +275,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       setFiles([]);
       setCount(0);
       onCloseModal(true);
+      setShowWarning(false);
     }
   }
 
@@ -288,6 +290,36 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     })
   }
 
+  const handleModalClose = () => {
+    const anyOngoing = files.find(f => f.status === FileStatus.UPLOADING || f.status === FileStatus.PROCESSING);
+    if (anyOngoing) {
+      setShowWarning(true);
+    } else {
+      handleConfirmClose();
+    }
+  }
+
+  const handleConfirmClose = () => {
+    const anyComplete = files.find(f => f.status === FileStatus.COMPLETE);
+    for (const file of files) {
+      if (file.status === FileStatus.UPLOADING){
+        handleCancel(file);
+      }
+    }
+    setCount(0);
+    setFiles([]);
+    if (anyComplete) {
+      onCloseModal(true);
+    } else {
+      onCloseModal(false);
+    }
+    setShowWarning(false);
+  }
+
+  const handleCancelClose = () => {
+    setShowWarning(false);
+  }
+
   return (
     <Modal className="modal-xl" data-testid="modal" isOpen={isOpen}>
       <ModalHeader>
@@ -295,10 +327,20 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
         <Button
           className="modal-close-button"
           close
-          onClick={e => files.find(f => f.status === FileStatus.COMPLETE) ? 
-                                    onCloseModal(true) : onCloseModal(false)} />
+          onClick={handleModalClose} />
       </ModalHeader>
       <ModalBody>
+        <Alert isOpen={showWarning} color='danger'>
+          <div className='d-flex align-items-center justify-content-between'>
+            Ongoing uploads will be cancelled if you close the menu! Are you sure?
+            <div className='d-flex'>
+              <ButtonGroup>
+                <Button color='primary' onClick={handleCancelClose}><FontAwesomeIcon icon={faBan}/></Button>
+                <Button color='danger' onClick={handleConfirmClose}><FontAwesomeIcon icon={faCheck}/></Button>
+              </ButtonGroup>
+            </div>
+          </div>
+        </Alert>
         <DragDrop
           style={{ height: '100px' }}
           className="my-2"
