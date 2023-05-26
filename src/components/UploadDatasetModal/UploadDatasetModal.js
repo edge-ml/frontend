@@ -34,6 +34,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       status: FileStatus.CONFIGURATION,
       id: count + idx,
       csv: inputFiles[idx],
+      error: undefined
     }));
     setFiles([...files, ...formatted]);
     setCount(count + inputFiles.length);
@@ -139,7 +140,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     );
   };
 
-  const extractHeader = (file) => {
+  const extractHeader = (fileId, file) => {
     return new Promise((resolve, reject) => {
       const CHUNK_SIZE = 128;
       const decoder = new TextDecoder();
@@ -159,6 +160,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       };
   
       fr.onerror = function() {
+        setFiles(prevFiles => prevFiles.map(f => f.id === fileId ? {...f, error: fr.error} : f));
         reject(fr.error);
       };
   
@@ -228,10 +230,10 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
   const onFileInput = async (inputFiles) => {
     const fileIds = addFiles(inputFiles);
     for (let i = 0; i < inputFiles.length; ++i) {
-      const header = await extractHeader(inputFiles[i])
+      const header = await extractHeader(fileIds[i], inputFiles[i])
       const [timeSeries, labelings] = parseHeader(header);
       if (!timeSeries || !labelings) {
-        setFiles(prevFiles => prevFiles.map(f => f.id === fileIds[i] ? {...f, status: FileStatus.ERROR, progress: 100} : f));
+        setFiles(prevFiles => prevFiles.map(f => f.id === fileIds[i] ? {...f, error: 'Invalid format, parsing failed', status: FileStatus.ERROR, progress: 100} : f));
         continue;
       }
       initConfig(fileIds[i], timeSeries, labelings);
@@ -252,6 +254,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     try {
       const result = await response;
     } catch (err) {
+      setFiles(prevFiles => prevFiles.map(f => f.id === file.id ? {...f, error: err.response.data.detail} : f));
       handleStatus(file.id, FileStatus.ERROR)
       return false;
     }
@@ -369,7 +372,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                           ? 'danger'
                           : 'primary'
                       }
-                    >{f.status === FileStatus.ERROR ? f.status : `${f.status} ${f.progress.toFixed(2)}%`}
+                    >{f.status === FileStatus.ERROR ? `Error: ${f.error}` : `${f.status} ${f.progress.toFixed(2)}%`}
                     </Progress>
                     <div className="d-flex align-items-center">
                       {f.status === FileStatus.COMPLETE && (
