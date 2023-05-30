@@ -39,6 +39,10 @@ export const NotificationProvider = ({ children }) => {
   const updateNotifications = async () => {
     console.log(updateHandle);
     const status = await datasetDownloadStatus();
+    if (status >= 400) {
+      setHasNewNotifications(false);
+      return;
+    }
     setActiveNotifications(status);
     setHasNewNotifications(status.length > 0); // Update the flag
   };
