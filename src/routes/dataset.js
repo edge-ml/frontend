@@ -285,7 +285,9 @@ class DatasetPage extends Component {
           ? selectedLabeling['_id']
           : undefined,
         selectedLabelTypes: selectedLabelTypes,
-        selectedLabelTypeId: labelings[0].labels[0]._id,
+        selectedLabelTypeId: labelings[0]
+          ? labelings[0].labels[0]._id
+          : undefined,
       },
       isReady: true,
     });
