@@ -39,6 +39,7 @@ class BlePanelSensorstreamGraph extends Component {
 
   updateLiveData() {
     var chart = Highcharts.charts[this.highcharts_index];
+    const xAxis = chart.xAxis[0];
 
     for (var i = chart.series.length - 1; i > -1; i--) {
       var series = chart.series[i];
@@ -57,6 +58,55 @@ class BlePanelSensorstreamGraph extends Component {
         series.addPoint([timestamp, value], true, false); // adds new data point
       }
     }
+
+    if (this.props.labelingStart) {
+      xAxis.removePlotLine(`labelingStart-${this.props.labelingPlotId}`);
+      xAxis.addPlotLine({
+        value: this.props.labelingStart,
+        color: this.props.activeLabel.color,
+        width: 5,
+        id: `labelingStart-${this.props.labelingPlotId}`,
+      });
+    }
+
+    // manually update plotband, highchart does not support updating an existing plotband
+    // so we remove existing and add the updated version again ("to" value is updated)
+    if (!this.props.labelingEnd) {
+      xAxis.removePlotBand(`labelingArea-${this.props.labelingPlotId}`);
+      xAxis.addPlotBand({
+        from: this.props.labelingStart,
+        to: Date.now(),
+        color: this.props.activeLabel.color,
+        className: "labelingArea",
+        id: `labelingArea-${this.props.labelingPlotId}`,
+      });
+    } else {
+      xAxis.removePlotLine(`labelingStart-${this.props.labelingPlotId}`);
+      xAxis.addPlotLine({
+        value: this.props.labelingStart,
+        color: this.props.activeLabel.color,
+        width: 5,
+        id: `labelingStart-${this.props.labelingPlotId}`,
+      });
+
+      xAxis.removePlotLine(`labelingEnd-${this.props.labelingPlotId}`)
+      xAxis.addPlotLine({
+        value: this.props.labelingEnd,
+        color: this.props.activeLabel.color,
+        width: 5,
+        id: `labelingEnd-${this.props.labelingPlotId}`,
+      });
+
+      xAxis.removePlotBand(`labelingArea-${this.props.labelingPlotId}`);
+      xAxis.addPlotBand({
+        from: this.props.labelingStart,
+        to: this.props.labelingEnd,
+        color: this.props.activeLabel.color,
+        className: "labelingArea",
+        id: `labelingArea-${this.props.labelingPlotId}`,
+      });
+    }
+
   }
 
   handleStartLiveUpdate(e) {

@@ -75,32 +75,38 @@ class BlePanelRecordingDisplay extends Component {
 
   render() {
     return (
-      <Card className="text-left">
-        <CardHeader>
-          <h4>4. Recording</h4>
-        </CardHeader>
-        <CardBody>
-          <ul>
-            {Array.from(this.props.selectedSensors).map((sensorKey) => {
-              return (
-                <li key={sensorKey}>
-                  <BlePanelSensorstreamGraph
-                    options={
-                      this.allOptions[
-                        this.props.sensorKeys.indexOf(sensorKey.toString())
-                      ]
-                    }
-                    fullSampleRate={this.props.fullSampleRate}
-                    sampleRate={this.props.deviceSensors[sensorKey].sampleRate}
-                    lastData={this.props.lastData}
-                    index={this.props.sensorKeys.indexOf(sensorKey.toString())}
-                  ></BlePanelSensorstreamGraph>
-                </li>
-              );
-            })}
-          </ul>
-        </CardBody>
-      </Card>
+      <div className="shadow p-3 mb-5 bg-white rounded">
+        <Card className="text-left">
+          <CardHeader>
+            <h4>5. Recording</h4>
+          </CardHeader>
+          <CardBody>
+            <ul>
+              {Array.from(this.props.selectedSensors).map((sensorKey) => {
+                return (
+                  <li key={sensorKey}>
+                    <BlePanelSensorstreamGraph
+                      options={
+                        this.allOptions[
+                          this.props.sensorKeys.indexOf(sensorKey.toString())
+                        ]
+                      }
+                      fullSampleRate={this.props.fullSampleRate}
+                      sampleRate={this.props.deviceSensors[sensorKey].sampleRate}
+                      lastData={this.props.lastData}
+                      index={this.props.sensorKeys.indexOf(sensorKey.toString())}
+                      labelingStart={this.props.labelingStart}
+                      labelingEnd={this.props.labelingEnd}
+                      labelingPlotId={this.props.labelingPlotId}
+                      activeLabel={this.props.activeLabel}
+                      ></BlePanelSensorstreamGraph>
+                  </li>
+                );
+              })}
+            </ul>
+          </CardBody>
+        </Card>
+      </div>
     );
   }
 }

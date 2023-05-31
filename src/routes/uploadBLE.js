@@ -28,6 +28,9 @@ import DFUModal from '../components/BLE/DFUModal/DFUModal';
 import semverLt from 'semver/functions/lt';
 import { adjectives, names } from './export/nameGeneration';
 import { uniqueNamesGenerator } from 'unique-names-generator';
+import { BleLabelingMenu } from '../components/BLE/BleLabelingMenu';
+
+import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -50,7 +53,18 @@ class UploadBLE extends Component {
       showDFUModal: false,
       latestEdgeMLVersion: undefined,
       outdatedVersionInstalled: false,
+      labelings: [],
+      selectedLabeling: undefined,
+      selectedLabel: undefined, // represents the selected label badge
+      activeLabel: undefined, // represents the selected label used when the labeling on plot started
+      labelingStart: undefined,
+      labelingEnd: undefined,
+      labelingPlotId: 0,
     };
+
+    this.componentRef = React.createRef();
+    this.labelingData = React.createRef();
+
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
     //this.receiveSensorData = this.receiveSensorData.bind(this);
@@ -73,6 +87,11 @@ class UploadBLE extends Component {
     this.checkServicesAndGetLatestFWVersion =
       this.checkServicesAndGetLatestFWVersion.bind(this);
     this.toggleDFUModal = this.toggleDFUModal.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.fetchLabelings = this.fetchLabelings.bind(this);
+    this.handleLabelingSelect = this.handleLabelingSelect.bind(this);
+    this.handleLabelSelect = this.handleLabelSelect.bind(this);
+    this.toggleLabelingActive = this.toggleLabelingActive.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
@@ -398,13 +417,89 @@ class UploadBLE extends Component {
     this.setState({ showDFUModal: !this.state.showDFUModal });
   }
 
+  handleLabelingSelect(labeling) {
+    this.setState({ selectedLabeling: labeling });
+  }
+
+  handleLabelSelect(label) {
+    this.setState({ selectedLabel: label });
+  }
+
+  toggleLabelingActive() {
+    const timestamp = Date.now();
+    console.log(this.labelingData)
+    if (!this.state.selectedLabel) {
+      return; 
+    }
+    if (!this.state.labelingStart) { // initial state
+      this.labelingData.current = [{ 
+        start: timestamp, 
+        labelType: this.state.selectedLabel._id,
+        labelingId: this.state.selectedLabeling._id
+      }];
+      this.setState({ labelingStart: timestamp, activeLabel: this.state.selectedLabel });
+    } else if (!this.state.labelingEnd) { // when the end of the label is set
+      const currentLabelingData = this.labelingData.current[this.labelingData.current.length - 1];
+      currentLabelingData.end = timestamp;
+      this.setState(prevState => ({ 
+        labelingEnd: timestamp,
+      }));
+    } else { // new label start, clear labelEnd from previous label
+      this.labelingData.current.push({ 
+        start: timestamp, 
+        labelType: this.state.selectedLabel._id, 
+        labelingId: this.state.selectedLabeling._id 
+      });
+      this.setState(prevState => ({ 
+        labelingStart: timestamp, 
+        labelingEnd: undefined,
+        activeLabel: this.state.selectedLabel,
+        labelingPlotId: prevState.labelingPlotId + 1  
+      }));
+    }
+  }
+
+  handleKeyDown(e) {
+    if (this.state.recorderState !== 'recording') {
+      return;
+    }
+    console.log(e.key)
+    if (e.key === '+' && this.state.selectedLabel) {
+      this.toggleLabelingActive();
+    } else if (e.key === '+' && !this.state.selectedLabel) {
+      console.log('no label selected');
+    } 
+  }
+
+  async fetchLabelings() {
+    const res = await subscribeLabelingsAndLabels();
+    this.setState({ labelings: res })
+  }
+
+  componentDidMount() {
+    this.componentRef.current.focus();
+    this.fetchLabelings();
+  }
+
+  componentDidUpdate() {
+    if (this.state.recorderState === 'recording') {
+      this.componentRef.current.focus();
+    }
+  }
+
   render() {
     if (!this.state.bleStatus) {
       return <BleNotActivated></BleNotActivated>;
     }
 
     return (
-      <div className="bleActivatedContainer">
+      <div 
+        className="bleActivatedContainer" 
+        ref={this.componentRef} 
+        onKeyDown={this.handleKeyDown} 
+        tabIndex="0" 
+        style={{ outline: 'none' }}
+      >
         <div className="mb-3">
           <BlePanelConnectDevice
             bleConnectionChanging={this.state.bleConnectionChanging}
@@ -463,16 +558,26 @@ class UploadBLE extends Component {
                 onToggleSampleRate={this.onToggleSampleRate}
                 fullSampleRate={this.state.fullSampleRate}
               ></BlePanelRecorderSettings>
+              <BleLabelingMenu 
+                labelings={this.state.labelings}
+                selectedLabeling={this.state.selectedLabeling}
+                selectedLabel={this.state.selectedLabel}
+                handleSelectLabeling={this.handleLabelingSelect}
+                handleSelectLabel={this.handleLabelSelect}
+              />
               {this.state.recorderState === 'recording' && this.state.stream ? (
-                <div className="shadow p-3 mb-5 bg-white rounded">
                   <BlePanelRecordingDisplay
                     deviceSensors={this.state.deviceSensors}
                     selectedSensors={this.state.selectedSensors}
                     lastData={this.currentData}
                     sensorKeys={this.sensorKeys}
                     fullSampleRate={this.state.fullSampleRate}
+                    handleKeyDown={this.handleKeyDown}
+                    labelingStart={this.state.labelingStart}
+                    labelingEnd={this.state.labelingEnd}
+                    labelingPlotId={this.state.labelingPlotId}
+                    activeLabel={this.state.activeLabel}
                   ></BlePanelRecordingDisplay>
-                </div>
               ) : null}
             </Col>
           </Row>

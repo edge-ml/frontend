@@ -1,0 +1,46 @@
+import React, { useEffect, useState } from 'react';
+import { Card, CardHeader, CardBody, Dropdown, DropdownMenu, DropdownItem, DropdownToggle, Badge } from 'reactstrap';
+
+export const BleLabelingMenu = ({ labelings, selectedLabeling, selectedLabel, handleSelectLabeling, handleSelectLabel }) => {
+
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+
+    const toggleDropdown = () => {
+        setDropdownOpen(prev => !prev);
+    }
+
+    return (
+        <Card className="text-left">
+          <CardHeader>
+            <h4>4. Labelings</h4>
+          </CardHeader>
+          <CardBody className='d-flex flex-column'>
+            <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+                <DropdownToggle caret>Labelings</DropdownToggle>
+                <DropdownMenu>
+                    {/* <DropdownItem header>Labelings</DropdownItem> */}
+                    {labelings.map(labeling => (
+                        <DropdownItem key={labeling.name} onClick={e => handleSelectLabeling(labeling)}>{labeling.name}</DropdownItem>
+                    ))}
+                </DropdownMenu>
+            </Dropdown>
+            <div className='d-flex mb-2'>
+            {selectedLabeling && selectedLabeling.labels.map(label => (
+                <div key={label._id} className='d-flex flex-column align-items-center mr-1'>
+                    <Badge 
+                        style={{
+                            backgroundColor: label.color, 
+                            border: label._id === selectedLabel?._id ? '0.2em outset': '0.2em solid transparent'}}
+                        onClick={e => handleSelectLabel(label)}
+                    >
+                        {label.name}
+                    </Badge>
+                </div>
+            ))}
+            </div>
+            <span>You may select the appropriate label and label the data during recording.</span>
+            <span>Labeling start/stop shortcut: +</span>
+          </CardBody>
+        </Card>
+    )
+}
