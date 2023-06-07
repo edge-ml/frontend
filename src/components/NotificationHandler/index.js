@@ -27,6 +27,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
     <Modal isOpen={isOpen} size="xl">
       <ModalHeader>Datasets</ModalHeader>
       <ModalBody>
+        {console.log(activeNotifications)}
         {activeNotifications.map((elm) => (
           <div className="d-flex justify-content-between align-items-center">
             <div>

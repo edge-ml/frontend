@@ -32,7 +32,6 @@ const LabelingSelectionPanel = (props) => {
       props.onSelectedLabelingIdChanged(id);
     }
   };
-
   return (
     <Card
       id="labelingSelectionPanel"
