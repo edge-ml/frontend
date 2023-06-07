@@ -48,124 +48,125 @@ const QUATMAP = ({ name }, { quaternion: [c1, c2, c3, c4] }) => ({
   [name + '4']: c4,
 });
 
-export const SENSORS = DeviceMotionEvent
-  ? [
-      new WebSensorApiSensor(
-        'Accelerometer',
-        window.Accelerometer,
-        ['X', 'Y', 'Z'],
-        XYZMAP,
-        PERMAPIASK('accelerometer')
-      ),
-      new WebSensorApiSensor(
-        'LinearAccelerationSensor',
-        window.LinearAccelerationSensor,
-        ['X', 'Y', 'Z'],
-        XYZMAP,
-        PERMAPIASK('accelerometer')
-      ),
-      new WebSensorApiSensor(
-        'GravitySensor',
-        window.GravitySensor,
-        ['X', 'Y', 'Z'],
-        XYZMAP,
-        PERMAPIASK('accelerometer')
-      ),
-      new WebSensorApiSensor(
-        'Gyroscope',
-        window.Gyroscope,
-        ['X', 'Y', 'Z'],
-        XYZMAP,
-        PERMAPIASK('gyroscope')
-      ),
-      new WebSensorApiSensor(
-        'RelativeOrientationSensor',
-        window.RelativeOrientationSensor,
-        ['1', '2', '3', '4'],
-        QUATMAP,
-        PERMAPIASK('accelerometer', 'gyroscope')
-      ),
-      new WebSensorApiSensor(
-        'AbsoluteOrientationSensor',
-        window.AbsoluteOrientationSensor,
-        ['1', '2', '3', '4'],
-        QUATMAP,
-        PERMAPIASK('accelerometer', 'gyroscope', 'magnetometer')
-      ),
-      new WebSensorApiSensor(
-        'AmbientLightSensor',
-        window.AmbientLightSensor,
-        ['Illuminance'],
-        ({ name }, { illuminance }) => ({
-          [name + 'Illuminance']: illuminance,
-        }),
-        PERMAPIASK('ambient-light-sensor')
-      ),
-      new WebSensorApiSensor(
-        'Magnetometer',
-        window.Magnetometer,
-        ['X', 'Y', 'Z'],
-        XYZMAP,
-        PERMAPIASK('magnetometer')
-      ),
+export const SENSORS =
+  'DeviceMotionEvent' in window
+    ? [
+        new WebSensorApiSensor(
+          'Accelerometer',
+          window.Accelerometer,
+          ['X', 'Y', 'Z'],
+          XYZMAP,
+          PERMAPIASK('accelerometer')
+        ),
+        new WebSensorApiSensor(
+          'LinearAccelerationSensor',
+          window.LinearAccelerationSensor,
+          ['X', 'Y', 'Z'],
+          XYZMAP,
+          PERMAPIASK('accelerometer')
+        ),
+        new WebSensorApiSensor(
+          'GravitySensor',
+          window.GravitySensor,
+          ['X', 'Y', 'Z'],
+          XYZMAP,
+          PERMAPIASK('accelerometer')
+        ),
+        new WebSensorApiSensor(
+          'Gyroscope',
+          window.Gyroscope,
+          ['X', 'Y', 'Z'],
+          XYZMAP,
+          PERMAPIASK('gyroscope')
+        ),
+        new WebSensorApiSensor(
+          'RelativeOrientationSensor',
+          window.RelativeOrientationSensor,
+          ['1', '2', '3', '4'],
+          QUATMAP,
+          PERMAPIASK('accelerometer', 'gyroscope')
+        ),
+        new WebSensorApiSensor(
+          'AbsoluteOrientationSensor',
+          window.AbsoluteOrientationSensor,
+          ['1', '2', '3', '4'],
+          QUATMAP,
+          PERMAPIASK('accelerometer', 'gyroscope', 'magnetometer')
+        ),
+        new WebSensorApiSensor(
+          'AmbientLightSensor',
+          window.AmbientLightSensor,
+          ['Illuminance'],
+          ({ name }, { illuminance }) => ({
+            [name + 'Illuminance']: illuminance,
+          }),
+          PERMAPIASK('ambient-light-sensor')
+        ),
+        new WebSensorApiSensor(
+          'Magnetometer',
+          window.Magnetometer,
+          ['X', 'Y', 'Z'],
+          XYZMAP,
+          PERMAPIASK('magnetometer')
+        ),
 
-      new DeviceMotionSensor(
-        'DeviceMotion',
-        DeviceMotionEvent,
-        'devicemotion',
-        [
-          'AccelX',
-          'AccelY',
-          'AccelZ',
-          'AccelWithGravityX',
-          'AccelWithGravityY',
-          'AccelWithGravityZ',
-          'RotationRateAlpha',
-          'RotationRateBeta',
-          'RotationRateGamma',
-        ],
-        (
-          { name },
-          _,
-          { acceleration, accelerationIncludingGravity, rotationRate }
-        ) => ({
-          [name + 'AccelX']: acceleration.x,
-          [name + 'AccelY']: acceleration.y,
-          [name + 'AccelZ']: acceleration.z,
-          [name + 'AccelWithGravityX']: accelerationIncludingGravity.x,
-          [name + 'AccelWithGravityY']: accelerationIncludingGravity.y,
-          [name + 'AccelWithGravityZ']: accelerationIncludingGravity.z,
-          [name + 'RotationRateAlpha']: rotationRate.alpha,
-          [name + 'RotationRateBeta']: rotationRate.beta,
-          [name + 'RotationRateGamma']: rotationRate.gamma,
-        })
-      ),
-      new DeviceMotionSensor(
-        'DeviceOrientation',
-        DeviceOrientationEvent,
-        'deviceorientation',
-        [
-          'RotationAlpha',
-          'RotationBeta',
-          'RotationGamma',
-          'CompassAccuracy',
-          'CompassHeading',
-        ],
-        (
-          { name },
-          _,
-          { alpha, beta, gamma, webkitCompassAccuracy, webkitCompassHeading }
-        ) => ({
-          [name + 'RotationAlpha']: alpha,
-          [name + 'RotationBeta']: beta,
-          [name + 'RotationGamma']: gamma,
-          [name + 'CompassAccuracy']: webkitCompassAccuracy,
-          [name + 'CompassHeading']: webkitCompassHeading,
-        })
-      ),
+        new DeviceMotionSensor(
+          'DeviceMotion',
+          DeviceMotionEvent,
+          'devicemotion',
+          [
+            'AccelX',
+            'AccelY',
+            'AccelZ',
+            'AccelWithGravityX',
+            'AccelWithGravityY',
+            'AccelWithGravityZ',
+            'RotationRateAlpha',
+            'RotationRateBeta',
+            'RotationRateGamma',
+          ],
+          (
+            { name },
+            _,
+            { acceleration, accelerationIncludingGravity, rotationRate }
+          ) => ({
+            [name + 'AccelX']: acceleration.x,
+            [name + 'AccelY']: acceleration.y,
+            [name + 'AccelZ']: acceleration.z,
+            [name + 'AccelWithGravityX']: accelerationIncludingGravity.x,
+            [name + 'AccelWithGravityY']: accelerationIncludingGravity.y,
+            [name + 'AccelWithGravityZ']: accelerationIncludingGravity.z,
+            [name + 'RotationRateAlpha']: rotationRate.alpha,
+            [name + 'RotationRateBeta']: rotationRate.beta,
+            [name + 'RotationRateGamma']: rotationRate.gamma,
+          })
+        ),
+        new DeviceMotionSensor(
+          'DeviceOrientation',
+          DeviceOrientationEvent,
+          'deviceorientation',
+          [
+            'RotationAlpha',
+            'RotationBeta',
+            'RotationGamma',
+            'CompassAccuracy',
+            'CompassHeading',
+          ],
+          (
+            { name },
+            _,
+            { alpha, beta, gamma, webkitCompassAccuracy, webkitCompassHeading }
+          ) => ({
+            [name + 'RotationAlpha']: alpha,
+            [name + 'RotationBeta']: beta,
+            [name + 'RotationGamma']: gamma,
+            [name + 'CompassAccuracy']: webkitCompassAccuracy,
+            [name + 'CompassHeading']: webkitCompassHeading,
+          })
+        ),
 
-      new BatterySensor(),
-    ].filter((x) => x)
-  : [];
+        new BatterySensor(),
+      ].filter((x) => x)
+    : [];
 
 export const SUPPORTED_SENSORS = SENSORS.filter((sensor) => sensor.detection());
