@@ -160,7 +160,11 @@ class BleDeviceProcessor {
       this.sensors
       );
     const labelingData = this.uploadBLE.labelingData.current;
-    const jsonBody = { timeSeries: recordedData, labels: labelingData ? labelingData : [] };
+    let latestTimestamp = 0;
+    for (const ts of recordedData) {
+      latestTimestamp = Math.max(latestTimestamp, ts.data[ts.data.length - 1][0]);
+    }
+    const jsonBody = { timeSeries: recordedData, labels: labelingData ? labelingData.map(label => label.end ? label : {...label, end: latestTimestamp}) : [] };
     this.addToUploadCounter(recordedData);
     ga_uploadataset_len(
       Array.from(this.uploadCounter.values()),
