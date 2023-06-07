@@ -60,6 +60,7 @@ class UploadBLE extends Component {
       labelingStart: undefined,
       labelingEnd: undefined,
       labelingPlotId: 0,
+      labelColor: undefined,
     };
 
     this.componentRef = React.createRef();
@@ -92,7 +93,8 @@ class UploadBLE extends Component {
     this.handleLabelingSelect = this.handleLabelingSelect.bind(this);
     this.handleLabelSelect = this.handleLabelSelect.bind(this);
     this.toggleLabelingActive = this.toggleLabelingActive.bind(this);
-
+    this.resetLabelingState = this.resetLabelingState.bind(this);
+    
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
     this.recordInterval = null;
@@ -111,6 +113,7 @@ class UploadBLE extends Component {
     this.deviceInfoServiceUuid = '45622510-6468-465a-b141-0b9b0f96b468';
     this.deviceIdentifierUuid = '45622511-6468-465a-b141-0b9b0f96b468';
     this.deviceGenerationUuid = '45622512-6468-465a-b141-0b9b0f96b468';
+    this.shortcutKeys = "1234567890abcdefghijklmnopqrstuvwxyz";
     this.bleDeviceProcessor = undefined;
     this.textEncoder = new TextDecoder('utf-8');
   }
@@ -226,6 +229,7 @@ class UploadBLE extends Component {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         this.setState({ recorderState: 'ready' });
         this.setState({ datasetName: '' });
+        this.resetLabelingState();
         break;
     }
   }
@@ -425,50 +429,90 @@ class UploadBLE extends Component {
     this.setState({ selectedLabel: label });
   }
 
-  toggleLabelingActive() {
+  toggleLabelingActive(labelIdx) {
+
     const timestamp = Date.now();
-    console.log(this.labelingData)
+    const keyPressedLabel = this.state.selectedLabeling.labels[labelIdx];
+
     if (!this.state.selectedLabel) {
-      return; 
+      this.setState({ selectedLabel: keyPressedLabel })
     }
-    if (!this.state.labelingStart) { // initial state
+
+    // initial state, labelingStart is only undefined when no label recording have ever took place 
+    // during the current sensor data collection
+    if (!this.state.labelingStart) { 
       this.labelingData.current = [{ 
         start: timestamp, 
-        labelType: this.state.selectedLabel._id,
+        labelType: keyPressedLabel._id,
         labelingId: this.state.selectedLabeling._id
       }];
-      this.setState({ labelingStart: timestamp, activeLabel: this.state.selectedLabel });
-    } else if (!this.state.labelingEnd) { // when the end of the label is set
+      this.setState({ labelingStart: timestamp, activeLabel: keyPressedLabel, labelColor: keyPressedLabel.color });
+    }
+    // stop recording the current label when the user pressed the label key a second time
+    else if (this.state.activeLabel === keyPressedLabel) { 
       const currentLabelingData = this.labelingData.current[this.labelingData.current.length - 1];
       currentLabelingData.end = timestamp;
-      this.setState(prevState => ({ 
-        labelingEnd: timestamp,
-      }));
-    } else { // new label start, clear labelEnd from previous label
+      // dont change the labelColor to render the plotlines of the completed label interval correctly
+      this.setState({ labelingEnd: timestamp, activeLabel: undefined });  
+    } 
+    
+    // if there is no active label recording start a new one
+    else if (!this.state.activeLabel) { 
       this.labelingData.current.push({ 
         start: timestamp, 
-        labelType: this.state.selectedLabel._id, 
+        labelType: keyPressedLabel._id, 
         labelingId: this.state.selectedLabeling._id 
       });
       this.setState(prevState => ({ 
         labelingStart: timestamp, 
         labelingEnd: undefined,
-        activeLabel: this.state.selectedLabel,
-        labelingPlotId: prevState.labelingPlotId + 1  
+        activeLabel: keyPressedLabel,
+        labelingPlotId: prevState.labelingPlotId + 1,
+        labelColor: keyPressedLabel.color,
       }));
     }
+
+    // if the user starts recording of another label before the user stops recording of the previous label 
+    // gracefully stop the previous label recording, start the new one
+    else if (this.state.activeLabel !== keyPressedLabel) {
+      const currentLabelingData = this.labelingData.current[this.labelingData.current.length - 1];
+      currentLabelingData.end = timestamp - 1; // -1 to avoid overlap between previous and new label
+
+      this.labelingData.current.push({ 
+        start: timestamp, 
+        labelType: keyPressedLabel._id, 
+        labelingId: this.state.selectedLabeling._id 
+      });
+
+      this.setState(prevState => ({ 
+        labelingStart: timestamp, 
+        labelingEnd: undefined,
+        activeLabel: keyPressedLabel,
+        labelingPlotId: prevState.labelingPlotId + 1,
+        labelColor: keyPressedLabel.color,
+      }));
+    }
+  }
+
+  resetLabelingState() {
+    this.labelingData.current = [];
+    this.setState({
+      labelingStart: undefined,
+      labelingEnd: undefined,
+      activeLabel: undefined,
+      labelingPlotId: 0,
+      labelColor: undefined,
+    });
   }
 
   handleKeyDown(e) {
     if (this.state.recorderState !== 'recording') {
       return;
     }
-    console.log(e.key)
-    if (e.key === '+' && this.state.selectedLabel) {
-      this.toggleLabelingActive();
-    } else if (e.key === '+' && !this.state.selectedLabel) {
-      console.log('no label selected');
-    } 
+    const labelIdx = this.shortcutKeys.indexOf(e.key);
+    if (labelIdx != -1 && this.state.selectedLabeling && labelIdx < this.state.selectedLabeling.labels.length) {
+      this.toggleLabelingActive(labelIdx);
+    }
   }
 
   async fetchLabelings() {
@@ -564,6 +608,7 @@ class UploadBLE extends Component {
                 selectedLabel={this.state.selectedLabel}
                 handleSelectLabeling={this.handleLabelingSelect}
                 handleSelectLabel={this.handleLabelSelect}
+                shortcutKeys={this.shortcutKeys}
               />
               {this.state.recorderState === 'recording' && this.state.stream ? (
                   <BlePanelRecordingDisplay
@@ -576,7 +621,7 @@ class UploadBLE extends Component {
                     labelingStart={this.state.labelingStart}
                     labelingEnd={this.state.labelingEnd}
                     labelingPlotId={this.state.labelingPlotId}
-                    activeLabel={this.state.activeLabel}
+                    labelColor={this.state.labelColor}
                   ></BlePanelRecordingDisplay>
               ) : null}
             </Col>

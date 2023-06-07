@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardBody, Dropdown, DropdownMenu, DropdownItem, DropdownToggle, Badge } from 'reactstrap';
 
-export const BleLabelingMenu = ({ labelings, selectedLabeling, selectedLabel, handleSelectLabeling, handleSelectLabel }) => {
+export const BleLabelingMenu = ({ labelings, selectedLabeling, selectedLabel, handleSelectLabeling, handleSelectLabel, shortcutKeys }) => {
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
-
     const toggleDropdown = () => {
         setDropdownOpen(prev => !prev);
     }
@@ -25,7 +24,7 @@ export const BleLabelingMenu = ({ labelings, selectedLabeling, selectedLabel, ha
                 </DropdownMenu>
             </Dropdown>
             <div className='d-flex mb-2'>
-            {selectedLabeling && selectedLabeling.labels.map(label => (
+            {selectedLabeling && selectedLabeling.labels.map((label, labelIdx) => (
                 <div key={label._id} className='d-flex flex-column align-items-center mr-1'>
                     <Badge 
                         style={{
@@ -35,11 +34,12 @@ export const BleLabelingMenu = ({ labelings, selectedLabeling, selectedLabel, ha
                     >
                         {label.name}
                     </Badge>
+                    <span>{shortcutKeys[labelIdx]}</span>
                 </div>
             ))}
             </div>
-            <span>You may select the appropriate label and label the data during recording.</span>
-            <span>Labeling start/stop shortcut: +</span>
+            <span>To start/stop labeling the data during recording:</span>
+            <span>Press the shortcut key on the keyboard which corresponds the desired label.</span>
           </CardBody>
         </Card>
     )

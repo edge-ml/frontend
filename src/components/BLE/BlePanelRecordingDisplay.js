@@ -98,7 +98,7 @@ class BlePanelRecordingDisplay extends Component {
                       labelingStart={this.props.labelingStart}
                       labelingEnd={this.props.labelingEnd}
                       labelingPlotId={this.props.labelingPlotId}
-                      activeLabel={this.props.activeLabel}
+                      labelColor={this.props.labelColor}
                       ></BlePanelSensorstreamGraph>
                   </li>
                 );

@@ -63,7 +63,7 @@ class BlePanelSensorstreamGraph extends Component {
       xAxis.removePlotLine(`labelingStart-${this.props.labelingPlotId}`);
       xAxis.addPlotLine({
         value: this.props.labelingStart,
-        color: this.props.activeLabel.color,
+        color: this.props.labelColor,
         width: 5,
         id: `labelingStart-${this.props.labelingPlotId}`,
       });
@@ -76,7 +76,7 @@ class BlePanelSensorstreamGraph extends Component {
       xAxis.addPlotBand({
         from: this.props.labelingStart,
         to: Date.now(),
-        color: this.props.activeLabel.color,
+        color: this.props.labelColor,
         className: "labelingArea",
         id: `labelingArea-${this.props.labelingPlotId}`,
       });
@@ -84,7 +84,7 @@ class BlePanelSensorstreamGraph extends Component {
       xAxis.removePlotLine(`labelingStart-${this.props.labelingPlotId}`);
       xAxis.addPlotLine({
         value: this.props.labelingStart,
-        color: this.props.activeLabel.color,
+        color: this.props.labelColor,
         width: 5,
         id: `labelingStart-${this.props.labelingPlotId}`,
       });
@@ -92,7 +92,7 @@ class BlePanelSensorstreamGraph extends Component {
       xAxis.removePlotLine(`labelingEnd-${this.props.labelingPlotId}`)
       xAxis.addPlotLine({
         value: this.props.labelingEnd,
-        color: this.props.activeLabel.color,
+        color: this.props.labelColor,
         width: 5,
         id: `labelingEnd-${this.props.labelingPlotId}`,
       });
@@ -101,7 +101,7 @@ class BlePanelSensorstreamGraph extends Component {
       xAxis.addPlotBand({
         from: this.props.labelingStart,
         to: this.props.labelingEnd,
-        color: this.props.activeLabel.color,
+        color: this.props.labelColor,
         className: "labelingArea",
         id: `labelingArea-${this.props.labelingPlotId}`,
       });
