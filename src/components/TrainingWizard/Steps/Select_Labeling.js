@@ -10,17 +10,21 @@ import {
   EdgeMLTableEntry,
 } from '../../Common/EdgeMLTable';
 
+const toggleElement = (arr, item) =>
+  arr.includes(item) ? arr.filter((i) => i !== item) : [...arr, item];
+
 const Wizard_SelectLabeling = ({
   labelings,
   datasets,
   setLabeling,
+  selectedLabeling,
   toggleZeroClass,
   zeroClass,
-  selectedLabeling,
   onNext,
   onBack,
   footer,
 }) => {
+  console.log('labeling', selectedLabeling);
   const countDatasets = (labeling) => {
     return datasets
       .map((elm) => elm.labelings.map((l) => l.labelingId))
@@ -57,7 +61,9 @@ const Wizard_SelectLabeling = ({
                   })}
                 >
                   <Checkbox
-                    onClick={() => setLabeling(labeling)}
+                    onClick={() =>
+                      setLabeling({ ...labeling, disabledLabelings: [] })
+                    }
                     isSelected={
                       selectedLabeling
                         ? selectedLabeling._id === labeling._id
@@ -69,7 +75,36 @@ const Wizard_SelectLabeling = ({
                     {labeling.labels.map((label) => (
                       <Badge
                         className="badge"
-                        style={{ backgroundColor: label.color }}
+                        onClick={() =>
+                          selectedLabeling?.disabledLabelings &&
+                          selectedLabeling._id === labeling._id &&
+                          setLabeling({
+                            ...selectedLabeling,
+                            disabledLabelings: toggleElement(
+                              selectedLabeling.disabledLabelings,
+                              label._id
+                            ),
+                          })
+                        }
+                        style={{
+                          ...(selectedLabeling?.disabledLabelings.includes(
+                            label._id
+                          )
+                            ? {
+                                textDecoration: 'line-through',
+                              }
+                            : {
+                                backgroundColor: label.color,
+                              }),
+                          userSelect: 'none',
+                        }}
+                        {...(selectedLabeling?.disabledLabelings.includes(
+                          label._id
+                        )
+                          ? {
+                              color: 'light',
+                            }
+                          : {})}
                       >
                         {label.name}
                       </Badge>

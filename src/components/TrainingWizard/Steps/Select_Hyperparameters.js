@@ -28,8 +28,6 @@ const Wizard_Hyperparameters = ({
 
   const [classififier_index, set_classifier_index] = useState(0);
 
-  console.log(classifier);
-
   const handleHyperparameterChange = ({ parameter_name, value }) => {
     const newClassifier = [...classifier];
     const idx = newClassifier[classififier_index].parameters.findIndex(

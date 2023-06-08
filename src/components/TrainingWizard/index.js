@@ -117,7 +117,11 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
             timeSeries: elm.timeSeries.map((ts) => ts._id),
           };
         }),
-      labeling: { _id: labeling._id, useZeroClass: zeroClass },
+      labeling: {
+        _id: labeling._id,
+        useZeroClass: zeroClass,
+        disabledLabels: labeling.disabledLabels || [],
+      },
       name: modelName,
       classifier: selectedClassifier,
       evaluation: selectedEval,
