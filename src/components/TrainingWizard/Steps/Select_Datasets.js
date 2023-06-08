@@ -14,6 +14,7 @@ const Wizard_SelectDataset = ({
   datasets,
   selectedLabeling,
   toggleSelectDataset,
+  toggleDatasetDisableTimeseries,
   onNext,
   onBack,
   footer,
@@ -37,7 +38,7 @@ const Wizard_SelectDataset = ({
   // const unionTimeseriesIDs = [...new Set(allDuplTimeseries.map(({name}) => name))]
   // const intersectTimeseriesIDs = intersect(unionTimeseriesIDs, ...selectedTimeseries.map(({name}) => name))
   // const unionTimeseries = unionTimeseriesIDs.map(name => allDuplTimeseries.find(ts => ts.name === name));
-
+  console.log('dses', datasets);
   return (
     <Fragment>
       <h3>2. Select datasets</h3>
@@ -63,9 +64,24 @@ const Wizard_SelectDataset = ({
                 <div className="datasetName">{dataset.name}</div>
                 <div style={{ overflow: 'auto' }}>
                   {dataset.timeSeries.map((ts) => (
-                    <Badge>{`${ts.name} (${
-                      Math.round(ts.samplingRate.mean * 100) / 100
-                    } Hz)`}</Badge>
+                    <Badge
+                      onClick={() =>
+                        toggleDatasetDisableTimeseries(ts._id, dataset._id)
+                      }
+                      style={{
+                        ...(dataset.disabledTimeseriesIDs.includes(ts._id)
+                          ? { textDecoration: 'line-through' }
+                          : {}),
+                        userSelect: 'none',
+                      }}
+                      {...(dataset.disabledTimeseriesIDs.includes(ts._id)
+                        ? { color: 'light' }
+                        : {})}
+                    >
+                      {`${ts.name} (${
+                        Math.round(ts.samplingRate.mean * 100) / 100
+                      } Hz)`}
+                    </Badge>
                   ))}
                 </div>
               </EdgeMLTableEntry>

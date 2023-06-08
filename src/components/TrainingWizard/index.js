@@ -14,6 +14,7 @@ import Select_Name from './Steps/Select_Name';
 import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { toggleElement } from '../../services/helpers';
 
 export const WizardFooter = ({
   onNext,
@@ -79,7 +80,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   useEffect(() => {
     getDatasets().then((datasets) => {
       const newDatasets = datasets.map((elm) => {
-        return { ...elm, selected: false };
+        return { ...elm, selected: false, disabledTimeseriesIDs: [] };
       });
       setDatasets(newDatasets);
     });
@@ -99,10 +100,24 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     });
   }, []);
 
+  const toggleDatasetDisableTimeseries = (timeseries_id, dataset_id) => {
+    const idx = datasets.findIndex((ds) => ds._id === dataset_id);
+    if (idx === -1 || !datasets[idx].selected) {
+      return;
+    }
+    const newDatasets = JSON.parse(JSON.stringify(datasets));
+    newDatasets[idx].disabledTimeseriesIDs = toggleElement(
+      newDatasets[idx].disabledTimeseriesIDs,
+      timeseries_id
+    );
+    setDatasets([...newDatasets]);
+  };
+
   const toggleSelectDataset = (id) => {
-    const newDatasets = datasets;
+    const newDatasets = JSON.parse(JSON.stringify(datasets));
     const idx = datasets.findIndex((elm) => elm._id === id);
     newDatasets[idx].selected = !newDatasets[idx].selected;
+    newDatasets[idx].disabledTimeseriesIDs = [];
     setDatasets([...newDatasets]);
   };
 
@@ -120,7 +135,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       labeling: {
         _id: labeling._id,
         useZeroClass: zeroClass,
-        disabledLabels: labeling.disabledLabels || [],
+        disabledLabelIDs: labeling.disabledLabels || [],
       },
       name: modelName,
       classifier: selectedClassifier,
@@ -139,6 +154,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     setLabeling: setLableing,
     selectedLabeling: labeling,
     toggleSelectDataset: toggleSelectDataset,
+    toggleDatasetDisableTimeseries: toggleDatasetDisableTimeseries,
     windowers: windowing,
     setSelectedWindower: setSelectedWindowing,
     setWindower: setWindowing,

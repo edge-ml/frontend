@@ -9,9 +9,7 @@ import {
   EdgeMLTableHeader,
   EdgeMLTableEntry,
 } from '../../Common/EdgeMLTable';
-
-const toggleElement = (arr, item) =>
-  arr.includes(item) ? arr.filter((i) => i !== item) : [...arr, item];
+import { toggleElement } from '../../../services/helpers';
 
 const Wizard_SelectLabeling = ({
   labelings,
