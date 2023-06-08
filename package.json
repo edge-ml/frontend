@@ -15,6 +15,7 @@
     "events": "^3.3.0",
     "highcharts": "^10.3.3",
     "highcharts-react-official": "^2.2.2",
+    "humanize-duration": "^3.28.0",
     "immutability-helper": "^2.7.1",
     "jszip": "^3.9.1",
     "jwt-decode": "^3.1.2",

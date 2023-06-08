@@ -25,11 +25,7 @@ const Select_FeatureExtractor = ({
 
   return (
     <Fragment>
-      <div className="w-100 d-flex justify-content-between align-items-center mb-2">
-        <div className="font-weight-bold h4 justify-self-start">
-          5. Select Feature Extractor
-        </div>
-      </div>
+      <h3 className="font-weight-bold">5. Select Feature Extractor</h3>
       <Dropdown
         isOpen={dropDownOpen}
         toggle={() => setDropDownOpen(!dropDownOpen)}

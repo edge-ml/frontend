@@ -14,7 +14,7 @@ import Select_Name from './Steps/Select_Name';
 import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import { toggleElement } from '../../services/helpers';
+import { difference, toggleElement } from '../../services/helpers';
 
 export const WizardFooter = ({
   onNext,
@@ -84,7 +84,9 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       });
       setDatasets(newDatasets);
     });
-    subscribeLabelingsAndLabels().then((labelings) => setLabelings(labelings));
+    subscribeLabelingsAndLabels().then((labelings) =>
+      setLabelings(labelings.map((ls) => ({ ...ls, disabledLabels: [] })))
+    );
     getTrainconfig().then((result) => {
       setEvaluation(result.evaluation);
       setClassifiers(result.classifier);
@@ -122,16 +124,19 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   };
 
   const onTrain = async () => {
-    console.log(selectedWindowing);
     const data = {
       datasets: datasets
         .filter((elm) => elm.selected)
         .map((elm) => {
           return {
             _id: elm._id,
-            timeSeries: elm.timeSeries.map((ts) => ts._id),
+            timeSeries: difference(
+              elm.timeSeries.map((ts) => ts._id),
+              elm.disabledTimeseriesIDs
+            ),
           };
-        }),
+        })
+        .filter((elm) => elm.timeSeries.length > 0),
       labeling: {
         _id: labeling._id,
         useZeroClass: zeroClass,
@@ -144,9 +149,16 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       windowing: selectedWindowing,
       featureExtractor: selectedFeatureExtractor,
     };
+    console.log(data);
     const model_id = await train(data);
     onClose();
   };
+
+  console.log(
+    'dsla',
+    datasets.filter((e) => e.selected),
+    labeling
+  );
 
   const props = {
     datasets: datasets,

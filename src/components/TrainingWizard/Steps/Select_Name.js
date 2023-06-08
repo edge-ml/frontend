@@ -4,11 +4,7 @@ import { Fragment } from 'react';
 const Select_Name = ({ modelName, setModelName, footer }) => {
   return (
     <Fragment>
-      <div className="w-100 d-flex justify-content-between align-items-center mb-2">
-        <div className="font-weight-bold h4 justify-self-start">
-          8. Model Metadata
-        </div>
-      </div>
+      <h3 className="font-weight-bold">8. Model Metadata</h3>
       <InputGroup style={{ maxWidth: '350px' }}>
         <InputGroupAddon addonType="prepend">Model Name</InputGroupAddon>
         <Input
