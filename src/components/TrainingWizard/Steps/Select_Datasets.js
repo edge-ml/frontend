@@ -34,6 +34,10 @@ const Wizard_SelectDataset = ({
       .map((elm) => elm.samplingRate.mean)
   );
 
+  // const unionTimeseriesIDs = [...new Set(allDuplTimeseries.map(({name}) => name))]
+  // const intersectTimeseriesIDs = intersect(unionTimeseriesIDs, ...selectedTimeseries.map(({name}) => name))
+  // const unionTimeseries = unionTimeseriesIDs.map(name => allDuplTimeseries.find(ts => ts.name === name));
+
   return (
     <Fragment>
       <h3>2. Select datasets</h3>
@@ -57,7 +61,7 @@ const Wizard_SelectDataset = ({
                   onClick={() => toggleSelectDataset(dataset._id)}
                 ></Checkbox>
                 <div className="datasetName">{dataset.name}</div>
-                <div>
+                <div style={{ overflow: 'auto' }}>
                   {dataset.timeSeries.map((ts) => (
                     <Badge>{`${ts.name} (${
                       Math.round(ts.samplingRate.mean * 100) / 100

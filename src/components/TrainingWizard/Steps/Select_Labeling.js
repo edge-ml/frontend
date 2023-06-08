@@ -90,20 +90,14 @@ const Wizard_SelectLabeling = ({
                           ...(selectedLabeling?.disabledLabelings.includes(
                             label._id
                           )
-                            ? {
-                                textDecoration: 'line-through',
-                              }
-                            : {
-                                backgroundColor: label.color,
-                              }),
+                            ? { textDecoration: 'line-through' }
+                            : { backgroundColor: label.color }),
                           userSelect: 'none',
                         }}
                         {...(selectedLabeling?.disabledLabelings.includes(
                           label._id
                         )
-                          ? {
-                              color: 'light',
-                            }
+                          ? { color: 'light' }
                           : {})}
                       >
                         {label.name}
