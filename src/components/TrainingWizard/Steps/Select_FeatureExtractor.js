@@ -50,4 +50,6 @@ const Select_FeatureExtractor = ({
   );
 };
 
+Select_FeatureExtractor.validate = () => {};
+
 export default Select_FeatureExtractor;

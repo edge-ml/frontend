@@ -111,4 +111,6 @@ export const HyperparameterView = ({
   );
 };
 
+SelectEvaluation.validate = () => {};
+
 export default SelectEvaluation;

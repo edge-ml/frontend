@@ -156,4 +156,43 @@ const Wizard_SelectDataset = ({
   );
 };
 
+Wizard_SelectDataset.validate = ({ datasets, selectedLabeling, zeroClass }) => {
+  const selDS = datasets.filter((elm) => elm.selected);
+
+  if (selDS.length === 0) {
+    return 'You need to select at least one dataset';
+  }
+
+  const coveredLabels = datasets
+    .filter((elm) => elm.selected)
+    .map((e) =>
+      e.labelings.find((ls) => ls.labelingId === selectedLabeling._id)
+    )
+    .filter((x) => x)
+    .map((ls) => ls.labels)
+    .flat()
+    .reduce((acc, cur) => {
+      acc[cur.type] = acc[cur.type] ?? {
+        count: 0,
+        duration: 0,
+        type: cur.type,
+      };
+      acc[cur.type].count += 1;
+      acc[cur.type].duration += cur.end - cur.start;
+      return acc;
+    }, {});
+
+  const coveredCount = Object.values(coveredLabels).filter(
+    (elm) => elm.count > 0
+  ).length;
+
+  if (coveredCount < 1) {
+    return 'Selected datasets do not contain any labels';
+  }
+
+  if (coveredCount === 1 && !zeroClass) {
+    return 'Selected datasets contain only one label. At least two labels are needed with zero class disabled';
+  }
+};
+
 export default Wizard_SelectDataset;

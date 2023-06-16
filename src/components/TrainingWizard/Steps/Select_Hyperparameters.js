@@ -130,4 +130,10 @@ const Wizard_Hyperparameters = ({
   );
 };
 
+Wizard_Hyperparameters.validate = ({ selectedClassifier }) => {
+  if (!selectedClassifier) {
+    return 'You need to select a classifier';
+  }
+};
+
 export default Wizard_Hyperparameters;

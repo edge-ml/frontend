@@ -49,4 +49,6 @@ const Select_Normalizer = ({
   );
 };
 
+Select_Normalizer.validate = () => {};
+
 export default Select_Normalizer;

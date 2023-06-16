@@ -103,4 +103,34 @@ const Wizard_SelectLabeling = ({
   );
 };
 
+Wizard_SelectLabeling.validate = ({
+  selectedLabeling,
+  labelings,
+  zeroClass,
+}) => {
+  if (!selectedLabeling) {
+    return 'You need to select a labeling';
+  }
+
+  const labeling = labelings.find((l) => l._id === selectedLabeling._id);
+
+  if (!labeling) {
+    return 'Selected labeling is erronous, an internal error has occured';
+  }
+
+  const remainingLabelsCount =
+    labeling.labels.length -
+    (selectedLabeling.disabledLabels
+      ? selectedLabeling.disabledLabels.length
+      : 0);
+
+  if (remainingLabelsCount === 0) {
+    return 'At least one label must remain enabled in the selected labeling';
+  }
+
+  if (remainingLabelsCount === 1 && !zeroClass) {
+    return 'At least two labels must remain enabled if zero class is disabled';
+  }
+};
+
 export default Wizard_SelectLabeling;

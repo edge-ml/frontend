@@ -65,4 +65,10 @@ const Select_Windowing = ({
   );
 };
 
+Select_Windowing.validate = ({ selectedWindowing }) => {
+  if (!selectedWindowing) {
+    return 'You need to select a windowing';
+  }
+};
+
 export default Select_Windowing;

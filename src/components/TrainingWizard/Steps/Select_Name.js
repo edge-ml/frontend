@@ -18,4 +18,10 @@ const Select_Name = ({ modelName, setModelName, footer }) => {
   );
 };
 
+Select_Name.validate = ({ modelName }) => {
+  if (!modelName) {
+    return 'Model name cannot be blank';
+  }
+};
+
 export default Select_Name;
