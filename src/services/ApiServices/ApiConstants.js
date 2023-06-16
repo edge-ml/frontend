@@ -8,6 +8,7 @@ export const AUTH_URI =
     : window.location.host === 'edge-ml.ngrok.io'
     ? 'http://auth.edge-ml.ngrok.io/auth/'
     : `http://${currentHost}:3002/auth/`;
+
 export const API_URI =
   process.env.NODE_ENV === 'production'
     ? '/api/'
@@ -62,11 +63,12 @@ export const API_ENDPOINTS = {
   LABEL_TYPES: 'labelTypes',
   EXPERIMENTS: 'experiments',
   PROJECTS: 'projects',
-  SETDEVICEAPIKEY: 'deviceApi/setkey',
   GETDEVICEAPIKEY: 'deviceApi/getkey',
   REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
   SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive',
   ARDUINOFIRMWARE: 'arduinoFirmware',
+  PROCESS_CSV: 'CSVServices/processCSV',
+  GENERATE_DATASET: 'CSVServices/generateDataset',
 };
 
 export const ML_ENDPOINTS = {
@@ -83,14 +85,16 @@ export const DATASET_STORE_ENDPOINTS = {
   DATASET_LABELINGS: 'datasets/labelings/',
   LABELING: 'labelings/',
   CSV: 'download/',
+  CREATE_DATASET: 'datasets/create',
 };
 
 export const generateApiRequest = (
   method = this.HTTP_METHODS.GET,
-  baseUri = API_URI,
+  baseUri = this.API_URI,
   endpoint = this.API_ENDPOINTS.DEFAULT,
   body = {},
-  params = {}
+  params = {},
+  contentType = 'application/json'
 ) => {
   const project = localStorageService.getProject();
   return {
@@ -99,7 +103,7 @@ export const generateApiRequest = (
     data: body,
     params: params,
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': contentType,
       ...(project && { project: project }),
       Authorization: localStorageService.getAccessToken(),
     },

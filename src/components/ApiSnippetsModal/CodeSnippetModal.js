@@ -86,7 +86,7 @@ class CodeSnippetModal extends Component {
             platform={this.state.platform}
             datasetName={this.state.datasetName}
             useServertime={this.state.servertime}
-            deviceApiKey={this.props.deviceApiKey}
+            deviceApiKey={this.props.readApiKey} // TODO: FIX CODESNIPPET DEVICEAPIKEY
           ></CodeSnippet>
         </ModalBody>
         <ModalFooter>

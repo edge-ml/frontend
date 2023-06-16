@@ -11,7 +11,6 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Alert,
 } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
 import {
@@ -19,9 +18,9 @@ import {
   createDatasets,
 } from '../../services/ApiServices/DatasetServices';
 
+import { processCSVBackend } from '../../services/ApiServices/CSVServices';
+
 import {
-  processCSV,
-  generateDataset,
   extendExistingDataset,
   generateLabeledDataset,
 } from '../../services/CsvService';
@@ -31,7 +30,6 @@ import './CreateNewDatasetModal.css';
 import {
   addLabeling,
   subscribeLabelingsAndLabels,
-  updateLabelingAndLabels,
 } from '../../services/ApiServices/LabelingServices';
 import ErrorModal from './ErrorModal';
 import SpinnerButton from '../Common/SpinnerButton';
@@ -70,9 +68,13 @@ class CreateNewDatasetModal extends Component {
     });
   }
 
-  onFileInput(files) {
-    processCSV(files).then((timeData) => {
-      const result = generateDataset(timeData);
+  async onFileInput(files) {
+    console.log('onFileInput');
+    let results = [];
+    for (let i = 0; i < files.length; ++i) {
+      const formData = new FormData();
+      formData.append('CSVFile', files[i]);
+      const result = await processCSVBackend(formData);
       if (Array.isArray(result)) {
         this.setState({
           uploadErrors: result,
@@ -80,24 +82,29 @@ class CreateNewDatasetModal extends Component {
         });
         return;
       }
-
-      var datasets = result.datasets;
-
-      datasets = datasets.map((dataset, idx) => {
-        const fileName = files[idx].name;
-        dataset.name = fileName.endsWith('.csv')
-          ? fileName.substring(0, fileName.length - 4)
-          : fileName;
-        return dataset;
+      const fileName = files[i].name;
+      results.push({
+        dataset: {
+          ...result.datasets[0],
+          name: fileName.endsWith('.csv')
+            ? fileName.substring(0, fileName.length - 4)
+            : fileName,
+        },
+        labeling: result.labelings[0],
       });
-      this.setState({
-        files: [...this.state.files, ...files],
-        datasets: [...this.state.datasets, ...datasets],
-        labelings: [
-          ...this.state.labelings,
-          ...result.labelings.map((elm) => elm.map((innerElm) => innerElm)),
-        ],
-      });
+    }
+
+    // console.log('state')
+    // console.log(this.state.datasets)
+    // console.log('result');
+    // console.log(results.map(e => e.dataset));
+    this.setState({
+      files: [...this.state.files, ...files],
+      datasets: [...this.state.datasets, ...results.map((e) => e.dataset)],
+      labelings: [
+        ...this.state.labelings,
+        ...results.map((elm) => elm.labeling.map((innerElm) => innerElm)),
+      ],
     });
   }
 

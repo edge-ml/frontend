@@ -108,6 +108,38 @@
   filter: brightness(85%);
 }
 
+.scrollBtn {
+  position: absolute;
+  top: 43.5%;
+  z-index: 5;
+  position: absolute;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  font-size: 30px;
+  cursor: pointer;
+  color: grey;
+  font-family: Monaco, monospace;
+  user-select: none;
+}
+
+.scrollBtn:hover {
+  color: black;
+}
+
+.scrollBtn:active {
+  font-size: 26px;
+  filter: brightness(85%);
+}
+
+.scrollBtnLeft {
+  left: 10px;
+}
+
+.scrollBtnRight {
+  right: 10px;
+}
+
 .noDataLabel {
   display: flex;
   height: 200px;

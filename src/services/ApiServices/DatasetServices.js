@@ -133,29 +133,19 @@ export const deleteDataset = (id) => {
   });
 };
 
-export const updateDataset = (dataset, onlyMetaData) => {
+export const updateDataset = (dataset) => {
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.PUT,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${dataset['_id']}`,
         dataset
       )
     )
-      .then(() =>
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.GET,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.DATASETS + `/${dataset['_id']}`,
-            {},
-            { onlyMetaData: onlyMetaData }
-          )
-        ).then((updatedDataset) => {
-          resolve(updatedDataset.data);
-        })
-      )
+      .then((updatedDataset) => {
+        resolve(updatedDataset.data);
+      })
       .catch((err) => reject(err.response));
   });
 };

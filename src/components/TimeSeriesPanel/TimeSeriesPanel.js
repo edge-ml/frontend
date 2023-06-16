@@ -117,64 +117,6 @@ class TimeSeriesPanel extends Component {
     if (this.props.index === 0) {
       return;
     }
-    /*const leftButton = document.createElement('button');
-    leftButton.innerHTML = '<';
-    leftButton.style.cssText = `
-      position: absolute;
-      left: 10px;
-      top: 37.5%;
-      transform: translateY(-50%);
-      border: none;
-      background: transparent;
-      font-size: 30px;
-      cursor: pointer;
-      color: grey;
-      font-family: Monaco, monospace;
-      user-select: none;
-    `;
-    leftButton.addEventListener('mousedown', (e) => {
-      e.stopImmediatePropagation();
-      this.scroll(ScrollDirection.LEFT);
-    });
-
-    leftButton.addEventListener('mouseover', function () {
-      leftButton.style.color = 'black';
-    });
-
-    leftButton.addEventListener('mouseout', function () {
-      leftButton.style.color = 'grey';
-    });
-
-    const rightButton = document.createElement('button');
-    rightButton.innerHTML = '>';
-    rightButton.style.cssText = `
-      position: absolute;
-      right: 10px;
-      top: 37.5%;
-      transform: translateY(-50%);
-      border: none;
-      background: transparent;
-      font-size: 30px;
-      cursor: pointer;
-      color: grey;
-      font-family: Monaco, monospace;
-      user-select: none;
-    `;
-    rightButton.addEventListener('mousedown', (e) => {
-      e.stopImmediatePropagation();
-      this.scroll(ScrollDirection.RIGHT);
-    });
-
-    rightButton.addEventListener('mouseover', function () {
-      rightButton.style.color = 'black';
-    });
-
-    rightButton.addEventListener('mouseout', function () {
-      rightButton.style.color = 'grey';
-    });
-
-    this.chart.current.chart.renderTo.parentNode.appendChild(leftButton);
-    this.chart.current.chart.renderTo.parentNode.appendChild(rightButton);*/
   }
 
   // updateData = debounce((chart, min, max, width, offset) => {
@@ -914,6 +856,22 @@ class TimeSeriesPanel extends Component {
               onClick={(e) => this.zoom(ZoomDirection.IN)}
             >
               <FontAwesomeIcon icon={faSearchPlus} size="xs" color="#999999" />
+            </button>
+          </div>
+        ) : null}
+        {this.props.index !== 0 && !this.props.isEmpty ? (
+          <div>
+            <button
+              className="scrollBtn scrollBtnLeft"
+              onClick={(e) => this.scroll(ScrollDirection.LEFT)}
+            >
+              &lt;
+            </button>
+            <button
+              className="scrollBtn scrollBtnRight"
+              onClick={(e) => this.scroll(ScrollDirection.RIGHT)}
+            >
+              &gt;
             </button>
           </div>
         ) : null}

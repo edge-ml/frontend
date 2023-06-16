@@ -7,7 +7,6 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
-import CreateNewDatasetModal from '../../components/CreateNewDatasetModal/CreateNewDatasetModal';
 import NotificationContext from '../../components/NotificationHandler/NotificationProvider';
 import Loader from '../../modules/loader';
 
@@ -18,9 +17,9 @@ import {
   deleteDatasets,
 } from '../../services/ApiServices/DatasetServices';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
-import { downloadAllAsZip } from '../../services/DatasetService';
 import DatasetTable from './DatasetTable';
 import DataUpload from './DataUpload';
+import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -108,6 +107,11 @@ const ListPage = (props) => {
     setIsCreateNewDatasetOpen(false);
   };
 
+  const refreshList = () => {
+    subscribeLabelingsAndLabels().then((labelings) => setLabelings(labelings));
+    getDatasets().then((datasets) => setDatasets(datasets));
+  };
+
   const toggleCheck = (e, datasetId) => {
     const checked = datasetsToDelete.includes(datasetId);
     if (!checked) {
@@ -179,10 +183,10 @@ const ListPage = (props) => {
           </Button>
         </ModalFooter>
       </Modal>
-      <CreateNewDatasetModal
+      <UploadDatasetModal
         isOpen={isCreateNewDatasetOpen}
         onCloseModal={toggleCreateNewDatasetModal}
-        onDatasetComplete={onDatasetsChanged}
+        onDatasetComplete={refreshList}
       />
     </div>
   );

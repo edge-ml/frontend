@@ -34,13 +34,25 @@ const displayTime = (time) => {
   return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
 };
 
+// s as unix timestamp in milliseconds
 const format_time = (s) => {
-  const dtFormat = new Intl.DateTimeFormat('en-GB', {
-    timeStyle: 'medium',
-    timeZone: 'UTC',
+  const seconds = s / 1000;
+
+  // Calculate the number of minutes and seconds from the remaining seconds
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60).toLocaleString('en-US', {
+    minimumIntegerDigits: 2,
   });
 
-  return dtFormat.format(new Date(s));
+  // Calculate the number of hours, minutes, and seconds from the remaining minutes
+  const hours = Math.floor(minutes / 60).toLocaleString('en-US', {
+    minimumIntegerDigits: 2,
+  });
+  const remainingMinutes = (minutes % 60).toLocaleString('en-US', {
+    minimumIntegerDigits: 2,
+  });
+
+  return `${hours}:${remainingMinutes}:${remainingSeconds}`;
 };
 
 const Labelings = (props) => {

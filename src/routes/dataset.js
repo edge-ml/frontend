@@ -11,6 +11,8 @@ import TSSelectionPanel from '../components/TSSelectionPanel';
 import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 
+import { MetaDataSidebar } from '../components/MetaDataSidebar/MetaDataSidebar';
+
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
   updateDataset,
@@ -32,13 +34,7 @@ import Loader from '../modules/loader';
 
 import pmemoize from 'promise-memoize';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowRight,
-  faCaretRight,
-  faChevronLeft,
-  faChevronRight,
-  faTimes,
-} from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const TIMESERIES_CACHE_MAX_AGE = 5000; // ms
 
