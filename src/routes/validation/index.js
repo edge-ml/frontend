@@ -9,6 +9,7 @@ import {
   ModalBody,
   ModalHeader,
   ModalFooter,
+  Spinner,
 } from 'reactstrap';
 import DownloadModal from './DownloadModal';
 import { Table, TableEntry } from '../../components/Common/Table';
@@ -31,12 +32,36 @@ const ValidationPage = () => {
   const [modelDeploy, setModelDeploy] = useState(undefined);
   const [selectedModels, setSelectedModels] = useState([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [updateModels, setUpdateModels] = useState(false);
 
   useEffect(() => {
     getModels().then((models) => {
       setModels(models);
     });
   }, []);
+
+  useEffect(() => {
+    const fetchData = () => {
+      console.log('update', updateModels);
+      getModels().then((models) => {
+        // if (models.length === 0 || models.every(elm => elm.status === "done" || elm.error != "")) {
+        //   setUpdateModels(false);
+        // }
+
+        setModels(models);
+      });
+    };
+
+    fetchData();
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [modalOpen]);
 
   const metric = (metric) => Math.round(metric * 100 * 100) / 100;
 
@@ -57,11 +82,18 @@ const ValidationPage = () => {
     toggleDeleteModal();
   };
 
+  const onDeleteSingleModel = (model_id) => {
+    setSelectedModels([model_id]);
+    toggleDeleteModal();
+  };
+
   const onDeleteSelectedModels = () => {
+    console.log(selectedModels);
     selectedModels.forEach((elm) => {
       deleteModel(elm);
     });
     setSelectedModels([]);
+    toggleDeleteModal();
   };
 
   const toggleDeleteModal = () => {
@@ -69,10 +101,12 @@ const ValidationPage = () => {
   };
 
   const onWizardClose = () => {
+    console.log('wizard close');
     setModalOpen(false);
     getModels().then((models) => setModels(models));
   };
 
+  console.log(models);
   return (
     <Container>
       <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
@@ -81,118 +115,145 @@ const ValidationPage = () => {
             <div className="font-weight-bold h4 justify-self-start">Models</div>
             <Button onClick={() => setModalOpen(true)}>Train a model</Button>
           </div>
-          <Table
-            header={
-              <>
-                <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
-                  <Checkbox isSelected={false}></Checkbox>
-                </div>
-                <Button
-                  className="ml-3 btn-delete"
-                  id="deleteDatasetsButton"
-                  size="sm"
-                  divor="secondary"
-                  onClick={onOpenDeleteModal}
-                >
-                  <FontAwesomeIcon
-                    className="mr-2"
-                    icon={faTrashAlt}
-                  ></FontAwesomeIcon>
-                  Delete
-                </Button>
-              </>
-            }
-          >
-            {models.map((model, index) => {
-              return (
-                <TableEntry index={index}>
-                  {model.status === 'done' ? (
-                    <div className="p-2 d-flex">
-                      <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
-                        <Checkbox
-                          onClick={() => clickCheckBox(model)}
-                        ></Checkbox>
-                      </div>
-                      <div
-                        className="w-100 d-flex justify-content-between align-items-center"
-                        onClick={() => onViewModel(model)}
-                      >
-                        <div>
-                          <b>{model.name}</b>
-                          <div>{model.pipeline.classifier.name}</div>
-                        </div>
-                        <div>
-                          <div className="">
-                            <b>Acc: </b>
-                            {metric(model.evaluator.metrics.accuracy_score)}%
-                          </div>
-                          <div>
-                            <b>F1: </b>
-                            {metric(model.evaluator.metrics.f1_score)}%
-                          </div>
-                        </div>
-                        <div>
-                          <Button
-                            className="btn-edit mr-3 mr-md-4"
-                            onClick={(e) => {
-                              onViewModel(model);
-                              e.stopPropagation();
-                            }}
-                          >
-                            <FontAwesomeIcon
-                              icon={faInfoCircle}
-                            ></FontAwesomeIcon>
-                          </Button>
-                          <Button
-                            className="btn-edit mr-3 mr-md-4"
-                            onClick={(e) => {
-                              setModelDownload(model);
-                              e.stopPropagation();
-                            }}
-                          >
-                            <FontAwesomeIcon
-                              icon={faDownload}
-                            ></FontAwesomeIcon>
-                          </Button>
-                          <Button
-                            className="btn-edit mr-3 mr-md-4"
-                            onClick={(e) => {
-                              setModelDeploy(model);
-                              e.stopPropagation();
-                            }}
-                          >
-                            <FontAwesomeIcon
-                              icon={faMicrochip}
-                            ></FontAwesomeIcon>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-2 d-flex">
-                      <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
-                        <Checkbox
-                          onClick={() => clickCheckBox(model)}
-                        ></Checkbox>
-                      </div>
-                      <div className="w-100 d-flex justify-content-start align-items-center">
-                        <div>
-                          <b>{model.name}</b>
-                          <div>{model.trainRequest.classifier.name}</div>
+          {models.length === 0 ? (
+            <div
+              style={{ marginTop: '30vh', fontSize: 'large' }}
+              className="d-flex h-100 justify-content-center align-items-center font-weight-bold"
+            >
+              No models trained yet!
+            </div>
+          ) : (
+            <Table
+              header={
+                <>
+                  <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
+                    <Checkbox isSelected={false}></Checkbox>
+                  </div>
+                  <Button
+                    className="ml-3 btn-delete"
+                    id="deleteDatasetsButton"
+                    size="sm"
+                    divor="secondary"
+                    onClick={onOpenDeleteModal}
+                  >
+                    <FontAwesomeIcon
+                      className="mr-2"
+                      icon={faTrashAlt}
+                    ></FontAwesomeIcon>
+                    Delete
+                  </Button>
+                </>
+              }
+            >
+              {models.map((model, index) => {
+                return (
+                  <TableEntry index={index}>
+                    {model.error === undefined || model.error === '' ? (
+                      <div className="p-2 d-flex">
+                        <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
+                          <Checkbox
+                            onClick={() => clickCheckBox(model)}
+                          ></Checkbox>
                         </div>
                         <div
-                          className="ml-5 flex-grow-1 d-flex justify-content-center"
-                          style={{ color: 'red' }}
+                          className="w-100 d-flex justify-content-between align-items-center"
+                          onClick={() => onViewModel(model)}
                         >
-                          An error occured while training!
+                          <div>
+                            <b>{model.name}</b>
+                            <div>{model.trainRequest.classifier.name}</div>
+                          </div>
+                          {model.status === 'done' ? (
+                            <div>
+                              <div className="">
+                                <b>Acc: </b>
+                                {metric(model.evaluator.metrics.accuracy_score)}
+                                %
+                              </div>
+                              <div>
+                                <b>F1: </b>
+                                {metric(model.evaluator.metrics.f1_score)}%
+                              </div>
+                            </div>
+                          ) : null}
+                          {model.status === 'done' ? (
+                            <div>
+                              {/* <Button
+                            className='btn-edit mr-4 mr-md-4'
+                            onClick={e => {
+                              onDeleteSingleModel();
+                              e.stopPropagation();
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
+                          </Button> */}
+                              <Button
+                                className="btn-edit mr-3 mr-md-4"
+                                onClick={(e) => {
+                                  onViewModel(model);
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faInfoCircle}
+                                ></FontAwesomeIcon>
+                              </Button>
+                              <Button
+                                className="btn-edit mr-3 mr-md-4"
+                                onClick={(e) => {
+                                  setModelDownload(model);
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faDownload}
+                                ></FontAwesomeIcon>
+                              </Button>
+                              <Button
+                                className="btn-edit mr-3 mr-md-4"
+                                onClick={(e) => {
+                                  setModelDeploy(model);
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faMicrochip}
+                                ></FontAwesomeIcon>
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="mr-5">
+                              <Spinner color="primary"></Spinner>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    </div>
-                  )}
-                </TableEntry>
-              );
-            })}
-          </Table>
+                    ) : (
+                      <div className="p-2 d-flex">
+                        <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
+                          <Checkbox
+                            onClick={() => clickCheckBox(model)}
+                          ></Checkbox>
+                        </div>
+                        <div className="w-100 d-flex justify-content-start align-items-center">
+                          <div>
+                            <b>{model.name}</b>
+                            <div>{model.trainRequest.classifier.name}</div>
+                          </div>
+                          <div
+                            className="ml-5 flex-grow-1 d-flex justify-content-center"
+                            style={{ color: 'red' }}
+                          >
+                            An error occured while training!
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </TableEntry>
+                );
+              })}
+            </Table>
+          )}
           {modalOpen ? (
             <TrainingWizard
               modalOpen={true}

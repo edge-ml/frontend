@@ -167,7 +167,7 @@ const Training_config = ({ model }) => {
   };
 
   return (
-    <div>
+    <div className="mt-3">
       <h5>
         <b>Training configuration</b>
       </h5>

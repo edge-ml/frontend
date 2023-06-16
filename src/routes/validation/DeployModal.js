@@ -17,6 +17,7 @@ import {
 import {
   getDeployDevices,
   deployModel,
+  downloadFirmware,
 } from '../../services/ApiServices/MlService';
 
 import './index.css';
@@ -81,6 +82,24 @@ const DeployModal = ({ model, onClose }) => {
 
   const flashFirmware = () => {
     dfuManager.flashFirmware();
+  };
+
+  const onDownloadFirmware = async () => {
+    console.log('Donwload');
+    const res = await downloadFirmware(
+      model._id,
+      selectedSensors,
+      parameters,
+      selectedDevice
+    );
+    console.log(res);
+    const downloadLink = document.createElement('a');
+    const blob = new Blob([res]);
+    const objectUrl = URL.createObjectURL(blob);
+    downloadLink.href = objectUrl;
+    downloadLink.download = 'download.zip';
+    downloadLink.click();
+    URL.revokeObjectURL(objectUrl);
   };
 
   const handleHyperparameterChange = ({ parameter_name, state }) => {
@@ -233,6 +252,9 @@ const DeployModal = ({ model, onClose }) => {
           </Button>
           <Button className="m-2" onClick={flashFirmware}>
             Flash firmware
+          </Button>
+          <Button className="m-2" onClick={onDownloadFirmware}>
+            Download firmware
           </Button>
         </div>
       </ModalBody>

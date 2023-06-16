@@ -21,6 +21,7 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
           <td></td>
           {labels.map((label) => (
             <td
+              className="pb-2"
               style={{
                 paddingRight: 0,
                 paddingLeft: 0,
@@ -36,7 +37,9 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
         {cm.map((row, rowIdx) => (
           <tr>
             <td
+              className="pr-2"
               style={{
+                textAlign: 'end',
                 borderRight: '1px solid black',
                 paddingBottom: '2px',
                 fontWeight: 'bold',
