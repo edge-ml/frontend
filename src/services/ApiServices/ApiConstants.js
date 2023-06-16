@@ -63,6 +63,7 @@ export const API_ENDPOINTS = {
   LABEL_TYPES: 'labelTypes',
   EXPERIMENTS: 'experiments',
   PROJECTS: 'projects',
+  SETDEVICEAPIKEY: 'deviceApi/setkey',
   GETDEVICEAPIKEY: 'deviceApi/getkey',
   REMOVEDEVICEAPIKEY: 'deviceApi/deletekey',
   SWTICHDEVICEAPIACTIVE: 'deviceApi/switchActive',
