@@ -1,13 +1,6 @@
 import React from 'react';
-import {
-  Table,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  Card,
-  CardBody,
-  CardHeader,
-} from 'reactstrap';
+import { Table, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import Checkbox from '../Common/Checkbox';
 
 function BlePanelSensorList(props) {
   if (!props.sensors || props.sensors === []) {
@@ -19,23 +12,11 @@ function BlePanelSensorList(props) {
     sampleRateSum += props.sensors[elm].sampleRate;
   });
   return (
-    <Card className="text-left">
-      <CardHeader>
+    <div className="ml-2">
+      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
         <h4>2. Configure sensors</h4>
-      </CardHeader>
-      {sampleRateSum > props.maxSampleRate ? (
-        <small className="text-danger">
-          <strong>Warning: </strong>Collecting data from multiple sensors with
-          high sampling rate can cause delays / errors during recording. It is
-          recommended to keep the sum of sample rates below{' '}
-          {props.maxSampleRate} Hz. Your are currently at {sampleRateSum} Hz.
-        </small>
-      ) : null}
-      <CardBody
-        style={
-          props.disabled ? { opacity: '0.4', pointerEvents: 'none' } : null
-        }
-      >
+      </div>
+      <div className="body-wrapper">
         <Table>
           <thead>
             <tr className="bg-light">
@@ -52,12 +33,11 @@ function BlePanelSensorList(props) {
                 <tr key={sensorKey}>
                   <td>
                     {' '}
-                    <Input
-                      onChange={(e) => props.onToggleSensor(sensorKey)}
+                    <Checkbox
+                      isSelected={props.selectedSensors.has(sensorKey)}
                       className="datasets-check"
-                      checked={props.selectedSensors.has(sensorKey)}
-                      type="checkbox"
-                    />
+                      onClick={(e) => props.onToggleSensor(sensorKey)}
+                    ></Checkbox>
                   </td>
                   <td>{sensorData.name}</td>
                   <td>
@@ -85,8 +65,19 @@ function BlePanelSensorList(props) {
             })}
           </tbody>
         </Table>
-      </CardBody>
-    </Card>
+        {sampleRateSum > props.maxSampleRate ? (
+          <div className="p-2">
+            <small className="text-danger">
+              <strong>Warning: </strong>Collecting data from multiple sensors
+              with high sampling rate can cause delays / errors during
+              recording. It is recommended to keep the sum of sample rates below{' '}
+              {props.maxSampleRate} Hz. Your are currently at {sampleRateSum}{' '}
+              Hz.
+            </small>
+          </div>
+        ) : null}
+      </div>
+    </div>
   );
 }
 

@@ -399,10 +399,17 @@ div.card {
   border-color: rgb(226, 232, 240);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-secondary:focus {
   background: rgb(226, 232, 240);
   color: black;
   border-color: rgb(226, 232, 240);
+}
+
+.btn-secondary:active {
+  color: #fff;
+  background-color: #5a6268;
+  border-color: #545b62;
 }
 
 .btn-success {
@@ -430,6 +437,20 @@ div.card {
   padding: 10px 15px;
   border-radius: 6px;
   border-width: 2px;
+}
+
+.header-wrapper {
+  background: rgb(249, 251, 252);
+  border: 2px solid rgb(230, 230, 234);
+  border-radius: 10px 10px 0px 0px;
+  border-width: 2px 2px 0px 2px;
+  padding: 10px;
+}
+
+.body-wrapper {
+  border: 2px solid rgb(230, 230, 234);
+  border-radius: 0px 0px 10px 10px;
+  overflow: hidden;
 }
 
 .edgeml-border {

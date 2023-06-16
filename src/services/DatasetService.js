@@ -12,18 +12,56 @@ import ax from 'axios';
 
 const axios = ax.create();
 
-const downloadDatasets = async (dataset) => {
-  console.log(dataset);
+const registerDatasetDownload = async (dataset) => {
   const request_params = generateApiRequest(
     HTTP_METHODS.POST,
     DATASET_STORE,
-    DATASET_STORE_ENDPOINTS.CSV,
-    { datasets: dataset }
+    DATASET_STORE_ENDPOINTS.CSV + `dataset/${dataset._id}`
   );
   const response = await axios(request_params);
-  const id = response.data.id;
-  console.log('open window: ', id);
-  window.open(`${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}download/${id}`);
+  return response.data;
+};
+
+const registerProjectDownload = async () => {
+  const request_params = generateApiRequest(
+    HTTP_METHODS.POST,
+    DATASET_STORE,
+    DATASET_STORE_ENDPOINTS.CSV + 'project'
+  );
+  const response = await axios(request_params);
+  return response.data;
+};
+
+const datasetDownloadStatus = async () => {
+  try {
+    const request_params = generateApiRequest(
+      HTTP_METHODS.GET,
+      DATASET_STORE,
+      DATASET_STORE_ENDPOINTS.CSV + 'status/'
+    );
+    const response = await axios(request_params);
+    return response.data;
+  } catch {
+    return 404;
+  }
+};
+
+const cancelDownload = async (downloadId) => {
+  try {
+    const request_params = generateApiRequest(
+      HTTP_METHODS.DELETE,
+      DATASET_STORE,
+      DATASET_STORE_ENDPOINTS.CSV + `${downloadId}`
+    );
+    const response = await axios(request_params);
+    return response.data;
+  } catch {
+    return 404;
+  }
+};
+
+const datasetDownloadfromId = async (downloadId) => {
+  window.open(`${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}${downloadId}`);
 };
 
 const downloadAllAsZip = async (datasets, labelings, labels) => {
@@ -67,4 +105,12 @@ const downloadFile = (blob, fileName) => {
   document.body.removeChild(link);
 };
 
-export { downloadDatasets, downloadAllAsZip, downloadFile };
+export {
+  registerDatasetDownload,
+  datasetDownloadfromId,
+  downloadAllAsZip,
+  downloadFile,
+  datasetDownloadStatus,
+  registerProjectDownload,
+  cancelDownload,
+};

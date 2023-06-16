@@ -1,9 +1,25 @@
 import React, { useState } from 'react';
-import { Modal, ModalHeader, ModalBody, Button, Progress, ModalFooter, Alert, ButtonGroup } from 'reactstrap';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  Button,
+  Progress,
+  ModalFooter,
+  Alert,
+  ButtonGroup,
+} from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faTrashAlt, faCog, faCheckCircle, faCheck, faBan } from '@fortawesome/free-solid-svg-icons';
+import {
+  faSpinner,
+  faTrashAlt,
+  faCog,
+  faCheckCircle,
+  faCheck,
+  faBan,
+} from '@fortawesome/free-solid-svg-icons';
 import { faFile } from '@fortawesome/free-regular-svg-icons';
 
 import { processCSVBackend } from '../../services/ApiServices/CSVServices';
@@ -13,7 +29,11 @@ import './UploadDatasetModal.css';
 
 import { updateDataset } from '../../services/ApiServices/DatasetServices';
 
-export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
+export const UploadDatasetModal = ({
+  isOpen,
+  onCloseModal,
+  onDatasetComplete,
+}) => {
   const [files, setFiles] = useState([]);
   const [count, setCount] = useState(0);
   const [showWarning, setShowWarning] = useState(false);
@@ -34,7 +54,7 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       status: FileStatus.CONFIGURATION,
       id: count + idx,
       csv: inputFiles[idx],
-      error: undefined
+      error: undefined,
     }));
     setFiles([...files, ...formatted]);
     setCount(count + inputFiles.length);
@@ -118,7 +138,6 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
                 : file.name,
               editingModeActive: false,
             },
-
           };
         }
         return file;
@@ -147,9 +166,9 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       let offset = 0;
       let results = '';
       const fr = new FileReader();
-  
-      fr.onload = function() {
-        results += decoder.decode(fr.result, {stream: true});
+
+      fr.onload = function () {
+        results += decoder.decode(fr.result, { stream: true });
         const lines = results.split('\n');
         if (lines.length > 1) {
           resolve(lines[0]);
@@ -158,14 +177,18 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
         offset += CHUNK_SIZE;
         seek();
       };
-  
-      fr.onerror = function() {
-        setFiles(prevFiles => prevFiles.map(f => f.id === fileId ? {...f, error: fr.error} : f));
+
+      fr.onerror = function () {
+        setFiles((prevFiles) =>
+          prevFiles.map((f) =>
+            f.id === fileId ? { ...f, error: fr.error } : f
+          )
+        );
         reject(fr.error);
       };
-  
+
       seek();
-  
+
       function seek() {
         if (offset >= file.size) {
           resolve(results);
@@ -175,17 +198,19 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
         fr.readAsArrayBuffer(slice);
       }
     });
-  }
+  };
 
   const parseHeader = (header) => {
-    const fields = header.split(',').map(f => f.trim());
-    const invalid = fields.find(f => !f.startsWith('sensor_') && !f.startsWith('label_') && f != 'time');
+    const fields = header.split(',').map((f) => f.trim());
+    const invalid = fields.find(
+      (f) => !f.startsWith('sensor_') && !f.startsWith('label_') && f != 'time'
+    );
     if (invalid || fields.length < 2) {
       return [undefined, undefined];
     }
     const unitPattern = /\[([^\[\]]*)\]$/;
     const timeSeries = fields
-      .filter(f => f.startsWith('sensor_'))
+      .filter((f) => f.startsWith('sensor_'))
       .map((f, idx) => {
         const match = f.match(unitPattern);
         const name = match ? f.slice(7, match.index) : f.slice(7);
@@ -195,45 +220,60 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
           originalName: name,
           unit: unit,
           removed: false,
-          index: idx
+          index: idx,
         };
       });
-      const labelings = fields
-      .filter(f => f.startsWith('label_'))
-      .map(f => {
+    const labelings = fields
+      .filter((f) => f.startsWith('label_'))
+      .map((f) => {
         const [, labeling, label] = f.split('_');
         return {
           name: label,
-          labelingItBelongs: labeling
+          labelingItBelongs: labeling,
         };
       })
-      .reduce((acc, label, index) => { // reduce over labels
-        const idx = acc.findIndex(labeling => labeling.name === label.labelingItBelongs);
+      .reduce((acc, label, index) => {
+        // reduce over labels
+        const idx = acc.findIndex(
+          (labeling) => labeling.name === label.labelingItBelongs
+        );
         if (idx >= 0) {
           acc[idx].labels.push(label.name);
           acc[idx].indices.push(index);
         } else {
-          acc.push({ // push resulting labelings
+          acc.push({
+            // push resulting labelings
             name: label.labelingItBelongs,
             originalName: label.labelingItBelongs,
             removed: false,
             labels: [label.name],
-            indices: [index]
+            indices: [index],
           });
         }
         return acc;
       }, [])
-      .map((labeling, index) => ({...labeling, index: index}))
+      .map((labeling, index) => ({ ...labeling, index: index }));
     return [timeSeries, labelings];
-  }
+  };
 
   const onFileInput = async (inputFiles) => {
     const fileIds = addFiles(inputFiles);
     for (let i = 0; i < inputFiles.length; ++i) {
-      const header = await extractHeader(fileIds[i], inputFiles[i])
+      const header = await extractHeader(fileIds[i], inputFiles[i]);
       const [timeSeries, labelings] = parseHeader(header);
       if (!timeSeries || !labelings) {
-        setFiles(prevFiles => prevFiles.map(f => f.id === fileIds[i] ? {...f, error: 'Invalid format, parsing failed', status: FileStatus.ERROR, progress: 100} : f));
+        setFiles((prevFiles) =>
+          prevFiles.map((f) =>
+            f.id === fileIds[i]
+              ? {
+                  ...f,
+                  error: 'Invalid format, parsing failed',
+                  status: FileStatus.ERROR,
+                  progress: 100,
+                }
+              : f
+          )
+        );
         continue;
       }
       initConfig(fileIds[i], timeSeries, labelings);
@@ -244,7 +284,11 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     const formData = new FormData();
     formData.append('CSVFile', file.csv);
     formData.append('CSVConfig', JSON.stringify(file.config));
-    setFiles(prevFiles => prevFiles.map(f => f === file ? { ...f, status: FileStatus.UPLOADING } : f));
+    setFiles((prevFiles) =>
+      prevFiles.map((f) =>
+        f === file ? { ...f, status: FileStatus.UPLOADING } : f
+      )
+    );
     const [cancellationHandler, response] = processCSVBackend(
       formData,
       file.id,
@@ -254,58 +298,73 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
     try {
       const result = await response;
     } catch (err) {
-      setFiles(prevFiles => prevFiles.map(f => f.id === file.id ? {...f, error: err.response.data.detail} : f));
-      handleStatus(file.id, FileStatus.ERROR)
+      setFiles((prevFiles) =>
+        prevFiles.map((f) =>
+          f.id === file.id ? { ...f, error: err.response.data.detail } : f
+        )
+      );
+      handleStatus(file.id, FileStatus.ERROR);
       return false;
     }
     handleStatus(file.id, FileStatus.COMPLETE);
     return true;
-  }
+  };
 
   const handleUploadAll = async () => {
-    setFiles(prevFiles => prevFiles.map(f => ({...f, config: {...f.config, editingModeActive: false}})))
-    const uploadResults = []
+    setFiles((prevFiles) =>
+      prevFiles.map((f) => ({
+        ...f,
+        config: { ...f.config, editingModeActive: false },
+      }))
+    );
+    const uploadResults = [];
     for (const file of files) {
       if (file.status !== FileStatus.CONFIGURATION) {
         continue;
       }
-      uploadResults.push(handleUpload(file))
+      uploadResults.push(handleUpload(file));
     }
-    console.log(uploadResults)
-    const allPromisesResolved = (await Promise.all(uploadResults)).every(result => result !== false);
+    console.log(uploadResults);
+    const allPromisesResolved = (await Promise.all(uploadResults)).every(
+      (result) => result !== false
+    );
     if (allPromisesResolved) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setFiles([]);
       setCount(0);
       onCloseModal(true);
       setShowWarning(false);
+      onDatasetComplete();
     }
-  }
+  };
 
   const confirmConfig = async (backendId, fileConfig) => {
     const updatedDataset = await updateDataset({
-      _id: backendId, 
+      _id: backendId,
       name: fileConfig.name,
       start: fileConfig.start,
       end: fileConfig.end,
       labelings: fileConfig.labelings,
       timeSeries: fileConfig.timeSeries,
-    })
-  }
+    });
+  };
 
   const handleModalClose = () => {
-    const anyOngoing = files.find(f => f.status === FileStatus.UPLOADING || f.status === FileStatus.PROCESSING);
+    const anyOngoing = files.find(
+      (f) =>
+        f.status === FileStatus.UPLOADING || f.status === FileStatus.PROCESSING
+    );
     if (anyOngoing) {
       setShowWarning(true);
     } else {
       handleConfirmClose();
     }
-  }
+  };
 
   const handleConfirmClose = () => {
-    const anyComplete = files.find(f => f.status === FileStatus.COMPLETE);
+    const anyComplete = files.find((f) => f.status === FileStatus.COMPLETE);
     for (const file of files) {
-      if (file.status === FileStatus.UPLOADING){
+      if (file.status === FileStatus.UPLOADING) {
         handleCancel(file);
       }
     }
@@ -317,11 +376,11 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
       onCloseModal(false);
     }
     setShowWarning(false);
-  }
+  };
 
   const handleCancelClose = () => {
     setShowWarning(false);
-  }
+  };
 
   return (
     <Modal className="modal-xl" data-testid="modal" isOpen={isOpen}>
@@ -330,16 +389,22 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
         <Button
           className="modal-close-button"
           close
-          onClick={handleModalClose} />
+          onClick={handleModalClose}
+        />
       </ModalHeader>
       <ModalBody>
-        <Alert isOpen={showWarning} color='danger'>
-          <div className='d-flex align-items-center justify-content-between'>
-            Ongoing uploads will be cancelled if you close the menu! Are you sure?
-            <div className='d-flex'>
+        <Alert isOpen={showWarning} color="danger">
+          <div className="d-flex align-items-center justify-content-between">
+            Ongoing uploads will be cancelled if you close the menu! Are you
+            sure?
+            <div className="d-flex">
               <ButtonGroup>
-                <Button color='primary' onClick={handleCancelClose}><FontAwesomeIcon icon={faBan}/></Button>
-                <Button color='danger' onClick={handleConfirmClose}><FontAwesomeIcon icon={faCheck}/></Button>
+                <Button color="primary" onClick={handleCancelClose}>
+                  <FontAwesomeIcon icon={faBan} />
+                </Button>
+                <Button color="danger" onClick={handleConfirmClose}>
+                  <FontAwesomeIcon icon={faCheck} />
+                </Button>
               </ButtonGroup>
             </div>
           </div>
@@ -351,94 +416,132 @@ export const UploadDatasetModal = ({ isOpen, onCloseModal }) => {
         />
         {files ? (
           <div className="mt-2">
-            {files.map(
-              (f, idx) =>
-                (!f.config || !f.config.editingModeActive) ? (
-                  <div key={f.id} className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11">
-                    <div className="d-flex flex-column align-items-center mr-2 ml-2 mt-2 col-lg-2">
-                      <FontAwesomeIcon icon={faFile} size='3x'/>
-                      <span className='text-center'>{f.name}</span>
-                    </div>
-                    <Progress
-                      className="w-75 mr-1 flex-shrink-0" //remove shrink and set w-100 to align the second button otherwise
-                      striped
-                      id={`progress-bar-${f.id}`}
-                      value={f.progress}
-                      color={
-                        f.status === FileStatus.COMPLETE
-                          ? 'success'
-                          : f.status === FileStatus.ERROR ||
-                            f.status === FileStatus.CANCELLED
-                          ? 'danger'
-                          : 'primary'
-                      }
-                    >{f.status === FileStatus.ERROR ? `Error: ${f.error}` : `${f.status} ${f.progress.toFixed(2)}%`}
-                    </Progress>
-                    <div className="d-flex align-items-center">
-                      {f.status === FileStatus.COMPLETE && (
-                        <Button close className="modal-icon-button mr-2" onClick={() => handleDelete(f.id)}>
-                          <FontAwesomeIcon icon={faCheckCircle} style={{fontSize: '1.2em'}} title='Removes item from list' />
-                        </Button>
-                      )}
-                      {f.status === FileStatus.CONFIGURATION && (
-                        <div className='d-flex'>
-                          <Button close className="modal-icon-button mr-1">
-                            <FontAwesomeIcon icon={faCog} title='Opens configuration menu' style={{fontSize: '1.2em'}} 
-                              onClick={(e) => changeConfig(f.id, {
+            {files.map((f, idx) =>
+              !f.config || !f.config.editingModeActive ? (
+                <div
+                  key={f.id}
+                  className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11"
+                >
+                  <div className="d-flex flex-column align-items-center mr-2 ml-2 mt-2 col-lg-2">
+                    <FontAwesomeIcon icon={faFile} size="3x" />
+                    <span className="text-center">{f.name}</span>
+                  </div>
+                  <Progress
+                    className="w-75 mr-1 flex-shrink-0" //remove shrink and set w-100 to align the second button otherwise
+                    striped
+                    id={`progress-bar-${f.id}`}
+                    value={f.progress}
+                    color={
+                      f.status === FileStatus.COMPLETE
+                        ? 'success'
+                        : f.status === FileStatus.ERROR ||
+                          f.status === FileStatus.CANCELLED
+                        ? 'danger'
+                        : 'primary'
+                    }
+                  >
+                    {f.status === FileStatus.ERROR
+                      ? `Error: ${f.error}`
+                      : `${f.status} ${f.progress.toFixed(2)}%`}
+                  </Progress>
+                  <div className="d-flex align-items-center">
+                    {f.status === FileStatus.COMPLETE && (
+                      <Button
+                        close
+                        className="modal-icon-button mr-2"
+                        onClick={() => handleDelete(f.id)}
+                      >
+                        <FontAwesomeIcon
+                          icon={faCheckCircle}
+                          style={{ fontSize: '1.2em' }}
+                          title="Removes item from list"
+                        />
+                      </Button>
+                    )}
+                    {f.status === FileStatus.CONFIGURATION && (
+                      <div className="d-flex">
+                        <Button close className="modal-icon-button mr-1">
+                          <FontAwesomeIcon
+                            icon={faCog}
+                            title="Opens configuration menu"
+                            style={{ fontSize: '1.2em' }}
+                            onClick={(e) =>
+                              changeConfig(f.id, {
                                 ...f.config,
                                 editingModeActive: true,
-                            })} />
-                          </Button>
-                          <Button close title='Removes item from list' className="modal-icon-button mr-2" onClick={(e) => handleDelete(f.id)} >
-                            <FontAwesomeIcon
-                              style={{fontSize: '1.2em'}}
-                              icon={faTrashAlt}
-                            />
-                          </Button>
-                        </div>
-                      )}
-                      {f.status === FileStatus.UPLOADING && (
-                        <Button close title='Cancels ongoing upload' className="modal-icon-button mr-2">
-                          <FontAwesomeIcon icon={faBan} style={{fontSize: '1.2em'}} onClick={(e) => handleCancel(f)}/>
+                              })
+                            }
+                          />
                         </Button>
-                      )}
-                      {f.status === FileStatus.CANCELLED || f.status === FileStatus.ERROR && (
-                        <Button close title='Removes item from list' className="modal-icon-button mr-2" onClick={(e) => handleDelete(f.id)} >
+                        <Button
+                          close
+                          title="Removes item from list"
+                          className="modal-icon-button mr-2"
+                          onClick={(e) => handleDelete(f.id)}
+                        >
                           <FontAwesomeIcon
-                            style={{fontSize: '1.2em'}}
+                            style={{ fontSize: '1.2em' }}
                             icon={faTrashAlt}
                           />
                         </Button>
-                      )}
-                      {f.status === FileStatus.PROCESSING && (
+                      </div>
+                    )}
+                    {f.status === FileStatus.UPLOADING && (
+                      <Button
+                        close
+                        title="Cancels ongoing upload"
+                        className="modal-icon-button mr-2"
+                      >
                         <FontAwesomeIcon
-                          spin
-                          size="2x"
-                          style={{marginLeft: '1px'}}
-                          className="mr-2"
-                          icon={faSpinner}
+                          icon={faBan}
+                          style={{ fontSize: '1.2em' }}
+                          onClick={(e) => handleCancel(f)}
                         />
-                      )}
-                    </div>
+                      </Button>
+                    )}
+                    {f.status === FileStatus.CANCELLED ||
+                      (f.status === FileStatus.ERROR && (
+                        <Button
+                          close
+                          title="Removes item from list"
+                          className="modal-icon-button mr-2"
+                          onClick={(e) => handleDelete(f.id)}
+                        >
+                          <FontAwesomeIcon
+                            style={{ fontSize: '1.2em' }}
+                            icon={faTrashAlt}
+                          />
+                        </Button>
+                      ))}
+                    {f.status === FileStatus.PROCESSING && (
+                      <FontAwesomeIcon
+                        spin
+                        size="2x"
+                        style={{ marginLeft: '1px' }}
+                        className="mr-2"
+                        icon={faSpinner}
+                      />
+                    )}
                   </div>
-                ) : 
-                (
-                    <DatasetConfigView
-                      fileId={f.id}
-                      fileConfig={f.config}
-                      changeConfig={changeConfig}
-                      confirmConfig={confirmConfig}
-                      backendId={f.backendId}
-                    />
-                )
+                </div>
+              ) : (
+                <DatasetConfigView
+                  fileId={f.id}
+                  fileConfig={f.config}
+                  changeConfig={changeConfig}
+                  confirmConfig={confirmConfig}
+                  backendId={f.backendId}
+                />
+              )
             )}
           </div>
         ) : null}
       </ModalBody>
       <ModalFooter>
         <div>
-          <Button color='primary'
-            disabled={!files.find(f => f.status === FileStatus.CONFIGURATION)}
+          <Button
+            color="primary"
+            disabled={!files.find((f) => f.status === FileStatus.CONFIGURATION)}
             onClick={handleUploadAll}
           >
             Upload All

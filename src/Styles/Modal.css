@@ -23,6 +23,29 @@
   padding: 8px;
 }
 
+.dataset-side-panel {
+  background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
+  padding: 8px;
+  height: 100vh;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  bottom: 0px;
+  width: 33vw;
+  z-index: 1000;
+  background-color: white;
+  position: fixed;
+}
+
+.dataset-side-panel-close-button {
+  display: flex;
+  justify-content: end;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .sidepanel-card {
   background-color: white;
   border-radius: 10px 10px 10px 10px;

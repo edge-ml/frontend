@@ -3,10 +3,8 @@ import { Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import SpinnerButton from '../Common/SpinnerButton';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-
+import Checkbox from '../Common/Checkbox';
 import './BleActivated.css';
-
-import { Card, CardBody, CardHeader } from 'reactstrap';
 
 function BlePanelRecorderSettings(props) {
   const [samplingRateError, setSamplingRateError] = useState(false);
@@ -43,14 +41,14 @@ function BlePanelRecorderSettings(props) {
   };
 
   return (
-    <Card
-      className="text-left"
+    <div
+      className="mr-2"
       style={props.disabled ? { opacity: '0.4', pointerEvents: 'none' } : null}
     >
-      <CardHeader>
+      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
         <h4>3. Record dataset</h4>
-      </CardHeader>
-      <CardBody>
+      </div>
+      <div className="body-wrapper p-3">
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>{'Dataset name'}</InputGroupText>
@@ -94,6 +92,7 @@ function BlePanelRecorderSettings(props) {
           }}
         >
           <SpinnerButton
+            outline
             style={
               buttonErrorAnimate
                 ? {
@@ -102,6 +101,7 @@ function BlePanelRecorderSettings(props) {
                 : null
             }
             color={buttonColor}
+            spinnercolor={buttonColor}
             onClick={onClickRecordButton}
             loading={buttonLoading}
             loadingtext={buttonLoadingText}
@@ -123,25 +123,23 @@ function BlePanelRecorderSettings(props) {
           </div>
           <small>
             <div>
-              <div>
-                <Input
-                  onChange={props.onToggleStream}
+              <div className="d-flex flex-row">
+                <Checkbox
+                  onClick={props.onToggleStream}
                   className="stream-check"
-                  type="checkbox"
                   id="stream-check"
                 />
-                <label htmlFor="stream-check">Disable sensor streaming</label>
+                <div className="ml-2">Disable sensor streaming</div>
               </div>
-              <div>
-                <Input
-                  onChange={props.onToggleSampleRate}
+              <div className="d-flex flex-row mt-2">
+                <Checkbox
+                  onClick={props.onToggleSampleRate}
                   className="sampleRate-check"
-                  type="checkbox"
                   id="sampleRate-check"
                 />
-                <label htmlFor="sampleRate-check">
+                <div className="ml-2">
                   Show sensor data at full sampling rate
-                </label>
+                </div>
               </div>
             </div>
           </small>
@@ -152,8 +150,8 @@ function BlePanelRecorderSettings(props) {
             Showing sensor data at full sample rate can affect performance.
           </small>
         ) : null}
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 }
 

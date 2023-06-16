@@ -346,6 +346,7 @@ class DFUModal extends Component {
               firmware by clicking on the update button.
             </div>
             <Button
+              outline
               color="primary"
               disabled={this.state.dfuState !== 'start'}
               onClick={this.downLoadAndInstallFW}
@@ -390,6 +391,7 @@ class DFUModal extends Component {
           <ModalBody>{this.renderModalBody()}</ModalBody>
           <ModalFooter>
             <Button
+              outline
               color="danger"
               onClick={this.props.toggleDFUModal}
               disabled={

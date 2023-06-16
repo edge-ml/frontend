@@ -6,6 +6,7 @@ import './Checkbox.css';
 
 const Checkbox = (props) => {
   const size = props.size || '20px';
+  const disabled = props.disabled || false;
   var onClick = props.onClick;
   if (!props.onClick) {
     onClick = () => {};
@@ -18,6 +19,7 @@ const Checkbox = (props) => {
       <input
         onClick={(e) => onClick(e)}
         type="checkbox"
+        disabled={disabled}
         checked={props.isSelected}
       ></input>
       <span className="checkBoxCheckmark" style={{ width: size, height: size }}>
