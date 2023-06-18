@@ -37,8 +37,17 @@ const DeployModal = ({ model, onClose }) => {
   const [selectedSensors, setSelectedSensors] = useState(undefined);
   const [compiledModel, setComiledModel] = useState(undefined);
   const [page, setPage] = useState(0);
+  const [flashState, setFlashState] = useState('start'); //start, connected, uploading, finished
+  const [flashError, setFlashError] = useState(undefined);
+  const [flashProgress, setFlashProgress] = useState(0);
+  const [connectedDevice, setConnectedDevice] = useState(undefined);
 
-  const dfuManager = new DFUManager();
+  const dfuManager = new DFUManager(
+    setFlashState,
+    setFlashError,
+    setFlashProgress,
+    setConnectedDevice
+  );
 
   useEffect(() => {
     if (!model) return;
@@ -81,7 +90,7 @@ const DeployModal = ({ model, onClose }) => {
   };
 
   const flashFirmware = () => {
-    dfuManager.flashFirmware();
+    dfuManager.flashFirmware(compiledModel);
   };
 
   const onDownloadFirmware = async () => {

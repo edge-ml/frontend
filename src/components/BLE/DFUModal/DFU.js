@@ -3,16 +3,35 @@ const DFU_INTERNALL_CHARACTERISTIC = '34c2e3b9-34aa-11eb-adc1-0242ac120002';
 const DFU_EXTERNAL_CHRARACTERISTIC = '34c2e3ba-34aa-11eb-adc1-0242ac120002';
 
 class DFUManager {
-  constructor(arrayFW) {
-    this.arrayFW = this.generateRandomArrayBuffer(1024 * 100);
-    this.fwLen = this.arrayFW.length;
-    this.dfuCharacteristic = undefined;
-    this.crc8(arrayFW);
+  constructor(
+    setFlashState,
+    setFlashError,
+    setFlashProgress,
+    setConnectedDevice
+  ) {
+    this.setFlashState = setFlashState;
+    this.setFlashError = setFlashError;
+    this.setFlashProgress = setFlashProgress;
+    this.setConnectedDevice = setConnectedDevice;
+
+    this.arrayFW = null;
+    this.fwLen = null;
     this.bytesArray = new Uint8Array(235);
+    this.dataLen = 232;
+    this.iterations = 0;
+    this.spareBytes = 0;
+    this.updateIndex = 0;
+    this.crc8bit = 0;
+    this.onlyCRCleft = false;
+    this.dfuCharacteristic = undefined;
+    this.debug = true;
   }
 
   async connectDevice() {
-    const options = { acceptAllDevices: true };
+    const options = {
+      acceptAllDevices: true,
+      optionalServices: [DFU_SERVICE_UUID],
+    };
     const device = await navigator.bluetooth.requestDevice(options);
     const server = await device.gatt.connect();
     const service = await server.getPrimaryService(DFU_SERVICE_UUID);
@@ -20,19 +39,37 @@ class DFUManager {
       DFU_INTERNALL_CHARACTERISTIC
     );
     console.log('Device connected');
+
+    this.setConnectedDevice(device);
+    this.setFlashState('connected');
   }
 
-  flashFirmware() {
-    // this.dfuCharacteristic.writeValue(this.fw_array).then(data => console.log(data))
+  init(firmware) {
+    this.arrayFW = new Uint8Array(firmware);
+    this.fwLen = this.arrayFW.length;
+
+    console.log('Binary file length: ', this.fwLen);
+    if (this.debug === true) {
+      console.log(this.arrayFW);
+    }
+    this.crc8();
+    console.log('Computed 8-bit CRC: ', this.crc8bit);
+
     this.iterations = Math.floor(this.fwLen / this.dataLen);
     this.spareBytes = this.fwLen % this.dataLen;
     this.iterations++;
+    if (this.debug === true) {
+      console.log('Iterations: ', this.iterations);
+      console.log('Spare bytes: ', this.spareBytes);
+    }
     if (this.spareBytes === 0) {
+      if (this.debug === true) {
+        console.log('No remaining bytes in last packet to write CRC.');
+        console.log('CRC will be sent alone in a new packet');
+      }
       this.onlyCRCleft = true;
     }
     this.updateIndex = 0;
-
-    this.update(this.updateIndex);
   }
 
   crc8() {
@@ -43,15 +80,11 @@ class DFUManager {
     }
   }
 
-  generateRandomArrayBuffer(length) {
-    const arrayBuffer = new ArrayBuffer(length);
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    for (let i = 0; i < length; i++) {
-      uint8Array[i] = Math.floor(Math.random() * 256);
-    }
-
-    return arrayBuffer;
+  flashFirmware(firmware) {
+    this.setFlashState('uploading');
+    this.init(firmware);
+    this.update(this.updateIndex);
+    this.setFlashState('finished');
   }
 
   update(index) {
@@ -65,6 +98,10 @@ class DFUManager {
       //Last byte
       this.bytesArray[0] = 1;
       var bytesleft = this.spareBytes + 1; //add CRC to the count
+      if (this.debug === true) {
+        console.log('Packaging last byte with CRC');
+        console.log('Total bytes left: ', this.bytesleft);
+      }
       var spare = new Uint8Array([
         bytesleft & 0x00ff,
         (bytesleft & 0xff00) >> 8,
@@ -112,8 +149,7 @@ class DFUManager {
       .writeValue(this.bytesArray)
       .then((_) => {
         //show on Progress bar
-        this.setState({ progress: (index / (this.iterations - 1)) * 100 });
-        console.log((index / this.iterations - 1) * 100);
+        this.setFlashProgress((index / (this.iterations - 1)) * 100);
 
         this.increaseIndex();
         if (this.debug === true) {
@@ -122,7 +158,27 @@ class DFUManager {
       })
       .catch((e) => {
         console.log(e);
+        this.resetStateWithError(
+          'An error occured while sending package to BLE device'
+        );
       });
+  }
+
+  increaseIndex() {
+    if (this.updateIndex < this.iterations - 1) {
+      this.updateIndex++;
+      this.update(this.updateIndex);
+    } else {
+      console.log('firmware sent');
+      this.setFlashState('finished');
+      return;
+    }
+  }
+
+  resetStateWithError(msg) {
+    this.setFlashError(msg);
+    this.setConnectedDevice(undefined);
+    this.setFlashState('start');
   }
 }
 
