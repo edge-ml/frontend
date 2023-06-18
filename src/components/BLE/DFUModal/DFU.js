@@ -25,6 +25,22 @@ class DFUManager {
     this.onlyCRCleft = false;
     this.dfuCharacteristic = undefined;
     this.debug = true;
+
+    this.crc8 = this.crc8.bind(this);
+    this.connectDevice = this.connectDevice.bind(this);
+    this.disconnectDevice = this.disconnectDevice.bind(this);
+    this.increaseIndex = this.increaseIndex.bind(this);
+    this.flashFirmware = this.flashFirmware.bind(this);
+    this.init = this.init.bind(this);
+    this.resetState = this.resetState.bind(this);
+    this.update = this.update.bind(this);
+  }
+
+  async disconnectDevice(connectedDevice) {
+    if (connectedDevice.gatt && connectedDevice.gatt.disconnect) {
+      connectedDevice.gatt.disconnect();
+    }
+    this.resetState(false);
   }
 
   async connectDevice() {
@@ -39,9 +55,8 @@ class DFUManager {
       DFU_INTERNALL_CHARACTERISTIC
     );
     console.log('Device connected');
-
-    this.setConnectedDevice(device);
     this.setFlashState('connected');
+    this.setConnectedDevice(device);
   }
 
   init(firmware) {
@@ -80,14 +95,14 @@ class DFUManager {
     }
   }
 
-  flashFirmware(firmware) {
+  flashFirmware = (firmware) => {
     this.setFlashState('uploading');
     this.init(firmware);
     this.update(this.updateIndex);
     this.setFlashState('finished');
-  }
+  };
 
-  update(index) {
+  update = (index) => {
     //clearTimeout(dfuTimeout);
     if (this.debug === true) {
       console.log(index);
@@ -158,11 +173,12 @@ class DFUManager {
       })
       .catch((e) => {
         console.log(e);
-        this.resetStateWithError(
+        this.resetState(
+          true,
           'An error occured while sending package to BLE device'
         );
       });
-  }
+  };
 
   increaseIndex() {
     if (this.updateIndex < this.iterations - 1) {
@@ -175,8 +191,10 @@ class DFUManager {
     }
   }
 
-  resetStateWithError(msg) {
-    this.setFlashError(msg);
+  resetState(hasError, msg = '') {
+    if (hasError) {
+      this.setFlashError(msg);
+    }
     this.setConnectedDevice(undefined);
     this.setFlashState('start');
   }
