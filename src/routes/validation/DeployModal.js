@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   Modal,
   ModalBody,
@@ -13,6 +13,8 @@ import {
   UncontrolledDropdown,
   FormGroup,
   CustomInput,
+  Progress,
+  Spinner,
 } from 'reactstrap';
 import {
   getDeployDevices,
@@ -28,6 +30,7 @@ import {
   EdgeMLTableHeader,
 } from '../../components/Common/EdgeMLTable';
 import DFUManager from '../../components/BLE/DFUModal/DFU';
+import { Brand } from 'react-bootstrap/lib/Navbar';
 
 const DeployModal = ({ model, onClose }) => {
   const [devices, setDevices] = useState([]);
@@ -37,16 +40,20 @@ const DeployModal = ({ model, onClose }) => {
   const [selectedSensors, setSelectedSensors] = useState(undefined);
   const [compiledModel, setComiledModel] = useState(undefined);
   const [page, setPage] = useState(0);
-  const [flashState, setFlashState] = useState('start'); //start, connected, uploading, finished
+  const [flashState, setFlashState] = useState('start'); //start, connected, modelDownload, uploading, finished
   const [flashError, setFlashError] = useState(undefined);
   const [flashProgress, setFlashProgress] = useState(0);
   const [connectedDevice, setConnectedDevice] = useState(undefined);
 
-  const dfuManager = new DFUManager(
-    setFlashState,
-    setFlashError,
-    setFlashProgress,
-    setConnectedDevice
+  const dfuManager = useMemo(
+    () =>
+      new DFUManager(
+        setFlashState,
+        setFlashError,
+        setFlashProgress,
+        setConnectedDevice
+      ),
+    []
   );
 
   useEffect(() => {
@@ -63,6 +70,16 @@ const DeployModal = ({ model, onClose }) => {
     });
   }, [model]);
 
+  useEffect(() => {
+    if (
+      compiledModel !== undefined &&
+      compiledModel !== null &&
+      connectedDevice !== undefined
+    ) {
+      dfuManager.flashFirmware(compiledModel);
+    }
+  }, [compiledModel]);
+
   const toggleDeviceDropDown = () => setDeviceDropDownOpen(!deviceDropDownOpen);
 
   const selectSensor = (ts_idx, sensor_idx, component_idx) => {
@@ -74,14 +91,21 @@ const DeployModal = ({ model, onClose }) => {
     setSelectedSensors([...selectedSensors]);
   };
 
-  const onDeploy = async () => {
+  const onSwitchPage = () => {
     setPage(1);
+  };
+  const onDeploy = async () => {
+    setFlashState('modelDownload');
     const res = await deployModel(
       model._id,
       selectedSensors,
       parameters,
       selectedDevice
     );
+    /**const buffer = new ArrayBuffer(10000);
+    const view = new Uint8Array(buffer);
+
+    view.fill(0); // Fill the ArrayBuffer with zeroes */
     setComiledModel(res);
   };
 
@@ -89,9 +113,13 @@ const DeployModal = ({ model, onClose }) => {
     dfuManager.connectDevice();
   };
 
-  const flashFirmware = () => {
-    dfuManager.flashFirmware(compiledModel);
+  const disconnectBLE = () => {
+    dfuManager.disconnectDevice(connectedDevice);
   };
+
+  /**const flashFirmware = () => {
+    dfuManager.flashFirmware(compiledModel);
+  };*/
 
   const onDownloadFirmware = async () => {
     console.log('Donwload');
@@ -123,6 +151,59 @@ const DeployModal = ({ model, onClose }) => {
   if (!model || !selectedDevice || !selectedSensors || !parameters) {
     return null;
   }
+
+  const renderDeployPart = () => {
+    return (
+      <div>
+        <div>
+          {'Connected device: '}
+          {connectedDevice ? connectedDevice.name : 'No device connected'}
+        </div>
+        <div>{renderProgressInfo()}</div>
+        <div>
+          <Button
+            className="m-2"
+            onClick={connectedDevice ? disconnectBLE : connectBLE}
+          >
+            {connectedDevice ? 'Disconnect device' : 'Connect device'}
+          </Button>
+          <Button
+            disabled={connectedDevice === undefined}
+            className="m-2"
+            onClick={onDeploy}
+          >
+            Flash firmware
+          </Button>
+          <Button className="m-2" onClick={onDownloadFirmware}>
+            Download firmware
+          </Button>
+        </div>
+        <div className="mt-3">
+          <Progress
+            color={flashState === 'uploadFinished' ? 'primary' : 'success'}
+            value={flashProgress}
+          />
+        </div>
+      </div>
+    );
+  };
+
+  const renderProgressInfo = () => {
+    switch (flashState) {
+      case 'start':
+        return 'Connect device for flashing';
+      case 'connected':
+        return 'Device is connected. Press Flash firmware to begin flashing process';
+      case 'modelDownload':
+        return 'Compiling and downloading model...';
+      case 'uploading':
+        return 'Flashing model onto device...';
+      case 'finished':
+        return 'Firmware successfully flashed onto device';
+      default:
+        return 'error';
+    }
+  };
 
   return (
     <Modal isOpen={model} size="xl">
@@ -243,29 +324,12 @@ const DeployModal = ({ model, onClose }) => {
               ></HyperparameterView>
             </div>
             <div className="w-100 d-flex justify-content-end">
-              <Button onClick={onDeploy}>Deploy</Button>
+              <Button onClick={onSwitchPage}>Deploy</Button>
             </div>
           </div>
         ) : (
-          <div className="w-100 h-100">
-            {compiledModel ? (
-              <div>Flash BLE</div>
-            ) : (
-              <div>Compiling your model</div>
-            )}
-          </div>
+          <div className="w-100 h-100">{renderDeployPart()}</div>
         )}
-        <div>
-          <Button className="m-2" onClick={connectBLE}>
-            Connect device
-          </Button>
-          <Button className="m-2" onClick={flashFirmware}>
-            Flash firmware
-          </Button>
-          <Button className="m-2" onClick={onDownloadFirmware}>
-            Download firmware
-          </Button>
-        </div>
       </ModalBody>
       <ModalFooter>
         <Button onClick={onClose}>Close</Button>
