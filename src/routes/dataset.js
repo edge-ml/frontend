@@ -897,12 +897,14 @@ class DatasetPage extends Component {
             </div>
           </Fade>
         </div>
-        <div
-          className="full-page-extend-metaData cursor-pointer"
-          onClick={() => this.toggleMetaData(true)}
-        >
-          <FontAwesomeIcon size="2x" icon={faChevronLeft}></FontAwesomeIcon>
-        </div>
+        {!this.state.metaDataExtended ? (
+          <div
+            className="full-page-extend-metaData cursor-pointer"
+            onClick={() => this.toggleMetaData(true)}
+          >
+            <FontAwesomeIcon size="2x" icon={faChevronLeft}></FontAwesomeIcon>
+          </div>
+        ) : null}
         {this.state.metaDataExtended ? (
           <Container>
             <div className="dataset-side-panel">
