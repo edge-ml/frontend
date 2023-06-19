@@ -21,7 +21,6 @@ import BleDeviceProcessor from '../components/BLE/BleDeviceProcessor';
 import BlePanelRecordingDisplay from '../components/BLE/BlePanelRecordingDisplay';
 
 import '../components/BLE/BleActivated.css';
-import { ga_connectBluetooth } from '../services/AnalyticsService';
 import { getLatestEdgeMLVersionNumber } from '../services/ApiServices/ArduinoFirmwareServices';
 import DFUModal from '../components/BLE/DFUModal/DFUModal';
 
@@ -230,7 +229,6 @@ class UploadBLE extends Component {
     this.currentData = new Array(Object.keys(this.state.deviceSensors).length);
     this.sensorKeys = Object.keys(this.state.deviceSensors);
     console.log('Device is now connected');
-    ga_connectBluetooth(this.state.connectedDeviceData, '', true);
   }
 
   async getDeviceInfo() {
@@ -368,7 +366,6 @@ class UploadBLE extends Component {
       })
       .catch((err) => {
         console.log(err);
-        ga_connectBluetooth(this.state.connectedDeviceData, err, false);
       });
   }
 

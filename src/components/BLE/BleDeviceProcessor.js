@@ -11,10 +11,6 @@ import {
   appendToDataset,
   getDatasets,
 } from '../../services/ApiServices/DatasetServices';
-import {
-  ga_uploadataset_len,
-  ga_uploadDataset,
-} from '../../services/AnalyticsService';
 
 class BleDeviceProcessor {
   constructor(
@@ -153,11 +149,6 @@ class BleDeviceProcessor {
       this.sensors
     );
     this.addToUploadCounter(recordedData);
-    ga_uploadataset_len(
-      Array.from(this.uploadCounter.values()),
-      'bluetooth',
-      this.deviceInfo
-    );
     await appendToDataset(this.newDataset, recordedData);
     this.recordingSensors = [];
     this.recordedData = [];
