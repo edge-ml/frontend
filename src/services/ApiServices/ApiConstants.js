@@ -8,6 +8,7 @@ export const AUTH_URI =
     : window.location.host === 'edge-ml.ngrok.io'
     ? 'http://auth.edge-ml.ngrok.io/auth/'
     : `http://${currentHost}:3002/auth/`;
+
 export const API_URI =
   process.env.NODE_ENV === 'production'
     ? '/api/'
@@ -21,7 +22,12 @@ export const ML_URI =
     ? 'http://ml.edge-ml.ngrok.io/ml/'
     : `http://${currentHost}:3003/ml/`;
 
-export const DATASET_STORE = `http://${currentHost}:3004`;
+export const DATASET_STORE =
+  process.env.NODE_ENV === 'production'
+    ? '/ds/'
+    : window.location.host === 'edge-ml.ngrok.io'
+    ? 'http://ds.edge-ml.ngrok.io/ds/'
+    : `http://${currentHost}:3004/ds/`;
 
 export const HTTP_METHODS = {
   GET: 'GET',
@@ -76,16 +82,16 @@ export const ML_ENDPOINTS = {
 };
 
 export const DATASET_STORE_ENDPOINTS = {
-  DATASETS: '/datasets/',
-  DATASET_LABELINGS: '/datasets/labelings/',
-  LABELING: '/labelings/',
-  CSV: '/datasets/csv/',
-  CREATE_DATASET: '/datasets/create'
+  DATASETS: 'datasets/',
+  DATASET_LABELINGS: 'datasets/labelings/',
+  LABELING: 'labelings/',
+  CSV: 'download/',
+  CREATE_DATASET: 'datasets/create',
 };
 
 export const generateApiRequest = (
   method = this.HTTP_METHODS.GET,
-  baseUri = API_URI,
+  baseUri = this.API_URI,
   endpoint = this.API_ENDPOINTS.DEFAULT,
   body = {},
   params = {},

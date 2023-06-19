@@ -12,7 +12,10 @@ export const getDatasets = () => {
         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS
       )
     )
-      .then((result) => resolve(result.data))
+      .then((result) => {
+        console.log(result);
+        resolve(result.data);
+      })
       .catch((err) => {
         console.log(err.response);
         reject(err.response);
@@ -30,6 +33,25 @@ export const getDatasetTimeseries = (id, info) => {
         apiConsts.DATASET_STORE,
         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
           `${id}/ts/${start}/${end}/${max_resolution}`
+      )
+    )
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
+  });
+};
+
+export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
+  console.log(info);
+  console.log(ts_ids);
+  const { max_resolution, start, end } = info;
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
+          `${id}/ts/${start}/${end}/${max_resolution}`,
+        ts_ids
       )
     )
       .then((data) => resolve(data.data))

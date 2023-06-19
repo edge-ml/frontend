@@ -1,25 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import { NavbarBrand } from 'reactstrap';
 import { Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCaretDown,
-  faCaretRight,
-  faPlus,
-  faUser,
-  faDatabase,
-  faCogs,
-  faPen,
-  faBrain,
-  faLightbulb,
-} from '@fortawesome/free-solid-svg-icons';
 import Navbar from './components/Navbar/Navbar';
 import MobileHeader from './components/MobileHeader/MobileHeader';
-
-import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { NotificationProvider } from './components/NotificationHandler/NotificationProvider';
 
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
@@ -32,7 +18,6 @@ import {
   setToken,
   clearProject,
 } from './services/LocalStorageService';
-import UserSettingsModal from './components/UserSettingsModal/UserSettingsModal';
 import AppContent from './AppContent';
 import NoProjectPage from './components/NoProjectPage/NoProjectPage';
 import ErrorPage from './components/ErrorPage/ErrorPage';
@@ -42,6 +27,7 @@ import {
 } from './services/ApiServices/ProjectService';
 import Loader from './modules/loader';
 import AppView from './AppView';
+import DataLossPage from './components/DataLossPage';
 
 class App extends Component {
   constructor(props) {
@@ -357,103 +343,111 @@ class App extends Component {
       this.state.userSettingsModalOpen;
 
     return (
-      <Fragment>
-        <EditProjectModal
-          project={
-            this.state.projects ? this.state.projects[projectIndex] : undefined
-          }
-          isOpen={this.state.projectEditModalOpen}
-          isNewProject={this.state.projectEditModalNew}
-          userName={this.state.userName}
-          onClose={this.onProjectModalClose}
-          projectChanged={this.onProjectsChanged}
-        ></EditProjectModal>
-        <Route
-          exact
-          path="/register"
-          render={(props) => <RegisterPage {...props} />}
-        />
-        <Route
-          path={'/errorpage/:error/:errorText?/:statusText?'}
-          render={(props) => <ErrorPage {...props} />}
-        />
-        {!this.props.history.location.pathname.includes('/register') ? (
-          <AuthWall
-            isLoggedIn={this.state.isLoggedIn}
-            onLogin={this.onLogin}
-            onCancelLogin={this.logoutHandler}
-            setAccessToken={this.setAccessToken}
-            setCurrentUserMail={this.setCurrentUserMail}
-            setUser={this.setUser}
-            onUserLoggedIn={this.onUserLoggedIn}
-            on2FA={this.on2FA}
-          >
-            <Loader loading={!(this.state.isLoggedIn && this.state.projects)}>
-              <AppView
-                mobileNavbarShown={this.state.mobileNavbarShown}
-                onMobileNavbarClose={this.onMobileNavbarClose}
-                mobileHeader={
-                  <MobileHeader
+      <NotificationProvider>
+        <Fragment>
+          <EditProjectModal
+            project={
+              this.state.projects
+                ? this.state.projects[projectIndex]
+                : undefined
+            }
+            isOpen={this.state.projectEditModalOpen}
+            isNewProject={this.state.projectEditModalNew}
+            userName={this.state.userName}
+            onClose={this.onProjectModalClose}
+            projectChanged={this.onProjectsChanged}
+          ></EditProjectModal>
+          <Route
+            exact
+            path="/register"
+            render={(props) => <RegisterPage {...props} />}
+          />
+          <Route
+            path={'/errorpage/:error/:errorText?/:statusText?'}
+            render={(props) => <ErrorPage {...props} />}
+          />
+          {!this.props.history.location.pathname.includes('/register') ? (
+            <AuthWall
+              isLoggedIn={this.state.isLoggedIn}
+              onLogin={this.onLogin}
+              onCancelLogin={this.logoutHandler}
+              setAccessToken={this.setAccessToken}
+              setCurrentUserMail={this.setCurrentUserMail}
+              setUser={this.setUser}
+              onUserLoggedIn={this.onUserLoggedIn}
+              on2FA={this.on2FA}
+            >
+              <DataLossPage>
+                <Loader
+                  loading={!(this.state.isLoggedIn && this.state.projects)}
+                >
+                  <AppView
                     mobileNavbarShown={this.state.mobileNavbarShown}
-                    onMenuButton={this.onMobileNavbarToggle}
-                    projectAvailable={projectAvailable}
+                    onMobileNavbarClose={this.onMobileNavbarClose}
+                    mobileHeader={
+                      <MobileHeader
+                        mobileNavbarShown={this.state.mobileNavbarShown}
+                        onMenuButton={this.onMobileNavbarToggle}
+                        projectAvailable={projectAvailable}
+                      />
+                    }
+                    navbar={
+                      <Navbar
+                        userName={this.state.userName}
+                        enable2FA={this.enable2FA}
+                        userMail={this.state.userMail}
+                        onLogout={this.onLogout}
+                        currentProjectId={this.state.currentProjectId}
+                        twoFAEnabled={this.state.twoFAEnabled}
+                        location={this.props.location}
+                        projectAvailable={projectAvailable}
+                        projects={this.state.projects}
+                        selectedProjectId={this.state.selectedProjectId}
+                        onProjectClick={this.onProjectClick}
+                        navigateTo={this.navigateTo}
+                        onProjectEditModal={this.onProjectEditModal}
+                      ></Navbar>
+                    }
+                    content={
+                      <Fragment>
+                        {projectAvailable ? null : (
+                          <NoProjectPage
+                            onCreateProject={(e) => {
+                              e.preventDefault();
+                              this.onProjectEditModal(true);
+                            }}
+                          ></NoProjectPage>
+                        )}
+                        <Route
+                          {...this.props}
+                          path="/:userName/:projectID"
+                          render={(props) => (
+                            <AppContent
+                              {...props}
+                              userName={this.state.userName}
+                              userMail={this.state.userMail}
+                              onDeleteProject={this.onDeleteProject}
+                              onLeaveProject={this.onLeaveProject}
+                              modalOpen={modalOpen}
+                              project={
+                                this.state.projects.filter(
+                                  (x) => x._id === this.state.currentProjectId
+                                )[0]
+                              }
+                              onProjectsChanged={this.onProjectsChanged}
+                              navigateTo={this.navigateTo}
+                            />
+                          )}
+                        ></Route>
+                      </Fragment>
+                    }
                   />
-                }
-                navbar={
-                  <Navbar
-                    userName={this.state.userName}
-                    enable2FA={this.enable2FA}
-                    userMail={this.state.userMail}
-                    onLogout={this.onLogout}
-                    currentProjectId={this.state.currentProjectId}
-                    twoFAEnabled={this.state.twoFAEnabled}
-                    location={this.props.location}
-                    projectAvailable={projectAvailable}
-                    projects={this.state.projects}
-                    selectedProjectId={this.state.selectedProjectId}
-                    onProjectClick={this.onProjectClick}
-                    navigateTo={this.navigateTo}
-                    onProjectEditModal={this.onProjectEditModal}
-                  ></Navbar>
-                }
-                content={
-                  <Fragment>
-                    {projectAvailable ? null : (
-                      <NoProjectPage
-                        onCreateProject={(e) => {
-                          e.preventDefault();
-                          this.onProjectEditModal(true);
-                        }}
-                      ></NoProjectPage>
-                    )}
-                    <Route
-                      {...this.props}
-                      path="/:userName/:projectID"
-                      render={(props) => (
-                        <AppContent
-                          {...props}
-                          userName={this.state.userName}
-                          userMail={this.state.userMail}
-                          onDeleteProject={this.onDeleteProject}
-                          onLeaveProject={this.onLeaveProject}
-                          modalOpen={modalOpen}
-                          project={
-                            this.state.projects.filter(
-                              (x) => x._id === this.state.currentProjectId
-                            )[0]
-                          }
-                          onProjectsChanged={this.onProjectsChanged}
-                          navigateTo={this.navigateTo}
-                        />
-                      )}
-                    ></Route>
-                  </Fragment>
-                }
-              />
-            </Loader>
-          </AuthWall>
-        ) : null}
-      </Fragment>
+                </Loader>
+              </DataLossPage>
+            </AuthWall>
+          ) : null}
+        </Fragment>
+      </NotificationProvider>
     );
   }
 }

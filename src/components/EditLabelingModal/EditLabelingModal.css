@@ -8,3 +8,14 @@
 .tooltip > .tooltip-inner {
   font-size: 13px;
 }
+
+.no-border-radius {
+  border-radius: 0 !important;
+}
+
+.alert-danger {
+  color: red;
+  background-color: transparent;
+  border: none;
+  position: relative;
+}

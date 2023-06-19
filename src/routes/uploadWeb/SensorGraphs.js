@@ -8,6 +8,7 @@ export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
     <div className="d-flex justify-content-between align-items-center">
       <span>Data preview is {dataPreview ? 'enabled' : 'paused'}.</span>
       <Button
+        outline
         color={dataPreview ? 'secondary' : 'primary'}
         onClick={() => setDataPreview(!dataPreview)}
       >

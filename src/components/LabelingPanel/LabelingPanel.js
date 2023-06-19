@@ -81,7 +81,6 @@ class LabelingPanel extends Component {
             {this.state.labeling
               ? this.state.labeling.labels
                   .slice(0)
-                  .reverse()
                   .map((label, index, array) => {
                     return (
                       <Button
@@ -109,7 +108,7 @@ class LabelingPanel extends Component {
                         }
                         key={index}
                       >
-                        {label.name} {'(' + (array.length - index) + ')'}
+                        {label.name} {'(' + (index + 1) + ')'}
                       </Button>
                     );
                   })

@@ -6,7 +6,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-brands-svg-icons": "^5.15.4",
     "@fortawesome/free-regular-svg-icons": "^6.2.1",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/free-solid-svg-icons": "6.4",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "animate-components": "^1.4.8",
     "axios": "^0.21.1",

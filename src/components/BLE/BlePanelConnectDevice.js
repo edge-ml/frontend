@@ -1,6 +1,6 @@
 import React from 'react';
 import SpinnerButton from '../Common/SpinnerButton';
-import { Button, Card, CardBody, CardHeader } from 'reactstrap';
+import { Button } from 'reactstrap';
 
 const getInfoText = (props) => {
   if (!props.connectedBLEDevice) {
@@ -83,7 +83,7 @@ const getButtonView = (props) => {
   ) {
     return (
       <div>
-        <Button color="primary" onClick={props.toggleDFUModal}>
+        <Button outline color="primary" onClick={props.toggleDFUModal}>
           Flash edge-ml firmware
         </Button>
       </div>
@@ -94,11 +94,11 @@ const getButtonView = (props) => {
 
 function BlePanelConnectDevice(props) {
   return (
-    <Card className="text-left mb-2">
-      <CardHeader>
+    <div className="p-2">
+      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
         <h4>1. Device</h4>
-      </CardHeader>
-      <CardBody>
+      </div>
+      <div className="body-wrapper p-2">
         <small className="text-danger">
           <strong>Warning: </strong>
           If your device can not be found, try to turn bluetooth off and on
@@ -124,12 +124,14 @@ function BlePanelConnectDevice(props) {
             <div className="mr-2">{getButtonView(props)}</div>
             <div>
               <SpinnerButton
+                outline
                 loadingtext={
                   props.connectedBLEDevice
                     ? 'Disconnecting...'
                     : 'Connecting...'
                 }
                 color={props.connectedBLEDevice ? 'danger' : 'primary'}
+                spinnercolor={props.connectedBLEDevice ? 'danger' : 'primary'}
                 loading={props.bleConnectionChanging}
                 onClick={props.toggleBLEDeviceConnection}
               >
@@ -140,8 +142,8 @@ function BlePanelConnectDevice(props) {
             </div>
           </div>
         </div>
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 }
 

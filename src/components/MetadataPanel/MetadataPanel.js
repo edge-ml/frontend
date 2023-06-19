@@ -27,6 +27,7 @@ class MetadataPanel extends Component {
   }
 
   render() {
+    console.log(this.props.start, unixTimeToString(this.props.start));
     return (
       <div className="sidepanel-card">
         <div className="sidepanel-heading">
@@ -36,11 +37,13 @@ class MetadataPanel extends Component {
           {this.metaDataItem('Name', this.props.name)}
           {this.metaDataItem(
             'Start',
-            this.props.start ? unixTimeToString(this.props.start) : ''
+            this.props.start !== undefined
+              ? unixTimeToString(this.props.start)
+              : ''
           )}
           {this.metaDataItem(
             'End',
-            this.props.end ? unixTimeToString(this.props.end) : ''
+            this.props.end != undefined ? unixTimeToString(this.props.end) : ''
           )}
           {this.metaDataItem('User', this.props.user)}
         </CardBody>

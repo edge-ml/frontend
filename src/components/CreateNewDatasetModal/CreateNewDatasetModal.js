@@ -11,7 +11,6 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Alert,
 } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
 import {
@@ -22,8 +21,6 @@ import {
 import { processCSVBackend } from '../../services/ApiServices/CSVServices';
 
 import {
-  processCSV,
-  generateDataset,
   extendExistingDataset,
   generateLabeledDataset,
 } from '../../services/CsvService';
@@ -33,7 +30,6 @@ import './CreateNewDatasetModal.css';
 import {
   addLabeling,
   subscribeLabelingsAndLabels,
-  updateLabelingAndLabels,
 } from '../../services/ApiServices/LabelingServices';
 import ErrorModal from './ErrorModal';
 import SpinnerButton from '../Common/SpinnerButton';

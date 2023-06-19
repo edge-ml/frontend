@@ -11,16 +11,18 @@ class BlePanelSensorstreamGraph extends Component {
     this.handleStartLiveUpdate = this.handleStartLiveUpdate.bind(this);
     this.handleStopLiveUpdate = this.handleStopLiveUpdate.bind(this);
     this.updateLiveData = this.updateLiveData.bind(this);
+    this.streaming_seconds = 30;
 
     if (this.props.fullSampleRate) {
       // show sensor stream at full sample rate
-      this.streaming_seconds = 3; // last 3 seconds of sensor data are streamed
       this.interval_length = Math.floor(1000 / this.props.sampleRate); // in ms
       this.datastream_length = this.props.sampleRate * this.streaming_seconds; // how many data points are visible
     } else {
       // show sensor stream at higher sample rate to improve performance (default)
       this.interval_length = 200;
-      this.datastream_length = 20;
+      this.datastream_length = Math.floor(
+        this.streaming_seconds * (1000 / this.interval_length)
+      );
     }
 
     this.state = {
@@ -40,7 +42,7 @@ class BlePanelSensorstreamGraph extends Component {
   updateLiveData() {
     var chart = Highcharts.charts[this.highcharts_index];
     const xAxis = chart.xAxis[0];
-
+    var shift = false;
     for (var i = chart.series.length - 1; i > -1; i--) {
       var series = chart.series[i];
       var timestamp;
@@ -52,11 +54,67 @@ class BlePanelSensorstreamGraph extends Component {
         timestamp = new Date().getTime();
         value = 0;
       }
-      if (series.data.length > this.datastream_length) {
-        series.addPoint([timestamp, value], true, true); // adds new data point and deletes oldest one
-      } else {
-        series.addPoint([timestamp, value], true, false); // adds new data point
+      var shiftSeries = series.data.length >= this.datastream_length;
+      if (shiftSeries) {
+        shift = true;
       }
+      series.addPoint([timestamp, value], true, shiftSeries); // adds new data point and deletes oldest one
+    }
+    if (shift) {
+      var extremes = chart.xAxis[0].getExtremes();
+      chart.xAxis[0].setExtremes(
+        extremes.min + this.interval_length,
+        extremes.max + this.interval_length
+      );
+    }
+    
+    // labeling part
+    if (this.props.labelingStart) {
+      xAxis.removePlotLine(`labelingStart-${this.props.labelingPlotId}`);
+      xAxis.addPlotLine({
+        value: this.props.labelingStart,
+        color: this.props.labelColor,
+        width: 5,
+        id: `labelingStart-${this.props.labelingPlotId}`,
+      });
+    }
+
+    // manually update plotband, highchart does not support updating an existing plotband
+    // so we remove existing and add the updated version again ("to" value is updated)
+    if (!this.props.labelingEnd) {
+      xAxis.removePlotBand(`labelingArea-${this.props.labelingPlotId}`);
+      xAxis.addPlotBand({
+        from: this.props.labelingStart,
+        to: Date.now(),
+        color: this.props.labelColor,
+        className: "labelingArea",
+        id: `labelingArea-${this.props.labelingPlotId}`,
+      });
+    } else {
+      xAxis.removePlotLine(`labelingStart-${this.props.labelingPlotId}`);
+      xAxis.addPlotLine({
+        value: this.props.labelingStart,
+        color: this.props.labelColor,
+        width: 5,
+        id: `labelingStart-${this.props.labelingPlotId}`,
+      });
+
+      xAxis.removePlotLine(`labelingEnd-${this.props.labelingPlotId}`)
+      xAxis.addPlotLine({
+        value: this.props.labelingEnd,
+        color: this.props.labelColor,
+        width: 5,
+        id: `labelingEnd-${this.props.labelingPlotId}`,
+      });
+
+      xAxis.removePlotBand(`labelingArea-${this.props.labelingPlotId}`);
+      xAxis.addPlotBand({
+        from: this.props.labelingStart,
+        to: this.props.labelingEnd,
+        color: this.props.labelColor,
+        className: "labelingArea",
+        id: `labelingArea-${this.props.labelingPlotId}`,
+      });
     }
 
     if (this.props.labelingStart) {
