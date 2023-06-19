@@ -55,12 +55,8 @@ class UploadBLE extends Component {
       outdatedVersionInstalled: false,
       labelings: [],
       selectedLabeling: undefined,
-      selectedLabel: undefined, // represents the selected label badge
-      activeLabel: undefined, // represents the selected label used when the labeling on plot started
-      labelingStart: undefined,
-      labelingEnd: undefined,
-      labelingPlotId: 0,
-      labelColor: undefined,
+      currentLabel: {start: undefined, end: undefined, color: undefined, plotId: 0},
+      prevLabel: {start: undefined, end: undefined, color: undefined, plotId: -1},
     };
 
     this.componentRef = React.createRef();
@@ -425,18 +421,10 @@ class UploadBLE extends Component {
     this.setState({ selectedLabeling: labeling });
   }
 
-  handleLabelSelect(label) {
-    this.setState({ selectedLabel: label });
-  }
-
   toggleLabelingActive(labelIdx) {
 
     const timestamp = Date.now();
     const keyPressedLabel = this.state.selectedLabeling.labels[labelIdx];
-
-    if (!this.state.selectedLabel) {
-      this.setState({ selectedLabel: keyPressedLabel })
-    }
 
     // initial state, labelingStart is only undefined when no label recording have ever took place 
     // during the current sensor data collection
@@ -602,13 +590,10 @@ class UploadBLE extends Component {
                   onToggleStream={this.onToggleStream}
                   onToggleSampleRate={this.onToggleSampleRate}
                   fullSampleRate={this.state.fullSampleRate}
-                ></BlePanelRecorderSettings>
-              </Col>
-              <Col>
+                />
                 <BleLabelingMenu 
                   labelings={this.state.labelings}
                   selectedLabeling={this.state.selectedLabeling}
-                  selectedLabel={this.state.selectedLabel}
                   handleSelectLabeling={this.handleLabelingSelect}
                   handleSelectLabel={this.handleLabelSelect}
                   shortcutKeys={this.shortcutKeys}
@@ -625,7 +610,7 @@ class UploadBLE extends Component {
                       lastData={this.currentData}
                       sensorKeys={this.sensorKeys}
                       fullSampleRate={this.state.fullSampleRate}
-                    ></BlePanelRecordingDisplay>
+                    />
                   </div>
                 ) : null}
               </Col>
