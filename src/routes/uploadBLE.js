@@ -55,8 +55,8 @@ class UploadBLE extends Component {
       outdatedVersionInstalled: false,
       labelings: [],
       selectedLabeling: undefined,
-      currentLabel: {start: undefined, end: undefined, color: undefined, plotId: 0},
-      prevLabel: {start: undefined, end: undefined, color: undefined, plotId: -1},
+      currentLabel: {start: undefined, end: undefined, color: undefined, id: undefined, plotId: 0},
+      prevLabel: {start: undefined, end: undefined, color: undefined, id: undefined, plotId: -1},
     };
 
     this.componentRef = React.createRef();
@@ -87,10 +87,9 @@ class UploadBLE extends Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.fetchLabelings = this.fetchLabelings.bind(this);
     this.handleLabelingSelect = this.handleLabelingSelect.bind(this);
-    this.handleLabelSelect = this.handleLabelSelect.bind(this);
     this.toggleLabelingActive = this.toggleLabelingActive.bind(this);
     this.resetLabelingState = this.resetLabelingState.bind(this);
-    
+
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
     this.recordInterval = null;
@@ -426,46 +425,59 @@ class UploadBLE extends Component {
     const timestamp = Date.now();
     const keyPressedLabel = this.state.selectedLabeling.labels[labelIdx];
 
-    // initial state, labelingStart is only undefined when no label recording have ever took place 
+    // initial state, currentLabel.id is only undefined when no label recording have ever took place 
     // during the current sensor data collection
-    if (!this.state.labelingStart) { 
+    if (this.state.currentLabel.id === undefined) { 
+      console.log('initial state')
       this.labelingData.current = [{ 
         start: timestamp, 
         labelType: keyPressedLabel._id,
         labelingId: this.state.selectedLabeling._id
       }];
-      this.setState({ labelingStart: timestamp, activeLabel: keyPressedLabel, labelColor: keyPressedLabel.color });
+      this.setState({
+        currentLabel: { 
+          start: timestamp, 
+          end: undefined, 
+          color: keyPressedLabel.color, 
+          id: keyPressedLabel._id, 
+          plotId: 0 
+        }
+      });
     }
     // stop recording the current label when the user pressed the label key a second time
-    else if (this.state.activeLabel === keyPressedLabel) { 
+    else if (this.state.currentLabel.id === keyPressedLabel._id && this.state.currentLabel.end === undefined) { 
+      console.log('stop current labeling')
       const currentLabelingData = this.labelingData.current[this.labelingData.current.length - 1];
       currentLabelingData.end = timestamp;
-      // dont change the labelColor to render the plotlines of the completed label interval correctly
-      this.setState({ labelingEnd: timestamp, activeLabel: undefined });  
+      this.setState(prevState => ({ currentLabel: {...prevState.currentLabel, end: timestamp }}));
     } 
     
-    // if there is no active label recording start a new one
-    else if (!this.state.activeLabel) { 
+    // the current label is stopped by the user previously and now a new one is requested
+    else if (this.state.currentLabel.end !== undefined) { 
+      console.log('start new labeling')
       this.labelingData.current.push({ 
         start: timestamp, 
         labelType: keyPressedLabel._id, 
         labelingId: this.state.selectedLabeling._id 
       });
       this.setState(prevState => ({ 
-        labelingStart: timestamp, 
-        labelingEnd: undefined,
-        activeLabel: keyPressedLabel,
-        labelingPlotId: prevState.labelingPlotId + 1,
-        labelColor: keyPressedLabel.color,
+        currentLabel: { 
+          start: timestamp,
+          end: undefined, 
+          color: keyPressedLabel.color, 
+          id: keyPressedLabel._id, 
+          plotId: prevState.currentLabel.plotId + 1, 
+        },
+        prevLabel: prevState.currentLabel,
       }));
     }
 
     // if the user starts recording of another label before the user stops recording of the previous label 
     // gracefully stop the previous label recording, start the new one
-    else if (this.state.activeLabel !== keyPressedLabel) {
+    else if (this.state.currentLabel.end === undefined && this.state.currentLabel.id !== keyPressedLabel._id) {
+      console.log('abruptly stop and start new labeling')
       const currentLabelingData = this.labelingData.current[this.labelingData.current.length - 1];
       currentLabelingData.end = timestamp - 1; // -1 to avoid overlap between previous and new label
-
       this.labelingData.current.push({ 
         start: timestamp, 
         labelType: keyPressedLabel._id, 
@@ -473,11 +485,14 @@ class UploadBLE extends Component {
       });
 
       this.setState(prevState => ({ 
-        labelingStart: timestamp, 
-        labelingEnd: undefined,
-        activeLabel: keyPressedLabel,
-        labelingPlotId: prevState.labelingPlotId + 1,
-        labelColor: keyPressedLabel.color,
+        currentLabel: { 
+          start: timestamp,
+          end: undefined, 
+          color: keyPressedLabel.color, 
+          id: keyPressedLabel._id, 
+          plotId: prevState.currentLabel.plotId + 1, 
+        },
+        prevLabel: {...prevState.currentLabel, end: timestamp - 120},
       }));
     }
   }
@@ -485,11 +500,8 @@ class UploadBLE extends Component {
   resetLabelingState() {
     this.labelingData.current = [];
     this.setState({
-      labelingStart: undefined,
-      labelingEnd: undefined,
-      activeLabel: undefined,
-      labelingPlotId: 0,
-      labelColor: undefined,
+      currentLabel: {start: undefined, end: undefined, color: undefined, id: undefined, plotId: 0},
+      prevLabel: {start: undefined, end: undefined, color: undefined, id: undefined, plotId: -1}
     });
   }
 
@@ -610,6 +622,8 @@ class UploadBLE extends Component {
                       lastData={this.currentData}
                       sensorKeys={this.sensorKeys}
                       fullSampleRate={this.state.fullSampleRate}
+                      currentLabel={this.state.currentLabel}
+                      prevLabel={this.state.prevLabel}
                     />
                   </div>
                 ) : null}

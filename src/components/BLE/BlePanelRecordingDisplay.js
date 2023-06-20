@@ -109,7 +109,9 @@ class BlePanelRecordingDisplay extends Component {
                     sampleRate={this.props.deviceSensors[sensorKey].sampleRate}
                     lastData={this.props.lastData}
                     index={this.props.sensorKeys.indexOf(sensorKey.toString())}
-                  ></BlePanelSensorstreamGraph>
+                    currentLabel={this.props.currentLabel}
+                    prevLabel={this.props.prevLabel}
+                  />
                 </li>
               );
             })}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardBody, Dropdown, DropdownMenu, DropdownItem, DropdownToggle, Badge } from 'reactstrap';
 
-export const BleLabelingMenu = ({ labelings, selectedLabeling, handleSelectLabeling, handleSelectLabel, shortcutKeys }) => {
+export const BleLabelingMenu = ({ labelings, selectedLabeling, handleSelectLabeling, shortcutKeys }) => {
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const toggleDropdown = () => {
@@ -29,8 +29,8 @@ export const BleLabelingMenu = ({ labelings, selectedLabeling, handleSelectLabel
                             <Badge
                                 style={{
                                     backgroundColor: label.color,
+                                    cursor: "default",
                                 }}
-                                onClick={e => handleSelectLabel(label)}
                             >
                                 {label.name}
                             </Badge>
