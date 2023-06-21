@@ -81,6 +81,8 @@ class BlePanelSensorstreamGraph extends Component {
         width: 5,
         id: `labelingStart-${this.props.currentLabel.plotId}`
       });
+
+      // handle the case when the user starts recording a new label before stopping the previous one
       if (this.props.prevLabel.id && this.state.endPlotId === undefined) {
         console.log('handle abrupt')
         console.log('prev', this.props.prevLabel)
@@ -126,38 +128,7 @@ class BlePanelSensorstreamGraph extends Component {
       for (const pl of xAxis.plotLinesAndBands) {
         console.log(pl);
       }
-
     } 
-
-    // handle the case when the user starts recording a new label before stopping the previous one
-    else if (this.state.startPlotId && this.state.startPlotId !== this.props.currentLabel.plotId && this.state.endPlotId === undefined) {
-      console.log('handle abrupt')
-      // add plotline and update plotband of previous label
-      console.log(this.props.prevLabel);
-      xAxis.removePlotBand(`labelingArea-${this.props.prevLabel.plotId}`);
-      xAxis.addPlotBand({
-        from: this.props.prevLabel.start,
-        to: this.props.prevLabel.end,
-        color: this.props.prevLabel.color,
-        className: 'labelingArea',
-        id: `labelingArea-${this.props.prevLabel.plotId}`,
-      });
-      xAxis.addPlotLine({
-        value: this.props.prevLabel.end,
-        color: this.props.prevLabel.color,
-        width: 5,
-        id: `labelingEnd-${this.props.prevLabel.plotId}`
-      });
-      
-      // add plotline of the new label
-      xAxis.addPlotLine({
-        value: this.props.currentLabel.start,
-        color: this.props.currentLabel.color,
-        width: 5,
-        id: `labelingStart-${this.props.currentLabel.plotId}`
-      });
-      this.setState({ startPlotId: this.props.currentLabel.plotId });
-    }
     // if the graph is not shifting, gradually move the end of the plotband to right each time a new point is rendered
     else if (!shiftSeries && this.state.startPlotId !== undefined && this.state.endPlotId === undefined) {
       console.log('static graph rerender plotband');
