@@ -78,7 +78,7 @@ class BlePanelSensorstreamGraph extends Component {
     // start a new label
     if ((this.state.startPlotId === undefined || this.state.startPlotId !== this.props.currentLabel.plotId) 
         && this.props.currentLabel.id) {
-      console.log('start new label');
+      // console.log('start new label');
       xAxis.addPlotLine({
         value: this.props.currentLabel.start - visualOffset,
         color: this.props.currentLabel.color,
@@ -88,8 +88,7 @@ class BlePanelSensorstreamGraph extends Component {
 
       // handle the case when the user starts recording a new label before stopping the previous one
       if (this.props.prevLabel.id && this.state.endPlotId === undefined) {
-        console.log('handle abrupt')
-        console.log('prev', this.props.prevLabel)
+        // console.log('handle abrupt')
         xAxis.removePlotBand(`labelingArea-${this.props.prevLabel.plotId}`);
         xAxis.addPlotBand({
           from: this.props.prevLabel.start - visualOffset,
@@ -109,10 +108,7 @@ class BlePanelSensorstreamGraph extends Component {
     } 
     // stop the label
     else if (this.state.endPlotId === undefined && this.props.currentLabel.end !== undefined) {
-      console.log('stop the label')
-      for (const pl of xAxis.plotLinesAndBands) {
-        console.log(pl);
-      }
+      // console.log('stop the label')
       this.setState({ endPlotId: this.props.currentLabel.plotId });
       xAxis.removePlotBand(`labelingArea-${this.props.currentLabel.plotId}`);
       xAxis.addPlotBand({
@@ -128,14 +124,10 @@ class BlePanelSensorstreamGraph extends Component {
         width: 5,
         id: `labelingEnd-${this.props.currentLabel.plotId}`
       });
-      console.log('----------')
-      for (const pl of xAxis.plotLinesAndBands) {
-        console.log(pl);
-      }
     } 
     // if the graph is not shifting, gradually move the end of the plotband to right each time a new point is rendered
     else if (!shiftSeries && this.state.startPlotId !== undefined && this.state.endPlotId === undefined) {
-      console.log('static graph rerender plotband');
+      // console.log('static graph rerender plotband');
       xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`)
       xAxis.addPlotBand({
         from: this.props.currentLabel.start - visualOffset,
@@ -149,8 +141,7 @@ class BlePanelSensorstreamGraph extends Component {
     // end of the graph is not visible during recording the label while shifting the graph
     // so we can optimize the number of rendering to just one this way
     else if (shiftSeries && this.state.shiftHandledForPlotId !== this.state.startPlotId) {
-      console.log('state', this.state.offsetApplied, visualOffset)
-      console.log('moving graph, rerender the plotband once by setting the maximum to infinity')
+      // console.log('moving graph, rerender the plotband once by setting the maximum to infinity')
       xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`)
       xAxis.addPlotBand({
         from: this.props.currentLabel.start - (this.state.offsetApplied ? offsetAmount : 0),
