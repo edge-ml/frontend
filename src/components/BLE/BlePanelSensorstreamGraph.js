@@ -30,6 +30,7 @@ class BlePanelSensorstreamGraph extends Component {
       startPlotId: undefined,
       endPlotId: undefined,
       shiftHandledForPlotId: undefined,
+      offsetApplied: undefined,
     };
   }
 
@@ -71,12 +72,15 @@ class BlePanelSensorstreamGraph extends Component {
       );
     }
 
+    const offsetAmount = 4 * this.interval_length;
+    const visualOffset = shiftSeries ? 0 : offsetAmount;
+    
     // start a new label
     if ((this.state.startPlotId === undefined || this.state.startPlotId !== this.props.currentLabel.plotId) 
         && this.props.currentLabel.id) {
       console.log('start new label');
       xAxis.addPlotLine({
-        value: this.props.currentLabel.start,
+        value: this.props.currentLabel.start - visualOffset,
         color: this.props.currentLabel.color,
         width: 5,
         id: `labelingStart-${this.props.currentLabel.plotId}`
@@ -88,20 +92,20 @@ class BlePanelSensorstreamGraph extends Component {
         console.log('prev', this.props.prevLabel)
         xAxis.removePlotBand(`labelingArea-${this.props.prevLabel.plotId}`);
         xAxis.addPlotBand({
-          from: this.props.prevLabel.start,
-          to: this.props.prevLabel.end,
+          from: this.props.prevLabel.start - visualOffset,
+          to: this.props.prevLabel.end - visualOffset,
           color: this.props.prevLabel.color,
           className: 'labelingArea',
           id: `labelingArea-${this.props.prevLabel.plotId}`,
         });
         xAxis.addPlotLine({
-          value: this.props.prevLabel.end,
+          value: this.props.prevLabel.end - visualOffset,
           color: this.props.prevLabel.color,
           width: 5,
           id: `labelingEnd-${this.props.prevLabel.plotId}`
         });
       }
-      this.setState({ startPlotId: this.props.currentLabel.plotId, endPlotId: undefined });
+      this.setState({ startPlotId: this.props.currentLabel.plotId, endPlotId: undefined, offsetApplied: !shiftSeries });
     } 
     // stop the label
     else if (this.state.endPlotId === undefined && this.props.currentLabel.end !== undefined) {
@@ -112,14 +116,14 @@ class BlePanelSensorstreamGraph extends Component {
       this.setState({ endPlotId: this.props.currentLabel.plotId });
       xAxis.removePlotBand(`labelingArea-${this.props.currentLabel.plotId}`);
       xAxis.addPlotBand({
-        from: this.props.currentLabel.start,
-        to: this.props.currentLabel.end,
+        from: this.props.currentLabel.start - (this.state.offsetApplied ? offsetAmount : 0),
+        to: this.props.currentLabel.end - (this.state.offsetApplied ? offsetAmount : 0),
         color: this.props.currentLabel.color,
         className: 'labelingArea',
         id: `labelingArea-${this.props.currentLabel.plotId}`,
       });
       xAxis.addPlotLine({
-        value: this.props.currentLabel.end,
+        value: this.props.currentLabel.end - (this.state.offsetApplied ? offsetAmount : 0),
         color: this.props.currentLabel.color,
         width: 5,
         id: `labelingEnd-${this.props.currentLabel.plotId}`
@@ -134,8 +138,8 @@ class BlePanelSensorstreamGraph extends Component {
       console.log('static graph rerender plotband');
       xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`)
       xAxis.addPlotBand({
-        from: this.props.currentLabel.start,
-        to: this.props.lastData[this.props.index][0],
+        from: this.props.currentLabel.start - visualOffset,
+        to: this.props.lastData[this.props.index][0] - 0.5 * visualOffset,
         color: this.props.currentLabel.color,
         className: 'labelingArea',
         id: `labelingArea-${this.state.startPlotId}`,
@@ -145,10 +149,11 @@ class BlePanelSensorstreamGraph extends Component {
     // end of the graph is not visible during recording the label while shifting the graph
     // so we can optimize the number of rendering to just one this way
     else if (shiftSeries && this.state.shiftHandledForPlotId !== this.state.startPlotId) {
+      console.log('state', this.state.offsetApplied, visualOffset)
       console.log('moving graph, rerender the plotband once by setting the maximum to infinity')
       xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`)
       xAxis.addPlotBand({
-        from: this.props.currentLabel.start,
+        from: this.props.currentLabel.start - (this.state.offsetApplied ? offsetAmount : 0),
         to: 4000000000000, // pseudo infinity
         color: this.props.currentLabel.color,
         className: 'labelingArea',
