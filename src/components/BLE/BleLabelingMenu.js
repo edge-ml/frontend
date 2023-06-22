@@ -23,6 +23,7 @@ export const BleLabelingMenu = ({ labelings, selectedLabeling, handleSelectLabel
                 </Dropdown>
             </div>
             <div className="body-wrapper p-3 d-flex flex-column">
+                {selectedLabeling ? <h5>Labels in {selectedLabeling.name}:</h5> : null}
                 <div className='d-flex mb-2 flex-wrap'>
                     {selectedLabeling && selectedLabeling.labels.map((label, labelIdx) => (
                         <div key={label._id} className='d-flex flex-column align-items-center mr-1'>
