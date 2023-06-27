@@ -56,7 +56,7 @@ const format_time = (s) => {
 };
 
 const Labelings = (props) => {
-  if (!props.dataset.labelings.length) {
+  if (!props.dataset.labelings.length || !props.labelings.length) {
     return null;
   }
 
