@@ -208,3 +208,16 @@ export const appendToDataset = (dataset, data) => {
     .then((result) => result.data)
     .catch((err) => err.response);
 };
+
+export const getUploadProcessingProgress = (datasetId) => {
+  return axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.GET,
+      apiConsts.DATASET_STORE,
+      apiConsts.DATASET_STORE_ENDPOINTS.GET_PROCESSING_PROGRESS +
+      `?datasetId=${datasetId}`
+    )
+  )
+  .then(result => [result.data.progress[0], result.data.progress[1]])
+  .catch(err => err.response);
+}

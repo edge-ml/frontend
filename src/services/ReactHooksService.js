@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 export const useSelect = (list, initialIndex = 0) => {
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
 
@@ -114,3 +114,23 @@ export const usePersistedState = (defaultValue, localStorageKey) => {
   // Expose the value and the updater function.
   return [value, setValue];
 };
+
+export const useInterval = (callback, delay) => {
+  const savedCallback = useRef();
+
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      const id = setInterval(tick, delay);
+      return () => {
+        clearInterval(id);
+      }
+    }
+  }, [callback, delay]);
+}
