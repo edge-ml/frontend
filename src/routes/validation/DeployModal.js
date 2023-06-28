@@ -80,6 +80,15 @@ const DeployModal = ({ model, onClose }) => {
     }
   }, [compiledModel]);
 
+  useEffect(() => {
+    return () => {
+      // Component will unmount
+      if (connectedDevice) {
+        dfuManager.disconnectDevice(connectedDevice);
+      }
+    };
+  }, []);
+
   const toggleDeviceDropDown = () => setDeviceDropDownOpen(!deviceDropDownOpen);
 
   const selectSensor = (ts_idx, sensor_idx, component_idx) => {
@@ -94,6 +103,11 @@ const DeployModal = ({ model, onClose }) => {
   const onSwitchPage = () => {
     setPage(1);
   };
+
+  const onGoBack = () => {
+    setPage(0);
+  };
+
   const onDeploy = async () => {
     setFlashState('modelDownload');
     const res = await deployModel(
@@ -106,6 +120,7 @@ const DeployModal = ({ model, onClose }) => {
     const view = new Uint8Array(buffer);
 
     view.fill(0); // Fill the ArrayBuffer with zeroes */
+    console.log('Compiled model length: ', res.length);
     setComiledModel(res);
   };
 
@@ -152,32 +167,64 @@ const DeployModal = ({ model, onClose }) => {
     return null;
   }
 
+  const inProgress = () => {
+    return flashState === 'modelDownload' || flashState === 'uploading';
+  };
+
   const renderDeployPart = () => {
     return (
       <div>
         <div>
           {'Connected device: '}
-          {connectedDevice ? connectedDevice.name : 'No device connected'}
+          {connectedDevice ? (
+            <b>{connectedDevice.name}</b>
+          ) : (
+            'No device connected'
+          )}
         </div>
-        <div>{renderProgressInfo()}</div>
+        <div className="d-flex flex-row">
+          <div>{renderProgressInfo()}</div>
+          {inProgress() ? (
+            <div>
+              <Spinner color="dark" size="sm" />
+            </div>
+          ) : null}
+        </div>
         <div>
           <Button
+            outline
+            disabled={inProgress()}
             className="m-2"
+            color={connectedDevice ? 'danger' : 'primary'}
             onClick={connectedDevice ? disconnectBLE : connectBLE}
           >
             {connectedDevice ? 'Disconnect device' : 'Connect device'}
           </Button>
           <Button
-            disabled={connectedDevice === undefined}
+            color="primary"
+            outline
+            disabled={connectedDevice === undefined || inProgress()}
             className="m-2"
             onClick={onDeploy}
           >
             Flash firmware
           </Button>
-          <Button className="m-2" onClick={onDownloadFirmware}>
+          <Button
+            color="primary"
+            outline
+            disabled={inProgress()}
+            className="m-2"
+            onClick={onDownloadFirmware}
+          >
             Download firmware
           </Button>
         </div>
+        {inProgress() ? (
+          <div className="text-danger">
+            Please do not leave this page or disconnect the device, while the
+            flashing is in progress.
+          </div>
+        ) : null}
         <div className="mt-3">
           <Progress
             color={flashState === 'uploadFinished' ? 'primary' : 'success'}
@@ -193,7 +240,7 @@ const DeployModal = ({ model, onClose }) => {
       case 'start':
         return 'Connect device for flashing';
       case 'connected':
-        return 'Device is connected. Press Flash firmware to begin flashing process';
+        return 'Device is connected. Press Flash firmware to begin flashing process.';
       case 'modelDownload':
         return 'Compiling and downloading model...';
       case 'uploading':
@@ -332,7 +379,14 @@ const DeployModal = ({ model, onClose }) => {
         )}
       </ModalBody>
       <ModalFooter>
-        <Button onClick={onClose}>Close</Button>
+        {page == 1 ? (
+          <Button outline color="primary" onClick={onGoBack}>
+            Back
+          </Button>
+        ) : null}
+        <Button onClick={onClose} outline color="danger">
+          Cancel
+        </Button>
       </ModalFooter>
     </Modal>
   );

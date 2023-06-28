@@ -38,7 +38,12 @@ class DFUManager {
 
   async disconnectDevice(connectedDevice) {
     if (connectedDevice.gatt && connectedDevice.gatt.disconnect) {
-      connectedDevice.gatt.disconnect();
+      try {
+        await connectedDevice.gatt.disconnect();
+        console.log('Disconnected from the device');
+      } catch (error) {
+        console.error('Error occurred during disconnection:', error);
+      }
     }
     this.resetState(false);
   }
