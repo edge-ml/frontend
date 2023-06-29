@@ -140,7 +140,8 @@ class BlePanelSensorstreamGraph extends Component {
     // if the graph is shifting, set the end of the plotband to infinity once
     // end of the graph is not visible during recording the label while shifting the graph
     // so we can optimize the number of rendering to just one this way
-    else if (shiftSeries && this.state.shiftHandledForPlotId !== this.state.startPlotId) {
+    // make sure the labeling is active
+    else if (shiftSeries && this.state.shiftHandledForPlotId !== this.state.startPlotId && this.state.endPlotId === undefined) {
       // console.log('moving graph, rerender the plotband once by setting the maximum to infinity')
       xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`)
       xAxis.addPlotBand({
