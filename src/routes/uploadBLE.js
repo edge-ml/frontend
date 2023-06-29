@@ -521,7 +521,9 @@ class UploadBLE extends Component {
   }
 
   componentDidMount() {
-    this.componentRef.current.focus();
+    if (this.componentRef.current) {
+      this.componentRef.current.focus();
+    }
     this.fetchLabelings();
   }
 
