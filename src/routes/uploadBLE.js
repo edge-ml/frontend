@@ -28,6 +28,9 @@ import DFUModal from '../components/BLE/DFUModal/DFUModal';
 import semverLt from 'semver/functions/lt';
 import { adjectives, names } from './export/nameGeneration';
 import { uniqueNamesGenerator } from 'unique-names-generator';
+import { BleLabelingMenu } from '../components/BLE/BleLabelingMenu';
+
+import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -50,7 +53,15 @@ class UploadBLE extends Component {
       showDFUModal: false,
       latestEdgeMLVersion: undefined,
       outdatedVersionInstalled: false,
+      labelings: [],
+      selectedLabeling: undefined,
+      currentLabel: {start: undefined, end: undefined, color: undefined, id: undefined, plotId: 0},
+      prevLabel: {start: undefined, end: undefined, color: undefined, id: undefined, plotId: -1},
     };
+
+    this.componentRef = React.createRef();
+    this.labelingData = React.createRef();
+
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
     //this.receiveSensorData = this.receiveSensorData.bind(this);
@@ -73,6 +84,11 @@ class UploadBLE extends Component {
     this.checkServicesAndGetLatestFWVersion =
       this.checkServicesAndGetLatestFWVersion.bind(this);
     this.toggleDFUModal = this.toggleDFUModal.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.fetchLabelings = this.fetchLabelings.bind(this);
+    this.handleLabelingSelect = this.handleLabelingSelect.bind(this);
+    this.toggleLabelingActive = this.toggleLabelingActive.bind(this);
+    this.resetLabelingState = this.resetLabelingState.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
@@ -92,6 +108,7 @@ class UploadBLE extends Component {
     this.deviceInfoServiceUuid = '45622510-6468-465a-b141-0b9b0f96b468';
     this.deviceIdentifierUuid = '45622511-6468-465a-b141-0b9b0f96b468';
     this.deviceGenerationUuid = '45622512-6468-465a-b141-0b9b0f96b468';
+    this.shortcutKeys = "1234567890abcdefghijklmnopqrstuvwxyz";
     this.bleDeviceProcessor = undefined;
     this.textEncoder = new TextDecoder('utf-8');
   }
@@ -207,6 +224,7 @@ class UploadBLE extends Component {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         this.setState({ recorderState: 'ready' });
         this.setState({ datasetName: '' });
+        this.resetLabelingState();
         break;
     }
   }
@@ -398,13 +416,134 @@ class UploadBLE extends Component {
     this.setState({ showDFUModal: !this.state.showDFUModal });
   }
 
+  handleLabelingSelect(labeling) {
+    this.setState({ selectedLabeling: labeling });
+  }
+
+  toggleLabelingActive(labelIdx) {
+
+    const timestamp = Date.now();
+    const keyPressedLabel = this.state.selectedLabeling.labels[labelIdx];
+
+    // initial state, currentLabel.id is only undefined when no label recording have ever took place 
+    // during the current sensor data collection
+    if (this.state.currentLabel.id === undefined) { 
+      console.log('initial state')
+      this.labelingData.current = [{ 
+        start: timestamp, 
+        labelType: keyPressedLabel._id,
+        labelingId: this.state.selectedLabeling._id
+      }];
+      this.setState({
+        currentLabel: { 
+          start: timestamp, 
+          end: undefined, 
+          color: keyPressedLabel.color, 
+          id: keyPressedLabel._id, 
+          plotId: 0 
+        }
+      });
+    }
+    // stop recording the current label when the user pressed the label key a second time
+    else if (this.state.currentLabel.id === keyPressedLabel._id && this.state.currentLabel.end === undefined) { 
+      console.log('stop current labeling')
+      const currentLabelingData = this.labelingData.current[this.labelingData.current.length - 1];
+      currentLabelingData.end = timestamp;
+      this.setState(prevState => ({ currentLabel: {...prevState.currentLabel, end: timestamp }}));
+    } 
+    
+    // the current label is stopped by the user previously and now a new one is requested
+    else if (this.state.currentLabel.end !== undefined) { 
+      console.log('start new labeling')
+      this.labelingData.current.push({ 
+        start: timestamp, 
+        labelType: keyPressedLabel._id, 
+        labelingId: this.state.selectedLabeling._id 
+      });
+      this.setState(prevState => ({ 
+        currentLabel: { 
+          start: timestamp,
+          end: undefined, 
+          color: keyPressedLabel.color, 
+          id: keyPressedLabel._id, 
+          plotId: prevState.currentLabel.plotId + 1, 
+        },
+        prevLabel: prevState.currentLabel,
+      }));
+    }
+
+    // if the user starts recording of another label before the user stops recording of the previous label 
+    // gracefully stop the previous label recording, start the new one
+    else if (this.state.currentLabel.end === undefined && this.state.currentLabel.id !== keyPressedLabel._id) {
+      console.log('abruptly stop and start new labeling')
+      const currentLabelingData = this.labelingData.current[this.labelingData.current.length - 1];
+      currentLabelingData.end = timestamp - 1; // -1 to avoid overlap between previous and new label
+      this.labelingData.current.push({ 
+        start: timestamp, 
+        labelType: keyPressedLabel._id, 
+        labelingId: this.state.selectedLabeling._id 
+      });
+
+      this.setState(prevState => ({ 
+        currentLabel: { 
+          start: timestamp,
+          end: undefined, 
+          color: keyPressedLabel.color, 
+          id: keyPressedLabel._id, 
+          plotId: prevState.currentLabel.plotId + 1, 
+        },
+        prevLabel: {...prevState.currentLabel, end: timestamp - 120},
+      }));
+    }
+  }
+
+  resetLabelingState() {
+    this.labelingData.current = [];
+    this.setState({
+      currentLabel: {start: undefined, end: undefined, color: undefined, id: undefined, plotId: 0},
+      prevLabel: {start: undefined, end: undefined, color: undefined, id: undefined, plotId: -1}
+    });
+  }
+
+  handleKeyDown(e) {
+    if (this.state.recorderState !== 'recording') {
+      return;
+    }
+    const labelIdx = this.shortcutKeys.indexOf(e.key);
+    if (labelIdx != -1 && this.state.selectedLabeling && labelIdx < this.state.selectedLabeling.labels.length) {
+      this.toggleLabelingActive(labelIdx);
+    }
+  }
+
+  async fetchLabelings() {
+    const res = await subscribeLabelingsAndLabels();
+    this.setState({ labelings: res })
+  }
+
+  componentDidMount() {
+    this.componentRef.current.focus();
+    this.fetchLabelings();
+  }
+
+  componentDidUpdate() {
+    if (this.state.recorderState === 'recording') {
+      this.componentRef.current.focus();
+    }
+  }
+
   render() {
     if (!this.state.bleStatus) {
       return <BleNotActivated></BleNotActivated>;
     }
 
     return (
-      <div className="bleActivatedContainer">
+      <div 
+        className="bleActivatedContainer" 
+        ref={this.componentRef} 
+        onKeyDown={this.handleKeyDown} 
+        tabIndex="0" 
+        style={{ outline: 'none' }}
+      >
         <div className="mb-2">
           <BlePanelConnectDevice
             bleConnectionChanging={this.state.bleConnectionChanging}
@@ -463,21 +602,29 @@ class UploadBLE extends Component {
                   onToggleStream={this.onToggleStream}
                   onToggleSampleRate={this.onToggleSampleRate}
                   fullSampleRate={this.state.fullSampleRate}
-                ></BlePanelRecorderSettings>
+                />
+                <BleLabelingMenu 
+                  labelings={this.state.labelings}
+                  selectedLabeling={this.state.selectedLabeling}
+                  handleSelectLabeling={this.handleLabelingSelect}
+                  handleSelectLabel={this.handleLabelSelect}
+                  shortcutKeys={this.shortcutKeys}
+                />
               </Col>
             </Row>
             <Row className="p-2">
               <Col xs={12}>
-                {this.state.recorderState === 'recording' &&
-                this.state.stream ? (
-                  <div>
+                {this.state.recorderState === 'recording' && this.state.stream ? (
+                  <div className="shadow p-3 mb-5 bg-white rounded">
                     <BlePanelRecordingDisplay
                       deviceSensors={this.state.deviceSensors}
                       selectedSensors={this.state.selectedSensors}
                       lastData={this.currentData}
                       sensorKeys={this.sensorKeys}
                       fullSampleRate={this.state.fullSampleRate}
-                    ></BlePanelRecordingDisplay>
+                      currentLabel={this.state.currentLabel}
+                      prevLabel={this.state.prevLabel}
+                    />
                   </div>
                 ) : null}
               </Col>

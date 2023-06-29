@@ -92,7 +92,7 @@ class BlePanelRecordingDisplay extends Component {
     return (
       <div className="mr-2 mt-3">
         <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
-          <h4>4. Recording</h4>
+          <h4>5. Recording</h4>
         </div>
         <div className="body-wrapper">
           <ul>
@@ -109,7 +109,9 @@ class BlePanelRecordingDisplay extends Component {
                     sampleRate={this.props.deviceSensors[sensorKey].sampleRate}
                     lastData={this.props.lastData}
                     index={this.props.sensorKeys.indexOf(sensorKey.toString())}
-                  ></BlePanelSensorstreamGraph>
+                    currentLabel={this.props.currentLabel}
+                    prevLabel={this.props.prevLabel}
+                  />
                 </li>
               );
             })}
