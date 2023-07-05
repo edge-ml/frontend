@@ -94,6 +94,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const [featureExtractors, setFeatureExtractors] = useState([]);
 
   // User selections made in the wizard
+  const [disabledTimeseriesNames, setDisabledTimeseriesNames] = useState([]);
   const [labeling, setLableing] = useState();
   const [zeroClass, toggleZeroClass] = useState(false);
   const [modelName, setModelName] = useState('');
@@ -116,8 +117,9 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   useEffect(() => {
     getDatasets().then((datasets) => {
       const newDatasets = datasets.map((elm) => {
-        return { ...elm, selected: false, disabledTimeseriesIDs: [] };
+        return { ...elm, selected: false };
       });
+      setDisabledTimeseriesNames([]);
       setDatasets(newDatasets);
     });
     subscribeLabelingsAndLabels().then((labelings) =>
@@ -138,24 +140,16 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     });
   }, []);
 
-  const toggleDatasetDisableTimeseries = (timeseries_id, dataset_id) => {
-    const idx = datasets.findIndex((ds) => ds._id === dataset_id);
-    if (idx === -1 || !datasets[idx].selected) {
-      return;
-    }
-    const newDatasets = JSON.parse(JSON.stringify(datasets));
-    newDatasets[idx].disabledTimeseriesIDs = toggleElement(
-      newDatasets[idx].disabledTimeseriesIDs,
-      timeseries_id
+  const toggleDisableTimeseries = (timeseries_id) => {
+    setDisabledTimeseriesNames(
+      toggleElement(disabledTimeseriesNames, timeseries_id)
     );
-    setDatasets([...newDatasets]);
   };
 
   const toggleSelectDataset = (id) => {
     const newDatasets = JSON.parse(JSON.stringify(datasets));
     const idx = datasets.findIndex((elm) => elm._id === id);
     newDatasets[idx].selected = !newDatasets[idx].selected;
-    newDatasets[idx].disabledTimeseriesIDs = [];
     setDatasets([...newDatasets]);
   };
 
@@ -168,7 +162,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
             _id: elm._id,
             timeSeries: difference(
               elm.timeSeries.map((ts) => ts._id),
-              elm.disabledTimeseriesIDs
+              disabledTimeseriesNames
             ),
           };
         })
@@ -190,11 +184,11 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     onClose();
   };
 
-  console.log(
-    'dsla',
-    datasets.filter((e) => e.selected),
-    labeling
-  );
+  // console.log(
+  //   'dsla',
+  //   datasets.filter((e) => e.selected),
+  //   labeling
+  // );
 
   const props = {
     datasets: datasets,
@@ -202,7 +196,8 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     setLabeling: setLableing,
     selectedLabeling: labeling,
     toggleSelectDataset: toggleSelectDataset,
-    toggleDatasetDisableTimeseries: toggleDatasetDisableTimeseries,
+    disabledTimeseriesNames: disabledTimeseriesNames,
+    toggleDisableTimeseries: toggleDisableTimeseries,
     windowers: windowing,
     selectedWindowing: selectedWindowing,
     setSelectedWindower: setSelectedWindowing,
