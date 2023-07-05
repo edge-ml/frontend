@@ -31,6 +31,8 @@ import {
 } from '../../components/Common/EdgeMLTable';
 import DFUManager from '../../components/BLE/DFUModal/DFU';
 import { Brand } from 'react-bootstrap/lib/Navbar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 
 const DeployModal = ({ model, onClose }) => {
   const [devices, setDevices] = useState([]);
@@ -57,6 +59,14 @@ const DeployModal = ({ model, onClose }) => {
       ),
     []
   );
+
+  useEffect(() => {
+    if (flashError) {
+      resetFlashState();
+      onGoBack();
+    }
+    return () => {};
+  }, [flashError]);
 
   useEffect(() => {
     if (!model) return;
@@ -90,6 +100,12 @@ const DeployModal = ({ model, onClose }) => {
       }
     };
   }, []);
+
+  const resetFlashState = () => {
+    setConnectedDevice(undefined);
+    setFlashState('start');
+    setFlashProgress(0);
+  };
 
   const toggleDeviceDropDown = () => setDeviceDropDownOpen(!deviceDropDownOpen);
 
@@ -384,6 +400,16 @@ const DeployModal = ({ model, onClose }) => {
                 handleHyperparameterChange={handleHyperparameterChange}
               ></HyperparameterView>
             </div>
+            {flashError ? (
+              <div className="d-flex flex-row ml-2">
+                <div>
+                  <FontAwesomeIcon icon={faCircleExclamation} color="red" />
+                </div>
+                <div className="text-danger">
+                  An error occured while flashing the model onto the device.
+                </div>
+              </div>
+            ) : null}
             <div className="w-100 d-flex flex-row">
               <div className="text-danger flex-grow-1">
                 {showSelectAllSensorWarning

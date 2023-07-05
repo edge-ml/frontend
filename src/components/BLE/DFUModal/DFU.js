@@ -211,11 +211,11 @@ class DFUManager {
   }
 
   resetState(hasError, msg = '') {
+    this.setConnectedDevice(undefined);
+    this.setFlashState('start');
     if (hasError) {
       this.setFlashError(msg);
     }
-    this.setConnectedDevice(undefined);
-    this.setFlashState('start');
   }
 }
 
