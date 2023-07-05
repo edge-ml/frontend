@@ -44,6 +44,8 @@ const DeployModal = ({ model, onClose }) => {
   const [flashError, setFlashError] = useState(undefined);
   const [flashProgress, setFlashProgress] = useState(0);
   const [connectedDevice, setConnectedDevice] = useState(undefined);
+  const [showSelectAllSensorWarning, setShowSelectAllSensorWarning] =
+    useState(false);
 
   const dfuManager = useMemo(
     () =>
@@ -100,8 +102,21 @@ const DeployModal = ({ model, onClose }) => {
     setSelectedSensors([...selectedSensors]);
   };
 
+  const checkAllSensorsSelected = () => {
+    return selectedSensors.every((sensor) => {
+      return (
+        sensor['sensor_id'] !== undefined ||
+        sensor['component_id'] !== undefined
+      );
+    });
+  };
+
   const onSwitchPage = () => {
-    setPage(1);
+    if (checkAllSensorsSelected()) {
+      setPage(1);
+    } else {
+      setShowSelectAllSensorWarning(true);
+    }
   };
 
   const onGoBack = () => {
@@ -131,10 +146,6 @@ const DeployModal = ({ model, onClose }) => {
   const disconnectBLE = () => {
     dfuManager.disconnectDevice(connectedDevice);
   };
-
-  /**const flashFirmware = () => {
-    dfuManager.flashFirmware(compiledModel);
-  };*/
 
   const onDownloadFirmware = async () => {
     console.log('Donwload');
@@ -370,8 +381,15 @@ const DeployModal = ({ model, onClose }) => {
                 handleHyperparameterChange={handleHyperparameterChange}
               ></HyperparameterView>
             </div>
-            <div className="w-100 d-flex justify-content-end">
-              <Button onClick={onSwitchPage}>Deploy</Button>
+            <div className="w-100 d-flex flex-row">
+              <div className="text-danger flex-grow-1">
+                {showSelectAllSensorWarning
+                  ? 'Please configure all time series under configure time series before deploying.'
+                  : ''}
+              </div>
+              <div>
+                <Button onClick={onSwitchPage}>Deploy</Button>
+              </div>
             </div>
           </div>
         ) : (
