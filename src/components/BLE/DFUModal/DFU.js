@@ -48,6 +48,20 @@ class DFUManager {
     this.resetState(false);
   }
 
+  async connectGATTdfu(connectedDevice) {
+    //device already connected with DFU_SERVICE as optional service
+    try {
+      const server = await connectedDevice.gatt.connect();
+      const service = await server.getPrimaryService(DFU_SERVICE_UUID);
+      this.dfuCharacteristic = await service.getCharacteristic(
+        DFU_INTERNALL_CHARACTERISTIC
+      );
+      console.log('Device connected');
+      this.setFlashState('connected');
+    } catch (err) {
+      this.setFlashError(err);
+    }
+  }
   async connectDevice() {
     const options = {
       acceptAllDevices: true,
