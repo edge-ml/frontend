@@ -100,6 +100,9 @@ const DeployModal = ({ model, onClose }) => {
     };
     console.log(selectedSensors);
     setSelectedSensors([...selectedSensors]);
+    if (checkAllSensorsSelected()) {
+      setShowSelectAllSensorWarning(false);
+    }
   };
 
   const checkAllSensorsSelected = () => {
@@ -388,7 +391,9 @@ const DeployModal = ({ model, onClose }) => {
                   : ''}
               </div>
               <div>
-                <Button onClick={onSwitchPage}>Deploy</Button>
+                <Button outline color="primary" onClick={onSwitchPage}>
+                  Deploy
+                </Button>
               </div>
             </div>
           </div>
