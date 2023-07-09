@@ -45,7 +45,9 @@ class DFUManager {
         console.error('Error occurred during disconnection:', error);
       }
     }
+
     this.resetState(false);
+    this.setConnectedDevice(undefined);
   }
 
   async connectGATTdfu(connectedDevice) {
@@ -211,8 +213,18 @@ class DFUManager {
   }
 
   resetState(hasError, msg = '') {
-    this.setConnectedDevice(undefined);
-    this.setFlashState('start');
+    this.arrayFW = null;
+    this.fwLen = null;
+    this.bytesArray = new Uint8Array(235);
+    this.dataLen = 232;
+    this.iterations = 0;
+    this.spareBytes = 0;
+    this.updateIndex = 0;
+    this.crc8bit = 0;
+    this.onlyCRCleft = false;
+    this.dfuCharacteristic = undefined;
+    this.debug = true;
+
     if (hasError) {
       this.setFlashError(msg);
     }
