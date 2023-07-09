@@ -301,57 +301,63 @@ const DeployModal = ({ model, onClose }) => {
               </DropdownMenu>
             </Dropdown>
             <div className="d-flex">
-              <EdgeMLTable className="m-2" style={{ width: '500px' }}>
-                <EdgeMLTableHeader>
-                  <div className="d-flex justify-content-center w-100">
-                    Configure TimeSeries
-                  </div>
-                </EdgeMLTableHeader>
-
-                {model.timeSeries.map((elm, ts_idx) => (
-                  <EdgeMLTableEntry>
-                    <div className="d-flex align-items-center justify-content-between mx-2">
-                      <strong className="pl-2">{elm}</strong>
-                      <UncontrolledDropdown
-                        direction="left"
-                        style={{ position: 'relative' }}
-                      >
-                        <DropdownToggle caret size="sm">
-                          {selectedSensors[ts_idx].sensor_id !== undefined
-                            ? selectedDevice.sensors[
-                                selectedSensors[ts_idx].sensor_id
-                              ].name +
-                              '_' +
-                              selectedDevice.sensors[
-                                selectedSensors[ts_idx].sensor_id
-                              ].components[selectedSensors[ts_idx].component_id]
-                                .name
-                            : 'Unset'}
-                        </DropdownToggle>
-                        <DropdownMenu>
-                          {selectedDevice.sensors.map((sensor, sensor_idx) =>
-                            sensor.components.map(
-                              (component, component_idx) => (
-                                <DropdownItem
-                                  onClick={() =>
-                                    selectSensor(
-                                      ts_idx,
-                                      sensor_idx,
-                                      component_idx
-                                    )
-                                  }
-                                >
-                                  {sensor.name + '_' + component.name}
-                                </DropdownItem>
+              <div className="my-4 ml-2 mr-4" style={{ width: '500px' }}>
+                <div className="header-wrapper d-flex justify-content-center align-content-center">
+                  <b>Configure TimeSeries</b>
+                </div>
+                <div className="body-wrapper-overflow">
+                  {model.timeSeries.map((elm, ts_idx) => (
+                    <div
+                      className="datasetCard"
+                      style={{
+                        background:
+                          ts_idx % 2 === 1 ? 'rgb(249, 251, 252)' : '',
+                      }}
+                    >
+                      <div className="d-flex align-items-center justify-content-between mx-2">
+                        <strong className="pl-2">{elm}</strong>
+                        <UncontrolledDropdown
+                          direction="left"
+                          style={{ position: 'relative' }}
+                        >
+                          <DropdownToggle caret size="sm">
+                            {selectedSensors[ts_idx].sensor_id !== undefined
+                              ? selectedDevice.sensors[
+                                  selectedSensors[ts_idx].sensor_id
+                                ].name +
+                                '_' +
+                                selectedDevice.sensors[
+                                  selectedSensors[ts_idx].sensor_id
+                                ].components[
+                                  selectedSensors[ts_idx].component_id
+                                ].name
+                              : 'Unset'}
+                          </DropdownToggle>
+                          <DropdownMenu>
+                            {selectedDevice.sensors.map((sensor, sensor_idx) =>
+                              sensor.components.map(
+                                (component, component_idx) => (
+                                  <DropdownItem
+                                    onClick={() =>
+                                      selectSensor(
+                                        ts_idx,
+                                        sensor_idx,
+                                        component_idx
+                                      )
+                                    }
+                                  >
+                                    {sensor.name + '_' + component.name}
+                                  </DropdownItem>
+                                )
                               )
-                            )
-                          )}
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
+                            )}
+                          </DropdownMenu>
+                        </UncontrolledDropdown>
+                      </div>
                     </div>
-                  </EdgeMLTableEntry>
-                ))}
-              </EdgeMLTable>
+                  ))}
+                </div>
+              </div>
               <EdgeMLTable className="m-2" style={{ width: '400px' }}>
                 <EdgeMLTableHeader>
                   <div className="d-flex justify-content-center w-100">
