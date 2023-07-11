@@ -21,7 +21,6 @@ export const Table = ({ children, header }) => {
 };
 
 export const TableEntry = ({ index, children }) => {
-  console.log(children);
   return (
     <Fragment>
       <div

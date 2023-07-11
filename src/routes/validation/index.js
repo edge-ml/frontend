@@ -74,7 +74,7 @@ const ValidationPage = () => {
   const metric = (metric) => Math.round(metric * 100 * 100) / 100;
 
   const onViewModel = (model) => {
-    if (model.error === 0 || model.error === undefined) {
+    if (model.error === '' || model.error === undefined) {
       setModalModel(model);
     }
   };
@@ -173,6 +173,7 @@ const ValidationPage = () => {
                           <div>{model.trainRequest.classifier.name}</div>
                         </Col>
                         <Col>
+                          {console.log(model)}
                           {model.error === undefined ||
                           model.error == '' ? null : (
                             <>

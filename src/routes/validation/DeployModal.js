@@ -358,7 +358,7 @@ const DeployModal = ({ model, onClose }) => {
                   ))}
                 </div>
               </div>
-              <EdgeMLTable className="m-2" style={{ width: '400px' }}>
+              {/* <EdgeMLTable className="m-2" style={{ width: '400px' }}>
                 <EdgeMLTableHeader>
                   <div className="d-flex justify-content-center w-100">
                     <div>Use BLE</div>
@@ -396,7 +396,7 @@ const DeployModal = ({ model, onClose }) => {
                     <Input></Input>
                   </div>
                 </EdgeMLTableEntry>
-              </EdgeMLTable>
+              </EdgeMLTable> */}
             </div>
             <div className="m-2">
               <div className="font-weight-bold fs-medium">Settings</div>
