@@ -1,4 +1,32 @@
 import ax from 'axios';
+import humanizeDuration from 'humanize-duration';
+
+export const humanDuration = humanizeDuration.humanizer({
+  language: 'shortEn',
+  languages: {
+    shortEn: {
+      y: () => 'y',
+      mo: () => 'mo',
+      w: () => 'w',
+      d: () => 'd',
+      h: () => 'h',
+      m: () => 'min',
+      s: () => 's',
+      ms: () => 'ms',
+    },
+  },
+  spacer: '',
+  delimiter: ' ',
+  maxDecimalPoints: 3,
+});
+
+const intersect2 = (xs, ys) => xs.filter((x) => ys.some((y) => y === x));
+export const intersect = (xs, ys, ...rest) =>
+  ys === undefined ? xs : intersect(intersect2(xs, ys), ...rest);
+export const difference = (xs, ys) => xs.filter((x) => !ys.includes(x));
+
+export const toggleElement = (arr, item) =>
+  arr.includes(item) ? arr.filter((i) => i !== item) : [...arr, item];
 
 export const validateEmail = (email) => {
   const re =

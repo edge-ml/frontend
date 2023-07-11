@@ -453,6 +453,12 @@ div.card {
   overflow: hidden;
 }
 
+.body-wrapper-overflow {
+  border: 2px solid rgb(230, 230, 234);
+  border-radius: 0px 0px 10px 10px;
+  overflow: visible;
+}
+
 .edgeml-border {
   border: 2 px solid rgb(230, 230, 234) !important;
   border-width: 2px !important;

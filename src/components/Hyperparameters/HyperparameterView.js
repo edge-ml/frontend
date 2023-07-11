@@ -7,8 +7,6 @@ export const HyperparameterView = ({
   hyperparameters,
   isAdvanced,
 }) => {
-  console.log(hyperparameters);
-  console.log(hyperparameters.filter((h) => h.is_advanced === isAdvanced));
   return (
     <Container fluid>
       <Row>

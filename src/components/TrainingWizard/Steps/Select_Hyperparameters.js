@@ -28,8 +28,6 @@ const Wizard_Hyperparameters = ({
 
   const [classififier_index, set_classifier_index] = useState(0);
 
-  console.log(classifier);
-
   const handleHyperparameterChange = ({ parameter_name, value }) => {
     const newClassifier = [...classifier];
     const idx = newClassifier[classififier_index].parameters.findIndex(
@@ -53,11 +51,7 @@ const Wizard_Hyperparameters = ({
 
   return (
     <Fragment>
-      <div className="w-100 d-flex justify-content-between align-items-center mb-2">
-        <div className="font-weight-bold h4 justify-self-start">
-          3. Select Classifier
-        </div>
-      </div>
+      <h3 className="font-weight-bold">3. Select Classifier</h3>
       <Dropdown isOpen={dropdownOpen} toggle={toggle}>
         <DropdownToggle caret size="lg">
           {classifier[classififier_index].name}
@@ -134,6 +128,12 @@ const Wizard_Hyperparameters = ({
       </div>
     </Fragment>
   );
+};
+
+Wizard_Hyperparameters.validate = ({ selectedClassifier }) => {
+  if (!selectedClassifier) {
+    return 'You need to select a classifier';
+  }
 };
 
 export default Wizard_Hyperparameters;

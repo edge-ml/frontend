@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { Badge, Container, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { subscribeLabelingsAndLabels } from '../../../services/ApiServices/LabelingServices';
 import '../index.css';
@@ -7,16 +7,17 @@ import classNames from 'classnames';
 import {
   EdgeMLTable,
   EdgeMLTableHeader,
-  EdgeMLTableBody,
+  EdgeMLTableEntry,
 } from '../../Common/EdgeMLTable';
+import { toggleElement } from '../../../services/helpers';
 
 const Wizard_SelectLabeling = ({
   labelings,
   datasets,
   setLabeling,
+  selectedLabeling,
   toggleZeroClass,
   zeroClass,
-  selectedLabeling,
   onNext,
   onBack,
   footer,
@@ -29,65 +30,107 @@ const Wizard_SelectLabeling = ({
   };
 
   return (
-    <div>
-      <ModalBody>
-        <div className="content">
-          <h3>1. Select Labeling</h3>
-          <EdgeMLTable>
-            <EdgeMLTableHeader>
+    <Fragment>
+      <h3 className="font-weight-bold">1. Select Labeling</h3>
+      <EdgeMLTable>
+        <EdgeMLTableHeader>
+          <div>
+            <h4>
+              <b>Labeling</b>
+            </h4>
+          </div>
+          <div className="d-flex justify-content-center align-items-center">
+            <Checkbox
+              onClick={() => toggleZeroClass(!zeroClass)}
+              isSelected={zeroClass}
+            ></Checkbox>
+            <div className="ml-2">Use 0-Class</div>
+          </div>
+        </EdgeMLTableHeader>
+        {labelings
+          .filter((elm) => countDatasets(elm))
+          .map((labeling) => (
+            <EdgeMLTableEntry
+              className={classNames('labelingRow', {
+                disabled: countDatasets(labeling) === 0,
+              })}
+            >
+              <Checkbox
+                onClick={() => setLabeling({ ...labeling, disabledLabels: [] })}
+                isSelected={
+                  selectedLabeling
+                    ? selectedLabeling._id === labeling._id
+                    : false
+                }
+              ></Checkbox>
+              <div className="labelingName">{labeling.name} </div>
               <div>
-                <h4>
-                  <b>Labeling</b>
-                </h4>
-              </div>
-              <div className="d-flex justify-content-center align-items-center">
-                <Checkbox
-                  onClick={() => toggleZeroClass(!zeroClass)}
-                  isSelected={zeroClass}
-                ></Checkbox>
-                <div className="ml-2">Use 0-Class</div>
-              </div>
-            </EdgeMLTableHeader>
-            <EdgeMLTableBody>
-              {labelings
-                .filter((elm) => countDatasets(elm))
-                .map((labeling) => (
-                  <div
-                    className={classNames('labelingRow', {
-                      disabled: countDatasets(labeling) === 0,
-                    })}
+                {labeling.labels.map((label) => (
+                  <Badge
+                    className="badge"
+                    onClick={() =>
+                      selectedLabeling?.disabledLabels &&
+                      selectedLabeling._id === labeling._id &&
+                      setLabeling({
+                        ...selectedLabeling,
+                        disabledLabels: toggleElement(
+                          selectedLabeling.disabledLabels,
+                          label._id
+                        ),
+                      })
+                    }
+                    style={{
+                      ...(selectedLabeling?.disabledLabels.includes(label._id)
+                        ? { textDecoration: 'line-through' }
+                        : { backgroundColor: label.color }),
+                      userSelect: 'none',
+                    }}
+                    {...(selectedLabeling?.disabledLabels.includes(label._id)
+                      ? { color: 'light' }
+                      : {})}
                   >
-                    <Checkbox
-                      onClick={() => setLabeling(labeling)}
-                      isSelected={
-                        selectedLabeling
-                          ? selectedLabeling._id === labeling._id
-                          : false
-                      }
-                    ></Checkbox>
-                    <div className="labelingName">{labeling.name} </div>
-                    <div>
-                      {labeling.labels.map((label) => (
-                        <Badge
-                          className="badge"
-                          style={{ backgroundColor: label.color }}
-                        >
-                          {label.name}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div>{`(${countDatasets(labeling)} ${
-                      countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
-                    })`}</div>
-                  </div>
+                    {label.name}
+                  </Badge>
                 ))}
-            </EdgeMLTableBody>
-          </EdgeMLTable>
-        </div>
-      </ModalBody>
-      {footer}
-    </div>
+              </div>
+              <div>{`(${countDatasets(labeling)} ${
+                countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
+              })`}</div>
+            </EdgeMLTableEntry>
+          ))}
+      </EdgeMLTable>
+    </Fragment>
   );
+};
+
+Wizard_SelectLabeling.validate = ({
+  selectedLabeling,
+  labelings,
+  zeroClass,
+}) => {
+  if (!selectedLabeling) {
+    return 'You need to select a labeling';
+  }
+
+  const labeling = labelings.find((l) => l._id === selectedLabeling._id);
+
+  if (!labeling) {
+    return 'Selected labeling is erronous, an internal error has occured';
+  }
+
+  const remainingLabelsCount =
+    labeling.labels.length -
+    (selectedLabeling.disabledLabels
+      ? selectedLabeling.disabledLabels.length
+      : 0);
+
+  if (remainingLabelsCount === 0) {
+    return 'At least one label must remain enabled in the selected labeling';
+  }
+
+  if (remainingLabelsCount === 1 && !zeroClass) {
+    return 'At least two labels must remain enabled if zero class is disabled';
+  }
 };
 
 export default Wizard_SelectLabeling;

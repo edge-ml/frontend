@@ -1,4 +1,11 @@
-import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from 'reactstrap';
+import {
+  Modal,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  Button,
+  Alert,
+} from 'reactstrap';
 import Wizard_SelectLabeling from './Steps/Select_Labeling';
 import './index.css';
 import { useEffect, useState, Fragment } from 'react';
@@ -14,8 +21,10 @@ import Select_Name from './Steps/Select_Name';
 import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { difference, toggleElement } from '../../services/helpers';
 
 export const WizardFooter = ({
+  invalidResult = false,
   onNext,
   onBack,
   onClose,
@@ -23,6 +32,9 @@ export const WizardFooter = ({
   step,
   maxSteps,
 }) => {
+  const [clickedOnce, setClickedOnce] = useState(false);
+  useEffect(() => setClickedOnce(false), [step]);
+
   return (
     <ModalFooter className="fotter">
       <div>
@@ -33,15 +45,40 @@ export const WizardFooter = ({
           Back
         </Button>
       </div>
-      <div>
-        {step + 1}/{maxSteps}
-      </div>
-      <Button
-        color="primary"
-        onClick={step + 1 === maxSteps ? onTrain : onNext}
+      <Alert
+        color="warning"
+        style={{
+          visibility: !!invalidResult && clickedOnce ? 'visible' : 'hidden',
+        }}
       >
-        {step + 1 === maxSteps ? 'Train' : 'Next'}
-      </Button>
+        {invalidResult || 'No problems'}
+      </Alert>
+      <div>
+        <span className="mr-3">
+          {step + 1}/{maxSteps}
+        </span>
+        <Button
+          color="primary"
+          disabled={!!invalidResult && clickedOnce}
+          onClick={() => {
+            if (!clickedOnce) {
+              setClickedOnce(true);
+            }
+
+            if (!!invalidResult) {
+              return;
+            }
+
+            if (step + 1 === maxSteps) {
+              onTrain();
+            } else {
+              onNext();
+            }
+          }}
+        >
+          {step + 1 === maxSteps ? 'Train' : 'Next'}
+        </Button>
+      </div>
     </ModalFooter>
   );
 };
@@ -57,6 +94,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const [featureExtractors, setFeatureExtractors] = useState([]);
 
   // User selections made in the wizard
+  const [disabledTimeseriesNames, setDisabledTimeseriesNames] = useState([]);
   const [labeling, setLableing] = useState();
   const [zeroClass, toggleZeroClass] = useState(false);
   const [modelName, setModelName] = useState('');
@@ -81,9 +119,12 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       const newDatasets = datasets.map((elm) => {
         return { ...elm, selected: false };
       });
+      setDisabledTimeseriesNames([]);
       setDatasets(newDatasets);
     });
-    subscribeLabelingsAndLabels().then((labelings) => setLabelings(labelings));
+    subscribeLabelingsAndLabels().then((labelings) =>
+      setLabelings(labelings.map((ls) => ({ ...ls, disabledLabels: [] })))
+    );
     getTrainconfig().then((result) => {
       setEvaluation(result.evaluation);
       setClassifiers(result.classifier);
@@ -99,25 +140,38 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     });
   }, []);
 
+  const toggleDisableTimeseries = (timeseries_id) => {
+    setDisabledTimeseriesNames(
+      toggleElement(disabledTimeseriesNames, timeseries_id)
+    );
+  };
+
   const toggleSelectDataset = (id) => {
-    const newDatasets = datasets;
+    const newDatasets = JSON.parse(JSON.stringify(datasets));
     const idx = datasets.findIndex((elm) => elm._id === id);
     newDatasets[idx].selected = !newDatasets[idx].selected;
     setDatasets([...newDatasets]);
   };
 
   const onTrain = async () => {
-    console.log(selectedWindowing);
     const data = {
       datasets: datasets
         .filter((elm) => elm.selected)
         .map((elm) => {
           return {
             _id: elm._id,
-            timeSeries: elm.timeSeries.map((ts) => ts._id),
+            timeSeries: difference(
+              elm.timeSeries.map((ts) => ts._id),
+              disabledTimeseriesNames
+            ),
           };
-        }),
-      labeling: { _id: labeling._id, useZeroClass: zeroClass },
+        })
+        .filter((elm) => elm.timeSeries.length > 0),
+      labeling: {
+        _id: labeling._id,
+        useZeroClass: zeroClass,
+        disabledLabelIDs: labeling.disabledLabels || [],
+      },
       name: modelName,
       classifier: selectedClassifier,
       evaluation: selectedEval,
@@ -125,9 +179,16 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       windowing: selectedWindowing,
       featureExtractor: selectedFeatureExtractor,
     };
+    console.log(data);
     const model_id = await train(data);
     onClose();
   };
+
+  // console.log(
+  //   'dsla',
+  //   datasets.filter((e) => e.selected),
+  //   labeling
+  // );
 
   const props = {
     datasets: datasets,
@@ -135,7 +196,10 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     setLabeling: setLableing,
     selectedLabeling: labeling,
     toggleSelectDataset: toggleSelectDataset,
+    disabledTimeseriesNames: disabledTimeseriesNames,
+    toggleDisableTimeseries: toggleDisableTimeseries,
     windowers: windowing,
+    selectedWindowing: selectedWindowing,
     setSelectedWindower: setSelectedWindowing,
     setWindower: setWindowing,
     featureExtractors: featureExtractors,
@@ -143,6 +207,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     normalizer: normalizer,
     setNormalizer: setSelectednormalizer,
     setModelName: setModelName,
+    selectedClassifier: selectedClassifier,
     setSelectedClassifier: setSelectedClassifier,
     setClassifier: setClassifiers,
     classifier: classifiers,
@@ -186,6 +251,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
         <ModalBody>{screen({ ...props })}</ModalBody>
       </div>
       <WizardFooter
+        invalidResult={screen.validate({ ...props })}
         step={idx}
         maxSteps={screens.length}
         onNext={onNext}
