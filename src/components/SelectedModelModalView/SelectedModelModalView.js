@@ -25,6 +25,8 @@ export const SelectedModelModalView = ({
   labels,
   onDelete = null,
   onClosed,
+  onButtonDeploy,
+  onButtonDownload,
   ...props
 }) => {
   return (
@@ -34,7 +36,11 @@ export const SelectedModelModalView = ({
           <div>
             <ModalHeader>Model: {model.name}</ModalHeader>
             <ModalBody>
-              <General_info model={model}></General_info>
+              <General_info
+                model={model}
+                onButtonDeploy={onButtonDeploy}
+                onButtonDownload={onButtonDownload}
+              ></General_info>
               <PerformanceInfo model={model}></PerformanceInfo>
             </ModalBody>
             <ModalFooter>
@@ -52,7 +58,12 @@ export const SelectedModelModalView = ({
   );
 };
 
-const General_info = ({ model, onDeploy }) => {
+const General_info = ({
+  model,
+  onDeploy,
+  onButtonDeploy,
+  onButtonDownload,
+}) => {
   return (
     <div>
       <h5>
@@ -71,8 +82,23 @@ const General_info = ({ model, onDeploy }) => {
           </div>
         </div>
         <div>
-          <Button className="mr-2">Download</Button>
-          <Button>Deploy</Button>
+          <Button
+            className="mr-2"
+            onClick={(e) => {
+              onButtonDownload(model);
+              e.stopPropagation();
+            }}
+          >
+            Download
+          </Button>
+          <Button
+            onClick={(e) => {
+              onButtonDeploy(model);
+              e.stopPropagation();
+            }}
+          >
+            Deploy
+          </Button>
         </div>
       </div>
     </div>

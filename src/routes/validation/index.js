@@ -10,6 +10,8 @@ import {
   ModalHeader,
   ModalFooter,
   Spinner,
+  Tooltip,
+  UncontrolledTooltip,
 } from 'reactstrap';
 import DownloadModal from './DownloadModal';
 import { Table, TableEntry } from '../../components/Common/Table';
@@ -20,6 +22,9 @@ import {
   faDownload,
   faInfoCircle,
   faMicrochip,
+  faXmark,
+  faCircleInfo,
+  faInfo,
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 
@@ -165,8 +170,8 @@ const ValidationPage = () => {
                             <div>{model.trainRequest.classifier.name}</div>
                           </div>
                           {model.status === 'done' ? (
-                            <div>
-                              <div className="">
+                            <div style={{ width: '200px' }}>
+                              <div>
                                 <b>Acc: </b>
                                 {metric(model.evaluator.metrics.accuracy_score)}
                                 %
@@ -179,15 +184,6 @@ const ValidationPage = () => {
                           ) : null}
                           {model.status === 'done' ? (
                             <div>
-                              {/* <Button
-                            className='btn-edit mr-4 mr-md-4'
-                            onClick={e => {
-                              onDeleteSingleModel();
-                              e.stopPropagation();
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
-                          </Button> */}
                               <Button
                                 className="btn-edit mr-3 mr-md-4"
                                 onClick={(e) => {
@@ -243,12 +239,20 @@ const ValidationPage = () => {
                             <div>{model.trainRequest.classifier.name}</div>
                           </div>
                           <div
-                            className="ml-5 flex-grow-1 d-flex justify-content-center"
+                            className="ml-5 flex-grow-1 d-flex justify-content-center align-items-center"
                             style={{ color: 'red' }}
                           >
                             An error occured while training!
+                            <FontAwesomeIcon
+                              id={'tooltip' + model._id}
+                              className="m-2"
+                              icon={faCircleInfo}
+                            ></FontAwesomeIcon>
                           </div>
                         </div>
+                        <UncontrolledTooltip target={'tooltip' + model._id}>
+                          {model.error}
+                        </UncontrolledTooltip>
                       </div>
                     )}
                   </TableEntry>
@@ -265,6 +269,13 @@ const ValidationPage = () => {
           <SelectedModelModalView
             model={modalModel}
             onClosed={() => setModalModel(false)}
+            onButtonDownload={(model) => {
+              setModelDownload(model);
+            }}
+            onButtonDeploy={(model) => {
+              setModelDeploy(model);
+              setDeployModalOpen(true);
+            }}
           ></SelectedModelModalView>
           <DownloadModal
             model={modelDownload}
