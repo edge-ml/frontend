@@ -12,6 +12,8 @@ import {
   Spinner,
   Tooltip,
   UncontrolledTooltip,
+  Row,
+  Col,
 } from 'reactstrap';
 import DownloadModal from './DownloadModal';
 import { Table, TableEntry } from '../../components/Common/Table';
@@ -72,7 +74,9 @@ const ValidationPage = () => {
   const metric = (metric) => Math.round(metric * 100 * 100) / 100;
 
   const onViewModel = (model) => {
-    setModalModel(model);
+    if (model.error === 0 || model.error === undefined) {
+      setModalModel(model);
+    }
   };
 
   const clickCheckBox = (model) => {
@@ -154,23 +158,44 @@ const ValidationPage = () => {
               {models.map((model, index) => {
                 return (
                   <TableEntry index={index}>
-                    {model.error === undefined || model.error === '' ? (
-                      <div className="p-2 d-flex">
-                        <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
-                          <Checkbox
-                            onClick={() => clickCheckBox(model)}
-                          ></Checkbox>
-                        </div>
-                        <div
-                          className="w-100 d-flex justify-content-between align-items-center"
-                          onClick={() => onViewModel(model)}
-                        >
-                          <div>
-                            <b>{model.name}</b>
-                            <div>{model.trainRequest.classifier.name}</div>
-                          </div>
+                    <div className="p-2 d-flex">
+                      <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
+                        <Checkbox
+                          onClick={() => clickCheckBox(model)}
+                        ></Checkbox>
+                      </div>
+                      <Row
+                        className="w-100 d-flex justify-content-between align-items-center"
+                        onClick={() => onViewModel(model)}
+                      >
+                        <Col>
+                          <b>{model.name}</b>
+                          <div>{model.trainRequest.classifier.name}</div>
+                        </Col>
+                        <Col>
+                          {model.error === undefined ||
+                          model.error == '' ? null : (
+                            <>
+                              <div
+                                className="ml-5 flex-grow-1 d-flex justify-content-center align-items-center"
+                                style={{ color: 'red' }}
+                              >
+                                An error occured while training!
+                                <FontAwesomeIcon
+                                  id={'tooltip' + model._id}
+                                  className="m-2"
+                                  icon={faCircleInfo}
+                                ></FontAwesomeIcon>
+                              </div>
+                              <UncontrolledTooltip
+                                target={'tooltip' + model._id}
+                              >
+                                {model.error}
+                              </UncontrolledTooltip>
+                            </>
+                          )}
                           {model.status === 'done' ? (
-                            <div style={{ width: '200px' }}>
+                            <div>
                               <div>
                                 <b>Acc: </b>
                                 {metric(model.evaluator.metrics.accuracy_score)}
@@ -182,6 +207,8 @@ const ValidationPage = () => {
                               </div>
                             </div>
                           ) : null}
+                        </Col>
+                        <Col className="d-flex justify-content-end">
                           {model.status === 'done' ? (
                             <div>
                               <Button
@@ -220,13 +247,19 @@ const ValidationPage = () => {
                               </Button>
                             </div>
                           ) : (
-                            <div className="mr-5">
-                              <Spinner color="primary"></Spinner>
+                            <div>
+                              {model.error === '' ||
+                              model.error === undefined ? (
+                                <div className="mr-3 mr-md-4">
+                                  <Spinner color="primary"></Spinner>
+                                </div>
+                              ) : null}
                             </div>
                           )}
-                        </div>
-                      </div>
-                    ) : (
+                        </Col>
+                      </Row>
+                    </div>
+                    {/* ) : (
                       <div className="p-2 d-flex">
                         <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
                           <Checkbox
@@ -254,7 +287,7 @@ const ValidationPage = () => {
                           {model.error}
                         </UncontrolledTooltip>
                       </div>
-                    )}
+                    )} */}
                   </TableEntry>
                 );
               })}
