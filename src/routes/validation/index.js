@@ -30,6 +30,7 @@ const ValidationPage = () => {
   const [modalModel, setModalModel] = useState(undefined);
   const [modelDownload, setModelDownload] = useState(undefined);
   const [modelDeploy, setModelDeploy] = useState(undefined);
+  const [deployModalOpen, setDeployModalOpen] = useState(false);
   const [selectedModels, setSelectedModels] = useState([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [updateModels, setUpdateModels] = useState(false);
@@ -213,6 +214,7 @@ const ValidationPage = () => {
                                 className="btn-edit mr-3 mr-md-4"
                                 onClick={(e) => {
                                   setModelDeploy(model);
+                                  setDeployModalOpen(true);
                                   e.stopPropagation();
                                 }}
                               >
@@ -268,10 +270,15 @@ const ValidationPage = () => {
             model={modelDownload}
             onClose={() => setModelDownload(undefined)}
           ></DownloadModal>
-          <DeployModal
-            model={modelDeploy}
-            onClose={() => setModelDeploy(undefined)}
-          ></DeployModal>
+          {deployModalOpen ? (
+            <DeployModal
+              model={modelDeploy}
+              onClose={() => {
+                setModelDeploy(undefined);
+                setDeployModalOpen(false);
+              }}
+            ></DeployModal>
+          ) : null}
         </Fragment>
       </div>
       <Modal isOpen={deleteModalOpen} toggle={toggleDeleteModal}>

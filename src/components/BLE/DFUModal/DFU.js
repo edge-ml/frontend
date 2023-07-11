@@ -3,16 +3,72 @@ const DFU_INTERNALL_CHARACTERISTIC = '34c2e3b9-34aa-11eb-adc1-0242ac120002';
 const DFU_EXTERNAL_CHRARACTERISTIC = '34c2e3ba-34aa-11eb-adc1-0242ac120002';
 
 class DFUManager {
-  constructor(arrayFW) {
-    this.arrayFW = this.generateRandomArrayBuffer(1024 * 100);
-    this.fwLen = this.arrayFW.length;
-    this.dfuCharacteristic = undefined;
-    this.crc8(arrayFW);
+  constructor(
+    setFlashState,
+    setFlashError,
+    setFlashProgress,
+    setConnectedDevice
+  ) {
+    this.setFlashState = setFlashState;
+    this.setFlashError = setFlashError;
+    this.setFlashProgress = setFlashProgress;
+    this.setConnectedDevice = setConnectedDevice;
+
+    this.arrayFW = null;
+    this.fwLen = null;
     this.bytesArray = new Uint8Array(235);
+    this.dataLen = 232;
+    this.iterations = 0;
+    this.spareBytes = 0;
+    this.updateIndex = 0;
+    this.crc8bit = 0;
+    this.onlyCRCleft = false;
+    this.dfuCharacteristic = undefined;
+    this.debug = true;
+
+    this.crc8 = this.crc8.bind(this);
+    this.connectDevice = this.connectDevice.bind(this);
+    this.disconnectDevice = this.disconnectDevice.bind(this);
+    this.increaseIndex = this.increaseIndex.bind(this);
+    this.flashFirmware = this.flashFirmware.bind(this);
+    this.init = this.init.bind(this);
+    this.resetState = this.resetState.bind(this);
+    this.update = this.update.bind(this);
   }
 
+  async disconnectDevice(connectedDevice) {
+    if (connectedDevice.gatt && connectedDevice.gatt.disconnect) {
+      try {
+        await connectedDevice.gatt.disconnect();
+        console.log('Disconnected from the device');
+      } catch (error) {
+        console.error('Error occurred during disconnection:', error);
+      }
+    }
+
+    this.resetState(false);
+    this.setConnectedDevice(undefined);
+  }
+
+  async connectGATTdfu(connectedDevice) {
+    //device already connected with DFU_SERVICE as optional service
+    try {
+      const server = await connectedDevice.gatt.connect();
+      const service = await server.getPrimaryService(DFU_SERVICE_UUID);
+      this.dfuCharacteristic = await service.getCharacteristic(
+        DFU_INTERNALL_CHARACTERISTIC
+      );
+      console.log('Device connected');
+      this.setFlashState('connected');
+    } catch (err) {
+      this.setFlashError(err);
+    }
+  }
   async connectDevice() {
-    const options = { acceptAllDevices: true };
+    const options = {
+      acceptAllDevices: true,
+      optionalServices: [DFU_SERVICE_UUID],
+    };
     const device = await navigator.bluetooth.requestDevice(options);
     const server = await device.gatt.connect();
     const service = await server.getPrimaryService(DFU_SERVICE_UUID);
@@ -20,19 +76,36 @@ class DFUManager {
       DFU_INTERNALL_CHARACTERISTIC
     );
     console.log('Device connected');
+    this.setFlashState('connected');
+    this.setConnectedDevice(device);
   }
 
-  flashFirmware() {
-    // this.dfuCharacteristic.writeValue(this.fw_array).then(data => console.log(data))
+  init(firmware) {
+    this.arrayFW = new Uint8Array(firmware);
+    this.fwLen = this.arrayFW.length;
+
+    console.log('Binary file length: ', this.fwLen);
+    if (this.debug === true) {
+      console.log(this.arrayFW);
+    }
+    this.crc8();
+    console.log('Computed 8-bit CRC: ', this.crc8bit);
+
     this.iterations = Math.floor(this.fwLen / this.dataLen);
     this.spareBytes = this.fwLen % this.dataLen;
     this.iterations++;
+    if (this.debug === true) {
+      console.log('Iterations: ', this.iterations);
+      console.log('Spare bytes: ', this.spareBytes);
+    }
     if (this.spareBytes === 0) {
+      if (this.debug === true) {
+        console.log('No remaining bytes in last packet to write CRC.');
+        console.log('CRC will be sent alone in a new packet');
+      }
       this.onlyCRCleft = true;
     }
     this.updateIndex = 0;
-
-    this.update(this.updateIndex);
   }
 
   crc8() {
@@ -43,18 +116,14 @@ class DFUManager {
     }
   }
 
-  generateRandomArrayBuffer(length) {
-    const arrayBuffer = new ArrayBuffer(length);
-    const uint8Array = new Uint8Array(arrayBuffer);
+  flashFirmware = (firmware) => {
+    this.setFlashState('uploading');
+    this.init(firmware);
+    this.update(this.updateIndex);
+    this.setFlashState('finished');
+  };
 
-    for (let i = 0; i < length; i++) {
-      uint8Array[i] = Math.floor(Math.random() * 256);
-    }
-
-    return arrayBuffer;
-  }
-
-  update(index) {
+  update = (index) => {
     //clearTimeout(dfuTimeout);
     if (this.debug === true) {
       console.log(index);
@@ -65,6 +134,10 @@ class DFUManager {
       //Last byte
       this.bytesArray[0] = 1;
       var bytesleft = this.spareBytes + 1; //add CRC to the count
+      if (this.debug === true) {
+        console.log('Packaging last byte with CRC');
+        console.log('Total bytes left: ', this.bytesleft);
+      }
       var spare = new Uint8Array([
         bytesleft & 0x00ff,
         (bytesleft & 0xff00) >> 8,
@@ -112,8 +185,7 @@ class DFUManager {
       .writeValue(this.bytesArray)
       .then((_) => {
         //show on Progress bar
-        this.setState({ progress: (index / (this.iterations - 1)) * 100 });
-        console.log((index / this.iterations - 1) * 100);
+        this.setFlashProgress((index / (this.iterations - 1)) * 100);
 
         this.increaseIndex();
         if (this.debug === true) {
@@ -122,7 +194,40 @@ class DFUManager {
       })
       .catch((e) => {
         console.log(e);
+        this.resetState(
+          true,
+          'An error occured while sending package to BLE device'
+        );
       });
+  };
+
+  increaseIndex() {
+    if (this.updateIndex < this.iterations - 1) {
+      this.updateIndex++;
+      this.update(this.updateIndex);
+    } else {
+      console.log('firmware sent');
+      this.setFlashState('finished');
+      return;
+    }
+  }
+
+  resetState(hasError, msg = '') {
+    this.arrayFW = null;
+    this.fwLen = null;
+    this.bytesArray = new Uint8Array(235);
+    this.dataLen = 232;
+    this.iterations = 0;
+    this.spareBytes = 0;
+    this.updateIndex = 0;
+    this.crc8bit = 0;
+    this.onlyCRCleft = false;
+    this.dfuCharacteristic = undefined;
+    this.debug = true;
+
+    if (hasError) {
+      this.setFlashError(msg);
+    }
   }
 }
 
