@@ -11,10 +11,6 @@ import {
   appendToDataset,
   getDatasets,
 } from '../../services/ApiServices/DatasetServices';
-import {
-  ga_uploadataset_len,
-  ga_uploadDataset,
-} from '../../services/AnalyticsService';
 
 class BleDeviceProcessor {
   constructor(
@@ -102,12 +98,8 @@ class BleDeviceProcessor {
         this.recordedData.length > 1000 ||
         timestamp - recordingStart > 300000
       ) {
-        const now = Date.now();
-        this.uploadCache(this.recordedData, now);
+        this.uploadCache(this.recordedData);
         this.recordedData = [];
-        this.uploadBLE.labelingData.current = this.uploadBLE.labelingData.current
-                                                .filter(l => l.end > now || l.end === undefined)
-                                                .map(l => l.start > now ? l : { ...l, start: now }); 
       }
       return {
         sensor: sensor,
@@ -125,7 +117,7 @@ class BleDeviceProcessor {
     );
   }
 
-  async uploadCache(recordedData, timestamp) {
+  async uploadCache(recordedData) {
     recordedData = parseTimeSeriesData(
       this.newDataset,
       this.recordedData,
@@ -133,12 +125,10 @@ class BleDeviceProcessor {
       this.sensors
     );
     this.addToUploadCounter(recordedData);
-    const labelingData = this.uploadBLE.labelingData.current.map(l => l.end === undefined ? {...l, end: timestamp} : l);
-    await appendToDataset(this.newDataset, { timeSeries: recordedData, labels: labelingData });
+    await appendToDataset(this.newDataset, recordedData);
   }
 
   addToUploadCounter(recordedData) {
-    console.log('before', this.uploadCounter)
     recordedData.forEach((elm) => {
       if (this.uploadCounter.has(elm.name)) {
         var old_ctr = this.uploadCounter.get(elm.name);
@@ -147,7 +137,6 @@ class BleDeviceProcessor {
         this.uploadCounter.set(elm.name, elm.data.length);
       }
     });
-    console.log('after', this.uploadCounter)
   }
 
   async stopRecording() {
@@ -158,20 +147,9 @@ class BleDeviceProcessor {
       this.recordedData,
       this.recordingSensors,
       this.sensors
-      );
-    const labelingData = this.uploadBLE.labelingData.current;
-    let latestTimestamp = 0;
-    for (const ts of recordedData) {
-      latestTimestamp = Math.max(latestTimestamp, ts.data[ts.data.length - 1][0]);
-    }
-    const jsonBody = { timeSeries: recordedData, labels: labelingData ? labelingData.map(label => label.end ? label : {...label, end: latestTimestamp}) : [] };
-    this.addToUploadCounter(recordedData);
-    ga_uploadataset_len(
-      Array.from(this.uploadCounter.values()),
-      'bluetooth',
-      this.deviceInfo
     );
-    await appendToDataset(this.newDataset, jsonBody);
+    this.addToUploadCounter(recordedData);
+    await appendToDataset(this.newDataset, recordedData);
     this.recordingSensors = [];
     this.recordedData = [];
     this.uploadCounter = new Map();
