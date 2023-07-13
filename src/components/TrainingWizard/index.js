@@ -21,7 +21,7 @@ import Select_Name from './Steps/Select_Name';
 import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import { difference, toggleElement } from '../../services/helpers';
+import { intersect, toggleElement } from '../../services/helpers';
 
 export const WizardFooter = ({
   invalidResult = false,
@@ -154,6 +154,12 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   };
 
   const onTrain = async () => {
+    const intersectingTSNames = intersect(
+      ...datasets
+        .filter((e) => e.selected)
+        .map((e) => e.timeSeries.map((t) => t.name))
+    );
+
     const data = {
       datasets: datasets
         .filter((elm) => elm.selected)
@@ -161,7 +167,11 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
           return {
             _id: elm._id,
             timeSeries: elm.timeSeries
-              .filter((ts) => !disabledTimeseriesNames.includes(ts.name))
+              .filter(
+                (ts) =>
+                  intersectingTSNames.includes(ts.name) &&
+                  !disabledTimeseriesNames.includes(ts.name)
+              )
               .map((ts) => ts._id),
           };
         })
