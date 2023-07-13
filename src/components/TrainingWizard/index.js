@@ -160,10 +160,9 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
         .map((elm) => {
           return {
             _id: elm._id,
-            timeSeries: difference(
-              elm.timeSeries.map((ts) => ts._id),
-              disabledTimeseriesNames
-            ),
+            timeSeries: elm.timeSeries
+              .filter((ts) => !disabledTimeseriesNames.includes(ts.name))
+              .map((ts) => ts._id),
           };
         })
         .filter((elm) => elm.timeSeries.length > 0),
