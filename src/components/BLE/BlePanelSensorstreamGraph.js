@@ -19,7 +19,7 @@ class BlePanelSensorstreamGraph extends Component {
       this.datastream_length = this.props.sampleRate * this.streaming_seconds; // how many data points are visible
     } else {
       // show sensor stream at higher sample rate to improve performance (default)
-      this.interval_length = 200;
+      this.interval_length = 100;
       this.datastream_length = Math.floor(
         this.streaming_seconds * (1000 / this.interval_length)
       );
@@ -41,7 +41,6 @@ class BlePanelSensorstreamGraph extends Component {
 
   updateLiveData() {
     var chart = Highcharts.charts[this.highcharts_index];
-    var shift = false;
     for (var i = chart.series.length - 1; i > -1; i--) {
       var series = chart.series[i];
       var timestamp;
@@ -50,16 +49,13 @@ class BlePanelSensorstreamGraph extends Component {
         timestamp = this.props.lastData[this.props.index][0];
         value = this.props.lastData[this.props.index][1][i];
       } else {
-        timestamp = new Date().getTime();
+        timestamp = new Date().now();
         value = 0;
       }
       var shiftSeries = series.data.length >= this.datastream_length;
-      if (shiftSeries) {
-        shift = true;
-      }
-      series.addPoint([timestamp, value], true, shiftSeries); // adds new data point and deletes oldest one
+      series.addPoint([timestamp, value], true, shiftSeries); // adds new data point and deletes oldest one if max datastream length is reached
     }
-    if (shift) {
+    if (shiftSeries) {
       var extremes = chart.xAxis[0].getExtremes();
       chart.xAxis[0].setExtremes(
         extremes.min + this.interval_length,

@@ -27,15 +27,13 @@ class BlePanelRecordingDisplay extends Component {
     const recordingStartTime = this.recordingStartTime;
     return {
       chart: {
-        //type: 'spline',
-        animation: Highcharts.svg, // don't animate in old IE
+        type: 'spline',
+        animation: false, // don't animate in old IE
         marginRight: 10,
         useSVG: true,
       },
       boost: {
-        // chart-level boost when there are more than 1 series in the chart
         useGPUTranslations: true,
-        seriesThreshold: 1,
       },
       series: this.generateStartData(components),
       title: {
