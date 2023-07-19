@@ -897,7 +897,7 @@ class TimeSeriesPanel extends Component {
               ? 0
               : this.props.index < this.props.numSeries - 1
               ? '-25px'
-              : '-10px',
+              : '40px',
         }}
       >
         {this.props.index !== 0 && !this.props.isEmpty ? (
