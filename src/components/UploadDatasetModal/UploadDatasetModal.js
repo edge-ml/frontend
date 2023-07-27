@@ -315,8 +315,10 @@ export const UploadDatasetModal = ({
     let pollResultedInUpdate = false;
     let allComplete = true;
     for (const file of files) {
+      // if the file is uploading, skip polling but not count it as complete
+      allComplete = allComplete && file.status !== FileStatus.UPLOADING;
       // processing not started yet / already done, skip
-      if (file.datasetId === undefined || file.status === FileStatus.COMPLETE) { 
+      if (file.datasetId === undefined || file.status === FileStatus.COMPLETE) {
         continue;
       }
       const [step, progress, currentTimeseries = undefined, totalTimeseries = undefined] = await getUploadProcessingProgress(file.datasetId);
