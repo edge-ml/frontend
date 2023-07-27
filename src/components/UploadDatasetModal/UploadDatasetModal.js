@@ -36,7 +36,7 @@ export const UploadDatasetModal = ({
   onDatasetComplete,
 }) => {
   const [files, setFiles] = useState([]);
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0); // used to create fileId for input files
   const [showWarning, setShowWarning] = useState(false);
   const [consecutiveNoUpdateCount, setConsecutiveNoUpdateCount] = useState(0);
   const MAXIMUM_POLLING_INTERVAL = 60 * 1000; // 60 seconds
@@ -313,8 +313,10 @@ export const UploadDatasetModal = ({
 
   useInterval(async () => {
     let pollResultedInUpdate = false;
+    let allComplete = true;
     for (const file of files) {
-      if (file.datasetId === undefined) {
+      // processing not started yet / already done, skip
+      if (file.datasetId === undefined || file.status === FileStatus.COMPLETE) { 
         continue;
       }
       const [step, progress, currentTimeseries = undefined, totalTimeseries = undefined] = await getUploadProcessingProgress(file.datasetId);
@@ -328,14 +330,19 @@ export const UploadDatasetModal = ({
             { ...f, processingStep: step, processedTimeseries: [currentTimeseries, totalTimeseries]} : 
             f 
         ));
+        allComplete = allComplete && progress === 100;
       }
     }
-    if (!pollResultedInUpdate) {
+    if (allComplete) {
+      setConsecutiveNoUpdateCount(null); // stop polling
+    } else if (!pollResultedInUpdate) {
       setConsecutiveNoUpdateCount(prevCount => prevCount + 1);
     } else {
       setConsecutiveNoUpdateCount(0);
     }
-  }, Math.min(MAXIMUM_POLLING_INTERVAL, (2 ** consecutiveNoUpdateCount) * 1000 + Math.random() * 100))
+  }, consecutiveNoUpdateCount === null 
+      ? null
+      :  Math.min(MAXIMUM_POLLING_INTERVAL, (1.5 ** consecutiveNoUpdateCount) * 1000 + Math.random() * 100));
 
   const handleUploadAll = async () => {
     setFiles((prevFiles) =>
