@@ -923,6 +923,7 @@ class DatasetPage extends Component {
                   onClickSelectSeries={this.onClickSelectSeries}
                   timeSeries={this.state.dataset.timeSeries}
                   activeSeries={this.state.activeSeries}
+                  datasetId={this.state.dataset._id}
                 ></TSSelectionPanel>
               </div>
               <div className="mt-2">
