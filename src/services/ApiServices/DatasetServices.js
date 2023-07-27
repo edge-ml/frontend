@@ -218,6 +218,6 @@ export const getUploadProcessingProgress = (datasetId) => {
       `?datasetId=${datasetId}`
     )
   )
-  .then(result => [result.data.progress[0], result.data.progress[1]])
+  .then(result => result.data.progress)
   .catch(err => err.response);
 }

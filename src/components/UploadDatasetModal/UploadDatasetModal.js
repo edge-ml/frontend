@@ -60,6 +60,7 @@ export const UploadDatasetModal = ({
       error: undefined,
       datasetId: undefined,
       processingStep: undefined,
+      processedTimeseries: [undefined, undefined],
     }));
     setFiles([...files, ...formatted]);
     setCount(count + inputFiles.length);
@@ -325,13 +326,17 @@ export const UploadDatasetModal = ({
       if (file.datasetId === undefined) {
         continue;
       }
-      const [step, progress] = await getUploadProcessingProgress(file.datasetId);
-      if (step !== file.processingStep) {
+      const [step, progress, currentTimeseries = undefined, totalTimeseries = undefined] = await getUploadProcessingProgress(file.datasetId);
+      if (step !== file.processingStep || file.processedTimeseries[0] !== currentTimeseries) {
         pollResultedInUpdate = true;
         if (progress === 100) {
           handleStatus(file.id, FileStatus.COMPLETE);
         }
-        setFiles(prevFiles => prevFiles.map(f => f.id === file.id ? { ...f, processingStep: step} : f ));
+        setFiles(prevFiles => 
+          prevFiles.map(f => f.id === file.id ? 
+            { ...f, processingStep: step, processedTimeseries: [currentTimeseries, totalTimeseries]} : 
+            f 
+        ));
       }
     }
     if (!pollResultedInUpdate) {
@@ -475,7 +480,8 @@ export const UploadDatasetModal = ({
                   >
                     {f.status === FileStatus.ERROR
                       ? `Error: ${f.error}`
-                      : `${f.status} ${f.status === FileStatus.PROCESSING ? `: ${f.processingStep}` : ""} ${f.progress.toFixed(2)}%`}
+                      : `${f.status} ${f.status === FileStatus.PROCESSING ? (f.processedTimeseries[0] ? `: ${f.processingStep} - Timeseries Processed: ${f.processedTimeseries[0]}/${f.processedTimeseries[1]} ` : `: ${f.processingStep} `)
+                      : ""} ${f.progress.toFixed(2)}%`}
                   </Progress>
                   <div className="d-flex align-items-center">
                     {f.status === FileStatus.COMPLETE && (
