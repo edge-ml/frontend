@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   ModalHeader,
@@ -102,6 +102,7 @@ export const UploadDatasetModal = ({
           return {
             ...file,
             status: status,
+            progress: status === FileStatus.ERROR ? 100 : file.progress,
           };
         }
         return file;
@@ -111,17 +112,6 @@ export const UploadDatasetModal = ({
 
   const handleCancel = (cancelledFile) => {
     cancelledFile.cancellationHandler();
-    setFiles((prevState) =>
-      prevState.map((file) => {
-        if (file.id === cancelledFile.id) {
-          return {
-            ...file,
-            status: FileStatus.CANCELLED,
-          };
-        }
-        return file;
-      })
-    );
   };
 
   const handleDelete = (fileId) => {
@@ -309,9 +299,10 @@ export const UploadDatasetModal = ({
                       f
       ));
     } catch (err) {
+      const message = err?.response?.data?.detail || err.message;
       setFiles((prevFiles) =>
         prevFiles.map((f) =>
-          f.id === file.id ? { ...f, error: err.response.data.detail } : f
+          f.id === file.id ? { ...f, error: message } : f
         )
       );
       handleStatus(file.id, FileStatus.ERROR);
@@ -360,20 +351,6 @@ export const UploadDatasetModal = ({
       }
       uploadResults.push(handleUpload(file));
     }
-    
-
-    // console.log(uploadResults);
-    // const allPromisesResolved = (await Promise.all(uploadResults)).every(
-    //   (result) => result !== false
-    // );
-    // if (allPromisesResolved) {
-    //   await new Promise((resolve) => setTimeout(resolve, 1000));
-    //   setFiles([]);
-    //   setCount(0);
-    //   onCloseModal(true);
-    //   setShowWarning(false);
-    //   onDatasetComplete();
-    // }
   };
 
   const confirmConfig = async (backendId, fileConfig) => {

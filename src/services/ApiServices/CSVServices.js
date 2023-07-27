@@ -7,7 +7,7 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
   const source = ax.CancelToken.source();
 
   const cancellationHandler = () => {
-    source.cancel('Operation cancelled by the user.');
+    source.cancel('Operation cancelled by the user');
   };
 
   const req = axios({
