@@ -1,4 +1,6 @@
 .TimeSeriesCollectionPanel {
+  margin-top: 80px;
+  margin-bottom: 80px;
 }
 
 .timeInputGroupText {
@@ -12,4 +14,12 @@
   align-items: center;
   font-weight: bold;
   font-size: larger;
+}
+
+.navigator {
+  position: fixed;
+  width: 90vw;
+  z-index: 100;
+  opacity: 0.85;
+  margin-top: -5px;
 }
