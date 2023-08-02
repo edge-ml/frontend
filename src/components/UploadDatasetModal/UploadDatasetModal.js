@@ -213,6 +213,7 @@ export const UploadDatasetModal = ({
           name: name,
           originalName: name,
           unit: unit,
+          originalUnit: unit,
           removed: false,
           index: idx,
           scale: 1,
