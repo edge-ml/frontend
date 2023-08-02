@@ -215,6 +215,8 @@ export const UploadDatasetModal = ({
           unit: unit,
           removed: false,
           index: idx,
+          scale: 1,
+          offset: 0,
         };
       });
     const labelings = fields
@@ -360,17 +362,6 @@ export const UploadDatasetModal = ({
       }
       handleUpload(file);
     }
-  };
-
-  const confirmConfig = async (backendId, fileConfig) => {
-    const updatedDataset = await updateDataset({
-      _id: backendId,
-      name: fileConfig.name,
-      start: fileConfig.start,
-      end: fileConfig.end,
-      labelings: fileConfig.labelings,
-      timeSeries: fileConfig.timeSeries,
-    });
   };
 
   const handleModalClose = () => {
@@ -554,7 +545,6 @@ export const UploadDatasetModal = ({
                   fileId={f.id}
                   fileConfig={f.config}
                   changeConfig={changeConfig}
-                  confirmConfig={confirmConfig}
                   backendId={f.backendId}
                 />
               )
