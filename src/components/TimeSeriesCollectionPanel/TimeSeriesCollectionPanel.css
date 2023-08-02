@@ -32,9 +32,14 @@
   }
 }
 
-/* Apply scaling when viewport width is below 960px */
 @media (max-width: 960px) {
   .navigator {
-    transform: scaleX(0.85); /* Scale the width to 85% of its original width */
+    transform: scaleX(0.85);
+  }
+}
+
+@media (max-width: 768px) {
+  .navigator {
+    transform: scaleX(1);
   }
 }
