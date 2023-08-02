@@ -22,6 +22,7 @@ import {
   getDatasetLock,
   getDatasetMeta,
   getTimeSeriesDataPartial,
+  getUploadProcessingProgress,
 } from '../services/ApiServices/DatasetServices';
 
 import {
@@ -61,6 +62,8 @@ class DatasetPage extends Component {
       modalOpen: false,
       activeSeries: [],
       metaDataExtended: false,
+      processedUntil: 0,
+      consecutiveNoUpdateCount: 0,
     };
 
     this.memoizedGetDatasetTimeseries = pmemoize(getTimeSeriesDataPartial, {
@@ -203,6 +206,7 @@ class DatasetPage extends Component {
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('keydown', this.onKeyDown);
     // this.loadData().then((data) => this.onDatasetChanged(data));
+    this.startPolling();
 
     var activeSeries = [];
     const dataset = await getDatasetMeta(this.props.match.params.id);
@@ -252,6 +256,7 @@ class DatasetPage extends Component {
   componentWillUnmount() {
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('keydown', this.onKeyDown);
+    this.stopPolling();
   }
 
   onDatasetChanged(dataset) {
@@ -753,6 +758,47 @@ class DatasetPage extends Component {
       });
   }
 
+  async startPolling() {
+
+    this.pollingInterval = setInterval(async () => {
+      const [step, progress, currentTimeseries = 0, totalTimeseries = undefined] = await getUploadProcessingProgress(this.state.dataset._id);
+      const { processedUntil } = this.state;
+
+      if (progress === 100) {
+        this.setState({
+          processedUntil: this.state.dataset.timeSeries.length,
+          consecutiveNoUpdateCount: null, // stop polling
+        });
+        this.stopPolling();
+      } else if (currentTimeseries !== processedUntil) {
+        this.setState((prevState) => ({
+          processedUntil: currentTimeseries,
+          consecutiveNoUpdateCount: prevState.consecutiveNoUpdateCount + 1,
+        }));
+      } else {
+        this.setState({ consecutiveNoUpdateCount: 0 });
+      }
+    }, this.getPollingDelay());
+  }
+
+  stopPolling() {
+    clearInterval(this.pollingInterval);
+  }
+
+  getPollingDelay() {
+    const { consecutiveNoUpdateCount } = this.state;
+    const MAXIMUM_POLLING_INTERVAL =  60 * 1000; // 60 seconds
+    if (consecutiveNoUpdateCount === null) {
+      return null;
+    }
+
+    // exponential backoff
+    return Math.min(
+      MAXIMUM_POLLING_INTERVAL,
+      (1.5 ** consecutiveNoUpdateCount) * 1000 + Math.random() * 100
+    );
+  }
+
   render() {
     if (
       !this.state.isReady ||
@@ -923,7 +969,7 @@ class DatasetPage extends Component {
                   onClickSelectSeries={this.onClickSelectSeries}
                   timeSeries={this.state.dataset.timeSeries}
                   activeSeries={this.state.activeSeries}
-                  datasetId={this.state.dataset._id}
+                  processedUntil={this.state.processedUntil}
                 ></TSSelectionPanel>
               </div>
               <div className="mt-2">
