@@ -298,6 +298,7 @@ export const UploadDatasetModal = ({
                       } :
                       f
       ));
+      onDatasetComplete();
     } catch (err) {
       const message = err?.response?.data?.detail || err.message;
       setFiles((prevFiles) =>
@@ -353,12 +354,11 @@ export const UploadDatasetModal = ({
         config: { ...f.config, editingModeActive: false },
       }))
     );
-    const uploadResults = [];
     for (const file of files) {
       if (file.status !== FileStatus.CONFIGURATION) {
         continue;
       }
-      uploadResults.push(handleUpload(file));
+      handleUpload(file);
     }
   };
 

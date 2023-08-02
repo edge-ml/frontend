@@ -56,13 +56,13 @@ const format_time = (s) => {
 };
 
 const Labelings = (props) => {
-  if (!props.dataset.labelings.length) {
+  if (!props.dataset.labelings.length || !props.labelings.length) {
     return null;
   }
 
-  const labelings = props.dataset.labelings.map((elm) =>
-    props.labelings.find((labeling) => labeling._id === elm.labelingId)
-  );
+  const labelings = props.dataset.labelings
+                                 .map(elm => props.labelings.find((labeling) => labeling._id === elm.labelingId))
+                                 .filter(elm => elm !== undefined);  
 
   return (
     <div className="mt-1 ml-4 p-lg-0 m-lg-0">
