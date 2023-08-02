@@ -99,8 +99,8 @@ class TimeSeriesCollectionPanel extends Component {
     return (
       <div className="d-flex flex-column">
         {this.state.activeSeries.length ? (
-          <div className="w-100">
-            <div className="navigator px-1">
+          <div className="d-flex flex-row justify-content-center w-100">
+            <div className="navigator">
               <TimeSeriesPanel
                 index={0}
                 offset={0}

@@ -22,4 +22,19 @@
   z-index: 100;
   opacity: 0.85;
   margin-top: -5px;
+  transform-origin: center;
+}
+
+/* Apply scaling when viewport width is below 1920px */
+@media (max-width: 1920px) {
+  .navigator {
+    transform: scaleX(0.9); /* Scale the width to 90% of its original width */
+  }
+}
+
+/* Apply scaling when viewport width is below 960px */
+@media (max-width: 960px) {
+  .navigator {
+    transform: scaleX(0.85); /* Scale the width to 85% of its original width */
+  }
 }
