@@ -19,6 +19,7 @@ import { FadeInUp } from 'animate-components';
 import { getServerTime } from '../services/helpers.js';
 import {
   loginUser,
+  loginUserRefresh,
   verify2FA,
 } from '../services/ApiServices/AuthentificationServices';
 import jwt_decode from 'jwt-decode';
@@ -28,7 +29,6 @@ import {
   getRefreshToken,
   setToken,
 } from '../services/LocalStorageService';
-import { Redirect, Router } from 'react-router-dom';
 import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo.js';
 
 class LoginPage extends Component {
@@ -55,6 +55,7 @@ class LoginPage extends Component {
     this.checkLoggedInStatus = this.checkLoggedInStatus.bind(this);
     this.onLoginError = this.onLoginError.bind(this);
     this.register = this.register.bind(this);
+    this.refreshThreshold = 5 * 60 * 1000 + 10 * 1000; // 5 minutes + 10 seconds offset
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -86,8 +87,29 @@ class LoginPage extends Component {
         });
       }
     }
-    if (refreshToken && jwt_decode(refreshToken).exp * 1000 >= Date.now()) {
-      //TODO: Need to obtain new Access_Token here
+    // check whether the access token expires in 5 minutes and 10 seconds
+    if (
+      refreshToken &&
+      jwt_decode(accessToken).exp * 1000 - Date.now() <= this.refreshThreshold
+    ) {
+      loginUserRefresh(refreshToken)
+        .then((res) => {
+          const refreshedAccessToken = 'Bearer ' + res.access_token;
+          const decoded = jwt_decode(refreshedAccessToken);
+          console.log(refreshedAccessToken)
+          setToken(refreshedAccessToken, refreshToken);
+          this.props.onUserLoggedIn(
+            refreshedAccessToken,
+            refreshToken,
+            decoded.email,
+            decoded.twoFactorEnabled,
+            decoded.userName,
+            decoded.subscriptionLevel
+          );
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       return;
     }
   }
@@ -205,6 +227,9 @@ class LoginPage extends Component {
       .then((serverTime) => this.setState({ time: serverTime }))
       .catch((err) => {});
     this.interval = setInterval(this.tick, 1000);
+    this.checkLoggedInInterval = setInterval(() => {
+      this.checkLoggedInStatus();
+    }, this.refreshThreshold - 10 * 1000); // check every 5 minutes
   }
 
   componentWillUnmount() {

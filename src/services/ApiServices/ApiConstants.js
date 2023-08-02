@@ -39,6 +39,7 @@ export const HTTP_METHODS = {
 export const AUTH_ENDPOINTS = {
   DEFAULT: '/',
   LOGIN: 'login',
+  REFRESH: 'refresh',
   DELETE: 'unregister',
   REGISTER: 'register',
   USERS: 'USERS',

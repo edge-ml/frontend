@@ -22,6 +22,23 @@ export const loginUser = function (userEMail, password) {
   });
 };
 
+export const loginUserRefresh = (refreshToken) => {
+  return new Promise((resolve, reject) => {
+    axiosNoToken(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.POST,
+        apiConsts.AUTH_URI,
+        apiConsts.AUTH_ENDPOINTS.REFRESH,
+        {
+          refresh_token: refreshToken,
+        }
+      )
+    )
+      .then((data) => resolve(data.data))
+      .catch((err) => reject(err.response));
+  });
+};
+
 export const deleteUser = (userEMail) => {
   return new Promise((resolve, reject) => {
     axios(
