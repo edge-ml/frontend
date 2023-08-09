@@ -47,6 +47,8 @@ class EditLabelingModal extends Component {
       confirmString: '',
       conflictingDatasetIdsForLabelingDeletion: [],
     };
+
+    this.onKeyPressed = this.onKeyPressed.bind(this);
     this.onAddLabel = this.onAddLabel.bind(this);
     this.onDeleteLabel = this.onDeleteLabel.bind(this);
     this.onLabelingNameChanged = this.onLabelingNameChanged.bind(this);
@@ -55,7 +57,6 @@ class EditLabelingModal extends Component {
     this.onLabelColorChanged = this.onLabelColorChanged.bind(this);
     this.onClickingSave = this.onClickingSave.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
-    this.onEscPresses = this.onEscPresses.bind(this);
     this.labelNameInvalid = this.labelNameInvalid.bind(this);
     this.checkAllowSaving = this.checkAllowSaving.bind(this);
     this.labelingNameInValid = this.labelingNameInValid.bind(this);
@@ -66,6 +67,7 @@ class EditLabelingModal extends Component {
     this.onConfirmDeletionLabels = this.onConfirmDeletionLabels.bind(this);
     this.onCancelDeletionLabels = this.onCancelDeletionLabels.bind(this);
     this.getConfirmStringLabels = this.getConfirmStringLabels.bind(this);
+    this.saveDisabled = this.saveDisabled.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -87,11 +89,11 @@ class EditLabelingModal extends Component {
   }
 
   componentDidMount() {
-    document.addEventListener('keydown', this.onEscPresses, false);
+    document.addEventListener('keydown', this.onKeyPressed, false);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.onEscPresses, false);
+    document.removeEventListener('keydown', this.onKeyPressed, false);
   }
 
   labelNameInvalid(label, labelIdx) {
@@ -101,14 +103,28 @@ class EditLabelingModal extends Component {
     );
   }
 
-  onEscPresses(e) {
-    if (e.keyCode === 27) {
-      this.onCloseModal();
+  onKeyPressed(e) {
+    if (
+      !this.state.showConfirmationDialogueLabeling &&
+      !this.state.showConfirmationDialogueLabels
+    ) {
+      switch (e.key) {
+        case 'Escape':
+          this.props.onCloseModal();
+          break;
+        case 'Enter':
+          if (!this.saveDisabled()) {
+            this.onClickingSave();
+          }
+          break;
+        case 'Delete':
+          this.onDeleteLabeling(this.state.labeling['_id']);
+      }
     }
   }
 
   //separate onCloseModal required, to restore labelings deleted when "cancel" is clicked
-  onCloseModal() {
+  /*onCloseModal() {
     if (this.state.deletedLabels.length > 0) {
       let labels = [...this.state.labels, ...this.state.deletedLabels];
       let labeling = this.state.labeling;
@@ -123,8 +139,8 @@ class EditLabelingModal extends Component {
         deletedLabels: [],
       });
     }
-    this.state.onCloseModal();
-  }
+    this.props.onCloseModal();
+  }*/
 
   getConfirmStringLabels(conflictingLabels) {
     let count = 1;
@@ -370,6 +386,14 @@ class EditLabelingModal extends Component {
           this.state.labeling.labels.length;
   }
 
+  saveDisabled() {
+    return (
+      !this.checkAllowSaving() ||
+      this.labelingNameInValid() ||
+      this.labelsNamesDouble()
+    );
+  }
+
   renderLabelingEditModal() {
     return (
       <Modal isOpen={this.state.isOpen}>
@@ -514,11 +538,7 @@ class EditLabelingModal extends Component {
             color="primary"
             className="m-1"
             onClick={this.onClickingSave}
-            disabled={
-              !this.checkAllowSaving() ||
-              this.labelingNameInValid() ||
-              this.labelsNamesDouble()
-            }
+            disabled={this.saveDisabled()}
           >
             Save
           </Button>

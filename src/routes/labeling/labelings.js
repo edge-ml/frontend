@@ -145,7 +145,6 @@ class LabelingsPage extends Component {
     this.setState({
       modal: {
         labeling: undefined,
-        labels: undefined,
         isOpen: false,
         isNewLabeling: false,
       },
