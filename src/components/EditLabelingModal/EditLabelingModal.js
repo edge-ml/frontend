@@ -9,16 +9,10 @@ import {
   InputGroupAddon,
   InputGroupText,
   Input,
-  UncontrolledTooltip,
   FormFeedback,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faInfoCircle,
-  faTrashAlt,
-  faPen,
-  faPlus,
-} from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 import {
   isValidColor,
@@ -35,7 +29,8 @@ class EditLabelingModal extends Component {
     super(props);
     this.state = {
       datasets: props.datasets,
-      labeling: props.labeling,
+      // clone labeling to not alter underlying data until user confirms
+      labeling: this.cloneLabeling(props.labeling),
       isOpen: props.isOpen,
       onSave: props.onSave,
       onDeleteLabeling: props.onDeleteLabeling,
@@ -68,24 +63,7 @@ class EditLabelingModal extends Component {
     this.onCancelDeletionLabels = this.onCancelDeletionLabels.bind(this);
     this.getConfirmStringLabels = this.getConfirmStringLabels.bind(this);
     this.saveDisabled = this.saveDisabled.bind(this);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    console.log('Exec');
-    if (this.props !== nextProps) {
-      this.setState({
-        ...JSON.parse(JSON.stringify(nextProps)), // TODO: Make this nice
-      });
-      // this.setState({
-      //   datasets: nextProps.datasets,
-      //   labeling: nextProps.labeling,
-      //   labels: nextProps.labels,
-      //   isOpen: nextProps.isOpen,
-      //   onSave: nextProps.onSave,
-      //   onDeleteLabeling: nextProps.onDeleteLabeling,
-      //   isNewLabeling: nextProps.isNewLabeling,
-      // });
-    }
+    this.cloneLabeling = this.cloneLabeling.bind(this);
   }
 
   componentDidMount() {
@@ -101,6 +79,10 @@ class EditLabelingModal extends Component {
       (elm, idx) =>
         elm.name === label.name && idx !== labelIdx && label.name !== ''
     );
+  }
+
+  cloneLabeling(labeling) {
+    return JSON.parse(JSON.stringify(labeling));
   }
 
   onKeyPressed(e) {
@@ -122,25 +104,6 @@ class EditLabelingModal extends Component {
       }
     }
   }
-
-  //separate onCloseModal required, to restore labelings deleted when "cancel" is clicked
-  /*onCloseModal() {
-    if (this.state.deletedLabels.length > 0) {
-      let labels = [...this.state.labels, ...this.state.deletedLabels];
-      let labeling = this.state.labeling;
-      labeling.labels = [
-        ...labeling.labels,
-        ...this.state.deletedLabels.map((e) => e['_id']),
-      ];
-
-      this.setState({
-        labels: labels,
-        labeling: labeling,
-        deletedLabels: [],
-      });
-    }
-    this.props.onCloseModal();
-  }*/
 
   getConfirmStringLabels(conflictingLabels) {
     let count = 1;
@@ -186,7 +149,7 @@ class EditLabelingModal extends Component {
           //delLabel contains an unique identifier corresponding to the type in the dataset label
           const found = l.labels.find((e) => e.type === delLabel['_id']);
           if (found) {
-            const label = this.props.labels.find(
+            const label = this.state.deletedLabels.find(
               (elm) => elm._id === found.type
             );
             labels.push(label);
@@ -211,11 +174,7 @@ class EditLabelingModal extends Component {
       });
     } else {
       //no conflicts, just save
-      this.state.onSave(
-        this.state.labeling,
-        this.state.labeling.labels,
-        this.state.deletedLabels
-      );
+      this.state.onSave(this.state.labeling);
     }
   }
 
@@ -235,17 +194,9 @@ class EditLabelingModal extends Component {
   }
 
   onCancelDeletionLabels() {
-    //label conflict, but user chose not to delete them. Restore all "deletedLabels"
-    let labels = [...this.state.labels, ...this.state.deletedLabels];
-    let labeling = this.state.labeling;
-    labeling.labels = [
-      ...labeling.labels,
-      ...this.state.deletedLabels.map((e) => e['_id']),
-    ];
-
+    //label conflict, but user chose not to delete them. Restore all "deletedLabels";
     this.setState({
-      labels: labels,
-      labeling: labeling,
+      labeling: this.cloneLabeling(this.props.labeling),
       deletedLabels: [],
       confirmString: '',
       showConfirmationDialogueLabels: false,
@@ -254,11 +205,7 @@ class EditLabelingModal extends Component {
 
   onConfirmDeletionLabels() {
     //label conflict and user chose to delete labels. Deletes them in the backend as well.
-    this.state.onSave(
-      this.state.labeling,
-      this.state.labels,
-      this.state.deletedLabels
-    );
+    this.state.onSave(this.state.labeling);
   }
 
   onDatasetsChanged(datasets) {
@@ -331,13 +278,15 @@ class EditLabelingModal extends Component {
 
   onDeleteLabel(index) {
     const labeling = this.state.labeling;
+    const deletedLabel = this.state.labeling.labels[index];
     labeling.labels.splice(index, 1);
-    console.log(labeling.labels);
+    console.log(this.state.labeling.labels);
     console.log(index);
 
-    this.setState({
+    this.setState((prevState) => ({
       labeling: labeling,
-    });
+      deletedLabels: [...prevState.deletedLabels, deletedLabel],
+    }));
   }
 
   onLabelNameChanged(index, name) {
@@ -526,6 +475,7 @@ class EditLabelingModal extends Component {
         </ModalBody>
         <ModalFooter>
           <Button
+            outline
             id="buttonClose"
             color="secondary"
             className="m-1 mr-auto"
@@ -534,6 +484,7 @@ class EditLabelingModal extends Component {
             Cancel
           </Button>
           <Button
+            outline
             id="buttonSaveLabeling"
             color="primary"
             className="m-1"
