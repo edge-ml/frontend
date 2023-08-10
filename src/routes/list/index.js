@@ -179,11 +179,13 @@ const ListPage = (props) => {
           </Button>
         </ModalFooter>
       </Modal>
-      <CreateNewDatasetModal
-        isOpen={isCreateNewDatasetOpen}
-        onCloseModal={toggleCreateNewDatasetModal}
-        onDatasetComplete={onDatasetsChanged}
-      />
+      {isCreateNewDatasetOpen ? (
+        <CreateNewDatasetModal
+          isOpen={isCreateNewDatasetOpen}
+          onCloseModal={toggleCreateNewDatasetModal}
+          onDatasetComplete={onDatasetsChanged}
+        />
+      ) : null}
     </div>
   );
 };
