@@ -107,7 +107,9 @@ const LabelingSelectionPanel = (props) => {
           </Button>
         </div>
       </CardBody>
-      <HelpModal isOpen={isHelpModalOpen} onCloseModal={toggleHelpModal} />
+      {isHelpModalOpen ? (
+        <HelpModal isOpen={isHelpModalOpen} onCloseModal={toggleHelpModal} />
+      ) : null}
     </Card>
   );
 };

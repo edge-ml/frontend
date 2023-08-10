@@ -2,6 +2,27 @@ import React, { Component } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 class HelpModal extends Component {
+  constructor(props) {
+    super(props);
+    this.onKeyPressed = this.onKeyPressed.bind(this);
+  }
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  onKeyPressed(e) {
+    switch (e.key) {
+      case 'Escape':
+        this.props.onCloseModal();
+        break;
+    }
+  }
+
   render() {
     return (
       <Modal isOpen={this.props.isOpen}>
