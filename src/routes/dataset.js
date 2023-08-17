@@ -23,6 +23,7 @@ import {
   getDatasetMeta,
   getTimeSeriesDataPartial,
   getUploadProcessingProgress,
+  changeDatasetName,
 } from '../services/ApiServices/DatasetServices';
 
 import {
@@ -97,6 +98,7 @@ class DatasetPage extends Component {
     this.hideLabels = this.hideLabels.bind(this);
     this.onClickSelectSeries = this.onClickSelectSeries.bind(this);
     this.toggleMetaData = this.toggleMetaData.bind(this);
+    this.handleDatasetNameChange = this.handleDatasetNameChange.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
@@ -298,6 +300,7 @@ class DatasetPage extends Component {
     if (
       this.state.modalOpen ||
       this.props.modalOpen ||
+      this.state.metaDataExtended ||
       document.querySelectorAll('.modal').length > 0
     ) {
       return;
@@ -799,6 +802,15 @@ class DatasetPage extends Component {
     );
   }
 
+  async handleDatasetNameChange(newName) {
+    const nameChangeSuccessful = await changeDatasetName(this.state.dataset._id, newName);
+    if (nameChangeSuccessful) {
+      this.setState(prevState => ({dataset: {...prevState.dataset, name: newName}}));
+      return true;
+    };
+    return false;
+  }
+
   render() {
     if (
       !this.state.isReady ||
@@ -982,6 +994,7 @@ class DatasetPage extends Component {
                   )}
                   user={this.state.dataset.userId}
                   name={this.state.dataset.name}
+                  handleDatasetNameChange={this.handleDatasetNameChange}
                 />
               </div>
               <div className="mt-2">

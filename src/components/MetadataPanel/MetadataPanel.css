@@ -1,10 +1,10 @@
 .customMetaDataItem {
   display: flex;
-  display: flex;
   justify-content: space-between;
   padding-top: 4px;
   padding-bottom: 4px;
   border-bottom: 1px solid gray;
+  height: 32px;
 }
 
 .customMetaDataItem_key {
@@ -15,4 +15,23 @@
 
 .customMetaDataItem_value {
   text-align: end;
+}
+
+.changeDatasetNameButton, .confirmDatasetNameButton {
+  border: none;
+  outline: none;
+  background-color: transparent;
+}
+
+.datasetNameChangeInputArea {
+  height: 5px;
+  align-content: center;
+  width: auto;
+}
+
+.datasetNameChangeInput {
+  background-color: transparent !important;
+  border: none;
+  outline: none;
+  box-shadow: none !important;
 }

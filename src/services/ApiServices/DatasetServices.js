@@ -221,3 +221,17 @@ export const getUploadProcessingProgress = (datasetId) => {
   .then(result => result.data.progress)
   .catch(err => err.response);
 }
+
+export const changeDatasetName = (datasetId, newName) => {
+  return axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.PUT,
+      apiConsts.DATASET_STORE,
+      apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
+      datasetId +
+      `/rename?newName=${newName}`
+    )
+  )
+  .then(result => result.data.message)
+  .catch(err => err.response);
+}
