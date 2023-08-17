@@ -10,11 +10,9 @@ class UserSettingsProvider extends Component {
   }
 
   onDeleteUser(confirmationMail) {
-    if (window.confirm('Are you sure to delete your user?')) {
-      deleteUser(confirmationMail).then(() => {
-        this.props.onLogout();
-      });
-    }
+    deleteUser(confirmationMail).then(() => {
+      this.props.onLogout();
+    });
   }
 
   render() {
