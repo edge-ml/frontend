@@ -10,7 +10,7 @@ class TimeSeriesCollectionPanel extends Component {
     super(props);
 
     this.state = {
-      timeSeries: props.timeSeries,
+      timeSeries: props.timeSeries.map(ts => ({...ts, isUnitMenuOpen: false, originalUnit: ts.unit, scale: 1, offset: 0})),
       previewTimeSeriesData: props.previewTimeSeriesData,
       fusedSeries: props.fusedSeries ? props.fusedSeries : [],
       labeling: this.props.labeling,
@@ -30,6 +30,10 @@ class TimeSeriesCollectionPanel extends Component {
     //   .filter((e, i, a) => e[0] !== (a[i - 1] ? a[i - 1][0] : undefined));
 
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
+    this.toggleUnitMenu = this.toggleUnitMenu.bind(this);
+    this.handleUnitChange = this.handleUnitChange.bind(this);
+    this.handleScaleChange = this.handleScaleChange.bind(this);
+    this.handleOffsetChange = this.handleOffsetChange.bind(this);
 
     Highcharts.addEvent(
       Highcharts.Axis,
@@ -46,10 +50,10 @@ class TimeSeriesCollectionPanel extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState((state) => ({
+    this.setState((prevState) => ({
       labeling: props.labeling,
       labelTypes: props.labelTypes,
-      timeSeries: props.timeSeries,
+      timeSeries: prevState.timeSeries,
       previewTimeSeriesData: props.previewTimeSeriesData,
       fusedSeries: props.fusedSeries ? props.fusedSeries : [],
       onLabelClicked: props.onLabelClicked,
@@ -95,6 +99,23 @@ class TimeSeriesCollectionPanel extends Component {
     const arr = Array.from({ length: N }, (_, i) => [start + i * step, -1]);
     return arr;
   };
+
+  toggleUnitMenu = (timeSeriesId) => () => {
+    this.setState(prevState => ({ timeSeries: prevState.timeSeries.map(ts => ts._id !== timeSeriesId ? ts : {...ts, isUnitMenuOpen: !ts.isUnitMenuOpen})}));
+  }
+
+  handleUnitChange = (timeSeriesId) => (unit) => {
+    this.setState(prevState => ({ timeSeries: prevState.timeSeries.map(ts => ts._id !== timeSeriesId ? ts : {...ts, unit: unit})}));
+  }
+
+  handleScaleChange = (timeSeriesId) => (scale) => {
+    this.setState(prevState => ({ timeSeries: prevState.timeSeries.map(ts => ts._id !== timeSeriesId ? ts : {...ts, scale: parseFloat(scale)})}));
+  }
+
+  handleOffsetChange = (timeSeriesId) => (offset) => {
+    this.setState(prevState => ({ timeSeries: prevState.timeSeries.map(ts => ts._id !== timeSeriesId ? ts : {...ts, offset: parseFloat(offset)})}));
+  }
+
   render() {
     return (
       <div className="TimeSeriesCollectionPanel">
@@ -166,7 +187,6 @@ class TimeSeriesCollectionPanel extends Component {
             <TimeSeriesPanel
               key={key}
               index={key + 1}
-              offset={timeSeries.offset}
               data={
                 this.state.previewTimeSeriesData
                   ? this.state.previewTimeSeriesData[key]
@@ -176,7 +196,15 @@ class TimeSeriesCollectionPanel extends Component {
                 timeSeries.samplingRate ? timeSeries.samplingRate : 1
               }
               name={timeSeries.name}
+              isUnitMenuOpen={timeSeries.isUnitMenuOpen}
               unit={timeSeries.unit}
+              originalUnit={timeSeries.originalUnit}
+              scale={timeSeries.scale}
+              offset={timeSeries.offset}
+              toggleUnitMenu={this.toggleUnitMenu(elm)}
+              handleUnitChange={this.handleUnitChange(elm)}
+              handleScaleChange={this.handleScaleChange(elm)}
+              handleOffsetChange={this.handleOffsetChange(elm)}
               labeling={this.state.labeling}
               labelTypes={this.state.labelTypes}
               onLabelClicked={this.state.onLabelClicked}

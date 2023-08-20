@@ -301,7 +301,8 @@ class DatasetPage extends Component {
       this.state.modalOpen ||
       this.props.modalOpen ||
       this.state.metaDataExtended ||
-      document.querySelectorAll('.modal').length > 0
+      document.querySelectorAll('.modal').length > 0 ||
+      document.querySelectorAll('.popover').length > 0
     ) {
       return;
     }

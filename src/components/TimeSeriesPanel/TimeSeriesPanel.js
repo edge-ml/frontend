@@ -6,7 +6,8 @@ import './TimeSeriesPanel.css';
 import { debounce } from '../../services/helpers';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearchPlus, faSearchMinus } from '@fortawesome/free-solid-svg-icons';
+import { faSearchPlus, faSearchMinus, faCog } from '@fortawesome/free-solid-svg-icons';
+import { Collapse, Fade, Input, InputGroup, Popover, PopoverBody, PopoverHeader } from 'reactstrap';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
@@ -87,8 +88,8 @@ class TimeSeriesPanel extends Component {
     let filteredLabels =
       this.props.labeling.labels !== undefined
         ? this.props.labeling.labels.filter(
-            (label) => label.start === undefined || label.end === undefined
-          )
+          (label) => label.start === undefined || label.end === undefined
+        )
         : undefined;
 
     if (
@@ -178,41 +179,41 @@ class TimeSeriesPanel extends Component {
         series:
           this.props.index === 0
             ? [
-                {
-                  lineWidth: 0,
-                  marker: {
-                    enabled: false,
-                    states: {
-                      hover: {
-                        enabled: false,
-                      },
+              {
+                lineWidth: 0,
+                marker: {
+                  enabled: false,
+                  states: {
+                    hover: {
+                      enabled: false,
                     },
                   },
-                  data: props.data,
-                  enableMouseTracking: false,
                 },
-              ]
+                data: props.data,
+                enableMouseTracking: false,
+              },
+            ]
             : !Array.isArray(props.name)
-            ? [
+              ? [
                 {
                   showInLegend: false,
                   name:
                     props.unit === ''
                       ? props.name
                       : props.name + ' (' + props.unit + ')',
-                  data: props.data,
+                  data: props.data.map(timeAndVal => [timeAndVal[0], timeAndVal[1] * props.scale + props.offset]),
                   lineWidth: 1.5,
                   enableMouseTracking: false,
                 },
               ]
-            : props.data.map((dataItem, indexOuter) => {
+              : props.data.map((dataItem, indexOuter) => {
                 return {
                   name:
                     props.name[indexOuter] +
                     ' (' +
                     props.unit[indexOuter] +
                     ')',
-                  data: props.data,
+                  data: props.data.map(timeAndVal => [timeAndVal[0], timeAndVal[1] * props.scale + props.offset]),
                   lineWidth: 1.5,
                   enableMouseTracking: false,
                 };
@@ -229,19 +230,19 @@ class TimeSeriesPanel extends Component {
             this.props.index === 0
               ? undefined
               : this.labelingToPlotBands(
-                  props.labeling,
-                  props.labelTypes,
-                  props.selectedLabelId
-                ),
+                props.labeling,
+                props.labelTypes,
+                props.selectedLabelId
+              ),
           plotLines:
             //state.chartOptions.xAxis.plotLines
             this.props.index === 0
               ? undefined
               : this.labelingToPlotLines(
-                  props.labeling.labels,
-                  props.labelTypes,
-                  props.selectedLabelId
-                ),
+                props.labeling.labels,
+                props.labelTypes,
+                props.selectedLabelId
+              ),
           crosshair: false,
           min: props.start,
           max: props.end,
@@ -838,22 +839,75 @@ class TimeSeriesPanel extends Component {
             this.props.index === 0
               ? 0
               : this.props.index < this.props.numSeries - 1
-              ? '-25px'
-              : '-10px',
+                ? '-25px'
+                : '-10px',
         }}
       >
         {this.props.index !== 0 && !this.props.isEmpty ? (
-          <div className="zoomMenuWrapper">
+          <div className="chartMenuWrapper">
             <button
-              className="zoomBtn"
+              className="chartBtn"
+              style={{ marginRight: '1px' }}
+              key={"unitMenuButton" + this.props.index}
+              id={"unitMenuButton" + this.props.index}
+              onClick={(e) => this.props.toggleUnitMenu()}
+            >
+              <FontAwesomeIcon icon={faCog} size="xs" color="#999999" />
+            </button>
+            <Popover
+              target={"unitMenuButton" + this.props.index}
+              isOpen={this.props.isUnitMenuOpen}
+              toggle={e => this.props.toggleUnitMenu()}
+              trigger="legacy"
+            >
+              <PopoverHeader className='text-center'>
+                Configuration
+              </PopoverHeader>
+              <PopoverBody>
+                <InputGroup size='sm'>
+                  <div className="input-group-prepend w-25">
+                    <span className="input-group-text w-100 justify-content-center">Unit</span>
+                  </div>
+                  <Input
+                    type="text"
+                    value={this.props.unit}
+                    onChange={e => this.props.handleUnitChange(e.target.value)}
+                  />
+                </InputGroup>
+                <InputGroup size='sm'>
+                  <div className="input-group-prepend w-25">
+                    <span className="input-group-text w-100 justify-content-center">Scale</span>
+                  </div>
+                  <Input
+                    type="number"
+                    value={this.props.scale}
+                    onChange={e => this.props.handleScaleChange(e.target.value)}
+                  />
+                </InputGroup>
+                <InputGroup size='sm'>
+                  <div className="input-group-prepend w-25">
+                    <span className="input-group-text w-100 justify-content-center">Offset</span>
+                  </div>
+                  <Input
+                    type="number"
+                    value={this.props.offset}
+                    onChange={e => this.props.handleOffsetChange(e.target.value)}
+                  />
+                </InputGroup>
+              </PopoverBody>
+            </Popover>
+            <button
+              className="chartBtn"
               style={{ marginRight: '1px' }}
               onClick={(e) => this.zoom(ZoomDirection.OUT)}
+              key={"zoomOutButton" + this.props.index}
             >
               <FontAwesomeIcon icon={faSearchMinus} size="xs" color="#999999" />
             </button>
             <button
-              className="zoomBtn"
+              className="chartBtn"
               onClick={(e) => this.zoom(ZoomDirection.IN)}
+              key={"zoomInButton" + this.props.index}
             >
               <FontAwesomeIcon icon={faSearchPlus} size="xs" color="#999999" />
             </button>
@@ -877,12 +931,20 @@ class TimeSeriesPanel extends Component {
         ) : null}
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
           {this.props.index !== 0 ? (
-            <div className="font-weight-bold">
-              {this.props.unit === ''
-                ? this.props.name
-                : this.props.name + ' (' + this.props.unit + ')'}
+            <div className="font-weight-bold d-flex">
+              {
+                  this.props.originalUnit === ''
+                  ? this.props.name
+                  : this.props.name + ' (' + this.props.originalUnit + ')'
+              }
+              <Fade in={this.props.unit !== '' && this.props.unit !== this.props.originalUnit}>
+              &nbsp;[viewed as: {this.props.unit}]
+              </Fade>
             </div>
           ) : null}
+          <Collapse isOpen={this.props.index !== 0 && (this.props.scale !== 1 || this.props.offset !== 0)}>
+           Scale: {this.props.scale}, Offset: {this.props.offset}
+          </Collapse>
           <HighchartsReact
             ref={this.chart}
             highcharts={Highcharts}

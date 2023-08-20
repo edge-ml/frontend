@@ -84,25 +84,25 @@
   font-size: 0.9rem;
 }
 
-.zoomMenuWrapper {
+.chartMenuWrapper {
   position: absolute;
   right: 0px;
   top: 10px;
   z-index: 5;
 }
 
-.zoomBtn {
+.chartBtn {
   background-color: #f2f2f2;
   padding: 0 6px 1px 6px;
   border-radius: 15%;
   border: none;
 }
 
-.zoomBtn:hover {
+.chartBtn:hover {
   background-color: #e6e6e6;
 }
 
-.zoomBtn:active {
+.chartBtn:active {
   -webkit-transform: scale(0.95);
   transform: scale(0.95);
   filter: brightness(85%);
