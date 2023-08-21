@@ -145,7 +145,7 @@ const AdditionalInfo = (props) => {
 const DatasetInfo = (props) => {
   const { dataset } = props;
   const datasetStart = Math.min(...dataset.timeSeries.map((elm) => elm.start));
-  const datasetEnd = Math.min(...dataset.timeSeries.map((elm) => elm.end));
+  const datasetEnd = Math.max(...dataset.timeSeries.map((elm) => elm.end));
 
   const duration = Math.max(datasetEnd - datasetStart, 0) || 0;
   const empty = dataset.timeSeries
