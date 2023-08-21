@@ -16,14 +16,12 @@ export const NotificationProvider = ({ children }) => {
 
   const registerProjectDownload = async () => {
     const res = await reg_project_download();
-    console.log(res);
     setActiveNotifications((prevState) => [...prevState, res]);
     setHasNewNotifications(true);
   };
 
   const registerDatasetDownload = async (datasetId) => {
     const res = await reg_dataset_download(datasetId);
-    console.log(res);
     setActiveNotifications((prevState) => [...prevState, res]);
     setHasNewNotifications(true);
   };
@@ -37,7 +35,6 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const updateNotifications = async () => {
-    console.log(updateHandle);
     const status = await datasetDownloadStatus();
     if (status >= 400) {
       setHasNewNotifications(false);
@@ -58,7 +55,6 @@ export const NotificationProvider = ({ children }) => {
   // Stop polling if no new notifications were found during the last pull
   useEffect(() => {
     if (!hasNewNotifications) {
-      console.log('Clear interval');
       clearInterval(updateHandle);
     }
   }, [hasNewNotifications]);
