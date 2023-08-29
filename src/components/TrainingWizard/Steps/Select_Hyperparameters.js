@@ -60,7 +60,7 @@ const Wizard_Hyperparameters = ({
           {classifier.map((cls, idx) => (
             <DropdownItem
               onClick={() => {
-                setSelectedClassifier(classifier[classififier_index]);
+                setSelectedClassifier(classifier[idx]);
                 set_classifier_index(idx);
               }}
             >
