@@ -235,3 +235,17 @@ export const changeDatasetName = (datasetId, newName) => {
   .then(result => result.data.message)
   .catch(err => err.response);
 }
+
+export const updateTimeSeriesConfig = (datasetId, tsId, unit, scaling, offset) => {
+  return axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.PUT,
+      apiConsts.DATASET_STORE,
+      apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
+      datasetId +
+      `/changeUnitConfig?tsId=${tsId}&unit=${unit}&scaling=${scaling}&offset=${offset}`
+    )
+  )
+  .then(result => result.data.message)
+  .catch(err => err.response);
+}

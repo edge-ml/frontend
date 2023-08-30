@@ -4,13 +4,15 @@ import './TimeSeriesCollectionPanel.css';
 import TimeSeriesPanel from '../TimeSeriesPanel/TimeSeriesPanel';
 import Highcharts from 'highcharts/highstock';
 import RangeSlider from '../RangeSlider/RangeSlider';
+import { updateTimeSeriesConfig } from '../../services/ApiServices/DatasetServices';
+import { Alert } from 'reactstrap';
 
 class TimeSeriesCollectionPanel extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      timeSeries: props.timeSeries.map(ts => ({...ts, isUnitMenuOpen: false, originalUnit: ts.unit, scale: 1, offset: 0})),
+      timeSeries: props.timeSeries.map(ts => ({...ts, isUnitMenuOpen: false, originalUnit: ts.unit, scale: 1, offset: 0, originalScale: ts.scaling, originalOffset: ts.offset})),
       previewTimeSeriesData: props.previewTimeSeriesData,
       fusedSeries: props.fusedSeries ? props.fusedSeries : [],
       labeling: this.props.labeling,
@@ -22,6 +24,8 @@ class TimeSeriesCollectionPanel extends Component {
       onScrubbed: props.onScrubbed,
       onDelete: props.onDelete,
       activeSeries: props.activeSeries,
+      successAlertVisible: false,
+      errorAlertVisible: false,
     };
 
     // this.sortedPreviewTimeSeries = props.previewTimeSeriesData
@@ -34,6 +38,7 @@ class TimeSeriesCollectionPanel extends Component {
     this.handleUnitChange = this.handleUnitChange.bind(this);
     this.handleScaleChange = this.handleScaleChange.bind(this);
     this.handleOffsetChange = this.handleOffsetChange.bind(this);
+    this.handleConfigSave = this.handleConfigSave.bind(this);
 
     Highcharts.addEvent(
       Highcharts.Axis,
@@ -116,9 +121,28 @@ class TimeSeriesCollectionPanel extends Component {
     this.setState(prevState => ({ timeSeries: prevState.timeSeries.map(ts => ts._id !== timeSeriesId ? ts : {...ts, offset: parseFloat(offset)})}));
   }
 
+  handleConfigSave = (timeSeriesId, originalScale, originalOffset) => async (unit, scale, offset) => {
+    try {
+      await updateTimeSeriesConfig(this.props.datasetId, timeSeriesId, unit, originalScale * scale, originalOffset + offset);
+      this.setState({ successAlertVisible: true });
+      setTimeout(() => this.setState({ successAlertVisible: false }), 3000); // Hide after 3 seconds
+    } catch (e) {
+      this.setState({ errorAlertVisible: true });
+      setTimeout(() => this.setState({ errorAlertVisible: false }), 3000); // Hide after 3 seconds
+    }
+  };
+
   render() {
     return (
       <div className="TimeSeriesCollectionPanel">
+        <div style={{ position: 'fixed', top: '20px', left: '11.8%', zIndex: 5000, width: '87%'}}>
+            <Alert color="success" isOpen={this.state.successAlertVisible} toggle={() => this.setState({ successAlertVisible: false })}>
+              Configuration saved successfully!
+            </Alert>
+            <Alert color="danger" isOpen={this.state.errorAlertVisible} toggle={() => this.setState({ errorAlertVisible: false })}>
+              Error saving configuration. Please try again.
+            </Alert>
+        </div>
         {this.state.activeSeries.length ? (
           <TimeSeriesPanel
             index={0}
@@ -189,7 +213,7 @@ class TimeSeriesCollectionPanel extends Component {
               index={key + 1}
               data={
                 this.state.previewTimeSeriesData
-                  ? this.state.previewTimeSeriesData[key]
+                  ? this.state.previewTimeSeriesData[key].map(data => [data[0], data[1] * timeSeries.originalScale + timeSeries.originalOffset])
                   : []
               }
               samplingRate={
@@ -205,6 +229,7 @@ class TimeSeriesCollectionPanel extends Component {
               handleUnitChange={this.handleUnitChange(elm)}
               handleScaleChange={this.handleScaleChange(elm)}
               handleOffsetChange={this.handleOffsetChange(elm)}
+              handleConfigSave={this.handleConfigSave(elm, timeSeries.originalScale, timeSeries.originalOffset)}
               labeling={this.state.labeling}
               labelTypes={this.state.labelTypes}
               onLabelClicked={this.state.onLabelClicked}

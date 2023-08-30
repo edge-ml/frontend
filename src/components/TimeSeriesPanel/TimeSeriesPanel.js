@@ -7,7 +7,7 @@ import { debounce } from '../../services/helpers';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearchPlus, faSearchMinus, faCog } from '@fortawesome/free-solid-svg-icons';
-import { Collapse, Fade, Input, InputGroup, Popover, PopoverBody, PopoverHeader } from 'reactstrap';
+import { Button, Collapse, Fade, Input, InputGroup, Popover, PopoverBody, PopoverHeader, UncontrolledTooltip } from 'reactstrap';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
@@ -863,7 +863,7 @@ class TimeSeriesPanel extends Component {
               <PopoverHeader className='text-center'>
                 Configuration
               </PopoverHeader>
-              <PopoverBody>
+              <PopoverBody id="scalingConfigMenu">
                 <InputGroup size='sm'>
                   <div className="input-group-prepend w-25">
                     <span className="input-group-text w-100 justify-content-center">Unit</span>
@@ -894,6 +894,14 @@ class TimeSeriesPanel extends Component {
                     onChange={e => this.props.handleOffsetChange(e.target.value)}
                   />
                 </InputGroup>
+                <div className='d-flex justify-content-end' id="scalingSaveButtonWrapper">
+                  <Button color='primary' id="scalingSaveButton" onClick={e => this.props.handleConfigSave(this.props.unit, this.props.scale, this.props.offset)}>
+                    Save
+                  </Button>
+                  <UncontrolledTooltip target="scalingSaveButton" placement="left" container="scalingConfigMenu" arrowClassName="mr-0 border-white bg-transparent">
+                  Saves the configuration in the database
+                  </UncontrolledTooltip>
+                </div>
               </PopoverBody>
             </Popover>
             <button

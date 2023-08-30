@@ -906,6 +906,7 @@ class DatasetPage extends Component {
                       updateControlStates={this.updateControlStates}
                       onClickPosition={this.onClickPosition}
                       onLabelPositionUpdate={this.onLabelPositionUpdate}
+                      datasetId={this.state.dataset._id}
                     />
                     <Fade
                       className="LabelingPanel"
