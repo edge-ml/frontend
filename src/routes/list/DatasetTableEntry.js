@@ -60,9 +60,9 @@ const Labelings = (props) => {
     return null;
   }
 
-  const labelings = props.dataset.labelings.map((elm) =>
-    props.labelings.find((labeling) => labeling._id === elm.labelingId)
-  );
+  const labelings = props.dataset.labelings
+                                 .map(elm => props.labelings.find((labeling) => labeling._id === elm.labelingId))
+                                 .filter(elm => elm !== undefined);  
 
   return (
     <div className="mt-1 ml-4 p-lg-0 m-lg-0">

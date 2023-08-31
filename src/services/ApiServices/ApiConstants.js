@@ -39,6 +39,7 @@ export const HTTP_METHODS = {
 export const AUTH_ENDPOINTS = {
   DEFAULT: '/',
   LOGIN: 'login',
+  REFRESH: 'refresh',
   DELETE: 'unregister',
   REGISTER: 'register',
   USERS: 'USERS',
@@ -87,6 +88,7 @@ export const DATASET_STORE_ENDPOINTS = {
   LABELING: 'labelings/',
   CSV: 'download/',
   CREATE_DATASET: 'datasets/create',
+  GET_PROCESSING_PROGRESS: 'datasets/create/progress'
 };
 
 export const generateApiRequest = (
