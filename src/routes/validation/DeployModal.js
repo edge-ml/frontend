@@ -37,6 +37,13 @@ import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 const DeployModal = ({ model, onClose }) => {
   const [devices, setDevices] = useState([]);
   const [parameters, setParameters] = useState([]);
+  const [additionalSettings, setAdditionalSettings] = useState({
+    ble: {
+      serviceUUID: '6E400001-B5A3-F393-E0A9-E50E24DCCA9E',
+      characteristicUUID: '3c6e98a5-f027-49aa-8b2e-c7b3f8a9c18c',
+    },
+  });
+  const [useBLE, setUseBLE] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState(undefined);
   const [deviceDropDownOpen, setDeviceDropDownOpen] = useState(false);
   const [selectedSensors, setSelectedSensors] = useState(undefined);
@@ -144,11 +151,16 @@ const DeployModal = ({ model, onClose }) => {
 
   const onDeploy = async () => {
     setFlashState('modelDownload');
+
+    const a_settings = {};
+    a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
+
     const res = await deployModel(
       model._id,
       selectedSensors,
       parameters,
-      selectedDevice
+      selectedDevice,
+      a_settings
     );
     /**const buffer = new ArrayBuffer(10000);
     const view = new Uint8Array(buffer);
@@ -167,19 +179,22 @@ const DeployModal = ({ model, onClose }) => {
   };
 
   const onDownloadFirmware = async () => {
-    console.log('Donwload');
+    const a_settings = {};
+    a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
+
     const res = await downloadFirmware(
       model._id,
       selectedSensors,
       parameters,
-      selectedDevice
+      selectedDevice,
+      a_settings
     );
     console.log(res);
     const downloadLink = document.createElement('a');
     const blob = new Blob([res]);
     const objectUrl = URL.createObjectURL(blob);
     downloadLink.href = objectUrl;
-    downloadLink.download = 'download.zip';
+    downloadLink.download = `${model.name}.zip`;
     downloadLink.click();
     URL.revokeObjectURL(objectUrl);
   };
@@ -201,44 +216,56 @@ const DeployModal = ({ model, onClose }) => {
     return flashState === 'modelDownload' || flashState === 'uploading';
   };
 
+  console.log(selectedDevice);
+
   const renderDeployPart = () => {
     return (
       <div>
-        <div>
-          {'Connected device: '}
-          {connectedDevice ? (
-            <b>{connectedDevice.name}</b>
-          ) : (
-            'No device connected'
-          )}
-        </div>
-        <div className="d-flex flex-row">
-          <div>{renderProgressInfo()}</div>
-          {inProgress() ? (
+        {selectedDevice.ota_update ? (
+          <>
             <div>
-              <Spinner color="dark" size="sm" />
+              {'Connected device: '}
+              {connectedDevice ? (
+                <b>{connectedDevice.name}</b>
+              ) : (
+                'No device connected'
+              )}
             </div>
-          ) : null}
-        </div>
+            <div className="d-flex flex-row">
+              <div>{renderProgressInfo()}</div>
+              {inProgress() ? (
+                <div>
+                  <Spinner color="dark" size="sm" />
+                </div>
+              ) : null}
+            </div>
+          </>
+        ) : (
+          'Device does not support OTA updates. Download the Arduino firmware instead.'
+        )}
         <div>
-          <Button
-            outline
-            disabled={inProgress()}
-            className="m-2"
-            color={connectedDevice ? 'danger' : 'primary'}
-            onClick={connectedDevice ? disconnectBLE : connectBLE}
-          >
-            {connectedDevice ? 'Disconnect device' : 'Connect device'}
-          </Button>
-          <Button
-            color="primary"
-            outline
-            disabled={connectedDevice === undefined || inProgress()}
-            className="m-2"
-            onClick={onDeploy}
-          >
-            Flash firmware
-          </Button>
+          {selectedDevice.ota_update ? (
+            <>
+              <Button
+                outline
+                disabled={inProgress()}
+                className="m-2"
+                color={connectedDevice ? 'danger' : 'primary'}
+                onClick={connectedDevice ? disconnectBLE : connectBLE}
+              >
+                {connectedDevice ? 'Disconnect device' : 'Connect device'}
+              </Button>
+              <Button
+                color="primary"
+                outline
+                disabled={connectedDevice === undefined || inProgress()}
+                className="m-2"
+                onClick={onDeploy}
+              >
+                Flash firmware
+              </Button>
+            </>
+          ) : null}
           <Button
             color="primary"
             outline
@@ -255,12 +282,14 @@ const DeployModal = ({ model, onClose }) => {
             flashing is in progress.
           </div>
         ) : null}
-        <div className="mt-3">
-          <Progress
-            color={flashState === 'uploadFinished' ? 'primary' : 'success'}
-            value={flashProgress}
-          />
-        </div>
+        {selectedDevice.ota_update ? (
+          <div className="mt-3">
+            <Progress
+              color={flashState === 'uploadFinished' ? 'primary' : 'success'}
+              value={flashProgress}
+            />
+          </div>
+        ) : null}
       </div>
     );
   };
@@ -358,7 +387,7 @@ const DeployModal = ({ model, onClose }) => {
                   ))}
                 </div>
               </div>
-              {/* <EdgeMLTable className="m-2" style={{ width: '400px' }}>
+              <EdgeMLTable className="m-2" style={{ width: '400px' }}>
                 <EdgeMLTableHeader>
                   <div className="d-flex justify-content-center w-100">
                     <div>Use BLE</div>
@@ -366,6 +395,7 @@ const DeployModal = ({ model, onClose }) => {
                       <CustomInput
                         className="ml-2"
                         inline
+                        onChange={(e) => setUseBLE(!useBLE)}
                         type="switch"
                         id="exampleCustomSwitch"
                         // checked={this.props.project.enableDeviceApi}
@@ -382,7 +412,10 @@ const DeployModal = ({ model, onClose }) => {
                     >
                       Service-UUID
                     </div>
-                    <Input></Input>
+                    <Input
+                      disabled={!useBLE}
+                      value={additionalSettings.ble.serviceUUID}
+                    ></Input>
                   </div>
                 </EdgeMLTableEntry>
                 <EdgeMLTableEntry>
@@ -393,10 +426,13 @@ const DeployModal = ({ model, onClose }) => {
                     >
                       Characteristic-UUID
                     </div>
-                    <Input></Input>
+                    <Input
+                      disabled={!useBLE}
+                      value={additionalSettings.ble.characteristicUUID}
+                    ></Input>
                   </div>
                 </EdgeMLTableEntry>
-              </EdgeMLTable> */}
+              </EdgeMLTable>
             </div>
             <div className="m-2">
               <div className="font-weight-bold fs-medium">Settings</div>

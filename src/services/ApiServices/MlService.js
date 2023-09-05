@@ -171,14 +171,25 @@ export const getDeployDevices = function (id) {
   });
 };
 
-export const deployModel = function (id, tsMap, parameters, selectedDevice) {
+export const deployModel = function (
+  id,
+  tsMap,
+  parameters,
+  selectedDevice,
+  additionalSettings
+) {
   console.log('Getting devices');
   return new Promise((resolve, reject) => {
     const request = apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
       apiConsts.ML_URI,
       apiConsts.ML_ENDPOINTS.DEPLOY + '/' + id,
-      { tsMap: tsMap, parameters: parameters, device: selectedDevice }
+      {
+        tsMap: tsMap,
+        parameters: parameters,
+        device: selectedDevice,
+        additionalSettings: additionalSettings,
+      }
     );
     request['responseType'] = 'arraybuffer';
     axios(request)
@@ -191,7 +202,8 @@ export const downloadFirmware = function (
   id,
   tsMap,
   parameters,
-  selectedDevice
+  selectedDevice,
+  additionalSettings
 ) {
   console.log('Getting devices');
   return new Promise((resolve, reject) => {
@@ -199,7 +211,12 @@ export const downloadFirmware = function (
       apiConsts.HTTP_METHODS.POST,
       apiConsts.ML_URI,
       apiConsts.ML_ENDPOINTS.DEPLOY + '/' + id + '/download',
-      { tsMap: tsMap, parameters: parameters, device: selectedDevice }
+      {
+        tsMap: tsMap,
+        parameters: parameters,
+        device: selectedDevice,
+        additionalSettings: additionalSettings,
+      }
     );
     request['responseType'] = 'arraybuffer';
     axios(request)

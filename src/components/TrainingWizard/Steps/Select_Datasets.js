@@ -40,7 +40,7 @@ const Wizard_SelectDataset = ({
     );
   };
 
-  const minSamplingRate = Math.min(
+  const minSamplingRate = Math.max(
     ...datasets
       .filter((elm) => elm.selected)
       .map((elm) =>
@@ -176,7 +176,7 @@ const Wizard_SelectDataset = ({
               </div>
               <div className="my-2">
                 For training, all time-series will be downsampled to{' '}
-                {Math.round(minSamplingRate * 100) / 100}
+                {Math.round(1000 / minSamplingRate)} Hz
               </div>
               <h5 className="font-weight-bold mt-4">Covered Labels</h5>
               <Table size="sm" borderless style={{ width: 'unset' }}>
