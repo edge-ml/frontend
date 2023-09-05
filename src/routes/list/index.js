@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import {
   Container,
   Button,
@@ -30,10 +30,12 @@ const ListPage = (props) => {
   const [isCreateNewDatasetOpen, setIsCreateNewDatasetOpen] = useState(false);
   const [labelings, setLabelings] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(10);
   const [displayedDatasets, setDisplayedDatasets] = useState([]);
-
+  const pageSize = 10;
   const { registerProjectDownload } = useContext(NotificationContext);
+  //needed to access newest state in key event handler
+  const datasetsRef = React.useRef(datasets);
+  const currentPageRef = React.useRef(currentPage);
 
   const toggleModal = () => {
     setModal(!modal);
@@ -98,11 +100,17 @@ const ListPage = (props) => {
       .catch((error) => {
         console.error(error);
       });
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   useEffect(() => {
+    datasetsRef.current = datasets;
+    setCurrentPage(0);
     if (datasets) {
-      setCurrentPage(0);
       setDisplayedDatasets(
         datasets.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
       );
@@ -110,6 +118,7 @@ const ListPage = (props) => {
   }, [datasets]);
 
   useEffect(() => {
+    currentPageRef.current = currentPage;
     if (datasets) {
       setDisplayedDatasets(
         datasets.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
@@ -117,16 +126,38 @@ const ListPage = (props) => {
     }
   }, [currentPage]);
 
+  const handleKeyDown = (e) => {
+    switch (e.key) {
+      case 'ArrowLeft':
+        console.log('left');
+        goToLastPage();
+        break;
+      case 'ArrowRight':
+        console.log('right');
+        goToNextPage();
+        break;
+      default:
+        break;
+    }
+  };
+
   const goToPage = (page) => {
     setCurrentPage(page);
   };
 
   const goToNextPage = () => {
-    setCurrentPage(currentPage + 1);
+    if (
+      currentPageRef.current <
+      Math.ceil(datasetsRef.current.length / pageSize) - 1
+    ) {
+      setCurrentPage(currentPageRef.current + 1);
+    }
   };
 
   const goToLastPage = () => {
-    setCurrentPage(currentPage - 1);
+    if (currentPageRef.current > 0) {
+      setCurrentPage(currentPageRef.current - 1);
+    }
   };
 
   const onDatasetsChanged = async (datasets) => {
@@ -184,7 +215,7 @@ const ListPage = (props) => {
         ></DatasetTable>
       </Container>
 
-      <div className="d-flex justify-content-center mt-5">
+      <div className="d-flex justify-content-center mt-3">
         <PageSelection
           pageSize={pageSize}
           datasetCount={datasets.length}

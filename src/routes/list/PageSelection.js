@@ -23,7 +23,7 @@ const PageSelection = ({
         </PaginationItem>
         {[...Array(Math.ceil(datasetCount / pageSize))].map((page, index) => {
           return (
-            <PaginationItem active={index == currentPage} key={index}>
+            <PaginationItem active={index === currentPage} key={index}>
               <PaginationLink onClick={() => goToPage(index)}>
                 {index + 1}
               </PaginationLink>
