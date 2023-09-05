@@ -20,6 +20,7 @@ import { subscribeLabelingsAndLabels } from '../../services/ApiServices/Labeling
 import DatasetTable from './DatasetTable';
 import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
+import PageSelection from './PageSelection';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -28,6 +29,9 @@ const ListPage = (props) => {
   const [ready, setReady] = useState(false);
   const [isCreateNewDatasetOpen, setIsCreateNewDatasetOpen] = useState(false);
   const [labelings, setLabelings] = useState(undefined);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(10);
+  const [displayedDatasets, setDisplayedDatasets] = useState([]);
 
   const { registerProjectDownload } = useContext(NotificationContext);
 
@@ -96,6 +100,35 @@ const ListPage = (props) => {
       });
   }, []);
 
+  useEffect(() => {
+    if (datasets) {
+      setCurrentPage(0);
+      setDisplayedDatasets(
+        datasets.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
+      );
+    }
+  }, [datasets]);
+
+  useEffect(() => {
+    if (datasets) {
+      setDisplayedDatasets(
+        datasets.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
+      );
+    }
+  }, [currentPage]);
+
+  const goToPage = (page) => {
+    setCurrentPage(page);
+  };
+
+  const goToNextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
+  const goToLastPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
+
   const onDatasetsChanged = async (datasets) => {
     const labelings = await subscribeLabelingsAndLabels();
     console.log(datasets);
@@ -138,7 +171,7 @@ const ListPage = (props) => {
           toggleCreateNewDatasetModal={toggleCreateNewDatasetModal}
         ></DataUpload>
         <DatasetTable
-          datasets={datasets}
+          displayedDatasets={displayedDatasets}
           datasetsToDelete={datasetsToDelete}
           openDeleteModal={toggleModal}
           selectAllEmpty={selectAllEmpty}
@@ -150,6 +183,17 @@ const ListPage = (props) => {
           deselectAll={deselectAll}
         ></DatasetTable>
       </Container>
+
+      <div className="d-flex justify-content-center mt-5">
+        <PageSelection
+          pageSize={pageSize}
+          datasetCount={datasets.length}
+          goToPage={goToPage}
+          goToNextPage={goToNextPage}
+          goToLastPage={goToLastPage}
+          currentPage={currentPage}
+        />
+      </div>
 
       <Modal isOpen={modal} toggle={toggleModal} className={props.className}>
         <ModalHeader toggle={toggleModal}>Delete Dataset</ModalHeader>

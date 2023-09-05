@@ -21,13 +21,13 @@ const DatasetTable = (props) => {
             size="sm"
             color="secondary"
             className="btn-download-all ml-auto"
-            disabled={props.datasets.length === 0}
+            disabled={props.displayedDatasets.length === 0}
             onClick={props.downloadAllDatasets}
           >
             <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon> Download All
           </Button>
         </div>
-        {props.datasets.length > 0 ? (
+        {props.displayedDatasets.length > 0 ? (
           <div style={{ borderRadius: 10 }}>
             <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline">
               <div className="d-flex flex-row align-items-center p-1">
@@ -82,7 +82,7 @@ const DatasetTable = (props) => {
                 overflow: 'hidden',
               }}
             >
-              {props.datasets.map((dataset, index) => (
+              {props.displayedDatasets.map((dataset, index) => (
                 <DatasetTableEntry
                   dataset={dataset}
                   index={index}
