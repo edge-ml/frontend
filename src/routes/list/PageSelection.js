@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import './PageSelection.css';
 
 const PageSelection = ({
   pageSize,
