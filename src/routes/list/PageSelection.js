@@ -12,11 +12,12 @@ const PageSelection = ({
   goToFirstPage,
 }) => {
   const [numPages, setNumPages] = useState(0);
-  const maxFullSize = 8;
+  //determines how many pages are shown in a row, before the shortended pagination is used
+  const maxFullSize = 6;
 
   useEffect(() => {
     setNumPages(Math.ceil(datasetCount / pageSize));
-  }, [datasetCount]);
+  }, [datasetCount, pageSize]);
 
   const generateNumbersArray = (m, n) => {
     return Array.from({ length: n - m + 1 }, (_, index) => m + index);
@@ -50,7 +51,9 @@ const PageSelection = ({
   //prevents overflow of pagination bar when screen is not wide enough
   const shortenedPagination = () => {
     const items = [];
-    if (currentPage <= 2) {
+    if (numPages === 1) {
+      items.push(getPaginationItems([0]));
+    } else if (currentPage <= 2) {
       items.push(getPaginationItems(generateNumbersArray(0, 2)));
       items.push(getEllipsisItem());
       items.push(getPaginationItems([numPages - 1]));
@@ -74,7 +77,7 @@ const PageSelection = ({
     return items;
   };
 
-  return numPages > 1 ? (
+  return (
     <div className="pagination-container">
       <Pagination>
         <PaginationItem disabled={currentPage <= 0}>
@@ -92,7 +95,7 @@ const PageSelection = ({
         </PaginationItem>
       </Pagination>
     </div>
-  ) : null;
+  );
 };
 
 export default PageSelection;
