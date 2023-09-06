@@ -12,7 +12,7 @@ const PageSelection = ({
   goToFirstPage,
 }) => {
   const [numPages, setNumPages] = useState(0);
-  const maxFullSize = 10;
+  const maxFullSize = 8;
 
   useEffect(() => {
     setNumPages(Math.ceil(datasetCount / pageSize));

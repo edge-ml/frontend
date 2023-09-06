@@ -8,6 +8,7 @@ import React, { Fragment, useState } from 'react';
 import { Button, Container } from 'reactstrap';
 import Checkbox from '../../components/Common/Checkbox';
 import DatasetTableEntry from './DatasetTableEntry';
+import DatasetFilter from './DatasetFilter';
 
 const DatasetTable = (props) => {
   const [areAllSelected, setAllSelected] = useState(false);
@@ -29,7 +30,7 @@ const DatasetTable = (props) => {
         </div>
         {props.displayedDatasets.length > 0 ? (
           <div style={{ borderRadius: 10 }}>
-            <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline">
+            <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row align-content-baseline">
               <div className="d-flex flex-row align-items-center p-1">
                 <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
                   <Checkbox
@@ -72,6 +73,12 @@ const DatasetTable = (props) => {
                   ></FontAwesomeIcon>
                   Select Empty Datasets
                 </Button>
+              </div>
+              <div className="d-flex flex-md-row justify-content-end position-relative">
+                <div className="position-absolute" style={{ top: '-10px' }}>
+                  {' '}
+                  <DatasetFilter />
+                </div>
               </div>
             </div>
             <div
