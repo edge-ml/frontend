@@ -130,7 +130,7 @@ const ListPage = (props) => {
     switch (e.key) {
       case 'ArrowLeft':
         console.log('left');
-        goToLastPage();
+        goToPreviousPage();
         break;
       case 'ArrowRight':
         console.log('right');
@@ -154,10 +154,18 @@ const ListPage = (props) => {
     }
   };
 
-  const goToLastPage = () => {
+  const goToPreviousPage = () => {
     if (currentPageRef.current > 0) {
       setCurrentPage(currentPageRef.current - 1);
     }
+  };
+
+  const goToLastPage = () => {
+    setCurrentPage(Math.ceil(datasetsRef.current.length / pageSize) - 1);
+  };
+
+  const gotToFirstPage = () => {
+    setCurrentPage(0);
   };
 
   const onDatasetsChanged = async (datasets) => {
@@ -223,6 +231,8 @@ const ListPage = (props) => {
           goToNextPage={goToNextPage}
           goToLastPage={goToLastPage}
           currentPage={currentPage}
+          goToPreviousPage={goToPreviousPage}
+          goToFirstPage={gotToFirstPage}
         />
       </div>
 
