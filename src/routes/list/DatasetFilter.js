@@ -7,27 +7,81 @@ import {
 } from 'reactstrap';
 import './DatasetFilter.css';
 
-const DatasetFilter = () => {
-  const [isOpen, setIsOpen] = useState(false);
-
+const DatasetFilter = ({
+  sortAlphaDesc,
+  sortAlphaAsc,
+  sortDateAsc,
+  sortDateDesc,
+  filterDropDownIsOpen,
+  setFilterDropdownIsOpen,
+  selectedFilter,
+  setSelectedFilter,
+}) => {
   const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+    setFilterDropdownIsOpen(!filterDropDownIsOpen);
+  };
+
+  const handleItemClick = (e) => {
+    sortDatasets(e.currentTarget.getAttribute('data-dropdownvalue'));
+    setSelectedFilter(e.currentTarget.textContent);
+    toggleDropdown();
+  };
+
+  const sortDatasets = (dropdownvalue) => {
+    switch (dropdownvalue) {
+      case 'sortAlphaDesc':
+        sortAlphaDesc();
+        break;
+      case 'sortAlphaAsc':
+        sortAlphaAsc();
+        break;
+      case 'sortDateDesc':
+        sortDateDesc();
+        break;
+      case 'sortDateAsc':
+        sortDateAsc();
+        break;
+      default:
+    }
   };
 
   return (
     <Dropdown
-      isOpen={isOpen}
+      direction="left"
+      isOpen={filterDropDownIsOpen}
       toggle={toggleDropdown}
       size="sm"
       className="dataset-filter"
     >
-      <DropdownToggle caret>Options</DropdownToggle>
+      <DropdownToggle caret>{selectedFilter || 'Sort'}</DropdownToggle>
       <DropdownMenu>
-        <DropdownItem header>Menu Header</DropdownItem>
-        <DropdownItem>Option 1</DropdownItem>
-        <DropdownItem>Option 2</DropdownItem>
+        <DropdownItem header>Filter Selection</DropdownItem>
+        <DropdownItem
+          onClick={handleItemClick}
+          data-dropdownvalue="sortAlphaDesc"
+        >
+          Alphabetical (descending)
+        </DropdownItem>
+        <DropdownItem
+          onClick={handleItemClick}
+          data-dropdownvalue="sortAlphaAsc"
+        >
+          Alphabetical (ascending)
+        </DropdownItem>
+        <DropdownItem
+          onClick={handleItemClick}
+          data-dropdownvalue="sortDateDesc"
+        >
+          Recording Date (descending)
+        </DropdownItem>
+        <DropdownItem
+          onClick={handleItemClick}
+          data-dropdownvalue="sortDateAsc"
+        >
+          Recording Date (ascending)
+        </DropdownItem>
         <DropdownItem divider />
-        <DropdownItem>Option 3</DropdownItem>
+        <DropdownItem>Labeling Set</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );

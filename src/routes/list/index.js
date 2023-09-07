@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  createRef,
+} from 'react';
 import {
   Container,
   Button,
@@ -22,6 +28,7 @@ import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
 import PageSelection from './PageSelection';
 import PageSizeDropdown from './PageSizeDropdown';
+import { displayTime } from '../../services/helpers';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -33,6 +40,8 @@ const ListPage = (props) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [displayedDatasets, setDisplayedDatasets] = useState([]);
   const [pageSize, setPageSize] = useState(5);
+  const [filterDropDownIsOpen, setFilterDropdownIsOpen] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState(null);
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
   const datasetsRef = useRef(datasets);
@@ -44,20 +53,17 @@ const ListPage = (props) => {
   };
 
   const deleteSelectedDatasets = () => {
-    deleteDatasets(datasetsToDelete)
-      .then(() => {
-        setModal(false);
-        setDatasetsToDelete([]);
-        setDatasets(
-          datasets.filter(
-            (dataset) => !datasetsToDelete.includes(dataset['_id'])
-          )
-        );
-      })
-      .catch((err) => {
-        window.alert('Error deleting datasets');
-        setModal(false);
-      });
+    deleteDatasets(datasetsToDelete).then(() => {
+      setModal(false);
+      setDatasetsToDelete([]);
+      setDatasets(
+        datasets.filter((dataset) => !datasetsToDelete.includes(dataset['_id']))
+      );
+    });
+    resetDropdown().catch((err) => {
+      window.alert('Error deleting datasets');
+      setModal(false);
+    });
   };
 
   const deleteEntry = (datasetId) => {
@@ -110,6 +116,10 @@ const ListPage = (props) => {
   }, []);
 
   useEffect(() => {
+    handleChangingPageSize();
+  }, [pageSize, datasets]);
+
+  const handleChangingPageSize = () => {
     pageSizeRef.current = pageSize;
     datasetsRef.current = datasets;
     setCurrentPage(0);
@@ -118,7 +128,7 @@ const ListPage = (props) => {
         datasets.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
       );
     }
-  }, [datasets, pageSize]);
+  };
 
   useEffect(() => {
     currentPageRef.current = currentPage;
@@ -173,6 +183,65 @@ const ListPage = (props) => {
     setCurrentPage(0);
   };
 
+  const resetDropdown = () => {
+    setSelectedFilter(null);
+    setFilterDropdownIsOpen(false);
+  };
+
+  const sortAlphaAsc = () => {
+    const _datasets = [...datasets];
+    _datasets.sort((a, b) => {
+      const textA = a.name.toLowerCase();
+      const textB = b.name.toLowerCase();
+      if (textA < textB) {
+        return -1;
+      }
+      if (textA > textB) {
+        return 1;
+      }
+      return 0;
+    });
+    setDatasets(_datasets);
+  };
+
+  const sortAlphaDesc = () => {
+    const _datasets = [...datasets];
+    _datasets.sort((a, b) => {
+      const textA = a.name.toLowerCase();
+      const textB = b.name.toLowerCase();
+      if (textA < textB) {
+        return 1;
+      }
+      if (textA > textB) {
+        return -1;
+      }
+      return 0;
+    });
+    setDatasets(_datasets);
+  };
+
+  const sortDateAsc = () => {
+    const _datasets = [...datasets];
+    _datasets.sort((a, b) => {
+      //dataset starts
+      const startA = Math.min(...a.timeSeries.map((elm) => elm.start));
+      const startB = Math.min(...b.timeSeries.map((elm) => elm.start));
+      return startA - startB;
+    });
+    setDatasets(_datasets);
+  };
+
+  const sortDateDesc = () => {
+    const _datasets = [...datasets];
+    _datasets.sort((a, b) => {
+      //dataset starts
+      const startA = Math.min(...a.timeSeries.map((elm) => elm.start));
+      const startB = Math.min(...b.timeSeries.map((elm) => elm.start));
+      return startB - startA;
+    });
+    setDatasets(_datasets);
+  };
+
   const onDatasetsChanged = async (datasets) => {
     const labelings = await subscribeLabelingsAndLabels();
     console.log(datasets);
@@ -182,11 +251,13 @@ const ListPage = (props) => {
     setModal(false);
     setReady(true);
     setIsCreateNewDatasetOpen(false);
+    resetDropdown();
   };
 
   const refreshList = () => {
     subscribeLabelingsAndLabels().then((labelings) => setLabelings(labelings));
     getDatasets().then((datasets) => setDatasets(datasets));
+    resetDropdown();
   };
 
   const toggleCheck = (e, datasetId) => {
@@ -225,24 +296,33 @@ const ListPage = (props) => {
           deleteEntry={deleteEntry}
           selectAll={selectAll}
           deselectAll={deselectAll}
+          filterDropDownIsOpen={filterDropDownIsOpen}
+          setFilterDropdownIsOpen={setFilterDropdownIsOpen}
+          selectedFilter={selectedFilter}
+          setSelectedFilter={setSelectedFilter}
+          sortAlphaAsc={sortAlphaAsc}
+          sortAlphaDesc={sortAlphaDesc}
+          sortDateAsc={sortDateAsc}
+          sortDateDesc={sortDateDesc}
         ></DatasetTable>
       </Container>
-
-      <div className="d-flex flex-row justify-content-center mt-3">
-        <div className="position-relative mr-3">
-          <PageSizeDropdown pageSize={pageSize} setPageSize={setPageSize} />
+      {datasets.length > 0 ? (
+        <div className="d-flex flex-row justify-content-center mt-3">
+          <div className="position-relative mr-3">
+            <PageSizeDropdown pageSize={pageSize} setPageSize={setPageSize} />
+          </div>
+          <PageSelection
+            pageSize={pageSize}
+            datasetCount={datasets.length}
+            goToPage={goToPage}
+            goToNextPage={goToNextPage}
+            goToLastPage={goToLastPage}
+            currentPage={currentPage}
+            goToPreviousPage={goToPreviousPage}
+            goToFirstPage={gotToFirstPage}
+          />
         </div>
-        <PageSelection
-          pageSize={pageSize}
-          datasetCount={datasets.length}
-          goToPage={goToPage}
-          goToNextPage={goToNextPage}
-          goToLastPage={goToLastPage}
-          currentPage={currentPage}
-          goToPreviousPage={goToPreviousPage}
-          goToFirstPage={gotToFirstPage}
-        />
-      </div>
+      ) : null}
 
       <Modal isOpen={modal} toggle={toggleModal} className={props.className}>
         <ModalHeader toggle={toggleModal}>Delete Dataset</ModalHeader>

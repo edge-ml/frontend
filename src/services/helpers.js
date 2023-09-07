@@ -168,3 +168,14 @@ export const debounce = function (func, delay) {
     }, delay);
   };
 };
+
+//calculate date from timestamp
+export const displayTime = (time) => {
+  const minTimestamp = -8640000000000000;
+  const maxTimestamp = 8640000000000000;
+  if (time < minTimestamp || time > maxTimestamp) {
+    return '-';
+  }
+  const date = new Date(time);
+  return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+};
