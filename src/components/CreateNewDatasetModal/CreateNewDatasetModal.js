@@ -58,6 +58,30 @@ class CreateNewDatasetModal extends Component {
     this.onDatasetNameChange = this.onDatasetNameChange.bind(this);
     this.onSetAll = this.onSetAll.bind(this);
     this.onDeleteLabeling = this.onDeleteLabeling.bind(this);
+    this.onKeyPressed = this.onKeyPressed.bind(this);
+  }
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  onKeyPressed(e) {
+    switch (e.key) {
+      case 'Escape':
+        if (!this.state.onUploading) {
+          this.onCloseModal();
+        }
+        break;
+      case 'Enter':
+        if (!this.state.onUploading) {
+          this.onUpload();
+        }
+        break;
+    }
   }
 
   onDatasetNameChange(e, fileIndex) {

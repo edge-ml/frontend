@@ -38,7 +38,9 @@ const DFUModal = ({
 
   useEffect(() => {
     dfuManager.connectGATTdfu(connectedDevice);
+    document.addEventListener('keydown', onKeyPressed, false);
     return () => {
+      document.removeEventListener('keydown', onKeyPressed, false);
       setFlashState('start');
       setFlashProgress(0);
       setConnectedDevice(undefined);
@@ -51,6 +53,21 @@ const DFUModal = ({
       onDisconnection();
     }
   }, [flashError]);
+
+  const onKeyPressed = (e) => {
+    switch (e.key) {
+      case 'Escape':
+        if (flashState !== 'downloadingFW' && flashState !== 'uploading') {
+          toggleDFUModal();
+        }
+        break;
+      case 'Enter':
+        if (flashState === 'start') {
+          downLoadAndInstallFW();
+        }
+        break;
+    }
+  };
 
   const downLoadAndInstallFW = async () => {
     downloadFirmware()

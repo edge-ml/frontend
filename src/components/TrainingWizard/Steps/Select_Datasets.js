@@ -254,7 +254,8 @@ Wizard_SelectDataset.validate = ({
     }, {});
 
   const coveredCount = Object.values(coveredLabels).filter(
-    (elm) => elm.count > 0
+    (elm) =>
+      !selectedLabeling.disabledLabels.includes(elm.type) && elm.count > 0
   ).length;
 
   if (coveredCount < 1) {

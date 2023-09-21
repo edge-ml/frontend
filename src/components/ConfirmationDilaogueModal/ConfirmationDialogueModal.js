@@ -8,7 +8,29 @@ class ConfirmationDialogueModal extends Component {
     this.state = {
       isOpen: this.props.isOpen,
     };
+    this.onKeyPressed = this.onKeyPressed.bind(this);
   }
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  //important that this is called when modal is not shown! Modal has to be rendered conditionally.
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyPressed, false);
+  }
+
+  onKeyPressed(e) {
+    switch (e.key) {
+      case 'Escape':
+        this.props.onCancel();
+        break;
+      case 'Enter':
+        this.props.onConfirm();
+        break;
+    }
+  }
+
   render() {
     return (
       <div>
@@ -25,6 +47,7 @@ class ConfirmationDialogueModal extends Component {
           <ModalFooter>
             <div className="d-flex flex-row justify-content-end">
               <Button
+                outline
                 color="danger"
                 className="m-1"
                 onClick={this.props.onConfirm}
@@ -32,6 +55,7 @@ class ConfirmationDialogueModal extends Component {
                 Confirm
               </Button>
               <Button
+                outline
                 color="secondary"
                 className="m-1 mr-auto"
                 onClick={this.props.onCancel}
