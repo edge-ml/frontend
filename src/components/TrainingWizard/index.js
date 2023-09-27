@@ -287,6 +287,16 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
           <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
         </div>
       </ModalHeader>
+      {datasets &&
+      labelings &&
+      (datasets.length === 0 || labelings.length === 0) ? (
+        <div
+          className="d-flex justify-content-center align-items-center font-weight-bold"
+          style={{ height: '30vh' }}
+        >
+          You need datasets and labelings to train models!
+        </div>
+      ) : null}
       {isReady() ? rendered_screens[screen] : null}
     </Modal>
   );
