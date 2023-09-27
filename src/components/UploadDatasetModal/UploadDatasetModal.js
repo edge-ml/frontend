@@ -366,7 +366,9 @@ export const UploadDatasetModal = ({
       console.log('Allcomplete', allComplete);
       if (allComplete) {
         setConsecutiveNoUpdateCount(null); // stop polling
-        handleModalClose();
+        if (files.length > 0) {
+          handleModalClose();
+        }
       } else if (!pollResultedInUpdate) {
         setConsecutiveNoUpdateCount((prevCount) => prevCount + 1);
       } else {
