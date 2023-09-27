@@ -10,41 +10,22 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './DatasetFilter.css';
 
 const DatasetSort = ({
-  sortAlphaDesc,
-  sortAlphaAsc,
-  sortDateAsc,
-  sortDateDesc,
+  setSortingMethod,
   sortingDropDownIsOpen,
   setSortingDropdownIsOpen,
-  selectedSorting,
-  setSelectedSorting,
+  selectedSortingString,
+  setSelectedSortingString,
+  applySorting,
 }) => {
   const toggleDropdown = () => {
     setSortingDropdownIsOpen(!sortingDropDownIsOpen);
   };
 
   const handleItemClick = (e) => {
-    sortDatasets(e.currentTarget.getAttribute('data-dropdownvalue'));
-    setSelectedSorting(e.currentTarget.textContent);
+    applySorting(e.currentTarget.getAttribute('data-dropdownvalue'));
+    setSelectedSortingString(e.currentTarget.textContent);
+    setSortingMethod(e.currentTarget.getAttribute('data-dropdownvalue'));
     toggleDropdown();
-  };
-
-  const sortDatasets = (dropdownvalue) => {
-    switch (dropdownvalue) {
-      case 'sortAlphaDesc':
-        sortAlphaDesc();
-        break;
-      case 'sortAlphaAsc':
-        sortAlphaAsc();
-        break;
-      case 'sortDateDesc':
-        sortDateDesc();
-        break;
-      case 'sortDateAsc':
-        sortDateAsc();
-        break;
-      default:
-    }
   };
 
   return (
@@ -56,7 +37,9 @@ const DatasetSort = ({
       className="dataset-sorting p-0"
     >
       <DropdownToggle caret>
-        {selectedSorting || <FontAwesomeIcon icon={faSort}></FontAwesomeIcon>}
+        {selectedSortingString || (
+          <FontAwesomeIcon icon={faSort}></FontAwesomeIcon>
+        )}
       </DropdownToggle>
       <DropdownMenu>
         <DropdownItem header>Sorting Method</DropdownItem>

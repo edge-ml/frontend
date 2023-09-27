@@ -54,6 +54,8 @@ const FilterSelectionModal = ({
   };
 
   const applyAndClose = () => {
+    setFilterParam(filterParam);
+    setSelectedFilter(currentFilter);
     applyFilter(currentFilter, filterParam);
     toggleFilterSelectionModal();
   };

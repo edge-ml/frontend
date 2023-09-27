@@ -79,12 +79,10 @@ const DatasetTable = (props) => {
                   <DatasetSort
                     sortingDropDownIsOpen={props.sortingDropDownIsOpen}
                     setSortingDropdownIsOpen={props.setSortingDropdownIsOpen}
-                    selectedSorting={props.selectedSorting}
-                    setSelectedSorting={props.setSelectedSorting}
-                    sortAlphaAsc={props.sortAlphaAsc}
-                    sortAlphaDesc={props.sortAlphaDesc}
-                    sortDateAsc={props.sortDateAsc}
-                    sortDateDesc={props.sortDateDesc}
+                    selectedSortingString={props.selectedSortingString}
+                    setSelectedSortingString={props.setSelectedSortingString}
+                    setSortingMethod={props.setSortingMethod}
+                    applySorting={props.applySorting}
                   />
                 </div>
                 <Button

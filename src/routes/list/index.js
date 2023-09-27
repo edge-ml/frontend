@@ -32,19 +32,25 @@ import PageSizeDropdown from './PageSizeDropdown';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
+  //underlying datasets which get sorted, but not filtered
   const [datasets, setDatasets] = useState(undefined);
+  //has to contain the filtered datasets after sorting
+  const [filteredDatasets, setFilteredDatasets] = useState(undefined);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [ready, setReady] = useState(false);
   const [isCreateNewDatasetOpen, setIsCreateNewDatasetOpen] = useState(false);
   const [labelings, setLabelings] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(0);
+  //datasets displayed on the current page
   const [displayedDatasets, setDisplayedDatasets] = useState([]);
   const [pageSize, setPageSize] = useState(5);
   const [sortingDropDownIsOpen, setSortingDropdownIsOpen] = useState(false);
-  const [selectedSorting, setSelectedSorting] = useState(null);
+  const [selectedSortingString, setSelectedSortingString] = useState(null);
+  const [sortingMethod, setSortingMethod] = useState(null);
   const [showFilterSelectionModal, setShowFilterSelectionModal] =
     useState(false);
   const [selectedFilter, setSelectedFilter] = useState('clearFilter');
+  const [filterParam, setFilterParam] = useState(null);
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
   const datasetsRef = useRef(datasets);
@@ -53,6 +59,10 @@ const ListPage = (props) => {
 
   const toggleModal = () => {
     setModal(!modal);
+  };
+
+  const getFilteredDatasets = () => {
+    //deselect selected datasets to not cause confusion with datasets, which aren't visible
   };
 
   const deleteSelectedDatasets = () => {
@@ -94,7 +104,7 @@ const ListPage = (props) => {
     );
   };
 
-  const applyFilter = (filter) => {
+  const applyFilter = (filter, filterParam) => {
     //clear selected before applying
     setSelectedDatasets([]);
     switch (filter) {
@@ -207,8 +217,30 @@ const ListPage = (props) => {
   };
 
   const resetDropdown = () => {
-    setSelectedSorting(null);
+    setSelectedSortingString(null);
+    setSortingMethod(null);
     setSortingDropdownIsOpen(false);
+  };
+
+  const applySorting = (sortingMethod) => {
+    let _datasets = sortDatasets(sortingMethod);
+    setDatasets(_datasets);
+  };
+
+  const sortDatasets = (sortingMethod) => {
+    switch (sortingMethod) {
+      case 'sortAlphaDesc':
+        return sortAlphaDesc();
+      case 'sortAlphaAsc':
+        return sortAlphaAsc();
+      case 'sortDateDesc':
+        return sortDateDesc();
+      case 'sortDateAsc':
+        return sortDateAsc();
+      //do nothing
+      default:
+        return [...datasets];
+    }
   };
 
   const sortAlphaAsc = () => {
@@ -224,7 +256,7 @@ const ListPage = (props) => {
       }
       return 0;
     });
-    setDatasets(_datasets);
+    return _datasets;
   };
 
   const sortAlphaDesc = () => {
@@ -240,7 +272,7 @@ const ListPage = (props) => {
       }
       return 0;
     });
-    setDatasets(_datasets);
+    return _datasets;
   };
 
   const sortDateAsc = () => {
@@ -251,7 +283,7 @@ const ListPage = (props) => {
       const startB = Math.min(...b.timeSeries.map((elm) => elm.start));
       return startA - startB;
     });
-    setDatasets(_datasets);
+    return _datasets;
   };
 
   const sortDateDesc = () => {
@@ -262,7 +294,7 @@ const ListPage = (props) => {
       const startB = Math.min(...b.timeSeries.map((elm) => elm.start));
       return startB - startA;
     });
-    setDatasets(_datasets);
+    return _datasets;
   };
 
   const onDatasetsChanged = async (datasets) => {
@@ -322,12 +354,10 @@ const ListPage = (props) => {
             deselectAll={deselectAll}
             sortingDropDownIsOpen={sortingDropDownIsOpen}
             setSortingDropdownIsOpen={setSortingDropdownIsOpen}
-            selectedSorting={selectedSorting}
-            setSelectedSorting={setSelectedSorting}
-            sortAlphaAsc={sortAlphaAsc}
-            sortAlphaDesc={sortAlphaDesc}
-            sortDateAsc={sortDateAsc}
-            sortDateDesc={sortDateDesc}
+            selectedSortingString={selectedSortingString}
+            setSelectedSortingString={setSelectedSortingString}
+            setSortingMethod={setSortingMethod}
+            applySorting={applySorting}
             toggleFilterSelectionModal={toggleFilterSelectionModal}
             applyFilter={applyFilter}
             filterSelected={selectedFilter !== 'clearFilter'}
@@ -401,6 +431,7 @@ const ListPage = (props) => {
           applyFilter={applyFilter}
           selectedFilter={selectedFilter}
           setSelectedFilter={setSelectedFilter}
+          setFilterParam={setFilterParam}
         />
       ) : null}
     </div>
