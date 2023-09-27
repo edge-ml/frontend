@@ -5,6 +5,8 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
+import { faSort } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './DatasetFilter.css';
 
 const DatasetFilter = ({
@@ -53,7 +55,9 @@ const DatasetFilter = ({
       size="sm"
       className="dataset-filter"
     >
-      <DropdownToggle caret>{selectedFilter || 'Sort'}</DropdownToggle>
+      <DropdownToggle caret>
+        {selectedFilter || <FontAwesomeIcon icon={faSort}></FontAwesomeIcon>}
+      </DropdownToggle>
       <DropdownMenu>
         <DropdownItem header>Filter Selection</DropdownItem>
         <DropdownItem
