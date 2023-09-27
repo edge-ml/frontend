@@ -33,7 +33,7 @@ import PageSizeDropdown from './PageSizeDropdown';
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
   const [datasets, setDatasets] = useState(undefined);
-  const [datasetsToDelete, setDatasetsToDelete] = useState([]);
+  const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [ready, setReady] = useState(false);
   const [isCreateNewDatasetOpen, setIsCreateNewDatasetOpen] = useState(false);
   const [labelings, setLabelings] = useState(undefined);
@@ -55,11 +55,11 @@ const ListPage = (props) => {
   };
 
   const deleteSelectedDatasets = () => {
-    deleteDatasets(datasetsToDelete).then(() => {
+    deleteDatasets(selectedDatasets).then(() => {
       setModal(false);
-      setDatasetsToDelete([]);
+      setSelectedDatasets([]);
       setDatasets(
-        datasets.filter((dataset) => !datasetsToDelete.includes(dataset['_id']))
+        datasets.filter((dataset) => !selectedDatasets.includes(dataset['_id']))
       );
     });
     resetDropdown().catch((err) => {
@@ -69,7 +69,7 @@ const ListPage = (props) => {
   };
 
   const deleteEntry = (datasetId) => {
-    setDatasetsToDelete([datasetId]);
+    setSelectedDatasets([datasetId]);
     toggleModal();
   };
 
@@ -82,7 +82,7 @@ const ListPage = (props) => {
   };
 
   const selectAllEmpty = () => {
-    setDatasetsToDelete(
+    setSelectedDatasets(
       datasets
         .filter((elm) =>
           elm.timeSeries
@@ -94,11 +94,11 @@ const ListPage = (props) => {
   };
 
   const selectAll = () => {
-    setDatasetsToDelete(datasets.map((elm) => elm._id));
+    setSelectedDatasets(datasets.map((elm) => elm._id));
   };
 
   const deselectAll = () => {
-    setDatasetsToDelete([]);
+    setSelectedDatasets([]);
   };
 
   useEffect(() => {
@@ -267,13 +267,13 @@ const ListPage = (props) => {
   };
 
   const toggleCheck = (e, datasetId) => {
-    const checked = datasetsToDelete.includes(datasetId);
+    const checked = selectedDatasets.includes(datasetId);
     if (!checked) {
-      if (!datasetsToDelete.includes(datasetId)) {
-        setDatasetsToDelete([...datasetsToDelete, datasetId]);
+      if (!selectedDatasets.includes(datasetId)) {
+        setSelectedDatasets([...selectedDatasets, datasetId]);
       }
     } else {
-      setDatasetsToDelete(datasetsToDelete.filter((id) => id !== datasetId));
+      setSelectedDatasets(selectedDatasets.filter((id) => id !== datasetId));
     }
   };
 
@@ -294,7 +294,7 @@ const ListPage = (props) => {
         <div className="table-margin">
           <DatasetTable
             displayedDatasets={displayedDatasets}
-            datasetsToDelete={datasetsToDelete}
+            selectedDatasets={selectedDatasets}
             openDeleteModal={toggleModal}
             selectAllEmpty={selectAllEmpty}
             downloadAllDatasets={downloadAllDatasets}
@@ -342,8 +342,8 @@ const ListPage = (props) => {
         <ModalHeader toggle={toggleModal}>Delete Dataset</ModalHeader>
         <ModalBody>
           Are you sure to delete the following datasets?
-          {console.log(datasetsToDelete)}
-          {datasetsToDelete.map((id) => {
+          {console.log(selectedDatasets)}
+          {selectedDatasets.map((id) => {
             const dataset = datasets.find((elm) => elm._id === id);
             if (!dataset) {
               return;

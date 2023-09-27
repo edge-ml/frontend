@@ -49,7 +49,7 @@ const DatasetTable = (props) => {
                   className="ml-3 btn-delete"
                   id="deleteDatasetsButton"
                   size="sm"
-                  disabled={props.datasetsToDelete.length === 0}
+                  disabled={props.selectedDatasets.length === 0}
                   color="secondary"
                   onClick={props.openDeleteModal}
                 >
@@ -108,11 +108,10 @@ const DatasetTable = (props) => {
                   dataset={dataset}
                   index={index}
                   toggleCheck={props.toggleCheck}
-                  isSelected={props.datasetsToDelete.includes(dataset['_id'])}
+                  isSelected={props.selectedDatasets.includes(dataset['_id'])}
                   labelings={props.labelings}
                   labels={props.labels}
                   deleteEntry={props.deleteEntry}
-                  areAllSelected={props.areAllSelected}
                 ></DatasetTableEntry>
               ))}
             </div>
