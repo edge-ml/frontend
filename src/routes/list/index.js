@@ -285,42 +285,49 @@ const ListPage = (props) => {
         <DataUpload
           toggleCreateNewDatasetModal={toggleCreateNewDatasetModal}
         ></DataUpload>
-        <DatasetTable
-          displayedDatasets={displayedDatasets}
-          datasetsToDelete={datasetsToDelete}
-          openDeleteModal={toggleModal}
-          selectAllEmpty={selectAllEmpty}
-          downloadAllDatasets={downloadAllDatasets}
-          toggleCheck={toggleCheck}
-          labelings={labelings}
-          deleteEntry={deleteEntry}
-          selectAll={selectAll}
-          deselectAll={deselectAll}
-          filterDropDownIsOpen={filterDropDownIsOpen}
-          setFilterDropdownIsOpen={setFilterDropdownIsOpen}
-          selectedFilter={selectedFilter}
-          setSelectedFilter={setSelectedFilter}
-          sortAlphaAsc={sortAlphaAsc}
-          sortAlphaDesc={sortAlphaDesc}
-          sortDateAsc={sortDateAsc}
-          sortDateDesc={sortDateDesc}
-        ></DatasetTable>
+        <div className="table-margin">
+          <DatasetTable
+            displayedDatasets={displayedDatasets}
+            datasetsToDelete={datasetsToDelete}
+            openDeleteModal={toggleModal}
+            selectAllEmpty={selectAllEmpty}
+            downloadAllDatasets={downloadAllDatasets}
+            toggleCheck={toggleCheck}
+            labelings={labelings}
+            deleteEntry={deleteEntry}
+            selectAll={selectAll}
+            deselectAll={deselectAll}
+            filterDropDownIsOpen={filterDropDownIsOpen}
+            setFilterDropdownIsOpen={setFilterDropdownIsOpen}
+            selectedFilter={selectedFilter}
+            setSelectedFilter={setSelectedFilter}
+            sortAlphaAsc={sortAlphaAsc}
+            sortAlphaDesc={sortAlphaDesc}
+            sortDateAsc={sortDateAsc}
+            sortDateDesc={sortDateDesc}
+          ></DatasetTable>
+        </div>
       </Container>
+
       {datasets.length > 0 ? (
-        <div className="d-flex flex-row justify-content-center mt-3">
-          <div className="position-relative mr-3">
-            <PageSizeDropdown pageSize={pageSize} setPageSize={setPageSize} />
+        <div className="fixed-bottom">
+          <div className="d-flex justify-content-center flex-md-row flex-wrap">
+            <div className="position-relative mr-md-3">
+              <PageSizeDropdown pageSize={pageSize} setPageSize={setPageSize} />
+            </div>
+            <div className="">
+              <PageSelection
+                pageSize={pageSize}
+                datasetCount={datasets.length}
+                goToPage={goToPage}
+                goToNextPage={goToNextPage}
+                goToLastPage={goToLastPage}
+                currentPage={currentPage}
+                goToPreviousPage={goToPreviousPage}
+                goToFirstPage={gotToFirstPage}
+              />
+            </div>
           </div>
-          <PageSelection
-            pageSize={pageSize}
-            datasetCount={datasets.length}
-            goToPage={goToPage}
-            goToNextPage={goToNextPage}
-            goToLastPage={goToLastPage}
-            currentPage={currentPage}
-            goToPreviousPage={goToPreviousPage}
-            goToFirstPage={gotToFirstPage}
-          />
         </div>
       ) : null}
 
