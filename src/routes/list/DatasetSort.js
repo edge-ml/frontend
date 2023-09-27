@@ -14,18 +14,18 @@ const DatasetSort = ({
   sortAlphaAsc,
   sortDateAsc,
   sortDateDesc,
-  filterDropDownIsOpen,
-  setFilterDropdownIsOpen,
-  selectedFilter,
-  setSelectedFilter,
+  sortingDropDownIsOpen,
+  setSortingDropdownIsOpen,
+  selectedSorting,
+  setSelectedSorting,
 }) => {
   const toggleDropdown = () => {
-    setFilterDropdownIsOpen(!filterDropDownIsOpen);
+    setSortingDropdownIsOpen(!sortingDropDownIsOpen);
   };
 
   const handleItemClick = (e) => {
     sortDatasets(e.currentTarget.getAttribute('data-dropdownvalue'));
-    setSelectedFilter(e.currentTarget.textContent);
+    setSelectedSorting(e.currentTarget.textContent);
     toggleDropdown();
   };
 
@@ -50,13 +50,13 @@ const DatasetSort = ({
   return (
     <Dropdown
       direction="left"
-      isOpen={filterDropDownIsOpen}
+      isOpen={sortingDropDownIsOpen}
       toggle={toggleDropdown}
       size="sm"
-      className="dataset-filter p-0"
+      className="dataset-sorting p-0"
     >
       <DropdownToggle caret>
-        {selectedFilter || <FontAwesomeIcon icon={faSort}></FontAwesomeIcon>}
+        {selectedSorting || <FontAwesomeIcon icon={faSort}></FontAwesomeIcon>}
       </DropdownToggle>
       <DropdownMenu>
         <DropdownItem header>Sorting Method</DropdownItem>

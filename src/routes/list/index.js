@@ -40,8 +40,8 @@ const ListPage = (props) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [displayedDatasets, setDisplayedDatasets] = useState([]);
   const [pageSize, setPageSize] = useState(5);
-  const [filterDropDownIsOpen, setFilterDropdownIsOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [sortingDropDownIsOpen, setSortingDropdownIsOpen] = useState(false);
+  const [selectedSorting, setSelectedSorting] = useState(null);
   const [showFilterSelectionModal, setShowFilterSelectionModal] =
     useState(false);
   const { registerProjectDownload } = useContext(NotificationContext);
@@ -190,8 +190,8 @@ const ListPage = (props) => {
   };
 
   const resetDropdown = () => {
-    setSelectedFilter(null);
-    setFilterDropdownIsOpen(false);
+    setSelectedSorting(null);
+    setSortingDropdownIsOpen(false);
   };
 
   const sortAlphaAsc = () => {
@@ -303,10 +303,10 @@ const ListPage = (props) => {
             deleteEntry={deleteEntry}
             selectAll={selectAll}
             deselectAll={deselectAll}
-            filterDropDownIsOpen={filterDropDownIsOpen}
-            setFilterDropdownIsOpen={setFilterDropdownIsOpen}
-            selectedFilter={selectedFilter}
-            setSelectedFilter={setSelectedFilter}
+            sortingDropDownIsOpen={sortingDropDownIsOpen}
+            setSortingDropdownIsOpen={setSortingDropdownIsOpen}
+            selectedSorting={selectedSorting}
+            setSelectedSorting={setSelectedSorting}
             sortAlphaAsc={sortAlphaAsc}
             sortAlphaDesc={sortAlphaDesc}
             sortDateAsc={sortDateAsc}

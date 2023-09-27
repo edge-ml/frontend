@@ -77,10 +77,10 @@ const DatasetTable = (props) => {
               <div className="d-flex flex-row justify-content-end position-relative">
                 <div className="position-absolute" style={{ right: '60px' }}>
                   <DatasetSort
-                    filterDropDownIsOpen={props.filterDropDownIsOpen}
-                    setFilterDropdownIsOpen={props.setFilterDropdownIsOpen}
-                    selectedFilter={props.selectedFilter}
-                    setSelectedFilter={props.setSelectedFilter}
+                    sortingDropDownIsOpen={props.sortingDropDownIsOpen}
+                    setSortingDropdownIsOpen={props.setSortingDropdownIsOpen}
+                    selectedSorting={props.selectedSorting}
+                    setSelectedSorting={props.setSelectedSorting}
                     sortAlphaAsc={props.sortAlphaAsc}
                     sortAlphaDesc={props.sortAlphaDesc}
                     sortDateAsc={props.sortDateAsc}

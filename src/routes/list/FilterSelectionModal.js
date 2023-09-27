@@ -27,6 +27,28 @@ const FilterSelectionModal = ({
     setSelectedFilter(event.target.value);
   };
 
+  const renderEmptyDatasetsFilter = () => {
+    return (
+      <div>This filter marks all datasets that contain no timeseries.</div>
+    );
+  };
+
+  const renderFilter = () => {
+    switch (selectedFilter) {
+      case 'filterByName':
+        return null;
+        break;
+      case 'filterEmptyDatasets':
+        return renderEmptyDatasetsFilter();
+        break;
+      case 'filterByLabelingSets':
+        return null;
+        break;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div>
       <Modal isOpen={showFilterSelectionModal} size="xl">
@@ -50,6 +72,7 @@ const FilterSelectionModal = ({
                 </div>
               ))}
             </FormGroup>
+            {renderFilter()}
           </div>
         </ModalBody>
         <ModalFooter>
