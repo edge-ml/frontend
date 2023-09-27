@@ -23,6 +23,7 @@ import {
   getDatasetMeta,
   getTimeSeriesDataPartial,
   getUploadProcessingProgress,
+  changeDatasetName,
 } from '../services/ApiServices/DatasetServices';
 
 import {
@@ -97,6 +98,7 @@ class DatasetPage extends Component {
     this.hideLabels = this.hideLabels.bind(this);
     this.onClickSelectSeries = this.onClickSelectSeries.bind(this);
     this.toggleMetaData = this.toggleMetaData.bind(this);
+    this.handleDatasetNameChange = this.handleDatasetNameChange.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
@@ -298,7 +300,9 @@ class DatasetPage extends Component {
     if (
       this.state.modalOpen ||
       this.props.modalOpen ||
-      document.querySelectorAll('.modal').length > 0
+      this.state.metaDataExtended ||
+      document.querySelectorAll('.modal').length > 0 ||
+      document.querySelectorAll('.popover').length > 0
     ) {
       return;
     }
@@ -759,9 +763,13 @@ class DatasetPage extends Component {
   }
 
   async startPolling() {
-
     this.pollingInterval = setInterval(async () => {
-      const [step, progress, currentTimeseries = 0, totalTimeseries = undefined] = await getUploadProcessingProgress(this.state.dataset._id);
+      const [
+        step,
+        progress,
+        currentTimeseries = 0,
+        totalTimeseries = undefined,
+      ] = await getUploadProcessingProgress(this.state.dataset._id);
       const { processedUntil } = this.state;
 
       if (progress === 100) {
@@ -787,7 +795,7 @@ class DatasetPage extends Component {
 
   getPollingDelay() {
     const { consecutiveNoUpdateCount } = this.state;
-    const MAXIMUM_POLLING_INTERVAL =  60 * 1000; // 60 seconds
+    const MAXIMUM_POLLING_INTERVAL = 60 * 1000; // 60 seconds
     if (consecutiveNoUpdateCount === null) {
       return null;
     }
@@ -795,8 +803,22 @@ class DatasetPage extends Component {
     // exponential backoff
     return Math.min(
       MAXIMUM_POLLING_INTERVAL,
-      (1.5 ** consecutiveNoUpdateCount) * 1000 + Math.random() * 100
+      1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100
     );
+  }
+
+  async handleDatasetNameChange(newName) {
+    const nameChangeSuccessful = await changeDatasetName(
+      this.state.dataset._id,
+      newName
+    );
+    if (nameChangeSuccessful) {
+      this.setState((prevState) => ({
+        dataset: { ...prevState.dataset, name: newName },
+      }));
+      return true;
+    }
+    return false;
   }
 
   render() {
@@ -893,6 +915,7 @@ class DatasetPage extends Component {
                       updateControlStates={this.updateControlStates}
                       onClickPosition={this.onClickPosition}
                       onLabelPositionUpdate={this.onLabelPositionUpdate}
+                      datasetId={this.state.dataset._id}
                     />
                     <Fade
                       className="LabelingPanel"
@@ -982,6 +1005,7 @@ class DatasetPage extends Component {
                   )}
                   user={this.state.dataset.userId}
                   name={this.state.dataset.name}
+                  handleDatasetNameChange={this.handleDatasetNameChange}
                 />
               </div>
               <div className="mt-2">

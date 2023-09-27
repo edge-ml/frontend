@@ -6,7 +6,22 @@ import './TimeSeriesPanel.css';
 import { debounce } from '../../services/helpers';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearchPlus, faSearchMinus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faSearchPlus,
+  faSearchMinus,
+  faCog,
+} from '@fortawesome/free-solid-svg-icons';
+import {
+  Button,
+  Collapse,
+  Fade,
+  Input,
+  InputGroup,
+  Popover,
+  PopoverBody,
+  PopoverHeader,
+  UncontrolledTooltip,
+} from 'reactstrap';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
@@ -200,7 +215,10 @@ class TimeSeriesPanel extends Component {
                     props.unit === ''
                       ? props.name
                       : props.name + ' (' + props.unit + ')',
-                  data: props.data,
+                  data: props.data.map((timeAndVal) => [
+                    timeAndVal[0],
+                    timeAndVal[1] * props.scale + props.offset,
+                  ]),
                   lineWidth: 1.5,
                   enableMouseTracking: false,
                 },
@@ -212,7 +230,10 @@ class TimeSeriesPanel extends Component {
                     ' (' +
                     props.unit[indexOuter] +
                     ')',
-                  data: props.data,
+                  data: props.data.map((timeAndVal) => [
+                    timeAndVal[0],
+                    timeAndVal[1] * props.scale + props.offset,
+                  ]),
                   lineWidth: 1.5,
                   enableMouseTracking: false,
                 };
@@ -839,21 +860,112 @@ class TimeSeriesPanel extends Component {
               ? 0
               : this.props.index < this.props.numSeries - 1
               ? '-25px'
-              : '40px',
+              : '-10px',
         }}
       >
         {this.props.index !== 0 && !this.props.isEmpty ? (
-          <div className="zoomMenuWrapper">
+          <div className="chartMenuWrapper">
             <button
-              className="zoomBtn"
+              className="chartBtn"
+              style={{ marginRight: '1px' }}
+              key={'unitMenuButton' + this.props.index}
+              id={'unitMenuButton' + this.props.index}
+              onClick={(e) => this.props.toggleUnitMenu()}
+            >
+              <FontAwesomeIcon icon={faCog} size="xs" color="#999999" />
+            </button>
+            <Popover
+              target={'unitMenuButton' + this.props.index}
+              isOpen={this.props.isUnitMenuOpen}
+              toggle={(e) => this.props.toggleUnitMenu()}
+              trigger="legacy"
+            >
+              <PopoverHeader className="text-center">
+                Configuration
+              </PopoverHeader>
+              <PopoverBody id="scalingConfigMenu">
+                <InputGroup size="sm">
+                  <div className="input-group-prepend w-25">
+                    <span className="input-group-text w-100 justify-content-center">
+                      Unit
+                    </span>
+                  </div>
+                  <Input
+                    type="text"
+                    value={this.props.unit}
+                    onChange={(e) =>
+                      this.props.handleUnitChange(e.target.value)
+                    }
+                  />
+                </InputGroup>
+                <InputGroup size="sm">
+                  <div className="input-group-prepend w-25">
+                    <span className="input-group-text w-100 justify-content-center">
+                      Scale
+                    </span>
+                  </div>
+                  <Input
+                    type="number"
+                    value={this.props.scale}
+                    onChange={(e) =>
+                      this.props.handleScaleChange(e.target.value)
+                    }
+                  />
+                </InputGroup>
+                <InputGroup size="sm">
+                  <div className="input-group-prepend w-25">
+                    <span className="input-group-text w-100 justify-content-center">
+                      Offset
+                    </span>
+                  </div>
+                  <Input
+                    type="number"
+                    value={this.props.offset}
+                    onChange={(e) =>
+                      this.props.handleOffsetChange(e.target.value)
+                    }
+                  />
+                </InputGroup>
+                <div
+                  className="d-flex justify-content-end"
+                  id="scalingSaveButtonWrapper"
+                >
+                  <Button
+                    color="primary"
+                    id="scalingSaveButton"
+                    onClick={(e) =>
+                      this.props.handleConfigSave(
+                        this.props.unit,
+                        this.props.scale,
+                        this.props.offset
+                      )
+                    }
+                  >
+                    Save
+                  </Button>
+                  <UncontrolledTooltip
+                    target="scalingSaveButton"
+                    placement="left"
+                    container="scalingConfigMenu"
+                    arrowClassName="mr-0 border-white bg-transparent"
+                  >
+                    Saves the configuration in the database
+                  </UncontrolledTooltip>
+                </div>
+              </PopoverBody>
+            </Popover>
+            <button
+              className="chartBtn"
               style={{ marginRight: '1px' }}
               onClick={(e) => this.zoom(ZoomDirection.OUT)}
+              key={'zoomOutButton' + this.props.index}
             >
               <FontAwesomeIcon icon={faSearchMinus} size="xs" color="#999999" />
             </button>
             <button
-              className="zoomBtn"
+              className="chartBtn"
               onClick={(e) => this.zoom(ZoomDirection.IN)}
+              key={'zoomInButton' + this.props.index}
             >
               <FontAwesomeIcon icon={faSearchPlus} size="xs" color="#999999" />
             </button>
@@ -877,12 +989,28 @@ class TimeSeriesPanel extends Component {
         ) : null}
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
           {this.props.index !== 0 ? (
-            <div className="font-weight-bold">
-              {this.props.unit === ''
+            <div className="font-weight-bold d-flex">
+              {this.props.originalUnit === ''
                 ? this.props.name
-                : this.props.name + ' (' + this.props.unit + ')'}
+                : this.props.name + ' (' + this.props.originalUnit + ')'}
+              <Fade
+                in={
+                  this.props.unit !== '' &&
+                  this.props.unit !== this.props.originalUnit
+                }
+              >
+                &nbsp;[viewed as: {this.props.unit}]
+              </Fade>
             </div>
           ) : null}
+          <Collapse
+            isOpen={
+              this.props.index !== 0 &&
+              (this.props.scale !== 1 || this.props.offset !== 0)
+            }
+          >
+            Scale: {this.props.scale}, Offset: {this.props.offset}
+          </Collapse>
           <HighchartsReact
             ref={this.chart}
             highcharts={Highcharts}

@@ -10,11 +10,9 @@ class UserSettingsProvider extends Component {
   }
 
   onDeleteUser(confirmationMail) {
-    if (window.confirm('Are you sure to delete your user?')) {
-      deleteUser(confirmationMail).then(() => {
-        this.props.onLogout();
-      });
-    }
+    deleteUser(confirmationMail).then(() => {
+      this.props.onLogout();
+    });
   }
 
   render() {
@@ -22,7 +20,7 @@ class UserSettingsProvider extends Component {
       <section>
         {React.cloneElement(this.props.children, {
           ...this.props,
-          deleteUser: this.onDeleteUser
+          deleteUser: this.onDeleteUser,
         })}
       </section>
     );

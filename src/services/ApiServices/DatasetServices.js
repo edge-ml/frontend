@@ -215,9 +215,43 @@ export const getUploadProcessingProgress = (datasetId) => {
       apiConsts.HTTP_METHODS.GET,
       apiConsts.DATASET_STORE,
       apiConsts.DATASET_STORE_ENDPOINTS.GET_PROCESSING_PROGRESS +
-      `?datasetId=${datasetId}`
+        `?datasetId=${datasetId}`
     )
   )
-  .then(result => result.data.progress)
-  .catch(err => err.response);
-}
+    .then((result) => result.data.progress)
+    .catch((err) => err.response);
+};
+
+export const changeDatasetName = (datasetId, newName) => {
+  return axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.PUT,
+      apiConsts.DATASET_STORE,
+      apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
+        datasetId +
+        `/rename?newName=${newName}`
+    )
+  )
+    .then((result) => result.data.message)
+    .catch((err) => err.response);
+};
+
+export const updateTimeSeriesConfig = (
+  datasetId,
+  tsId,
+  unit,
+  scaling,
+  offset
+) => {
+  return axios(
+    apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.PUT,
+      apiConsts.DATASET_STORE,
+      apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
+        datasetId +
+        `/changeUnitConfig?tsId=${tsId}&unit=${unit}&scaling=${scaling}&offset=${offset}`
+    )
+  )
+    .then((result) => result.data.message)
+    .catch((err) => err.response);
+};

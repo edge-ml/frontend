@@ -27,7 +27,10 @@ import { DatasetConfigView } from './DatasetConfigView';
 
 import './UploadDatasetModal.css';
 
-import { getUploadProcessingProgress, updateDataset } from '../../services/ApiServices/DatasetServices';
+import {
+  getUploadProcessingProgress,
+  updateDataset,
+} from '../../services/ApiServices/DatasetServices';
 import { useInterval } from '../../services/ReactHooksService';
 
 export const UploadDatasetModal = ({
@@ -213,8 +216,11 @@ export const UploadDatasetModal = ({
           name: name,
           originalName: name,
           unit: unit,
+          originalUnit: unit,
           removed: false,
           index: idx,
+          scale: 1,
+          offset: 0,
         };
       });
     const labelings = fields
@@ -288,23 +294,23 @@ export const UploadDatasetModal = ({
     setController(file.id, cancellationHandler);
     try {
       const result = await response;
-      setFiles(prevFiles => 
-        prevFiles.map(f => f.id === file.id ? 
-                      { 
-                        ...f, 
-                        datasetId: result.data.datasetId, 
-                        status: FileStatus.PROCESSING, 
-                        processingStep: "Started processing",
-                      } :
-                      f
-      ));
+      setFiles((prevFiles) =>
+        prevFiles.map((f) =>
+          f.id === file.id
+            ? {
+                ...f,
+                datasetId: result.data.datasetId,
+                status: FileStatus.PROCESSING,
+                processingStep: 'Started processing',
+              }
+            : f
+        )
+      );
       onDatasetComplete();
     } catch (err) {
       const message = err?.response?.data?.detail || err.message;
       setFiles((prevFiles) =>
-        prevFiles.map((f) =>
-          f.id === file.id ? { ...f, error: message } : f
-        )
+        prevFiles.map((f) => (f.id === file.id ? { ...f, error: message } : f))
       );
       handleStatus(file.id, FileStatus.ERROR);
       return false;
@@ -312,40 +318,68 @@ export const UploadDatasetModal = ({
     return true;
   };
 
-  useInterval(async () => {
-    let pollResultedInUpdate = false;
-    let allComplete = true;
-    for (const file of files) {
-      // if the file is uploading, skip polling but not count it as complete
-      allComplete = allComplete && file.status !== FileStatus.UPLOADING;
-      // processing not started yet / already done, skip
-      if (file.datasetId === undefined || file.status === FileStatus.COMPLETE) {
-        continue;
-      }
-      const [step, progress, currentTimeseries = undefined, totalTimeseries = undefined] = await getUploadProcessingProgress(file.datasetId);
-      if (step !== file.processingStep || file.processedTimeseries[0] !== currentTimeseries) {
-        pollResultedInUpdate = true;
-        if (progress === 100) {
-          handleStatus(file.id, FileStatus.COMPLETE);
+  useInterval(
+    async () => {
+      let pollResultedInUpdate = false;
+      let allComplete = true;
+      console.log('Checking status');
+      console.log(files.length);
+      for (const file of files) {
+        // if the file is uploading, skip polling but not count it as complete
+        allComplete = allComplete && file.status !== FileStatus.UPLOADING;
+        // processing not started yet / already done, skip
+        if (
+          file.datasetId === undefined ||
+          file.status === FileStatus.COMPLETE
+        ) {
+          continue;
         }
-        setFiles(prevFiles => 
-          prevFiles.map(f => f.id === file.id ? 
-            { ...f, processingStep: step, processedTimeseries: [currentTimeseries, totalTimeseries]} : 
-            f 
-        ));
-        allComplete = allComplete && progress === 100;
+        const [
+          step,
+          progress,
+          currentTimeseries = undefined,
+          totalTimeseries = undefined,
+        ] = await getUploadProcessingProgress(file.datasetId);
+        console.log(step, progress, currentTimeseries);
+        if (
+          step !== file.processingStep ||
+          file.processedTimeseries[0] !== currentTimeseries
+        ) {
+          pollResultedInUpdate = true;
+          if (progress === 100) {
+            handleStatus(file.id, FileStatus.COMPLETE);
+          }
+          setFiles((prevFiles) =>
+            prevFiles.map((f) =>
+              f.id === file.id
+                ? {
+                    ...f,
+                    processingStep: step,
+                    processedTimeseries: [currentTimeseries, totalTimeseries],
+                  }
+                : f
+            )
+          );
+          allComplete = allComplete && progress === 100;
+        }
       }
-    }
-    if (allComplete) {
-      setConsecutiveNoUpdateCount(null); // stop polling
-    } else if (!pollResultedInUpdate) {
-      setConsecutiveNoUpdateCount(prevCount => prevCount + 1);
-    } else {
-      setConsecutiveNoUpdateCount(0);
-    }
-  }, consecutiveNoUpdateCount === null 
+      console.log('Allcomplete', allComplete);
+      if (allComplete) {
+        setConsecutiveNoUpdateCount(null); // stop polling
+        handleModalClose();
+      } else if (!pollResultedInUpdate) {
+        setConsecutiveNoUpdateCount((prevCount) => prevCount + 1);
+      } else {
+        setConsecutiveNoUpdateCount(0);
+      }
+    },
+    consecutiveNoUpdateCount === null
       ? null
-      :  Math.min(MAXIMUM_POLLING_INTERVAL, (1.5 ** consecutiveNoUpdateCount) * 1000 + Math.random() * 100));
+      : Math.min(
+          MAXIMUM_POLLING_INTERVAL,
+          1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100
+        )
+  );
 
   const handleUploadAll = async () => {
     setFiles((prevFiles) =>
@@ -362,22 +396,8 @@ export const UploadDatasetModal = ({
     }
   };
 
-  const confirmConfig = async (backendId, fileConfig) => {
-    const updatedDataset = await updateDataset({
-      _id: backendId,
-      name: fileConfig.name,
-      start: fileConfig.start,
-      end: fileConfig.end,
-      labelings: fileConfig.labelings,
-      timeSeries: fileConfig.timeSeries,
-    });
-  };
-
   const handleModalClose = () => {
-    const anyOngoing = files.find(
-      (f) =>
-        f.status === FileStatus.UPLOADING
-    );
+    const anyOngoing = files.find((f) => f.status === FileStatus.UPLOADING);
     if (anyOngoing) {
       setShowWarning(true);
     } else {
@@ -466,8 +486,13 @@ export const UploadDatasetModal = ({
                   >
                     {f.status === FileStatus.ERROR
                       ? `Error: ${f.error}`
-                      : `${f.status} ${f.status === FileStatus.PROCESSING ? (f.processedTimeseries[0] ? `: ${f.processingStep} - Timeseries Processed: ${f.processedTimeseries[0]}/${f.processedTimeseries[1]} ` : `: ${f.processingStep} `)
-                      : ""} ${f.progress.toFixed(2)}%`}
+                      : `${f.status} ${
+                          f.status === FileStatus.PROCESSING
+                            ? f.processedTimeseries[0]
+                              ? `: ${f.processingStep} - Timeseries Processed: ${f.processedTimeseries[0]}/${f.processedTimeseries[1]} `
+                              : `: ${f.processingStep} `
+                            : ''
+                        } ${f.progress.toFixed(2)}%`}
                   </Progress>
                   <div className="d-flex align-items-center">
                     {f.status === FileStatus.COMPLETE && (
@@ -554,7 +579,6 @@ export const UploadDatasetModal = ({
                   fileId={f.id}
                   fileConfig={f.config}
                   changeConfig={changeConfig}
-                  confirmConfig={confirmConfig}
                   backendId={f.backendId}
                 />
               )

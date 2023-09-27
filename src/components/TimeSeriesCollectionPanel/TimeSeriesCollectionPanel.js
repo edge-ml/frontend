@@ -4,13 +4,23 @@ import './TimeSeriesCollectionPanel.css';
 import TimeSeriesPanel from '../TimeSeriesPanel/TimeSeriesPanel';
 import Highcharts from 'highcharts/highstock';
 import RangeSlider from '../RangeSlider/RangeSlider';
+import { updateTimeSeriesConfig } from '../../services/ApiServices/DatasetServices';
+import { Alert } from 'reactstrap';
 
 class TimeSeriesCollectionPanel extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      timeSeries: props.timeSeries,
+      timeSeries: props.timeSeries.map((ts) => ({
+        ...ts,
+        isUnitMenuOpen: false,
+        originalUnit: ts.unit,
+        scale: 1,
+        offset: 0,
+        originalScale: ts.scaling,
+        originalOffset: ts.offset,
+      })),
       previewTimeSeriesData: props.previewTimeSeriesData,
       fusedSeries: props.fusedSeries ? props.fusedSeries : [],
       labeling: this.props.labeling,
@@ -22,6 +32,8 @@ class TimeSeriesCollectionPanel extends Component {
       onScrubbed: props.onScrubbed,
       onDelete: props.onDelete,
       activeSeries: props.activeSeries,
+      successAlertVisible: false,
+      errorAlertVisible: false,
     };
 
     // this.sortedPreviewTimeSeries = props.previewTimeSeriesData
@@ -30,6 +42,11 @@ class TimeSeriesCollectionPanel extends Component {
     //   .filter((e, i, a) => e[0] !== (a[i - 1] ? a[i - 1][0] : undefined));
 
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
+    this.toggleUnitMenu = this.toggleUnitMenu.bind(this);
+    this.handleUnitChange = this.handleUnitChange.bind(this);
+    this.handleScaleChange = this.handleScaleChange.bind(this);
+    this.handleOffsetChange = this.handleOffsetChange.bind(this);
+    this.handleConfigSave = this.handleConfigSave.bind(this);
 
     Highcharts.addEvent(
       Highcharts.Axis,
@@ -46,10 +63,10 @@ class TimeSeriesCollectionPanel extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState((state) => ({
+    this.setState((prevState) => ({
       labeling: props.labeling,
       labelTypes: props.labelTypes,
-      timeSeries: props.timeSeries,
+      timeSeries: prevState.timeSeries,
       previewTimeSeriesData: props.previewTimeSeriesData,
       fusedSeries: props.fusedSeries ? props.fusedSeries : [],
       onLabelClicked: props.onLabelClicked,
@@ -95,9 +112,87 @@ class TimeSeriesCollectionPanel extends Component {
     const arr = Array.from({ length: N }, (_, i) => [start + i * step, -1]);
     return arr;
   };
+
+  toggleUnitMenu = (timeSeriesId) => () => {
+    this.setState((prevState) => ({
+      timeSeries: prevState.timeSeries.map((ts) =>
+        ts._id !== timeSeriesId
+          ? ts
+          : { ...ts, isUnitMenuOpen: !ts.isUnitMenuOpen }
+      ),
+    }));
+  };
+
+  handleUnitChange = (timeSeriesId) => (unit) => {
+    this.setState((prevState) => ({
+      timeSeries: prevState.timeSeries.map((ts) =>
+        ts._id !== timeSeriesId ? ts : { ...ts, unit: unit }
+      ),
+    }));
+  };
+
+  handleScaleChange = (timeSeriesId) => (scale) => {
+    this.setState((prevState) => ({
+      timeSeries: prevState.timeSeries.map((ts) =>
+        ts._id !== timeSeriesId ? ts : { ...ts, scale: parseFloat(scale) }
+      ),
+    }));
+  };
+
+  handleOffsetChange = (timeSeriesId) => (offset) => {
+    this.setState((prevState) => ({
+      timeSeries: prevState.timeSeries.map((ts) =>
+        ts._id !== timeSeriesId ? ts : { ...ts, offset: parseFloat(offset) }
+      ),
+    }));
+  };
+
+  handleConfigSave =
+    (timeSeriesId, originalScale, originalOffset) =>
+    async (unit, scale, offset) => {
+      try {
+        await updateTimeSeriesConfig(
+          this.props.datasetId,
+          timeSeriesId,
+          unit,
+          originalScale * scale,
+          originalOffset + offset
+        );
+        this.setState({ successAlertVisible: true });
+        setTimeout(() => this.setState({ successAlertVisible: false }), 3000); // Hide after 3 seconds
+      } catch (e) {
+        this.setState({ errorAlertVisible: true });
+        setTimeout(() => this.setState({ errorAlertVisible: false }), 3000); // Hide after 3 seconds
+      }
+    };
+
   render() {
     return (
-      <div className="d-flex flex-column">
+      <div className="TimeSeriesCollectionPanel">
+        <div
+          style={{
+            position: 'fixed',
+            top: '20px',
+            left: '11.8%',
+            zIndex: 5000,
+            width: '87%',
+          }}
+        >
+          <Alert
+            color="success"
+            isOpen={this.state.successAlertVisible}
+            toggle={() => this.setState({ successAlertVisible: false })}
+          >
+            Configuration saved successfully!
+          </Alert>
+          <Alert
+            color="danger"
+            isOpen={this.state.errorAlertVisible}
+            toggle={() => this.setState({ errorAlertVisible: false })}
+          >
+            Error saving configuration. Please try again.
+          </Alert>
+        </div>
         {this.state.activeSeries.length ? (
           <div className="d-flex flex-row justify-content-center w-100">
             <div className="navigator">
