@@ -9,7 +9,7 @@ import { faSort } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './DatasetFilter.css';
 
-const DatasetFilter = ({
+const DatasetSort = ({
   sortAlphaDesc,
   sortAlphaAsc,
   sortDateAsc,
@@ -84,11 +84,9 @@ const DatasetFilter = ({
         >
           Recording Date (ascending)
         </DropdownItem>
-        <DropdownItem divider />
-        <DropdownItem>Labeling Set</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );
 };
 
-export default DatasetFilter;
+export default DatasetSort;
