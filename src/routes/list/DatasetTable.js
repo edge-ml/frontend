@@ -74,9 +74,8 @@ const DatasetTable = (props) => {
                   Select Empty Datasets
                 </Button>
               </div>
-              <div className="d-flex flex-md-row justify-content-end position-relative">
-                <div className="position-absolute" style={{ top: '-10px' }}>
-                  {' '}
+              <div className="d-flex flex-row justify-content-end position-relative">
+                <div className="position-absolute" style={{ right: '60px' }}>
                   <DatasetSort
                     filterDropDownIsOpen={props.filterDropDownIsOpen}
                     setFilterDropdownIsOpen={props.setFilterDropdownIsOpen}
@@ -88,6 +87,12 @@ const DatasetTable = (props) => {
                     sortDateDesc={props.sortDateDesc}
                   />
                 </div>
+                <Button
+                  className="mr-3"
+                  onClick={props.toggleFilterSelectionModal}
+                >
+                  <FontAwesomeIcon icon={faFilter} />
+                </Button>
               </div>
             </div>
             <div

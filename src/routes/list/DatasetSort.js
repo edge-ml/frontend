@@ -53,13 +53,13 @@ const DatasetSort = ({
       isOpen={filterDropDownIsOpen}
       toggle={toggleDropdown}
       size="sm"
-      className="dataset-filter"
+      className="dataset-filter p-0"
     >
       <DropdownToggle caret>
         {selectedFilter || <FontAwesomeIcon icon={faSort}></FontAwesomeIcon>}
       </DropdownToggle>
       <DropdownMenu>
-        <DropdownItem header>Filter Selection</DropdownItem>
+        <DropdownItem header>Sorting Method</DropdownItem>
         <DropdownItem
           onClick={handleItemClick}
           data-dropdownvalue="sortAlphaDesc"

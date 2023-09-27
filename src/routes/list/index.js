@@ -15,6 +15,7 @@ import {
 } from 'reactstrap';
 import NotificationContext from '../../components/NotificationHandler/NotificationProvider';
 import Loader from '../../modules/loader';
+import FilterSelectionModal from './FilterSelectionModal';
 
 import './index.css';
 
@@ -28,7 +29,6 @@ import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
 import PageSelection from './PageSelection';
 import PageSizeDropdown from './PageSizeDropdown';
-import { displayTime } from '../../services/helpers';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -42,6 +42,8 @@ const ListPage = (props) => {
   const [pageSize, setPageSize] = useState(5);
   const [filterDropDownIsOpen, setFilterDropdownIsOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(null);
+  const [showFilterSelectionModal, setShowFilterSelectionModal] =
+    useState(false);
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
   const datasetsRef = useRef(datasets);
@@ -73,6 +75,10 @@ const ListPage = (props) => {
 
   const toggleCreateNewDatasetModal = () => {
     setIsCreateNewDatasetOpen(!isCreateNewDatasetOpen);
+  };
+
+  const toggleFilterSelectionModal = () => {
+    setShowFilterSelectionModal(!showFilterSelectionModal);
   };
 
   const selectAllEmpty = () => {
@@ -305,6 +311,7 @@ const ListPage = (props) => {
             sortAlphaDesc={sortAlphaDesc}
             sortDateAsc={sortDateAsc}
             sortDateDesc={sortDateDesc}
+            toggleFilterSelectionModal={toggleFilterSelectionModal}
           ></DatasetTable>
         </div>
       </Container>
@@ -368,6 +375,12 @@ const ListPage = (props) => {
         onCloseModal={toggleCreateNewDatasetModal}
         onDatasetComplete={refreshList}
       />
+      {showFilterSelectionModal ? (
+        <FilterSelectionModal
+          toggleFilterSelectionModal={toggleFilterSelectionModal}
+          showFilterSelectionModal={showFilterSelectionModal}
+        />
+      ) : null}
     </div>
   );
 };
