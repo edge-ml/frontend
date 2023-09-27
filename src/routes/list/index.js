@@ -44,6 +44,7 @@ const ListPage = (props) => {
   const [selectedSorting, setSelectedSorting] = useState(null);
   const [showFilterSelectionModal, setShowFilterSelectionModal] =
     useState(false);
+  const [selectedFilter, setSelectedFilter] = useState('clearFilter');
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
   const datasetsRef = useRef(datasets);
@@ -91,6 +92,22 @@ const ListPage = (props) => {
         )
         .map((elm) => elm._id)
     );
+  };
+
+  const applyFilter = (filter) => {
+    //clear selected before applying
+    setSelectedDatasets([]);
+    switch (filter) {
+      case 'filterByName':
+        break;
+      case 'filterEmptyDatasets':
+        selectAllEmpty();
+        break;
+      case 'filterByLabelingSets':
+        break;
+      default:
+        return null;
+    }
   };
 
   const selectAll = () => {
@@ -312,6 +329,8 @@ const ListPage = (props) => {
             sortDateAsc={sortDateAsc}
             sortDateDesc={sortDateDesc}
             toggleFilterSelectionModal={toggleFilterSelectionModal}
+            applyFilter={applyFilter}
+            filterSelected={selectedFilter !== 'clearFilter'}
           ></DatasetTable>
         </div>
       </Container>
@@ -379,6 +398,9 @@ const ListPage = (props) => {
         <FilterSelectionModal
           toggleFilterSelectionModal={toggleFilterSelectionModal}
           showFilterSelectionModal={showFilterSelectionModal}
+          applyFilter={applyFilter}
+          selectedFilter={selectedFilter}
+          setSelectedFilter={setSelectedFilter}
         />
       ) : null}
     </div>

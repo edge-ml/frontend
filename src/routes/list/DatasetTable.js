@@ -88,6 +88,7 @@ const DatasetTable = (props) => {
                   />
                 </div>
                 <Button
+                  active={props.filterSelected}
                   className="mr-3"
                   onClick={props.toggleFilterSelectionModal}
                 >

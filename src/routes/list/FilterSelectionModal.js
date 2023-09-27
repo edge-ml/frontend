@@ -6,8 +6,6 @@ import {
   ModalBody,
   ModalFooter,
   Input,
-  ListGroup,
-  ListGroupItem,
   Label,
   FormGroup,
 } from 'reactstrap';
@@ -15,16 +13,22 @@ import {
 const FilterSelectionModal = ({
   toggleFilterSelectionModal,
   showFilterSelectionModal,
+  applyFilter,
+  selectedFilter,
+  setSelectedFilter,
 }) => {
-  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [currentFilter, setCurrentFilter] = useState(selectedFilter);
+  const [filterParam, setFilterParam] = useState(null);
   const filters = [
-    { displayName: 'Name Prefix', value: 'filterByName' },
+    { displayName: 'Remove Filter', value: 'clearFilter' },
+    { displayName: 'Text Search', value: 'filterByName' },
     { displayName: 'Empty Datasets', value: 'filterEmptyDatasets' },
     { displayName: 'Labeling Sets', value: 'filterByLabelingSets' },
   ];
 
   const handleFilterClick = (event) => {
-    setSelectedFilter(event.target.value);
+    setFilterParam(null);
+    setCurrentFilter(event.target.value);
   };
 
   const renderEmptyDatasetsFilter = () => {
@@ -34,7 +38,7 @@ const FilterSelectionModal = ({
   };
 
   const renderFilter = () => {
-    switch (selectedFilter) {
+    switch (currentFilter) {
       case 'filterByName':
         return null;
         break;
@@ -47,6 +51,11 @@ const FilterSelectionModal = ({
       default:
         return null;
     }
+  };
+
+  const applyAndClose = () => {
+    applyFilter(currentFilter, filterParam);
+    toggleFilterSelectionModal();
   };
 
   return (
@@ -64,7 +73,7 @@ const FilterSelectionModal = ({
                       type="radio"
                       name="radioOption"
                       value={filter.value}
-                      checked={selectedFilter === filter.value}
+                      checked={currentFilter === filter.value}
                       onChange={handleFilterClick}
                     />{' '}
                     {filter.displayName}
@@ -76,7 +85,7 @@ const FilterSelectionModal = ({
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" outline onClick={toggleFilterSelectionModal}>
+          <Button color="primary" outline onClick={applyAndClose}>
             Apply
           </Button>{' '}
           <Button color="danger" outline onClick={toggleFilterSelectionModal}>
