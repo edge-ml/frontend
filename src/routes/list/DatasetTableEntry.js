@@ -23,16 +23,7 @@ import classNames from 'classnames';
 
 import Checkbox from '../../components/Common/Checkbox';
 import { hexToRgb } from '../../services/ColorService';
-
-const displayTime = (time) => {
-  const minTimestamp = -8640000000000000;
-  const maxTimestamp = 8640000000000000;
-  if (time < minTimestamp || time > maxTimestamp) {
-    return '-';
-  }
-  const date = new Date(time);
-  return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
-};
+import { displayTime } from '../../services/helpers';
 
 // s as unix timestamp in milliseconds
 const format_time = (s) => {

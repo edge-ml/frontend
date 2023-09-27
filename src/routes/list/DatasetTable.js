@@ -8,6 +8,7 @@ import React, { Fragment, useState } from 'react';
 import { Button, Container } from 'reactstrap';
 import Checkbox from '../../components/Common/Checkbox';
 import DatasetTableEntry from './DatasetTableEntry';
+import DatasetFilter from './DatasetFilter';
 
 const DatasetTable = (props) => {
   const [areAllSelected, setAllSelected] = useState(false);
@@ -21,15 +22,15 @@ const DatasetTable = (props) => {
             size="sm"
             color="secondary"
             className="btn-download-all ml-auto"
-            disabled={props.datasets.length === 0}
+            disabled={props.displayedDatasets.length === 0}
             onClick={props.downloadAllDatasets}
           >
             <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon> Download All
           </Button>
         </div>
-        {props.datasets.length > 0 ? (
+        {props.displayedDatasets.length > 0 ? (
           <div style={{ borderRadius: 10 }}>
-            <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline">
+            <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row align-content-baseline">
               <div className="d-flex flex-row align-items-center p-1">
                 <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
                   <Checkbox
@@ -73,6 +74,21 @@ const DatasetTable = (props) => {
                   Select Empty Datasets
                 </Button>
               </div>
+              <div className="d-flex flex-md-row justify-content-end position-relative">
+                <div className="position-absolute" style={{ top: '-10px' }}>
+                  {' '}
+                  <DatasetFilter
+                    filterDropDownIsOpen={props.filterDropDownIsOpen}
+                    setFilterDropdownIsOpen={props.setFilterDropdownIsOpen}
+                    selectedFilter={props.selectedFilter}
+                    setSelectedFilter={props.setSelectedFilter}
+                    sortAlphaAsc={props.sortAlphaAsc}
+                    sortAlphaDesc={props.sortAlphaDesc}
+                    sortDateAsc={props.sortDateAsc}
+                    sortDateDesc={props.sortDateDesc}
+                  />
+                </div>
+              </div>
             </div>
             <div
               className="w-100 position-relative"
@@ -82,7 +98,7 @@ const DatasetTable = (props) => {
                 overflow: 'hidden',
               }}
             >
-              {props.datasets.map((dataset, index) => (
+              {props.displayedDatasets.map((dataset, index) => (
                 <DatasetTableEntry
                   dataset={dataset}
                   index={index}
