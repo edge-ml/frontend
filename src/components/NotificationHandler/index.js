@@ -6,6 +6,8 @@ import {
   ModalFooter,
   ModalHeader,
   Spinner,
+  Col,
+  Row,
 } from 'reactstrap';
 import NotificationContext from '../NotificationHandler/NotificationProvider';
 import { useContext, useEffect } from 'react';
@@ -29,34 +31,75 @@ const NotificationHandler = ({ onClose, isOpen }) => {
       <ModalBody>
         {console.log(activeNotifications)}
         {activeNotifications.map((elm) => (
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <b>{elm.projectName ? elm.projectName : elm.datasetName}</b>
-            </div>
-            {elm.error ? <div>Error</div> : null}
-            {elm.status < 100 ? (
-              <div className="d-flex  align-items-center">
-                <Spinner></Spinner>
-                <div className="ml-2">{elm.status}%</div>
-              </div>
-            ) : (
+          <Row className="mt-2">
+            <Col>
               <div>
-                {console.log(elm)}
-                {elm.error ? null : (
-                  <Button onClick={() => datasetDownloadfromId(elm.downloadId)}>
-                    Download
-                  </Button>
-                )}
+                <b>{elm.datasetName ? elm.datasetName : elm.projectName}</b>
+                <div>
+                  {elm.datasetName
+                    ? '(Dataset in project ' + elm.projectName + ')'
+                    : '(Project)'}
+                </div>
               </div>
-            )}
-            <Button
-              className="m-2"
-              onClick={() => removeNotification(elm.downloadId)}
-              color="danger"
-            >
-              <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
-            </Button>
-          </div>
+            </Col>
+            <Col className="text-center">
+              {elm.error ? <div>Error</div> : null}
+              {elm.status < 100 ? (
+                <div className="d-flex  align-items-center">
+                  <Spinner></Spinner>
+                  <div className="ml-2">{elm.status}%</div>
+                </div>
+              ) : (
+                <div>
+                  {console.log(elm)}
+                  {elm.error ? null : (
+                    <Button
+                      onClick={() => datasetDownloadfromId(elm.downloadId)}
+                    >
+                      Download
+                    </Button>
+                  )}
+                </div>
+              )}
+            </Col>
+            <Col style={{ textAlign: 'end' }}>
+              <Button
+                onClick={() => removeNotification(elm.downloadId)}
+                color="danger"
+              >
+                <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
+              </Button>
+            </Col>
+          </Row>
+
+          // <div className="d-flex justify-content-between align-items-center">
+          //   <div>
+          //     <b>{elm.datasetName ? elm.datasetName : elm.projectName}</b>
+          //   </div>
+          // {elm.error ? <div>Error</div> : null}
+          // {elm.status < 100 ? (
+          //   <div className="d-flex  align-items-center">
+          //     <Spinner></Spinner>
+          //     <div className="ml-2">{elm.status}%</div>
+          //   </div>
+          // ) : (
+          //   <div>
+          //     {console.log(elm)}
+          //     {elm.error ? null : (
+          //       <Button onClick={() => datasetDownloadfromId(elm.downloadId)}>
+          //         Download
+          //       </Button>
+          //     )}
+          //   </div>
+          // )}
+          // <Button
+          //   className="m-2"
+          //   onClick={() => removeNotification(elm.downloadId)}
+          //   color="danger"
+          // >
+          //   <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
+          // </Button>
+          // </div>
         ))}
       </ModalBody>
       <ModalFooter>

@@ -12,7 +12,7 @@ const NotificationContext = createContext();
 export const NotificationProvider = ({ children }) => {
   const [activeNotifications, setActiveNotifications] = useState([]);
   const [hasNewNotifications, setHasNewNotifications] = useState(true); // Flag variable
-  const [updateHandle, setUpdateHandle] = useState(null); // Initialize updateHandle as a state variable
+  const [updateHandle, setUpdateHandle] = useState(undefined); // Initialize updateHandle as a state variable
 
   const registerProjectDownload = async () => {
     const res = await reg_project_download();
@@ -37,31 +37,76 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const updateNotifications = async () => {
-    console.log(updateHandle);
-    const status = await datasetDownloadStatus();
-    if (status >= 400) {
+    const notifications = await datasetDownloadStatus();
+    console.log(notifications);
+    if (notifications >= 400) {
       setHasNewNotifications(false);
       return;
     }
-    setActiveNotifications(status);
-    setHasNewNotifications(status.length > 0); // Update the flag
+    setActiveNotifications(notifications);
+    const uncompletedNotifications =
+      notifications.map((elm) => elm.status).filter((elm) => elm != 100) > 0;
+    console.log(!uncompletedNotifications || notifications.length === 0);
+    if (!uncompletedNotifications) {
+      stopUpdates();
+    }
+    setHasNewNotifications(uncompletedNotifications); // Update the flag
+  };
+
+  const startUpdates = () => {
+    console.log('Starting updates');
+    if (!updateHandle) {
+      const handle = setInterval(updateNotifications, 2000); // Assign to updateHandle
+      setUpdateHandle(handle);
+    }
+  };
+
+  const stopUpdates = () => {
+    console.log('Stopping updates');
+    clearInterval(updateHandle);
   };
 
   useEffect(() => {
-    const handle = setInterval(updateNotifications, 2000); // Assign to updateHandle
-    setUpdateHandle(handle);
-    return () => {
-      clearInterval(updateHandle);
-    };
+    startUpdates();
   }, []);
 
+  // useEffect(() => {
+  //   const handle = setInterval(updateNotifications, 2000); // Assign to updateHandle
+  //   console.log(handle)
+  //   setUpdateHandle(handle);
+  //   return () => {
+  //     clearInterval(updateHandle);
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+
+  //   var handle = undefined;
+
+  //   const updateNotifications = async () => {
+  //     const notifications = await datasetDownloadStatus();
+  //     if (notifications >= 400) {
+  //       setHasNewNotifications(false);
+  //       return;
+  //     }
+  //     setActiveNotifications(notifications)
+  //     const uncompletedNotifications = notifications.map(elm => elm.status).filter(elm => elm != 100) > 0;
+  //     if (!uncompletedNotifications) {
+  //       clearInterval(handle)
+  //     }
+  //     setHasNewNotifications(uncompletedNotifications); // Update the flag
+  //   }
+
+  //   handle = setInterval(updateNotifications, 2000);
+  // }, [])
+
   // Stop polling if no new notifications were found during the last pull
-  useEffect(() => {
-    if (!hasNewNotifications) {
-      console.log('Clear interval');
-      clearInterval(updateHandle);
-    }
-  }, [hasNewNotifications]);
+  // useEffect(() => {
+  //   if (!hasNewNotifications) {
+  //     console.log('Clear interval');
+  //     clearInterval(updateHandle);
+  //   }
+  // }, [hasNewNotifications]);
 
   return (
     <NotificationContext.Provider
