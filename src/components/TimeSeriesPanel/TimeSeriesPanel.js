@@ -992,7 +992,12 @@ class TimeSeriesPanel extends Component {
             <div className="font-weight-bold d-flex">
               {this.props.originalUnit === ''
                 ? this.props.name
-                : this.props.name + ' (' + this.props.originalUnit + ')'}
+                : this.props.name +
+                  ' (' +
+                  (this.props.originalUnit
+                    ? this.props.originalUnit
+                    : 'No unit') +
+                  ')'}
               <Fade
                 in={
                   this.props.unit !== '' &&
@@ -1008,9 +1013,7 @@ class TimeSeriesPanel extends Component {
               this.props.index !== 0 &&
               (this.props.scale !== 1 || this.props.offset !== 0)
             }
-          >
-            Scale: {this.props.scale}, Offset: {this.props.offset}
-          </Collapse>
+          ></Collapse>
           <HighchartsReact
             ref={this.chart}
             highcharts={Highcharts}

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useRef } from 'react';
 import {
   downloadDatasetsRegister,
   datasetDownloadStatus,
@@ -12,13 +12,14 @@ const NotificationContext = createContext();
 export const NotificationProvider = ({ children }) => {
   const [activeNotifications, setActiveNotifications] = useState([]);
   const [hasNewNotifications, setHasNewNotifications] = useState(true); // Flag variable
-  const [updateHandle, setUpdateHandle] = useState(undefined); // Initialize updateHandle as a state variable
+  const updateHandle = useRef(null);
 
   const registerProjectDownload = async () => {
     const res = await reg_project_download();
     console.log(res);
     setActiveNotifications((prevState) => [...prevState, res]);
     setHasNewNotifications(true);
+    startUpdates();
   };
 
   const registerDatasetDownload = async (datasetId) => {
@@ -26,6 +27,7 @@ export const NotificationProvider = ({ children }) => {
     console.log(res);
     setActiveNotifications((prevState) => [...prevState, res]);
     setHasNewNotifications(true);
+    startUpdates();
   };
 
   const removeNotification = (id) => {
@@ -47,7 +49,8 @@ export const NotificationProvider = ({ children }) => {
     const uncompletedNotifications =
       notifications.map((elm) => elm.status).filter((elm) => elm != 100) > 0;
     console.log(!uncompletedNotifications || notifications.length === 0);
-    if (!uncompletedNotifications) {
+    console.log(uncompletedNotifications, notifications);
+    if (!uncompletedNotifications || notifications.length === 0) {
       stopUpdates();
     }
     setHasNewNotifications(uncompletedNotifications); // Update the flag
@@ -55,19 +58,21 @@ export const NotificationProvider = ({ children }) => {
 
   const startUpdates = () => {
     console.log('Starting updates');
-    if (!updateHandle) {
-      const handle = setInterval(updateNotifications, 2000); // Assign to updateHandle
-      setUpdateHandle(handle);
+    if (updateHandle.current === null) {
+      const handle = setInterval(updateNotifications, 2000);
+      updateHandle.current = handle;
     }
   };
 
   const stopUpdates = () => {
     console.log('Stopping updates');
-    clearInterval(updateHandle);
+    clearInterval(updateHandle.current);
+    updateHandle.current = null;
   };
 
   useEffect(() => {
     startUpdates();
+    return () => stopUpdates();
   }, []);
 
   // useEffect(() => {

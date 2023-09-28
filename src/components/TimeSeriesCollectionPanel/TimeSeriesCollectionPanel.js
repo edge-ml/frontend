@@ -205,6 +205,7 @@ class TimeSeriesCollectionPanel extends Component {
                 //     : [10, 10]
                 // }
                 // data={[[this.state.start, 1], [this.state.end, 1]]}
+                toggleUnitMenu={this.toggleUnitMenu}
                 data={this.getIndexData()}
                 labeling={this.state.labeling}
                 labelTypes={this.state.labelTypes}
@@ -231,6 +232,7 @@ class TimeSeriesCollectionPanel extends Component {
         <div className="TimeSeriesCollectionPanel">
           {this.state.timeSeries.length === 0 ? (
             <TimeSeriesPanel
+              toggleUnitMenu={this.toggleUnitMenu}
               isEmpty={true}
               index={1}
               offset={0}
@@ -275,6 +277,7 @@ class TimeSeriesCollectionPanel extends Component {
                 samplingRate={
                   timeSeries.samplingRate ? timeSeries.samplingRate : 1
                 }
+                toggleUnitMenu={this.toggleUnitMenu}
                 name={timeSeries.name}
                 unit={timeSeries.unit}
                 labeling={this.state.labeling}
