@@ -33,7 +33,7 @@ export const SensorList = ({
   setSensorRate,
   disabled = false,
   uiPersistentStateKey = 'routes:uploadWeb:SensorList.collapseState',
-  SensorComponent = BadgeSensorComponent,
+  renderSensorComponent = BadgeSensorComponent,
   onlyShowSelectedDetails = false,
 }) => {
   const isDesktop = useBootstrapMDBreakpoint();
@@ -51,8 +51,8 @@ export const SensorList = ({
             <Th>Sensor</Th>
             {isDesktop ? (
               <React.Fragment>
-                <Th>Sample Rate</Th>
-                <Th>Components</Th>
+                <Th style={{ whiteSpace: 'nowrap' }}>Sample Rate</Th>
+                <Th style={{ width: '100%' }}>Components</Th>
               </React.Fragment>
             ) : (
               <React.Fragment>
@@ -84,14 +84,13 @@ export const SensorList = ({
               </InputGroup>
             );
 
-            const badges = shortComponents.map((c, i) => (
-              <SensorComponent
-                key={c}
-                shortComponent={c}
-                component={components[i]}
-                sensor={sensor}
-              />
-            ));
+            const badges = shortComponents.map((c, i) =>
+              renderSensorComponent({
+                shortComponent: c,
+                component: components[i],
+                sensor: sensor,
+              })
+            );
 
             const toggleDetails = () =>
               setCollapseState((prevState) => ({
@@ -143,9 +142,12 @@ export const SensorList = ({
                         {fixedFrequency ? null : rateInput}
                       </Td>
                       <Td
-                        style={displayStyle(
-                          !areDetailsShownWhenOnlyShowSelectedDetails
-                        )}
+                        style={{
+                          ...displayStyle(
+                            !areDetailsShownWhenOnlyShowSelectedDetails
+                          ),
+                          width: '100%',
+                        }}
                       >
                         {badges}
                       </Td>
