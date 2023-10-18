@@ -84,11 +84,12 @@ export const ML_ENDPOINTS = {
 
 export const DATASET_STORE_ENDPOINTS = {
   DATASETS: 'datasets/',
+  DATASETS_VIEW: 'datasets/view',
   DATASET_LABELINGS: 'datasets/labelings/',
   LABELING: 'labelings/',
   CSV: 'download/',
   CREATE_DATASET: 'datasets/create',
-  GET_PROCESSING_PROGRESS: 'datasets/create/progress'
+  GET_PROCESSING_PROGRESS: 'datasets/create/progress',
 };
 
 export const generateApiRequest = (

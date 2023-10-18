@@ -23,6 +23,30 @@ export const getDatasets = () => {
   });
 };
 
+export const getDatasetsWithPagination = () => {
+  const queryParams = {
+    page: 1,
+    page_size: 5,
+  };
+  const request = apiConsts.generateApiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.DATASET_STORE,
+    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS_VIEW
+  );
+  request.params = queryParams;
+  return new Promise((resolve, reject) => {
+    axios(request)
+      .then((result) => {
+        console.log(result);
+        resolve(result.data);
+      })
+      .catch((err) => {
+        console.log(err.response);
+        reject(err.response);
+      });
+  });
+};
+
 export const getDatasetTimeseries = (id, info) => {
   console.log(info);
   const { max_resolution, start, end } = info;

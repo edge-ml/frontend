@@ -21,6 +21,7 @@ import './index.css';
 import {
   getDatasets,
   deleteDatasets,
+  getDatasetsWithPagination,
 } from '../../services/ApiServices/DatasetServices';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import DatasetTable from './DatasetTable';
@@ -97,7 +98,7 @@ const ListPage = (props) => {
 
   useEffect(() => {
     Promise.all([
-      getDatasets(),
+      getDatasetsWithPagination(),
       subscribeLabelingsAndLabels().then((labelings) => {
         setLabelings(labelings);
       }),
