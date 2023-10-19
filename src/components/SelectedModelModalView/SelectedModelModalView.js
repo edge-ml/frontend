@@ -9,6 +9,7 @@ import {
   Table,
   Row,
   Col,
+  Badge,
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -64,43 +65,57 @@ const General_info = ({
   onButtonDeploy,
   onButtonDownload,
 }) => {
+  console.log(model);
   return (
     <div>
       <h5>
         <b>General information</b>
       </h5>
-      <div className="d-flex justify-content-between m-2">
-        <div>
-          <div>
-            <b>Name</b>: {model.name}
+      <Row>
+        <Col className="col-auto">
+          <Table borderless size="sm" striped>
+            <tbody>
+              <tr>
+                <th>Name</th>
+                <td>{model.name}</td>
+              </tr>
+              <tr>
+                <th>Classifier</th>
+                <td>{model.pipeline.classifier.name}</td>
+              </tr>
+              <tr>
+                <th>Used labels</th>
+                <td>
+                  {model.pipeline.labels.map((elm, index) => (
+                    <Badge key={index}>{elm}</Badge>
+                  ))}
+                </td>
+              </tr>
+            </tbody>
+          </Table>
+        </Col>
+        <Col>
+          <div className="d-flex justify-content-end align-items-start">
+            <Button
+              className="mr-2"
+              onClick={(e) => {
+                onButtonDownload(model);
+                e.stopPropagation();
+              }}
+            >
+              Download
+            </Button>
+            <Button
+              onClick={(e) => {
+                onButtonDeploy(model);
+                e.stopPropagation();
+              }}
+            >
+              Deploy
+            </Button>
           </div>
-          <div>
-            <b>Classifier</b>: {model.pipeline.classifier.name}
-          </div>
-          <div>
-            <b>Used labels</b>: TODO
-          </div>
-        </div>
-        <div>
-          <Button
-            className="mr-2"
-            onClick={(e) => {
-              onButtonDownload(model);
-              e.stopPropagation();
-            }}
-          >
-            Download
-          </Button>
-          <Button
-            onClick={(e) => {
-              onButtonDeploy(model);
-              e.stopPropagation();
-            }}
-          >
-            Deploy
-          </Button>
-        </div>
-      </div>
+        </Col>
+      </Row>
     </div>
   );
 };
@@ -239,17 +254,28 @@ const PerformanceInfo = ({ model }) => {
       <h5>
         <b>Performance metrics</b>
       </h5>
-      <div className="ml-2">
-        <div>
-          <b>Accuracy</b>: {metric(metrics.accuracy_score)}
-        </div>
-        <div>
-          <b>Precision</b>: {metric(metrics.precision_score)}
-        </div>
-        <div>
-          <b>Recall</b>: {metric(metrics.recall_score)}
-        </div>
-      </div>
+      <Table borderless size="sm" striped style={{ width: '150px' }}>
+        <tbody>
+          <tr>
+            <td>
+              <b>Accuracy</b>
+            </td>
+            <td>{metric(metrics.accuracy_score)}%</td>
+          </tr>
+          <tr>
+            <td>
+              <b>Precision</b>
+            </td>
+            <td>{metric(metrics.precision_score)}%</td>
+          </tr>
+          <tr>
+            <td>
+              <b>Recall</b>
+            </td>
+            <td>{metric(metrics.recall_score)}%</td>
+          </tr>
+        </tbody>
+      </Table>
       <div className="d-flex align-items-center m-2">
         <Classification_report
           report={metrics.classification_report}

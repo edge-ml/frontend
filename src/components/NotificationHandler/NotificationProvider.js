@@ -75,44 +75,6 @@ export const NotificationProvider = ({ children }) => {
     return () => stopUpdates();
   }, []);
 
-  // useEffect(() => {
-  //   const handle = setInterval(updateNotifications, 2000); // Assign to updateHandle
-  //   console.log(handle)
-  //   setUpdateHandle(handle);
-  //   return () => {
-  //     clearInterval(updateHandle);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-
-  //   var handle = undefined;
-
-  //   const updateNotifications = async () => {
-  //     const notifications = await datasetDownloadStatus();
-  //     if (notifications >= 400) {
-  //       setHasNewNotifications(false);
-  //       return;
-  //     }
-  //     setActiveNotifications(notifications)
-  //     const uncompletedNotifications = notifications.map(elm => elm.status).filter(elm => elm != 100) > 0;
-  //     if (!uncompletedNotifications) {
-  //       clearInterval(handle)
-  //     }
-  //     setHasNewNotifications(uncompletedNotifications); // Update the flag
-  //   }
-
-  //   handle = setInterval(updateNotifications, 2000);
-  // }, [])
-
-  // Stop polling if no new notifications were found during the last pull
-  // useEffect(() => {
-  //   if (!hasNewNotifications) {
-  //     console.log('Clear interval');
-  //     clearInterval(updateHandle);
-  //   }
-  // }, [hasNewNotifications]);
-
   return (
     <NotificationContext.Provider
       value={{
