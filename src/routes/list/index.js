@@ -29,7 +29,8 @@ import DatasetTable from './DatasetTable';
 import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
 import PageSelection from './PageSelection';
-import PageSizeDropdown from './PageSizeDropdown';
+import PageSizeDropdown from './PageSizeInput';
+import PageSizeInput from './PageSizeInput';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -350,9 +351,6 @@ const ListPage = (props) => {
       </Container>
       {datasets.length > 0 ? (
         <div className="d-flex flex-row justify-content-center mt-3">
-          <div className="position-relative mr-3">
-            <PageSizeDropdown pageSize={pageSize} setPageSize={setPageSize} />
-          </div>
           <PageSelection
             pageSize={pageSize}
             datasetCount={total_datasets}
@@ -363,6 +361,9 @@ const ListPage = (props) => {
             goToPreviousPage={goToPreviousPage}
             goToFirstPage={gotToFirstPage}
           />
+          <div className="position-relative ml-3">
+            <PageSizeInput pageSize={pageSize} setPageSize={setPageSize} />
+          </div>
         </div>
       ) : null}
 
