@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
+import {
+  Route,
+  Switch,
+  Redirect,
+  useLocation,
+  useHistory,
+} from 'react-router-dom';
 
 import ListPage from './routes/list/index';
 import DatasetPage from './routes/dataset';
@@ -26,46 +32,29 @@ class AppContent extends Component {
         <Route
           exact
           forceRefresh
-          path={this.props.match.path + '/Datasets/view'}
+          path={[
+            this.props.match.path + '/datasets',
+            this.props.match.path + '/',
+          ]}
           render={(props) => {
-            const urlSearchParams = new URLSearchParams(props.location.search);
-            let page = urlSearchParams.get('page');
-            let page_size = urlSearchParams.get('page_size');
-
-            if (!page || !page_size) {
-              // Redirect to the specific page and page size
-              return (
-                <Redirect
-                  to={`${this.props.match.url}view?page=1&page_size=5`}
-                />
-              );
+            let path = this.props.match.url;
+            if (path.endsWith('datasets')) {
+              return <Redirect to={path + '/view'} />;
             } else {
-              return (
-                <ProjectRefresh project={this.props.project}>
-                  <ListPage
-                    {...props}
-                    page={parseInt(props.page, 10)}
-                    page_size={parseInt(props.page_size, 10)}
-                  />
-                </ProjectRefresh>
-              );
+              return <Redirect to={path + '/datasets/view'} />;
             }
           }}
         />
         <Route
           exact
           forceRefresh
-          path={[
-            this.props.match.path + '/Datasets',
-            this.props.match.path + '/',
-          ]}
+          path={this.props.match.path + '/datasets/view'}
           render={(props) => {
-            // Redirect to /datasets/view?page=1&page_size=5
-            let currentURL = this.props.match.url.endsWith('/')
-              ? this.props.match.url
-              : this.props.match.url + '/';
-            const redirectTo = `${currentURL}Datasets/view?page=1&page_size=5`;
-            return <Redirect to={redirectTo} />;
+            return (
+              <ProjectRefresh project={this.props.project}>
+                <ListPage {...props} />
+              </ProjectRefresh>
+            );
           }}
         />
         <Route

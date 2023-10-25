@@ -15,6 +15,7 @@ import {
 } from 'reactstrap';
 import NotificationContext from '../../components/NotificationHandler/NotificationProvider';
 import Loader from '../../modules/loader';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import './index.css';
 
@@ -29,25 +30,27 @@ import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
 import PageSelection from './PageSelection';
 import PageSizeDropdown from './PageSizeDropdown';
-import { displayTime } from '../../services/helpers';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
   const [datasets, setDatasets] = useState(undefined);
+  const [total_datasets, setTotalDatasets] = useState(0);
   const [datasetsToDelete, setDatasetsToDelete] = useState([]);
   const [ready, setReady] = useState(false);
   const [isCreateNewDatasetOpen, setIsCreateNewDatasetOpen] = useState(false);
   const [labelings, setLabelings] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(0);
-  const [displayedDatasets, setDisplayedDatasets] = useState([]);
   const [pageSize, setPageSize] = useState(5);
   const [filterDropDownIsOpen, setFilterDropdownIsOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(null);
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
-  const datasetsRef = useRef(datasets);
+  const total_datasetsRef = useRef(total_datasets);
   const currentPageRef = useRef(currentPage);
   const pageSizeRef = useRef(pageSize);
+
+  const location = useLocation();
+  const history = useHistory();
 
   const toggleModal = () => {
     setModal(!modal);
@@ -96,16 +99,62 @@ const ListPage = (props) => {
     setDatasetsToDelete([]);
   };
 
+  const initURLSearchParams = () => {
+    let pageUpdate = currentPage;
+    let pageSizeUpdate = pageSize;
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.has('page')) {
+      pageUpdate = parseInt(searchParams.get('page')) - 1;
+    } else {
+      searchParams.set('page', currentPage + 1);
+    }
+    if (searchParams.has('page_size')) {
+      pageSizeUpdate = parseInt(searchParams.get('page_size'));
+    } else {
+      searchParams.set('page_size', pageSize);
+    }
+    history.replace({ search: `?${searchParams.toString()}` });
+    //TODO error handling
+    currentPageRef.current = pageUpdate;
+    pageSizeRef.current = pageSizeUpdate;
+    setCurrentPage(pageUpdate);
+    setPageSize(pageSizeUpdate);
+    return {
+      pageUpdate: pageUpdate === 0 ? 1 : pageUpdate,
+      pageSizeUpdate: pageSizeUpdate,
+    };
+  };
+
+  const changeURLSearchParams = (currentPage, pageSize) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('page', currentPage + 1);
+    searchParams.set('page_size', pageSize);
+    history.replace({ search: `?${searchParams.toString()}` });
+  };
+
+  const fetchDatasetets = (currentPage, pageSize) => {
+    getDatasetsWithPagination(currentPage + 1, pageSize).then((data) => {
+      onDatasetsChanged(data.datasets);
+      total_datasetsRef.current = data.total_datasets;
+      setTotalDatasets(data.total_datasets);
+      changeURLSearchParams(currentPage, pageSize);
+    });
+  };
+
   useEffect(() => {
+    const pageInit = initURLSearchParams();
     Promise.all([
-      getDatasetsWithPagination(),
+      getDatasetsWithPagination(pageInit.pageUpdate, pageInit.pageSizeUpdate),
       subscribeLabelingsAndLabels().then((labelings) => {
         setLabelings(labelings);
       }),
     ])
-      .then(([datasets, _]) => {
-        onDatasetsChanged(datasets);
+      .then(([data, _]) => {
+        onDatasetsChanged(data.datasets);
+        total_datasetsRef.current = data.total_datasets;
+        setTotalDatasets(data.total_datasets);
       })
+
       .catch((error) => {
         console.error(error);
       });
@@ -117,26 +166,18 @@ const ListPage = (props) => {
   }, []);
 
   useEffect(() => {
-    handleChangingPageSize();
-  }, [pageSize, datasets]);
-
-  const handleChangingPageSize = () => {
-    pageSizeRef.current = pageSize;
-    datasetsRef.current = datasets;
-    setCurrentPage(0);
-    if (datasets) {
-      setDisplayedDatasets(
-        datasets.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
-      );
+    if (pageSizeRef.current !== pageSize && ready) {
+      pageSizeRef.current = pageSize;
+      currentPageRef.current = 0;
+      setCurrentPage(0);
+      fetchDatasetets(0, pageSize);
     }
-  };
+  }, [pageSize]);
 
   useEffect(() => {
-    currentPageRef.current = currentPage;
-    if (datasets) {
-      setDisplayedDatasets(
-        datasets.slice(currentPage * pageSize, (currentPage + 1) * pageSize)
-      );
+    if (currentPageRef.current !== currentPage && ready) {
+      currentPageRef.current = currentPage;
+      fetchDatasetets(currentPage, pageSize);
     }
   }, [currentPage]);
 
@@ -162,7 +203,7 @@ const ListPage = (props) => {
   const goToNextPage = () => {
     if (
       currentPageRef.current <
-      Math.ceil(datasetsRef.current.length / pageSizeRef.current) - 1
+      Math.ceil(total_datasetsRef.current / pageSizeRef.current) - 1
     ) {
       setCurrentPage(currentPageRef.current + 1);
     }
@@ -176,7 +217,7 @@ const ListPage = (props) => {
 
   const goToLastPage = () => {
     setCurrentPage(
-      Math.ceil(datasetsRef.current.length / pageSizeRef.current) - 1
+      Math.ceil(total_datasetsRef.current / pageSizeRef.current) - 1
     );
   };
 
@@ -287,7 +328,7 @@ const ListPage = (props) => {
           toggleCreateNewDatasetModal={toggleCreateNewDatasetModal}
         ></DataUpload>
         <DatasetTable
-          displayedDatasets={displayedDatasets}
+          datasets={datasets}
           datasetsToDelete={datasetsToDelete}
           openDeleteModal={toggleModal}
           selectAllEmpty={selectAllEmpty}
@@ -314,7 +355,7 @@ const ListPage = (props) => {
           </div>
           <PageSelection
             pageSize={pageSize}
-            datasetCount={datasets.length}
+            datasetCount={total_datasets}
             goToPage={goToPage}
             goToNextPage={goToNextPage}
             goToLastPage={goToLastPage}
