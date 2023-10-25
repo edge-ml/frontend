@@ -82,10 +82,6 @@ const DatasetTable = (props) => {
                     setFilterDropdownIsOpen={props.setFilterDropdownIsOpen}
                     selectedFilter={props.selectedFilter}
                     setSelectedFilter={props.setSelectedFilter}
-                    sortAlphaAsc={props.sortAlphaAsc}
-                    sortAlphaDesc={props.sortAlphaDesc}
-                    sortDateAsc={props.sortDateAsc}
-                    sortDateDesc={props.sortDateDesc}
                   />
                 </div>
               </div>

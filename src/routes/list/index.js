@@ -42,12 +42,13 @@ const ListPage = (props) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [filterDropDownIsOpen, setFilterDropdownIsOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [selectedFilter, setSelectedFilter] = useState('alphaAsc'); //alphaAsc, alphaDesc, dateAsc, dateDesc
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
   const total_datasetsRef = useRef(total_datasets);
   const currentPageRef = useRef(currentPage);
   const pageSizeRef = useRef(pageSize);
+  const selectedFilterRef = useRef(selectedFilter);
 
   const location = useLocation();
   const history = useHistory();
@@ -100,8 +101,10 @@ const ListPage = (props) => {
   };
 
   const initURLSearchParams = () => {
+    //TODO error handling
     let pageUpdate = currentPage;
     let pageSizeUpdate = pageSize;
+    let sortUpdate = selectedFilter;
     const searchParams = new URLSearchParams(location.search);
     if (searchParams.has('page')) {
       pageUpdate = parseInt(searchParams.get('page')) - 1;
@@ -113,38 +116,51 @@ const ListPage = (props) => {
     } else {
       searchParams.set('page_size', pageSize);
     }
+    if (searchParams.has('sort')) {
+      sortUpdate = searchParams.get('sort');
+    } else {
+      searchParams.set('sort', selectedFilter);
+    }
     history.replace({ search: `?${searchParams.toString()}` });
-    //TODO error handling
+
+    selectedFilterRef.current = sortUpdate;
     currentPageRef.current = pageUpdate;
     pageSizeRef.current = pageSizeUpdate;
     setCurrentPage(pageUpdate);
     setPageSize(pageSizeUpdate);
+    setSelectedFilter(sortUpdate);
     return {
       pageUpdate: pageUpdate === 0 ? 1 : pageUpdate,
       pageSizeUpdate: pageSizeUpdate,
+      sortUpdate: sortUpdate,
     };
   };
 
-  const changeURLSearchParams = (currentPage, pageSize) => {
+  const changeURLSearchParams = (currentPage, pageSize, sort) => {
     const searchParams = new URLSearchParams(location.search);
     searchParams.set('page', currentPage + 1);
     searchParams.set('page_size', pageSize);
+    searchParams.set('sort', sort);
     history.replace({ search: `?${searchParams.toString()}` });
   };
 
-  const fetchDatasetets = (currentPage, pageSize) => {
-    getDatasetsWithPagination(currentPage + 1, pageSize).then((data) => {
+  const fetchDatasetets = (currentPage, pageSize, sort) => {
+    getDatasetsWithPagination(currentPage + 1, pageSize, sort).then((data) => {
       onDatasetsChanged(data.datasets);
       total_datasetsRef.current = data.total_datasets;
       setTotalDatasets(data.total_datasets);
-      changeURLSearchParams(currentPage, pageSize);
+      changeURLSearchParams(currentPage, pageSize, sort);
     });
   };
 
   useEffect(() => {
     const pageInit = initURLSearchParams();
     Promise.all([
-      getDatasetsWithPagination(pageInit.pageUpdate, pageInit.pageSizeUpdate),
+      getDatasetsWithPagination(
+        pageInit.pageUpdate,
+        pageInit.pageSizeUpdate,
+        pageInit.sortUpdate
+      ),
       subscribeLabelingsAndLabels().then((labelings) => {
         setLabelings(labelings);
       }),
@@ -170,14 +186,21 @@ const ListPage = (props) => {
       pageSizeRef.current = pageSize;
       currentPageRef.current = 0;
       setCurrentPage(0);
-      fetchDatasetets(0, pageSize);
+      fetchDatasetets(0, pageSize, selectedFilter);
     }
   }, [pageSize]);
 
   useEffect(() => {
+    if (selectedFilterRef.current !== selectedFilter && ready) {
+      selectedFilterRef.current = selectedFilter;
+      fetchDatasetets(currentPage, pageSize, selectedFilter);
+    }
+  }, [selectedFilter]);
+
+  useEffect(() => {
     if (currentPageRef.current !== currentPage && ready) {
       currentPageRef.current = currentPage;
-      fetchDatasetets(currentPage, pageSize);
+      fetchDatasetets(currentPage, pageSize, selectedFilter);
     }
   }, [currentPage]);
 
@@ -226,62 +249,7 @@ const ListPage = (props) => {
   };
 
   const resetDropdown = () => {
-    setSelectedFilter(null);
     setFilterDropdownIsOpen(false);
-  };
-
-  const sortAlphaAsc = () => {
-    const _datasets = [...datasets];
-    _datasets.sort((a, b) => {
-      const textA = a.name.toLowerCase();
-      const textB = b.name.toLowerCase();
-      if (textA < textB) {
-        return -1;
-      }
-      if (textA > textB) {
-        return 1;
-      }
-      return 0;
-    });
-    setDatasets(_datasets);
-  };
-
-  const sortAlphaDesc = () => {
-    const _datasets = [...datasets];
-    _datasets.sort((a, b) => {
-      const textA = a.name.toLowerCase();
-      const textB = b.name.toLowerCase();
-      if (textA < textB) {
-        return 1;
-      }
-      if (textA > textB) {
-        return -1;
-      }
-      return 0;
-    });
-    setDatasets(_datasets);
-  };
-
-  const sortDateAsc = () => {
-    const _datasets = [...datasets];
-    _datasets.sort((a, b) => {
-      //dataset starts
-      const startA = Math.min(...a.timeSeries.map((elm) => elm.start));
-      const startB = Math.min(...b.timeSeries.map((elm) => elm.start));
-      return startA - startB;
-    });
-    setDatasets(_datasets);
-  };
-
-  const sortDateDesc = () => {
-    const _datasets = [...datasets];
-    _datasets.sort((a, b) => {
-      //dataset starts
-      const startA = Math.min(...a.timeSeries.map((elm) => elm.start));
-      const startB = Math.min(...b.timeSeries.map((elm) => elm.start));
-      return startB - startA;
-    });
-    setDatasets(_datasets);
   };
 
   const onDatasetsChanged = async (datasets) => {
@@ -342,10 +310,6 @@ const ListPage = (props) => {
           setFilterDropdownIsOpen={setFilterDropdownIsOpen}
           selectedFilter={selectedFilter}
           setSelectedFilter={setSelectedFilter}
-          sortAlphaAsc={sortAlphaAsc}
-          sortAlphaDesc={sortAlphaDesc}
-          sortDateAsc={sortDateAsc}
-          sortDateDesc={sortDateDesc}
         ></DatasetTable>
       </Container>
       {datasets.length > 0 ? (

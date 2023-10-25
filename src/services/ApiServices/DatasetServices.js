@@ -23,10 +23,11 @@ export const getDatasets = () => {
   });
 };
 
-export const getDatasetsWithPagination = (currentPage, pageSize) => {
+export const getDatasetsWithPagination = (currentPage, pageSize, sort) => {
   const queryParams = {
     page: currentPage,
     page_size: pageSize,
+    sort: sort,
   };
   const request = apiConsts.generateApiRequest(
     apiConsts.HTTP_METHODS.GET,
