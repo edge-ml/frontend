@@ -29,7 +29,6 @@ import DatasetTable from './DatasetTable';
 import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
 import PageSelection from './PageSelection';
-import PageSizeDropdown from './PageSizeInput';
 import PageSizeInput from './PageSizeInput';
 
 const ListPage = (props) => {

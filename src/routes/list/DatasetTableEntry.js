@@ -52,8 +52,10 @@ const Labelings = (props) => {
   }
 
   const labelings = props.dataset.labelings
-                                 .map(elm => props.labelings.find((labeling) => labeling._id === elm.labelingId))
-                                 .filter(elm => elm !== undefined);  
+    .map((elm) =>
+      props.labelings.find((labeling) => labeling._id === elm.labelingId)
+    )
+    .filter((elm) => elm !== undefined);
 
   return (
     <div className="mt-1 ml-4 p-lg-0 m-lg-0">
@@ -254,8 +256,14 @@ const DatasetTableEntry = (props) => {
                     color="secondary"
                     className="btn-edit mr-3 mr-md-4"
                     onClick={(e) => {
+                      const currentPathname = history.location.pathname;
+                      const id = dataset['_id'];
+                      const newPathname = currentPathname.replace(
+                        /\/view$/,
+                        `/${id}`
+                      );
                       history.push({
-                        pathname: `datasets/${dataset['_id']}`,
+                        pathname: newPathname,
                         state: dataset,
                       });
                     }}
