@@ -43,6 +43,7 @@ export const getDatasetTimeseries = (id, info) => {
 export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
   console.log(info);
   console.log(ts_ids);
+  console.log('Get time series partial');
   const { max_resolution, start, end } = info;
   return new Promise((resolve, reject) => {
     axios(

@@ -143,8 +143,9 @@ const Navbar = (props) => {
                       // ['Model', faBrain],
                       ['Models', faMicrochip],
                       ['Settings', faCogs],
-                    ].map((elm, indx) => (
+                    ].map((elm, index) => (
                       <div
+                        key={elm + index}
                         onClick={() => {
                           props.navigateTo(elm[0]);
                         }}

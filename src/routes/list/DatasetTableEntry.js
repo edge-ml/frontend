@@ -52,20 +52,25 @@ const Labelings = (props) => {
   }
 
   const labelings = props.dataset.labelings
-                                 .map(elm => props.labelings.find((labeling) => labeling._id === elm.labelingId))
-                                 .filter(elm => elm !== undefined);  
+    .map((elm) =>
+      props.labelings.find((labeling) => labeling._id === elm.labelingId)
+    )
+    .filter((elm) => elm !== undefined);
 
   return (
     <div className="mt-1 ml-4 p-lg-0 m-lg-0">
       <Row className="pl-1 ml-1 p-lg-0 m-lg-0 ">
         <Col>
           {labelings.map((labeling, idx) => (
-            <Badge className="mr-2 badgeSize badgeLabelings pb-2 mt-2 mb-2">
+            <Badge
+              className="mr-2 badgeSize badgeLabelings pb-2 mt-2 mb-2"
+              key={labeling + idx}
+            >
               <div className="labelingBadgeWrapper">
                 {labeling.name.toUpperCase()}
               </div>
               <div>
-                {labeling.labels.map((label) => {
+                {labeling.labels.map((label, index) => {
                   const labelTypes = props.dataset.labelings[idx].labels.map(
                     (elm) => elm.type
                   );
@@ -74,6 +79,7 @@ const Labelings = (props) => {
                   }
                   return (
                     <Badge
+                      key={label + index}
                       className="badgeSize mx-1"
                       style={{ backgroundColor: label.color }}
                     >

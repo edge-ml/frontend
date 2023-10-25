@@ -156,10 +156,10 @@ class TimeSeriesPanel extends Component {
         chart.showLoading('Loading from server...');
       }
       this.props
-        .onTimeSeriesWindow(Math.round(min), Math.round(max), Math.round(width))
+        .onTimeSeriesWindow(Math.floor(min), Math.floor(max), Math.round(width))
         .then((ts) => {
           chart.series[0].setData(ts, false, false);
-          chart.xAxis[0].setExtremes(min, max, true, false);
+          //chart.xAxis[0].setExtremes(min, max, true, false);
           chart.hideLoading();
           chart.redraw(true);
         });
@@ -215,10 +215,7 @@ class TimeSeriesPanel extends Component {
                     props.unit === ''
                       ? props.name
                       : props.name + ' (' + props.unit + ')',
-                  data: props.data.map((timeAndVal) => [
-                    timeAndVal[0],
-                    timeAndVal[1] * props.scale + props.offset,
-                  ]),
+                  data: props.data,
                   lineWidth: 1.5,
                   enableMouseTracking: false,
                 },
@@ -230,10 +227,7 @@ class TimeSeriesPanel extends Component {
                     ' (' +
                     props.unit[indexOuter] +
                     ')',
-                  data: props.data.map((timeAndVal) => [
-                    timeAndVal[0],
-                    timeAndVal[1] * props.scale + props.offset,
-                  ]),
+                  data: props.data,
                   lineWidth: 1.5,
                   enableMouseTracking: false,
                 };
@@ -822,6 +816,7 @@ class TimeSeriesPanel extends Component {
       this.chart.current.chart.xAxis[0].min +
       1;
     const sign = direction === ScrollDirection.LEFT ? -1 : 1;
+
     this.chart.current.chart.xAxis[0].setExtremes(
       this.chart.current.chart.xAxis[0].min + sign * width * scrollFactor,
       this.chart.current.chart.xAxis[0].max + sign * width * scrollFactor
@@ -834,10 +829,20 @@ class TimeSeriesPanel extends Component {
       this.chart.current.chart.xAxis[0].min +
       1;
     const sign = direction === ZoomDirection.IN ? 1 : -1;
-    this.chart.current.chart.xAxis[0].setExtremes(
-      this.chart.current.chart.xAxis[0].min + sign * width * zoomFactor,
+
+    console.log('zoom');
+    console.log(sign, width, zoomFactor, sign * width * zoomFactor);
+
+    const newMin = Math.floor(
+      this.chart.current.chart.xAxis[0].min + sign * width * zoomFactor
+    );
+    const newMax = Math.floor(
       this.chart.current.chart.xAxis[0].max - sign * width * zoomFactor
     );
+
+    console.log(newMin, newMax);
+
+    this.chart.current.chart.xAxis[0].setExtremes(newMin, newMax);
   }
 
   render() {
@@ -848,7 +853,6 @@ class TimeSeriesPanel extends Component {
     if (!this.props.data.length) {
       return <div className="noDataLabel">{this.props.name}: No data</div>;
     }
-
     return (
       <div
         className="mt-2"

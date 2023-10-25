@@ -21,9 +21,7 @@ const TSSelectionPanel = (props) => {
               className={
                 activeSeries.includes(ts._id)
                   ? 'badgeActive badge'
-                  : idx < processedUntil
-                  ? 'badgeInactive badge'
-                  : 'badgeDisabled badge'
+                  : 'badgeInactive badge'
               }
             >
               {ts.name}

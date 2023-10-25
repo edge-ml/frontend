@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Col, Row, Fade, Button, Container } from 'reactstrap';
+import { Col, Row, Fade, Container } from 'reactstrap';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
 import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
@@ -9,17 +9,11 @@ import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/T
 import Snackbar from '../components/Snackbar/Snackbar';
 import TSSelectionPanel from '../components/TSSelectionPanel';
 import Highcharts from 'highcharts/highstock';
-import HighchartsReact from 'highcharts-react-official';
-
-import { MetaDataSidebar } from '../components/MetaDataSidebar/MetaDataSidebar';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
   updateDataset,
   deleteDataset,
-  getDataset,
-  getDatasetTimeseries,
-  getDatasetLock,
   getDatasetMeta,
   getTimeSeriesDataPartial,
   getUploadProcessingProgress,
@@ -478,7 +472,6 @@ class DatasetPage extends Component {
   }
 
   onSelectedLabelingIdChanged(selectedLabelingId) {
-    console.log(selectedLabelingId);
     let labeling = this.state.labelings.filter(
       (labeling) => labeling['_id'] === selectedLabelingId
     )[0];
@@ -529,7 +522,6 @@ class DatasetPage extends Component {
   }
 
   onSelectedLabelChanged(selectedLabelId) {
-    console.log('onlableClick');
     let labeling = this.state.dataset.labelings.filter(
       (labeling) =>
         labeling.labelingId === this.state.controlStates.selectedLabelingId
@@ -551,7 +543,6 @@ class DatasetPage extends Component {
   }
 
   onClickPosition(position) {
-    console.log(position);
     // don't add new labels if we don't show them
     if (this.state.hideLabels) {
       return;
@@ -617,7 +608,6 @@ class DatasetPage extends Component {
         labelIdx - 1 >= 0 &&
         newDataset.labelings[labelingIdx].labels[labelIdx - 1]
       ) {
-        console.log(this.state.controlStates.selectedLabelTypeId);
         newLabel.type = this.state.controlStates.selectedLabelTypeId;
       }
       newDataset.labelings[labelingIdx].labels[labelIdx] = newLabel;
@@ -764,27 +754,32 @@ class DatasetPage extends Component {
 
   async startPolling() {
     this.pollingInterval = setInterval(async () => {
-      const [
-        step,
-        progress,
-        currentTimeseries = 0,
-        totalTimeseries = undefined,
-      ] = await getUploadProcessingProgress(this.state.dataset._id);
-      const { processedUntil } = this.state;
+      try {
+        const [
+          step,
+          progress,
+          currentTimeseries = 0,
+          totalTimeseries = undefined,
+        ] = await getUploadProcessingProgress(this.state.dataset._id);
+        const { processedUntil } = this.state;
 
-      if (progress === 100) {
-        this.setState({
-          processedUntil: this.state.dataset.timeSeries.length,
-          consecutiveNoUpdateCount: null, // stop polling
-        });
+        if (progress === 100) {
+          this.setState({
+            processedUntil: this.state.dataset.timeSeries.length,
+            consecutiveNoUpdateCount: null, // stop polling
+          });
+          this.stopPolling();
+        } else if (currentTimeseries !== processedUntil) {
+          this.setState((prevState) => ({
+            processedUntil: currentTimeseries,
+            consecutiveNoUpdateCount: prevState.consecutiveNoUpdateCount + 1,
+          }));
+        } else {
+          this.setState({ consecutiveNoUpdateCount: 0 });
+        }
+      } catch (error) {
+        console.error('Error polling', error);
         this.stopPolling();
-      } else if (currentTimeseries !== processedUntil) {
-        this.setState((prevState) => ({
-          processedUntil: currentTimeseries,
-          consecutiveNoUpdateCount: prevState.consecutiveNoUpdateCount + 1,
-        }));
-      } else {
-        this.setState({ consecutiveNoUpdateCount: 0 });
       }
     }, this.getPollingDelay());
   }
@@ -837,7 +832,6 @@ class DatasetPage extends Component {
     let selectedDatasetlabeling = this.state.dataset.labelings.filter(
       (labeling) => selectedLabeling['_id'] === labeling.labelingId
     )[0];
-    console.log(selectedDatasetlabeling);
 
     if (!selectedDatasetlabeling) selectedDatasetlabeling = {};
     let selectedDatasetLabel =

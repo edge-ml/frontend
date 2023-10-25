@@ -100,6 +100,7 @@ const DatasetTable = (props) => {
             >
               {props.displayedDatasets.map((dataset, index) => (
                 <DatasetTableEntry
+                  key={dataset + index}
                   dataset={dataset}
                   index={index}
                   toggleCheck={props.toggleCheck}
