@@ -18,6 +18,7 @@ import SelectEvaluation from './Steps/Select_Evaluation';
 import Select_Normalizer from './Steps/Select_Normalizer';
 import Select_Windowing from './Steps/Select_Windowing';
 import Select_Name from './Steps/Select_Name';
+import SelectTrainMethod from './selectTrainMethod';
 import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -232,6 +233,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   // The steps in the wizard
 
   const screens = [
+    SelectTrainMethod,
     Wizard_SelectLabeling,
     Wizard_SelectDataset,
     Wizard_Hyperparameters,
