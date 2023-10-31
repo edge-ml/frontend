@@ -31,7 +31,7 @@ import {
 import DeployModal from './DeployModal';
 
 const ValidationPage = () => {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(true);
 
   const [models, setModels] = useState([]);
   const [modalModel, setModalModel] = useState(undefined);
@@ -50,13 +50,17 @@ const ValidationPage = () => {
 
   useEffect(() => {
     const fetchData = () => {
-      console.log('update', updateModels);
-      getModels().then((models) => {
+      getModels().then((newModels) => {
         // if (models.length === 0 || models.every(elm => elm.status === "done" || elm.error != "")) {
         //   setUpdateModels(false);
         // }
+        const allDone = newModels.filter((elm) => elm.status === 'done').length;
 
-        setModels(models);
+        if (allDone) {
+          return;
+        }
+
+        setModels(newModels);
       });
     };
 
@@ -116,7 +120,6 @@ const ValidationPage = () => {
     getModels().then((models) => setModels(models));
   };
 
-  console.log(models);
   return (
     <Container>
       <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
@@ -173,7 +176,6 @@ const ValidationPage = () => {
                           <div>{model.trainRequest.classifier.name}</div>
                         </Col>
                         <Col>
-                          {console.log(model)}
                           {model.error === undefined ||
                           model.error == '' ? null : (
                             <>

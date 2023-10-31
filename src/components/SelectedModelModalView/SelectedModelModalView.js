@@ -65,7 +65,6 @@ const General_info = ({
   onButtonDeploy,
   onButtonDownload,
 }) => {
-  console.log(model);
   return (
     <div>
       <h5>

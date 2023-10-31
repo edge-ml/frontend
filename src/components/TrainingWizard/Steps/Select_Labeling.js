@@ -30,7 +30,7 @@ const Wizard_SelectLabeling = ({
   };
 
   return (
-    <Fragment>
+    <div className="p-2">
       <h3 className="font-weight-bold">1. Select Labeling</h3>
       <EdgeMLTable>
         <EdgeMLTableHeader>
@@ -99,7 +99,7 @@ const Wizard_SelectLabeling = ({
             </EdgeMLTableEntry>
           ))}
       </EdgeMLTable>
-    </Fragment>
+    </div>
   );
 };
 

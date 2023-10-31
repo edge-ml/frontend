@@ -10,19 +10,15 @@ import Wizard_SelectLabeling from './Steps/Select_Labeling';
 import './index.css';
 import { useEffect, useState, Fragment } from 'react';
 import Wizard_SelectDataset from './Steps/Select_Datasets';
-import Wizard_Hyperparameters from './Steps/Select_Hyperparameters';
 import { getDatasets } from '../../services/ApiServices/DatasetServices';
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import { getTrainconfig, train } from '../../services/ApiServices/MlService';
-import SelectEvaluation from './Steps/Select_Evaluation';
-import Select_Normalizer from './Steps/Select_Normalizer';
-import Select_Windowing from './Steps/Select_Windowing';
 import Select_Name from './Steps/Select_Name';
 import SelectTrainMethod from './selectTrainMethod';
-import Select_FeatureExtractor from './Steps/Select_FeatureExtractor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { intersect, toggleElement } from '../../services/helpers';
+import Pipelinestep from './Pipelinestep';
 
 export const WizardFooter = ({
   invalidResult = false,
@@ -86,6 +82,9 @@ export const WizardFooter = ({
 
 const TrainingWizard = ({ modalOpen, onClose }) => {
   // Data obtained from the server
+
+  const [pipelines, setPipelines] = useState(undefined);
+
   const [datasets, setDatasets] = useState([]);
   const [labelings, setLabelings] = useState([]);
   const [classifiers, setClassifiers] = useState([]);
@@ -106,12 +105,16 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const [selectedFeatureExtractor, setSelectedFeatureExtractor] =
     useState(undefined);
 
+  const [selectedPipeline, setSelectedPipeline] = useState(undefined);
+  const [selectedPipelineSteps, setSelectedPipelineSteps] = useState(undefined);
+
   // Current state of the wizard
   const [screen, setScreen] = useState(0);
 
   // Navigate the wizard
   const onBack = () => setScreen(Math.max(screen - 1, 0));
-  const onNext = () => setScreen(Math.min(screen + 1, screens.length - 1));
+  const onNext = () =>
+    setScreen(Math.min(screen + 1, selectedPipelineSteps.length - 1 + 2));
 
   const onEvaluationChanged = (evl) => setEvaluation(evl);
 
@@ -127,17 +130,13 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setLabelings(labelings.map((ls) => ({ ...ls, disabledLabels: [] })))
     );
     getTrainconfig().then((result) => {
+      console.log(result);
+      setPipelines(result);
       setEvaluation(result.evaluation);
       setClassifiers(result.classifier);
       setNormalizer(result.normalizer);
       setWindowing(result.windowing);
       setFeatureExtractors(result.featureExtractors);
-      // Set default values for the pages
-      setSelectedClassifier(result.classifier[0]);
-      setSelectedEval(result.evaluation[0]);
-      setSelectednormalizer(result.normalizer[0]);
-      setSelectedWindowing(result.windowing[0]);
-      setSelectedFeatureExtractor(result.featureExtractors[0]);
     });
   }, []);
 
@@ -155,6 +154,15 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   };
 
   const onTrain = async () => {
+    console.log(selectedPipelineSteps);
+    console.log(selectedPipeline);
+
+    const tmpSelectedPipeline = selectedPipeline;
+    tmpSelectedPipeline.steps = tmpSelectedPipeline.steps.map((elm, i) => {
+      return { ...elm, options: selectedPipelineSteps[i] };
+    });
+    console.log(tmpSelectedPipeline);
+
     const intersectingTSNames = intersect(
       ...datasets
         .filter((e) => e.selected)
@@ -182,12 +190,13 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
         useZeroClass: zeroClass,
         disabledLabelIDs: labeling.disabledLabels || [],
       },
-      name: modelName,
-      classifier: selectedClassifier,
-      evaluation: selectedEval,
-      normalizer: selectednormalizer,
-      windowing: selectedWindowing,
-      featureExtractor: selectedFeatureExtractor,
+      selectedPipeline: tmpSelectedPipeline,
+      // name: modelName,
+      // classifier: selectedClassifier,
+      // evaluation: selectedEval,
+      // normalizer: selectednormalizer,
+      // windowing: selectedWindowing,
+      // featureExtractor: selectedFeatureExtractor,
     };
     console.log(data);
     const model_id = await train(data);
@@ -200,7 +209,15 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   //   labeling
   // );
 
+  const onSelectTrainingMethod = (pipeline) => {
+    setSelectedPipeline(pipeline);
+    const selectedPipelineSteps = pipeline.steps.map((elm) => elm.options[0]);
+    setSelectedPipelineSteps(selectedPipelineSteps);
+  };
+
   const props = {
+    onSelectTrainingMethod: onSelectTrainingMethod,
+    pipelines: pipelines,
     datasets: datasets,
     labelings: labelings,
     setLabeling: setLableing,
@@ -230,48 +247,15 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     toggleZeroClass: toggleZeroClass,
   };
 
-  // The steps in the wizard
+  const setPipelineStep = (pipelineStep) => {
+    const tmpPipelineData = [...selectedPipelineSteps];
+    tmpPipelineData[screen - 2] = pipelineStep;
 
-  const screens = [
-    SelectTrainMethod,
-    Wizard_SelectLabeling,
-    Wizard_SelectDataset,
-    Wizard_Hyperparameters,
-    Select_Windowing,
-    Select_FeatureExtractor,
-    Select_Normalizer,
-    SelectEvaluation,
-    Select_Name,
-  ];
+    console.log(pipelineStep);
+    console.log(selectedPipelineSteps);
 
-  const isReady = () => {
-    return (
-      datasets.length > 0 &&
-      labelings.length > 0 &&
-      classifiers.length > 0 &&
-      evaluation.length > 0 &&
-      normalizer.length > 0 &&
-      windowing.length > 0 &&
-      featureExtractors.length > 0
-    );
+    setSelectedPipelineSteps(tmpPipelineData);
   };
-
-  const rendered_screens = screens.map((screen, idx) => (
-    <Fragment>
-      <div className="training-wizard-body">
-        <ModalBody>{screen({ ...props })}</ModalBody>
-      </div>
-      <WizardFooter
-        invalidResult={screen.validate({ ...props })}
-        step={idx}
-        maxSteps={screens.length}
-        onNext={onNext}
-        onBack={onBack}
-        onClose={onClose}
-        onTrain={onTrain}
-      />
-    </Fragment>
-  ));
 
   return (
     <Modal isOpen={true} size="xl">
@@ -299,7 +283,69 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
           You need datasets and labelings to train models!
         </div>
       ) : null}
-      {isReady() ? rendered_screens[screen] : null}
+      {pipelines && !selectedPipeline ? (
+        <SelectTrainMethod
+          pipelines={pipelines}
+          onSelectTrainingMethod={onSelectTrainingMethod}
+        ></SelectTrainMethod>
+      ) : null}
+      {selectedPipeline ? (
+        <Fragment>
+          {screen === 0 ? (
+            <Wizard_SelectLabeling
+              labelings={labelings}
+              datasets={datasets}
+              setLabeling={setLableing}
+              selectedLabeling={labeling}
+              toggleZeroClass={toggleZeroClass}
+              zeroClass={zeroClass}
+            ></Wizard_SelectLabeling>
+          ) : null}
+
+          {screen === 1 ? (
+            <Wizard_SelectDataset
+              toggleSelectDataset={toggleSelectDataset}
+              datasets={datasets}
+              selectedLabeling={labeling}
+              toggleDisableTimeseries={toggleDisableTimeseries}
+              disabledTimeseriesNames={disabledTimeseriesNames}
+            ></Wizard_SelectDataset>
+          ) : null}
+          {screen >= 2 ? (
+            <Pipelinestep
+              step={selectedPipeline.steps[screen - 2]}
+              selectedPipelineStep={selectedPipelineSteps[screen - 2]}
+              setPipelineStep={setPipelineStep}
+            ></Pipelinestep>
+          ) : null}
+          <ModalFooter className="d-flex justify-content-between">
+            <div>
+              <Button color="secondary" onClick={onBack}>
+                Back
+              </Button>
+            </div>
+            <span className="mr-3">
+              {screen + 1}/{selectedPipeline.steps.length + 2}
+            </span>
+            <div>
+              <Button
+                color="primary"
+                onClick={() => {
+                  if (screen + 1 === selectedPipeline.steps.length + 2) {
+                    onTrain();
+                  } else {
+                    onNext();
+                  }
+                }}
+              >
+                {screen + 1 === selectedPipeline.steps.length + 2
+                  ? 'Train'
+                  : 'Next'}
+              </Button>
+            </div>
+          </ModalFooter>
+        </Fragment>
+      ) : null}
     </Modal>
   );
 };

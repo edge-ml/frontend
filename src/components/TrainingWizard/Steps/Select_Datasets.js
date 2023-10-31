@@ -99,7 +99,7 @@ const Wizard_SelectDataset = ({
   );
 
   return (
-    <Fragment>
+    <div className="p-2">
       <h3 className="font-weight-bold">2. Select datasets</h3>
       <Row className="mx-0">
         <Col>
@@ -219,7 +219,7 @@ const Wizard_SelectDataset = ({
           ) : null}
         </Col>
       </Row>
-    </Fragment>
+    </div>
   );
 };
 
