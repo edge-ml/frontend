@@ -1,10 +1,10 @@
 import { Input, ModalBody, InputGroup, InputGroupAddon } from 'reactstrap';
 import { Fragment } from 'react';
 
-const Select_Name = ({ modelName, setModelName, footer }) => {
+const Select_Name = ({ modelName, setModelName }) => {
   return (
-    <Fragment>
-      <h3 className="font-weight-bold">8. Model Metadata</h3>
+    <div>
+      <h3 className="font-weight-bold">Model Metadata</h3>
       <InputGroup style={{ maxWidth: '350px' }}>
         <InputGroupAddon addonType="prepend">Model Name</InputGroupAddon>
         <Input
@@ -14,7 +14,7 @@ const Select_Name = ({ modelName, setModelName, footer }) => {
           invalid={!modelName}
         ></Input>
       </InputGroup>
-    </Fragment>
+    </div>
   );
 };
 

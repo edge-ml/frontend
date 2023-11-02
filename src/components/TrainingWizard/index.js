@@ -112,9 +112,9 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const [screen, setScreen] = useState(0);
 
   // Navigate the wizard
+  const maxSteps = selectedPipeline ? selectedPipeline.steps.length + 2 : 0;
   const onBack = () => setScreen(Math.max(screen - 1, 0));
-  const onNext = () =>
-    setScreen(Math.min(screen + 1, selectedPipelineSteps.length - 1 + 2));
+  const onNext = () => setScreen(Math.min(screen + 1, maxSteps - 1));
 
   const onEvaluationChanged = (evl) => setEvaluation(evl);
 
@@ -257,6 +257,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     setSelectedPipelineSteps(tmpPipelineData);
   };
 
+  console.log(screen, maxSteps);
   return (
     <Modal isOpen={true} size="xl">
       <ModalHeader>
@@ -273,79 +274,79 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
           <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
         </div>
       </ModalHeader>
-      {datasets &&
-      labelings &&
-      (datasets.length === 0 || labelings.length === 0) ? (
-        <div
-          className="d-flex justify-content-center align-items-center font-weight-bold"
-          style={{ height: '30vh' }}
-        >
-          You need datasets and labelings to train models!
-        </div>
-      ) : null}
-      {pipelines && !selectedPipeline ? (
-        <SelectTrainMethod
-          pipelines={pipelines}
-          onSelectTrainingMethod={onSelectTrainingMethod}
-        ></SelectTrainMethod>
-      ) : null}
-      {selectedPipeline ? (
-        <Fragment>
-          {screen === 0 ? (
-            <Wizard_SelectLabeling
-              labelings={labelings}
-              datasets={datasets}
-              setLabeling={setLableing}
-              selectedLabeling={labeling}
-              toggleZeroClass={toggleZeroClass}
-              zeroClass={zeroClass}
-            ></Wizard_SelectLabeling>
-          ) : null}
+      <ModalBody style={{ minHeight: '50vh' }}>
+        {datasets &&
+        labelings &&
+        (datasets.length === 0 || labelings.length === 0) ? (
+          <div
+            className="d-flex justify-content-center align-items-center font-weight-bold"
+            style={{ height: '30vh' }}
+          >
+            You need datasets and labelings to train models!
+          </div>
+        ) : null}
+        {pipelines && !selectedPipeline ? (
+          <SelectTrainMethod
+            pipelines={pipelines}
+            onSelectTrainingMethod={onSelectTrainingMethod}
+          ></SelectTrainMethod>
+        ) : null}
+        {selectedPipeline ? (
+          <Fragment>
+            {screen === 0 ? (
+              <Wizard_SelectLabeling
+                labelings={labelings}
+                datasets={datasets}
+                setLabeling={setLableing}
+                selectedLabeling={labeling}
+                toggleZeroClass={toggleZeroClass}
+                zeroClass={zeroClass}
+              ></Wizard_SelectLabeling>
+            ) : null}
 
-          {screen === 1 ? (
-            <Wizard_SelectDataset
-              toggleSelectDataset={toggleSelectDataset}
-              datasets={datasets}
-              selectedLabeling={labeling}
-              toggleDisableTimeseries={toggleDisableTimeseries}
-              disabledTimeseriesNames={disabledTimeseriesNames}
-            ></Wizard_SelectDataset>
-          ) : null}
-          {screen >= 2 ? (
-            <Pipelinestep
-              step={selectedPipeline.steps[screen - 2]}
-              selectedPipelineStep={selectedPipelineSteps[screen - 2]}
-              setPipelineStep={setPipelineStep}
-            ></Pipelinestep>
-          ) : null}
-          <ModalFooter className="d-flex justify-content-between">
-            <div>
-              <Button color="secondary" onClick={onBack}>
-                Back
-              </Button>
-            </div>
-            <span className="mr-3">
-              {screen + 1}/{selectedPipeline.steps.length + 2}
-            </span>
-            <div>
-              <Button
-                color="primary"
-                onClick={() => {
-                  if (screen + 1 === selectedPipeline.steps.length + 2) {
-                    onTrain();
-                  } else {
-                    onNext();
-                  }
-                }}
-              >
-                {screen + 1 === selectedPipeline.steps.length + 2
-                  ? 'Train'
-                  : 'Next'}
-              </Button>
-            </div>
-          </ModalFooter>
-        </Fragment>
-      ) : null}
+            {screen === 1 ? (
+              <Wizard_SelectDataset
+                toggleSelectDataset={toggleSelectDataset}
+                datasets={datasets}
+                selectedLabeling={labeling}
+                toggleDisableTimeseries={toggleDisableTimeseries}
+                disabledTimeseriesNames={disabledTimeseriesNames}
+              ></Wizard_SelectDataset>
+            ) : null}
+            {screen >= 2 ? (
+              <Pipelinestep
+                step={selectedPipeline.steps[screen - 2]}
+                selectedPipelineStep={selectedPipelineSteps[screen - 2]}
+                setPipelineStep={setPipelineStep}
+              ></Pipelinestep>
+            ) : null}
+          </Fragment>
+        ) : null}
+      </ModalBody>
+      <ModalFooter className="d-flex justify-content-between">
+        <div>
+          <Button color="secondary" onClick={onBack}>
+            Back
+          </Button>
+        </div>
+        <span className="mr-3">
+          {screen + 1}/{maxSteps}
+        </span>
+        <div>
+          <Button
+            color="primary"
+            onClick={() => {
+              if (screen + 1 === maxSteps) {
+                onTrain();
+              } else {
+                onNext();
+              }
+            }}
+          >
+            {screen + 1 === maxSteps ? 'Train' : 'Next'}
+          </Button>
+        </div>
+      </ModalFooter>
     </Modal>
   );
 };

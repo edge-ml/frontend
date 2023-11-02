@@ -34,25 +34,30 @@ const Pipelinestep = ({ step, selectedPipelineStep, setPipelineStep }) => {
     <div className="p-2">
       <div className="d-flex justify-content-between">
         <div>
-          <div className="font-weight-bold">{step.name}</div>
-          <div>{step.description}</div>
+          <h3 className="font-weight-bold">
+            {step.name +
+              (step.options.length === 1 ? ': ' + step.options[0].name : '')}
+          </h3>
+          <h5>{step.description}</h5>
         </div>
-        <div>
-          <Dropdown
-            style={{ position: 'relative !important' }}
-            isOpen={dropdownOpen}
-            toggle={toggleDropdown}
-          >
-            <DropdownToggle caret>{selectedPipelineStep.name}</DropdownToggle>
-            <DropdownMenu>
-              {step.options.map((option) => (
-                <DropdownItem onClick={() => onSelectStepOption(option)}>
-                  {option.name}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-        </div>
+        {step.options.length > 1 ? (
+          <div>
+            <Dropdown
+              style={{ position: 'relative !important' }}
+              isOpen={dropdownOpen}
+              toggle={toggleDropdown}
+            >
+              <DropdownToggle caret>{selectedPipelineStep.name}</DropdownToggle>
+              <DropdownMenu>
+                {step.options.map((option) => (
+                  <DropdownItem onClick={() => onSelectStepOption(option)}>
+                    {option.name}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        ) : null}
       </div>
 
       <HyperparameterView
