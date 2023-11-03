@@ -78,14 +78,14 @@ const General_info = ({
                 <th>Name</th>
                 <td>{model.name}</td>
               </tr>
-              <tr>
+              {/* <tr>
                 <th>Classifier</th>
                 <td>{model.pipeline.classifier.name}</td>
-              </tr>
+              </tr> */}
               <tr>
                 <th>Used labels</th>
                 <td>
-                  {model.pipeline.labels.map((elm, index) => (
+                  {model.labels.map((elm, index) => (
                     <Badge key={index}>{elm}</Badge>
                   ))}
                 </td>
@@ -247,7 +247,7 @@ const metric = (metric) => {
 };
 
 const PerformanceInfo = ({ model }) => {
-  const metrics = model.evaluator.metrics;
+  const metrics = model.performance.metrics;
   return (
     <div className="my-4">
       <h5>
@@ -275,7 +275,7 @@ const PerformanceInfo = ({ model }) => {
           </tr>
         </tbody>
       </Table>
-      <div className="d-flex align-items-center m-2">
+      {/* <div className="d-flex align-items-center m-2">
         <Classification_report
           report={metrics.classification_report}
         ></Classification_report>
@@ -283,8 +283,8 @@ const PerformanceInfo = ({ model }) => {
           matrix={JSON.parse(metrics.confusion_matrix)}
           labels={model.pipeline.labels}
         ></ConfusionMatrixView>
-      </div>
-      <Training_config model={model}></Training_config>
+      </div> */}
+      {/* <Training_config model={model}></Training_config> */}
     </div>
   );
 };

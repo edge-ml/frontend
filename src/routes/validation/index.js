@@ -31,7 +31,7 @@ import {
 import DeployModal from './DeployModal';
 
 const ValidationPage = () => {
-  const [modalOpen, setModalOpen] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const [models, setModels] = useState([]);
   const [modalModel, setModalModel] = useState(undefined);
@@ -120,6 +120,7 @@ const ValidationPage = () => {
     getModels().then((models) => setModels(models));
   };
 
+  console.log(models);
   return (
     <Container>
       <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
@@ -173,11 +174,10 @@ const ValidationPage = () => {
                       >
                         <Col>
                           <b>{model.name}</b>
-                          <div>{model.trainRequest.classifier.name}</div>
+                          {/* <div>{model.trainRequest.classifier.name}</div> */}
                         </Col>
                         <Col>
-                          {model.error === undefined ||
-                          model.error == '' ? null : (
+                          {model.error == '' ? null : (
                             <>
                               <div
                                 className="ml-5 flex-grow-1 d-flex justify-content-center align-items-center"
@@ -197,22 +197,24 @@ const ValidationPage = () => {
                               </UncontrolledTooltip>
                             </>
                           )}
-                          {model.status === 'done' ? (
+                          {model.trainStatus === 'done' ? (
                             <div>
                               <div>
                                 <b>Acc: </b>
-                                {metric(model.evaluator.metrics.accuracy_score)}
+                                {metric(
+                                  model.performance.metrics.accuracy_score
+                                )}
                                 %
                               </div>
                               <div>
                                 <b>F1: </b>
-                                {metric(model.evaluator.metrics.f1_score)}%
+                                {metric(model.performance.metrics.f1_score)}%
                               </div>
                             </div>
                           ) : null}
                         </Col>
                         <Col className="d-flex justify-content-end">
-                          {model.status === 'done' ? (
+                          {model.trainStatus === 'done' ? (
                             <div>
                               <Button
                                 className="btn-edit mr-3 mr-md-4"
@@ -251,8 +253,7 @@ const ValidationPage = () => {
                             </div>
                           ) : (
                             <div>
-                              {model.error === '' ||
-                              model.error === undefined ? (
+                              {model.error === '' ? (
                                 <div className="mr-3 mr-md-4">
                                   <Spinner color="primary"></Spinner>
                                 </div>

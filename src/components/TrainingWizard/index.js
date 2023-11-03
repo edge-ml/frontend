@@ -112,7 +112,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const [screen, setScreen] = useState(0);
 
   // Navigate the wizard
-  const maxSteps = selectedPipeline ? selectedPipeline.steps.length + 2 : 0;
+  const maxSteps = selectedPipeline ? selectedPipeline.steps.length + 3 : 0;
   const onBack = () => setScreen(Math.max(screen - 1, 0));
   const onNext = () => setScreen(Math.min(screen + 1, maxSteps - 1));
 
@@ -191,23 +191,12 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
         disabledLabelIDs: labeling.disabledLabels || [],
       },
       selectedPipeline: tmpSelectedPipeline,
-      // name: modelName,
-      // classifier: selectedClassifier,
-      // evaluation: selectedEval,
-      // normalizer: selectednormalizer,
-      // windowing: selectedWindowing,
-      // featureExtractor: selectedFeatureExtractor,
+      name: modelName,
     };
     console.log(data);
     const model_id = await train(data);
     onClose();
   };
-
-  // console.log(
-  //   'dsla',
-  //   datasets.filter((e) => e.selected),
-  //   labeling
-  // );
 
   const onSelectTrainingMethod = (pipeline) => {
     setSelectedPipeline(pipeline);
@@ -313,12 +302,18 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
                 disabledTimeseriesNames={disabledTimeseriesNames}
               ></Wizard_SelectDataset>
             ) : null}
-            {screen >= 2 ? (
+            {screen >= 2 && screen !== maxSteps - 1 ? (
               <Pipelinestep
                 step={selectedPipeline.steps[screen - 2]}
                 selectedPipelineStep={selectedPipelineSteps[screen - 2]}
                 setPipelineStep={setPipelineStep}
               ></Pipelinestep>
+            ) : null}
+            {screen == maxSteps - 1 ? (
+              <Select_Name
+                modelName={modelName}
+                setModelName={setModelName}
+              ></Select_Name>
             ) : null}
           </Fragment>
         ) : null}
