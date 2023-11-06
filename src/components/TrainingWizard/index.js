@@ -147,10 +147,23 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   };
 
   const toggleSelectDataset = (id) => {
-    const newDatasets = JSON.parse(JSON.stringify(datasets));
+    const newDatasets = [...datasets];
     const idx = datasets.findIndex((elm) => elm._id === id);
     newDatasets[idx].selected = !newDatasets[idx].selected;
     setDatasets([...newDatasets]);
+  };
+
+  const toggleAllDatasets = (datasets, selected) => {
+    const datasetIds = datasets.map((elm) => elm._id);
+    console.log('Select all');
+    console.log(datasetIds);
+    const newDatasets = [...datasets];
+    for (var i = 0; i < newDatasets.length; i++) {
+      if (datasetIds.includes(newDatasets[i]._id)) {
+        newDatasets[i].selected = selected;
+      }
+    }
+    setDatasets(newDatasets);
   };
 
   const onTrain = async () => {
@@ -250,7 +263,10 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   return (
     <Modal isOpen={true} size="xl">
       <ModalHeader>
-        <div>Train a model</div>
+        <div>
+          {'Train a model' +
+            (selectedPipeline ? ': ' + selectedPipeline.name : '')}
+        </div>
         <div
           style={{
             position: 'absolute',
@@ -296,6 +312,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
             {screen === 1 ? (
               <Wizard_SelectDataset
                 toggleSelectDataset={toggleSelectDataset}
+                toggleAllDatasets={toggleAllDatasets}
                 datasets={datasets}
                 selectedLabeling={labeling}
                 toggleDisableTimeseries={toggleDisableTimeseries}
@@ -304,6 +321,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
             ) : null}
             {screen >= 2 && screen !== maxSteps - 1 ? (
               <Pipelinestep
+                stepNum={screen}
                 step={selectedPipeline.steps[screen - 2]}
                 selectedPipelineStep={selectedPipelineSteps[screen - 2]}
                 setPipelineStep={setPipelineStep}
@@ -320,26 +338,32 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       </ModalBody>
       <ModalFooter className="d-flex justify-content-between">
         <div>
-          <Button color="secondary" onClick={onBack}>
-            Back
-          </Button>
+          {screen !== 0 ? (
+            <Button color="secondary" onClick={onBack}>
+              Back
+            </Button>
+          ) : null}
         </div>
-        <span className="mr-3">
-          {screen + 1}/{maxSteps}
-        </span>
+        {selectedPipeline ? (
+          <span className="mr-3">
+            {screen + 1}/{maxSteps}
+          </span>
+        ) : null}
         <div>
-          <Button
-            color="primary"
-            onClick={() => {
-              if (screen + 1 === maxSteps) {
-                onTrain();
-              } else {
-                onNext();
-              }
-            }}
-          >
-            {screen + 1 === maxSteps ? 'Train' : 'Next'}
-          </Button>
+          {selectedPipeline ? (
+            <Button
+              color="primary"
+              onClick={() => {
+                if (screen + 1 === maxSteps) {
+                  onTrain();
+                } else {
+                  onNext();
+                }
+              }}
+            >
+              {screen + 1 === maxSteps ? 'Train' : 'Next'}
+            </Button>
+          ) : null}
         </div>
       </ModalFooter>
     </Modal>

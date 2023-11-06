@@ -28,6 +28,7 @@ const Wizard_SelectDataset = ({
   toggleSelectDataset,
   toggleDisableTimeseries,
   disabledTimeseriesNames,
+  toggleAllDatasets,
   onNext,
   onBack,
   footer,
@@ -98,6 +99,9 @@ const Wizard_SelectDataset = ({
     (tno) => !tno.inIntersection
   );
 
+  const selectedAllActive = datasets
+    .filter((elm) => !checkUsable(elm))
+    .every((elm) => elm.selected);
   return (
     <div className="p-2">
       <h3 className="font-weight-bold">2. Select datasets</h3>
@@ -105,6 +109,18 @@ const Wizard_SelectDataset = ({
         <Col>
           <EdgeMLTable>
             <EdgeMLTableHeader>
+              <div className="d-flex">
+                <Checkbox
+                  isSelected={selectedAllActive}
+                  onClick={() =>
+                    toggleAllDatasets(
+                      datasets.filter((elm) => !checkUsable(elm)),
+                      !selectedAllActive
+                    )
+                  }
+                ></Checkbox>
+                <div className="ml-2">Select all</div>
+              </div>
               <h4>
                 <b>Datasets</b>
               </h4>

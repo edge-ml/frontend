@@ -8,7 +8,12 @@ import {
 } from 'reactstrap';
 import { HyperparameterView } from '../Hyperparameters/HyperparameterView';
 
-const Pipelinestep = ({ step, selectedPipelineStep, setPipelineStep }) => {
+const Pipelinestep = ({
+  step,
+  selectedPipelineStep,
+  setPipelineStep,
+  stepNum,
+}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -35,31 +40,54 @@ const Pipelinestep = ({ step, selectedPipelineStep, setPipelineStep }) => {
       <div className="d-flex justify-content-between">
         <div>
           <h3 className="font-weight-bold">
-            {step.name +
+            {stepNum +
+              1 +
+              '. ' +
+              step.name +
               (step.options.length === 1 ? ': ' + step.options[0].name : '')}
           </h3>
           <h5>{step.description}</h5>
         </div>
+      </div>
+      <hr></hr>
+      <div className="mb-2">
         {step.options.length > 1 ? (
-          <div>
-            <Dropdown
-              style={{ position: 'relative !important' }}
-              isOpen={dropdownOpen}
-              toggle={toggleDropdown}
-            >
-              <DropdownToggle caret>{selectedPipelineStep.name}</DropdownToggle>
-              <DropdownMenu>
-                {step.options.map((option) => (
-                  <DropdownItem onClick={() => onSelectStepOption(option)}>
-                    {option.name}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
+          <div className="">
+            <div className="d-flex justify-content-start align-items-center">
+              <b>Method: </b>
+              <div>
+                <Dropdown
+                  className="ml-2"
+                  style={{ position: 'unset', padding: 'unset' }}
+                  isOpen={dropdownOpen}
+                  toggle={toggleDropdown}
+                >
+                  <DropdownToggle caret>
+                    {selectedPipelineStep.name}
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {step.options.map((option) => (
+                      <DropdownItem onClick={() => onSelectStepOption(option)}>
+                        {option.name}
+                      </DropdownItem>
+                    ))}
+                  </DropdownMenu>
+                </Dropdown>
+              </div>
+            </div>
+            <div className="my-2">
+              <b>Description: </b>
+              {selectedPipelineStep.description}
+            </div>
           </div>
         ) : null}
       </div>
-
+      {console.log(selectedPipelineStep.parameters)}
+      {selectedPipelineStep.parameters.length > 0 ? (
+        <div>
+          <b>Parameters:</b>
+        </div>
+      ) : null}
       <HyperparameterView
         handleHyperparameterChange={onHandleHyperparameterChange}
         isAdvanced={false}
