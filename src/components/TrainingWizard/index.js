@@ -364,7 +364,6 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
           {selectedPipeline ? (
             <Button
               color="primary"
-              disabled={!stepValidation}
               onClick={() => {
                 if (screen + 1 === maxSteps) {
                   onTrain();

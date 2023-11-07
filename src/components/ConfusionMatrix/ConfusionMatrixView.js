@@ -28,7 +28,7 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
                 textAlign: 'center',
                 borderBottom: '1px solid black',
                 fontWeight: 'bold',
-                transform: 'rotate(-75deg) translateX(50%) translateY(-50%)',
+                transform: 'rotate(-75deg) translateX(0%) translateY(0%)',
                 maxWidth: '50px',
               }}
             >

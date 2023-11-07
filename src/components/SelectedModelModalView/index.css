@@ -1,0 +1,17 @@
+.training_step {
+  background-color: rgba(14, 52, 98, 0.6);
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  color: white;
+  width: 150%;
+  clip-path: polygon(90% 0%, 100% 50%, 90% 100%, 0% 100%, 10% 50%, 0% 0%);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.training_step_selected {
+  background-color: rgb(14 52 98);
+}

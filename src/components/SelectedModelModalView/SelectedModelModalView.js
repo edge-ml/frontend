@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 
 import {
   Modal,
@@ -20,6 +20,9 @@ import ConfusionMatrixView from '../ConfusionMatrix/ConfusionMatrixView';
 import { CrossValidationTable } from './CrossValidationTable';
 import Loader from '../../modules/loader';
 import { Collapse } from 'react-bootstrap/lib/Navbar';
+
+import './index.css';
+import classNames from 'classnames';
 
 export const SelectedModelModalView = ({
   model,
@@ -78,15 +81,18 @@ const General_info = ({
                 <th>Name</th>
                 <td>{model.name}</td>
               </tr>
-              {/* <tr>
-                <th>Classifier</th>
-                <td>{model.pipeline.classifier.name}</td>
-              </tr> */}
+              <tr>
+                <th>Pipeline</th>
+                <td>{model.pipeLineRequest.selectedPipeline.name}</td>
+              </tr>
+
               <tr>
                 <th>Used labels</th>
                 <td>
                   {model.labels.map((elm, index) => (
-                    <Badge key={index}>{elm}</Badge>
+                    <Badge style={{ backgroundColor: elm.color }} key={index}>
+                      {elm.name}
+                    </Badge>
                   ))}
                 </td>
               </tr>
@@ -149,95 +155,59 @@ const Classification_report = ({ report }) => {
 };
 
 const Training_config = ({ model }) => {
-  const { windower, featureExtractor, normalizer, classifier } = model.pipeline;
+  const [selectedStep, setSelectedStep] = useState(
+    model.pipeLineRequest.selectedPipeline.steps[0]
+  );
 
-  const Advanced_params = ({ params }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const toggle = () => setIsOpen(!isOpen);
-
-    if (params.filter((elm) => elm.is_advanced).length === 0) {
-      return <div></div>;
-    }
-
+  const Render_Step = (step) => {
     return (
-      <div>
-        <div className="cursor-pointer" onClick={toggle}>
-          <FontAwesomeIcon
-            icon={isOpen ? faCaretDown : faCaretRight}
-          ></FontAwesomeIcon>
-          <div className="d-inline ml-1">Advanced Parameters</div>
-        </div>
-        {isOpen ? (
-          <div className="ml-3">
-            {params &&
-              params
-                .filter((elm) => elm.is_advanced)
-                .map((param) => {
-                  return (
-                    <div>
-                      {param.name}: {param.value}
-                    </div>
-                  );
-                })}
-          </div>
-        ) : null}
+      <div
+        className={classNames('training_step', {
+          training_step_selected: step.name === selectedStep.name,
+        })}
+        onClick={() => onClickStep(step)}
+      >
+        <div>{step.name}</div>
       </div>
     );
   };
 
-  const Detail_view = ({ stage }) => {
-    console.log(stage.parameters);
-    return (
-      <div>
-        <div>Method: {stage.name}</div>
-        {stage.parameters &&
-          stage.parameters
-            .filter((elm) => !elm.is_advanced)
-            .map((param) => {
-              return (
-                <div>
-                  {param.name}: {param.value}
-                </div>
-              );
-            })}
-        <Advanced_params params={stage.parameters}></Advanced_params>
-      </div>
-    );
+  const onClickStep = (step) => {
+    setSelectedStep(step);
   };
 
   return (
-    <div className="mt-3">
+    <Fragment>
       <h5>
-        <b>Training configuration</b>
+        <b>Pipeline configuration</b>
       </h5>
-      <div className="d-flex justify-content-between">
-        <div className="m-2">
-          <h6 className="text-center">
-            <b>Windowing</b>
-          </h6>
-          <Detail_view stage={windower}></Detail_view>
-        </div>
-        <div className="m-2">
-          <h6 className="text-center">
-            <b>Feature Extraction</b>
-          </h6>
-          <Detail_view stage={featureExtractor}></Detail_view>
-        </div>
-        <div className="m-2">
-          <h6 className="text-center">
-            <b>Normalizer</b>
-          </h6>
-          <Detail_view stage={normalizer}></Detail_view>
-        </div>
-        <div className="m-2">
-          <h6 className="text-center">
-            <b>Classifier</b>
-          </h6>
-          <Detail_view stage={classifier}></Detail_view>
-        </div>
+      <div className="d-flex justify-content-start">
+        {model.pipeLineRequest.selectedPipeline.steps
+          .filter((elm) => elm.type === 'PRE' || elm.type === 'CORE')
+          .map((elm) => Render_Step(elm, onClickStep))}
       </div>
-    </div>
+
+      <div className="m-2">
+        <h5>
+          <b>{selectedStep.name}</b>
+        </h5>
+        <div>
+          <b>Method: </b>
+          {selectedStep.options.name}
+        </div>
+        {selectedStep.options.parameters.length > 0 ? (
+          <div>
+            <b>Parameters: </b>
+            {selectedStep.options.parameters.map((param) => (
+              <div>
+                <span>{param.name}: </span>
+                <span>{param.value}</span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </Fragment>
   );
 };
 
@@ -248,6 +218,7 @@ const metric = (metric) => {
 
 const PerformanceInfo = ({ model }) => {
   const metrics = model.performance.metrics;
+  console.log(model.performance.classification_report);
   return (
     <div className="my-4">
       <h5>
@@ -275,16 +246,16 @@ const PerformanceInfo = ({ model }) => {
           </tr>
         </tbody>
       </Table>
-      {/* <div className="d-flex align-items-center m-2">
+      <div className="d-flex align-items-center m-2">
         <Classification_report
-          report={metrics.classification_report}
+          report={model.performance.classification_report}
         ></Classification_report>
         <ConfusionMatrixView
-          matrix={JSON.parse(metrics.confusion_matrix)}
-          labels={model.pipeline.labels}
+          matrix={JSON.parse(model.performance.confusion_matrix)}
+          labels={model.labels.map((elm) => elm.name)}
         ></ConfusionMatrixView>
-      </div> */}
-      {/* <Training_config model={model}></Training_config> */}
+      </div>
+      <Training_config model={model}></Training_config>
     </div>
   );
 };

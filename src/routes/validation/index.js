@@ -175,7 +175,9 @@ const ValidationPage = () => {
                       >
                         <Col>
                           <b>{model.name}</b>
-                          {/* <div>{model.trainRequest.classifier.name}</div> */}
+                          <div>
+                            {model.pipeLineRequest.selectedPipeline.name}
+                          </div>
                         </Col>
                         <Col>
                           {model.error == '' ? null : (
