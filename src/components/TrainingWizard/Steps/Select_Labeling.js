@@ -18,9 +18,7 @@ const Wizard_SelectLabeling = ({
   selectedLabeling,
   toggleZeroClass,
   zeroClass,
-  onNext,
-  onBack,
-  footer,
+  validate,
 }) => {
   const countDatasets = (labeling) => {
     return datasets

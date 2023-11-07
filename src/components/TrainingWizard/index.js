@@ -111,10 +111,16 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   // Current state of the wizard
   const [screen, setScreen] = useState(0);
 
+  const [stepValidation, setStepValidation] = useState(false);
+
   // Navigate the wizard
   const maxSteps = selectedPipeline ? selectedPipeline.steps.length + 3 : 0;
-  const onBack = () => setScreen(Math.max(screen - 1, 0));
-  const onNext = () => setScreen(Math.min(screen + 1, maxSteps - 1));
+  const onBack = () => {
+    setScreen(Math.max(screen - 1, 0));
+  };
+  const onNext = () => {
+    setScreen(Math.min(screen + 1, maxSteps - 1));
+  };
 
   const onEvaluationChanged = (evl) => setEvaluation(evl);
 
@@ -294,6 +300,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
           <SelectTrainMethod
             pipelines={pipelines}
             onSelectTrainingMethod={onSelectTrainingMethod}
+            valdiate={setStepValidation}
           ></SelectTrainMethod>
         ) : null}
         {selectedPipeline ? (
@@ -306,6 +313,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
                 selectedLabeling={labeling}
                 toggleZeroClass={toggleZeroClass}
                 zeroClass={zeroClass}
+                valdiate={setStepValidation}
               ></Wizard_SelectLabeling>
             ) : null}
 
@@ -317,6 +325,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
                 selectedLabeling={labeling}
                 toggleDisableTimeseries={toggleDisableTimeseries}
                 disabledTimeseriesNames={disabledTimeseriesNames}
+                valdiate={setStepValidation}
               ></Wizard_SelectDataset>
             ) : null}
             {screen >= 2 && screen !== maxSteps - 1 ? (
@@ -325,12 +334,14 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
                 step={selectedPipeline.steps[screen - 2]}
                 selectedPipelineStep={selectedPipelineSteps[screen - 2]}
                 setPipelineStep={setPipelineStep}
+                valdiate={setStepValidation}
               ></Pipelinestep>
             ) : null}
             {screen == maxSteps - 1 ? (
               <Select_Name
                 modelName={modelName}
                 setModelName={setModelName}
+                valdiate={setStepValidation}
               ></Select_Name>
             ) : null}
           </Fragment>
@@ -353,6 +364,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
           {selectedPipeline ? (
             <Button
               color="primary"
+              disabled={!stepValidation}
               onClick={() => {
                 if (screen + 1 === maxSteps) {
                   onTrain();

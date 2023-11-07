@@ -10,7 +10,6 @@ import {
   ModalHeader,
   ModalFooter,
   Spinner,
-  Tooltip,
   UncontrolledTooltip,
   Row,
   Col,
@@ -24,9 +23,7 @@ import {
   faDownload,
   faInfoCircle,
   faMicrochip,
-  faXmark,
   faCircleInfo,
-  faInfo,
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 
@@ -41,33 +38,26 @@ const ValidationPage = () => {
   const [selectedModels, setSelectedModels] = useState([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [updateModels, setUpdateModels] = useState(false);
+  const [error, setError] = useState(undefined);
 
   useEffect(() => {
-    getModels().then((models) => {
-      setModels(models);
-    });
+    refreshModels();
   }, []);
 
-  useEffect(() => {
-    const fetchData = () => {
-      getModels().then((newModels) => {
-        // if (models.length === 0 || models.every(elm => elm.status === "done" || elm.error != "")) {
-        //   setUpdateModels(false);
-        // }
-        const allDone = newModels.filter((elm) => elm.status === 'done').length;
-
-        if (allDone) {
-          return;
-        }
-
-        setModels(newModels);
+  const refreshModels = async () => {
+    getModels()
+      .then((models) => {
+        setModels(models);
+        setError(undefined);
+      })
+      .catch((err) => {
+        setError(true);
       });
-    };
+  };
 
-    fetchData();
-
+  useEffect(() => {
     const interval = setInterval(() => {
-      fetchData();
+      refreshModels();
     }, 1000);
 
     return () => {
@@ -120,7 +110,18 @@ const ValidationPage = () => {
     getModels().then((models) => setModels(models));
   };
 
-  console.log(models);
+  console.log(error);
+
+  if (error) {
+    return (
+      <Container style={{ height: '100vh' }}>
+        <div className="h-100 d-flex justify-content-center align-items-center">
+          <h2 className="font-weight-bold">Cannot connect to the backend</h2>
+        </div>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
@@ -263,35 +264,6 @@ const ValidationPage = () => {
                         </Col>
                       </Row>
                     </div>
-                    {/* ) : (
-                      <div className="p-2 d-flex">
-                        <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
-                          <Checkbox
-                            onClick={() => clickCheckBox(model)}
-                          ></Checkbox>
-                        </div>
-                        <div className="w-100 d-flex justify-content-start align-items-center">
-                          <div>
-                            <b>{model.name}</b>
-                            <div>{model.trainRequest.classifier.name}</div>
-                          </div>
-                          <div
-                            className="ml-5 flex-grow-1 d-flex justify-content-center align-items-center"
-                            style={{ color: 'red' }}
-                          >
-                            An error occured while training!
-                            <FontAwesomeIcon
-                              id={'tooltip' + model._id}
-                              className="m-2"
-                              icon={faCircleInfo}
-                            ></FontAwesomeIcon>
-                          </div>
-                        </div>
-                        <UncontrolledTooltip target={'tooltip' + model._id}>
-                          {model.error}
-                        </UncontrolledTooltip>
-                      </div>
-                    )} */}
                   </TableEntry>
                 );
               })}
