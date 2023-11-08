@@ -83,7 +83,7 @@ const General_info = ({
               </tr>
               <tr>
                 <th>Pipeline</th>
-                <td>{model.pipeLineRequest.selectedPipeline.name}</td>
+                <td>{model.pipeline.selectedPipeline.name}</td>
               </tr>
 
               <tr>
@@ -156,7 +156,7 @@ const Classification_report = ({ report }) => {
 
 const Training_config = ({ model }) => {
   const [selectedStep, setSelectedStep] = useState(
-    model.pipeLineRequest.selectedPipeline.steps[0]
+    model.pipeline.selectedPipeline.steps[0]
   );
 
   const Render_Step = (step) => {
@@ -182,7 +182,7 @@ const Training_config = ({ model }) => {
         <b>Pipeline configuration</b>
       </h5>
       <div className="d-flex justify-content-start">
-        {model.pipeLineRequest.selectedPipeline.steps
+        {model.pipeline.selectedPipeline.steps
           .filter((elm) => elm.type === 'PRE' || elm.type === 'CORE')
           .map((elm) => Render_Step(elm, onClickStep))}
       </div>
@@ -217,8 +217,9 @@ const metric = (metric) => {
 };
 
 const PerformanceInfo = ({ model }) => {
-  const metrics = model.performance.metrics;
-  console.log(model.performance.classification_report);
+  const metrics = model.pipeline.selectedPipeline.steps.filter(
+    (elm) => elm.type === 'EVAL'
+  )[0].options.metrics;
   return (
     <div className="my-4">
       <h5>
@@ -230,28 +231,28 @@ const PerformanceInfo = ({ model }) => {
             <td>
               <b>Accuracy</b>
             </td>
-            <td>{metric(metrics.accuracy_score)}%</td>
+            <td>{metric(metrics.metrics.accuracy_score)}%</td>
           </tr>
           <tr>
             <td>
               <b>Precision</b>
             </td>
-            <td>{metric(metrics.precision_score)}%</td>
+            <td>{metric(metrics.metrics.precision_score)}%</td>
           </tr>
           <tr>
             <td>
               <b>Recall</b>
             </td>
-            <td>{metric(metrics.recall_score)}%</td>
+            <td>{metric(metrics.metrics.recall_score)}%</td>
           </tr>
         </tbody>
       </Table>
       <div className="d-flex align-items-center m-2">
         <Classification_report
-          report={model.performance.classification_report}
+          report={metrics.classification_report}
         ></Classification_report>
         <ConfusionMatrixView
-          matrix={JSON.parse(model.performance.confusion_matrix)}
+          matrix={JSON.parse(metrics.confusion_matrix)}
           labels={model.labels.map((elm) => elm.name)}
         ></ConfusionMatrixView>
       </div>

@@ -161,6 +161,9 @@ const ValidationPage = () => {
               }
             >
               {models.map((model, index) => {
+                const metrics = model.pipeline.selectedPipeline.steps.filter(
+                  (elm) => elm.type === 'EVAL'
+                )[0].options.metrics.metrics;
                 return (
                   <TableEntry index={index}>
                     <div className="p-2 d-flex">
@@ -175,9 +178,7 @@ const ValidationPage = () => {
                       >
                         <Col>
                           <b>{model.name}</b>
-                          <div>
-                            {model.pipeLineRequest.selectedPipeline.name}
-                          </div>
+                          <div>{model.pipeline.name}</div>
                         </Col>
                         <Col>
                           {model.error == '' ? null : (
@@ -204,14 +205,11 @@ const ValidationPage = () => {
                             <div>
                               <div>
                                 <b>Acc: </b>
-                                {metric(
-                                  model.performance.metrics.accuracy_score
-                                )}
-                                %
+                                {metric(metrics.accuracy_score)}%
                               </div>
                               <div>
                                 <b>F1: </b>
-                                {metric(model.performance.metrics.f1_score)}%
+                                {metric(metrics.f1_score)}%
                               </div>
                             </div>
                           ) : null}
