@@ -122,6 +122,7 @@ const ValidationPage = () => {
     );
   }
 
+  console.log(models);
   return (
     <Container>
       <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
@@ -161,9 +162,11 @@ const ValidationPage = () => {
               }
             >
               {models.map((model, index) => {
-                const metrics = model.pipeline.selectedPipeline.steps.filter(
-                  (elm) => elm.type === 'EVAL'
-                )[0].options.metrics.metrics;
+                const metrics = model.error
+                  ? undefined
+                  : model.pipeline.selectedPipeline.steps.filter(
+                      (elm) => elm.type === 'EVAL'
+                    )[0].options.metrics.metrics;
                 return (
                   <TableEntry index={index}>
                     <div className="p-2 d-flex">

@@ -339,6 +339,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
             ) : null}
             {screen == maxSteps - 1 ? (
               <Select_Name
+                screen={screen}
                 modelName={modelName}
                 setModelName={setModelName}
                 valdiate={setStepValidation}
