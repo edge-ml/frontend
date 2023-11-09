@@ -178,7 +178,7 @@ const ValidationPage = () => {
                       >
                         <Col>
                           <b>{model.name}</b>
-                          <div>{model.pipeline.name}</div>
+                          <div>{model.pipeline.selectedPipeline.name}</div>
                         </Col>
                         <Col>
                           {model.error == '' ? null : (
