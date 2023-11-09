@@ -265,7 +265,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     setSelectedPipelineSteps(tmpPipelineData);
   };
 
-  console.log(screen, maxSteps);
+  console.log(stepValidation);
   return (
     <Modal isOpen={true} size="xl">
       <ModalHeader>
@@ -313,7 +313,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
                 selectedLabeling={labeling}
                 toggleZeroClass={toggleZeroClass}
                 zeroClass={zeroClass}
-                valdiate={setStepValidation}
+                validate={setStepValidation}
               ></Wizard_SelectLabeling>
             ) : null}
 
@@ -365,6 +365,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
           {selectedPipeline ? (
             <Button
               color="primary"
+              disabled={!stepValidation}
               onClick={() => {
                 if (screen + 1 === maxSteps) {
                   onTrain();

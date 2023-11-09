@@ -1,6 +1,4 @@
-import { useEffect, useState, Fragment } from 'react';
-import { Badge, Container, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { subscribeLabelingsAndLabels } from '../../../services/ApiServices/LabelingServices';
+import { Badge } from 'reactstrap';
 import '../index.css';
 import Checkbox from '../../../components/Common/Checkbox';
 import classNames from 'classnames';
@@ -10,6 +8,7 @@ import {
   EdgeMLTableEntry,
 } from '../../Common/EdgeMLTable';
 import { toggleElement } from '../../../services/helpers';
+import { useEffect } from 'react';
 
 const Wizard_SelectLabeling = ({
   labelings,
@@ -25,6 +24,20 @@ const Wizard_SelectLabeling = ({
       .map((elm) => elm.labelings.map((l) => l.labelingId))
       .flat()
       .filter((elm) => elm === labeling._id).length;
+  };
+
+  useEffect(() => {
+    console.log('ValidateInput');
+    validateInput();
+  }, [selectedLabeling, zeroClass]);
+
+  useEffect(() => {
+    console.log('Validate new');
+    validateInput();
+  }, []);
+
+  const validateInput = () => {
+    validate(selectedLabeling);
   };
 
   return (
