@@ -317,18 +317,23 @@ const DeployModal = ({ model, onClose }) => {
       <ModalBody>
         {page === 0 ? (
           <div>
-            <Dropdown isOpen={deviceDropDownOpen} toggle={toggleDeviceDropDown}>
-              <DropdownToggle caret size="lg">
-                {selectedDevice.name}
-              </DropdownToggle>
-              <DropdownMenu>
-                {devices.map((device, idx) => (
-                  <DropdownItem onClick={() => setSelectedDevice(device)}>
-                    {device.name}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
+            <div>
+              <Dropdown
+                isOpen={deviceDropDownOpen}
+                toggle={toggleDeviceDropDown}
+              >
+                <DropdownToggle caret size="lg">
+                  {selectedDevice.name}
+                </DropdownToggle>
+                <DropdownMenu>
+                  {devices.map((device, idx) => (
+                    <DropdownItem onClick={() => setSelectedDevice(device)}>
+                      {device.name}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
+            </div>
             <div className="d-flex">
               <div className="my-4 ml-2 mr-4" style={{ width: '500px' }}>
                 <div className="header-wrapper d-flex justify-content-center align-content-center">

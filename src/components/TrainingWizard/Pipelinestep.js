@@ -5,8 +5,12 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Collapse,
+  Button,
 } from 'reactstrap';
 import { HyperparameterView } from '../Hyperparameters/HyperparameterView';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown, faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 
 const Pipelinestep = ({
   step,
@@ -15,6 +19,12 @@ const Pipelinestep = ({
   stepNum,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleCollapse = () => {
+    setIsOpen(!isOpen);
+  };
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -75,16 +85,42 @@ const Pipelinestep = ({
         </div>
       </div>
       {console.log(selectedPipelineStep.parameters)}
-      {selectedPipelineStep.parameters.length > 0 ? (
+      {selectedPipelineStep.parameters.filter((elm) => !elm.is_advanced)
+        .length > 0 ? (
         <div>
           <b>Parameters:</b>
+          <HyperparameterView
+            handleHyperparameterChange={onHandleHyperparameterChange}
+            isAdvanced={false}
+            hyperparameters={selectedPipelineStep.parameters}
+          ></HyperparameterView>
         </div>
       ) : null}
-      <HyperparameterView
-        handleHyperparameterChange={onHandleHyperparameterChange}
-        isAdvanced={false}
-        hyperparameters={selectedPipelineStep.parameters}
-      ></HyperparameterView>
+      {selectedPipelineStep.parameters.filter((elm) => elm.is_advanced).length >
+        0 && (
+        <div>
+          {/* <Button color="primary" onClick={toggleCollapse} style={{ marginBottom: '1rem' }}>
+            <b>Advanced parameters</b>
+          </Button> */}
+          <div
+            className="d-flex justify-content-start align-items-center cursor-pointer"
+            onClick={toggleCollapse}
+          >
+            <div className="mr-2">Advanced parameters</div>
+            <FontAwesomeIcon
+              size="2x"
+              icon={isOpen ? faCaretDown : faCaretLeft}
+            ></FontAwesomeIcon>
+          </div>
+          <Collapse isOpen={isOpen}>
+            <HyperparameterView
+              handleHyperparameterChange={onHandleHyperparameterChange}
+              isAdvanced={true}
+              hyperparameters={selectedPipelineStep.parameters}
+            />
+          </Collapse>
+        </div>
+      )}
     </div>
   );
 };
