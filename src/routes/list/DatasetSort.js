@@ -5,57 +5,44 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
+import { faSort } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './DatasetFilter.css';
 
-const DatasetFilter = ({
-  sortAlphaDesc,
-  sortAlphaAsc,
-  sortDateAsc,
-  sortDateDesc,
-  filterDropDownIsOpen,
-  setFilterDropdownIsOpen,
-  selectedFilter,
-  setSelectedFilter,
+const DatasetSort = ({
+  setSortingMethod,
+  sortingDropDownIsOpen,
+  setSortingDropdownIsOpen,
+  selectedSortingString,
+  setSelectedSortingString,
+  applySorting,
 }) => {
   const toggleDropdown = () => {
-    setFilterDropdownIsOpen(!filterDropDownIsOpen);
+    setSortingDropdownIsOpen(!sortingDropDownIsOpen);
   };
 
   const handleItemClick = (e) => {
-    sortDatasets(e.currentTarget.getAttribute('data-dropdownvalue'));
-    setSelectedFilter(e.currentTarget.textContent);
+    applySorting(e.currentTarget.getAttribute('data-dropdownvalue'));
+    setSelectedSortingString(e.currentTarget.textContent);
+    setSortingMethod(e.currentTarget.getAttribute('data-dropdownvalue'));
     toggleDropdown();
-  };
-
-  const sortDatasets = (dropdownvalue) => {
-    switch (dropdownvalue) {
-      case 'sortAlphaDesc':
-        sortAlphaDesc();
-        break;
-      case 'sortAlphaAsc':
-        sortAlphaAsc();
-        break;
-      case 'sortDateDesc':
-        sortDateDesc();
-        break;
-      case 'sortDateAsc':
-        sortDateAsc();
-        break;
-      default:
-    }
   };
 
   return (
     <Dropdown
       direction="left"
-      isOpen={filterDropDownIsOpen}
+      isOpen={sortingDropDownIsOpen}
       toggle={toggleDropdown}
       size="sm"
-      className="dataset-filter"
+      className="dataset-sorting p-0"
     >
-      <DropdownToggle caret>{selectedFilter || 'Sort'}</DropdownToggle>
+      <DropdownToggle caret>
+        {selectedSortingString || (
+          <FontAwesomeIcon icon={faSort}></FontAwesomeIcon>
+        )}
+      </DropdownToggle>
       <DropdownMenu>
-        <DropdownItem header>Filter Selection</DropdownItem>
+        <DropdownItem header>Sorting Method</DropdownItem>
         <DropdownItem
           onClick={handleItemClick}
           data-dropdownvalue="sortAlphaDesc"
@@ -80,11 +67,9 @@ const DatasetFilter = ({
         >
           Recording Date (ascending)
         </DropdownItem>
-        <DropdownItem divider />
-        <DropdownItem>Labeling Set</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );
 };
 
-export default DatasetFilter;
+export default DatasetSort;

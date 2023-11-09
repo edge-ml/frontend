@@ -15,6 +15,7 @@ import {
 } from 'reactstrap';
 import NotificationContext from '../../components/NotificationHandler/NotificationProvider';
 import Loader from '../../modules/loader';
+import FilterSelectionModal from './FilterSelectionModal';
 
 import './index.css';
 
@@ -28,20 +29,28 @@ import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
 import PageSelection from './PageSelection';
 import PageSizeDropdown from './PageSizeDropdown';
-import { displayTime } from '../../services/helpers';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
+  //underlying datasets which get sorted, but not filtered
   const [datasets, setDatasets] = useState(undefined);
-  const [datasetsToDelete, setDatasetsToDelete] = useState([]);
+  //has to contain the filtered datasets after sorting
+  const [filteredDatasets, setFilteredDatasets] = useState(undefined);
+  const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [ready, setReady] = useState(false);
   const [isCreateNewDatasetOpen, setIsCreateNewDatasetOpen] = useState(false);
   const [labelings, setLabelings] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(0);
+  //datasets displayed on the current page
   const [displayedDatasets, setDisplayedDatasets] = useState([]);
   const [pageSize, setPageSize] = useState(5);
-  const [filterDropDownIsOpen, setFilterDropdownIsOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState(null);
+  const [sortingDropDownIsOpen, setSortingDropdownIsOpen] = useState(false);
+  const [selectedSortingString, setSelectedSortingString] = useState(null);
+  const [sortingMethod, setSortingMethod] = useState(null);
+  const [showFilterSelectionModal, setShowFilterSelectionModal] =
+    useState(false);
+  const [selectedFilter, setSelectedFilter] = useState('clearFilter');
+  const [filterParam, setFilterParam] = useState(null);
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
   const datasetsRef = useRef(datasets);
@@ -52,12 +61,16 @@ const ListPage = (props) => {
     setModal(!modal);
   };
 
+  const getFilteredDatasets = () => {
+    //deselect selected datasets to not cause confusion with datasets, which aren't visible
+  };
+
   const deleteSelectedDatasets = () => {
-    deleteDatasets(datasetsToDelete).then(() => {
+    deleteDatasets(selectedDatasets).then(() => {
       setModal(false);
-      setDatasetsToDelete([]);
+      setSelectedDatasets([]);
       setDatasets(
-        datasets.filter((dataset) => !datasetsToDelete.includes(dataset['_id']))
+        datasets.filter((dataset) => !selectedDatasets.includes(dataset['_id']))
       );
     });
     resetDropdown().catch((err) => {
@@ -67,7 +80,7 @@ const ListPage = (props) => {
   };
 
   const deleteEntry = (datasetId) => {
-    setDatasetsToDelete([datasetId]);
+    setSelectedDatasets([datasetId]);
     toggleModal();
   };
 
@@ -75,8 +88,12 @@ const ListPage = (props) => {
     setIsCreateNewDatasetOpen(!isCreateNewDatasetOpen);
   };
 
+  const toggleFilterSelectionModal = () => {
+    setShowFilterSelectionModal(!showFilterSelectionModal);
+  };
+
   const selectAllEmpty = () => {
-    setDatasetsToDelete(
+    setSelectedDatasets(
       datasets
         .filter((elm) =>
           elm.timeSeries
@@ -87,12 +104,28 @@ const ListPage = (props) => {
     );
   };
 
+  const applyFilter = (filter, filterParam) => {
+    //clear selected before applying
+    setSelectedDatasets([]);
+    switch (filter) {
+      case 'filterByName':
+        break;
+      case 'filterEmptyDatasets':
+        selectAllEmpty();
+        break;
+      case 'filterByLabelingSets':
+        break;
+      default:
+        return null;
+    }
+  };
+
   const selectAll = () => {
-    setDatasetsToDelete(datasets.map((elm) => elm._id));
+    setSelectedDatasets(datasets.map((elm) => elm._id));
   };
 
   const deselectAll = () => {
-    setDatasetsToDelete([]);
+    setSelectedDatasets([]);
   };
 
   useEffect(() => {
@@ -184,8 +217,30 @@ const ListPage = (props) => {
   };
 
   const resetDropdown = () => {
-    setSelectedFilter(null);
-    setFilterDropdownIsOpen(false);
+    setSelectedSortingString(null);
+    setSortingMethod(null);
+    setSortingDropdownIsOpen(false);
+  };
+
+  const applySorting = (sortingMethod) => {
+    let _datasets = sortDatasets(sortingMethod);
+    setDatasets(_datasets);
+  };
+
+  const sortDatasets = (sortingMethod) => {
+    switch (sortingMethod) {
+      case 'sortAlphaDesc':
+        return sortAlphaDesc();
+      case 'sortAlphaAsc':
+        return sortAlphaAsc();
+      case 'sortDateDesc':
+        return sortDateDesc();
+      case 'sortDateAsc':
+        return sortDateAsc();
+      //do nothing
+      default:
+        return [...datasets];
+    }
   };
 
   const sortAlphaAsc = () => {
@@ -201,7 +256,7 @@ const ListPage = (props) => {
       }
       return 0;
     });
-    setDatasets(_datasets);
+    return _datasets;
   };
 
   const sortAlphaDesc = () => {
@@ -217,7 +272,7 @@ const ListPage = (props) => {
       }
       return 0;
     });
-    setDatasets(_datasets);
+    return _datasets;
   };
 
   const sortDateAsc = () => {
@@ -228,7 +283,7 @@ const ListPage = (props) => {
       const startB = Math.min(...b.timeSeries.map((elm) => elm.start));
       return startA - startB;
     });
-    setDatasets(_datasets);
+    return _datasets;
   };
 
   const sortDateDesc = () => {
@@ -239,7 +294,7 @@ const ListPage = (props) => {
       const startB = Math.min(...b.timeSeries.map((elm) => elm.start));
       return startB - startA;
     });
-    setDatasets(_datasets);
+    return _datasets;
   };
 
   const onDatasetsChanged = async (datasets) => {
@@ -261,13 +316,13 @@ const ListPage = (props) => {
   };
 
   const toggleCheck = (e, datasetId) => {
-    const checked = datasetsToDelete.includes(datasetId);
+    const checked = selectedDatasets.includes(datasetId);
     if (!checked) {
-      if (!datasetsToDelete.includes(datasetId)) {
-        setDatasetsToDelete([...datasetsToDelete, datasetId]);
+      if (!selectedDatasets.includes(datasetId)) {
+        setSelectedDatasets([...selectedDatasets, datasetId]);
       }
     } else {
-      setDatasetsToDelete(datasetsToDelete.filter((id) => id !== datasetId));
+      setSelectedDatasets(selectedDatasets.filter((id) => id !== datasetId));
     }
   };
 
@@ -285,42 +340,50 @@ const ListPage = (props) => {
         <DataUpload
           toggleCreateNewDatasetModal={toggleCreateNewDatasetModal}
         ></DataUpload>
-        <DatasetTable
-          displayedDatasets={displayedDatasets}
-          datasetsToDelete={datasetsToDelete}
-          openDeleteModal={toggleModal}
-          selectAllEmpty={selectAllEmpty}
-          downloadAllDatasets={downloadAllDatasets}
-          toggleCheck={toggleCheck}
-          labelings={labelings}
-          deleteEntry={deleteEntry}
-          selectAll={selectAll}
-          deselectAll={deselectAll}
-          filterDropDownIsOpen={filterDropDownIsOpen}
-          setFilterDropdownIsOpen={setFilterDropdownIsOpen}
-          selectedFilter={selectedFilter}
-          setSelectedFilter={setSelectedFilter}
-          sortAlphaAsc={sortAlphaAsc}
-          sortAlphaDesc={sortAlphaDesc}
-          sortDateAsc={sortDateAsc}
-          sortDateDesc={sortDateDesc}
-        ></DatasetTable>
+        <div className="table-margin">
+          <DatasetTable
+            displayedDatasets={displayedDatasets}
+            selectedDatasets={selectedDatasets}
+            openDeleteModal={toggleModal}
+            selectAllEmpty={selectAllEmpty}
+            downloadAllDatasets={downloadAllDatasets}
+            toggleCheck={toggleCheck}
+            labelings={labelings}
+            deleteEntry={deleteEntry}
+            selectAll={selectAll}
+            deselectAll={deselectAll}
+            sortingDropDownIsOpen={sortingDropDownIsOpen}
+            setSortingDropdownIsOpen={setSortingDropdownIsOpen}
+            selectedSortingString={selectedSortingString}
+            setSelectedSortingString={setSelectedSortingString}
+            setSortingMethod={setSortingMethod}
+            applySorting={applySorting}
+            toggleFilterSelectionModal={toggleFilterSelectionModal}
+            applyFilter={applyFilter}
+            filterSelected={selectedFilter !== 'clearFilter'}
+          ></DatasetTable>
+        </div>
       </Container>
+
       {datasets.length > 0 ? (
-        <div className="d-flex flex-row justify-content-center mt-3">
-          <div className="position-relative mr-3">
-            <PageSizeDropdown pageSize={pageSize} setPageSize={setPageSize} />
+        <div className="fixed-bottom">
+          <div className="d-flex justify-content-center flex-md-row flex-wrap">
+            <div className="position-relative mr-md-3">
+              <PageSizeDropdown pageSize={pageSize} setPageSize={setPageSize} />
+            </div>
+            <div className="">
+              <PageSelection
+                pageSize={pageSize}
+                datasetCount={datasets.length}
+                goToPage={goToPage}
+                goToNextPage={goToNextPage}
+                goToLastPage={goToLastPage}
+                currentPage={currentPage}
+                goToPreviousPage={goToPreviousPage}
+                goToFirstPage={gotToFirstPage}
+              />
+            </div>
           </div>
-          <PageSelection
-            pageSize={pageSize}
-            datasetCount={datasets.length}
-            goToPage={goToPage}
-            goToNextPage={goToNextPage}
-            goToLastPage={goToLastPage}
-            currentPage={currentPage}
-            goToPreviousPage={goToPreviousPage}
-            goToFirstPage={gotToFirstPage}
-          />
         </div>
       ) : null}
 
@@ -328,8 +391,8 @@ const ListPage = (props) => {
         <ModalHeader toggle={toggleModal}>Delete Dataset</ModalHeader>
         <ModalBody>
           Are you sure to delete the following datasets?
-          {console.log(datasetsToDelete)}
-          {datasetsToDelete.map((id) => {
+          {console.log(selectedDatasets)}
+          {selectedDatasets.map((id) => {
             const dataset = datasets.find((elm) => elm._id === id);
             if (!dataset) {
               return;
@@ -361,6 +424,16 @@ const ListPage = (props) => {
         onCloseModal={toggleCreateNewDatasetModal}
         onDatasetComplete={refreshList}
       />
+      {showFilterSelectionModal ? (
+        <FilterSelectionModal
+          toggleFilterSelectionModal={toggleFilterSelectionModal}
+          showFilterSelectionModal={showFilterSelectionModal}
+          applyFilter={applyFilter}
+          selectedFilter={selectedFilter}
+          setSelectedFilter={setSelectedFilter}
+          setFilterParam={setFilterParam}
+        />
+      ) : null}
     </div>
   );
 };

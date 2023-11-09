@@ -8,7 +8,7 @@ import React, { Fragment, useState } from 'react';
 import { Button, Container } from 'reactstrap';
 import Checkbox from '../../components/Common/Checkbox';
 import DatasetTableEntry from './DatasetTableEntry';
-import DatasetFilter from './DatasetFilter';
+import DatasetSort from './DatasetSort';
 
 const DatasetTable = (props) => {
   const [areAllSelected, setAllSelected] = useState(false);
@@ -49,7 +49,7 @@ const DatasetTable = (props) => {
                   className="ml-3 btn-delete"
                   id="deleteDatasetsButton"
                   size="sm"
-                  disabled={props.datasetsToDelete.length === 0}
+                  disabled={props.selectedDatasets.length === 0}
                   color="secondary"
                   onClick={props.openDeleteModal}
                 >
@@ -74,20 +74,24 @@ const DatasetTable = (props) => {
                   Select Empty Datasets
                 </Button>
               </div>
-              <div className="d-flex flex-md-row justify-content-end position-relative">
-                <div className="position-absolute" style={{ top: '-10px' }}>
-                  {' '}
-                  <DatasetFilter
-                    filterDropDownIsOpen={props.filterDropDownIsOpen}
-                    setFilterDropdownIsOpen={props.setFilterDropdownIsOpen}
-                    selectedFilter={props.selectedFilter}
-                    setSelectedFilter={props.setSelectedFilter}
-                    sortAlphaAsc={props.sortAlphaAsc}
-                    sortAlphaDesc={props.sortAlphaDesc}
-                    sortDateAsc={props.sortDateAsc}
-                    sortDateDesc={props.sortDateDesc}
+              <div className="d-flex flex-row justify-content-end position-relative">
+                <div className="position-absolute" style={{ right: '60px' }}>
+                  <DatasetSort
+                    sortingDropDownIsOpen={props.sortingDropDownIsOpen}
+                    setSortingDropdownIsOpen={props.setSortingDropdownIsOpen}
+                    selectedSortingString={props.selectedSortingString}
+                    setSelectedSortingString={props.setSelectedSortingString}
+                    setSortingMethod={props.setSortingMethod}
+                    applySorting={props.applySorting}
                   />
                 </div>
+                <Button
+                  active={props.filterSelected}
+                  className="mr-3"
+                  onClick={props.toggleFilterSelectionModal}
+                >
+                  <FontAwesomeIcon icon={faFilter} />
+                </Button>
               </div>
             </div>
             <div
@@ -104,11 +108,10 @@ const DatasetTable = (props) => {
                   dataset={dataset}
                   index={index}
                   toggleCheck={props.toggleCheck}
-                  isSelected={props.datasetsToDelete.includes(dataset['_id'])}
+                  isSelected={props.selectedDatasets.includes(dataset['_id'])}
                   labelings={props.labelings}
                   labels={props.labels}
                   deleteEntry={props.deleteEntry}
-                  areAllSelected={props.areAllSelected}
                 ></DatasetTableEntry>
               ))}
             </div>
