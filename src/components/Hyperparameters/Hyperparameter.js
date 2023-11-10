@@ -20,12 +20,12 @@ const Hyperparameter = (props) => (
           icon={faInfoCircle}
           className="mr-2 fa-s"
         />
-        {/* <UncontrolledTooltip
+        <UncontrolledTooltip
           placement="top-start"
           target={'hyperparameter' + props.parameter_name}
         >
           <b>Description:</b> {props.description}
-        </UncontrolledTooltip> */}
+        </UncontrolledTooltip>
         <span className="text-truncate">{props.display_name}</span>
       </InputGroupText>
     </InputGroupAddon>

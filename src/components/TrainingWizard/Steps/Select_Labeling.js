@@ -9,6 +9,7 @@ import {
 } from '../../Common/EdgeMLTable';
 import { toggleElement } from '../../../services/helpers';
 import { useEffect } from 'react';
+import LabelBadge from '../../Common/LabelBadge';
 
 const Wizard_SelectLabeling = ({
   labelings,
@@ -77,7 +78,7 @@ const Wizard_SelectLabeling = ({
               <div className="labelingName">{labeling.name} </div>
               <div>
                 {labeling.labels.map((label) => (
-                  <Badge
+                  <LabelBadge
                     className="badge"
                     onClick={() =>
                       selectedLabeling?.disabledLabels &&
@@ -96,12 +97,17 @@ const Wizard_SelectLabeling = ({
                         : { backgroundColor: label.color }),
                       userSelect: 'none',
                     }}
-                    {...(selectedLabeling?.disabledLabels.includes(label._id)
-                      ? { color: 'light' }
-                      : {})}
+                    // {...(selectedLabeling?.disabledLabels.includes(label._id)
+                    //   ? { color: 'light' }
+                    //   : {})}
+                    color={
+                      selectedLabeling?.disabledLabels.includes(label._id)
+                        ? 'light'
+                        : ''
+                    }
                   >
                     {label.name}
-                  </Badge>
+                  </LabelBadge>
                 ))}
               </div>
               <div>{`(${countDatasets(labeling)} ${

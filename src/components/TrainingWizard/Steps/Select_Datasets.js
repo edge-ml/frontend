@@ -173,7 +173,9 @@ const Wizard_SelectDataset = ({
                           : {}),
                         userSelect: 'none',
                       }}
-                      {...(tsNameObj.disabled ? { color: 'light' } : {})}
+                      {...(tsNameObj.disabled
+                        ? { color: 'light' }
+                        : { color: 'primary' })}
                     >
                       {`${tsNameObj.name}`}
                     </Badge>

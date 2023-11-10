@@ -1,17 +1,37 @@
 .training_step {
-  background-color: rgba(14, 52, 98, 0.6);
+  background-color: rgba(0, 123, 255, 0.6);
+  color: black;
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px;
   color: white;
-  width: 150%;
   clip-path: polygon(90% 0%, 100% 50%, 90% 100%, 0% 100%, 10% 50%, 0% 0%);
   font-weight: bold;
   cursor: pointer;
 }
 
+.training_step > * {
+  color: black;
+}
+
 .training_step_selected {
-  background-color: rgb(14 52 98);
+  background-color: #007bff;
+}
+
+.training_step_container {
+  width: 150%;
+}
+
+.v_line {
+  height: 20px;
+  width: 20px;
+  background-color: #007bff;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  margin-bottom: -1px;
+}
+
+.borderTop {
+  border-top: 2px solid #007bff;
 }

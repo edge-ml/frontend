@@ -84,7 +84,7 @@ const Pipelinestep = ({
           </div>
         </div>
       </div>
-      {console.log(selectedPipelineStep.parameters)}
+      <hr></hr>
       {selectedPipelineStep.parameters.filter((elm) => !elm.is_advanced)
         .length > 0 ? (
         <div>
@@ -102,15 +102,10 @@ const Pipelinestep = ({
           {/* <Button color="primary" onClick={toggleCollapse} style={{ marginBottom: '1rem' }}>
             <b>Advanced parameters</b>
           </Button> */}
-          <div
-            className="d-flex justify-content-start align-items-center cursor-pointer"
-            onClick={toggleCollapse}
-          >
-            <div className="mr-2">Advanced parameters</div>
-            <FontAwesomeIcon
-              size="2x"
-              icon={isOpen ? faCaretDown : faCaretLeft}
-            ></FontAwesomeIcon>
+          <div className="mr-2 font-weight-bold">Advanced parameters</div>
+          <div>
+            You do not need to change the advanced parameters. Leave the fields
+            empty to use default values.
           </div>
           <Collapse isOpen={isOpen}>
             <HyperparameterView

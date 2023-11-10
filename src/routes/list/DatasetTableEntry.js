@@ -24,6 +24,7 @@ import classNames from 'classnames';
 import Checkbox from '../../components/Common/Checkbox';
 import { hexToRgb } from '../../services/ColorService';
 import { displayTime } from '../../services/helpers';
+import LabelBadge from '../../components/Common/LabelBadge';
 
 // s as unix timestamp in milliseconds
 const format_time = (s) => {
@@ -78,13 +79,13 @@ const Labelings = (props) => {
                     return null;
                   }
                   return (
-                    <Badge
+                    <LabelBadge
                       key={label + index}
                       className="badgeSize mx-1"
-                      style={{ backgroundColor: label.color }}
+                      color={label.color}
                     >
                       {label.name}
-                    </Badge>
+                    </LabelBadge>
                   );
                 })}
               </div>
