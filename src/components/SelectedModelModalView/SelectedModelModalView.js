@@ -141,7 +141,7 @@ const Classification_report = ({ report }) => {
   return (
     <div>
       <h5>
-        <b>Classification Report</b>
+        <b>Classification report</b>
       </h5>
       <Table borderless size="sm" striped>
         <thead>
