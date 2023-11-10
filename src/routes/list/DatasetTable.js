@@ -21,7 +21,7 @@ const DatasetTable = (props) => {
             id="downloadAllDatasetsButton"
             size="sm"
             color="secondary"
-            className="btn-download-all ml-auto"
+            className="btn-neutral ml-auto"
             disabled={props.displayedDatasets.length === 0}
             onClick={props.downloadAllDatasets}
           >

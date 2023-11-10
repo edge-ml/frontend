@@ -122,8 +122,10 @@ const ValidationPage = () => {
       <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
         <Fragment>
           <div className="w-100 d-flex justify-content-between align-items-center mb-2">
-            <div className="font-weight-bold h4 justify-self-start">Models</div>
-            <Button onClick={() => setModalOpen(true)}>Train a model</Button>
+            <h4 className="font-weight-bold">MODELS</h4>
+            <Button className="btn-neutral" onClick={() => setModalOpen(true)}>
+              Train a model
+            </Button>
           </div>
           {models.length === 0 ? (
             <div
