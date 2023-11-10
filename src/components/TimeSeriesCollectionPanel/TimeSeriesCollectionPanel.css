@@ -1,6 +1,5 @@
 .TimeSeriesCollectionPanel {
-  margin-top: 80px;
-  margin-bottom: 80px;
+  overflow: scroll;
 }
 
 .timeInputGroupText {
@@ -16,14 +15,14 @@
   font-size: larger;
 }
 
-.navigator {
+/* .navigator {
   position: fixed;
   width: 90vw;
   z-index: 100;
   opacity: 0.85;
   margin-top: -5px;
   transform-origin: center;
-}
+} */
 
 /* Apply scaling when viewport width is below 1920px */
 @media (max-width: 1920px) {

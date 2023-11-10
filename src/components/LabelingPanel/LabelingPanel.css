@@ -1,9 +1,9 @@
 .LabelingPanel {
   z-index: 10;
-  width: calc(100vw - (160px + 2 * 14.4px));
+  /* width: calc(100vw - (160px + 2 * 14.4px)); */
   border-radius: 0.25rem;
-  position: fixed;
-  bottom: 15px;
+  /* position: fixed; */
+  /* bottom: 15px; */
 }
 
 .informationBox {
@@ -39,9 +39,9 @@
     flex-direction: row;
   }
 
-  .LabelingPanel {
+  /* .LabelingPanel {
     bottom: 15px;
-  }
+  } */
 }
 
 .labelingButton {
