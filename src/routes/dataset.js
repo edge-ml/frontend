@@ -845,120 +845,81 @@ class DatasetPage extends Component {
 
     return (
       <div
-        className="dataset-full-page"
+        className="dataset-full-page p-2 d-flex flex-column justify-content-between"
         onKeyDown={this.onKeyDown}
         tabIndex={0}
+        onMouseUp={this.mouseUpHandler}
       >
-        <div className="w-100 position-relative">
-          <Fade in={this.state.fadeIn}>
-            <div>
-              <Row className="pt-3 m-0 pr-3">
-                <Col
-                  ref={this.middle_col_width}
-                  onMouseUp={this.mouseUpHandler}
-                  xs={12}
-                  lg={12}
-                  className="pr-lg-0"
-                >
-                  <div className="position-relative">
-                    <LabelingSelectionPanel
-                      dataset={this.state.dataset}
-                      objectType={'labelings'}
-                      history={this.props.history}
-                      labelings={this.state.labelings}
-                      onAddLabeling={this.onAddLabeling}
-                      selectedLabelingId={
-                        this.state.controlStates.selectedLabelingId
-                      }
-                      onSelectedLabelingIdChanged={
-                        this.onSelectedLabelingIdChanged
-                      }
-                      onCanEditChanged={this.onCanEditChanged}
-                      canEdit={this.state.controlStates.canEdit}
-                      isCrosshairIntervalActive={isCrosshairIntervalActive}
-                      hideLabels={this.state.hideLabels}
-                      onHideLabels={this.hideLabels}
-                    />
-                    <TimeSeriesCollectionPanel
-                      datasetStart={Math.min(
-                        ...this.state.dataset.timeSeries.map((elm) => elm.start)
-                      )}
-                      datasetEnd={Math.max(
-                        ...this.state.dataset.timeSeries.map((elm) => elm.end)
-                      )}
-                      activeSeries={this.state.activeSeries}
-                      timeSeries={this.state.dataset.timeSeries}
-                      previewTimeSeriesData={this.state.previewTimeSeriesData}
-                      getDatasetWindow={this.getDatasetWindow}
-                      labeling={
-                        this.state.hideLabels
-                          ? { labels: undefined }
-                          : selectedDatasetlabeling
-                      }
-                      labelTypes={this.state.controlStates.selectedLabelTypes}
-                      onLabelClicked={this.onSelectedLabelChanged}
-                      selectedLabelId={this.state.controlStates.selectedLabelId}
-                      start={this.state.shownStart || this.state.dataset.start}
-                      end={this.state.shownEnd || this.state.dataset.end}
-                      canEdit={this.state.controlStates.canEdit}
-                      onScrubbed={this.onScrubbed}
-                      onDelete={this.onDeleteTimeSeries}
-                      drawingId={this.state.controlStates.drawingId}
-                      drawingPosition={this.state.controlStates.drawingPosition}
-                      newPosition={this.state.controlStates.newPosition}
-                      updateControlStates={this.updateControlStates}
-                      onClickPosition={this.onClickPosition}
-                      onLabelPositionUpdate={this.onLabelPositionUpdate}
-                      datasetId={this.state.dataset._id}
-                    />
-                    <Fade
-                      className="LabelingPanel"
-                      in={!this.state.hideLabels}
-                      unmountOnExit={true}
-                    >
-                      <LabelingPanel
-                        className="StickyLabelingSelectionPanel"
-                        history={this.props.history}
-                        id={this.state.controlStates.selectedLabelId}
-                        from={
-                          selectedDatasetLabel
-                            ? selectedDatasetLabel.start
-                            : null
-                        }
-                        to={
-                          selectedDatasetLabel ? selectedDatasetLabel.end : null
-                        }
-                        labeling={selectedLabeling}
-                        labels={this.state.controlStates.selectedLabelTypes}
-                        selectedLabelTypeId={
-                          this.state.controlStates.selectedLabelTypeId
-                        }
-                        onSelectedLabelTypeIdChanged={
-                          this.onSelectedLabelTypeIdChanged
-                        }
-                        onDeleteSelectedLabel={this.onDeleteSelectedLabel}
-                        canEdit={this.state.controlStates.canEdit}
-                      />
-                    </Fade>
-                  </div>
-                  <div className="dataset-labelingpanel">
-                    {this.state.error ? (
-                      <Fade>
-                        <div className="dataset-snackbar-center">
-                          <Snackbar
-                            text={this.state.error}
-                            closeSnackbar={() => {
-                              this.setState({ error: undefined });
-                            }}
-                          ></Snackbar>
-                        </div>
-                      </Fade>
-                    ) : null}
-                  </div>
-                </Col>
-              </Row>
+        <LabelingSelectionPanel
+          dataset={this.state.dataset}
+          objectType={'labelings'}
+          history={this.props.history}
+          labelings={this.state.labelings}
+          onAddLabeling={this.onAddLabeling}
+          selectedLabelingId={this.state.controlStates.selectedLabelingId}
+          onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
+          onCanEditChanged={this.onCanEditChanged}
+          canEdit={this.state.controlStates.canEdit}
+          isCrosshairIntervalActive={isCrosshairIntervalActive}
+          hideLabels={this.state.hideLabels}
+          onHideLabels={this.hideLabels}
+        />
+        <TimeSeriesCollectionPanel
+          datasetStart={Math.min(
+            ...this.state.dataset.timeSeries.map((elm) => elm.start)
+          )}
+          datasetEnd={Math.max(
+            ...this.state.dataset.timeSeries.map((elm) => elm.end)
+          )}
+          activeSeries={this.state.activeSeries}
+          timeSeries={this.state.dataset.timeSeries}
+          previewTimeSeriesData={this.state.previewTimeSeriesData}
+          getDatasetWindow={this.getDatasetWindow}
+          labeling={
+            this.state.hideLabels
+              ? { labels: undefined }
+              : selectedDatasetlabeling
+          }
+          labelTypes={this.state.controlStates.selectedLabelTypes}
+          onLabelClicked={this.onSelectedLabelChanged}
+          selectedLabelId={this.state.controlStates.selectedLabelId}
+          start={this.state.shownStart || this.state.dataset.start}
+          end={this.state.shownEnd || this.state.dataset.end}
+          canEdit={this.state.controlStates.canEdit}
+          onScrubbed={this.onScrubbed}
+          onDelete={this.onDeleteTimeSeries}
+          drawingId={this.state.controlStates.drawingId}
+          drawingPosition={this.state.controlStates.drawingPosition}
+          newPosition={this.state.controlStates.newPosition}
+          updateControlStates={this.updateControlStates}
+          onClickPosition={this.onClickPosition}
+          onLabelPositionUpdate={this.onLabelPositionUpdate}
+          datasetId={this.state.dataset._id}
+        />
+        <LabelingPanel
+          className="StickyLabelingSelectionPanel"
+          history={this.props.history}
+          id={this.state.controlStates.selectedLabelId}
+          from={selectedDatasetLabel ? selectedDatasetLabel.start : null}
+          to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
+          labeling={selectedLabeling}
+          labels={this.state.controlStates.selectedLabelTypes}
+          selectedLabelTypeId={this.state.controlStates.selectedLabelTypeId}
+          onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
+          onDeleteSelectedLabel={this.onDeleteSelectedLabel}
+          canEdit={this.state.controlStates.canEdit}
+        />
+        <div className="dataset-labelingpanel">
+          {this.state.error ? (
+            <div className="dataset-snackbar-center">
+              <Snackbar
+                text={this.state.error}
+                closeSnackbar={() => {
+                  this.setState({ error: undefined });
+                }}
+              ></Snackbar>
             </div>
-          </Fade>
+          ) : null}
         </div>
         {!this.state.metaDataExtended ? (
           <div

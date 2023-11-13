@@ -168,7 +168,7 @@ class TimeSeriesCollectionPanel extends Component {
 
   render() {
     return (
-      <div className="TimeSeriesCollectionPanel">
+      <>
         <div
           style={{
             position: 'fixed',
@@ -193,18 +193,15 @@ class TimeSeriesCollectionPanel extends Component {
             Error saving configuration. Please try again.
           </Alert>
         </div>
-        {this.state.activeSeries.length ? (
-          <div className="d-flex flex-row justify-content-center w-100">
-            <div className="navigator">
+        <div
+          className="d-flex flex-column justify-content-start flex-fill p-2"
+          style={{ overflowY: 'scroll' }}
+        >
+          {this.state.activeSeries.length ? (
+            <div>
               <TimeSeriesPanel
                 index={0}
                 offset={0}
-                // data={
-                //   this.state.previewTimeSeriesData.length > 0
-                //     ? this.sortedPreviewTimeSeries
-                //     : [10, 10]
-                // }
-                // data={[[this.state.start, 1], [this.state.end, 1]]}
                 toggleUnitMenu={this.toggleUnitMenu}
                 data={this.getIndexData()}
                 labeling={this.state.labeling}
@@ -223,63 +220,22 @@ class TimeSeriesCollectionPanel extends Component {
                 }
               />
             </div>
-          </div>
-        ) : (
-          <div className="user-info-select-timeSeries">
-            Select some time-series on the panel on the right
-          </div>
-        )}
-        <div className="TimeSeriesCollectionPanel">
-          {this.state.timeSeries.length === 0 ? (
-            <TimeSeriesPanel
-              toggleUnitMenu={this.toggleUnitMenu}
-              isEmpty={true}
-              index={1}
-              offset={0}
-              data={[]}
-              samplingRate={1}
-              name={''}
-              unit={''}
-              labeling={this.state.labeling}
-              labelTypes={this.state.labelTypes}
-              onLabelClicked={this.state.onLabelClicked}
-              selectedLabelId={this.state.selectedLabelId}
-              start={this.state.start}
-              end={this.state.end}
-              canEdit={this.props.canEdit}
-              onScrubbed={this.state.onScrubbed}
-              numSeries={2}
-              drawingId={this.props.drawingId}
-              drawingPosition={this.props.drawingPosition}
-              newPosition={this.props.newPosition}
-              updateControlStates={this.props.updateControlStates}
-              onClickPosition={this.props.onClickPosition}
-              onLabelPositionUpdate={this.props.onLabelPositionUpdate}
-              onTimeSeriesWindow={(start, end, res) =>
-                this.onTimeSeriesWindow(0, start, end, res)
-              }
-            />
-          ) : null}
-          {this.state.activeSeries.map((elm, key) => {
-            const timeSeries = this.state.timeSeries.find(
-              (ts) => ts._id === elm
-            );
-            return (
+          ) : (
+            <div className="user-info-select-timeSeries h-100">
+              Select some time-series on the panel on the right
+            </div>
+          )}
+          <div style={{ overflowY: 'auto' }}>
+            {this.state.timeSeries.length === 0 ? (
               <TimeSeriesPanel
-                key={key}
-                index={key + 1}
-                offset={timeSeries.offset}
-                data={
-                  this.state.previewTimeSeriesData
-                    ? this.state.previewTimeSeriesData[key]
-                    : []
-                }
-                samplingRate={
-                  timeSeries.samplingRate ? timeSeries.samplingRate : 1
-                }
                 toggleUnitMenu={this.toggleUnitMenu}
-                name={timeSeries.name}
-                unit={timeSeries.unit}
+                isEmpty={true}
+                index={1}
+                offset={0}
+                data={[]}
+                samplingRate={1}
+                name={''}
+                unit={''}
                 labeling={this.state.labeling}
                 labelTypes={this.state.labelTypes}
                 onLabelClicked={this.state.onLabelClicked}
@@ -288,12 +244,7 @@ class TimeSeriesCollectionPanel extends Component {
                 end={this.state.end}
                 canEdit={this.props.canEdit}
                 onScrubbed={this.state.onScrubbed}
-                numSeries={
-                  this.state.timeSeries.length +
-                  this.state.fusedSeries.length +
-                  1
-                }
-                onDelete={() => this.state.onDelete(false, key)}
+                numSeries={2}
                 drawingId={this.props.drawingId}
                 drawingPosition={this.props.drawingPosition}
                 newPosition={this.props.newPosition}
@@ -301,13 +252,59 @@ class TimeSeriesCollectionPanel extends Component {
                 onClickPosition={this.props.onClickPosition}
                 onLabelPositionUpdate={this.props.onLabelPositionUpdate}
                 onTimeSeriesWindow={(start, end, res) =>
-                  this.onTimeSeriesWindow(key, start, end, res)
+                  this.onTimeSeriesWindow(0, start, end, res)
                 }
               />
-            );
-          })}
+            ) : null}
+            {this.state.activeSeries.map((elm, key) => {
+              const timeSeries = this.state.timeSeries.find(
+                (ts) => ts._id === elm
+              );
+              return (
+                <TimeSeriesPanel
+                  key={key}
+                  index={key + 1}
+                  offset={timeSeries.offset}
+                  data={
+                    this.state.previewTimeSeriesData
+                      ? this.state.previewTimeSeriesData[key]
+                      : []
+                  }
+                  samplingRate={
+                    timeSeries.samplingRate ? timeSeries.samplingRate : 1
+                  }
+                  toggleUnitMenu={this.toggleUnitMenu}
+                  name={timeSeries.name}
+                  unit={timeSeries.unit}
+                  labeling={this.state.labeling}
+                  labelTypes={this.state.labelTypes}
+                  onLabelClicked={this.state.onLabelClicked}
+                  selectedLabelId={this.state.selectedLabelId}
+                  start={this.state.start}
+                  end={this.state.end}
+                  canEdit={this.props.canEdit}
+                  onScrubbed={this.state.onScrubbed}
+                  numSeries={
+                    this.state.timeSeries.length +
+                    this.state.fusedSeries.length +
+                    1
+                  }
+                  onDelete={() => this.state.onDelete(false, key)}
+                  drawingId={this.props.drawingId}
+                  drawingPosition={this.props.drawingPosition}
+                  newPosition={this.props.newPosition}
+                  updateControlStates={this.props.updateControlStates}
+                  onClickPosition={this.props.onClickPosition}
+                  onLabelPositionUpdate={this.props.onLabelPositionUpdate}
+                  onTimeSeriesWindow={(start, end, res) =>
+                    this.onTimeSeriesWindow(key, start, end, res)
+                  }
+                />
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 }
