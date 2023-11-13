@@ -1,5 +1,9 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { getModels, deleteModel } from '../../services/ApiServices/MlService';
+import {
+  getModels,
+  deleteModel,
+  getStepOptions,
+} from '../../services/ApiServices/MlService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 import TrainingWizard from '../../components/TrainingWizard';
 import {
@@ -39,9 +43,11 @@ const ValidationPage = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [updateModels, setUpdateModels] = useState(false);
   const [error, setError] = useState(undefined);
+  const [stepOptions, setStepOptions] = useState(undefined);
 
   useEffect(() => {
     refreshModels();
+    getStepOptions().then((data) => setStepOptions(data));
   }, []);
 
   const refreshModels = async () => {
@@ -116,6 +122,23 @@ const ValidationPage = () => {
       </Container>
     );
   }
+
+  const checkExportC = (model) => {
+    const res = model.pipeline.selectedPipeline.steps.map((step) => {
+      const stepOption = stepOptions.find(
+        (elm) => elm.name === step.options.name
+      );
+      if (
+        ['PRE', 'CORE'].includes(stepOption.type) &&
+        !stepOption.platforms.includes('C')
+      ) {
+        console.log(stepOption.name, stepOption.platforms);
+        return false;
+      }
+      return true;
+    });
+    return res.every((elm) => elm === true);
+  };
 
   return (
     <Container>
@@ -241,10 +264,12 @@ const ValidationPage = () => {
                               </Button>
                               <Button
                                 className="btn-edit mr-3 mr-md-4"
+                                disabled={!checkExportC(model)}
                                 onClick={(e) => {
                                   setModelDeploy(model);
                                   setDeployModalOpen(true);
                                   e.stopPropagation();
+                                  e.preventDefault();
                                 }}
                               >
                                 <FontAwesomeIcon
