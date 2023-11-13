@@ -13,7 +13,6 @@ const Hyperparameter = (props) => (
   <InputGroup className="position-relative w-100 d-flex">
     <InputGroupAddon className="w-50" addonType="prepend">
       <InputGroupText className="w-100">
-        {console.log(props)}
         <FontAwesomeIcon
           id={'hyperparameter' + props.parameter_name}
           style={{ color: '#8b8d8f' }}

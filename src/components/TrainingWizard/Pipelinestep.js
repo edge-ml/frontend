@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 import { HyperparameterView } from '../Hyperparameters/HyperparameterView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretLeft } from '@fortawesome/free-solid-svg-icons';
+import PlatformList from '../Common/PlatformList';
 
 const Pipelinestep = ({
   step,
@@ -82,6 +82,16 @@ const Pipelinestep = ({
             <b>Description: </b>
             {selectedPipelineStep.description}
           </div>
+          {selectedPipelineStep.type !== 'EVAL' && (
+            <div className="my-2">
+              <b>Platforms: </b>
+              <PlatformList
+                platforms={selectedPipelineStep.platforms}
+                size="1x"
+                color="black"
+              ></PlatformList>
+            </div>
+          )}
         </div>
       </div>
       <hr></hr>
@@ -99,9 +109,6 @@ const Pipelinestep = ({
       {selectedPipelineStep.parameters.filter((elm) => elm.is_advanced).length >
         0 && (
         <div>
-          {/* <Button color="primary" onClick={toggleCollapse} style={{ marginBottom: '1rem' }}>
-            <b>Advanced parameters</b>
-          </Button> */}
           <div className="mr-2 font-weight-bold">Advanced parameters</div>
           <div>
             You do not need to change the advanced parameters. Leave the fields
