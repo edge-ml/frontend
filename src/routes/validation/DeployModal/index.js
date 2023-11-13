@@ -20,17 +20,16 @@ import {
   getDeployDevices,
   deployModel,
   downloadFirmware,
-} from '../../services/ApiServices/MlService';
+} from '../../../services/ApiServices/MlService';
 
-import './index.css';
-import { HyperparameterView } from '../../components/Hyperparameters/HyperparameterView';
+// import './index.css';
+import { HyperparameterView } from '../../../../components/Hyperparameters/HyperparameterView';
 import {
   EdgeMLTable,
   EdgeMLTableEntry,
   EdgeMLTableHeader,
-} from '../../components/Common/EdgeMLTable';
-import DFUManager from '../../components/BLE/DFUModal/DFU';
-import { Brand } from 'react-bootstrap/lib/Navbar';
+} from '../../../../components/Common/EdgeMLTable';
+import DFUManager from '../../../../components/BLE/DFUModal/DFU';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 
@@ -317,8 +316,7 @@ const DeployModal = ({ model, onClose }) => {
       <ModalBody>
         {page === 0 ? (
           <div>
-            <div className="d-flex justify-content-start align-items-center">
-              <h5 className="font-weight-bold">1. Select Device: </h5>
+            <div className="d-flex justify-content-center">
               <Dropdown
                 isOpen={deviceDropDownOpen}
                 toggle={toggleDeviceDropDown}
@@ -335,8 +333,6 @@ const DeployModal = ({ model, onClose }) => {
                 </DropdownMenu>
               </Dropdown>
             </div>
-            <hr></hr>
-            <h5 className="font-weight-bold">2. Configure Device:</h5>
             <div className="d-flex">
               <div className="my-4 ml-2 mr-4" style={{ width: '500px' }}>
                 <div className="header-wrapper d-flex justify-content-center align-content-center">
@@ -442,9 +438,8 @@ const DeployModal = ({ model, onClose }) => {
                 </EdgeMLTableEntry>
               </EdgeMLTable>
             </div>
-            <hr></hr>
             <div className="m-2">
-              <h5 className="font-weight-bold">3. Additional Settings</h5>
+              <div className="font-weight-bold fs-medium">Settings</div>
               <HyperparameterView
                 hyperparameters={parameters}
                 isAdvanced={false}
