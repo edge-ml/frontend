@@ -1,5 +1,5 @@
 .training_step {
-  background-color: rgba(0, 123, 255, 0.6);
+  background-color: rgba(7, 52, 98, 0.6);
   color: black;
   height: 50px;
   display: flex;
@@ -13,11 +13,11 @@
 }
 
 .training_step > * {
-  color: black;
+  color: white;
 }
 
 .training_step_selected {
-  background-color: #007bff;
+  background-color: rgba(7, 52, 98, 1);
 }
 
 .training_step_container {
@@ -27,11 +27,11 @@
 .v_line {
   height: 20px;
   width: 20px;
-  background-color: #007bff;
+  background-color: rgba(7, 52, 98, 1);
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
   margin-bottom: -1px;
 }
 
 .borderTop {
-  border-top: 2px solid #007bff;
+  border-top: 2px solid rgba(7, 52, 98, 1);
 }
