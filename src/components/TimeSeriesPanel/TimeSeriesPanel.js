@@ -857,19 +857,7 @@ class TimeSeriesPanel extends Component {
       return <div className="noDataLabel">{this.props.name}: No data</div>;
     }
     return (
-      <div
-        className="mt-2"
-        style={{
-          position: 'relative',
-          overflow: 'visible',
-          marginBottom:
-            this.props.index === 0
-              ? 0
-              : this.props.index < this.props.numSeries - 1
-              ? '-25px'
-              : '-10px',
-        }}
-      >
+      <div style={{}}>
         {this.props.index !== 0 && !this.props.isEmpty ? (
           <div className="chartMenuWrapper">
             <button
