@@ -44,7 +44,7 @@ const LabelingTableEntry = (props) => {
               </Col>
               <Col className="d-flex flex-nowrap col-2 align-self-center justify-content-end">
                 <Button
-                  className="btn-delete mr-2"
+                  className="btn-delete t mr-3 mr-md-4"
                   onClick={(e) =>
                     props.onClickDeleteLabelingIcon(labeling['_id'])
                   }

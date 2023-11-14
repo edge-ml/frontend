@@ -79,6 +79,15 @@ const ValidationPage = () => {
     }
   };
 
+  const onSelectAll = () => {
+    const allSelected = models.length === selectedModels.length;
+    if (allSelected) {
+      setSelectedModels([]);
+    } else {
+      setSelectedModels(models.map((model) => model._id));
+    }
+  };
+
   const clickCheckBox = (model) => {
     const id = model._id;
     if (selectedModels.includes(id)) {
@@ -99,6 +108,15 @@ const ValidationPage = () => {
     });
     setSelectedModels([]);
     toggleDeleteModal();
+  };
+
+  const onDeleteSingleModel = (model_id) => {
+    const model = models.find((elm) => elm._id === model_id);
+
+    if (model) {
+      setSelectedModels([model._id]);
+      toggleDeleteModal();
+    }
   };
 
   const toggleDeleteModal = () => {
@@ -162,7 +180,10 @@ const ValidationPage = () => {
               header={
                 <>
                   <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
-                    <Checkbox isSelected={false}></Checkbox>
+                    <Checkbox
+                      isSelected={models.length == selectedModels.length}
+                      onClick={onSelectAll}
+                    ></Checkbox>
                   </div>
                   <Button
                     className="ml-3 btn-delete"
@@ -192,6 +213,7 @@ const ValidationPage = () => {
                     <div className="p-2 d-flex">
                       <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
                         <Checkbox
+                          isSelected={selectedModels.includes(model._id)}
                           onClick={() => clickCheckBox(model)}
                         ></Checkbox>
                       </div>
@@ -261,6 +283,17 @@ const ValidationPage = () => {
                                 <FontAwesomeIcon
                                   icon={faDownload}
                                 ></FontAwesomeIcon>
+                              </Button>
+                              <Button
+                                className="btn-delete t mr-3 mr-md-4"
+                                onClick={(e) => {
+                                  onDeleteSingleModel(model._id);
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrashAlt}
+                                ></FontAwesomeIcon>{' '}
                               </Button>
                               <Button
                                 className="btn-edit mr-3 mr-md-4"
