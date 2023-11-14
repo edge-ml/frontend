@@ -1,16 +1,30 @@
-import React, { useState, useContext } from 'react';
-import { Card, CardBody, Button } from 'reactstrap';
+import React, { useState, useContext, Fragment } from 'react';
+import {
+  Card,
+  CardBody,
+  Button,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Dropdown,
+} from 'reactstrap';
 import Select from 'react-select';
 import './LabelingSelectionPanel.css';
 
 import HelpModal from './HelpModal';
 
 import NotificationContext from '../NotificationHandler/NotificationProvider';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
+
+import Checkbox from '../Common/Checkbox';
 
 const hideLabelsSymbol = 'hide labels' + Math.floor(Math.random() * 1000);
 
 const LabelingSelectionPanel = (props) => {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [isTSDropdownOpen, setIsTSDropdownOpen] = useState(false);
   const { registerDatasetDownload } = useContext(NotificationContext);
 
   const toggleHelpModal = () => {
@@ -32,6 +46,118 @@ const LabelingSelectionPanel = (props) => {
       props.onSelectedLabelingIdChanged(id);
     }
   };
+
+  const TimeSeriesSelection = () => {
+    return (
+      <div>
+        {/* {props.timeSeries.map(elm => <div>{elm.name}</div>)} */}
+        <Dropdown
+          isOpen={isTSDropdownOpen}
+          toggle={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
+          className="mx-2"
+        >
+          <DropdownToggle
+            caret
+            onClick={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
+          >
+            Selected Timeseries:{' '}
+            <div className="d-inline font-weight-normal">
+              {props.activeSeries.length + '/' + props.timeSeries.length}
+            </div>{' '}
+          </DropdownToggle>
+          <DropdownMenu>
+            {props.timeSeries.map((elm) => {
+              return (
+                <DropdownItem className="p-0 p-2 dropdownItemTS">
+                  <div
+                    onClick={(e) => {
+                      props.onClickSelectSeries(elm._id);
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <div className="d-flex align-items-center">
+                      <Checkbox
+                        isSelected={props.activeSeries.includes(elm._id)}
+                        onClick={() => console.log('click checkbox')}
+                      ></Checkbox>
+                      <div className="ml-2">{elm.name}</div>
+                    </div>
+                  </div>
+                </DropdownItem>
+              );
+            })}
+          </DropdownMenu>
+        </Dropdown>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <div className="LabelingSelectionPanel p-1">
+        <div className="d-flex align-items-center">
+          <div className="d-flex">
+            <TimeSeriesSelection></TimeSeriesSelection>
+            <UncontrolledDropdown>
+              <DropdownToggle caret>
+                {props.hideLabels ? 'Select Labeling' : 'Selected Labeling: '}
+                <div className="d-inline font-weight-normal">
+                  {
+                    props.labelings.find(
+                      (x) => x._id === props.selectedLabelingId
+                    ).name
+                  }
+                </div>
+              </DropdownToggle>
+              <DropdownMenu>
+                {props.labelings.map((elm) => (
+                  <DropdownItem
+                    onClick={() => props.onSelectedLabelingIdChanged(elm._id)}
+                  >
+                    {elm.name}
+                  </DropdownItem>
+                ))}
+                <DropdownItem divider></DropdownItem>
+                <DropdownItem className="font-weight-bold">
+                  + Add Labeling Set
+                </DropdownItem>
+                {props.hideLabels ? null : (
+                  <Fragment>
+                    <DropdownItem divider></DropdownItem>
+                    <DropdownItem
+                      className="text-danger"
+                      onClick={props.onHideLabels}
+                    >
+                      Hide Labels
+                    </DropdownItem>
+                  </Fragment>
+                )}
+              </DropdownMenu>
+            </UncontrolledDropdown>
+          </div>
+        </div>
+        <div className="d-flex align-items-center">
+          <Button id="btn-secondary" className="m-1" onClick={downloadDataSet}>
+            <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon>
+          </Button>
+          <Button
+            id="buttonOpenHelpModal"
+            className="m-1"
+            color="secondary"
+            onClick={toggleHelpModal}
+          >
+            <FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon>
+          </Button>
+        </div>
+      </div>
+      <div className="bottom-line"></div>
+      {isHelpModalOpen ? (
+        <HelpModal isOpen={isHelpModalOpen} onCloseModal={toggleHelpModal} />
+      ) : null}
+    </div>
+  );
+
   return (
     <Card
       id="labelingSelectionPanel"

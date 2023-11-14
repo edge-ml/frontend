@@ -24,7 +24,8 @@
 }
 
 .dataset-side-panel {
-  background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
+  /* background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72)); */
+  border-left: 1px solid lightgray;
   padding: 8px;
   height: 100vh;
   position: absolute;
@@ -37,9 +38,21 @@
   position: fixed;
 }
 
+.sidePanelBackdrop {
+  background-color: gray;
+  position: fixed;
+  opacity: 0.2;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 100;
+}
+
 .dataset-side-panel-close-button {
   display: flex;
   justify-content: end;
+  color: black;
 }
 
 .cursor-pointer {

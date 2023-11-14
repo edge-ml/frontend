@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Col, Row, Fade, Container } from 'reactstrap';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
@@ -102,6 +102,7 @@ class DatasetPage extends Component {
   }
 
   onClickSelectSeries(_id) {
+    console.log('Click: ', _id);
     var series = this.state.activeSeries;
     if (series.includes(_id)) {
       series = series.filter((elm) => elm !== _id);
@@ -146,14 +147,14 @@ class DatasetPage extends Component {
   }
 
   onUpdateMetaData(updatedDataset) {
-    updateDataset(
-      { ...updatedDataset, _id: this.state.dataset._id },
-      true
-    ).then((newDataset) => {
-      this.setState({
-        dataset: { ...newDataset, timeSeries: this.state.dataset.timeSeries },
-      });
-    });
+    console.log({ ...updatedDataset, ...this.state.dataset });
+    updateDataset({ ...updatedDataset, ...this.state.dataset }, true).then(
+      (newDataset) => {
+        this.setState({
+          dataset: { ...newDataset, timeSeries: this.state.dataset.timeSeries },
+        });
+      }
+    );
   }
 
   showSnackbar(errorText, duration) {
@@ -478,6 +479,7 @@ class DatasetPage extends Component {
 
     const labelTypes = labeling.labels;
     this.setState({
+      hideLabels: false,
       controlStates: {
         ...this.state.controlStates,
         selectedLabelId: undefined,
@@ -844,134 +846,141 @@ class DatasetPage extends Component {
     let isCrosshairIntervalActive = this.crosshairInterval ? true : false;
 
     return (
-      <div
-        className="dataset-full-page p-2 d-flex flex-column justify-content-between"
-        onKeyDown={this.onKeyDown}
-        tabIndex={0}
-        onMouseUp={this.mouseUpHandler}
-      >
-        <LabelingSelectionPanel
-          dataset={this.state.dataset}
-          objectType={'labelings'}
-          history={this.props.history}
-          labelings={this.state.labelings}
-          onAddLabeling={this.onAddLabeling}
-          selectedLabelingId={this.state.controlStates.selectedLabelingId}
-          onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
-          onCanEditChanged={this.onCanEditChanged}
-          canEdit={this.state.controlStates.canEdit}
-          isCrosshairIntervalActive={isCrosshairIntervalActive}
-          hideLabels={this.state.hideLabels}
-          onHideLabels={this.hideLabels}
-        />
-        <TimeSeriesCollectionPanel
-          datasetStart={Math.min(
-            ...this.state.dataset.timeSeries.map((elm) => elm.start)
-          )}
-          datasetEnd={Math.max(
-            ...this.state.dataset.timeSeries.map((elm) => elm.end)
-          )}
-          activeSeries={this.state.activeSeries}
-          timeSeries={this.state.dataset.timeSeries}
-          previewTimeSeriesData={this.state.previewTimeSeriesData}
-          getDatasetWindow={this.getDatasetWindow}
-          labeling={
-            this.state.hideLabels
-              ? { labels: undefined }
-              : selectedDatasetlabeling
-          }
-          labelTypes={this.state.controlStates.selectedLabelTypes}
-          onLabelClicked={this.onSelectedLabelChanged}
-          selectedLabelId={this.state.controlStates.selectedLabelId}
-          start={this.state.shownStart || this.state.dataset.start}
-          end={this.state.shownEnd || this.state.dataset.end}
-          canEdit={this.state.controlStates.canEdit}
-          onScrubbed={this.onScrubbed}
-          onDelete={this.onDeleteTimeSeries}
-          drawingId={this.state.controlStates.drawingId}
-          drawingPosition={this.state.controlStates.drawingPosition}
-          newPosition={this.state.controlStates.newPosition}
-          updateControlStates={this.updateControlStates}
-          onClickPosition={this.onClickPosition}
-          onLabelPositionUpdate={this.onLabelPositionUpdate}
-          datasetId={this.state.dataset._id}
-        />
-        <LabelingPanel
-          className="StickyLabelingSelectionPanel"
-          history={this.props.history}
-          id={this.state.controlStates.selectedLabelId}
-          from={selectedDatasetLabel ? selectedDatasetLabel.start : null}
-          to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
-          labeling={selectedLabeling}
-          labels={this.state.controlStates.selectedLabelTypes}
-          selectedLabelTypeId={this.state.controlStates.selectedLabelTypeId}
-          onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
-          onDeleteSelectedLabel={this.onDeleteSelectedLabel}
-          canEdit={this.state.controlStates.canEdit}
-        />
-        <div className="dataset-labelingpanel">
-          {this.state.error ? (
-            <div className="dataset-snackbar-center">
-              <Snackbar
-                text={this.state.error}
-                closeSnackbar={() => {
-                  this.setState({ error: undefined });
-                }}
-              ></Snackbar>
+      <div className="d-flex">
+        <div
+          className="dataset-full-page px-2 d-flex flex-column justify-content-between flex-fill"
+          onKeyDown={this.onKeyDown}
+          tabIndex={0}
+          onMouseUp={this.mouseUpHandler}
+        >
+          <LabelingSelectionPanel
+            onClickSelectSeries={this.onClickSelectSeries}
+            timeSeries={this.state.dataset.timeSeries}
+            activeSeries={this.state.activeSeries}
+            dataset={this.state.dataset}
+            objectType={'labelings'}
+            history={this.props.history}
+            labelings={this.state.labelings}
+            onAddLabeling={this.onAddLabeling}
+            selectedLabelingId={this.state.controlStates.selectedLabelingId}
+            onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
+            onCanEditChanged={this.onCanEditChanged}
+            canEdit={this.state.controlStates.canEdit}
+            isCrosshairIntervalActive={isCrosshairIntervalActive}
+            hideLabels={this.state.hideLabels}
+            onHideLabels={this.hideLabels}
+          />
+          <TimeSeriesCollectionPanel
+            datasetStart={Math.min(
+              ...this.state.dataset.timeSeries.map((elm) => elm.start)
+            )}
+            datasetEnd={Math.max(
+              ...this.state.dataset.timeSeries.map((elm) => elm.end)
+            )}
+            activeSeries={this.state.activeSeries}
+            timeSeries={this.state.dataset.timeSeries}
+            previewTimeSeriesData={this.state.previewTimeSeriesData}
+            getDatasetWindow={this.getDatasetWindow}
+            labeling={
+              this.state.hideLabels
+                ? { labels: undefined }
+                : selectedDatasetlabeling
+            }
+            labelTypes={this.state.controlStates.selectedLabelTypes}
+            onLabelClicked={this.onSelectedLabelChanged}
+            selectedLabelId={this.state.controlStates.selectedLabelId}
+            start={this.state.shownStart || this.state.dataset.start}
+            end={this.state.shownEnd || this.state.dataset.end}
+            canEdit={this.state.controlStates.canEdit}
+            onScrubbed={this.onScrubbed}
+            onDelete={this.onDeleteTimeSeries}
+            drawingId={this.state.controlStates.drawingId}
+            drawingPosition={this.state.controlStates.drawingPosition}
+            newPosition={this.state.controlStates.newPosition}
+            updateControlStates={this.updateControlStates}
+            onClickPosition={this.onClickPosition}
+            onLabelPositionUpdate={this.onLabelPositionUpdate}
+            datasetId={this.state.dataset._id}
+          />
+          <LabelingPanel
+            hideLabels={this.state.hideLabels}
+            className="StickyLabelingSelectionPanel"
+            history={this.props.history}
+            id={this.state.controlStates.selectedLabelId}
+            from={selectedDatasetLabel ? selectedDatasetLabel.start : null}
+            to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
+            labeling={selectedLabeling}
+            labels={this.state.controlStates.selectedLabelTypes}
+            selectedLabelTypeId={this.state.controlStates.selectedLabelTypeId}
+            onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
+            onDeleteSelectedLabel={this.onDeleteSelectedLabel}
+            canEdit={this.state.controlStates.canEdit}
+          />
+          <div className="dataset-labelingpanel">
+            {this.state.error ? (
+              <div className="dataset-snackbar-center">
+                <Snackbar
+                  text={this.state.error}
+                  closeSnackbar={() => {
+                    this.setState({ error: undefined });
+                  }}
+                ></Snackbar>
+              </div>
+            ) : null}
+          </div>
+          {this.state.metaDataExtended ? (
+            <Fragment>
+              <div className="sidePanelBackdrop"></div>
+              <Container>
+                <div className="d-flex">
+                  <div className="dataset-side-panel d-flex flex-column flex-fill">
+                    <div
+                      style={{ width: '20px', backgroundColor: 'lightgray' }}
+                    ></div>
+                    <div className="d-flex flex-column flex-fill">
+                      <div className="mt-2">
+                        <MetadataPanel
+                          start={Math.min(
+                            ...this.state.dataset.timeSeries.map(
+                              (elm) => elm.start
+                            )
+                          )}
+                          end={Math.max(
+                            ...this.state.dataset.timeSeries.map(
+                              (elm) => elm.end
+                            )
+                          )}
+                          user={this.state.dataset.userId}
+                          name={this.state.dataset.name}
+                          handleDatasetNameChange={this.handleDatasetNameChange}
+                        />
+                      </div>
+                      <div className="mt-2 flex-fill">
+                        <CustomMetadataPanel
+                          metaData={this.state.dataset.metaData}
+                          onUpdateMetaData={this.onUpdateMetaData}
+                        ></CustomMetadataPanel>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Container>
+            </Fragment>
+          ) : null}
+        </div>
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ backgroundColor: 'lightgray', width: '20px' }}
+        >
+          {!this.state.metaDataExtended ? (
+            <div
+              className="cursor-pointer"
+              onClick={() => this.toggleMetaData(true)}
+            >
+              <FontAwesomeIcon size="1x" icon={faChevronLeft}></FontAwesomeIcon>
             </div>
           ) : null}
         </div>
-        {!this.state.metaDataExtended ? (
-          <div
-            className="full-page-extend-metaData cursor-pointer"
-            onClick={() => this.toggleMetaData(true)}
-          >
-            <FontAwesomeIcon size="2x" icon={faChevronLeft}></FontAwesomeIcon>
-          </div>
-        ) : null}
-        {this.state.metaDataExtended ? (
-          <Container>
-            <div className="dataset-side-panel">
-              <div
-                className="dataset-side-panel-close cursor-pointer"
-                onClick={() => this.toggleMetaData(false)}
-              >
-                <FontAwesomeIcon
-                  size="lg"
-                  icon={faTimes}
-                  inverse
-                ></FontAwesomeIcon>
-              </div>
-              <div className="mt-2">
-                <TSSelectionPanel
-                  onClickSelectSeries={this.onClickSelectSeries}
-                  timeSeries={this.state.dataset.timeSeries}
-                  activeSeries={this.state.activeSeries}
-                  processedUntil={this.state.processedUntil}
-                ></TSSelectionPanel>
-              </div>
-              <div className="mt-2">
-                <MetadataPanel
-                  start={Math.min(
-                    ...this.state.dataset.timeSeries.map((elm) => elm.start)
-                  )}
-                  end={Math.max(
-                    ...this.state.dataset.timeSeries.map((elm) => elm.end)
-                  )}
-                  user={this.state.dataset.userId}
-                  name={this.state.dataset.name}
-                  handleDatasetNameChange={this.handleDatasetNameChange}
-                />
-              </div>
-              <div className="mt-2">
-                <CustomMetadataPanel
-                  metaData={this.state.dataset.metaData}
-                  onUpdateMetaData={this.onUpdateMetaData}
-                ></CustomMetadataPanel>
-              </div>
-            </div>
-          </Container>
-        ) : null}
       </div>
     );
   }

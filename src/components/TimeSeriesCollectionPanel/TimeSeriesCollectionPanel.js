@@ -195,7 +195,7 @@ class TimeSeriesCollectionPanel extends Component {
         </div>
         <div
           className="d-flex flex-column justify-content-start flex-fill"
-          style={{ overflowY: 'scroll' }}
+          style={{ overflowY: 'auto' }}
         >
           {this.state.activeSeries.length ? (
             <div>

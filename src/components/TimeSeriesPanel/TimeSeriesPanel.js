@@ -857,7 +857,7 @@ class TimeSeriesPanel extends Component {
       return <div className="noDataLabel">{this.props.name}: No data</div>;
     }
     return (
-      <div style={{}}>
+      <div style={{ position: 'relative' }}>
         {this.props.index !== 0 && !this.props.isEmpty ? (
           <div className="chartMenuWrapper">
             <button
@@ -982,6 +982,7 @@ class TimeSeriesPanel extends Component {
             </button>
           </div>
         ) : null}
+
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
           {this.props.index !== 0 ? (
             <div className="font-weight-bold d-flex">

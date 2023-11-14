@@ -39,12 +39,14 @@ class CustomMetadataPanel extends Component {
   }
 
   onSave(newMetaData) {
+    console.log('ONSAVE');
     const metaDataAsObj = {};
     newMetaData
       .filter((elm) => elm.key !== '')
       .forEach((elm) => {
         metaDataAsObj[elm.key] = elm.data;
       });
+    console.log(newMetaData);
     this.props.onUpdateMetaData({ metaData: metaDataAsObj });
     this.setState({
       editModalOpen: false,
@@ -64,26 +66,27 @@ class CustomMetadataPanel extends Component {
 
   render() {
     return (
-      <div>
-        <div className="sidepanel-card">
-          <div className="sidepanel-heading">
-            <h5>Custom Metadata</h5>
-          </div>
-          <CardBody>
-            {Object.keys(this.props.metaData).length ? (
-              <div>
-                <div>{this.additionalMetaData()}</div>
-              </div>
-            ) : (
-              <div>No custom metadata</div>
-            )}
-          </CardBody>
-          <div>
-            <div className="text-right">
-              <Button color="primary" size="sm" onClick={this.onEdit}>
-                + Edit
-              </Button>
+      <div className="h-100 sidepanel-card flex-fill position-relative">
+        <div className="sidepanel-heading">
+          <h5>Custom Metadata</h5>
+        </div>
+        <div>
+          {Object.keys(this.props.metaData).length ? (
+            <div>
+              <div>{this.additionalMetaData()}</div>
             </div>
+          ) : (
+            <div className="m-2">No custom metadata</div>
+          )}
+        </div>
+        <div
+          className="position-absolute"
+          style={{ bottom: '8px', right: '8px' }}
+        >
+          <div className="text-right">
+            <Button color="primary" size="sm" onClick={this.onEdit}>
+              + Edit
+            </Button>
           </div>
         </div>
         <MetaDataEditModal
