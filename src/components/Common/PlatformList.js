@@ -1,6 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faJsSquare } from '@fortawesome/free-brands-svg-icons';
-import { faC } from '@fortawesome/free-solid-svg-icons';
+import { ReactComponent as CPPSVG } from './CPP.svg';
+import { ReactComponent as JSSVG } from './JS.svg';
 
 const PlatformList = ({ platforms, size, color }) => {
   const platformsSet = new Set(platforms);
@@ -8,24 +7,14 @@ const PlatformList = ({ platforms, size, color }) => {
   if (platformsSet.size === 0) {
     return <div className="d-inline">None</div>;
   }
-
+  platformsSet.add('JS');
   return (
-    <div className="d-inline">
+    <div className="child-gap">
       {platformsSet.has('JS') && (
-        <FontAwesomeIcon
-          className="mx-2"
-          size={size}
-          style={{ color: color }}
-          icon={faJsSquare}
-        ></FontAwesomeIcon>
+        <JSSVG style={{ height: '2rem', width: '2rem' }}></JSSVG>
       )}
       {platformsSet.has('C') && (
-        <FontAwesomeIcon
-          className="mx-2"
-          size={size}
-          style={{ color: color }}
-          icon={faC}
-        ></FontAwesomeIcon>
+        <CPPSVG style={{ height: '2rem', width: '2rem' }}></CPPSVG>
       )}
     </div>
   );

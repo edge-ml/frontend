@@ -486,3 +486,7 @@ div.card {
 .hover-bigger:hover {
   transform: scale(1.01);
 }
+
+.child-gap > * {
+  margin: 2px;
+}
