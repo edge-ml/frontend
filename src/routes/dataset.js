@@ -30,7 +30,11 @@ import Loader from '../modules/loader';
 
 import pmemoize from 'promise-memoize';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faTimes } from '@fortawesome/free-solid-svg-icons';
+import {
+  faChevronLeft,
+  faChevronRight,
+  faTimes,
+} from '@fortawesome/free-solid-svg-icons';
 
 const TIMESERIES_CACHE_MAX_AGE = 5000; // ms
 
@@ -932,13 +936,16 @@ class DatasetPage extends Component {
             <Fragment>
               <div className="sidePanelBackdrop"></div>
               <Container>
-                <div className="d-flex">
-                  <div className="dataset-side-panel d-flex flex-column flex-fill">
+                <div className="dataset-side-panel d-flex flex-column flex-fill">
+                  <div className="d-flex flex-fill">
                     <div
-                      style={{ width: '20px', backgroundColor: 'lightgray' }}
-                    ></div>
-                    <div className="d-flex flex-column flex-fill">
-                      <div className="mt-2">
+                      onClick={() => this.toggleMetaData(false)}
+                      className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton"
+                    >
+                      <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
+                    </div>
+                    <div className="f-flex flex-fill">
+                      <div className="mt-2 flex-fill">
                         <MetadataPanel
                           start={Math.min(
                             ...this.state.dataset.timeSeries.map(
@@ -968,15 +975,9 @@ class DatasetPage extends Component {
             </Fragment>
           ) : null}
         </div>
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ backgroundColor: 'lightgray', width: '20px' }}
-        >
+        <div className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton">
           {!this.state.metaDataExtended ? (
-            <div
-              className="cursor-pointer"
-              onClick={() => this.toggleMetaData(true)}
-            >
+            <div onClick={() => this.toggleMetaData(true)}>
               <FontAwesomeIcon size="1x" icon={faChevronLeft}></FontAwesomeIcon>
             </div>
           ) : null}

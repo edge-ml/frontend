@@ -26,7 +26,7 @@
 .dataset-side-panel {
   /* background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72)); */
   border-left: 1px solid lightgray;
-  padding: 8px;
+  padding-right: 8px;
   height: 100vh;
   position: absolute;
   right: 0px;
@@ -41,7 +41,7 @@
 .sidePanelBackdrop {
   background-color: gray;
   position: fixed;
-  opacity: 0.2;
+  opacity: 0.7;
   top: 0px;
   bottom: 0px;
   right: 0px;
@@ -82,4 +82,14 @@
 
 .dataset-full-page {
   height: 100vh;
+}
+
+.metaDataCollapseButton {
+  width: 20px;
+  height: 100vh;
+  background-color: #d3d3d3;
+}
+
+.metaDataCollapseButton:hover {
+  background-color: #ababab;
 }
