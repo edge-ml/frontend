@@ -75,7 +75,7 @@ const DatasetTable = (props) => {
                 </Button>
               </div>
               <div className="d-flex flex-row justify-content-end position-relative">
-                <div className="position-absolute" style={{ right: '60px' }}>
+                {/* <div className="position-absolute" style={{ right: '60px' }}>
                   <DatasetSort
                     sortingDropDownIsOpen={props.sortingDropDownIsOpen}
                     setSortingDropdownIsOpen={props.setSortingDropdownIsOpen}
@@ -84,7 +84,7 @@ const DatasetTable = (props) => {
                     setSortingMethod={props.setSortingMethod}
                     applySorting={props.applySorting}
                   />
-                </div>
+                </div> */}
                 <Button
                   active={props.filterSelected}
                   className="mr-3"
