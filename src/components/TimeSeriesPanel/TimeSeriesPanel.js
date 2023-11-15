@@ -10,6 +10,8 @@ import {
   faSearchPlus,
   faSearchMinus,
   faCog,
+  faChevronLeft,
+  faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 import {
   Button,
@@ -123,7 +125,7 @@ class TimeSeriesPanel extends Component {
     }
     const container = this.chart.current.container.current;
 
-    container.style.height = this.props.index === 0 ? '80px' : '200px';
+    container.style.height = this.props.index !== 0 ? '200px' : '70px';
     container.style.width = '100%';
 
     this.chart.current.chart.reflow();
@@ -498,6 +500,7 @@ class TimeSeriesPanel extends Component {
     const offset =
       -this.chart.current.container.current.getBoundingClientRect().left;
 
+    console.log(activePlotLine);
     activePlotLine.options.isActive = false;
 
     // Clip between neighbours
@@ -814,15 +817,15 @@ class TimeSeriesPanel extends Component {
   }
 
   scroll(direction) {
-    const width =
-      this.chart.current.chart.xAxis[0].max -
-      this.chart.current.chart.xAxis[0].min +
-      1;
-    const sign = direction === ScrollDirection.LEFT ? -1 : 1;
+    var min = this.chart.current.chart.xAxis[0].min;
+    var max = this.chart.current.chart.xAxis[0].max;
 
+    const width = max - min + 1;
+
+    const sign = direction === ScrollDirection.LEFT ? -1 : 1;
     this.chart.current.chart.xAxis[0].setExtremes(
-      this.chart.current.chart.xAxis[0].min + sign * width * scrollFactor,
-      this.chart.current.chart.xAxis[0].max + sign * width * scrollFactor
+      min + sign * width * scrollFactor,
+      max + sign * width * scrollFactor
     );
   }
 
@@ -856,9 +859,11 @@ class TimeSeriesPanel extends Component {
     if (!this.props.data.length) {
       return <div className="noDataLabel">{this.props.name}: No data</div>;
     }
+
+    console.log(this.props);
     return (
       <div style={{ position: 'relative' }}>
-        {this.props.index !== 0 && !this.props.isEmpty ? (
+        {/* {this.props.index !== 0 && !this.props.isEmpty ? (
           <div className="chartMenuWrapper">
             <button
               className="chartBtn"
@@ -965,23 +970,7 @@ class TimeSeriesPanel extends Component {
               <FontAwesomeIcon icon={faSearchPlus} size="xs" color="#999999" />
             </button>
           </div>
-        ) : null}
-        {this.props.index !== 0 && !this.props.isEmpty ? (
-          <div>
-            <button
-              className="scrollBtn scrollBtnLeft"
-              onClick={(e) => this.scroll(ScrollDirection.LEFT)}
-            >
-              &lt;
-            </button>
-            <button
-              className="scrollBtn scrollBtnRight"
-              onClick={(e) => this.scroll(ScrollDirection.RIGHT)}
-            >
-              &gt;
-            </button>
-          </div>
-        ) : null}
+        ) : null} */}
 
         <div className="chartWrapper" onMouseDown={this.onMouseDown}>
           {this.props.index !== 0 ? (
@@ -1010,14 +999,34 @@ class TimeSeriesPanel extends Component {
               (this.props.scale !== 1 || this.props.offset !== 0)
             }
           ></Collapse>
-          <HighchartsReact
-            ref={this.chart}
-            highcharts={Highcharts}
-            options={this.generateState(this.props).chartOptions}
-            oneToOne={true}
-            constructorType={'stockChart'}
-            containerProps={{ style: { height: '100%' } }}
-          />
+          {this.props.index === 0 && (
+            <div className="d-flex align-items-center">
+              {/* <div className='cursor-pointer' onClick={() => this.scroll(ScrollDirection.LEFT)}>
+                <FontAwesomeIcon icon={faChevronLeft} size='2x'></FontAwesomeIcon>
+              </div> */}
+              <HighchartsReact
+                ref={this.chart}
+                highcharts={Highcharts}
+                options={this.generateState(this.props).chartOptions}
+                oneToOne={true}
+                constructorType={'stockChart'}
+                containerProps={{ style: { height: '100%' } }}
+              />
+              {/* <div className='cursor-pointer' onClick={() => this.scroll(ScrollDirection.RIGHT)}>
+                <FontAwesomeIcon icon={faChevronRight} size='2x'></FontAwesomeIcon>
+              </div> */}
+            </div>
+          )}
+          {this.props.index !== 0 && (
+            <HighchartsReact
+              ref={this.chart}
+              highcharts={Highcharts}
+              options={this.generateState(this.props).chartOptions}
+              oneToOne={true}
+              constructorType={'stockChart'}
+              containerProps={{ style: { height: '100%' } }}
+            />
+          )}
         </div>
       </div>
     );

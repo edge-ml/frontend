@@ -273,7 +273,7 @@ class TimeSeriesCollectionPanel extends Component {
                   samplingRate={
                     timeSeries.samplingRate ? timeSeries.samplingRate : 1
                   }
-                  toggleUnitMenu={this.toggleUnitMenu}
+                  toggleUnitMenu={() => this.toggleUnitMenu()}
                   name={timeSeries.name}
                   unit={timeSeries.unit}
                   labeling={this.state.labeling}

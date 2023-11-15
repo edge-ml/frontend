@@ -68,7 +68,8 @@ const renderDeviceInfo = (props) => {
       Installed version:{' '}
       <strong>{props.connectedDeviceData.installedFWVersion}</strong>
       <br />
-      Latest version: <strong>{props.latestEdgeMLVersion}</strong>
+      {props.basicEdgeMLArduinoFirmware &&
+        'Latest version:' + <strong>{props.latestEdgeMLVersion}</strong>}
     </div>
   );
 };
@@ -79,7 +80,8 @@ const getButtonView = (props) => {
   }
   if (
     (props.outdatedVersionInstalled || !props.isEdgeMLInstalled) &&
-    props.hasDFUFunction
+    props.hasDFUFunction &&
+    props.basicEdgeMLArduinoFirmware
   ) {
     return (
       <div>

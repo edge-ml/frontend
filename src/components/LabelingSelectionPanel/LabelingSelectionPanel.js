@@ -54,7 +54,7 @@ const LabelingSelectionPanel = (props) => {
         <Dropdown
           isOpen={isTSDropdownOpen}
           toggle={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
-          className="mx-2"
+          className="mr-2"
         >
           <DropdownToggle
             caret
