@@ -937,7 +937,10 @@ class DatasetPage extends Component {
           </div>
           {this.state.metaDataExtended ? (
             <Fragment>
-              <div className="sidePanelBackdrop"></div>
+              <div
+                className="sidePanelBackdrop"
+                onClick={() => this.toggleMetaData(false)}
+              ></div>
               <Container>
                 <div className="dataset-side-panel d-flex flex-column flex-fill">
                   <div className="d-flex flex-fill">
