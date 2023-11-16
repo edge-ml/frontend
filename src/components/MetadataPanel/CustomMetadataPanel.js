@@ -66,23 +66,21 @@ class CustomMetadataPanel extends Component {
 
   render() {
     return (
-      <div className="sidepanel-card flex-fill position-relative d-flex flex-column">
+      <div className="sidepanel-card  position-relative flex-column">
         <div className="sidepanel-heading">
           <h5>Custom Metadata</h5>
         </div>
-        <div>
+        <div className="flex-fill" style={{ overflowY: 'auto' }}>
           {Object.keys(this.props.metaData).length ? (
-            <div>
-              <div>{this.additionalMetaData()}</div>
-            </div>
+            <div>{this.additionalMetaData()}</div>
           ) : (
             <div className="m-2">No custom metadata</div>
           )}
-        </div>
-        <div className="editButton">
-          <Button color="primary" size="sm" onClick={this.onEdit}>
-            + Edit
-          </Button>
+          <div className="editButton mt-2">
+            <Button color="primary" size="sm" onClick={this.onEdit}>
+              + Edit
+            </Button>
+          </div>
         </div>
         <MetaDataEditModal
           onClose={this.onCancelEdit}

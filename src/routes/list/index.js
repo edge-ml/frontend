@@ -73,10 +73,10 @@ const ListPage = (props) => {
         datasets.filter((dataset) => !selectedDatasets.includes(dataset['_id']))
       );
     });
-    resetDropdown().catch((err) => {
-      window.alert('Error deleting datasets');
-      setModal(false);
-    });
+    // resetDropdown().catch((err) => {
+    //   window.alert('Error deleting datasets');
+    //   setModal(false);
+    // });
   };
 
   const deleteEntry = (datasetId) => {

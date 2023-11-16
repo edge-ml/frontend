@@ -71,12 +71,14 @@ const LabelingPanel = ({
   from,
   to,
   onDeleteSelectedLabel,
+  selectedLabelId,
 }) => {
   const handleLabelTypeClicked = (e, id) => {
     e.preventDefault();
     onSelectedLabelTypeIdChanged(id);
   };
 
+  console.log(selectedLabelTypeId);
   return (
     <div>
       <div className="labelingPanelBorder"></div>
@@ -103,7 +105,7 @@ const LabelingPanel = ({
         <div className="d-flex">
           <TimeDisplay from={from} to={to}></TimeDisplay>
           <Button
-            disabled={selectedLabelTypeId === undefined || !canEdit}
+            disabled={selectedLabelId === undefined || !canEdit}
             className="deleteButton m-1"
             outline
             color="danger"

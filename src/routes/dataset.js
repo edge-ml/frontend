@@ -917,6 +917,7 @@ class DatasetPage extends Component {
             from={selectedDatasetLabel ? selectedDatasetLabel.start : null}
             to={selectedDatasetLabel ? selectedDatasetLabel.end : null}
             labeling={selectedLabeling}
+            selectedLabelId={this.state.controlStates.selectedLabelId}
             labels={this.state.controlStates.selectedLabelTypes}
             selectedLabelTypeId={this.state.controlStates.selectedLabelTypeId}
             onSelectedLabelTypeIdChanged={this.onSelectedLabelTypeIdChanged}
@@ -968,7 +969,7 @@ class DatasetPage extends Component {
                           handleDatasetNameChange={this.handleDatasetNameChange}
                         />
                       </div>
-                      <div className="mt-2 flex-fill d-flex">
+                      <div className="mt-2 flex-fill">
                         <CustomMetadataPanel
                           metaData={this.state.dataset.metaData}
                           onUpdateMetaData={this.onUpdateMetaData}

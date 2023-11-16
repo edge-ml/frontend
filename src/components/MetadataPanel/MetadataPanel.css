@@ -38,7 +38,8 @@
 }
 
 .editButton {
-  position: absolute;
+  display: flex;
+  justify-content: end;
   bottom: 8px;
   right: 0px;
 }
