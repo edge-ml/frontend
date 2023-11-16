@@ -975,9 +975,12 @@ class DatasetPage extends Component {
             </Fragment>
           ) : null}
         </div>
-        <div className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton">
+        <div
+          className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton"
+          onClick={() => this.toggleMetaData(true)}
+        >
           {!this.state.metaDataExtended ? (
-            <div onClick={() => this.toggleMetaData(true)}>
+            <div>
               <FontAwesomeIcon size="1x" icon={faChevronLeft}></FontAwesomeIcon>
             </div>
           ) : null}
