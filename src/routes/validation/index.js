@@ -41,6 +41,7 @@ const ValidationPage = () => {
   const [modelDeploy, setModelDeploy] = useState(undefined);
   const [modelLiveInference, setModelLiveInference] = useState(undefined);
   const [deployModalOpen, setDeployModalOpen] = useState(false);
+  const [liveInferenceModalOpen, setLiveInferenceModalOpen] = useState(false);
   const [selectedModels, setSelectedModels] = useState([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [updateModels, setUpdateModels] = useState(false);
@@ -253,6 +254,7 @@ const ValidationPage = () => {
                                 className="btn-edit mr-3 mr-md-4"
                                 onClick={(e) => {
                                   setModelLiveInference(model);
+                                  setLiveInferenceModalOpen(true);
                                   e.stopPropagation();
                                 }}
                               >
@@ -338,10 +340,15 @@ const ValidationPage = () => {
               }}
             ></DeployModal>
           ) : null}
-          <LiveInferenceModal
-            model={modelLiveInference}
-            onClose={() => setModelLiveInference(undefined)}
-          ></LiveInferenceModal>
+          {liveInferenceModalOpen ? (
+            <LiveInferenceModal
+              model={modelLiveInference}
+              onClose={() => {
+                setModelLiveInference(undefined);
+                setLiveInferenceModalOpen(false);
+              }}
+            ></LiveInferenceModal>
+          ) : null}
         </Fragment>
       </div>
       <Modal isOpen={deleteModalOpen} toggle={toggleDeleteModal}>

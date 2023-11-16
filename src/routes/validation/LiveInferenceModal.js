@@ -1,7 +1,11 @@
+/* global Module */
+
 import { Modal, ModalFooter, ModalBody, ModalHeader, Button } from 'reactstrap';
 import { SUPPORTED_SENSORS } from '../../services/WebSensorServices';
 import { SensorList } from '../../components/SensorList/SensorList';
 import { usePersistedState } from '../../services/ReactHooksService';
+import { downloadDeploymentModel } from '../../services/ApiServices/MLDeploymentService';
+import { downloadBlob } from '../../services/helpers';
 import {
   Badge,
   UncontrolledDropdown,
@@ -12,10 +16,15 @@ import {
   Col,
   Table,
 } from 'reactstrap';
-import { useState } from 'react';
+import { useState, memo, useEffect } from 'react';
 import { faCross, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { objMap } from '../../services/helpers';
+import Checkbox from '../../components/Common/Checkbox';
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 const mergeSingle = (replacer) => (key, value) => {
   replacer((prev) => ({ ...prev, [key]: value }));
@@ -88,37 +97,52 @@ const TimeSeriesSelectingSensorComponent = ({
   );
 };
 
-const LiveInferenceModal = ({ model, onClose }) => {
-  const [selectedSensors, setSelectedSensors] = usePersistedState(
-    {},
-    'routes:validation:LiveInferenceModal.selectedSensors'
-  );
-  const [sensorRates, setSensorRates] = usePersistedState(
-    SUPPORTED_SENSORS.reduce((acc, { name }) => {
-      acc[name] = 50;
-      return acc;
-    }, {}),
-    'routes:validation:LiveInferenceModal.sensorRates'
-  );
+const ScreenOne = memo(
+  ({ model, onClassify }) => {
+    const [downloadSingleFile, setDownloadSingleFile] = useState(false);
 
-  // tsName -> { sensor, component, shortComponent }
-  const [tsMatches, setTsMatches] = useState({});
+    const [selectedSensors, setSelectedSensors] = usePersistedState(
+      {},
+      'routes:validation:LiveInferenceModal.selectedSensors'
+    );
+    const [sensorRates, setSensorRates] = usePersistedState(
+      SUPPORTED_SENSORS.reduce((acc, { name }) => {
+        acc[name] = 50;
+        return acc;
+      }, {}),
+      'routes:validation:LiveInferenceModal.sensorRates'
+    );
 
-  if (!model) {
-    return null;
-  }
+    // tsName -> { sensor, component, shortComponent }
+    const [tsMatches, setTsMatches] = useState({});
 
-  const sensors = SUPPORTED_SENSORS;
+    const sensors = SUPPORTED_SENSORS;
 
-  const setMatch = mergeSingle(setTsMatches, tsMatches);
+    const setMatch = mergeSingle(setTsMatches, tsMatches);
 
-  const legalMatches = objMap(tsMatches, (triplet) =>
-    triplet && selectedSensors[triplet.sensor.name] ? triplet : null
-  );
+    const legalMatches = objMap(tsMatches, (triplet) =>
+      triplet && selectedSensors[triplet.sensor.name] ? triplet : null
+    );
 
-  return (
-    <Modal isOpen={model} size="xl">
-      <ModalHeader>Live Inference: {model.name}</ModalHeader>
+    const legal = model.timeSeries.reduce(
+      (acc, tsName) => !!(acc && legalMatches[tsName]),
+      true
+    );
+
+    const onDownloadWASM = async () => {
+      const filename = `${model.name}_${'WASM'}.${
+        downloadSingleFile ? 'js' : 'zip'
+      }`;
+      const blob = await downloadDeploymentModel(
+        model._id,
+        'WASM',
+        true,
+        downloadSingleFile
+      );
+      downloadBlob(blob, filename);
+    };
+
+    return (
       <ModalBody>
         <Row>
           <Col>
@@ -205,11 +229,234 @@ const LiveInferenceModal = ({ model, onClose }) => {
               </Table>
             </div>
           </Col>
-          <Col className="mt-2"></Col>
+          <Col className="mt-2 d-flex flex-column justify-content-end align-items-end">
+            <div className="mb-2 d-flex justify-content-end align-items-center">
+              <div className="d-flex justify-content-center align-items-center mr-2">
+                <Checkbox
+                  isSelected={downloadSingleFile}
+                  onClick={(e) => {
+                    setDownloadSingleFile(e.target.checked);
+                  }}
+                />
+                <span className="ml-1">Single file</span>
+              </div>
+              <Button
+                outline
+                className=""
+                onClick={() => {
+                  onDownloadWASM();
+                }}
+              >
+                Download WASM
+              </Button>
+            </div>
+            <Button
+              disabled={!legal}
+              outline
+              color="primary"
+              className=""
+              onClick={() => onClassify(legalMatches)}
+            >
+              Live Classification
+            </Button>
+          </Col>
         </Row>
+        {/* <Row>
+        <Col>
+          
+        </Col>
+      </Row> */}
       </ModalBody>
+    );
+  },
+  (props, nextprops) => props.model === nextprops.model
+);
+
+const ScreenTwo = ({ model, legalMatches }) => {
+  const [loaded, setLoaded] = useState(false);
+  const [modelInstance, setModelInstance] = useState(null);
+
+  const onSensorData = (config) => (sensorData) => {
+    console.log('sensorData', sensorData, 'config', config);
+  };
+
+  useEffect(() => {
+    let blobURL = null;
+    let script = null;
+
+    const f = async () => {
+      const blob = await downloadDeploymentModel(model._id, 'WASM', true, true);
+
+      blobURL = URL.createObjectURL(blob);
+      // // This conflicts with webpack/cra (https://github.com/webpack/webpack/issues/6680)
+      // // There are some workarounds, but they are bad, thje best would be using something like SystemJS
+      // // but I could not get it working with webpack either, so script tag it is.
+
+      // import(blobURL).then((Module) => {
+      //   console.log(Module);
+      // })
+      script = document.createElement('script');
+      script.src = blobURL;
+      document.body.appendChild(script);
+
+      // disgusting, but we use script, so wait for it to load first
+      await delay(1000);
+
+      console.log('waited 1000ms for Module', Module);
+      const instance = await Module();
+      console.log(instance);
+
+      setLoaded(true);
+      setModelInstance(instance);
+    };
+    f();
+
+    return () => {
+      if (script) {
+        script.remove();
+        // global
+        Module = undefined;
+      }
+      if (blobURL) URL.revokeObjectURL(blobURL);
+    };
+  }, [model]);
+
+  useEffect(() => {
+    if (!legalMatches) {
+      return null;
+    }
+
+    const sensorNames = [
+      ...new Set(Object.values(legalMatches).map(({ sensor }) => sensor.name)),
+    ];
+    let sensorConfigs = [];
+    for (const sensorName of sensorNames) {
+      const matches = Object.entries(legalMatches)
+        .filter(([_, { sensor: s }]) => s.name === sensorName)
+        .map(([tsName, match]) => ({ tsName, match }));
+      sensorConfigs.push({
+        sensor: matches[0].match.sensor,
+        matches: matches,
+      });
+    }
+
+    console.log('sensor configgggggs', sensorConfigs);
+
+    const f = async () => {
+      for (const config of sensorConfigs) {
+        const sensor = config.sensor;
+        console.log('sensor', sensor);
+        sensor.removeAllListeners();
+
+        // sensor.on('warn', this._onSensorError(sensor, true));
+        // sensor.on('error', this._onSensorError(sensor));
+        sensor.on('data', onSensorData(config));
+        await sensor.listen({
+          ...(sensor.properties.fixedFrequency
+            ? {}
+            : // : { frequency: this._sampleRates[sensor.name] }),
+              {}), // TODO: tackle frequency here later
+        });
+      }
+    };
+    f();
+
+    return () => {
+      for (const config of sensorConfigs) {
+        const sensor = config.sensor;
+        sensor.stop();
+        sensor.removeAllListeners();
+      }
+    };
+  }, [legalMatches]);
+
+  if (!legalMatches) {
+    return null;
+  }
+
+  console.log(legalMatches, model);
+
+  return (
+    <ModalBody>
+      <Row>
+        <Col>
+          <div>WASM Blob: {loaded ? 'Downloaded.' : 'In progress...'}</div>
+          <div>
+            Model Instance: {!!modelInstance ? 'Loaded.' : 'In progress...'}
+          </div>
+          <div>Sensors: </div>
+        </Col>
+      </Row>
+      {/* <Row>
+        <Col>
+          <Button disabled={!legal} outline color="primary" className="float-right" onClick={onClassify}>Classify</Button>
+        </Col>
+      </Row> */}
+    </ModalBody>
+  );
+};
+
+const LiveInferenceModal = ({ model, onClose: onCloseOrig }) => {
+  const [page, setPage] = useState(1);
+
+  const [legalMatches, setLegalMatches] = useState(null);
+
+  if (!model) {
+    return null;
+  }
+
+  const onGoBack = () => {
+    setPage(1);
+    setLegalMatches(null);
+  };
+
+  const onClose = () => {
+    setPage(1);
+    setLegalMatches(null);
+    return onCloseOrig();
+  };
+
+  const onClassify = (legalMatches) => {
+    const legal = model.timeSeries.reduce(
+      (acc, tsName) => !!(acc && legalMatches[tsName]),
+      true
+    );
+
+    if (!legal) {
+      return;
+    }
+
+    // classify
+    console.log('classify', legalMatches);
+    setLegalMatches(legalMatches);
+    setPage(2);
+  };
+
+  let renderedScreen = null;
+  switch (page) {
+    case 1:
+      renderedScreen = <ScreenOne model={model} onClassify={onClassify} />;
+      break;
+    case 2:
+      renderedScreen = <ScreenTwo model={model} legalMatches={legalMatches} />;
+      break;
+    default:
+      renderedScreen = null;
+  }
+
+  return (
+    <Modal isOpen={model} size="xl">
+      <ModalHeader>Live Inference: {model.name}</ModalHeader>
+      {renderedScreen}
       <ModalFooter>
-        <Button onClick={onClose}>Close</Button>
+        {page !== 1 ? (
+          <Button outline color="primary" onClick={onGoBack}>
+            Back
+          </Button>
+        ) : null}
+        <Button onClick={onClose} outline color="danger">
+          Cancel
+        </Button>
       </ModalFooter>
     </Modal>
   );
