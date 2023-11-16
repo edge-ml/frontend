@@ -7,7 +7,6 @@ const PlatformList = ({ platforms, size, color }) => {
   if (platformsSet.size === 0) {
     return <div className="d-inline">None</div>;
   }
-  platformsSet.add('JS');
   return (
     <div className="child-gap">
       {platformsSet.has('JS') && (
