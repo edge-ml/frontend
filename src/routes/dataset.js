@@ -151,14 +151,17 @@ class DatasetPage extends Component {
   }
 
   onUpdateMetaData(updatedDataset) {
-    console.log({ ...updatedDataset, ...this.state.dataset });
-    updateDataset({ ...updatedDataset, ...this.state.dataset }, true).then(
-      (newDataset) => {
-        this.setState({
-          dataset: { ...newDataset, timeSeries: this.state.dataset.timeSeries },
-        });
-      }
-    );
+    const newDataset = this.state.dataset;
+    newDataset.metaData = {
+      ...newDataset.metaData,
+      ...updatedDataset.metaData,
+    };
+    console.log(newDataset);
+    updateDataset(newDataset, true).then(() => {
+      this.setState({
+        dataset: { ...newDataset, timeSeries: this.state.dataset.timeSeries },
+      });
+    });
   }
 
   showSnackbar(errorText, duration) {
@@ -944,8 +947,8 @@ class DatasetPage extends Component {
                     >
                       <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
                     </div>
-                    <div className="f-flex flex-fill">
-                      <div className="mt-2 flex-fill">
+                    <div className="d-flex flex-column flex-fill">
+                      <div className="mt-2">
                         <MetadataPanel
                           start={Math.min(
                             ...this.state.dataset.timeSeries.map(
@@ -962,7 +965,7 @@ class DatasetPage extends Component {
                           handleDatasetNameChange={this.handleDatasetNameChange}
                         />
                       </div>
-                      <div className="mt-2 flex-fill">
+                      <div className="mt-2 flex-fill d-flex">
                         <CustomMetadataPanel
                           metaData={this.state.dataset.metaData}
                           onUpdateMetaData={this.onUpdateMetaData}
