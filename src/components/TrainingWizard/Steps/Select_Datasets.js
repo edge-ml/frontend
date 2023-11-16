@@ -133,7 +133,7 @@ const Wizard_SelectDataset = ({
                     )
                   }
                 ></Checkbox>
-                <div className="ml-2">Select all</div>
+                <div className="ml-2 align-self-center">Select all</div>
               </div>
               <h4>
                 <b>Datasets</b>

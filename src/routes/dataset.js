@@ -9,6 +9,7 @@ import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/T
 import Snackbar from '../components/Snackbar/Snackbar';
 import TSSelectionPanel from '../components/TSSelectionPanel';
 import Highcharts from 'highcharts/highstock';
+import MetadataContainer from '../components/MetadataPanel/MetadataContainer';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
 import {
@@ -943,39 +944,27 @@ class DatasetPage extends Component {
                 onClick={() => this.toggleMetaData(false)}
               ></div>
               <Container>
-                <div className="dataset-side-panel d-flex flex-column flex-fill">
-                  <div className="d-flex flex-fill">
+                <div className="dataset-side-panel">
+                  <div className="d-flex">
                     <div
                       onClick={() => this.toggleMetaData(false)}
                       className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton"
                     >
                       <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
                     </div>
-                    <div className="d-flex flex-column flex-fill">
-                      <div className="mt-2">
-                        <MetadataPanel
-                          start={Math.min(
-                            ...this.state.dataset.timeSeries.map(
-                              (elm) => elm.start
-                            )
-                          )}
-                          end={Math.max(
-                            ...this.state.dataset.timeSeries.map(
-                              (elm) => elm.end
-                            )
-                          )}
-                          user={this.state.dataset.userId}
-                          name={this.state.dataset.name}
-                          handleDatasetNameChange={this.handleDatasetNameChange}
-                        />
-                      </div>
-                      <div className="mt-2 flex-fill">
-                        <CustomMetadataPanel
-                          metaData={this.state.dataset.metaData}
-                          onUpdateMetaData={this.onUpdateMetaData}
-                        ></CustomMetadataPanel>
-                      </div>
-                    </div>
+                    <MetadataContainer
+                      start={Math.min(
+                        ...this.state.dataset.timeSeries.map((elm) => elm.start)
+                      )}
+                      end={Math.max(
+                        ...this.state.dataset.timeSeries.map((elm) => elm.end)
+                      )}
+                      user={this.state.dataset.userId}
+                      name={this.state.dataset.name}
+                      handleDatasetNameChange={this.handleDatasetNameChange}
+                      metaData={this.state.dataset.metaData}
+                      onUpdateMetaData={this.onUpdateMetaData}
+                    ></MetadataContainer>
                   </div>
                 </div>
               </Container>

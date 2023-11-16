@@ -56,7 +56,7 @@ class MetadataPanel extends Component {
 
   render() {
     return (
-      <div className="sidepanel-card h-100">
+      <div>
         <div className="sidepanel-heading">
           <h5>Metadata</h5>
         </div>
