@@ -186,7 +186,7 @@ const ValidationPage = () => {
                     ></Checkbox>
                   </div>
                   <Button
-                    className="ml-3 btn-delete"
+                    className="btn-delete"
                     id="deleteDatasetsButton"
                     size="sm"
                     divor="secondary"

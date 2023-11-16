@@ -347,7 +347,7 @@ const DeployModal = ({ model, onClose }) => {
                           ts_idx % 2 === 1 ? 'rgb(249, 251, 252)' : '',
                       }}
                     >
-                      <div className="d-flex align-items-center justify-content-between mx-2">
+                      <div className="d-flex align-items-center justify-content-between">
                         <strong className="pl-2">{elm}</strong>
                         <UncontrolledDropdown
                           direction="left"
