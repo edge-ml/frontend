@@ -1,4 +1,5 @@
 import { Button } from 'reactstrap';
+import { hexToForegroundColor } from '../../services/ColorService';
 
 import './LabelingPanel.css';
 
@@ -18,7 +19,10 @@ const LabelButtonView = ({
             backgroundColor:
               label._id === selectedLabelTypeId ? label.color : 'white',
             borderColor: label._id === selectedLabelTypeId ? null : label.color,
-            color: label._id === selectedLabelTypeId ? null : label.color,
+            color:
+              label._id === selectedLabelTypeId
+                ? hexToForegroundColor(label.color)
+                : label.color,
           }}
           onClick={(e) => handleLabelTypeClicked(e, label._id)}
           key={index}
