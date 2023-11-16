@@ -65,7 +65,7 @@ const LabelingSelectionPanel = (props) => {
               {props.activeSeries.length + '/' + props.timeSeries.length}
             </div>{' '}
           </DropdownToggle>
-          <DropdownMenu>
+          <DropdownMenu className="scrollable-dropdown">
             {props.timeSeries.map((elm) => {
               return (
                 <DropdownItem className="p-0 p-2 dropdownItemTS">
@@ -110,7 +110,7 @@ const LabelingSelectionPanel = (props) => {
                   }
                 </div>
               </DropdownToggle>
-              <DropdownMenu>
+              <DropdownMenu className="scrollable-dropdown">
                 {props.labelings.map((elm) => (
                   <DropdownItem
                     onClick={() => props.onSelectedLabelingIdChanged(elm._id)}
