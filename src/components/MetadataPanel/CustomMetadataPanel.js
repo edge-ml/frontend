@@ -52,7 +52,7 @@ class CustomMetadataPanel extends Component {
       editModalOpen: false,
     });
   }
-
+  //
   additionalMetaData() {
     return Object.keys(this.props.metaData).map((key) => (
       <div className="customMetaDataItem mx-2">
@@ -66,18 +66,18 @@ class CustomMetadataPanel extends Component {
 
   render() {
     return (
-      <div className="d-flex flex-column h-100">
-        <div className="sidepanel-heading">
-          <h5>Custom Metadata</h5>
+      <>
+        <div className="sidepanel-heading mt-5">
+          <h4>Custom Metadata</h4>
         </div>
-        <div style={{ flex: 1 }}>
+        <div style={{ overflowY: 'auto' }}>
           {Object.keys(this.props.metaData).length ? (
             this.additionalMetaData()
           ) : (
             <div className="m-2">No custom metadata</div>
           )}
         </div>
-        <div className="mt-2">
+        <div className="m-2 d-flex justify-content-end">
           <Button color="primary" size="sm" onClick={this.onEdit}>
             + Edit
           </Button>
@@ -88,7 +88,7 @@ class CustomMetadataPanel extends Component {
           isOpen={this.state.editModalOpen}
           metaData={this.props.metaData}
         ></MetaDataEditModal>
-      </div>
+      </>
     );
   }
 }
