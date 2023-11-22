@@ -9,37 +9,38 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './DatasetFilter.css';
 import { useState } from 'react';
 
-const DatasetFilter = ({
-  filterDropDownIsOpen,
-  setFilterDropdownIsOpen,
-  selectedFilter,
-  setSelectedFilter,
+const DatasetSorting = ({
+  sortDropDownIsOpen,
+  setSortDropdownIsOpen,
+  selectedSorting,
+  setSelectedSorting,
 }) => {
-  const [filterText, setFilterText] = useState(null);
+  const [sortingText, setSortingText] = useState(null);
+
   const toggleDropdown = () => {
-    setFilterDropdownIsOpen(!filterDropDownIsOpen);
+    setSortDropdownIsOpen(!sortDropDownIsOpen);
   };
 
   const handleItemClick = (e) => {
     sortDatasets(e.currentTarget.getAttribute('data-dropdownvalue'));
-    setFilterText(e.currentTarget.textContent);
+    setSortingText(e.currentTarget.textContent);
     toggleDropdown();
   };
 
   const sortDatasets = (dropdownvalue) => {
-    setSelectedFilter(dropdownvalue);
+    setSelectedSorting(dropdownvalue);
   };
 
   return (
     <Dropdown
       direction="left"
-      isOpen={filterDropDownIsOpen}
+      isOpen={sortDropDownIsOpen}
       toggle={toggleDropdown}
       size="sm"
-      className="dataset-filter"
+      className="dataset-sorting"
     >
       <DropdownToggle caret>
-        {filterText || <FontAwesomeIcon icon={faSort} />}
+        {sortingText || <FontAwesomeIcon icon={faSort} />}
       </DropdownToggle>
       <DropdownMenu>
         <DropdownItem header>Filter Selection</DropdownItem>
@@ -60,4 +61,4 @@ const DatasetFilter = ({
   );
 };
 
-export default DatasetFilter;
+export default DatasetSorting;

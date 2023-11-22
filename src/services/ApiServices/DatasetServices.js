@@ -29,10 +29,15 @@ export const getDatasetsWithPagination = (currentPage, pageSize, sort) => {
     page_size: pageSize,
     sort: sort,
   };
+
+  const requestBody = {
+    filters: [],
+  };
   const request = apiConsts.generateApiRequest(
-    apiConsts.HTTP_METHODS.GET,
+    apiConsts.HTTP_METHODS.POST,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS_VIEW
+    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS_VIEW,
+    requestBody
   );
   request.params = queryParams;
   return new Promise((resolve, reject) => {

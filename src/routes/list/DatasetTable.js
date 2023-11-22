@@ -8,7 +8,7 @@ import React, { Fragment, useState } from 'react';
 import { Button, Container } from 'reactstrap';
 import Checkbox from '../../components/Common/Checkbox';
 import DatasetTableEntry from './DatasetTableEntry';
-import DatasetFilter from './DatasetFilter';
+import DatasetSorting from './DatasetSorting';
 
 const DatasetTable = (props) => {
   const [areAllSelected, setAllSelected] = useState(false);
@@ -77,11 +77,11 @@ const DatasetTable = (props) => {
               <div className="d-flex flex-md-row justify-content-end position-relative">
                 <div className="position-absolute" style={{ top: '-10px' }}>
                   {' '}
-                  <DatasetFilter
-                    filterDropDownIsOpen={props.filterDropDownIsOpen}
-                    setFilterDropdownIsOpen={props.setFilterDropdownIsOpen}
-                    selectedFilter={props.selectedFilter}
-                    setSelectedFilter={props.setSelectedFilter}
+                  <DatasetSorting
+                    sortDropDownIsOpen={props.sortDropDownIsOpen}
+                    setSortDropdownIsOpen={props.setSortDropdownIsOpen}
+                    selectedSorting={props.selectedSorting}
+                    setSelectedSorting={props.setSelectedSorting}
                   />
                 </div>
               </div>

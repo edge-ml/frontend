@@ -41,14 +41,14 @@ const ListPage = (props) => {
   const [labelings, setLabelings] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
-  const [filterDropDownIsOpen, setFilterDropdownIsOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState('alphaAsc'); //alphaAsc, alphaDesc, dateAsc, dateDesc
+  const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
+  const [selectedSorting, setSelectedSorting] = useState('alphaAsc'); //alphaAsc, alphaDesc, dateAsc, dateDesc
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
   const total_datasetsRef = useRef(total_datasets);
   const currentPageRef = useRef(currentPage);
   const pageSizeRef = useRef(pageSize);
-  const selectedFilterRef = useRef(selectedFilter);
+  const selectedSortingRef = useRef(selectedSorting);
 
   const location = useLocation();
   const history = useHistory();
@@ -104,7 +104,7 @@ const ListPage = (props) => {
     //TODO error handling
     let pageUpdate = currentPage;
     let pageSizeUpdate = pageSize;
-    let sortUpdate = selectedFilter;
+    let sortUpdate = selectedSorting;
     const searchParams = new URLSearchParams(location.search);
     if (searchParams.has('page')) {
       pageUpdate = parseInt(searchParams.get('page')) - 1;
@@ -119,16 +119,16 @@ const ListPage = (props) => {
     if (searchParams.has('sort')) {
       sortUpdate = searchParams.get('sort');
     } else {
-      searchParams.set('sort', selectedFilter);
+      searchParams.set('sort', selectedSorting);
     }
     history.replace({ search: `?${searchParams.toString()}` });
 
-    selectedFilterRef.current = sortUpdate;
+    selectedSortingRef.current = sortUpdate;
     currentPageRef.current = pageUpdate;
     pageSizeRef.current = pageSizeUpdate;
     setCurrentPage(pageUpdate);
     setPageSize(pageSizeUpdate);
-    setSelectedFilter(sortUpdate);
+    setSelectedSorting(sortUpdate);
     return {
       pageUpdate: pageUpdate === 0 ? 1 : pageUpdate,
       pageSizeUpdate: pageSizeUpdate,
@@ -186,21 +186,21 @@ const ListPage = (props) => {
       pageSizeRef.current = pageSize;
       currentPageRef.current = 0;
       setCurrentPage(0);
-      fetchDatasetets(0, pageSize, selectedFilter);
+      fetchDatasetets(0, pageSize, selectedSorting);
     }
   }, [pageSize]);
 
   useEffect(() => {
-    if (selectedFilterRef.current !== selectedFilter && ready) {
-      selectedFilterRef.current = selectedFilter;
-      fetchDatasetets(currentPage, pageSize, selectedFilter);
+    if (selectedSortingRef.current !== selectedSorting && ready) {
+      selectedSortingRef.current = selectedSorting;
+      fetchDatasetets(currentPage, pageSize, selectedSorting);
     }
-  }, [selectedFilter]);
+  }, [selectedSorting]);
 
   useEffect(() => {
     if (currentPageRef.current !== currentPage && ready) {
       currentPageRef.current = currentPage;
-      fetchDatasetets(currentPage, pageSize, selectedFilter);
+      fetchDatasetets(currentPage, pageSize, selectedSorting);
     }
   }, [currentPage]);
 
@@ -249,7 +249,7 @@ const ListPage = (props) => {
   };
 
   const resetDropdown = () => {
-    setFilterDropdownIsOpen(false);
+    setSortDropdownIsOpen(false);
   };
 
   const onDatasetsChanged = async (datasets) => {
@@ -306,10 +306,10 @@ const ListPage = (props) => {
           deleteEntry={deleteEntry}
           selectAll={selectAll}
           deselectAll={deselectAll}
-          filterDropDownIsOpen={filterDropDownIsOpen}
-          setFilterDropdownIsOpen={setFilterDropdownIsOpen}
-          selectedFilter={selectedFilter}
-          setSelectedFilter={setSelectedFilter}
+          sortDropDownIsOpen={sortDropDownIsOpen}
+          setSortDropdownIsOpen={setSortDropdownIsOpen}
+          selectedSorting={selectedSorting}
+          setSelectedSorting={setSelectedSorting}
         ></DatasetTable>
       </Container>
       {datasets.length > 0 ? (
