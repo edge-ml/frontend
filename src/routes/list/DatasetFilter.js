@@ -4,6 +4,8 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
+import { faSort } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './DatasetFilter.css';
 import { useState } from 'react';
 
@@ -36,7 +38,9 @@ const DatasetFilter = ({
       size="sm"
       className="dataset-filter"
     >
-      <DropdownToggle caret>{filterText || 'Sort'}</DropdownToggle>
+      <DropdownToggle caret>
+        {filterText || <FontAwesomeIcon icon={faSort} />}
+      </DropdownToggle>
       <DropdownMenu>
         <DropdownItem header>Filter Selection</DropdownItem>
         <DropdownItem onClick={handleItemClick} data-dropdownvalue="alphaDesc">
@@ -51,8 +55,6 @@ const DatasetFilter = ({
         <DropdownItem onClick={handleItemClick} data-dropdownvalue="dateAsc">
           Recording Date (ascending)
         </DropdownItem>
-        <DropdownItem divider />
-        <DropdownItem>Labeling Set</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   );
