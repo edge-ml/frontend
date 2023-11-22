@@ -12,12 +12,8 @@ const MetadataContainer = ({
 }) => {
   return (
     <div
-      className="p-2"
-      style={{
-        backgroundColor: 'lightgreen',
-        maxHeight: '100vh',
-        width: '100%',
-      }}
+      className="d-flex flex-column p-2"
+      style={{ height: '100vh', width: '100%' }}
     >
       <MetadataPanel
         start={start}
