@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Card,
   InputGroup,
@@ -66,11 +66,11 @@ class CustomMetadataPanel extends Component {
 
   render() {
     return (
-      <div className="d-flex flex-column h-100">
+      <>
         <div className="sidepanel-heading">
           <h5>Custom Metadata</h5>
         </div>
-        <div style={{ flex: 1 }}>
+        <div style={{ overflowY: 'auto' }}>
           {Object.keys(this.props.metaData).length ? (
             this.additionalMetaData()
           ) : (
@@ -88,7 +88,7 @@ class CustomMetadataPanel extends Component {
           isOpen={this.state.editModalOpen}
           metaData={this.props.metaData}
         ></MetaDataEditModal>
-      </div>
+      </>
     );
   }
 }

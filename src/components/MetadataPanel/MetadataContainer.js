@@ -12,8 +12,12 @@ const MetadataContainer = ({
 }) => {
   return (
     <div
-      className="m-2"
-      style={{ backgroundColor: 'lightgreen', height: '100vh', width: '100%' }}
+      className="p-2"
+      style={{
+        backgroundColor: 'lightgreen',
+        maxHeight: '100vh',
+        width: '100%',
+      }}
     >
       <MetadataPanel
         start={start}
