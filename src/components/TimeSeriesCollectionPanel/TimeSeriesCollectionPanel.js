@@ -225,7 +225,7 @@ class TimeSeriesCollectionPanel extends Component {
               Select some time-series on the panel on the right
             </div>
           )}
-          <div style={{ overflowY: 'auto' }}>
+          <div className="flex-fill" style={{ overflowY: 'auto' }}>
             {this.state.timeSeries.length === 0 ? (
               <TimeSeriesPanel
                 toggleUnitMenu={this.toggleUnitMenu}
