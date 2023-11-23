@@ -102,7 +102,6 @@ const ValidationPage = () => {
   };
 
   const onDeleteSelectedModels = () => {
-    console.log(selectedModels);
     selectedModels.forEach((elm) => {
       deleteModel(elm);
     });
@@ -124,12 +123,9 @@ const ValidationPage = () => {
   };
 
   const onWizardClose = () => {
-    console.log('wizard close');
     setModalOpen(false);
     getModels().then((models) => setModels(models));
   };
-
-  console.log(error);
 
   if (error) {
     return (

@@ -10,7 +10,6 @@ import { Button } from 'reactstrap';
 import PlatformList from '../Common/PlatformList';
 
 const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
-  console.log(pipeline);
   let platforms = new Set(
     pipeline.steps
       .filter((elm) => ['PRE', 'EVAL'].includes(elm.type))[0]
@@ -19,12 +18,11 @@ const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
   );
 
   pipeline.steps.forEach((step) => {
-    if (step.type !== 'PRE' && step.type !== 'CORE') {
+    if (step.type === 'PRE' || step.type === 'CORE') {
       const plf = new Set(step.options.map((elm) => elm.platforms).flat());
-      platforms = new Set([...platforms].filter((elm) => !plf.has(elm)));
+      platforms = new Set([...platforms].filter((elm) => plf.has(elm)));
     }
   });
-  console.log(platforms);
   return (
     <div
       key={pipeline.name}
@@ -45,7 +43,6 @@ const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
 };
 
 const SelectTrainMethod = ({ pipelines, onSelectTrainingMethod }) => {
-  console.log(pipelines);
   return (
     <Fragment>
       {pipelines.map((elm) => TrainingMethod(elm, onSelectTrainingMethod))}

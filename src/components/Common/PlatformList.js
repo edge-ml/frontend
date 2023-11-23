@@ -5,7 +5,7 @@ const PlatformList = ({ platforms, size, color }) => {
   const platformsSet = new Set(platforms);
 
   if (platformsSet.size === 0) {
-    return <div className="d-inline">None</div>;
+    return <div className="d-inline">No Platforms</div>;
   }
   return (
     <div className="child-gap">

@@ -136,7 +136,6 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setLabelings(labelings.map((ls) => ({ ...ls, disabledLabels: [] })))
     );
     getTrainconfig().then((result) => {
-      console.log(result);
       setPipelines(result);
       setEvaluation(result.evaluation);
       setClassifiers(result.classifier);
@@ -161,8 +160,6 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
 
   const toggleAllDatasets = (datasets, selected) => {
     const datasetIds = datasets.map((elm) => elm._id);
-    console.log('Select all');
-    console.log(datasetIds);
     const newDatasets = [...datasets];
     for (var i = 0; i < newDatasets.length; i++) {
       if (datasetIds.includes(newDatasets[i]._id)) {
@@ -173,14 +170,10 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   };
 
   const onTrain = async () => {
-    console.log(selectedPipelineSteps);
-    console.log(selectedPipeline);
-
     const tmpSelectedPipeline = selectedPipeline;
     tmpSelectedPipeline.steps = tmpSelectedPipeline.steps.map((elm, i) => {
       return { ...elm, options: selectedPipelineSteps[i] };
     });
-    console.log(tmpSelectedPipeline);
 
     const intersectingTSNames = intersect(
       ...datasets
@@ -212,7 +205,6 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       selectedPipeline: tmpSelectedPipeline,
       name: modelName,
     };
-    console.log(data);
     const model_id = await train(data);
     onClose();
   };
@@ -259,13 +251,9 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     const tmpPipelineData = [...selectedPipelineSteps];
     tmpPipelineData[screen - 2] = pipelineStep;
 
-    console.log(pipelineStep);
-    console.log(selectedPipelineSteps);
-
     setSelectedPipelineSteps(tmpPipelineData);
   };
 
-  console.log(stepValidation);
   return (
     <Modal isOpen={true} size="xl">
       <ModalHeader>
