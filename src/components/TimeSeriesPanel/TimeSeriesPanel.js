@@ -1,29 +1,12 @@
 import React, { Component } from 'react';
-import Highcharts, { animObject } from 'highcharts/highstock';
+import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 
 import './TimeSeriesPanel.css';
-import { debounce } from '../../services/helpers';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faSearchPlus,
-  faSearchMinus,
-  faCog,
-  faChevronLeft,
-  faChevronRight,
-} from '@fortawesome/free-solid-svg-icons';
-import {
-  Button,
-  Collapse,
-  Fade,
-  Input,
-  InputGroup,
-  Popover,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledTooltip,
-} from 'reactstrap';
+import { Collapse, Fade } from 'reactstrap';
+
+import classNames from 'classnames';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
@@ -173,7 +156,9 @@ class TimeSeriesPanel extends Component {
 
   generateState(props) {
     return {
+      height: '200px',
       chartOptions: {
+        height: '200px',
         navigator: {
           maskFill: '#0080ff22',
           enabled: this.props.index === 0,
@@ -287,7 +272,6 @@ class TimeSeriesPanel extends Component {
             },
           },
         },
-        height: '200px',
         yAxis: {
           height: this.props.index === 0 ? 0 : undefined,
           gridLineWidth: this.props.index === 0 ? 0 : 1,
@@ -972,7 +956,12 @@ class TimeSeriesPanel extends Component {
           </div>
         ) : null} */}
 
-        <div className="chartWrapper" onMouseDown={this.onMouseDown}>
+        <div
+          className={classNames('chartWrapper', {
+            'chartWrapper-height': this.props.index !== 0,
+          })}
+          onMouseDown={this.onMouseDown}
+        >
           {this.props.index !== 0 ? (
             <div className="font-weight-bold d-flex">
               {this.props.originalUnit === ''
