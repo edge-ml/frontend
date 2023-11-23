@@ -5,6 +5,7 @@ on:
 
 jobs:
   check_branch:
+    name: check_main_merge
     runs-on: ubuntu-latest
     steps:
       - name: Check branch
