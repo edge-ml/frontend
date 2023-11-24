@@ -92,7 +92,8 @@ const LabelingSelectionPanel = (props) => {
       </div>
     );
   };
-
+  const l = props.labelings.find((x) => x._id === props.selectedLabelingId);
+  const name = l && l.name;
   return (
     <div>
       <div className="LabelingSelectionPanel p-1">
@@ -103,11 +104,7 @@ const LabelingSelectionPanel = (props) => {
               <DropdownToggle caret>
                 {props.hideLabels ? 'Select Labeling' : 'Selected Labeling: '}
                 <div className="d-inline font-weight-normal">
-                  {
-                    props.labelings.find(
-                      (x) => x._id === props.selectedLabelingId
-                    ).name
-                  }
+                  {name || 'None'}
                 </div>
               </DropdownToggle>
               <DropdownMenu className="scrollable-dropdown">

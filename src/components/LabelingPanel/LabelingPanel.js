@@ -11,25 +11,27 @@ const LabelButtonView = ({
 }) => {
   return (
     <div>
-      {labeling.labels.map((label, index) => (
-        <Button
-          className="m-1 labelingButton"
-          disabled={selectedLabelTypeId === undefined || !canEdit}
-          style={{
-            backgroundColor:
-              label._id === selectedLabelTypeId ? label.color : 'white',
-            borderColor: label._id === selectedLabelTypeId ? null : label.color,
-            color:
-              label._id === selectedLabelTypeId
-                ? hexToForegroundColor(label.color)
-                : label.color,
-          }}
-          onClick={(e) => handleLabelTypeClicked(e, label._id)}
-          key={index}
-        >
-          {label.name} {'(' + (index + 1) + ')'}
-        </Button>
-      ))}
+      {labeling &&
+        labeling.labels.map((label, index) => (
+          <Button
+            className="m-1 labelingButton"
+            disabled={selectedLabelTypeId === undefined || !canEdit}
+            style={{
+              backgroundColor:
+                label._id === selectedLabelTypeId ? label.color : 'white',
+              borderColor:
+                label._id === selectedLabelTypeId ? null : label.color,
+              color:
+                label._id === selectedLabelTypeId
+                  ? hexToForegroundColor(label.color)
+                  : label.color,
+            }}
+            onClick={(e) => handleLabelTypeClicked(e, label._id)}
+            key={index}
+          >
+            {label.name} {'(' + (index + 1) + ')'}
+          </Button>
+        ))}
     </div>
   );
 };

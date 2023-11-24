@@ -5,6 +5,7 @@ import HighchartsReact from 'highcharts-react-official';
 import './TimeSeriesPanel.css';
 
 import { Collapse, Fade } from 'reactstrap';
+import ChartSettings from './ChartSettings';
 
 import classNames from 'classnames';
 
@@ -322,6 +323,7 @@ class TimeSeriesPanel extends Component {
    * Global Mouse Handlers
    */
   onMouseDown(e) {
+    console.log('mouse down');
     this.mouseDown = true;
     if (this.props.index === 0) return;
     var plotBand = this.getSelectedPlotBand();
@@ -879,6 +881,10 @@ class TimeSeriesPanel extends Component {
               (this.props.scale !== 1 || this.props.offset !== 0)
             }
           ></Collapse>
+          <ChartSettings
+            index={this.props.index}
+            unit={this.props.unit}
+          ></ChartSettings>
           {this.props.index === 0 && (
             <div className="d-flex align-items-center">
               {/* <div className='cursor-pointer' onClick={() => this.scroll(ScrollDirection.LEFT)}>
