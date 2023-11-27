@@ -37,6 +37,10 @@
   background-color: #ddd;
 }
 
+.navbar-project-item-color {
+  color: #666;
+}
+
 .navbar-project  {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */

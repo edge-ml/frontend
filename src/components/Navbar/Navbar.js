@@ -225,16 +225,20 @@ const Navbar = (props) => {
             Documentation
           </small>
         </div>
-        <div className="navbar-project-item navbar-logos pt-3 px-3 pb-1">
+        <div className="navbar-project-item-color navbar-logos pt-3 px-3 pb-1">
           <div>
             <small>Open source from</small>
           </div>
           <div className="my-1 d-flex justify-content-between">
             <div>
-              <TECOLogo style={{ width: '50px' }}></TECOLogo>
+              <a href="https://www.teco.edu" target="_blank">
+                <TECOLogo style={{ width: '50px' }}></TECOLogo>
+              </a>
             </div>
             <div>
-              <KITLogo style={{ width: '50px' }}></KITLogo>
+              <a href="https://www.kit.edu" target="_blank">
+                <KITLogo style={{ width: '50px' }}></KITLogo>
+              </a>
             </div>
           </div>
         </div>
