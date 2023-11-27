@@ -271,11 +271,11 @@ class UploadBLE extends Component {
 
     let newOptions = {
       acceptAllDevices: true,
-      // optionalServices: [
-      //   this.deviceInfoServiceUuid,
-      //   this.sensorServiceUuid,
-      //   this.dfuServiceUuid,
-      // ],
+      optionalServices: [
+        this.deviceInfoServiceUuid,
+        this.sensorServiceUuid,
+        this.dfuServiceUuid,
+      ],
     };
     const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
     console.log(bleDevice);

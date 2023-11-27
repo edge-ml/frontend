@@ -224,6 +224,9 @@ const Navbar = (props) => {
             Documentation
           </small>
         </div>
+        <div className="navbar-project-item">
+          <div>Open source</div>
+        </div>
         <div
           style={{
             height: '1px',

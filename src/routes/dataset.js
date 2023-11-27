@@ -1,13 +1,10 @@
 import React, { Component, Fragment } from 'react';
-import { Col, Row, Fade, Container } from 'reactstrap';
+import { Container } from 'reactstrap';
 
 import LabelingPanel from '../components/LabelingPanel/LabelingPanel';
-import MetadataPanel from '../components/MetadataPanel/MetadataPanel';
-import CustomMetadataPanel from '../components/MetadataPanel/CustomMetadataPanel';
 import LabelingSelectionPanel from '../components/LabelingSelectionPanel/LabelingSelectionPanel';
 import TimeSeriesCollectionPanel from '../components/TimeSeriesCollectionPanel/TimeSeriesCollectionPanel';
 import Snackbar from '../components/Snackbar/Snackbar';
-import TSSelectionPanel from '../components/TSSelectionPanel';
 import Highcharts from 'highcharts/highstock';
 import MetadataContainer from '../components/MetadataPanel/MetadataContainer';
 
@@ -34,7 +31,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faChevronRight,
-  faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 
 const TIMESERIES_CACHE_MAX_AGE = 5000; // ms

@@ -88,7 +88,7 @@ class BlePanelRecordingDisplay extends Component {
 
   render() {
     return (
-      <div className="mr-2 mt-3">
+      <div className="m-2">
         <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
           <h4>5. Recording</h4>
         </div>
