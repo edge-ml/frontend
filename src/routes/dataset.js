@@ -554,6 +554,11 @@ class DatasetPage extends Component {
       return;
     }
 
+    // Not labelings to do anything
+    if (!this.state.controlStates.selectedLabelTypes) {
+      return;
+    }
+
     const labelingIdx = this.state.dataset.labelings.findIndex(
       (elm) => elm.labelingId === this.state.controlStates.selectedLabelingId
     );

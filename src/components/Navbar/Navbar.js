@@ -20,6 +20,7 @@ import './Navbar.css';
 import EdgeMLBrandLogo from '../EdgeMLBrandLogo/EdgeMLBrandLogo';
 import NotificationHandler from '../NotificationHandler';
 import NotificationContext from '../NotificationHandler/NotificationProvider';
+import { KITLogo, TECOLogo } from '../Common/logos';
 
 const navbarProjectId = (id) => `navbar-project-${id}`;
 
@@ -224,8 +225,18 @@ const Navbar = (props) => {
             Documentation
           </small>
         </div>
-        <div className="navbar-project-item">
-          <div>Open source</div>
+        <div className="navbar-project-item navbar-logos pt-3 px-3 pb-1">
+          <div>
+            <small>Open source from</small>
+          </div>
+          <div className="my-1 d-flex justify-content-between">
+            <div>
+              <TECOLogo style={{ width: '50px' }}></TECOLogo>
+            </div>
+            <div>
+              <KITLogo style={{ width: '50px' }}></KITLogo>
+            </div>
+          </div>
         </div>
         <div
           style={{

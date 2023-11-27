@@ -57,3 +57,8 @@
   text-decoration: none;
   cursor: pointer;
 }
+
+.navbar-logos {
+  width: 100%;
+  text-align: center;
+}
