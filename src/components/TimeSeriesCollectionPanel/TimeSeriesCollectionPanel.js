@@ -148,6 +148,7 @@ class TimeSeriesCollectionPanel extends Component {
   };
 
   handleConfigSave = async (timeseries_id, unit, scale, offset, key) => {
+    this.handleUnitChange(timeseries_id)(unit);
     await updateTimeSeriesConfig(
       this.props.datasetId,
       timeseries_id,

@@ -849,22 +849,15 @@ class TimeSeriesPanel extends Component {
         >
           {this.props.index !== 0 ? (
             <div className="font-weight-bold d-flex">
-              {this.props.originalUnit === ''
-                ? this.props.name
-                : this.props.name +
-                  ' (' +
-                  (this.props.originalUnit
-                    ? this.props.originalUnit
-                    : 'No unit') +
-                  ')'}
+              {this.props.name +
+                ' (' +
+                (this.props.unit ? this.props.unit : 'No unit') +
+                ')'}
               <Fade
                 in={
-                  this.props.unit !== '' &&
-                  this.props.unit !== this.props.originalUnit
+                  this.props.unit !== '' && this.props.unit !== this.props.unit
                 }
-              >
-                &nbsp;[viewed as: {this.props.unit}]
-              </Fade>
+              ></Fade>
             </div>
           ) : null}
           <Collapse

@@ -42,7 +42,7 @@ const ChartSettings = ({
 
   const save = async () => {
     setLoading(true);
-    await handleConfigSave(unit, scale, offset);
+    await handleConfigSave(newUnit, scale, offset);
     setLoading(false);
     toggleUnitMenu();
   };
@@ -137,76 +137,6 @@ const ChartSettings = ({
             </SpinnerButton>
           </div>
         </PopoverBody>
-        {/* <PopoverBody id="scalingConfigMenu">
-                    <InputGroup size="sm">
-                        <div className="input-group-prepend w-25">
-                            <span className="input-group-text w-100 justify-content-center">
-                                Unit
-                            </span>
-                        </div>
-                        <Input
-                            type="text"
-                            value={unit}
-                            onChange={(e) =>
-                                handleUnitChange(e.target.value)
-                            }
-                        />
-                    </InputGroup>
-                    <InputGroup size="sm">
-                        <div className="input-group-prepend w-25">
-                            <span className="input-group-text w-100 justify-content-center">
-                                Scale
-                            </span>
-                        </div>
-                        <Input
-                            type="number"
-                            value={scale}
-                            onChange={(e) =>
-                                handleScaleChange(e.target.value)
-                            }
-                        />
-                    </InputGroup>
-                    <InputGroup size="sm">
-                        <div className="input-group-prepend w-25">
-                            <span className="input-group-text w-100 justify-content-center">
-                                Offset
-                            </span>
-                        </div>
-                        <Input
-                            type="number"
-                            value={offset}
-                            onChange={(e) =>
-                                handleOffsetChange(e.target.value)
-                            }
-                        />
-                    </InputGroup>
-                    <div
-                        className="d-flex justify-content-end"
-                        id="scalingSaveButtonWrapper"
-                    >
-                        <Button
-                            color="primary"
-                            id="scalingSaveButton"
-                            onClick={(e) =>
-                                this.props.handleConfigSave(
-                                    unit,
-                                    scale,
-                                    offset
-                                )
-                            }
-                        >
-                            Save
-                        </Button>
-                        <UncontrolledTooltip
-                            target="scalingSaveButton"
-                            placement="left"
-                            container="scalingConfigMenu"
-                            arrowClassName="mr-0 border-white bg-transparent"
-                        >
-                            Saves the configuration in the database
-                        </UncontrolledTooltip>
-                    </div>
-                </PopoverBody> */}
       </Popover>
       <button
         className="chartBtn"
