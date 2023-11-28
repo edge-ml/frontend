@@ -100,7 +100,7 @@ class TimeSeriesCollectionPanel extends Component {
 
   onTimeSeriesWindow = async (index, start, end, resolution) => {
     // getDatasetWindow is memoized in dataset.js, so that this doesn't cause excessive requests
-    this.lastWindow = await this.props.getDatasetWindow(start, end, resolution);
+    this.lastWindow = await this.props.getDatasetWindow(start, end);
     return this.lastWindow[index];
   };
 
@@ -147,24 +147,27 @@ class TimeSeriesCollectionPanel extends Component {
     }));
   };
 
-  handleConfigSave =
-    (timeSeriesId, originalScale, originalOffset) =>
-    async (unit, scale, offset) => {
-      try {
-        await updateTimeSeriesConfig(
-          this.props.datasetId,
-          timeSeriesId,
-          unit,
-          originalScale * scale,
-          originalOffset + offset
-        );
-        this.setState({ successAlertVisible: true });
-        setTimeout(() => this.setState({ successAlertVisible: false }), 3000); // Hide after 3 seconds
-      } catch (e) {
-        this.setState({ errorAlertVisible: true });
-        setTimeout(() => this.setState({ errorAlertVisible: false }), 3000); // Hide after 3 seconds
-      }
-    };
+  handleConfigSave = async (timeseries_id, unit, scale, offset, key) => {
+    await updateTimeSeriesConfig(
+      this.props.datasetId,
+      timeseries_id,
+      unit,
+      scale,
+      offset
+    );
+    // this.props.udateTimeSeries(timeseries_id)
+    const data = await this.onTimeSeriesWindow(
+      key,
+      this.state.start,
+      this.state.end,
+      this.state.res
+    );
+    const tmpSeries = [...this.state.previewTimeSeriesData];
+    tmpSeries[key] = data;
+    this.setState({
+      previewTimeSeriesData: tmpSeries,
+    });
+  };
 
   render() {
     return (
@@ -228,6 +231,7 @@ class TimeSeriesCollectionPanel extends Component {
           <div className="flex-fill" style={{ overflowY: 'auto' }}>
             {this.state.timeSeries.length === 0 ? (
               <TimeSeriesPanel
+                handleConfigSave={this.handleConfigSave}
                 toggleUnitMenu={this.toggleUnitMenu}
                 isEmpty={true}
                 index={1}
@@ -262,6 +266,15 @@ class TimeSeriesCollectionPanel extends Component {
               );
               return (
                 <TimeSeriesPanel
+                  handleConfigSave={(unit, scale, offset) =>
+                    this.handleConfigSave(
+                      timeSeries._id,
+                      unit,
+                      scale,
+                      offset,
+                      key
+                    )
+                  }
                   key={key}
                   index={key + 1}
                   offset={timeSeries.offset}

@@ -15,45 +15,62 @@ import {
   faSearchPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
+import SpinnerButton from '../Common/SpinnerButton';
 
-const ChartSettings = ({ index, isEmpty, handleUnitChange, unit }) => {
+const ChartSettings = ({
+  index,
+  isEmpty,
+  setPopUpOpen,
+  unit,
+  handleConfigSave,
+}) => {
   const [isUnitMenuOpen, setUnitMenuOpen] = useState(false);
 
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState(0);
   const [newUnit, setNewUnit] = useState(undefined);
+  const [loading, setLoading] = useState(false);
 
   const toggleUnitMenu = () => {
     setUnitMenuOpen(!isUnitMenuOpen);
+    setPopUpOpen();
   };
 
   if (index === 0 || isEmpty) {
     return null;
   }
 
+  const save = async () => {
+    setLoading(true);
+    await handleConfigSave(unit, scale, offset);
+    setLoading(false);
+    toggleUnitMenu();
+  };
+
   const unitText = unit || 'no unit';
 
   return (
-    <div className="chartMenuWrapper">
+    <div className="chartMenuWrapper" onClick={(e) => e.stopPropagation()}>
       <button
         className="chartBtn"
         style={{ marginRight: '1px' }}
         key={'unitMenuButton' + index}
         id={'unitMenuButton' + index}
-        onClick={(e) => toggleUnitMenu()}
+        onClick={toggleUnitMenu}
       >
         <FontAwesomeIcon icon={faCog} size="xs" color="#999999" />
       </button>
       <Popover
         target={'unitMenuButton' + index}
         isOpen={isUnitMenuOpen}
-        toggle={(e) => toggleUnitMenu()}
+        toggle={toggleUnitMenu}
         trigger="legacy"
+        onClick={(e) => e.stopPropagation()}
       >
         <PopoverHeader className="text-center">
           <strong>Change unit</strong>
         </PopoverHeader>
-        <PopoverBody>
+        <PopoverBody onClick={(e) => e.stopPropagation()}>
           <div>
             <strong>1. Provide new unit</strong>
           </div>
@@ -108,14 +125,16 @@ const ChartSettings = ({ index, isEmpty, handleUnitChange, unit }) => {
           </div>
           <hr></hr>
           <div className="d-flex justify-content-end">
-            <Button
+            <SpinnerButton
               size="sm"
               color="primary"
               id="scalingSaveButton"
-              onClick={(e) => this.props.handleConfigSave(unit, scale, offset)}
+              onClick={save}
+              loading={loading}
+              loadingtext="Processing"
             >
               Save
-            </Button>
+            </SpinnerButton>
           </div>
         </PopoverBody>
         {/* <PopoverBody id="scalingConfigMenu">

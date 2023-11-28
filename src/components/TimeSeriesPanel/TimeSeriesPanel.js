@@ -65,6 +65,8 @@ class TimeSeriesPanel extends Component {
     this.zoom = this.zoom.bind(this);
     this.mouseDown = false;
     this.changeNavigator = false;
+
+    this.compontentRef = React.createRef();
   }
 
   componentWillReceiveProps(props) {
@@ -120,21 +122,6 @@ class TimeSeriesPanel extends Component {
     }
   }
 
-  // updateData = debounce((chart, min, max, width, offset) => {
-  //   if (this.props.onTimeSeriesWindow) {
-  //     // FIXME: this doesn't really work with fusedSeries, ignore them for now
-
-  //     chart.showLoading('Loading data from server...');
-  //     this.props
-  //       .onTimeSeriesWindow(Math.round(min), Math.round(max), Math.round(width))
-  //       .then((timeserie) => {
-  //         // FIXME: offset/series[0] cause problem with fusedSeries, ignore for now
-  //         chart.series[0].setData(timeserie, true, false);
-  //         chart.hideLoading();
-  //       });
-  //   }
-  // }, 200);
-
   afterSetExtremesFunc(min, max, width) {
     if (this.chart && this.chart.current && this.chart.current.chart) {
       const chart = this.chart.current.chart;
@@ -157,6 +144,7 @@ class TimeSeriesPanel extends Component {
 
   generateState(props) {
     return {
+      popupOpen: false,
       height: '200px',
       chartOptions: {
         height: '200px',
@@ -324,6 +312,10 @@ class TimeSeriesPanel extends Component {
    */
   onMouseDown(e) {
     console.log('mouse down');
+    if (this.state.popupOpen) {
+      console.log('popup open');
+      return;
+    }
     this.mouseDown = true;
     if (this.props.index === 0) return;
     var plotBand = this.getSelectedPlotBand();
@@ -848,7 +840,7 @@ class TimeSeriesPanel extends Component {
 
     console.log(this.props);
     return (
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative' }} ref={this.compontentRef}>
         <div
           className={classNames('chartWrapper', {
             'chartWrapper-height': this.props.index !== 0,
@@ -884,6 +876,10 @@ class TimeSeriesPanel extends Component {
           <ChartSettings
             index={this.props.index}
             unit={this.props.unit}
+            setPopUpOpen={(e) =>
+              this.setState({ popupOpen: !this.state.popupOpen })
+            }
+            handleConfigSave={this.props.handleConfigSave}
           ></ChartSettings>
           {this.props.index === 0 && (
             <div className="d-flex align-items-center">

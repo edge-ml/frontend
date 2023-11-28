@@ -94,6 +94,7 @@ class DatasetPage extends Component {
     this.onClickSelectSeries = this.onClickSelectSeries.bind(this);
     this.toggleMetaData = this.toggleMetaData.bind(this);
     this.handleDatasetNameChange = this.handleDatasetNameChange.bind(this);
+    this.udateTimeSeries = this.udateTimeSeries.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
@@ -241,7 +242,8 @@ class DatasetPage extends Component {
     });
   }
 
-  async getDatasetWindow(start, end, max_resolution) {
+  async getDatasetWindow(start, end) {
+    const max_resolution = window.innerWidth / 2;
     const res = await this.memoizedGetDatasetTimeseries(
       this.props.match.params.id,
       this.state.activeSeries,
@@ -547,6 +549,8 @@ class DatasetPage extends Component {
       },
     });
   }
+
+  udateTimeSeries(timeseries_id) {}
 
   onClickPosition(position) {
     // don't add new labels if we don't show them
@@ -880,6 +884,7 @@ class DatasetPage extends Component {
             onHideLabels={this.hideLabels}
           />
           <TimeSeriesCollectionPanel
+            udateTimeSeries={this.udateTimeSeries}
             datasetStart={Math.min(
               ...this.state.dataset.timeSeries.map((elm) => elm.start)
             )}
