@@ -768,35 +768,34 @@ class DatasetPage extends Component {
   }
 
   async startPolling() {
-    this.pollingInterval = setInterval(async () => {
-      try {
-        const [
-          step,
-          progress,
-          currentTimeseries = 0,
-          totalTimeseries = undefined,
-        ] = await getUploadProcessingProgress(this.state.dataset._id);
-        const { processedUntil } = this.state;
-
-        if (progress === 100) {
-          this.setState({
-            processedUntil: this.state.dataset.timeSeries.length,
-            consecutiveNoUpdateCount: null, // stop polling
-          });
-          this.stopPolling();
-        } else if (currentTimeseries !== processedUntil) {
-          this.setState((prevState) => ({
-            processedUntil: currentTimeseries,
-            consecutiveNoUpdateCount: prevState.consecutiveNoUpdateCount + 1,
-          }));
-        } else {
-          this.setState({ consecutiveNoUpdateCount: 0 });
-        }
-      } catch (error) {
-        console.error('Error polling', error);
-        this.stopPolling();
-      }
-    }, this.getPollingDelay());
+    // this.pollingInterval = setInterval(async () => {
+    //   try {
+    //     const [
+    //       step,
+    //       progress,
+    //       currentTimeseries = 0,
+    //       totalTimeseries = undefined,
+    //     ] = await getUploadProcessingProgress(this.state.dataset._id);
+    //     const { processedUntil } = this.state;
+    //     if (progress === 100) {
+    //       this.setState({
+    //         processedUntil: this.state.dataset.timeSeries.length,
+    //         consecutiveNoUpdateCount: null, // stop polling
+    //       });
+    //       this.stopPolling();
+    //     } else if (currentTimeseries !== processedUntil) {
+    //       this.setState((prevState) => ({
+    //         processedUntil: currentTimeseries,
+    //         consecutiveNoUpdateCount: prevState.consecutiveNoUpdateCount + 1,
+    //       }));
+    //     } else {
+    //       this.setState({ consecutiveNoUpdateCount: 0 });
+    //     }
+    //   } catch (error) {
+    //     console.error('Error polling', error);
+    //     this.stopPolling();
+    //   }
+    // }, this.getPollingDelay());
   }
 
   stopPolling() {

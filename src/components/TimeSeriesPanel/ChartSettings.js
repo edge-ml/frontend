@@ -50,7 +50,7 @@ const ChartSettings = ({
   const unitText = unit || 'no unit';
 
   return (
-    <div className="chartMenuWrapper" onClick={(e) => e.stopPropagation()}>
+    <div className="chartMenuWrapper">
       <button
         className="chartBtn"
         style={{ marginRight: '1px' }}
@@ -65,80 +65,81 @@ const ChartSettings = ({
         isOpen={isUnitMenuOpen}
         toggle={toggleUnitMenu}
         trigger="legacy"
-        onClick={(e) => e.stopPropagation()}
       >
         <PopoverHeader className="text-center">
           <strong>Change unit</strong>
         </PopoverHeader>
-        <PopoverBody onClick={(e) => e.stopPropagation()}>
-          <div>
-            <strong>1. Provide new unit</strong>
-          </div>
-          <div>Current unit: {unitText}</div>
-          <InputGroup size="sm">
-            <div className="input-group-prepend w-35">
-              <span className="input-group-text w-100 justify-content-center">
-                New Unit
-              </span>
-            </div>
-            <Input
-              type="text"
-              value={newUnit}
-              onChange={(e) => setNewUnit(e.target.value)}
-            />
-          </InputGroup>
-          <hr></hr>
-          <div>
-            <strong>2. Conversion</strong>
-          </div>
-          <small>
-            Tell us how to convert from <strong>{unitText}</strong> to{' '}
-            <strong>{newUnit || 'no unit'}</strong>
-          </small>
-          <div className="my-2 d-flex align-items-center justify-content-center">
-            <span>y = (</span>
-            <Input
-              size="sm mx-1"
-              style={{ width: '4em', height: '2em' }}
-              value={scale}
-              onChange={(e) => setScale(e.target.value)}
-            ></Input>
-            <span> &times; x) + </span>
-            <Input
-              size="sm mx-2"
-              style={{ width: '4em', height: '2em' }}
-              value={offset}
-              onChange={(e) => setOffset(e.target.value)}
-            ></Input>
-          </div>
+        <PopoverBody>
           <div>
             <div>
-              <small>
-                <strong>x</strong>: Old datapoint
-              </small>
+              <strong>1. Provide new unit</strong>
+            </div>
+            <div>Current unit: {unitText}</div>
+            <InputGroup size="sm">
+              <div className="input-group-prepend w-35">
+                <span className="input-group-text w-100 justify-content-center">
+                  New Unit
+                </span>
+              </div>
+              <Input
+                type="text"
+                value={newUnit}
+                onChange={(e) => setNewUnit(e.target.value)}
+              />
+            </InputGroup>
+            <hr></hr>
+            <div>
+              <strong>2. Conversion</strong>
+            </div>
+            <small>
+              Tell us how to convert from <strong>{unitText}</strong> to{' '}
+              <strong>{newUnit || 'no unit'}</strong>
+            </small>
+            <div className="my-2 d-flex align-items-center justify-content-center">
+              <span>y = (</span>
+              <Input
+                size="sm mx-1"
+                style={{ width: '4em', height: '2em' }}
+                value={scale}
+                onChange={(e) => setScale(e.target.value)}
+              ></Input>
+              <span> &times; x) + </span>
+              <Input
+                size="sm mx-2"
+                style={{ width: '4em', height: '2em' }}
+                value={offset}
+                onChange={(e) => setOffset(e.target.value)}
+              ></Input>
             </div>
             <div>
-              <small>
-                <strong>y</strong>: New datapoint
-              </small>
+              <div>
+                <small>
+                  <strong>x</strong>: Old datapoint
+                </small>
+              </div>
+              <div>
+                <small>
+                  <strong>y</strong>: New datapoint
+                </small>
+              </div>
             </div>
-          </div>
-          <hr></hr>
-          <div className="d-flex justify-content-end">
-            <SpinnerButton
-              size="sm"
-              color="primary"
-              id="scalingSaveButton"
-              onClick={save}
-              loading={loading}
-              loadingtext="Processing"
-            >
-              Save
-            </SpinnerButton>
+            <hr></hr>
+            <div className="d-flex justify-content-end">
+              <SpinnerButton
+                size="sm"
+                color="primary"
+                id="scalingSaveButton"
+                onClick={save}
+                loading={loading}
+                loadingtext="Processing"
+              >
+                Save
+              </SpinnerButton>
+            </div>
           </div>
         </PopoverBody>
       </Popover>
-      <button
+      {/* <button
         className="chartBtn"
         style={{ marginRight: '1px' }}
         // onClick={(e) => this.zoom(ZoomDirection.OUT)}
@@ -152,7 +153,7 @@ const ChartSettings = ({
         key={'zoomInButton' + index}
       >
         <FontAwesomeIcon icon={faSearchPlus} size="xs" color="#999999" />
-      </button>
+      </button> */}
     </div>
   );
 };
