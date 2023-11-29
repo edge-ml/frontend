@@ -54,6 +54,7 @@ const FilterSelectionModal = ({
           <LabelingSetsFilter
             labelings={labelings}
             currenFilterParams={currenFilterParams}
+            setCurrentFilterParams={setCurrentFilterParams}
           />
         );
         break;
