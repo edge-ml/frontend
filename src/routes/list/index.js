@@ -85,6 +85,16 @@ const ListPage = (props) => {
   };
 
   const toggleCreateNewDatasetModal = () => {
+    if (isCreateNewDatasetOpen) {
+      Promise.all([getDatasets(), subscribeLabelingsAndLabels()])
+        .then(([datasets, labelings]) => {
+          onDatasetsChanged(datasets);
+          setLabelings(labelings);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
     setIsCreateNewDatasetOpen(!isCreateNewDatasetOpen);
   };
 

@@ -390,12 +390,11 @@ export const UploadDatasetModal = ({
         config: { ...f.config, editingModeActive: false },
       }))
     );
-    for (const file of files) {
-      if (file.status !== FileStatus.CONFIGURATION) {
-        continue;
-      }
-      handleUpload(file);
-    }
+    await Promise.all(
+      files
+        .filter((elm) => elm.status === FileStatus.CONFIGURATION)
+        .map((elm) => handleUpload(elm))
+    );
   };
 
   const handleModalClose = () => {
