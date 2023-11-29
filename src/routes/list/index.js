@@ -30,6 +30,8 @@ import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
 import PageSelection from './PageSelection';
 import PageSizeInput from './PageSizeInput';
+import FilterSelectionModal from './FilterSelection';
+import { filter } from 'jszip';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -43,6 +45,8 @@ const ListPage = (props) => {
   const [pageSize, setPageSize] = useState(5);
   const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState('alphaAsc'); //alphaAsc, alphaDesc, dateAsc, dateDesc
+  const [filters, setFilters] = useState([]); //{filter: filterParam}
+  const [filterModalOpen, setFilterModalOpen] = useState(false);
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
   const total_datasetsRef = useRef(total_datasets);
@@ -310,6 +314,7 @@ const ListPage = (props) => {
           setSortDropdownIsOpen={setSortDropdownIsOpen}
           selectedSorting={selectedSorting}
           setSelectedSorting={setSelectedSorting}
+          setFilterModalOpen={setFilterModalOpen}
         ></DatasetTable>
       </Container>
       {datasets.length > 0 ? (
@@ -367,6 +372,14 @@ const ListPage = (props) => {
         onCloseModal={toggleCreateNewDatasetModal}
         onDatasetComplete={refreshList}
       />
+      {filterModalOpen ? (
+        <FilterSelectionModal
+          filters={filters}
+          setFilterModalOpen={setFilterModalOpen}
+          filterModalOpen={filterModalOpen}
+          applyFilter={applyFilter}
+        />
+      ) : null}
     </div>
   );
 };

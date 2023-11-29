@@ -75,7 +75,15 @@ const DatasetTable = (props) => {
                 </Button>
               </div>
               <div className="d-flex flex-md-row justify-content-end position-relative">
-                <div className="position-absolute" style={{ top: '-10px' }}>
+                <div className="position-absolute">
+                  <Button active={true} className="mr-3" onClick={null}>
+                    <FontAwesomeIcon icon={faFilter} />
+                  </Button>
+                </div>
+                <div
+                  className="position-absolute"
+                  style={{ top: '-10px', left: '-55px' }}
+                >
                   {' '}
                   <DatasetSorting
                     sortDropDownIsOpen={props.sortDropDownIsOpen}
