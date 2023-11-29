@@ -266,6 +266,7 @@ const ListPage = (props) => {
     setModal(false);
     setReady(true);
     setIsCreateNewDatasetOpen(false);
+    setFilterModalOpen(false);
     resetDropdown();
   };
 
@@ -386,6 +387,7 @@ const ListPage = (props) => {
           setFilterModalOpen={setFilterModalOpen}
           filterModalOpen={filterModalOpen}
           applyFilter={applyFilter}
+          labelings={labelings}
         />
       ) : null}
     </div>

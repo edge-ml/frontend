@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
+import LabelingSetsFilter from './filters/LabelingSetsFilter';
 
 const FilterSelectionModal = ({
   filterModalOpen,
@@ -19,6 +20,7 @@ const FilterSelectionModal = ({
   setSelectedFilter,
   selectedFilterParams,
   setSelectedFilterParams,
+  labelings,
 }) => {
   const filtersDef = [
     { displayName: 'Empty Datasets', value: 'filterEmptyDatasets' },
@@ -48,7 +50,12 @@ const FilterSelectionModal = ({
         return renderEmptyDatasetsFilter();
         break;
       case 'labelings':
-        return null;
+        return (
+          <LabelingSetsFilter
+            labelings={labelings}
+            currenFilterParams={currenFilterParams}
+          />
+        );
         break;
       default:
         return null;
@@ -67,8 +74,8 @@ const FilterSelectionModal = ({
   };
 
   const handleFilterSelect = (filter) => {
-    setCurrentFilter(filter);
     setCurrentFilterParams(undefined);
+    setCurrentFilter(filter);
   };
 
   const filterDropdown = () => {
