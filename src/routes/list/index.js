@@ -45,7 +45,8 @@ const ListPage = (props) => {
   const [pageSize, setPageSize] = useState(5);
   const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
   const [selectedSorting, setSelectedSorting] = useState('alphaAsc'); //alphaAsc, alphaDesc, dateAsc, dateDesc
-  const [filters, setFilters] = useState([]); //{filter: filterParam}
+  const [selectedFilter, setSelectedFilter] = useState(undefined); //name and display value of filter
+  const [selectedFilterParams, setSelectedFilterParams] = useState(undefined); // obj containing filter params
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
@@ -293,6 +294,10 @@ const ListPage = (props) => {
     return <Loader loading={!ready} />;
   }
 
+  const applyFilter = (currentFilter, currenFilterParams) => {
+    return null;
+  };
+
   return (
     <div id="dataList">
       <Container style={{ padding: 0 }}>
@@ -374,7 +379,10 @@ const ListPage = (props) => {
       />
       {filterModalOpen ? (
         <FilterSelectionModal
-          filters={filters}
+          selectedFilter={selectedFilter}
+          setSelectedFilter={setSelectedFilter}
+          selectedFilterParams={selectedFilterParams}
+          setSelectedFilterParams={setSelectedFilterParams}
           setFilterModalOpen={setFilterModalOpen}
           filterModalOpen={filterModalOpen}
           applyFilter={applyFilter}

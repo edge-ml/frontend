@@ -5,40 +5,42 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Input,
-  Label,
-  FormGroup,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from 'reactstrap';
 
 const FilterSelectionModal = ({
   filterModalOpen,
   setFilterModalOpen,
   applyFilter,
-  filters,
-  setFilters,
+  selectedFilter,
+  setSelectedFilter,
+  selectedFilterParams,
+  setSelectedFilterParams,
 }) => {
-  const [currentFilter, setCurrentFilter] = useState(selectedFilter);
-  const [filterParam, setFilterParam] = useState(null);
   const filtersDef = [
-    { displayName: 'Remove Filter', value: 'clearFilter' },
-    { displayName: 'Text Search', value: 'filterByName' },
     { displayName: 'Empty Datasets', value: 'filterEmptyDatasets' },
+    { displayName: 'Text Search', value: 'filterByName' },
     { displayName: 'Labeling Sets', value: 'labelings' },
   ];
 
-  const handleFilterClick = (event) => {
-    setFilterParam(null);
-    setCurrentFilter(event.target.value);
-  };
+  const [currentFilter, setCurrentFilter] = useState(
+    selectedFilter === undefined ? filtersDef[0] : selectedFilter
+  );
+  const [currenFilterParams, setCurrentFilterParams] =
+    useState(selectedFilterParams);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const renderEmptyDatasetsFilter = () => {
     return (
-      <div>This filter marks all datasets that contain no timeseries.</div>
+      <div>This filter shows all datasets that contain no timeseries.</div>
     );
   };
 
   const renderFilter = () => {
-    switch (currentFilter) {
+    switch (currentFilter.value) {
       case 'filterByName':
         return null;
         break;
@@ -54,86 +56,48 @@ const FilterSelectionModal = ({
   };
 
   const applyAndClose = () => {
-    setFilters(currentFilter, filterParam);
-    applyFilter(currentFilter, filterParam);
+    setSelectedFilter(currentFilter);
+    setSelectedFilterParams(currenFilterParams);
+    applyFilter(currentFilter, currenFilterParams);
     setFilterModalOpen(false);
   };
 
-  /**  return (
-    <div>
-      <Modal isOpen={filterModalOpen} size="xl">
-        <ModalHeader>Filter Selection</ModalHeader>
-        <ModalBody>
-          <div>
-            <FormGroup className="ml-3 d-flex flex-column justify-content-center">
-              <Label>Select a filter:</Label>
-              {c.map((filter, idx) => (
-                <div key={idx}>
-                  <Label check>
-                    <Input
-                      type="radio"
-                      name="radioOption"
-                      value={filter.value}
-                      checked={currentFilter === filter.value}
-                      onChange={handleFilterClick}
-                    />{' '}
-                    {filter.displayName}
-                  </Label>
-                </div>
-              ))}
-            </FormGroup>
-            {renderFilter()}
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" outline onClick={applyAndClose}>
-            Apply
-          </Button>{' '}
-          <Button color="danger" outline onClick={() => setFilterModalOpen(false)}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </div>
-  );*/
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
 
-  /**  return (
-    <Dropdown
-      direction="left"
-      isOpen={sortDropDownIsOpen}
-      toggle={toggleDropdown}
-      size="sm"
-      className="dataset-sorting"
-    >
-      <DropdownToggle caret>
-        {sortingText || <FontAwesomeIcon icon={faSort} />}
-      </DropdownToggle>
-      <DropdownMenu>
-        <DropdownItem header>Filter Selection</DropdownItem>
-        <DropdownItem onClick={handleItemClick} data-dropdownvalue="alphaDesc">
-          Alphabetical (descending)
-        </DropdownItem>
-        <DropdownItem onClick={handleItemClick} data-dropdownvalue="alphaAsc">
-          Alphabetical (ascending)
-        </DropdownItem>
-        <DropdownItem onClick={handleItemClick} data-dropdownvalue="dateDesc">
-          Recording Date (descending)
-        </DropdownItem>
-        <DropdownItem onClick={handleItemClick} data-dropdownvalue="dateAsc">
-          Recording Date (ascending)
-        </DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
-  );
-};*/
+  const handleFilterSelect = (filter) => {
+    setCurrentFilter(filter);
+    setCurrentFilterParams(undefined);
+  };
+
+  const filterDropdown = () => {
+    return (
+      <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+        <DropdownToggle caret>{currentFilter.displayName}</DropdownToggle>
+        <DropdownMenu>
+          {filtersDef.map((filter) => (
+            <DropdownItem
+              key={filter.value}
+              onClick={() => handleFilterSelect(filter)}
+            >
+              {filter.displayName}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+    );
+  };
 
   return (
     <div>
       <Modal isOpen={filterModalOpen} size="xl">
         <ModalHeader>Filter Selection</ModalHeader>
         <ModalBody>
-          <div></div>
-          {renderFilter()}
+          <div>
+            <div>{filterDropdown()}</div>
+            <div>{renderFilter()}</div>
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button color="primary" outline onClick={applyAndClose}>

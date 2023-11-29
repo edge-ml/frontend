@@ -76,7 +76,11 @@ const DatasetTable = (props) => {
               </div>
               <div className="d-flex flex-md-row justify-content-end position-relative">
                 <div className="position-absolute">
-                  <Button active={true} className="mr-3" onClick={null}>
+                  <Button
+                    active={true}
+                    className="mr-3"
+                    onClick={() => props.setFilterModalOpen(true)}
+                  >
                     <FontAwesomeIcon icon={faFilter} />
                   </Button>
                 </div>
