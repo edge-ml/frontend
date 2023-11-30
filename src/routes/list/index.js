@@ -29,6 +29,7 @@ import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
 import PageSelection from './PageSelection';
 import PageSizeDropdown from './PageSizeDropdown';
+import { usePersistedState } from '../../services/ReactHooksService';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -43,7 +44,7 @@ const ListPage = (props) => {
   const [currentPage, setCurrentPage] = useState(0);
   //datasets displayed on the current page
   const [displayedDatasets, setDisplayedDatasets] = useState([]);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = usePersistedState(5, 'list.index.pageSize');
   const [sortingDropDownIsOpen, setSortingDropdownIsOpen] = useState(false);
   const [selectedSortingString, setSelectedSortingString] = useState(null);
   const [sortingMethod, setSortingMethod] = useState(null);
