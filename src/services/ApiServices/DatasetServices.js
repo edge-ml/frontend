@@ -23,16 +23,25 @@ export const getDatasets = () => {
   });
 };
 
-export const getDatasetsWithPagination = (currentPage, pageSize, sort) => {
+export const getDatasetsWithPagination = (
+  currentPage,
+  pageSize,
+  sort,
+  selectedFilter,
+  selectedFilterParams
+) => {
   const queryParams = {
     page: currentPage,
     page_size: pageSize,
     sort: sort,
   };
-
   const requestBody = {
-    filters: [],
+    filters: {},
   };
+
+  if (selectedFilter) {
+    requestBody.filters[selectedFilter] = selectedFilterParams;
+  }
   const request = apiConsts.generateApiRequest(
     apiConsts.HTTP_METHODS.POST,
     apiConsts.DATASET_STORE,

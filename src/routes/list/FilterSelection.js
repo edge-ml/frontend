@@ -64,8 +64,6 @@ const FilterSelectionModal = ({
   };
 
   const applyAndClose = () => {
-    setSelectedFilter(currentFilter);
-    setSelectedFilterParams(currenFilterParams);
     applyFilter(currentFilter, currenFilterParams);
     setFilterModalOpen(false);
   };

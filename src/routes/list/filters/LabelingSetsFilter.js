@@ -4,16 +4,16 @@ import Checkbox from '../../../components/Common/Checkbox';
 
 const LabelingSetsFilter = ({
   labelings,
-  currenFilterParams,
+  currentFilterParams,
   setCurrentFilterParams,
 }) => {
   const [targetLabelingIds, setTargetLabelingIds] = useState([]);
   const [targetLabelIds, setTargetLabelIds] = useState([]);
 
   useEffect(() => {
-    if (currenFilterParams !== undefined) {
-      setTargetLabelIds(currenFilterParams.target_label_ids);
-      setTargetLabelingIds(currenFilterParams.target_labeling_ids);
+    if (currentFilterParams !== undefined) {
+      setTargetLabelIds(currentFilterParams.target_label_ids);
+      setTargetLabelingIds(currentFilterParams.target_labeling_ids);
     } else {
       const _currentFilterParams = {};
       _currentFilterParams.target_label_ids = [];
@@ -24,17 +24,17 @@ const LabelingSetsFilter = ({
   }, []);
 
   useEffect(() => {
-    setCurrentFilterParams({
-      ...currenFilterParams,
+    setCurrentFilterParams((prevParams) => ({
+      ...prevParams,
       target_labeling_ids: targetLabelingIds,
-    });
+    }));
   }, [targetLabelingIds]);
 
   useEffect(() => {
-    setCurrentFilterParams({
-      ...currenFilterParams,
+    setCurrentFilterParams((prevParams) => ({
+      ...prevParams,
       target_label_ids: targetLabelIds,
-    });
+    }));
   }, [targetLabelIds]);
 
   const onSelectLabel = (label) => {

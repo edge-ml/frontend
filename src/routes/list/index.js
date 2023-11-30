@@ -149,8 +149,20 @@ const ListPage = (props) => {
     history.replace({ search: `?${searchParams.toString()}` });
   };
 
-  const fetchDatasetets = (currentPage, pageSize, sort) => {
-    getDatasetsWithPagination(currentPage + 1, pageSize, sort).then((data) => {
+  const fetchDatasetets = (
+    currentPage,
+    pageSize,
+    sort,
+    selectedFilter,
+    selectedFilterParams
+  ) => {
+    getDatasetsWithPagination(
+      currentPage + 1,
+      pageSize,
+      sort,
+      selectedFilter.value,
+      selectedFilterParams
+    ).then((data) => {
       onDatasetsChanged(data.datasets);
       total_datasetsRef.current = data.total_datasets;
       setTotalDatasets(data.total_datasets);
@@ -191,21 +203,39 @@ const ListPage = (props) => {
       pageSizeRef.current = pageSize;
       currentPageRef.current = 0;
       setCurrentPage(0);
-      fetchDatasetets(0, pageSize, selectedSorting);
+      fetchDatasetets(
+        0,
+        pageSize,
+        selectedSorting,
+        selectedFilter,
+        selectedFilterParams
+      );
     }
   }, [pageSize]);
 
   useEffect(() => {
     if (selectedSortingRef.current !== selectedSorting && ready) {
       selectedSortingRef.current = selectedSorting;
-      fetchDatasetets(currentPage, pageSize, selectedSorting);
+      fetchDatasetets(
+        currentPage,
+        pageSize,
+        selectedSorting,
+        selectedFilter,
+        selectedFilterParams
+      );
     }
   }, [selectedSorting]);
 
   useEffect(() => {
     if (currentPageRef.current !== currentPage && ready) {
       currentPageRef.current = currentPage;
-      fetchDatasetets(currentPage, pageSize, selectedSorting);
+      fetchDatasetets(
+        currentPage,
+        pageSize,
+        selectedSorting,
+        selectedFilter,
+        selectedFilterParams
+      );
     }
   }, [currentPage]);
 
@@ -267,6 +297,8 @@ const ListPage = (props) => {
     setReady(true);
     setIsCreateNewDatasetOpen(false);
     setFilterModalOpen(false);
+    setSelectedFilter(undefined);
+    setSelectedFilterParams(undefined);
     resetDropdown();
   };
 
@@ -296,7 +328,16 @@ const ListPage = (props) => {
   }
 
   const applyFilter = (currentFilter, currenFilterParams) => {
-    return null;
+    setSelectedFilter(currentFilter);
+    setSelectedFilterParams(currenFilterParams);
+    setCurrentPage(0);
+    fetchDatasetets(
+      0,
+      pageSize,
+      selectedSorting,
+      currentFilter,
+      currenFilterParams
+    );
   };
 
   return (
