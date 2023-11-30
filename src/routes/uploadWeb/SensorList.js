@@ -122,7 +122,7 @@ export const SensorList = ({
                       <tr style={tableVisibilityStyle(name)}>
                         <Td className="p-0" />
                         <Td className="p-0" colSpan="2">
-                          <div className="d-flex align-items-center">
+                          <div className="d-flex align-items-center pr-3">
                             <small>
                               <b>Sample Rate:</b>
                             </small>
@@ -133,7 +133,10 @@ export const SensorList = ({
                       <tr style={tableVisibilityStyle(name)}>
                         <Td className="p-0" />
                         <Td className="p-0" colspan="2">
-                          <div className="d-flex flex-wrap align-items-center">
+                          <div
+                            className="d-flex align-items-center"
+                            style={{ flexWrap: 'wrap' }}
+                          >
                             <small>
                               <b>Components:</b>
                             </small>
