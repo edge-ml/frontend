@@ -30,14 +30,13 @@ export const HyperparameterView = ({
                   </Col>
                 );
               } else if (h.parameter_type === 'selection') {
-                console.log(h.value);
                 return (
                   <Col className="col-md-6 col-12 pl-0">
                     <SelectionHyperparameter
                       {...h}
                       id={'input_' + h.parameter_name}
                       handleChange={handleHyperparameterChange}
-                      value={h.value}
+                      value={{ value: h.value, label: h.value }}
                     />
                   </Col>
                 );
