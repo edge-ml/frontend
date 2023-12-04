@@ -17,6 +17,7 @@ const SelectionHyperparameter = (props) => {
         options={props.options.map((e) => {
           return { value: e, label: e };
         })}
+        menuPosition="fixed"
         isMulti={props.multi_select}
         value={props.value}
         defaultValue={props.value}
