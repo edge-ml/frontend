@@ -39,8 +39,8 @@ export const getDatasetsWithPagination = (
     filters: {},
   };
 
-  if (selectedFilter) {
-    requestBody.filters[selectedFilter] = selectedFilterParams;
+  if (selectedFilter && selectedFilterParams) {
+    requestBody.filters[selectedFilter.value] = selectedFilterParams;
   }
   const request = apiConsts.generateApiRequest(
     apiConsts.HTTP_METHODS.POST,

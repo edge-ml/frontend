@@ -160,7 +160,7 @@ const ListPage = (props) => {
       currentPage + 1,
       pageSize,
       sort,
-      selectedFilter.value,
+      selectedFilter,
       selectedFilterParams
     ).then((data) => {
       onDatasetsChanged(data.datasets);
