@@ -11,6 +11,8 @@ import {
   DropdownItem,
 } from 'reactstrap';
 import LabelingSetsFilter from './filters/LabelingSetsFilter';
+import EmptyDatasetFilter from './filters/EmptyDatasetsFilter';
+import TextSearchFilter from './filters/TextSearchFilter';
 
 const FilterSelectionModal = ({
   filterModalOpen,
@@ -21,6 +23,7 @@ const FilterSelectionModal = ({
   selectedFilterParams,
   setSelectedFilterParams,
   labelings,
+  removeFilter,
 }) => {
   const filtersDef = [
     { displayName: 'Empty Datasets', value: 'filterEmptyDatasets' },
@@ -35,19 +38,21 @@ const FilterSelectionModal = ({
     useState(selectedFilterParams);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const renderEmptyDatasetsFilter = () => {
-    return (
-      <div>This filter shows all datasets that contain no timeseries.</div>
-    );
-  };
-
   const renderFilter = () => {
     switch (currentFilter.value) {
       case 'filterByName':
-        return null;
+        return (
+          <TextSearchFilter
+            selectedFilter={selectedFilter}
+            selectedFilterParams={selectedFilterParams}
+            labelings={labelings}
+            currenFilterParams={currenFilterParams}
+            setCurrentFilterParams={setCurrentFilterParams}
+          />
+        );
         break;
       case 'filterEmptyDatasets':
-        return renderEmptyDatasetsFilter();
+        return <EmptyDatasetFilter />;
         break;
       case 'labelings':
         return (
@@ -79,6 +84,11 @@ const FilterSelectionModal = ({
     setCurrentFilter(filter);
   };
 
+  const _removeFilter = () => {
+    removeFilter();
+    setFilterModalOpen(false);
+  };
+
   const filterDropdown = () => {
     return (
       <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
@@ -108,6 +118,9 @@ const FilterSelectionModal = ({
           </div>
         </ModalBody>
         <ModalFooter>
+          <Button color="primary" outline onClick={_removeFilter}>
+            Remove filter
+          </Button>{' '}
           <Button color="primary" outline onClick={applyAndClose}>
             Apply
           </Button>{' '}

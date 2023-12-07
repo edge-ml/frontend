@@ -342,6 +342,20 @@ const ListPage = (props) => {
     );
   };
 
+  const removeFilter = () => {
+    selectedFilterRef.current = undefined;
+    selectedFilterParamsRef.current = undefined;
+    setSelectedFilter(undefined);
+    setSelectedFilterParams(undefined);
+    fetchDatasetets(
+      0,
+      pageSize,
+      selectedSorting,
+      selectedFilterRef.current,
+      selectedFilterParamsRef.current
+    );
+  };
+
   return (
     <div id="dataList">
       <Container style={{ padding: 0 }}>
@@ -364,6 +378,7 @@ const ListPage = (props) => {
           selectedSorting={selectedSorting}
           setSelectedSorting={setSelectedSorting}
           setFilterModalOpen={setFilterModalOpen}
+          selectedFilter={selectedFilter}
         ></DatasetTable>
       </Container>
       {datasets.length > 0 ? (
@@ -431,6 +446,7 @@ const ListPage = (props) => {
           filterModalOpen={filterModalOpen}
           applyFilter={applyFilter}
           labelings={labelings}
+          removeFilter={removeFilter}
         />
       ) : null}
     </div>

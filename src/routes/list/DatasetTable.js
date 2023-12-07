@@ -77,7 +77,7 @@ const DatasetTable = (props) => {
               <div className="d-flex flex-md-row justify-content-end position-relative">
                 <div className="position-absolute">
                   <Button
-                    active={true}
+                    active={props.selectedFilter}
                     className="mr-3"
                     onClick={() => props.setFilterModalOpen(true)}
                   >

@@ -86,7 +86,7 @@ const LabelingSetsFilter = ({
       return null;
     } else {
       return (
-        <div className="d-flex flex-row mr-2 badgeSize pb-2 mt-2 mb-2">
+        <div className="d-flex flex-row mr-2 badgeSize pb-2">
           {labels.map((label, index) => {
             return (
               <div style={{ display: 'flex', alignItems: 'center' }}>
