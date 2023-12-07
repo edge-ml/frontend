@@ -133,8 +133,8 @@ const ScreenOne = memo(
       }));
     };
 
-    const legalMatches = objMap(tsMatches, (triplet) =>
-      triplet && selectedSensors[triplet.sensor.name] ? triplet : null
+    const legalMatches = objMap(tsMatches, (obj) =>
+      obj && selectedSensors[obj.sensor.name] ? obj : null
     );
 
     const legal = model.timeSeries.reduce(
@@ -286,12 +286,11 @@ const ScreenOne = memo(
 );
 
 const ScreenTwo = ({ model, legalMatches }) => {
-  const [loaded, setLoaded] = useState(false);
+  const [wasmBlobLoaded, setWASMBlobLoaded] = useState(false);
+  const [sensorConfigs, setSensorConfigs] = useState([]);
   const [modelInstance, setModelInstance] = useState(null);
-
-  const onSensorData = (config) => (sensorData) => {
-    console.log('sensorData', sensorData, 'config', config);
-  };
+  const [sensorData, setSensorData] = useState({});
+  const [clfRes, setClfRes] = useState(null);
 
   useEffect(() => {
     let blobURL = null;
@@ -326,7 +325,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
       const instance = await Module();
       console.log(instance);
 
-      setLoaded(true);
+      setWASMBlobLoaded(true);
       setModelInstance(instance);
     };
     f();
@@ -360,7 +359,16 @@ const ScreenTwo = ({ model, legalMatches }) => {
       });
     }
 
+    // sensorData: Record<string, number>
+    const onSensorData = (config) => (newData) => {
+      setSensorData((prev) => ({
+        ...prev,
+        [config.sensor.name]: { sensorName: config.sensor.name, data: newData },
+      }));
+    };
+
     console.log('sensor configgggggs', sensorConfigs);
+    setSensorConfigs(sensorConfigs);
 
     const f = async () => {
       for (const config of sensorConfigs) {
@@ -390,6 +398,22 @@ const ScreenTwo = ({ model, legalMatches }) => {
     };
   }, [legalMatches]);
 
+  useEffect(() => {
+    if (modelInstance) {
+      const payload = model.timeSeries.map((tsName) => {
+        const match = legalMatches[tsName];
+        const sensorName = match.sensor.name;
+        return sensorData[sensorName]?.data[match.component];
+      });
+
+      if (!payload.includes(undefined)) {
+        modelInstance._add_datapoint(...payload);
+        const prediction = modelInstance._predict();
+        setClfRes(prediction);
+      }
+    }
+  }, [legalMatches, model.timeSeries, modelInstance, sensorData]);
+
   if (!legalMatches) {
     return null;
   }
@@ -400,11 +424,63 @@ const ScreenTwo = ({ model, legalMatches }) => {
     <ModalBody>
       <Row>
         <Col>
-          <div>WASM Blob: {loaded ? 'Downloaded.' : 'In progress...'}</div>
           <div>
-            Model Instance: {!!modelInstance ? 'Loaded.' : 'In progress...'}
+            <b>WASM Blob:</b>{' '}
+            {wasmBlobLoaded ? 'Downloaded.' : 'In progress...'}
           </div>
-          <div>Sensors: </div>
+          <div>
+            <b>Model Instance:</b>{' '}
+            {!!modelInstance ? 'Loaded.' : 'In progress...'}
+          </div>
+          <div>
+            <b>Sensor Matching:</b>
+            <ul>
+              {sensorConfigs.map(({ sensor, matches }) => (
+                <li>
+                  {sensor.name}
+                  <ul>
+                    {matches.map(({ tsName, match }) => (
+                      <li>
+                        {match.shortComponent} → <b>{tsName}</b>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Col>
+        <Col>
+          <div>
+            <b>Sensor Data:</b>
+            <ul>
+              {sensorConfigs.map(({ sensor, matches }) => (
+                <li>
+                  {sensor.name}
+                  <ul>
+                    {matches
+                      .map(({ match }) => (
+                        <li>
+                          {match.shortComponent} →{' '}
+                          <b>
+                            {sensorData[sensor.name]?.data[match.component]}
+                          </b>
+                        </li>
+                      ))
+                      .filter((x) => x)}
+                  </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
+          {clfRes !== null ? (
+            <div>
+              <b>Classification:</b>{' '}
+              <Badge>
+                {model.pipeline.labels[clfRes]} ({clfRes})
+              </Badge>
+            </div>
+          ) : null}
         </Col>
       </Row>
       {/* <Row>
