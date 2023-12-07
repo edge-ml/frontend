@@ -29,6 +29,7 @@ import {
   faInfoCircle,
   faMicrochip,
   faCircleInfo,
+  faPlay,
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 
