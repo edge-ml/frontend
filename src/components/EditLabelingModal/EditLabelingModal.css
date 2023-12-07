@@ -9,8 +9,8 @@
   font-size: 13px;
 }
 
-.no-border-radius {
-  border-radius: 0 !important;
+.deleteBtnRadius {
+  border-radius: 0px 0.3rem 0.3rem 0px !important;
 }
 
 .edit-labeling-body .alert-danger {

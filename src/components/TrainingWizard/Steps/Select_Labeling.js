@@ -1,6 +1,4 @@
-import { useEffect, useState, Fragment } from 'react';
-import { Badge, Container, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { subscribeLabelingsAndLabels } from '../../../services/ApiServices/LabelingServices';
+import { Badge } from 'reactstrap';
 import '../index.css';
 import Checkbox from '../../../components/Common/Checkbox';
 import classNames from 'classnames';
@@ -10,6 +8,8 @@ import {
   EdgeMLTableEntry,
 } from '../../Common/EdgeMLTable';
 import { toggleElement } from '../../../services/helpers';
+import { useEffect } from 'react';
+import LabelBadge from '../../Common/LabelBadge';
 
 const Wizard_SelectLabeling = ({
   labelings,
@@ -18,9 +18,7 @@ const Wizard_SelectLabeling = ({
   selectedLabeling,
   toggleZeroClass,
   zeroClass,
-  onNext,
-  onBack,
-  footer,
+  validate,
 }) => {
   const countDatasets = (labeling) => {
     return datasets
@@ -29,8 +27,22 @@ const Wizard_SelectLabeling = ({
       .filter((elm) => elm === labeling._id).length;
   };
 
+  useEffect(() => {
+    console.log('ValidateInput');
+    validateInput();
+  }, [selectedLabeling, zeroClass]);
+
+  useEffect(() => {
+    console.log('Validate new');
+    validateInput();
+  }, []);
+
+  const validateInput = () => {
+    validate(selectedLabeling);
+  };
+
   return (
-    <Fragment>
+    <div className="p-2">
       <h3 className="font-weight-bold">1. Select Labeling</h3>
       <EdgeMLTable>
         <EdgeMLTableHeader>
@@ -66,7 +78,7 @@ const Wizard_SelectLabeling = ({
               <div className="labelingName">{labeling.name} </div>
               <div>
                 {labeling.labels.map((label) => (
-                  <Badge
+                  <LabelBadge
                     className="badge"
                     onClick={() =>
                       selectedLabeling?.disabledLabels &&
@@ -85,12 +97,17 @@ const Wizard_SelectLabeling = ({
                         : { backgroundColor: label.color }),
                       userSelect: 'none',
                     }}
-                    {...(selectedLabeling?.disabledLabels.includes(label._id)
-                      ? { color: 'light' }
-                      : {})}
+                    // {...(selectedLabeling?.disabledLabels.includes(label._id)
+                    //   ? { color: 'light' }
+                    //   : {})}
+                    color={
+                      selectedLabeling?.disabledLabels.includes(label._id)
+                        ? 'light'
+                        : ''
+                    }
                   >
                     {label.name}
-                  </Badge>
+                  </LabelBadge>
                 ))}
               </div>
               <div>{`(${countDatasets(labeling)} ${
@@ -99,7 +116,7 @@ const Wizard_SelectLabeling = ({
             </EdgeMLTableEntry>
           ))}
       </EdgeMLTable>
-    </Fragment>
+    </div>
   );
 };
 

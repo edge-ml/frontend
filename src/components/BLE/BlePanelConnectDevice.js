@@ -68,7 +68,8 @@ const renderDeviceInfo = (props) => {
       Installed version:{' '}
       <strong>{props.connectedDeviceData.installedFWVersion}</strong>
       <br />
-      Latest version: <strong>{props.latestEdgeMLVersion}</strong>
+      {props.basicEdgeMLArduinoFirmware &&
+        'Latest version:' + <strong>{props.latestEdgeMLVersion}</strong>}
     </div>
   );
 };
@@ -79,7 +80,8 @@ const getButtonView = (props) => {
   }
   if (
     (props.outdatedVersionInstalled || !props.isEdgeMLInstalled) &&
-    props.hasDFUFunction
+    props.hasDFUFunction &&
+    props.basicEdgeMLArduinoFirmware
   ) {
     return (
       <div>
@@ -94,7 +96,7 @@ const getButtonView = (props) => {
 
 function BlePanelConnectDevice(props) {
   return (
-    <div className="p-2">
+    <div className="m-2">
       <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
         <h4>1. Device</h4>
       </div>
@@ -122,24 +124,20 @@ function BlePanelConnectDevice(props) {
             }}
           >
             <div className="mr-2">{getButtonView(props)}</div>
-            <div>
-              <SpinnerButton
-                outline
-                loadingtext={
-                  props.connectedBLEDevice
-                    ? 'Disconnecting...'
-                    : 'Connecting...'
-                }
-                color={props.connectedBLEDevice ? 'danger' : 'primary'}
-                spinnercolor={props.connectedBLEDevice ? 'danger' : 'primary'}
-                loading={props.bleConnectionChanging}
-                onClick={props.toggleBLEDeviceConnection}
-              >
-                {props.connectedBLEDevice
-                  ? 'Disconnect device'
-                  : 'Connect device'}
-              </SpinnerButton>
-            </div>
+            <SpinnerButton
+              outline
+              loadingtext={
+                props.connectedBLEDevice ? 'Disconnecting...' : 'Connecting...'
+              }
+              color={props.connectedBLEDevice ? 'danger' : 'primary'}
+              spinnercolor={props.connectedBLEDevice ? 'danger' : 'primary'}
+              loading={props.bleConnectionChanging}
+              onClick={props.toggleBLEDeviceConnection}
+            >
+              {props.connectedBLEDevice
+                ? 'Disconnect device'
+                : 'Connect device'}
+            </SpinnerButton>
           </div>
         </div>
       </div>

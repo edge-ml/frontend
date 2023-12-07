@@ -30,8 +30,8 @@ const NotificationHandler = ({ onClose, isOpen }) => {
       <ModalHeader>Datasets</ModalHeader>
       <ModalBody>
         {console.log(activeNotifications)}
-        {activeNotifications.map((elm) => (
-          <Row className="mt-2">
+        {activeNotifications.map((elm, idx) => (
+          <Row className="mt-2" key={elm + idx}>
             <Col>
               <div>
                 <b>{elm.datasetName ? elm.datasetName : elm.projectName}</b>

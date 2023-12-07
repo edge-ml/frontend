@@ -27,6 +27,7 @@ export const TableEntry = ({ index, children }) => {
         className="datasetCard"
         style={{
           background: index % 2 === 1 ? 'rgb(249, 251, 252)' : '',
+          cursor: 'pointer',
         }}
       >
         {children}

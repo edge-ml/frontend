@@ -75,7 +75,7 @@ export const API_ENDPOINTS = {
 
 export const ML_ENDPOINTS = {
   MODELS: 'models',
-  TRAIN: 'train/',
+  TRAIN: 'train',
   TRAIN_ONGOING: 'train/ongoing',
   TRAINED_MODELS: 'models/trained',
   DEPLOY: 'deploy',
@@ -88,7 +88,7 @@ export const DATASET_STORE_ENDPOINTS = {
   LABELING: 'labelings/',
   CSV: 'download/',
   CREATE_DATASET: 'datasets/create',
-  GET_PROCESSING_PROGRESS: 'datasets/create/progress'
+  GET_PROCESSING_PROGRESS: 'datasets/create/progress',
 };
 
 export const generateApiRequest = (
