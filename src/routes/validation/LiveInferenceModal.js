@@ -419,8 +419,8 @@ const ScreenTwo = ({ model, legalMatches }) => {
       });
 
       if (!payload.includes(undefined)) {
-        modelInstance._add_datapoint(...payload);
-        const prediction = modelInstance._predict();
+        modelInstance.add_datapoint(...payload);
+        const prediction = modelInstance.predict();
         setClfRes(prediction);
       }
     }
@@ -489,7 +489,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
             <div>
               <b>Classification:</b>{' '}
               <Badge>
-                {model.pipeline.labels[clfRes]} ({clfRes})
+                {modelInstance.class_to_label(clfRes)} ({clfRes})
               </Badge>
             </div>
           ) : null}
