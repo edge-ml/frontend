@@ -15,6 +15,7 @@ import {
   Row,
   Col,
   Table,
+  Alert,
 } from 'reactstrap';
 import { useState, memo, useEffect } from 'react';
 import { faCross, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -291,6 +292,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
   const [modelInstance, setModelInstance] = useState(null);
   const [sensorData, setSensorData] = useState({});
   const [clfRes, setClfRes] = useState(null);
+  const [sensorErrors, setSensorErrors] = useState({});
 
   useEffect(() => {
     let blobURL = null;
@@ -367,6 +369,16 @@ const ScreenTwo = ({ model, legalMatches }) => {
       }));
     };
 
+    const onSensorError =
+      (sensor, isWarning = false) =>
+      (error) => {
+        console.log('Sensor error!');
+        setSensorErrors((prev) => ({
+          ...prev,
+          [sensor.name]: { error, isWarning },
+        }));
+      };
+
     console.log('sensor configgggggs', sensorConfigs);
     setSensorConfigs(sensorConfigs);
 
@@ -376,8 +388,8 @@ const ScreenTwo = ({ model, legalMatches }) => {
         console.log('sensor', sensor);
         sensor.removeAllListeners();
 
-        // sensor.on('warn', this._onSensorError(sensor, true));
-        // sensor.on('error', this._onSensorError(sensor));
+        sensor.on('warn', onSensorError(sensor, true));
+        sensor.on('error', onSensorError(sensor));
         sensor.on('data', onSensorData(config));
         await sensor.listen({
           ...(sensor.properties.fixedFrequency
@@ -481,6 +493,11 @@ const ScreenTwo = ({ model, legalMatches }) => {
               </Badge>
             </div>
           ) : null}
+          {Object.entries(sensorErrors).map(([comp, { error, isWarning }]) => (
+            <Alert color={isWarning ? 'warning' : 'danger'}>
+              <strong>{comp}</strong>: {error}
+            </Alert>
+          ))}
         </Col>
       </Row>
       {/* <Row>

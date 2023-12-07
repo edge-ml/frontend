@@ -13,7 +13,7 @@
   border-radius: 0 !important;
 }
 
-.alert-danger {
+.edit-labeling-body .alert-danger {
   color: red;
   background-color: transparent;
   border: none;

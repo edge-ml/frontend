@@ -351,7 +351,7 @@ class EditLabelingModal extends Component {
             ? 'Edit Labeling Set'
             : 'Add Labeling Set'}
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className="edit-labeling-body">
           <div className="d-flex flex-row align-items-center">
             <InputGroup>
               <InputGroupAddon addonType="prepend">
