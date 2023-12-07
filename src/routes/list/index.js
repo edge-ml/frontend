@@ -54,6 +54,8 @@ const ListPage = (props) => {
   const currentPageRef = useRef(currentPage);
   const pageSizeRef = useRef(pageSize);
   const selectedSortingRef = useRef(selectedSorting);
+  const selectedFilterRef = useRef(selectedFilter);
+  const selectedFilterParamsRef = useRef(selectedFilterParams);
 
   const location = useLocation();
   const history = useHistory();
@@ -206,9 +208,9 @@ const ListPage = (props) => {
       fetchDatasetets(
         0,
         pageSize,
-        selectedSorting,
-        selectedFilter,
-        selectedFilterParams
+        selectedSortingRef.current,
+        selectedFilterRef.current,
+        selectedFilterParamsRef.current
       );
     }
   }, [pageSize]);
@@ -217,11 +219,11 @@ const ListPage = (props) => {
     if (selectedSortingRef.current !== selectedSorting && ready) {
       selectedSortingRef.current = selectedSorting;
       fetchDatasetets(
-        currentPage,
-        pageSize,
+        currentPageRef.current,
+        pageSizeRef.current,
         selectedSorting,
-        selectedFilter,
-        selectedFilterParams
+        selectedFilterRef.current,
+        selectedFilterParamsRef.current
       );
     }
   }, [selectedSorting]);
@@ -231,10 +233,10 @@ const ListPage = (props) => {
       currentPageRef.current = currentPage;
       fetchDatasetets(
         currentPage,
-        pageSize,
-        selectedSorting,
-        selectedFilter,
-        selectedFilterParams
+        pageSizeRef.current,
+        selectedSortingRef.current,
+        selectedFilterRef.current,
+        selectedFilterParamsRef.current
       );
     }
   }, [currentPage]);
@@ -297,8 +299,6 @@ const ListPage = (props) => {
     setReady(true);
     setIsCreateNewDatasetOpen(false);
     setFilterModalOpen(false);
-    setSelectedFilter(undefined);
-    setSelectedFilterParams(undefined);
     resetDropdown();
   };
 
@@ -327,16 +327,18 @@ const ListPage = (props) => {
     return <Loader loading={!ready} />;
   }
 
-  const applyFilter = (currentFilter, currenFilterParams) => {
+  const applyFilter = (currentFilter, currentFilterParams) => {
     setSelectedFilter(currentFilter);
-    setSelectedFilterParams(currenFilterParams);
+    setSelectedFilterParams(currentFilterParams);
+    selectedFilterRef.current = currentFilter;
+    selectedFilterParamsRef.current = currentFilterParams;
     setCurrentPage(0);
     fetchDatasetets(
       0,
       pageSize,
       selectedSorting,
       currentFilter,
-      currenFilterParams
+      currentFilterParams
     );
   };
 

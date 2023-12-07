@@ -3,6 +3,8 @@ import { ListGroup, ListGroupItem, Badge } from 'reactstrap';
 import Checkbox from '../../../components/Common/Checkbox';
 
 const LabelingSetsFilter = ({
+  selectedFilter,
+  selectedFilterParams,
   labelings,
   currentFilterParams,
   setCurrentFilterParams,
@@ -11,9 +13,9 @@ const LabelingSetsFilter = ({
   const [targetLabelIds, setTargetLabelIds] = useState([]);
 
   useEffect(() => {
-    if (currentFilterParams !== undefined) {
-      setTargetLabelIds(currentFilterParams.target_label_ids);
-      setTargetLabelingIds(currentFilterParams.target_labeling_ids);
+    if (selectedFilter && selectedFilter.value === 'labelings') {
+      setTargetLabelIds(selectedFilterParams.target_label_ids);
+      setTargetLabelingIds(selectedFilterParams.target_labeling_ids);
     } else {
       const _currentFilterParams = {};
       _currentFilterParams.target_label_ids = [];

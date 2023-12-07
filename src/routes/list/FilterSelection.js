@@ -52,6 +52,8 @@ const FilterSelectionModal = ({
       case 'labelings':
         return (
           <LabelingSetsFilter
+            selectedFilter={selectedFilter}
+            selectedFilterParams={selectedFilterParams}
             labelings={labelings}
             currenFilterParams={currenFilterParams}
             setCurrentFilterParams={setCurrentFilterParams}
