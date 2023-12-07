@@ -86,7 +86,11 @@ const TimeSeriesSelectingSensorComponent = ({
         {remainingTimeseries.map((tsName) => (
           <DropdownItem
             onClick={() =>
-              onTimeseriesSelect(tsName, { sensor, component, shortComponent })
+              onTimeseriesSelect(tsName, {
+                sensorName: sensor.name,
+                component,
+                shortComponent,
+              })
             }
           >
             {tsName}
@@ -118,7 +122,16 @@ const ScreenOne = memo(
 
     const sensors = SUPPORTED_SENSORS;
 
-    const setMatch = mergeSingle(setTsMatches, tsMatches);
+    const setMatch = (tsName, { sensorName, component, shortComponent }) => {
+      setTsMatches((prev) => ({
+        ...prev,
+        [tsName]: {
+          sensor: sensors.find((s) => s.name === sensorName),
+          component,
+          shortComponent,
+        },
+      }));
+    };
 
     const legalMatches = objMap(tsMatches, (triplet) =>
       triplet && selectedSensors[triplet.sensor.name] ? triplet : null
@@ -295,14 +308,21 @@ const ScreenTwo = ({ model, legalMatches }) => {
       // import(blobURL).then((Module) => {
       //   console.log(Module);
       // })
+
+      if (typeof Module !== 'undefined') {
+        // eslint-disable-next-line no-global-assign
+        Module = undefined;
+      }
+
       script = document.createElement('script');
       script.src = blobURL;
       document.body.appendChild(script);
 
-      // disgusting, but we use script, so wait for it to load first
-      await delay(1000);
+      while (typeof Module === 'undefined') {
+        await delay(100);
+      }
 
-      console.log('waited 1000ms for Module', Module);
+      console.log('emscripten Module', Module);
       const instance = await Module();
       console.log(instance);
 
@@ -314,7 +334,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
     return () => {
       if (script) {
         script.remove();
-        // global
+        // eslint-disable-next-line no-global-assign
         Module = undefined;
       }
       if (blobURL) URL.revokeObjectURL(blobURL);
