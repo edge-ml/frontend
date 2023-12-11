@@ -19,6 +19,7 @@ import {
   Col,
 } from 'reactstrap';
 import DownloadModal from './DownloadModal';
+import LiveInferenceModal from './LiveInferenceModal';
 import { Table, TableEntry } from '../../components/Common/Table';
 import Checkbox from '../../components/Common/Checkbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -28,6 +29,7 @@ import {
   faInfoCircle,
   faMicrochip,
   faCircleInfo,
+  faPlay,
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 
@@ -38,7 +40,9 @@ const ValidationPage = () => {
   const [modalModel, setModalModel] = useState(undefined);
   const [modelDownload, setModelDownload] = useState(undefined);
   const [modelDeploy, setModelDeploy] = useState(undefined);
+  const [modelLiveInference, setModelLiveInference] = useState(undefined);
   const [deployModalOpen, setDeployModalOpen] = useState(false);
+  const [liveInferenceModalOpen, setLiveInferenceModalOpen] = useState(false);
   const [selectedModels, setSelectedModels] = useState([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [updateModels, setUpdateModels] = useState(false);
@@ -305,6 +309,18 @@ const ValidationPage = () => {
                                   icon={faMicrochip}
                                 ></FontAwesomeIcon>
                               </Button>
+                              <Button
+                                className="btn-edit mr-3 mr-md-4"
+                                onClick={(e) => {
+                                  setModelLiveInference(model);
+                                  setLiveInferenceModalOpen(true);
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faPlay}
+                                ></FontAwesomeIcon>
+                              </Button>
                             </div>
                           ) : (
                             <div>
@@ -352,6 +368,15 @@ const ValidationPage = () => {
                 setDeployModalOpen(false);
               }}
             ></DeployModal>
+          ) : null}
+          {liveInferenceModalOpen ? (
+            <LiveInferenceModal
+              model={modelLiveInference}
+              onClose={() => {
+                setModelLiveInference(undefined);
+                setLiveInferenceModalOpen(false);
+              }}
+            ></LiveInferenceModal>
           ) : null}
         </Fragment>
       </div>

@@ -31,12 +31,20 @@ export class WebSensorApiSensor extends EventEmitter {
     this.stop();
 
     // const clVal = setInterval(() => {
-    //     this.emit('data', this._mapComponents(this, {x: Math.random() * 100, y: Math.random() * 100, z: Math.random() * 100}), {
-    //         timestamp: Date.now()
-    //     })
-    // }, 1000 / opts.frequency)
+    //   this.emit(
+    //     'data',
+    //     this._mapComponents(this, {
+    //       x: Math.random() * 100,
+    //       y: Math.random() * 100,
+    //       z: Math.random() * 100,
+    //     }),
+    //     {
+    //       timestamp: Date.now(),
+    //     }
+    //   );
+    // }, 1000 / opts.frequency);
 
-    // this._sensor = { stop: () => clearInterval(clVal) }
+    // this._sensor = { stop: () => clearInterval(clVal) };
 
     // return;
     try {

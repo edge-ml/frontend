@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { SensorList } from './SensorList';
+import { SensorList } from '../../components/SensorList/SensorList';
 import { UploadWebView } from './UploadWebView';
 
 import { SUPPORTED_SENSORS } from '../../services/WebSensorServices';

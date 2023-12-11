@@ -17,13 +17,20 @@ export const getPlatformCode = function (modelId, format) {
   });
 };
 
-export const downloadDeploymentModel = function (modelId, format) {
+export const downloadDeploymentModel = function (
+  modelId,
+  format,
+  compileWasm = false,
+  wasmSingleFile = false
+) {
   return new Promise((resolve, reject) => {
     axios({
       ...apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + modelId + '/download/' + format
+        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + modelId + '/download/' + format,
+        null,
+        { compile_wasm: compileWasm, wasm_single_file: wasmSingleFile }
       ),
       responseType: 'blob',
     })
