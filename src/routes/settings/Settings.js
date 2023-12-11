@@ -293,8 +293,8 @@ class Settings extends Component {
 
   mapOptions() {
     return this.state.visibleOptions.map((option) => (
-      <div key={option.header.name} className="mt-5 mb-2">
-        <h3>{option.header.name}</h3>
+      <div key={option.header.name} className="mt-4 mb-2">
+        <h5 className="font-weight-bold">{option.header.name}</h5>
         <div>
           {option.values.map((value) => {
             if (value.isModal) {
@@ -390,7 +390,7 @@ class Settings extends Component {
     }
     return (
       <Container className="my-5">
-        <h2>{'Project Settings'}</h2>
+        <h4 className="font-weight-bold">{'PROJECT SETTINGS'}</h4>
         {this.mapOptions()}
         <Prompt
           when={changes}

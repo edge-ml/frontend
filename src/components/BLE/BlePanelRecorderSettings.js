@@ -42,7 +42,7 @@ function BlePanelRecorderSettings(props) {
 
   return (
     <div
-      className="mr-2"
+      className="m-2"
       style={props.disabled ? { opacity: '0.4', pointerEvents: 'none' } : null}
     >
       <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
@@ -92,6 +92,7 @@ function BlePanelRecorderSettings(props) {
           }}
         >
           <SpinnerButton
+            className="mr-2"
             outline
             style={
               buttonErrorAnimate

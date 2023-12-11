@@ -36,3 +36,10 @@
   outline: none;
   box-shadow: none !important;
 }
+
+.editButton {
+  display: flex;
+  justify-content: end;
+  bottom: 8px;
+  right: 0px;
+}

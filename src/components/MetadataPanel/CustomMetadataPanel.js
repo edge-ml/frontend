@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   Card,
   InputGroup,
@@ -39,21 +39,23 @@ class CustomMetadataPanel extends Component {
   }
 
   onSave(newMetaData) {
+    console.log('ONSAVE');
     const metaDataAsObj = {};
     newMetaData
       .filter((elm) => elm.key !== '')
       .forEach((elm) => {
         metaDataAsObj[elm.key] = elm.data;
       });
+    console.log(newMetaData);
     this.props.onUpdateMetaData({ metaData: metaDataAsObj });
     this.setState({
       editModalOpen: false,
     });
   }
-
+  //
   additionalMetaData() {
     return Object.keys(this.props.metaData).map((key) => (
-      <div className="customMetaDataItem">
+      <div className="customMetaDataItem mx-2">
         <div className="customMetaDataItem_key">{key}</div>
         <div className="customMetaDataItem_value">
           {this.props.metaData[key]}
@@ -64,27 +66,21 @@ class CustomMetadataPanel extends Component {
 
   render() {
     return (
-      <div>
-        <div className="sidepanel-card">
-          <div className="sidepanel-heading">
-            <h5>Custom Metadata</h5>
-          </div>
-          <CardBody>
-            {Object.keys(this.props.metaData).length ? (
-              <div>
-                <div>{this.additionalMetaData()}</div>
-              </div>
-            ) : (
-              <div>No custom metadata</div>
-            )}
-          </CardBody>
-          <div>
-            <div className="text-right">
-              <Button color="primary" size="sm" onClick={this.onEdit}>
-                + Edit
-              </Button>
-            </div>
-          </div>
+      <>
+        <div className="sidepanel-heading mt-5">
+          <h4>Custom Metadata</h4>
+        </div>
+        <div style={{ overflowY: 'auto' }}>
+          {Object.keys(this.props.metaData).length ? (
+            this.additionalMetaData()
+          ) : (
+            <div className="m-2">No custom metadata</div>
+          )}
+        </div>
+        <div className="m-2 d-flex justify-content-end">
+          <Button color="primary" size="sm" onClick={this.onEdit}>
+            + Edit
+          </Button>
         </div>
         <MetaDataEditModal
           onClose={this.onCancelEdit}
@@ -92,7 +88,7 @@ class CustomMetadataPanel extends Component {
           isOpen={this.state.editModalOpen}
           metaData={this.props.metaData}
         ></MetaDataEditModal>
-      </div>
+      </>
     );
   }
 }

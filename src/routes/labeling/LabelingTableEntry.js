@@ -3,6 +3,7 @@ import { Row, Col, Button, Badge } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import Checkbox from '../../components/Common/Checkbox';
+import LabelBadge from '../../components/Common/LabelBadge';
 const LabelingTableEntry = (props) => {
   const labeling = props.labeling;
   return (
@@ -43,7 +44,7 @@ const LabelingTableEntry = (props) => {
               </Col>
               <Col className="d-flex flex-nowrap col-2 align-self-center justify-content-end">
                 <Button
-                  className="btn-delete mr-2"
+                  className="btn-delete t mr-3 mr-md-4"
                   onClick={(e) =>
                     props.onClickDeleteLabelingIcon(labeling['_id'])
                   }
@@ -88,17 +89,9 @@ const Labeling = (props) => {
       <div className="mr-2 badgeSize pb-2 mt-2 mb-2">
         {labels.map((label, index) => {
           return (
-            <Badge
-              key={label._id}
-              className={
-                label.name === ''
-                  ? 'font-italic font-weight-normal badgeSize mx-1 border border-dark'
-                  : 'badgeSize mx-1 my-1 border border-dark'
-              }
-              style={{ backgroundColor: label.color }}
-            >
+            <LabelBadge key={label._id} color={label.color}>
               {label.name !== '' ? label.name : 'Untitled'}{' '}
-            </Badge>
+            </LabelBadge>
           );
         })}
       </div>

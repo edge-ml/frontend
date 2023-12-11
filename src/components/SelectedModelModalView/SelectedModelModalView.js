@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 
 import {
   Modal,
@@ -11,14 +11,12 @@ import {
   Col,
 } from 'reactstrap';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
-
-import { humanFileSize, toPercentage } from '../../services/helpers';
 import ConfusionMatrixView from '../ConfusionMatrix/ConfusionMatrixView';
-import { CrossValidationTable } from './CrossValidationTable';
 import Loader from '../../modules/loader';
-import { Collapse } from 'react-bootstrap/lib/Navbar';
+
+import './index.css';
+import classNames from 'classnames';
+import LabelBadge from '../Common/LabelBadge';
 
 export const SelectedModelModalView = ({
   model,
@@ -29,6 +27,11 @@ export const SelectedModelModalView = ({
   onButtonDownload,
   ...props
 }) => {
+  const metrics = model
+    ? model.pipeline.selectedPipeline.steps.filter(
+        (elm) => elm.type === 'EVAL'
+      )[0].options.metrics
+    : null;
   return (
     <Modal isOpen={model} size="xl" toggle={onClosed} {...props}>
       <Loader loading={!model}>
@@ -36,19 +39,52 @@ export const SelectedModelModalView = ({
           <div>
             <ModalHeader>Model: {model.name}</ModalHeader>
             <ModalBody>
-              <General_info
-                model={model}
-                onButtonDeploy={onButtonDeploy}
-                onButtonDownload={onButtonDownload}
-              ></General_info>
-              <PerformanceInfo model={model}></PerformanceInfo>
+              <div className="d-flex justify-content-between w-100">
+                <div className="d-flex justify-content-start">
+                  <General_info
+                    model={model}
+                    onButtonDeploy={onButtonDeploy}
+                    onButtonDownload={onButtonDownload}
+                  ></General_info>
+                  <PerformanceInfo metrics={metrics.metrics}></PerformanceInfo>
+                </div>
+                <div>
+                  <Button className="mr-auto" onClick={() => {}} color="danger">
+                    Delete
+                  </Button>
+                </div>
+              </div>
+              <div className="my-5 d-flex justify-content-start align-items-center">
+                <Classification_report
+                  report={metrics.classification_report}
+                ></Classification_report>
+                <ConfusionMatrixView
+                  matrix={JSON.parse(metrics.confusion_matrix)}
+                  labels={model.labels.map((elm) => elm.name)}
+                ></ConfusionMatrixView>
+              </div>
+              <Training_config model={model}></Training_config>
             </ModalBody>
-            <ModalFooter>
-              {onDelete ? (
-                <Button className="mr-auto" onClick={onDelete} color="danger">
-                  Delete
+            <ModalFooter className="justify-content-between">
+              <div>
+                <Button
+                  className="mr-2"
+                  onClick={(e) => {
+                    onButtonDownload(model);
+                    e.stopPropagation();
+                  }}
+                >
+                  Download
                 </Button>
-              ) : null}
+                <Button
+                  onClick={(e) => {
+                    onButtonDeploy(model);
+                    e.stopPropagation();
+                  }}
+                >
+                  Deploy
+                </Button>
+              </div>
               <Button onClick={onClosed}>Close</Button>
             </ModalFooter>
           </div>
@@ -69,38 +105,32 @@ const General_info = ({
       <h5>
         <b>General information</b>
       </h5>
-      <div className="d-flex justify-content-between m-2">
-        <div>
-          <div>
-            <b>Name</b>: {model.name}
-          </div>
-          <div>
-            <b>Classifier</b>: {model.pipeline.classifier.name}
-          </div>
-          <div>
-            <b>Used labels</b>: TODO
-          </div>
-        </div>
-        <div>
-          <Button
-            className="mr-2"
-            onClick={(e) => {
-              onButtonDownload(model);
-              e.stopPropagation();
-            }}
-          >
-            Download
-          </Button>
-          <Button
-            onClick={(e) => {
-              onButtonDeploy(model);
-              e.stopPropagation();
-            }}
-          >
-            Deploy
-          </Button>
-        </div>
-      </div>
+      <Row>
+        <Col className="col-auto">
+          <Table borderless size="sm" striped>
+            <tbody>
+              <tr>
+                <th>Name</th>
+                <td>{model.name}</td>
+              </tr>
+              <tr>
+                <th>Pipeline</th>
+                <td>{model.pipeline.selectedPipeline.name}</td>
+              </tr>
+
+              <tr>
+                <th>Used labels</th>
+                <td>
+                  {model.labels.map((elm, index) => (
+                    <LabelBadge color={elm.color}>{elm.name}</LabelBadge>
+                  ))}
+                </td>
+              </tr>
+            </tbody>
+          </Table>
+        </Col>
+        <Col></Col>
+      </Row>
     </div>
   );
 };
@@ -110,6 +140,9 @@ const Classification_report = ({ report }) => {
   const metrics = Object.keys(report[keys[0]]);
   return (
     <div>
+      <h5>
+        <b>Classification report</b>
+      </h5>
       <Table borderless size="sm" striped>
         <thead>
           <tr>
@@ -135,95 +168,66 @@ const Classification_report = ({ report }) => {
 };
 
 const Training_config = ({ model }) => {
-  const { windower, featureExtractor, normalizer, classifier } = model.pipeline;
+  const [selectedStep, setSelectedStep] = useState(
+    model.pipeline.selectedPipeline.steps[0]
+  );
 
-  const Advanced_params = ({ params }) => {
-    const [isOpen, setIsOpen] = useState(false);
-
-    const toggle = () => setIsOpen(!isOpen);
-
-    if (params.filter((elm) => elm.is_advanced).length === 0) {
-      return <div></div>;
-    }
-
+  const Render_Step = (step) => {
     return (
-      <div>
-        <div className="cursor-pointer" onClick={toggle}>
-          <FontAwesomeIcon
-            icon={isOpen ? faCaretDown : faCaretRight}
-          ></FontAwesomeIcon>
-          <div className="d-inline ml-1">Advanced Parameters</div>
+      <div className="training_step_container">
+        <div
+          className={classNames('training_step', {
+            training_step_selected: step.name === selectedStep.name,
+          })}
+          onClick={() => onClickStep(step)}
+        >
+          <div>{step.name}</div>
         </div>
-        {isOpen ? (
-          <div className="ml-3">
-            {params &&
-              params
-                .filter((elm) => elm.is_advanced)
-                .map((param) => {
-                  return (
-                    <div>
-                      {param.name}: {param.value}
-                    </div>
-                  );
-                })}
+        {step.name == selectedStep.name ? (
+          <div className="d-flex justify-content-center">
+            <div className="v_line"></div>
           </div>
         ) : null}
       </div>
     );
   };
 
-  const Detail_view = ({ stage }) => {
-    console.log(stage.parameters);
-    return (
-      <div>
-        <div>Method: {stage.name}</div>
-        {stage.parameters &&
-          stage.parameters
-            .filter((elm) => !elm.is_advanced)
-            .map((param) => {
-              return (
-                <div>
-                  {param.name}: {param.value}
-                </div>
-              );
-            })}
-        <Advanced_params params={stage.parameters}></Advanced_params>
-      </div>
-    );
+  const onClickStep = (step) => {
+    setSelectedStep(step);
   };
 
   return (
-    <div className="mt-3">
+    <Fragment>
       <h5>
-        <b>Training configuration</b>
+        <b>Pipeline configuration</b>
       </h5>
-      <div className="d-flex justify-content-between">
-        <div className="m-2">
-          <h6 className="text-center">
-            <b>Windowing</b>
-          </h6>
-          <Detail_view stage={windower}></Detail_view>
-        </div>
-        <div className="m-2">
-          <h6 className="text-center">
-            <b>Feature Extraction</b>
-          </h6>
-          <Detail_view stage={featureExtractor}></Detail_view>
-        </div>
-        <div className="m-2">
-          <h6 className="text-center">
-            <b>Normalizer</b>
-          </h6>
-          <Detail_view stage={normalizer}></Detail_view>
-        </div>
-        <div className="m-2">
-          <h6 className="text-center">
-            <b>Classifier</b>
-          </h6>
-          <Detail_view stage={classifier}></Detail_view>
-        </div>
+      <div className="d-flex justify-content-start">
+        {model.pipeline.selectedPipeline.steps
+          .filter((elm) => elm.type === 'PRE' || elm.type === 'CORE')
+          .map((elm) => Render_Step(elm, onClickStep))}
       </div>
-    </div>
+
+      <div className="mx-2 borderTop p-2">
+        {/* <h5>
+          <b>{selectedStep.name}</b>
+        </h5> */}
+        <div>
+          <b>Method: </b>
+          {selectedStep.options.name}
+        </div>
+        {selectedStep.options.parameters.length > 0 ? (
+          <div>
+            <b>Parameters: </b>
+            {selectedStep.options.parameters.map((param) => (
+              <div>
+                <span>{param.name}: </span>
+                <span>{param.value}</span>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </Fragment>
   );
 };
 
@@ -232,34 +236,34 @@ const metric = (metric) => {
   return isNaN(val) ? '' : val;
 };
 
-const PerformanceInfo = ({ model }) => {
-  const metrics = model.evaluator.metrics;
+const PerformanceInfo = ({ metrics }) => {
   return (
-    <div className="my-4">
+    <div>
       <h5>
-        <b>Performance metrics</b>
+        <b>Metrics</b>
       </h5>
-      <div className="ml-2">
-        <div>
-          <b>Accuracy</b>: {metric(metrics.accuracy_score)}
-        </div>
-        <div>
-          <b>Precision</b>: {metric(metrics.precision_score)}
-        </div>
-        <div>
-          <b>Recall</b>: {metric(metrics.recall_score)}
-        </div>
-      </div>
-      <div className="d-flex align-items-center m-2">
-        <Classification_report
-          report={metrics.classification_report}
-        ></Classification_report>
-        <ConfusionMatrixView
-          matrix={JSON.parse(metrics.confusion_matrix)}
-          labels={model.pipeline.labels}
-        ></ConfusionMatrixView>
-      </div>
-      <Training_config model={model}></Training_config>
+      <Table borderless size="sm" striped style={{ width: '150px' }}>
+        <tbody>
+          <tr>
+            <td>
+              <b>Accuracy</b>
+            </td>
+            <td>{metric(metrics.accuracy_score)}%</td>
+          </tr>
+          <tr>
+            <td>
+              <b>Precision</b>
+            </td>
+            <td>{metric(metrics.precision_score)}%</td>
+          </tr>
+          <tr>
+            <td>
+              <b>Recall</b>
+            </td>
+            <td>{metric(metrics.recall_score)}%</td>
+          </tr>
+        </tbody>
+      </Table>
     </div>
   );
 };

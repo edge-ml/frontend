@@ -430,7 +430,7 @@ div.card {
   color: rgb(213, 63, 140);
 }
 
-.btn-download-all {
+.btn-neutral {
   background-color: white;
   border-color: rgb(230, 230, 234);
   color: rgb(34, 41, 51);
@@ -471,4 +471,22 @@ div.card {
 
 .edgeml-fade-one {
   background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
+}
+
+.edgeml-border {
+  border: 2px solid rgb(230, 230, 234);
+  border-radius: 0px 0px 10px 10px;
+  overflow: hidden;
+}
+
+.hover-bigger {
+  transition: transform 0.3s ease-in-out;
+}
+
+.hover-bigger:hover {
+  transform: scale(1.01);
+}
+
+.child-gap > * {
+  margin: 2px;
 }

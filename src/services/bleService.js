@@ -24,6 +24,7 @@ export const parseData = (sensor, data) => {
         (data.getUint16(dataIndex + 2, true) << 16);
       size = 4;
     } else if (valueType == 'int16') {
+      console.log(data);
       value = data.getInt16(dataIndex, true) * scale;
       size = 2;
     } else if (valueType == 'float') {

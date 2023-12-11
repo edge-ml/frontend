@@ -1,27 +1,13 @@
 import React, { Component } from 'react';
-import Highcharts, { animObject } from 'highcharts/highstock';
+import Highcharts from 'highcharts/highstock';
 import HighchartsReact from 'highcharts-react-official';
 
 import './TimeSeriesPanel.css';
-import { debounce } from '../../services/helpers';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faSearchPlus,
-  faSearchMinus,
-  faCog,
-} from '@fortawesome/free-solid-svg-icons';
-import {
-  Button,
-  Collapse,
-  Fade,
-  Input,
-  InputGroup,
-  Popover,
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledTooltip,
-} from 'reactstrap';
+import { Collapse, Fade } from 'reactstrap';
+import ChartSettings from './ChartSettings';
+
+import classNames from 'classnames';
 
 const prefixLeftPlotLine = 'plotLine_left_';
 const prefixRightPlotLine = 'plotLine_right_';
@@ -79,6 +65,8 @@ class TimeSeriesPanel extends Component {
     this.zoom = this.zoom.bind(this);
     this.mouseDown = false;
     this.changeNavigator = false;
+
+    this.compontentRef = React.createRef();
   }
 
   componentWillReceiveProps(props) {
@@ -123,7 +111,7 @@ class TimeSeriesPanel extends Component {
     }
     const container = this.chart.current.container.current;
 
-    container.style.height = this.props.index === 0 ? '80px' : '200px';
+    container.style.height = this.props.index !== 0 ? '200px' : '70px';
     container.style.width = '100%';
 
     this.chart.current.chart.reflow();
@@ -134,21 +122,6 @@ class TimeSeriesPanel extends Component {
     }
   }
 
-  // updateData = debounce((chart, min, max, width, offset) => {
-  //   if (this.props.onTimeSeriesWindow) {
-  //     // FIXME: this doesn't really work with fusedSeries, ignore them for now
-
-  //     chart.showLoading('Loading data from server...');
-  //     this.props
-  //       .onTimeSeriesWindow(Math.round(min), Math.round(max), Math.round(width))
-  //       .then((timeserie) => {
-  //         // FIXME: offset/series[0] cause problem with fusedSeries, ignore for now
-  //         chart.series[0].setData(timeserie, true, false);
-  //         chart.hideLoading();
-  //       });
-  //   }
-  // }, 200);
-
   afterSetExtremesFunc(min, max, width) {
     if (this.chart && this.chart.current && this.chart.current.chart) {
       const chart = this.chart.current.chart;
@@ -156,10 +129,13 @@ class TimeSeriesPanel extends Component {
         chart.showLoading('Loading from server...');
       }
       this.props
-        .onTimeSeriesWindow(Math.round(min), Math.round(max), Math.round(width))
+        .onTimeSeriesWindow(Math.floor(min), Math.floor(max), Math.round(width))
         .then((ts) => {
+          if (!chart.series) {
+            return;
+          }
           chart.series[0].setData(ts, false, false);
-          chart.xAxis[0].setExtremes(min, max, true, false);
+          //chart.xAxis[0].setExtremes(min, max, true, false);
           chart.hideLoading();
           chart.redraw(true);
         });
@@ -168,7 +144,10 @@ class TimeSeriesPanel extends Component {
 
   generateState(props) {
     return {
+      popupOpen: false,
+      height: '200px',
       chartOptions: {
+        height: '200px',
         navigator: {
           maskFill: '#0080ff22',
           enabled: this.props.index === 0,
@@ -215,10 +194,7 @@ class TimeSeriesPanel extends Component {
                     props.unit === ''
                       ? props.name
                       : props.name + ' (' + props.unit + ')',
-                  data: props.data.map((timeAndVal) => [
-                    timeAndVal[0],
-                    timeAndVal[1] * props.scale + props.offset,
-                  ]),
+                  data: props.data,
                   lineWidth: 1.5,
                   enableMouseTracking: false,
                 },
@@ -230,10 +206,7 @@ class TimeSeriesPanel extends Component {
                     ' (' +
                     props.unit[indexOuter] +
                     ')',
-                  data: props.data.map((timeAndVal) => [
-                    timeAndVal[0],
-                    timeAndVal[1] * props.scale + props.offset,
-                  ]),
+                  data: props.data,
                   lineWidth: 1.5,
                   enableMouseTracking: false,
                 };
@@ -288,7 +261,6 @@ class TimeSeriesPanel extends Component {
             },
           },
         },
-        height: '200px',
         yAxis: {
           height: this.props.index === 0 ? 0 : undefined,
           gridLineWidth: this.props.index === 0 ? 0 : 1,
@@ -339,6 +311,11 @@ class TimeSeriesPanel extends Component {
    * Global Mouse Handlers
    */
   onMouseDown(e) {
+    console.log('mouse down');
+    if (this.state.popupOpen) {
+      console.log('popup open');
+      return;
+    }
     this.mouseDown = true;
     if (this.props.index === 0) return;
     var plotBand = this.getSelectedPlotBand();
@@ -501,6 +478,7 @@ class TimeSeriesPanel extends Component {
     const offset =
       -this.chart.current.container.current.getBoundingClientRect().left;
 
+    console.log(activePlotLine);
     activePlotLine.options.isActive = false;
 
     // Clip between neighbours
@@ -817,14 +795,15 @@ class TimeSeriesPanel extends Component {
   }
 
   scroll(direction) {
-    const width =
-      this.chart.current.chart.xAxis[0].max -
-      this.chart.current.chart.xAxis[0].min +
-      1;
+    var min = this.chart.current.chart.xAxis[0].min;
+    var max = this.chart.current.chart.xAxis[0].max;
+
+    const width = max - min + 1;
+
     const sign = direction === ScrollDirection.LEFT ? -1 : 1;
     this.chart.current.chart.xAxis[0].setExtremes(
-      this.chart.current.chart.xAxis[0].min + sign * width * scrollFactor,
-      this.chart.current.chart.xAxis[0].max + sign * width * scrollFactor
+      min + sign * width * scrollFactor,
+      max + sign * width * scrollFactor
     );
   }
 
@@ -834,10 +813,20 @@ class TimeSeriesPanel extends Component {
       this.chart.current.chart.xAxis[0].min +
       1;
     const sign = direction === ZoomDirection.IN ? 1 : -1;
-    this.chart.current.chart.xAxis[0].setExtremes(
-      this.chart.current.chart.xAxis[0].min + sign * width * zoomFactor,
+
+    console.log('zoom');
+    console.log(sign, width, zoomFactor, sign * width * zoomFactor);
+
+    const newMin = Math.floor(
+      this.chart.current.chart.xAxis[0].min + sign * width * zoomFactor
+    );
+    const newMax = Math.floor(
       this.chart.current.chart.xAxis[0].max - sign * width * zoomFactor
     );
+
+    console.log(newMin, newMax);
+
+    this.chart.current.chart.xAxis[0].setExtremes(newMin, newMax);
   }
 
   render() {
@@ -849,163 +838,26 @@ class TimeSeriesPanel extends Component {
       return <div className="noDataLabel">{this.props.name}: No data</div>;
     }
 
+    console.log(this.props);
     return (
-      <div
-        className="mt-2"
-        style={{
-          position: 'relative',
-          overflow: 'visible',
-          marginBottom:
-            this.props.index === 0
-              ? 0
-              : this.props.index < this.props.numSeries - 1
-              ? '-25px'
-              : '-10px',
-        }}
-      >
-        {this.props.index !== 0 && !this.props.isEmpty ? (
-          <div className="chartMenuWrapper">
-            <button
-              className="chartBtn"
-              style={{ marginRight: '1px' }}
-              key={'unitMenuButton' + this.props.index}
-              id={'unitMenuButton' + this.props.index}
-              onClick={(e) => this.props.toggleUnitMenu()}
-            >
-              <FontAwesomeIcon icon={faCog} size="xs" color="#999999" />
-            </button>
-            <Popover
-              target={'unitMenuButton' + this.props.index}
-              isOpen={this.props.isUnitMenuOpen}
-              toggle={(e) => this.props.toggleUnitMenu()}
-              trigger="legacy"
-            >
-              <PopoverHeader className="text-center">
-                Configuration
-              </PopoverHeader>
-              <PopoverBody id="scalingConfigMenu">
-                <InputGroup size="sm">
-                  <div className="input-group-prepend w-25">
-                    <span className="input-group-text w-100 justify-content-center">
-                      Unit
-                    </span>
-                  </div>
-                  <Input
-                    type="text"
-                    value={this.props.unit}
-                    onChange={(e) =>
-                      this.props.handleUnitChange(e.target.value)
-                    }
-                  />
-                </InputGroup>
-                <InputGroup size="sm">
-                  <div className="input-group-prepend w-25">
-                    <span className="input-group-text w-100 justify-content-center">
-                      Scale
-                    </span>
-                  </div>
-                  <Input
-                    type="number"
-                    value={this.props.scale}
-                    onChange={(e) =>
-                      this.props.handleScaleChange(e.target.value)
-                    }
-                  />
-                </InputGroup>
-                <InputGroup size="sm">
-                  <div className="input-group-prepend w-25">
-                    <span className="input-group-text w-100 justify-content-center">
-                      Offset
-                    </span>
-                  </div>
-                  <Input
-                    type="number"
-                    value={this.props.offset}
-                    onChange={(e) =>
-                      this.props.handleOffsetChange(e.target.value)
-                    }
-                  />
-                </InputGroup>
-                <div
-                  className="d-flex justify-content-end"
-                  id="scalingSaveButtonWrapper"
-                >
-                  <Button
-                    color="primary"
-                    id="scalingSaveButton"
-                    onClick={(e) =>
-                      this.props.handleConfigSave(
-                        this.props.unit,
-                        this.props.scale,
-                        this.props.offset
-                      )
-                    }
-                  >
-                    Save
-                  </Button>
-                  <UncontrolledTooltip
-                    target="scalingSaveButton"
-                    placement="left"
-                    container="scalingConfigMenu"
-                    arrowClassName="mr-0 border-white bg-transparent"
-                  >
-                    Saves the configuration in the database
-                  </UncontrolledTooltip>
-                </div>
-              </PopoverBody>
-            </Popover>
-            <button
-              className="chartBtn"
-              style={{ marginRight: '1px' }}
-              onClick={(e) => this.zoom(ZoomDirection.OUT)}
-              key={'zoomOutButton' + this.props.index}
-            >
-              <FontAwesomeIcon icon={faSearchMinus} size="xs" color="#999999" />
-            </button>
-            <button
-              className="chartBtn"
-              onClick={(e) => this.zoom(ZoomDirection.IN)}
-              key={'zoomInButton' + this.props.index}
-            >
-              <FontAwesomeIcon icon={faSearchPlus} size="xs" color="#999999" />
-            </button>
-          </div>
-        ) : null}
-        {this.props.index !== 0 && !this.props.isEmpty ? (
-          <div>
-            <button
-              className="scrollBtn scrollBtnLeft"
-              onClick={(e) => this.scroll(ScrollDirection.LEFT)}
-            >
-              &lt;
-            </button>
-            <button
-              className="scrollBtn scrollBtnRight"
-              onClick={(e) => this.scroll(ScrollDirection.RIGHT)}
-            >
-              &gt;
-            </button>
-          </div>
-        ) : null}
-        <div className="chartWrapper" onMouseDown={this.onMouseDown}>
+      <div style={{ position: 'relative' }} ref={this.compontentRef}>
+        <div
+          className={classNames('chartWrapper', {
+            'chartWrapper-height': this.props.index !== 0,
+          })}
+          onMouseDown={this.onMouseDown}
+        >
           {this.props.index !== 0 ? (
             <div className="font-weight-bold d-flex">
-              {this.props.originalUnit === ''
-                ? this.props.name
-                : this.props.name +
-                  ' (' +
-                  (this.props.originalUnit
-                    ? this.props.originalUnit
-                    : 'No unit') +
-                  ')'}
+              {this.props.name +
+                ' (' +
+                (this.props.unit ? this.props.unit : 'No unit') +
+                ')'}
               <Fade
                 in={
-                  this.props.unit !== '' &&
-                  this.props.unit !== this.props.originalUnit
+                  this.props.unit !== '' && this.props.unit !== this.props.unit
                 }
-              >
-                &nbsp;[viewed as: {this.props.unit}]
-              </Fade>
+              ></Fade>
             </div>
           ) : null}
           <Collapse
@@ -1014,14 +866,42 @@ class TimeSeriesPanel extends Component {
               (this.props.scale !== 1 || this.props.offset !== 0)
             }
           ></Collapse>
-          <HighchartsReact
-            ref={this.chart}
-            highcharts={Highcharts}
-            options={this.generateState(this.props).chartOptions}
-            oneToOne={true}
-            constructorType={'stockChart'}
-            containerProps={{ style: { height: '100%' } }}
-          />
+          <ChartSettings
+            index={this.props.index}
+            unit={this.props.unit}
+            setPopUpOpen={(e) =>
+              this.setState({ popupOpen: !this.state.popupOpen })
+            }
+            handleConfigSave={this.props.handleConfigSave}
+          ></ChartSettings>
+          {this.props.index === 0 && (
+            <div className="d-flex align-items-center">
+              {/* <div className='cursor-pointer' onClick={() => this.scroll(ScrollDirection.LEFT)}>
+                <FontAwesomeIcon icon={faChevronLeft} size='2x'></FontAwesomeIcon>
+              </div> */}
+              <HighchartsReact
+                ref={this.chart}
+                highcharts={Highcharts}
+                options={this.generateState(this.props).chartOptions}
+                oneToOne={true}
+                constructorType={'stockChart'}
+                containerProps={{ style: { height: '100%' } }}
+              />
+              {/* <div className='cursor-pointer' onClick={() => this.scroll(ScrollDirection.RIGHT)}>
+                <FontAwesomeIcon icon={faChevronRight} size='2x'></FontAwesomeIcon>
+              </div> */}
+            </div>
+          )}
+          {this.props.index !== 0 && (
+            <HighchartsReact
+              ref={this.chart}
+              highcharts={Highcharts}
+              options={this.generateState(this.props).chartOptions}
+              oneToOne={true}
+              constructorType={'stockChart'}
+              containerProps={{ style: { height: '100%' } }}
+            />
+          )}
         </div>
       </div>
     );

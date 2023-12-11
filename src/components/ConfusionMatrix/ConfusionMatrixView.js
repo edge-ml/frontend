@@ -21,13 +21,14 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
           <td></td>
           {labels.map((label) => (
             <td
-              className="pb-2"
               style={{
                 paddingRight: 0,
                 paddingLeft: 0,
                 textAlign: 'center',
                 borderBottom: '1px solid black',
                 fontWeight: 'bold',
+                transform: 'translateY(-50%) rotate(-75deg)',
+                maxWidth: '50px',
               }}
             >
               {label}
