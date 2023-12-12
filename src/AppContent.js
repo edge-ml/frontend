@@ -1,155 +1,145 @@
-import React, { Component } from 'react';
-import {
-  Route,
-  Switch,
-  Redirect,
-  useLocation,
-  useHistory,
-} from 'react-router-dom';
+import React, { createContext, useMemo } from 'react';
+import { Route, Switch, Redirect } from 'react-router-dom';
 
 import ListPage from './routes/list/index';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labeling/labelings';
 import ExperimentsPage from './routes/experiments';
 import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
-import ModelPage from './routes/model';
 import ValidationPage from './routes/validation';
-import ExportPage from './routes/export';
 import UploadBLE from './routes/uploadBLE';
 import { UploadWebPage } from './routes/uploadWeb';
-import UnderConstruction from './components/UnderConstruction';
 import Settings from './routes/settings/Settings';
 
-class AppContent extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+const AppContent = (props) => {
+  const {
+    match,
+    project,
+    navigateTo,
+    modalOpen,
+    onProjectsChanged,
+    userName,
+    onDeleteProject,
+    onLeaveProject,
+    userMail,
+  } = props;
 
-  render() {
-    return (
-      <Switch>
-        <Route
-          exact
-          forceRefresh
-          path={[
-            this.props.match.path + '/datasets',
-            this.props.match.path + '/',
-          ]}
-          render={(props) => {
-            let path = this.props.match.url;
-            if (path.endsWith('datasets')) {
-              return <Redirect to={path + '/view'} />;
-            } else {
-              return <Redirect to={path + '/datasets/view'} />;
-            }
-          }}
-        />
-        <Route
-          exact
-          forceRefresh
-          path={this.props.match.path + '/datasets/view'}
-          render={(props) => {
-            return (
-              <ProjectRefresh project={this.props.project}>
-                <ListPage {...props} />
-              </ProjectRefresh>
-            );
-          }}
-        />
-        <Route
-          path={[this.props.match.path + '/labelings']}
-          render={(props) => (
-            <ProjectRefresh project={this.props.project}>
-              <LabelingsPage {...props} />
+  return (
+    <Switch>
+      <Route
+        exact
+        forceRefresh
+        path={[match.path + '/datasets', match.path + '/']}
+        render={(props) => {
+          let path = match.url;
+          if (path.endsWith('datasets')) {
+            return <Redirect to={path + '/view'} />;
+          } else {
+            return <Redirect to={path + '/datasets/view'} />;
+          }
+        }}
+      />
+      <Route
+        exact
+        forceRefresh
+        path={match.path + '/datasets/view'}
+        render={(props) => {
+          return (
+            <ProjectRefresh project={project}>
+              <ListPage {...props} />
             </ProjectRefresh>
-          )}
-        />
-        <Route
-          path={this.props.match.path + '/datasets/:id'}
-          render={(props) => (
-            <DatasetPage
+          );
+        }}
+      />
+      <Route
+        path={[match.path + '/labelings']}
+        render={(props) => (
+          <ProjectRefresh project={project}>
+            <LabelingsPage {...props} />
+          </ProjectRefresh>
+        )}
+      />
+      <Route
+        path={match.path + '/datasets/:id'}
+        render={(props) => (
+          <DatasetPage
+            {...props}
+            navigateTo={navigateTo}
+            modalOpen={modalOpen}
+          />
+        )}
+      />
+      <Route
+        exact
+        path={[match.path + '/experiments', match.path + '/experiments/new']}
+        render={(props) => (
+          <ProjectRefresh project={project}>
+            <ExperimentsPage {...props} />
+          </ProjectRefresh>
+        )}
+      />
+      <Route
+        exact
+        path={match.path + '/models'}
+        render={(props) => (
+          <ProjectRefresh project={project}>
+            <ValidationPage {...props}></ValidationPage>
+          </ProjectRefresh>
+        )}
+      />
+      <Route
+        exact
+        path={match.path + '/settings'}
+        render={(props) => (
+          <ProjectRefresh project={project}>
+            <Settings
+              onProjectsChanged={onProjectsChanged}
+              userName={userName}
+              onDeleteProject={onDeleteProject}
+              onLeaveProject={onLeaveProject}
+              userMail={userMail}
               {...props}
-              navigateTo={this.props.navigateTo}
-              modalOpen={this.props.modalOpen}
             />
-          )}
-        />
-        <Route
-          exact
-          path={[
-            this.props.match.path + '/experiments',
-            this.props.match.path + '/experiments/new',
-          ]}
-          render={(props) => (
-            <ProjectRefresh project={this.props.project}>
-              <ExperimentsPage {...props} />
-            </ProjectRefresh>
-          )}
-        />
-        <Route
-          exact
-          path={this.props.match.path + '/models'}
-          render={(props) => (
-            <ProjectRefresh project={this.props.project}>
-              <ValidationPage {...props}></ValidationPage>
-            </ProjectRefresh>
-          )}
-        />
-        <Route
-          exact
-          path={this.props.match.path + '/settings'}
-          render={(props) => (
-            <ProjectRefresh project={this.props.project}>
-              <Settings
-                onProjectsChanged={this.props.onProjectsChanged}
-                userName={this.props.userName}
-                onDeleteProject={this.props.onDeleteProject}
-                onLeaveProject={this.props.onLeaveProject}
-                userMail={this.props.userMail}
-                {...props}
-              />
-            </ProjectRefresh>
-          )}
-        />
-        <Route
-          exact
-          path={this.props.match.path + '/settings/getCode'}
-          render={(props) => (
-            <ProjectRefresh project={this.props.project}>
-              <Settings
-                onProjectsChanged={this.props.onProjectsChanged}
-                codeSnippetModalOpen={true}
-                userName={this.props.userName}
-                userMail={this.props.userMail}
-                onDeleteProject={this.props.onDeleteProject}
-                onLeaveProject={this.props.onLeaveProject}
-                {...props}
-              />
-            </ProjectRefresh>
-          )}
-        />
-        <Route
-          exact
-          path={this.props.match.path + '/ble'}
-          render={(props) => (
-            <ProjectRefresh project={this.props.project}>
-              <UploadBLE {...props}></UploadBLE>
-            </ProjectRefresh>
-          )}
-        />
-        <Route
-          exact
-          path={this.props.match.path + '/uploadweb'}
-          render={(props) => (
-            <ProjectRefresh project={this.props.project}>
-              <UploadWebPage {...props}></UploadWebPage>
-            </ProjectRefresh>
-          )}
-        />
-      </Switch>
-    );
-  }
-}
+          </ProjectRefresh>
+        )}
+      />
+      <Route
+        exact
+        path={match.path + '/settings/getCode'}
+        render={(props) => (
+          <ProjectRefresh project={project}>
+            <Settings
+              onProjectsChanged={onProjectsChanged}
+              codeSnippetModalOpen={true}
+              userName={userName}
+              userMail={userMail}
+              onDeleteProject={onDeleteProject}
+              onLeaveProject={onLeaveProject}
+              {...props}
+            />
+          </ProjectRefresh>
+        )}
+      />
+      <Route
+        exact
+        path={match.path + '/ble'}
+        render={(props) => (
+          <ProjectRefresh project={project}>
+            <UploadBLE {...props}></UploadBLE>
+          </ProjectRefresh>
+        )}
+      />
+      <Route
+        exact
+        path={match.path + '/uploadweb'}
+        render={(props) => (
+          <ProjectRefresh project={project}>
+            <UploadWebPage {...props}></UploadWebPage>
+          </ProjectRefresh>
+        )}
+      />
+    </Switch>
+  );
+};
 
 export default AppContent;

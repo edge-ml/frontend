@@ -75,35 +75,24 @@ const DatasetTable = (props) => {
                 </Button>
               </div>
               <div className="d-flex flex-md-row justify-content-end position-relative">
-                <div className="position-absolute">
-                  <Button
-                    active={props.selectedFilter}
-                    className="mr-3"
-                    onClick={() => props.setFilterModalOpen(true)}
-                  >
-                    <FontAwesomeIcon icon={faFilter} />
-                  </Button>
-                </div>
-                <div
-                  className="position-absolute"
-                  style={{ top: '-10px', left: '-55px' }}
-                >
-                  {' '}
+                <div className="d-flex align-items-center mr-2">
                   <DatasetSorting
                     sortDropDownIsOpen={props.sortDropDownIsOpen}
                     setSortDropdownIsOpen={props.setSortDropdownIsOpen}
                     selectedSorting={props.selectedSorting}
                     setSelectedSorting={props.setSelectedSorting}
                   />
-                </div>{' '}
-                */}
-                <Button
-                  active={props.filterSelected}
-                  className="mr-3"
-                  onClick={props.toggleFilterSelectionModal}
-                >
-                  <FontAwesomeIcon icon={faFilter} />
-                </Button>
+                </div>
+                <div className="d-flex align-items-center">
+                  <Button
+                    active={props.filterSelected}
+                    className="mr-3"
+                    size="sm"
+                    onClick={props.toggleFilterSelectionModal}
+                  >
+                    <FontAwesomeIcon icon={faFilter} size="sm" />
+                  </Button>
+                </div>
               </div>
             </div>
             <div
