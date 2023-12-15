@@ -105,7 +105,7 @@ class TimeSeriesCollectionPanel extends Component {
   };
 
   getIndexData = () => {
-    const N = 1000;
+    const N = 5000;
     const activeSeries = this.state.activeSeries.map((elm, key) =>
       this.state.timeSeries.find((ts) => ts._id === elm)
     );
