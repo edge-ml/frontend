@@ -1,27 +1,19 @@
 import React, { Component } from 'react';
-import { Col, Row, Container } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 
 import BleNotActivated from '../components/BLE/BleNotActivated';
 import BlePanelSensorList from '../components/BLE/BlePanelSensorList';
 import BlePanelRecorderSettings from '../components/BLE/BlePanelRecorderSettings';
 import BlePanelConnectDevice from '../components/BLE/BlePanelConnectDevice';
 
-import {
-  getDevices,
-  getDeviceById,
-  getDeviceByNameAndGeneration,
-} from '../services/ApiServices/DeviceService';
+import { getDeviceByNameAndGeneration } from '../services/ApiServices/DeviceService';
 
-import {
-  prepareSensorBleObject,
-  findDeviceIdById,
-} from '../services/bleService';
+import { prepareSensorBleObject } from '../services/bleService';
 
 import BleDeviceProcessor from '../components/BLE/BleDeviceProcessor';
 import BlePanelRecordingDisplay from '../components/BLE/BlePanelRecordingDisplay';
 
 import '../components/BLE/BleActivated.css';
-import { ga_connectBluetooth } from '../services/AnalyticsService';
 import { getLatestEdgeMLVersionNumber } from '../services/ApiServices/ArduinoFirmwareServices';
 import DFUModal from '../components/BLE/DFUModal/DFUModal';
 
@@ -76,7 +68,6 @@ class UploadBLE extends Component {
 
     this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
     this.connectDevice = this.connectDevice.bind(this);
-    //this.receiveSensorData = this.receiveSensorData.bind(this);
     this.connect = this.connect.bind(this);
     this.onDisconnection = this.onDisconnection.bind(this);
     this.getDeviceInfo = this.getDeviceInfo.bind(this);
@@ -232,8 +223,6 @@ class UploadBLE extends Component {
       case 'recording':
         this.setState({ recorderState: 'finalizing' });
         await this.bleDeviceProcessor.stopRecording();
-        // Upload dataset here
-        await new Promise((resolve) => setTimeout(resolve, 1000));
         this.setState({ recorderState: 'ready' });
         this.setState({ datasetName: '' });
         this.resetLabelingState();
@@ -260,7 +249,6 @@ class UploadBLE extends Component {
     this.currentData = new Array(Object.keys(this.state.deviceSensors).length);
     this.sensorKeys = Object.keys(this.state.deviceSensors);
     console.log('Device is now connected');
-    ga_connectBluetooth(this.state.connectedDeviceData, '', true);
   }
 
   async getDeviceInfo() {
@@ -395,7 +383,6 @@ class UploadBLE extends Component {
       })
       .catch((err) => {
         console.log(err);
-        ga_connectBluetooth(this.state.connectedDeviceData, err, false);
       });
   }
 
@@ -449,6 +436,8 @@ class UploadBLE extends Component {
           start: timestamp,
           end: undefined,
           color: keyPressedLabel.color,
+          labelingId: this.state.selectedLabeling._id,
+          type: keyPressedLabel._id,
           id: keyPressedLabel._id,
           plotId: 0,
         },
@@ -463,8 +452,10 @@ class UploadBLE extends Component {
       const currentLabelingData =
         this.labelingData.current[this.labelingData.current.length - 1];
       currentLabelingData.end = timestamp;
+      const newCurrentLabel = { ...this.state.currentLabel, end: timestamp };
+      this.bleDeviceProcessor.addLabel(newCurrentLabel);
       this.setState((prevState) => ({
-        currentLabel: { ...prevState.currentLabel, end: timestamp },
+        currentLabel: newCurrentLabel,
       }));
     }
 
@@ -483,6 +474,8 @@ class UploadBLE extends Component {
           color: keyPressedLabel.color,
           id: keyPressedLabel._id,
           plotId: prevState.currentLabel.plotId + 1,
+          type: keyPressedLabel._id,
+          labelingId: this.state.selectedLabeling._id,
         },
         prevLabel: prevState.currentLabel,
       }));

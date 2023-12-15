@@ -12,6 +12,8 @@ import {
   getDatasets,
 } from '../../services/ApiServices/DatasetServices';
 
+import { createDatasetLabel } from '../../services/ApiServices/DatasetLabelService';
+
 class BleDeviceProcessor {
   constructor(
     device,
@@ -33,6 +35,7 @@ class BleDeviceProcessor {
     this.recordingSensors = [];
     this.uploadBLE = uploadBLE;
     this.uploadCounter = new Map();
+    this.labels = [];
   }
 
   async configureSingleSensor(sensorId, sampleRate, latency) {
@@ -44,6 +47,10 @@ class BleDeviceProcessor {
     configPacket.set(floatToBytes(sampleRate), 1);
     configPacket.set(intToBytes(latency), 5);
     await this.sensorConfigCharacteristic.writeValue(configPacket);
+  }
+
+  addLabel(label) {
+    this.labels.push(label);
   }
 
   async unSubscribeAllSensors() {
@@ -150,6 +157,13 @@ class BleDeviceProcessor {
     );
     this.addToUploadCounter(recordedData);
     await appendToDataset(this.newDataset, recordedData);
+
+    // Upload labels
+    for (const label of this.labels) {
+      console.log(label);
+      await createDatasetLabel(this.newDataset._id, label.labelingId, label);
+    }
+
     this.recordingSensors = [];
     this.recordedData = [];
     this.uploadCounter = new Map();
