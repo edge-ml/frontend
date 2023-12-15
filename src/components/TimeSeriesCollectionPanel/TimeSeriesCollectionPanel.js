@@ -106,8 +106,11 @@ class TimeSeriesCollectionPanel extends Component {
 
   getIndexData = () => {
     const N = 1000;
-    const start = this.props.datasetStart;
-    const end = this.props.datasetEnd;
+    const activeSeries = this.state.activeSeries.map((elm, key) =>
+      this.state.timeSeries.find((ts) => ts._id === elm)
+    );
+    const start = Math.min(...activeSeries.map((elm) => elm.start));
+    const end = Math.max(...activeSeries.map((elm) => elm.end));
     const step = (end - start) / (N - 1);
     const arr = Array.from({ length: N }, (_, i) => [start + i * step, -1]);
     return arr;

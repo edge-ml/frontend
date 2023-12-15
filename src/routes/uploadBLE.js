@@ -17,7 +17,6 @@ import '../components/BLE/BleActivated.css';
 import { getLatestEdgeMLVersionNumber } from '../services/ApiServices/ArduinoFirmwareServices';
 import DFUModal from '../components/BLE/DFUModal/DFUModal';
 
-import semverLt from 'semver/functions/lt';
 import { adjectives, names } from './export/nameGeneration';
 import { uniqueNamesGenerator } from 'unique-names-generator';
 import { BleLabelingMenu } from '../components/BLE/BleLabelingMenu';
@@ -300,10 +299,8 @@ class UploadBLE extends Component {
         installedFWVersion: deviceGeneration,
       },
       deviceSensors: prepareSensorBleObject(deviceInfo.sensors),
-      outdatedVersionInstalled: semverLt(
-        deviceGeneration,
-        this.state.latestEdgeMLVersion
-      ),
+      outdatedVersionInstalled:
+        deviceGeneration < this.state.latestEdgeMLVersion,
     });
     return [bleDevice, primaryService];
   }

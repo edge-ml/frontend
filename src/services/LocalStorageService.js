@@ -18,6 +18,7 @@ export const clearToken = function () {
 };
 
 export const setProject = function (project_id) {
+  console.log('SET PROJECT: ', project_id);
   localStorage.setItem('project_id', project_id);
 };
 
