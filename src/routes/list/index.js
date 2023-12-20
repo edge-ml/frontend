@@ -379,6 +379,7 @@ const ListPage = (props) => {
           setSelectedSorting={setSelectedSorting}
           setFilterModalOpen={setFilterModalOpen}
           selectedFilter={selectedFilter}
+          removeFilter={removeFilter}
         ></DatasetTable>
       </Container>
       {datasets.length > 0 ? (

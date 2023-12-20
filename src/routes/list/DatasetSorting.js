@@ -36,7 +36,6 @@ const DatasetSorting = ({
       direction="left"
       isOpen={sortDropDownIsOpen}
       toggle={toggleDropdown}
-      size="sm"
       className="dataset-sorting"
     >
       <DropdownToggle caret>

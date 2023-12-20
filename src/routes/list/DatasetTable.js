@@ -78,7 +78,7 @@ const DatasetTable = (props) => {
                 <div className="position-absolute">
                   <Button
                     active={props.selectedFilter}
-                    className="mr-3"
+                    className="mr-3 mt-1"
                     onClick={() => props.setFilterModalOpen(true)}
                   >
                     <FontAwesomeIcon icon={faFilter} />
@@ -120,6 +120,18 @@ const DatasetTable = (props) => {
               ))}
             </div>
           </div>
+        ) : props.selectedFilter ? (
+          <Container
+            className="d-flex flex-column justify-content-center align-items-center"
+            style={{ height: '50vh' }}
+          >
+            <div className="text-center">No results found.</div>
+            <div>
+              <Button outline onClick={props.removeFilter}>
+                Remove Filter
+              </Button>
+            </div>
+          </Container>
         ) : (
           <Container
             className="d-flex flex-column justify-content-center align-items-center"
