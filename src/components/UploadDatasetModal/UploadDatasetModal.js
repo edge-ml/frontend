@@ -121,7 +121,7 @@ export const UploadDatasetModal = ({
     setFiles((prevState) => prevState.filter((file) => file.id !== fileId));
   };
 
-  const initConfig = (fileId, timeSeries, labelings) => {
+  const initConfig = (fileId, timeSeries, labelings, metadata) => {
     setFiles((prevState) =>
       prevState.map((file) => {
         if (file.id === fileId) {
@@ -135,6 +135,7 @@ export const UploadDatasetModal = ({
                 : file.name,
               editingModeActive: false,
             },
+            metadata: metadata,
           };
         }
         return file;
@@ -156,19 +157,33 @@ export const UploadDatasetModal = ({
     );
   };
 
-  const extractHeader = (fileId, file) => {
+  const extractMetadataAndHeader = (fileId, file) => {
     return new Promise((resolve, reject) => {
       const CHUNK_SIZE = 128;
       const decoder = new TextDecoder();
       let offset = 0;
       let results = '';
+      let processedLines = 0;
       const fr = new FileReader();
+      const metadata = [];
 
       fr.onload = function () {
         results += decoder.decode(fr.result, { stream: true });
         const lines = results.split('\n');
-        if (lines.length > 1) {
-          resolve(lines[0]);
+        while (lines.length > 1) {
+          if (lines[0].startsWith('#')) {
+            metadata.push(lines[0]);
+            lines.shift();
+            processedLines++;
+          } else if (lines[0].startsWith('time')) {
+            resolve({ metadata: metadata, header: lines[0] });
+            break;
+          } else {
+            reject(
+              `Invalid line encountered during parsing at line ${processedLines}`
+            );
+            break;
+          }
         }
         results = lines.pop();
         offset += CHUNK_SIZE;
@@ -195,6 +210,19 @@ export const UploadDatasetModal = ({
         fr.readAsArrayBuffer(slice);
       }
     });
+  };
+
+  const parseMetadata = (metadata) => {
+    const pattern = /# ?([a-zA-Z0-9_ \-]+):([a-zA-Z0-9_ \-]+)/;
+    const parsedMetadata = {};
+    for (const item of metadata) {
+      const match = item.match(pattern);
+      if (match === null) {
+        return null;
+      }
+      parsedMetadata[match[1]] = match[2];
+    }
+    return parsedMetadata;
   };
 
   const parseHeader = (header) => {
@@ -259,7 +287,46 @@ export const UploadDatasetModal = ({
   const onFileInput = async (inputFiles) => {
     const fileIds = addFiles(inputFiles);
     for (let i = 0; i < inputFiles.length; ++i) {
-      const header = await extractHeader(fileIds[i], inputFiles[i]);
+      let metadata, header;
+      try {
+        const extractedResult = await extractMetadataAndHeader(
+          fileIds[i],
+          inputFiles[i]
+        );
+        metadata = extractedResult.metadata;
+        header = extractedResult.header;
+      } catch (exception) {
+        setFiles((prevFiles) =>
+          prevFiles.map((f) =>
+            f.id === fileIds[i]
+              ? {
+                  ...f,
+                  error: exception,
+                  status: FileStatus.ERROR,
+                  progress: 100,
+                }
+              : f
+          )
+        );
+        continue;
+      }
+      const parsedMetadata = parseMetadata(metadata);
+      if (parseMetadata === null) {
+        setFiles((prevFiles) =>
+          prevFiles.map((f) =>
+            f.id === fileIds[i]
+              ? {
+                  ...f,
+                  error: 'Metadata segment is ill-formatted, parsing failed',
+                  status: FileStatus.ERROR,
+                  progress: 100,
+                }
+              : f
+          )
+        );
+        continue;
+      }
+
       const [timeSeries, labelings] = parseHeader(header);
       if (!timeSeries || !labelings) {
         setFiles((prevFiles) =>
@@ -276,7 +343,7 @@ export const UploadDatasetModal = ({
         );
         continue;
       }
-      initConfig(fileIds[i], timeSeries, labelings);
+      initConfig(fileIds[i], timeSeries, labelings, parsedMetadata);
     }
   };
 
@@ -284,6 +351,7 @@ export const UploadDatasetModal = ({
     const formData = new FormData();
     formData.append('CSVFile', file.csv);
     formData.append('CSVConfig', JSON.stringify(file.config));
+    formData.append('metadata', JSON.stringify(file.metadata));
     handleStatus(file.id, FileStatus.UPLOADING);
     setConsecutiveNoUpdateCount(0);
     const [cancellationHandler, response] = processCSVBackend(
