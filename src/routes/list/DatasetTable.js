@@ -11,7 +11,6 @@ import DatasetTableEntry from './DatasetTableEntry';
 import DatasetSorting from './DatasetSorting';
 
 const DatasetTable = (props) => {
-  const [areAllSelected, setAllSelected] = useState(false);
   return (
     <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2">
       <Fragment>
@@ -32,21 +31,8 @@ const DatasetTable = (props) => {
           <div style={{ borderRadius: 10 }}>
             <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row align-content-baseline">
               <div className="d-flex flex-row align-items-center p-1">
-                <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
-                  <Checkbox
-                    isSelected={areAllSelected}
-                    onClick={(e) => {
-                      setAllSelected(!areAllSelected);
-                      if (areAllSelected) {
-                        props.deselectAll();
-                      } else {
-                        props.selectAll();
-                      }
-                    }}
-                  ></Checkbox>
-                </div>
                 <Button
-                  className="ml-3 btn-delete"
+                  className="ml-3 mr-2 btn-delete"
                   id="deleteDatasetsButton"
                   size="sm"
                   disabled={props.datasetsToDelete.length === 0}
@@ -59,20 +45,26 @@ const DatasetTable = (props) => {
                   ></FontAwesomeIcon>
                   Delete
                 </Button>
-                <Button
-                  id="selectAllEmptyButton"
-                  size="sm"
-                  color="secondary"
-                  onClick={props.selectAllEmpty}
-                  /* disabled={props.datasets.every((elm) => elm.end != 0)}*/
-                  className="ml-2"
-                >
-                  <FontAwesomeIcon
-                    className="mr-2"
-                    icon={faFilter}
-                  ></FontAwesomeIcon>
-                  Select Empty Datasets
-                </Button>
+                <div className="ml-0 mr-2">
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      props.selectAllOnPage();
+                    }}
+                  >
+                    {'Select Page'}
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      props.deselectAll();
+                    }}
+                  >
+                    {'Deselect All'}
+                  </Button>
+                </div>
               </div>
               <div className="d-flex flex-md-row justify-content-end position-relative">
                 <div className="position-absolute">
@@ -86,7 +78,7 @@ const DatasetTable = (props) => {
                 </div>
                 <div
                   className="position-absolute"
-                  style={{ top: '-10px', left: '-55px' }}
+                  style={{ top: '-10px', left: '-50px' }}
                 >
                   {' '}
                   <DatasetSorting
@@ -111,7 +103,10 @@ const DatasetTable = (props) => {
                   dataset={dataset}
                   index={index}
                   toggleCheck={props.toggleCheck}
-                  isSelected={props.datasetsToDelete.includes(dataset['_id'])}
+                  isSelected={props.datasetsToDelete.some(
+                    (datasetsToDelete) =>
+                      datasetsToDelete._id === dataset['_id']
+                  )}
                   labelings={props.labelings}
                   labels={props.labels}
                   deleteEntry={props.deleteEntry}

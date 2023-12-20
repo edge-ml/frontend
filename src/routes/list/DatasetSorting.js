@@ -37,6 +37,7 @@ const DatasetSorting = ({
       isOpen={sortDropDownIsOpen}
       toggle={toggleDropdown}
       className="dataset-sorting"
+      outline
     >
       <DropdownToggle caret>
         {sortingText || <FontAwesomeIcon icon={faSort} />}

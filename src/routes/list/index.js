@@ -31,7 +31,6 @@ import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDa
 import PageSelection from './PageSelection';
 import PageSizeInput from './PageSizeInput';
 import FilterSelectionModal from './FilterSelection';
-import { filter } from 'jszip';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -87,24 +86,20 @@ const ListPage = (props) => {
     setIsCreateNewDatasetOpen(!isCreateNewDatasetOpen);
   };
 
-  const selectAllEmpty = () => {
-    setDatasetsToDelete(
-      datasets
-        .filter((elm) =>
-          elm.timeSeries
-            .map((x) => x.length)
-            .every((y) => y === 0 || y === null)
-        )
-        .map((elm) => elm._id)
-    );
-  };
-
-  const selectAll = () => {
-    setDatasetsToDelete(datasets.map((elm) => elm._id));
-  };
-
   const deselectAll = () => {
     setDatasetsToDelete([]);
+  };
+
+  const selectAllOnPage = () => {
+    const filteredDatasets = datasets.filter(
+      (dataset) =>
+        !datasetsToDelete.some((toDelete) => toDelete._id === dataset['_id'])
+    );
+    const newDatasetIdsToDelete = filteredDatasets.map((dataset) => ({
+      _id: dataset['_id'],
+      name: dataset['name'],
+    }));
+    setDatasetsToDelete([...datasetsToDelete, ...newDatasetIdsToDelete]);
   };
 
   const initURLSearchParams = () => {
@@ -309,13 +304,21 @@ const ListPage = (props) => {
   };
 
   const toggleCheck = (e, datasetId) => {
-    const checked = datasetsToDelete.includes(datasetId);
-    if (!checked) {
-      if (!datasetsToDelete.includes(datasetId)) {
-        setDatasetsToDelete([...datasetsToDelete, datasetId]);
-      }
+    const checked = datasetsToDelete.find(
+      (toDelete) => toDelete._id === datasetId
+    );
+    if (checked) {
+      setDatasetsToDelete(
+        datasetsToDelete.filter(
+          (datasetsToDelete) => datasetsToDelete._id !== datasetId
+        )
+      );
     } else {
-      setDatasetsToDelete(datasetsToDelete.filter((id) => id !== datasetId));
+      const found = datasets.find((dataset) => dataset['_id'] === datasetId);
+      setDatasetsToDelete([
+        ...datasetsToDelete,
+        { _id: found._id, name: found.name },
+      ]);
     }
   };
 
@@ -366,12 +369,10 @@ const ListPage = (props) => {
           datasets={datasets}
           datasetsToDelete={datasetsToDelete}
           openDeleteModal={toggleModal}
-          selectAllEmpty={selectAllEmpty}
           downloadAllDatasets={downloadAllDatasets}
           toggleCheck={toggleCheck}
           labelings={labelings}
           deleteEntry={deleteEntry}
-          selectAll={selectAll}
           deselectAll={deselectAll}
           sortDropDownIsOpen={sortDropDownIsOpen}
           setSortDropdownIsOpen={setSortDropdownIsOpen}
@@ -380,6 +381,7 @@ const ListPage = (props) => {
           setFilterModalOpen={setFilterModalOpen}
           selectedFilter={selectedFilter}
           removeFilter={removeFilter}
+          selectAllOnPage={selectAllOnPage}
         ></DatasetTable>
       </Container>
       {datasets.length > 0 ? (
@@ -405,15 +407,11 @@ const ListPage = (props) => {
         <ModalBody>
           Are you sure to delete the following datasets?
           {console.log(datasetsToDelete)}
-          {datasetsToDelete.map((id) => {
-            const dataset = datasets.find((elm) => elm._id === id);
-            if (!dataset) {
-              return;
-            }
+          {datasetsToDelete.map((datasetsToDelete) => {
             return (
-              <React.Fragment key={id}>
+              <React.Fragment key={datasetsToDelete._id}>
                 <br />
-                <b>{dataset.name}</b>
+                <b>{datasetsToDelete.name}</b>
               </React.Fragment>
             );
           })}
