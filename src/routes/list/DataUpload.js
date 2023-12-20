@@ -55,7 +55,13 @@ const DataUpload = (props) => {
               className="mt-2 btn-upload align-self-stretch align-self-md-start"
               color="secondary"
               onClick={() => {
-                history.push('./ble');
+                //history.push('./ble');
+                const currentUrl = window.location.href;
+                const urlParts = currentUrl.split('/');
+                console.log(urlParts);
+                urlParts.splice(5, urlParts.length - 5, 'ble');
+                const newUrl = urlParts.join('/');
+                window.location.href = newUrl;
               }}
               style={{ padding: '0px' }}
             >
@@ -89,7 +95,7 @@ const DataUpload = (props) => {
               id="buttonUploadFromFile"
               className="mt-2 btn-upload align-self-stretch align-self-md-start"
               color="secondary"
-              onClick={e => props.toggleCreateNewDatasetModal()}
+              onClick={(e) => props.toggleCreateNewDatasetModal()}
               style={{ padding: '0px' }}
             >
               <small>Upload CSV Files</small>
