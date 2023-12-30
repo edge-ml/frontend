@@ -248,7 +248,12 @@ const DatasetTableEntry = (props) => {
                   </div>
                   <Button
                     className="btn-delete mr-2"
-                    onClick={() => props.deleteEntry(dataset._id)}
+                    onClick={() =>
+                      props.deleteEntry({
+                        _id: dataset._id,
+                        name: dataset.name,
+                      })
+                    }
                   >
                     <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
                   </Button>

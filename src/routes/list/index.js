@@ -64,12 +64,11 @@ const ListPage = (props) => {
   };
 
   const deleteSelectedDatasets = () => {
-    deleteDatasets(datasetsToDelete).then(() => {
+    const idsToDelete = datasetsToDelete.map((dsToDelete) => dsToDelete['_id']);
+    deleteDatasets(idsToDelete).then(() => {
       setModal(false);
       setDatasetsToDelete([]);
-      setDatasets(
-        datasets.filter((dataset) => !datasetsToDelete.includes(dataset['_id']))
-      );
+      setCurrentPage(0);
     });
     resetDropdown().catch((err) => {
       window.alert('Error deleting datasets');
@@ -77,8 +76,8 @@ const ListPage = (props) => {
     });
   };
 
-  const deleteEntry = (datasetId) => {
-    setDatasetsToDelete([datasetId]);
+  const deleteEntry = (toDelete) => {
+    setDatasetsToDelete([toDelete]);
     toggleModal();
   };
 
