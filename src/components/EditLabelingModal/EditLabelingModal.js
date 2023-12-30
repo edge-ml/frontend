@@ -427,9 +427,6 @@ class EditLabelingModal extends Component {
                     style={{
                       backgroundColor: isValidColor(label.color)
                         ? label.color
-                        : 'white',
-                      borderColor: isValidColor(label.color)
-                        ? label.color
                         : null,
                       color: hexToForegroundColor(label.color),
                     }}
@@ -441,7 +438,7 @@ class EditLabelingModal extends Component {
                   <InputGroupAddon addonType="append">
                     <Button
                       id={'buttonDeleteLabel' + index}
-                      className="m-0 no-border-radius"
+                      className="m-0 deleteBtnRadius"
                       color="danger"
                       outline
                       onClick={(e) => {

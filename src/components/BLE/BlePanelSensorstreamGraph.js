@@ -55,7 +55,7 @@ class BlePanelSensorstreamGraph extends Component {
         timestamp = this.props.lastData[this.props.index][0];
         value = this.props.lastData[this.props.index][1][i];
       } else {
-        timestamp = new Date().now();
+        timestamp = Date.now();
         value = 0;
       }
       var shiftSeries = series.data.length >= this.datastream_length;
@@ -193,7 +193,7 @@ class BlePanelSensorstreamGraph extends Component {
 
   render() {
     return (
-      <div>
+      <div className="m-2">
         <HighchartsReact
           highcharts={Highcharts}
           options={this.props.options}

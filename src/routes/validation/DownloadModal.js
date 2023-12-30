@@ -14,7 +14,6 @@ const DownloadModal = ({ model, onClose }) => {
   };
 
   const getCode = () => {
-    console.log(model);
     return `#include "model.hpp"
 #include <iostream>
 

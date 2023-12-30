@@ -68,25 +68,25 @@ const DatasetTable = (props) => {
               </div>
               <div className="d-flex flex-md-row justify-content-end position-relative">
                 <div className="position-absolute">
+                  <div className="mr-5">
+                    {' '}
+                    <DatasetSorting
+                      sortDropDownIsOpen={props.sortDropDownIsOpen}
+                      setSortDropdownIsOpen={props.setSortDropdownIsOpen}
+                      selectedSorting={props.selectedSorting}
+                      setSelectedSorting={props.setSelectedSorting}
+                    />
+                  </div>
+                </div>
+                <div className="position-absolute">
                   <Button
+                    size="sm"
+                    className="mr-2"
                     active={props.selectedFilter}
-                    className="mr-3 mt-1"
                     onClick={() => props.setFilterModalOpen(true)}
                   >
                     <FontAwesomeIcon icon={faFilter} />
                   </Button>
-                </div>
-                <div
-                  className="position-absolute"
-                  style={{ top: '-10px', left: '-50px' }}
-                >
-                  {' '}
-                  <DatasetSorting
-                    sortDropDownIsOpen={props.sortDropDownIsOpen}
-                    setSortDropdownIsOpen={props.setSortDropdownIsOpen}
-                    selectedSorting={props.selectedSorting}
-                    setSelectedSorting={props.setSelectedSorting}
-                  />
                 </div>
               </div>
             </div>
@@ -100,6 +100,7 @@ const DatasetTable = (props) => {
             >
               {props.datasets.map((dataset, index) => (
                 <DatasetTableEntry
+                  key={dataset['_id']}
                   dataset={dataset}
                   index={index}
                   toggleCheck={props.toggleCheck}
@@ -110,7 +111,6 @@ const DatasetTable = (props) => {
                   labelings={props.labelings}
                   labels={props.labels}
                   deleteEntry={props.deleteEntry}
-                  areAllSelected={props.areAllSelected}
                 ></DatasetTableEntry>
               ))}
             </div>

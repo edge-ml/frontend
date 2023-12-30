@@ -28,9 +28,11 @@ const Wizard_SelectDataset = ({
   toggleSelectDataset,
   toggleDisableTimeseries,
   disabledTimeseriesNames,
+  toggleAllDatasets,
   onNext,
   onBack,
   footer,
+  validate,
 }) => {
   const checkUsable = (dataset) => {
     return (
@@ -38,6 +40,19 @@ const Wizard_SelectDataset = ({
       dataset.labelings.filter((elm) => elm.labelingId === selectedLabeling._id)
         .length <= 0
     );
+  };
+
+  // useEffect(() => {
+  //   validateInput();
+  // }, [datasets])
+
+  // useEffect(() => {
+  //   console.log("Validate new")
+  //   validateInput();
+  // },[])
+
+  const validateInput = () => {
+    validate(selectedLabeling);
   };
 
   const minSamplingRate = Math.max(
@@ -98,13 +113,28 @@ const Wizard_SelectDataset = ({
     (tno) => !tno.inIntersection
   );
 
+  const selectedAllActive = datasets
+    .filter((elm) => !checkUsable(elm))
+    .every((elm) => elm.selected);
   return (
-    <Fragment>
+    <div className="p-2">
       <h3 className="font-weight-bold">2. Select datasets</h3>
       <Row className="mx-0">
         <Col>
           <EdgeMLTable>
             <EdgeMLTableHeader>
+              <div className="d-flex">
+                <Checkbox
+                  isSelected={selectedAllActive}
+                  onClick={() =>
+                    toggleAllDatasets(
+                      datasets.filter((elm) => !checkUsable(elm)),
+                      !selectedAllActive
+                    )
+                  }
+                ></Checkbox>
+                <div className="ml-2 align-self-center">Select all</div>
+              </div>
               <h4>
                 <b>Datasets</b>
               </h4>
@@ -143,7 +173,9 @@ const Wizard_SelectDataset = ({
                           : {}),
                         userSelect: 'none',
                       }}
-                      {...(tsNameObj.disabled ? { color: 'light' } : {})}
+                      {...(tsNameObj.disabled
+                        ? { color: 'light' }
+                        : { color: 'primary' })}
                     >
                       {`${tsNameObj.name}`}
                     </Badge>
@@ -219,7 +251,7 @@ const Wizard_SelectDataset = ({
           ) : null}
         </Col>
       </Row>
-    </Fragment>
+    </div>
   );
 };
 

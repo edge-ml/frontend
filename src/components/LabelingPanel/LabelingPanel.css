@@ -1,58 +1,9 @@
-.LabelingPanel {
-  z-index: 10;
-  width: calc(100vw - (160px + 2 * 14.4px));
-  border-radius: 0.25rem;
-  position: fixed;
-  bottom: 15px;
+.labelingPanelBorder {
+  border-top: 1px solid lightgray !important;
+  margin-left: 4px;
+  margin-right: 4px;
 }
 
-.informationBox {
-  display: flex;
-  flex-direction: column;
-}
-
-.informationBox > .inputGroup {
-  padding: 0px;
-  margin: 0px;
-  width: 150px;
-}
-
-/* md mobile */
-@media (max-width: 768px) {
-  .informationBox > .inputGroup {
-    width: unset;
-  }
-
-  .informationBox {
-    flex-grow: 9999;
-  }
-
-  .labelingBox {
-    flex-basis: 100%;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-}
-
-@media (min-width: 768px) {
-  .informationBox {
-    flex-direction: row;
-  }
-
-  .LabelingPanel {
-    bottom: 15px;
-  }
-}
-
-.labelingButton {
-  background-color: white;
-  border: none;
-}
-
-.labelingButton:disabled {
-  opacity: 0.8;
-}
-
-.informationBox {
-  margin-left: auto; /* override justify start */
+.monospace {
+  font-family: monospace;
 }

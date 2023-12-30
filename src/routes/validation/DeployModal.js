@@ -317,18 +317,26 @@ const DeployModal = ({ model, onClose }) => {
       <ModalBody>
         {page === 0 ? (
           <div>
-            <Dropdown isOpen={deviceDropDownOpen} toggle={toggleDeviceDropDown}>
-              <DropdownToggle caret size="lg">
-                {selectedDevice.name}
-              </DropdownToggle>
-              <DropdownMenu>
-                {devices.map((device, idx) => (
-                  <DropdownItem onClick={() => setSelectedDevice(device)}>
-                    {device.name}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
+            <div className="d-flex justify-content-start align-items-center">
+              <h5 className="font-weight-bold m-0 mr-2">1. Select Device: </h5>
+              <Dropdown
+                isOpen={deviceDropDownOpen}
+                toggle={toggleDeviceDropDown}
+              >
+                <DropdownToggle caret size="lg">
+                  {selectedDevice.name}
+                </DropdownToggle>
+                <DropdownMenu>
+                  {devices.map((device, idx) => (
+                    <DropdownItem onClick={() => setSelectedDevice(device)}>
+                      {device.name}
+                    </DropdownItem>
+                  ))}
+                </DropdownMenu>
+              </Dropdown>
+            </div>
+            <hr></hr>
+            <h5 className="font-weight-bold">2. Configure Device:</h5>
             <div className="d-flex">
               <div className="my-4 ml-2 mr-4" style={{ width: '500px' }}>
                 <div className="header-wrapper d-flex justify-content-center align-content-center">
@@ -337,13 +345,13 @@ const DeployModal = ({ model, onClose }) => {
                 <div className="body-wrapper-overflow">
                   {model.timeSeries.map((elm, ts_idx) => (
                     <div
-                      className="datasetCard"
+                      className="datasetCard p-2"
                       style={{
                         background:
                           ts_idx % 2 === 1 ? 'rgb(249, 251, 252)' : '',
                       }}
                     >
-                      <div className="d-flex align-items-center justify-content-between mx-2">
+                      <div className="d-flex align-items-center justify-content-between">
                         <strong className="pl-2">{elm}</strong>
                         <UncontrolledDropdown
                           direction="left"
@@ -434,8 +442,9 @@ const DeployModal = ({ model, onClose }) => {
                 </EdgeMLTableEntry>
               </EdgeMLTable>
             </div>
+            <hr></hr>
             <div className="m-2">
-              <div className="font-weight-bold fs-medium">Settings</div>
+              <h5 className="font-weight-bold">3. Additional Settings:</h5>
               <HyperparameterView
                 hyperparameters={parameters}
                 isAdvanced={false}

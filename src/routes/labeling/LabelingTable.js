@@ -18,7 +18,7 @@ const LabelingTable = (props) => {
             <Button
               outline
               onClick={props.onModalAddLabeling}
-              className="btn-download-all ml-auto"
+              className="btn-neutral ml-auto"
             >
               Create Labeling Set
             </Button>

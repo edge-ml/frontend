@@ -1,5 +1,9 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { getModels, deleteModel } from '../../services/ApiServices/MlService';
+import {
+  getModels,
+  deleteModel,
+  getStepOptions,
+} from '../../services/ApiServices/MlService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 import TrainingWizard from '../../components/TrainingWizard';
 import {
@@ -10,7 +14,6 @@ import {
   ModalHeader,
   ModalFooter,
   Spinner,
-  Tooltip,
   UncontrolledTooltip,
   Row,
   Col,
@@ -24,9 +27,7 @@ import {
   faDownload,
   faInfoCircle,
   faMicrochip,
-  faXmark,
   faCircleInfo,
-  faInfo,
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 
@@ -41,29 +42,28 @@ const ValidationPage = () => {
   const [selectedModels, setSelectedModels] = useState([]);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [updateModels, setUpdateModels] = useState(false);
+  const [error, setError] = useState(undefined);
+  const [stepOptions, setStepOptions] = useState(undefined);
 
   useEffect(() => {
-    getModels().then((models) => {
-      setModels(models);
-    });
+    refreshModels();
+    getStepOptions().then((data) => setStepOptions(data));
   }, []);
 
-  useEffect(() => {
-    const fetchData = () => {
-      console.log('update', updateModels);
-      getModels().then((models) => {
-        // if (models.length === 0 || models.every(elm => elm.status === "done" || elm.error != "")) {
-        //   setUpdateModels(false);
-        // }
-
+  const refreshModels = async () => {
+    getModels()
+      .then((models) => {
         setModels(models);
+        setError(undefined);
+      })
+      .catch(() => {
+        setError(true);
       });
-    };
+  };
 
-    fetchData();
-
+  useEffect(() => {
     const interval = setInterval(() => {
-      fetchData();
+      refreshModels();
     }, 1000);
 
     return () => {
@@ -76,6 +76,15 @@ const ValidationPage = () => {
   const onViewModel = (model) => {
     if (model.error === '' || model.error === undefined) {
       setModalModel(model);
+    }
+  };
+
+  const onSelectAll = () => {
+    const allSelected = models.length === selectedModels.length;
+    if (allSelected) {
+      setSelectedModels([]);
+    } else {
+      setSelectedModels(models.map((model) => model._id));
     }
   };
 
@@ -92,13 +101,7 @@ const ValidationPage = () => {
     toggleDeleteModal();
   };
 
-  const onDeleteSingleModel = (model_id) => {
-    setSelectedModels([model_id]);
-    toggleDeleteModal();
-  };
-
   const onDeleteSelectedModels = () => {
-    console.log(selectedModels);
     selectedModels.forEach((elm) => {
       deleteModel(elm);
     });
@@ -106,24 +109,60 @@ const ValidationPage = () => {
     toggleDeleteModal();
   };
 
+  const onDeleteSingleModel = (model_id) => {
+    const model = models.find((elm) => elm._id === model_id);
+
+    if (model) {
+      setSelectedModels([model._id]);
+      toggleDeleteModal();
+    }
+  };
+
   const toggleDeleteModal = () => {
     setDeleteModalOpen(!deleteModalOpen);
   };
 
   const onWizardClose = () => {
-    console.log('wizard close');
     setModalOpen(false);
     getModels().then((models) => setModels(models));
   };
 
-  console.log(models);
+  if (error) {
+    return (
+      <Container style={{ height: '100vh' }}>
+        <div className="h-100 d-flex justify-content-center align-items-center">
+          <h2 className="font-weight-bold">Cannot connect to the backend</h2>
+        </div>
+      </Container>
+    );
+  }
+
+  const checkExportC = (model) => {
+    const res = model.pipeline.selectedPipeline.steps.map((step) => {
+      const stepOption = stepOptions.find(
+        (elm) => elm.name === step.options.name
+      );
+      if (
+        ['PRE', 'CORE'].includes(stepOption.type) &&
+        !stepOption.platforms.includes('C')
+      ) {
+        console.log(stepOption.name, stepOption.platforms);
+        return false;
+      }
+      return true;
+    });
+    return res.every((elm) => elm === true);
+  };
+
   return (
     <Container>
       <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
         <Fragment>
           <div className="w-100 d-flex justify-content-between align-items-center mb-2">
-            <div className="font-weight-bold h4 justify-self-start">Models</div>
-            <Button onClick={() => setModalOpen(true)}>Train a model</Button>
+            <h4 className="font-weight-bold">MODELS</h4>
+            <Button className="btn-neutral" onClick={() => setModalOpen(true)}>
+              Train a model
+            </Button>
           </div>
           {models.length === 0 ? (
             <div
@@ -137,10 +176,13 @@ const ValidationPage = () => {
               header={
                 <>
                   <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
-                    <Checkbox isSelected={false}></Checkbox>
+                    <Checkbox
+                      isSelected={models.length == selectedModels.length}
+                      onClick={onSelectAll}
+                    ></Checkbox>
                   </div>
                   <Button
-                    className="ml-3 btn-delete"
+                    className="btn-delete"
                     id="deleteDatasetsButton"
                     size="sm"
                     divor="secondary"
@@ -156,11 +198,18 @@ const ValidationPage = () => {
               }
             >
               {models.map((model, index) => {
+                const metrics =
+                  model.error || model.trainStatus !== 'done'
+                    ? undefined
+                    : model.pipeline.selectedPipeline.steps.filter(
+                        (elm) => elm.type === 'EVAL'
+                      )[0].options.metrics.metrics;
                 return (
                   <TableEntry index={index}>
                     <div className="p-2 d-flex">
                       <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
                         <Checkbox
+                          isSelected={selectedModels.includes(model._id)}
                           onClick={() => clickCheckBox(model)}
                         ></Checkbox>
                       </div>
@@ -170,12 +219,10 @@ const ValidationPage = () => {
                       >
                         <Col>
                           <b>{model.name}</b>
-                          <div>{model.trainRequest.classifier.name}</div>
+                          <div>{model.pipeline.selectedPipeline.name}</div>
                         </Col>
                         <Col>
-                          {console.log(model)}
-                          {model.error === undefined ||
-                          model.error == '' ? null : (
+                          {model.error == '' ? null : (
                             <>
                               <div
                                 className="ml-5 flex-grow-1 d-flex justify-content-center align-items-center"
@@ -195,22 +242,21 @@ const ValidationPage = () => {
                               </UncontrolledTooltip>
                             </>
                           )}
-                          {model.status === 'done' ? (
+                          {model.trainStatus === 'done' ? (
                             <div>
                               <div>
                                 <b>Acc: </b>
-                                {metric(model.evaluator.metrics.accuracy_score)}
-                                %
+                                {metric(metrics.accuracy_score)}%
                               </div>
                               <div>
                                 <b>F1: </b>
-                                {metric(model.evaluator.metrics.f1_score)}%
+                                {metric(metrics.f1_score)}%
                               </div>
                             </div>
                           ) : null}
                         </Col>
                         <Col className="d-flex justify-content-end">
-                          {model.status === 'done' ? (
+                          {model.trainStatus === 'done' ? (
                             <div>
                               <Button
                                 className="btn-edit mr-3 mr-md-4"
@@ -235,11 +281,24 @@ const ValidationPage = () => {
                                 ></FontAwesomeIcon>
                               </Button>
                               <Button
+                                className="btn-delete t mr-3 mr-md-4"
+                                onClick={(e) => {
+                                  onDeleteSingleModel(model._id);
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrashAlt}
+                                ></FontAwesomeIcon>{' '}
+                              </Button>
+                              <Button
                                 className="btn-edit mr-3 mr-md-4"
+                                disabled={!checkExportC(model)}
                                 onClick={(e) => {
                                   setModelDeploy(model);
                                   setDeployModalOpen(true);
                                   e.stopPropagation();
+                                  e.preventDefault();
                                 }}
                               >
                                 <FontAwesomeIcon
@@ -249,8 +308,7 @@ const ValidationPage = () => {
                             </div>
                           ) : (
                             <div>
-                              {model.error === '' ||
-                              model.error === undefined ? (
+                              {model.error === '' ? (
                                 <div className="mr-3 mr-md-4">
                                   <Spinner color="primary"></Spinner>
                                 </div>
@@ -260,35 +318,6 @@ const ValidationPage = () => {
                         </Col>
                       </Row>
                     </div>
-                    {/* ) : (
-                      <div className="p-2 d-flex">
-                        <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
-                          <Checkbox
-                            onClick={() => clickCheckBox(model)}
-                          ></Checkbox>
-                        </div>
-                        <div className="w-100 d-flex justify-content-start align-items-center">
-                          <div>
-                            <b>{model.name}</b>
-                            <div>{model.trainRequest.classifier.name}</div>
-                          </div>
-                          <div
-                            className="ml-5 flex-grow-1 d-flex justify-content-center align-items-center"
-                            style={{ color: 'red' }}
-                          >
-                            An error occured while training!
-                            <FontAwesomeIcon
-                              id={'tooltip' + model._id}
-                              className="m-2"
-                              icon={faCircleInfo}
-                            ></FontAwesomeIcon>
-                          </div>
-                        </div>
-                        <UncontrolledTooltip target={'tooltip' + model._id}>
-                          {model.error}
-                        </UncontrolledTooltip>
-                      </div>
-                    )} */}
                   </TableEntry>
                 );
               })}

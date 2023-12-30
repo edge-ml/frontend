@@ -1,14 +1,24 @@
+.dataset-side-panel-close-button {
+  display: flex;
+  justify-content: end;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .dataset-side-panel {
   background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72));
   padding: 8px;
   height: 100vh;
-  position: fixed;
+  position: absolute;
+  right: 0px;
   top: 0px;
   bottom: 0px;
   width: 33vw;
-  z-index: 200;
+  z-index: 1000;
   background-color: white;
-  transition: transform 500ms ease-in-out;
+  position: fixed;
 }
 
 .dataset-side-panel.open {
@@ -18,8 +28,5 @@
 .dataset-side-panel-close-button {
   display: flex;
   justify-content: end;
-}
-
-.cursor-pointer {
-  cursor: pointer;
+  color: black;
 }

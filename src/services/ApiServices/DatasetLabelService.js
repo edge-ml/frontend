@@ -21,7 +21,8 @@ export const createDatasetLabel = (datasetId, labelingId, label) => {
 };
 
 export const changeDatasetLabel = (datasetId, labelingId, changedLabel) => {
-  console.log(changedLabel);
+  changedLabel.start = Math.ceil(changedLabel.start);
+  changedLabel.end = Math.floor(changedLabel.end);
   return axios(
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.PUT,

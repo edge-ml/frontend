@@ -70,10 +70,6 @@ const ListPage = (props) => {
       setDatasetsToDelete([]);
       setCurrentPage(0);
     });
-    resetDropdown().catch((err) => {
-      window.alert('Error deleting datasets');
-      setModal(false);
-    });
   };
 
   const deleteEntry = (toDelete) => {
@@ -82,6 +78,9 @@ const ListPage = (props) => {
   };
 
   const toggleCreateNewDatasetModal = () => {
+    if (isCreateNewDatasetOpen) {
+      setCurrentPage(0);
+    }
     setIsCreateNewDatasetOpen(!isCreateNewDatasetOpen);
   };
 
@@ -158,12 +157,16 @@ const ListPage = (props) => {
       sort,
       selectedFilter,
       selectedFilterParams
-    ).then((data) => {
-      onDatasetsChanged(data.datasets);
-      total_datasetsRef.current = data.total_datasets;
-      setTotalDatasets(data.total_datasets);
-      changeURLSearchParams(currentPage, pageSize, sort);
-    });
+    )
+      .then((data) => {
+        onDatasetsChanged(data.datasets);
+        total_datasetsRef.current = data.total_datasets;
+        setTotalDatasets(data.total_datasets);
+        changeURLSearchParams(currentPage, pageSize, sort);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   useEffect(() => {
@@ -383,6 +386,7 @@ const ListPage = (props) => {
           selectAllOnPage={selectAllOnPage}
         ></DatasetTable>
       </Container>
+
       {datasets.length > 0 ? (
         <div className="d-flex flex-row justify-content-center mt-3">
           <PageSelection

@@ -34,6 +34,7 @@ const DatasetSorting = ({
   return (
     <Dropdown
       direction="left"
+      size="sm"
       isOpen={sortDropDownIsOpen}
       toggle={toggleDropdown}
       className="dataset-sorting"
@@ -43,7 +44,7 @@ const DatasetSorting = ({
         {sortingText || <FontAwesomeIcon icon={faSort} />}
       </DropdownToggle>
       <DropdownMenu>
-        <DropdownItem header>Filter Selection</DropdownItem>
+        <DropdownItem header>Sorting</DropdownItem>
         <DropdownItem onClick={handleItemClick} data-dropdownvalue="alphaDesc">
           Alphabetical (descending)
         </DropdownItem>

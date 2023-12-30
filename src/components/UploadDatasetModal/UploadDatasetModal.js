@@ -390,12 +390,11 @@ export const UploadDatasetModal = ({
         config: { ...f.config, editingModeActive: false },
       }))
     );
-    for (const file of files) {
-      if (file.status !== FileStatus.CONFIGURATION) {
-        continue;
-      }
-      handleUpload(file);
-    }
+    await Promise.all(
+      files
+        .filter((elm) => elm.status === FileStatus.CONFIGURATION)
+        .map((elm) => handleUpload(elm))
+    );
   };
 
   const handleModalClose = () => {
@@ -588,16 +587,21 @@ export const UploadDatasetModal = ({
           </div>
         ) : null}
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className="d-flex justify-content-between">
         <div>
-          <Button
-            color="primary"
-            disabled={!files.find((f) => f.status === FileStatus.CONFIGURATION)}
-            onClick={handleUploadAll}
-          >
-            Upload All
-          </Button>
+          {' '}
+          <a href="/example_file.csv" download="example_file.csv">
+            Click here
+          </a>{' '}
+          to download an example CSV file.
         </div>
+        <Button
+          color="primary"
+          disabled={!files.find((f) => f.status === FileStatus.CONFIGURATION)}
+          onClick={handleUploadAll}
+        >
+          Upload All
+        </Button>
       </ModalFooter>
     </Modal>
   );
