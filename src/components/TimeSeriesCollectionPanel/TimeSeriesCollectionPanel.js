@@ -6,6 +6,7 @@ import Highcharts from 'highcharts/highstock';
 import RangeSlider from '../RangeSlider/RangeSlider';
 import { updateTimeSeriesConfig } from '../../services/ApiServices/DatasetServices';
 import { Alert } from 'reactstrap';
+import HighChartsNavigator from '../TimeSeriesPanel/HighChartNavigator';
 
 class TimeSeriesCollectionPanel extends Component {
   constructor(props) {
@@ -206,7 +207,8 @@ class TimeSeriesCollectionPanel extends Component {
         >
           {this.state.activeSeries.length ? (
             <div>
-              <TimeSeriesPanel
+              <HighChartsNavigator data={this.state.data}></HighChartsNavigator>
+              {/* <TimeSeriesPanel
                 index={0}
                 offset={0}
                 toggleUnitMenu={this.toggleUnitMenu}
@@ -225,7 +227,7 @@ class TimeSeriesCollectionPanel extends Component {
                 onTimeSeriesWindow={(start, end, res) =>
                   this.onTimeSeriesWindow(0, start, end, res)
                 }
-              />
+              /> */}
             </div>
           ) : (
             <div className="user-info-select-timeSeries h-100">
@@ -233,7 +235,7 @@ class TimeSeriesCollectionPanel extends Component {
             </div>
           )}
           <div className="flex-fill" style={{ overflowY: 'auto' }}>
-            {this.state.timeSeries.length === 0 ? (
+            {/* {this.state.timeSeries.length === 0 ? (
               <TimeSeriesPanel
                 handleConfigSave={this.handleConfigSave}
                 toggleUnitMenu={this.toggleUnitMenu}
@@ -263,7 +265,7 @@ class TimeSeriesCollectionPanel extends Component {
                   this.onTimeSeriesWindow(0, start, end, res)
                 }
               />
-            ) : null}
+            ) : null} */}
             {this.state.activeSeries.map((elm, key) => {
               const timeSeries = this.state.timeSeries.find(
                 (ts) => ts._id === elm
