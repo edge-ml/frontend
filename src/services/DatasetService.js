@@ -1,5 +1,4 @@
 import * as JSZip from 'jszip';
-import { ga_downloadDataset } from './AnalyticsService';
 import { generateCSV } from './CsvService';
 import { getDataset } from '../services/ApiServices/DatasetServices';
 import {

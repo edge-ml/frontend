@@ -229,7 +229,7 @@ class TimeSeriesCollectionPanel extends Component {
             </div>
           ) : (
             <div className="user-info-select-timeSeries h-100">
-              Select some time-series on the panel on the right
+              Select some time-series on the panel on the top
             </div>
           )}
           <div className="flex-fill" style={{ overflowY: 'auto' }}>
