@@ -55,11 +55,6 @@ class TimeSeriesCollectionPanel extends Component {
       this.onCrosshairDrawn
     );
 
-    // keep a copy of the last window acquired via afterSetExtremes
-    // so that the component doesn't rerender the preview after an
-    // update to the component tree. this copy must be kept outside the
-    // react state in order not to cause an infinite loop, as highcharts
-    // is also calling afterSetExtremes outside react's scope
     this.lastWindow = null;
   }
 
@@ -207,8 +202,8 @@ class TimeSeriesCollectionPanel extends Component {
         >
           {this.state.activeSeries.length ? (
             <div>
-              <HighChartsNavigator data={this.state.data}></HighChartsNavigator>
-              {/* <TimeSeriesPanel
+              {/* <HighChartsNavigator data={this.state.data}></HighChartsNavigator> */}
+              <TimeSeriesPanel
                 index={0}
                 offset={0}
                 toggleUnitMenu={this.toggleUnitMenu}
@@ -227,7 +222,7 @@ class TimeSeriesCollectionPanel extends Component {
                 onTimeSeriesWindow={(start, end, res) =>
                   this.onTimeSeriesWindow(0, start, end, res)
                 }
-              /> */}
+              />
             </div>
           ) : (
             <div className="user-info-select-timeSeries h-100">
@@ -235,37 +230,6 @@ class TimeSeriesCollectionPanel extends Component {
             </div>
           )}
           <div className="flex-fill" style={{ overflowY: 'auto' }}>
-            {/* {this.state.timeSeries.length === 0 ? (
-              <TimeSeriesPanel
-                handleConfigSave={this.handleConfigSave}
-                toggleUnitMenu={this.toggleUnitMenu}
-                isEmpty={true}
-                index={1}
-                offset={0}
-                data={[]}
-                samplingRate={1}
-                name={''}
-                unit={''}
-                labeling={this.state.labeling}
-                labelTypes={this.state.labelTypes}
-                onLabelClicked={this.state.onLabelClicked}
-                selectedLabelId={this.state.selectedLabelId}
-                start={this.state.start}
-                end={this.state.end}
-                canEdit={this.props.canEdit}
-                onScrubbed={this.state.onScrubbed}
-                numSeries={2}
-                drawingId={this.props.drawingId}
-                drawingPosition={this.props.drawingPosition}
-                newPosition={this.props.newPosition}
-                updateControlStates={this.props.updateControlStates}
-                onClickPosition={this.props.onClickPosition}
-                onLabelPositionUpdate={this.props.onLabelPositionUpdate}
-                onTimeSeriesWindow={(start, end, res) =>
-                  this.onTimeSeriesWindow(0, start, end, res)
-                }
-              />
-            ) : null} */}
             {this.state.activeSeries.map((elm, key) => {
               const timeSeries = this.state.timeSeries.find(
                 (ts) => ts._id === elm
