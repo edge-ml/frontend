@@ -239,8 +239,6 @@ class TimeSeriesPanel extends Component {
           crosshair: false,
           min: props.start,
           max: props.end,
-          startOnTick: !this.props.isEmpty,
-          endOnTick: !this.props.isEmpty,
           events: {
             afterSetExtremes: (e) => {
               this.min = e.min;

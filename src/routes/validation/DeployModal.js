@@ -145,6 +145,14 @@ const DeployModal = ({ model, onClose }) => {
     }
   };
 
+  const checkAndDownloadFirmware = () => {
+    if (checkAllSensorsSelected()) {
+      onDownloadFirmware();
+    } else {
+      setShowSelectAllSensorWarning(true);
+    }
+  };
+
   const onGoBack = () => {
     setPage(0);
   };
@@ -313,7 +321,7 @@ const DeployModal = ({ model, onClose }) => {
 
   return (
     <Modal isOpen={model} size="xl">
-      <ModalHeader>Deploy model: {model.name}</ModalHeader>
+      <ModalHeader>Generate firmware: {model.name}</ModalHeader>
       <ModalBody>
         {page === 0 ? (
           <div>
@@ -468,8 +476,15 @@ const DeployModal = ({ model, onClose }) => {
                   : ''}
               </div>
               <div>
-                <Button outline color="primary" onClick={onSwitchPage}>
+                {/* <Button outline color="primary" onClick={onSwitchPage}>
                   Deploy
+                </Button> */}
+                <Button
+                  outline
+                  color="primary"
+                  onClick={checkAndDownloadFirmware}
+                >
+                  Download firmware
                 </Button>
               </div>
             </div>
