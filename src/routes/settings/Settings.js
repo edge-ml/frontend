@@ -58,7 +58,7 @@ const options = [
   },
   {
     header: {
-      name: 'Users',
+      name: 'Members',
     },
     values: [
       {

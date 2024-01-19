@@ -21,14 +21,26 @@ import EdgeMLBrandLogo from '../EdgeMLBrandLogo/EdgeMLBrandLogo';
 import NotificationHandler from '../NotificationHandler';
 import NotificationContext from '../NotificationHandler/NotificationProvider';
 import { KITLogo, TECOLogo } from '../Common/logos';
+import {
+  PopoverBody,
+  PopoverHeader,
+  UncontrolledPopover,
+  Button,
+  Popover,
+} from 'reactstrap';
 
 const navbarProjectId = (id) => `navbar-project-${id}`;
 
 const Navbar = (props) => {
   const [userSettingsModalOpen, setUserSettingsModalOpen] = useState(false);
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
+  const [userPopoverOpen, setUserPopoverOpen] = useState(false);
 
   const { activeNotifications } = useContext(NotificationContext);
+
+  const toggleUserPopOver = () => {
+    setUserPopoverOpen(!userPopoverOpen);
+  };
 
   const getNavBarItemClasses = (location) => {
     const project = props.projects.filter(
@@ -253,8 +265,38 @@ const Navbar = (props) => {
         <div
           id="userProfileSettings"
           className="d-flex flex-row justify-content-center navbar-project-item align-items-center pt-3 pb-3 w-100"
-          onClick={toggleUserSettingsModal}
+          onClick={toggleUserPopOver}
         >
+          <Popover
+            target="userProfileSettings"
+            placement="right"
+            isOpen={userPopoverOpen}
+          >
+            <PopoverBody>
+              <div className="d-flex justify-content-center align-items-center flex-column">
+                <div className="m-2 w-100">
+                  <Button
+                    className="w-100"
+                    color="primary"
+                    outline
+                    onClick={toggleUserSettingsModal}
+                  >
+                    Settings
+                  </Button>
+                </div>
+                <div className="m-2 w-100">
+                  <Button
+                    className="w-100"
+                    color="danger"
+                    outline
+                    onClick={props.onLogout}
+                  >
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            </PopoverBody>
+          </Popover>
           <div
             style={{
               backgroundColor: 'lightgray',
