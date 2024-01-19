@@ -95,12 +95,19 @@ class DatasetPage extends Component {
     this.toggleMetaData = this.toggleMetaData.bind(this);
     this.handleDatasetNameChange = this.handleDatasetNameChange.bind(this);
     this.udateTimeSeries = this.udateTimeSeries.bind(this);
+    this.setActiveSeries = this.setActiveSeries.bind(this);
     this.pressedKeys = {
       num: [],
       ctrl: false,
       shift: false,
     };
     this.maxSeries = 3;
+  }
+
+  setActiveSeries(ids) {
+    this.setState({
+      activeSeries: ids,
+    });
   }
 
   onClickSelectSeries(_id) {
@@ -866,6 +873,7 @@ class DatasetPage extends Component {
           onMouseUp={this.mouseUpHandler}
         >
           <LabelingSelectionPanel
+            setActiveSeries={this.setActiveSeries}
             onClickSelectSeries={this.onClickSelectSeries}
             timeSeries={this.state.dataset.timeSeries}
             activeSeries={this.state.activeSeries}

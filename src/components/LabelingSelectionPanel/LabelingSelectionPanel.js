@@ -1,4 +1,4 @@
-import React, { useState, useContext, Fragment } from 'react';
+import React, { useState, useContext, Fragment, useEffect } from 'react';
 import {
   Card,
   CardBody,
@@ -26,6 +26,11 @@ const LabelingSelectionPanel = (props) => {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isTSDropdownOpen, setIsTSDropdownOpen] = useState(false);
   const { registerDatasetDownload } = useContext(NotificationContext);
+  const [selectedTs, setSelectedTs] = useState([]);
+
+  useEffect(() => {
+    setSelectedTs(props.activeSeries);
+  }, [props.activeSeries]);
 
   const toggleHelpModal = () => {
     setIsHelpModalOpen(!isHelpModalOpen);
@@ -47,7 +52,25 @@ const LabelingSelectionPanel = (props) => {
     }
   };
 
+  const onApplyTs = () => {
+    props.setActiveSeries(selectedTs);
+  };
+
+  const onClickSelectSeries = (elm_id) => {
+    if (selectedTs.includes(elm_id)) {
+      const idx = selectedTs.indexOf(elm_id);
+      const arr = [...selectedTs];
+      arr.splice(idx, 1);
+      setSelectedTs(arr);
+    } else {
+      const arr = [...selectedTs];
+      arr.push(elm_id);
+      setSelectedTs(arr);
+    }
+  };
+
   const TimeSeriesSelection = () => {
+    console.log(selectedTs);
     return (
       <div>
         {/* {props.timeSeries.map(elm => <div>{elm.name}</div>)} */}
@@ -71,14 +94,14 @@ const LabelingSelectionPanel = (props) => {
                 <DropdownItem className="p-0 p-2 dropdownItemTS">
                   <div
                     onClick={(e) => {
-                      props.onClickSelectSeries(elm._id);
+                      onClickSelectSeries(elm._id);
                       e.preventDefault();
                       e.stopPropagation();
                     }}
                   >
                     <div className="d-flex align-items-center">
                       <Checkbox
-                        isSelected={props.activeSeries.includes(elm._id)}
+                        isSelected={selectedTs.includes(elm._id)}
                         onClick={() => console.log('click checkbox')}
                       ></Checkbox>
                       <div className="ml-2">{elm.name}</div>
@@ -87,6 +110,17 @@ const LabelingSelectionPanel = (props) => {
                 </DropdownItem>
               );
             })}
+            <DropdownItem divider></DropdownItem>
+            <DropdownItem className="p-1">
+              <Button
+                className="w-100"
+                color="primary"
+                outline
+                onClick={onApplyTs}
+              >
+                Apply
+              </Button>
+            </DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </div>
