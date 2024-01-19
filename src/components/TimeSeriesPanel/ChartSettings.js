@@ -50,7 +50,13 @@ const ChartSettings = ({
   const unitText = unit || 'no unit';
 
   return (
-    <div className="chartMenuWrapper">
+    <div
+      className="chartMenuWrapper"
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+    >
       <button
         className="chartBtn"
         style={{ marginRight: '1px' }}
