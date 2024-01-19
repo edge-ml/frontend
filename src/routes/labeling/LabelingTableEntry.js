@@ -86,7 +86,7 @@ const Labeling = (props) => {
     return null;
   } else {
     return (
-      <div className="mr-2 badgeSize pb-2 mt-2 mb-2">
+      <div>
         {labels.map((label, index) => {
           return (
             <LabelBadge key={label._id} color={label.color}>
