@@ -30,6 +30,7 @@ import {
   faMicrochip,
   faCircleInfo,
   faPlay,
+  faInfo,
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 
@@ -158,6 +159,23 @@ const ValidationPage = () => {
     return res.every((elm) => elm === true);
   };
 
+  const ListButton = ({ onClick, icon, disabled = false }) => {
+    const onClickStop = (e) => {
+      onClick(e);
+      e.stopPropagation();
+    };
+
+    return (
+      <Button
+        disabled={disabled}
+        className="btn-edit ml-2 my-2"
+        onClick={onClickStop}
+      >
+        <FontAwesomeIcon icon={icon}></FontAwesomeIcon>
+      </Button>
+    );
+  };
+
   return (
     <Container>
       <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
@@ -259,73 +277,41 @@ const ValidationPage = () => {
                             </div>
                           ) : null}
                         </Col>
-                        <Col className="d-flex justify-content-end">
+                        <Col className="d-flex justify-content-end mr-3 mr-md-4">
                           {model.trainStatus === 'done' ? (
                             <div>
-                              <Button
-                                className="btn-edit mr-3 mr-md-4"
-                                onClick={(e) => {
-                                  onViewModel(model);
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faInfoCircle}
-                                ></FontAwesomeIcon>
-                              </Button>
-                              <Button
-                                className="btn-edit mr-3 mr-md-4"
-                                onClick={(e) => {
-                                  setModelDownload(model);
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faDownload}
-                                ></FontAwesomeIcon>
-                              </Button>
-                              <Button
-                                className="btn-delete t mr-3 mr-md-4"
-                                onClick={(e) => {
-                                  onDeleteSingleModel(model._id);
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faTrashAlt}
-                                ></FontAwesomeIcon>{' '}
-                              </Button>
-                              <Button
-                                className="btn-edit mr-3 mr-md-4"
-                                disabled={!checkExportC(model)}
-                                onClick={(e) => {
+                              <ListButton
+                                icon={faInfoCircle}
+                                onClick={() => onViewModel(model)}
+                              ></ListButton>
+                              <ListButton
+                                icon={faDownload}
+                                onClick={() => setModelDownload(model)}
+                              ></ListButton>
+                              <ListButton
+                                icon={faTrashAlt}
+                                onClick={() => onDeleteSingleModel(model)}
+                              ></ListButton>
+                              <ListButton
+                                icon={faMicrochip}
+                                onClick={() => {
                                   setModelDeploy(model);
                                   setDeployModalOpen(true);
-                                  e.stopPropagation();
-                                  e.preventDefault();
                                 }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faMicrochip}
-                                ></FontAwesomeIcon>
-                              </Button>
-                              <Button
-                                className="btn-edit mr-3 mr-md-4"
+                                disabled={!checkExportC(model)}
+                              ></ListButton>
+                              <ListButton
+                                icon={faPlay}
                                 onClick={(e) => {
                                   setModelLiveInference(model);
                                   setLiveInferenceModalOpen(true);
-                                  e.stopPropagation();
                                 }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faPlay}
-                                ></FontAwesomeIcon>
-                              </Button>
+                              ></ListButton>
                             </div>
                           ) : (
                             <div>
                               {model.error === '' ? (
-                                <div className="mr-3 mr-md-4">
+                                <div>
                                   <Spinner color="primary"></Spinner>
                                 </div>
                               ) : null}

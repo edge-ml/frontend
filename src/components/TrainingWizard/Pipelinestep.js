@@ -11,6 +11,7 @@ import {
 import { HyperparameterView } from '../Hyperparameters/HyperparameterView';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PlatformList from '../Common/PlatformList';
+import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
 
 const Pipelinestep = ({
   step,
@@ -95,6 +96,11 @@ const Pipelinestep = ({
         </div>
       </div>
       <hr></hr>
+      {console.log(
+        selectedPipelineStep.parameters.filter(
+          (elm) => elm.is_advanced !== true
+        )
+      )}
       {selectedPipelineStep.parameters.filter((elm) => !elm.is_advanced)
         .length > 0 ? (
         <div>
@@ -109,7 +115,14 @@ const Pipelinestep = ({
       {selectedPipelineStep.parameters.filter((elm) => elm.is_advanced).length >
         0 && (
         <div>
-          <div className="mr-2 font-weight-bold">Advanced parameters</div>
+          <div className="d-flex align-items-center">
+            <div className="mr-2 font-weight-bold">Advanced parameters</div>
+            <FontAwesomeIcon
+              size="1x"
+              icon={isOpen ? faCaretDown : faCaretRight}
+              onClick={toggleCollapse}
+            ></FontAwesomeIcon>
+          </div>
           <div>
             You do not need to change the advanced parameters. Leave the fields
             empty to use default values.
