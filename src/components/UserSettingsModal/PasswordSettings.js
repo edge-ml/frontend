@@ -4,7 +4,7 @@ import {
   Input,
   InputGroup,
   InputGroupAddon,
-  InputGroupText
+  InputGroupText,
 } from 'reactstrap';
 
 import { changeUserPassword } from './../../services/ApiServices/AuthentificationServices';
@@ -16,12 +16,11 @@ class PasswordSettings extends Component {
       newPassword: undefined,
       newConfirmationPassword: undefined,
       currentPassword: undefined,
-      passwordError: undefined
+      passwordError: undefined,
     };
     this.onNewPasswordChange = this.onNewPasswordChange.bind(this);
-    this.onConfirmationPasswordChange = this.onConfirmationPasswordChange.bind(
-      this
-    );
+    this.onConfirmationPasswordChange =
+      this.onConfirmationPasswordChange.bind(this);
     this.onCurrentPasswordChanged = this.onCurrentPasswordChanged.bind(this);
     this.onPasswordChangeSubmit = this.onPasswordChangeSubmit.bind(this);
   }
@@ -29,21 +28,21 @@ class PasswordSettings extends Component {
   onNewPasswordChange(e) {
     this.setState({
       newPassword: e.target.value,
-      passwordError: undefined
+      passwordError: undefined,
     });
   }
 
   onConfirmationPasswordChange(e) {
     this.setState({
       newConfirmationPassword: e.target.value,
-      passwordError: undefined
+      passwordError: undefined,
     });
   }
 
   onCurrentPasswordChanged(e) {
     this.setState({
       currentPassword: e.target.value,
-      passwordError: undefined
+      passwordError: undefined,
     });
   }
 
@@ -57,15 +56,15 @@ class PasswordSettings extends Component {
     }
     if (this.state.newPassword !== this.state.newConfirmationPassword) {
       this.setState({
-        passwordError: 'Passwords do not match'
+        passwordError: 'Passwords do not match',
       });
       return;
     }
     changeUserPassword(this.state.currentPassword, this.state.newPassword)
-      .then(data => window.alert(data))
-      .catch(err => {
+      .then((data) => window.alert(data))
+      .catch((err) => {
         this.setState({
-          passwordError: err.data
+          passwordError: err.data,
         });
       });
   }
@@ -73,6 +72,7 @@ class PasswordSettings extends Component {
   render() {
     return (
       <div>
+        <h4 className="font-weight-bold">Change password</h4>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>Password</InputGroupText>
@@ -127,7 +127,7 @@ class PasswordSettings extends Component {
             style={{
               display: 'inline',
               color: 'red',
-              marginLeft: '16px'
+              marginLeft: '16px',
             }}
           >
             {this.state.passwordError}

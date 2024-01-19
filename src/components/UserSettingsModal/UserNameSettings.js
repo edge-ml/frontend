@@ -4,7 +4,7 @@ import {
   Input,
   InputGroup,
   InputGroupAddon,
-  InputGroupText
+  InputGroupText,
 } from 'reactstrap';
 
 import { changeUserName } from '../../services/ApiServices/AuthentificationServices';
@@ -15,7 +15,7 @@ class UserNameSettings extends Component {
     this.state = {
       userName: undefined,
       userNameConfirm: undefined,
-      userNameError: undefined
+      userNameError: undefined,
     };
 
     this.onUserNameChange = this.onUserNameChange.bind(this);
@@ -26,14 +26,14 @@ class UserNameSettings extends Component {
   onUserNameChange(e) {
     this.setState({
       userName: e.target.value,
-      userNameError: undefined
+      userNameError: undefined,
     });
   }
 
   onUserNameConfirmChange(e) {
     this.setState({
       userNameConfirm: e.target.value,
-      userNameError: undefined
+      userNameError: undefined,
     });
   }
 
@@ -41,14 +41,14 @@ class UserNameSettings extends Component {
     if (!this.state.userName && !this.state.userNameConfirm) return;
     if (this.state.userName !== this.state.userNameConfirm) {
       this.setState({
-        userNameError: 'E-mails do not match'
+        userNameError: 'E-mails do not match',
       });
     } else {
       changeUserName(this.state.userName)
-        .then(data => window.alert(data))
-        .catch(err => {
+        .then((data) => window.alert(data))
+        .catch((err) => {
           this.setState({
-            userNameError: err.error
+            userNameError: err.error,
           });
         });
     }
@@ -57,6 +57,7 @@ class UserNameSettings extends Component {
   render() {
     return (
       <div>
+        <h4 className="font-weight-bold">Change UserName</h4>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>Username</InputGroupText>
@@ -95,7 +96,7 @@ class UserNameSettings extends Component {
             style={{
               display: 'inline',
               color: 'red',
-              marginLeft: '16px'
+              marginLeft: '16px',
             }}
           >
             {this.state.userNameError}

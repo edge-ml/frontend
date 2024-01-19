@@ -1,170 +1,38 @@
-import React, { Component } from 'react';
-import {
-  Modal,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  Button,
-  NavItem,
-  NavLink,
-  Nav
-} from 'reactstrap';
-import classnames from 'classnames';
-import Logout from './Logout';
+import React from 'react';
+import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from 'reactstrap';
 import MailSettings from './MailSettings';
 import PasswordSettings from './PasswordSettings';
-import TwoFaSettings from './TwoFaSettings';
 import UserNameSettings from './UserNameSettings';
 import DeleteUser from './DeleteUser';
 import UserSettingsProvider from './UserSettingsProvider';
 
-class UserSettingsModal extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeTab: 'logout'
-    };
-    this.baseState = this.state;
-    this.onCloseModal = this.onCloseModal.bind(this);
-    this.toggleTab = this.toggleTab.bind(this);
-  }
-
-  toggleTab(e) {
-    this.setState({
-      activeTab: e
-    });
-  }
-
-  onCloseModal() {
-    this.setState(this.baseState);
-    this.props.onClose();
-  }
-
-  render() {
-    return (
-      <Modal size="lg" isOpen={this.props.isOpen}>
-        <ModalHeader style={{ borderBottom: 'None' }}>
-          User Settings
-        </ModalHeader>
-        <Nav tabs>
-          <NavItem style={{ cursor: 'pointer' }}>
-            <NavLink
-              className={classnames({
-                active: this.state.activeTab === 'logout'
-              })}
-              onClick={() => {
-                this.toggleTab('logout');
-              }}
-            >
-              Logout
-            </NavLink>
-          </NavItem>
-          <NavItem style={{ cursor: 'pointer' }}>
-            <NavLink
-              className={classnames({
-                active: this.state.activeTab === 'mailChange'
-              })}
-              onClick={() => {
-                this.toggleTab('mailChange');
-              }}
-            >
-              Change E-Mail
-            </NavLink>
-          </NavItem>
-          <NavItem style={{ cursor: 'pointer' }}>
-            <NavLink
-              className={classnames({
-                active: this.state.activeTab === 'passwordChange'
-              })}
-              onClick={() => {
-                this.toggleTab('passwordChange');
-              }}
-            >
-              Change Password
-            </NavLink>
-          </NavItem>
-          {/* 2FA disabled for now, because it didn't work properly. Please fix and enable again.
-          Tests in conjunction with 2FA in /userSettingsModal.test.js are also disabled, please enable them too after fixing this.
-          <NavItem style={{ cursor: 'pointer' }}>
-            <NavLink
-              className={classnames({
-                active: this.state.activeTab === '2FA'
-              })}
-              onClick={() => {
-                this.toggleTab('2FA');
-              }}
-            >
-              2FA
-            </NavLink>
-          </NavItem>
-          */}
-          <NavItem style={{ cursor: 'pointer' }}>
-            <NavLink
-              className={classnames({
-                active: this.state.activeTab === 'userName'
-              })}
-              onClick={() => {
-                this.toggleTab('userName');
-              }}
-            >
-              Change Username
-            </NavLink>
-          </NavItem>
-
-          <NavItem style={{ cursor: 'pointer' }}>
-            <NavLink
-              className={classnames({
-                active: this.state.activeTab === 'deleteUser'
-              })}
-              onClick={() => {
-                this.toggleTab('deleteUser');
-              }}
-            >
-              Delete user
-            </NavLink>
-          </NavItem>
-        </Nav>
-        <ModalBody>
-          {this.state.activeTab === 'logout' ? (
-            <Logout onLogout={this.props.onLogout} id="logoutSettings"></Logout>
-          ) : null}
-          {this.state.activeTab === 'mailChange' ? (
-            <MailSettings id="mailSettings"></MailSettings>
-          ) : null}
-
-          {this.state.activeTab === 'passwordChange' ? (
-            <PasswordSettings id="passwordSettings"></PasswordSettings>
-          ) : null}
-          {this.state.activeTab === '2FA' ? (
-            <TwoFaSettings
-              id="twoFaSettings"
-              twoFAEnabled={this.props.twoFAEnabled}
-              onLogout={this.props.onLogout}
-              enable2FA={this.props.enable2FA}
-            ></TwoFaSettings>
-          ) : null}
-          {this.state.activeTab === 'userName' ? (
-            <UserNameSettings id="userNameSettings"></UserNameSettings>
-          ) : null}
-          {this.state.activeTab === 'deleteUser' ? (
-            <UserSettingsProvider onLogout={this.props.onLogout}>
-              <DeleteUser userMail={this.props.userMail}></DeleteUser>
-            </UserSettingsProvider>
-          ) : null}
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            id="buttonCloseSettings"
-            color="secondary"
-            className="m-1"
-            onClick={this.onCloseModal}
-          >
-            Close Settings
-          </Button>
-        </ModalFooter>
-      </Modal>
-    );
-  }
-}
+const UserSettingsModal = (props) => {
+  return (
+    <Modal size="lg" isOpen={props.isOpen} className="modal-dialog-scrollable">
+      <ModalHeader style={{ borderBottom: 'None' }}>User Settings</ModalHeader>
+      <ModalBody style={{ maxHeight: 'calc(100vh)', overflowY: 'auto' }}>
+        <MailSettings id="mailSettings" />
+        <hr />
+        <PasswordSettings id="passwordSettings" />
+        <hr />
+        <UserNameSettings id="userNameSettings" />
+        <hr />
+        <UserSettingsProvider onLogout={props.onLogout}>
+          <DeleteUser userMail={props.userMail} />
+        </UserSettingsProvider>
+      </ModalBody>
+      <ModalFooter>
+        <Button
+          id="buttonCloseSettings"
+          color="secondary"
+          className="m-1"
+          onClick={props.onClose}
+        >
+          Close
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+};
 
 export default UserSettingsModal;

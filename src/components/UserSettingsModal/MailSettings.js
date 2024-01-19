@@ -4,7 +4,7 @@ import {
   Input,
   InputGroup,
   InputGroupAddon,
-  InputGroupText
+  InputGroupText,
 } from 'reactstrap';
 
 import { validateEmail } from './../../services/helpers';
@@ -16,7 +16,7 @@ class MailSettings extends Component {
     this.state = {
       newEmail: undefined,
       confirmationEmail: undefined,
-      emailError: undefined
+      emailError: undefined,
     };
     this.onNewEmailChange = this.onNewEmailChange.bind(this);
     this.onConfirmationEmailChange = this.onConfirmationEmailChange.bind(this);
@@ -26,13 +26,13 @@ class MailSettings extends Component {
   onNewEmailChange(e) {
     this.setState({
       emailError: undefined,
-      newEmail: e.target.value
+      newEmail: e.target.value,
     });
   }
   onConfirmationEmailChange(e) {
     this.setState({
       emailError: undefined,
-      confirmationEmail: e.target.value
+      confirmationEmail: e.target.value,
     });
   }
 
@@ -40,18 +40,18 @@ class MailSettings extends Component {
     if (!this.state.newEmail && !this.state.confirmationEmail) return;
     if (this.state.newEmail !== this.state.confirmationEmail) {
       this.setState({
-        emailError: 'E-mails do not match'
+        emailError: 'E-mails do not match',
       });
     } else if (!validateEmail(this.state.newEmail)) {
       this.setState({
-        emailError: 'Not a valid e-mail format'
+        emailError: 'Not a valid e-mail format',
       });
     } else {
       changeUserMail(this.state.newEmail)
-        .then(data => window.alert(data))
-        .catch(err => {
+        .then((data) => window.alert(data))
+        .catch((err) => {
           this.setState({
-            emailError: err.error
+            emailError: err.error,
           });
         });
     }
@@ -60,6 +60,7 @@ class MailSettings extends Component {
   render() {
     return (
       <div>
+        <h4 className="font-weight-bold">Change Mail</h4>
         <InputGroup>
           <InputGroupAddon addonType="prepend">
             <InputGroupText>E-Mail</InputGroupText>
@@ -98,7 +99,7 @@ class MailSettings extends Component {
             style={{
               display: 'inline',
               color: 'red',
-              marginLeft: '16px'
+              marginLeft: '16px',
             }}
           >
             {this.state.emailError}

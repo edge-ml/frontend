@@ -42,7 +42,8 @@ class DeleteUser extends Component {
 
   render() {
     return (
-      <div>
+      <div className="mt-3">
+        <h4 className="font-weight-bold">Delete User</h4>
         <div>
           <h6>
             Please type <b>{this.props.userMail}</b> to confirm
