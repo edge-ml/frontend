@@ -640,21 +640,19 @@ class UploadBLE extends Component {
                 />
               </Col>
             </Row>
-            <Row className="p-2">
+            <Row>
               <Col xs={12}>
                 {this.state.recorderState === 'recording' &&
                 this.state.stream ? (
-                  <div className="shadow p-3 mb-5 bg-white rounded">
-                    <BlePanelRecordingDisplay
-                      deviceSensors={this.state.deviceSensors}
-                      selectedSensors={this.state.selectedSensors}
-                      lastData={this.currentData}
-                      sensorKeys={this.sensorKeys}
-                      fullSampleRate={this.state.fullSampleRate}
-                      currentLabel={this.state.currentLabel}
-                      prevLabel={this.state.prevLabel}
-                    />
-                  </div>
+                  <BlePanelRecordingDisplay
+                    deviceSensors={this.state.deviceSensors}
+                    selectedSensors={this.state.selectedSensors}
+                    lastData={this.currentData}
+                    sensorKeys={this.sensorKeys}
+                    fullSampleRate={this.state.fullSampleRate}
+                    currentLabel={this.state.currentLabel}
+                    prevLabel={this.state.prevLabel}
+                  />
                 ) : null}
               </Col>
             </Row>

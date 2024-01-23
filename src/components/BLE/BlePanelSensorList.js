@@ -48,6 +48,7 @@ function BlePanelSensorList(props) {
                     >
                       <Input
                         value={sensorData.sampleRate}
+                        disabled={props.disabled}
                         onChange={(e) =>
                           props.onChangeSampleRate(sensorKey, e.target.value)
                         }
