@@ -12,10 +12,10 @@ import {
   CardBody,
   CardHeader,
   Alert,
+  Fade,
 } from 'reactstrap';
 import { PersonIcon, ShieldIcon } from 'react-octicons';
 import update from 'immutability-helper';
-import { FadeInUp } from 'animate-components';
 import { getServerTime } from '../services/helpers.js';
 import {
   loginUser,
@@ -96,7 +96,7 @@ class LoginPage extends Component {
         .then((res) => {
           const refreshedAccessToken = 'Bearer ' + res.access_token;
           const decoded = jwt_decode(refreshedAccessToken);
-          console.log(refreshedAccessToken)
+          console.log(refreshedAccessToken);
           setToken(refreshedAccessToken, refreshToken);
           this.props.onUserLoggedIn(
             refreshedAccessToken,
@@ -266,7 +266,7 @@ class LoginPage extends Component {
           </Alert>
           <Row>
             <Col className="login" xs={11} sm={6} lg={4}>
-              <FadeInUp duration="0.3s" playState="running">
+              <Fade duration="0.3s" playState="running">
                 <Card
                   style={
                     this.state.loginFailed
@@ -392,7 +392,7 @@ class LoginPage extends Component {
                     </Button>
                   </CardBody>
                 </Card>
-              </FadeInUp>
+              </Fade>
             </Col>
           </Row>
         </Container>

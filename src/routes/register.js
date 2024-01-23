@@ -15,7 +15,6 @@ import {
   Label,
 } from 'reactstrap';
 import { MailIcon, PersonIcon, ShieldIcon } from 'react-octicons';
-import { FadeInUp } from 'animate-components';
 import { registerNewUser } from '../services/ApiServices/AuthentificationServices';
 import { clearToken } from '../services/LocalStorageService';
 
@@ -130,154 +129,150 @@ class RegisterPage extends Component {
       >
         <Row>
           <Col className="login" xs={11} sm={6} lg={4}>
-            <FadeInUp duration="0.3s" playState="running">
-              <Card
+            <Card
+              style={{
+                marginBottom: -149,
+              }}
+            >
+              <CardHeader
+                hidden={this.state.isLoggedIn}
                 style={{
-                  marginBottom: -149,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                <CardHeader
-                  hidden={this.state.isLoggedIn}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <EdgeMLBrandLogo></EdgeMLBrandLogo>
-                </CardHeader>
-                <CardBody hidden={this.state.isLoggedIn}>
-                  <Row>
+                <EdgeMLBrandLogo></EdgeMLBrandLogo>
+              </CardHeader>
+              <CardBody hidden={this.state.isLoggedIn}>
+                <Row>
+                  <Col>
                     <Col>
-                      <Col>
-                        <InputGroup>
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <MailIcon fill="#444" width="15" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input
-                            type="email"
-                            name="email"
-                            id="email"
-                            placeholder="email"
-                            onChange={this.onEMailChanged}
-                          />
-                        </InputGroup>
-                      </Col>
-                      <Col>
-                        <InputGroup>
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <ShieldIcon fill="#444" width="15" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input
-                            type="password"
-                            name="password"
-                            id="password"
-                            placeholder="password"
-                            onChange={this.onPasswordChanged}
-                          />
-                        </InputGroup>
-                      </Col>
-                      <Col>
-                        <InputGroup>
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <ShieldIcon fill="#444" width="15" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input
-                            type="password"
-                            name="password"
-                            id="passwordRepeat"
-                            placeholder="repeat password"
-                            onChange={this.onPasswordRepeatChanged}
-                          />
-                        </InputGroup>
-                      </Col>
-                      <Col>
-                        <InputGroup>
-                          <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                              <PersonIcon fill="#444" width="15" />
-                            </InputGroupText>
-                          </InputGroupAddon>
-                          <Input
-                            type="text"
-                            name="username"
-                            id="username"
-                            placeholder="username"
-                            onChange={this.onUserNameChanged}
-                          />
-                        </InputGroup>
-                      </Col>
-                      <Col
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <MailIcon fill="#444" width="15" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input
+                          type="email"
+                          name="email"
+                          id="email"
+                          placeholder="email"
+                          onChange={this.onEMailChanged}
+                        />
+                      </InputGroup>
+                    </Col>
+                    <Col>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <ShieldIcon fill="#444" width="15" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input
+                          type="password"
+                          name="password"
+                          id="password"
+                          placeholder="password"
+                          onChange={this.onPasswordChanged}
+                        />
+                      </InputGroup>
+                    </Col>
+                    <Col>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <ShieldIcon fill="#444" width="15" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input
+                          type="password"
+                          name="password"
+                          id="passwordRepeat"
+                          placeholder="repeat password"
+                          onChange={this.onPasswordRepeatChanged}
+                        />
+                      </InputGroup>
+                    </Col>
+                    <Col>
+                      <InputGroup>
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <PersonIcon fill="#444" width="15" />
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input
+                          type="text"
+                          name="username"
+                          id="username"
+                          placeholder="username"
+                          onChange={this.onUserNameChanged}
+                        />
+                      </InputGroup>
+                    </Col>
+                    <Col
+                      style={{
+                        paddingBottom: '10px',
+                        textAlign: 'left',
+                      }}
+                    >
+                      <FormGroup
+                        check
                         style={{
-                          paddingBottom: '10px',
-                          textAlign: 'left',
+                          marginTop: 20,
+                          marginBottom: 10,
                         }}
                       >
-                        <FormGroup
-                          check
-                          style={{
-                            marginTop: 20,
-                            marginBottom: 10,
-                          }}
-                        >
-                          <Label check>
-                            <Input
-                              type="checkbox"
-                              onChange={this.onToS_checked}
-                            />{' '}
-                            I have read and agree to the{' '}
-                            <a href="/terms_of_service.html" target="_blank">
-                              terms of service
-                            </a>{' '}
-                            .
-                          </Label>
-                        </FormGroup>
-                      </Col>
-                      {this.state.error ? (
-                        <Col
-                          className="my-1"
-                          style={{ paddingRight: '15px', paddingLeft: '15px' }}
-                        >
-                          <FontAwesomeIcon
-                            style={{ color: 'red' }}
-                            icon={faExclamationTriangle}
-                            className="mr-2 fa-xs"
-                            data-tip="Error"
-                            id="errorIcon"
-                          />
-                          <div
-                            style={{ color: 'red', display: 'inline-block' }}
-                          >
-                            {' '}
-                            {this.state.error}
-                          </div>
-                        </Col>
-                      ) : null}
-                      <Col>
-                        <Button
-                          id="registerButton"
-                          color="success"
-                          block
-                          onClick={this.onRegisterClick}
-                          disabled={!this.state.ToS_accepted}
-                          style={{
-                            marginBottom: 10,
-                          }}
-                        >
-                          Register
-                        </Button>
-                      </Col>
+                        <Label check>
+                          <Input
+                            type="checkbox"
+                            onChange={this.onToS_checked}
+                          />{' '}
+                          I have read and agree to the{' '}
+                          <a href="/terms_of_service.html" target="_blank">
+                            terms of service
+                          </a>{' '}
+                          .
+                        </Label>
+                      </FormGroup>
                     </Col>
-                  </Row>
-                </CardBody>
-              </Card>
-            </FadeInUp>
+                    {this.state.error ? (
+                      <Col
+                        className="my-1"
+                        style={{ paddingRight: '15px', paddingLeft: '15px' }}
+                      >
+                        <FontAwesomeIcon
+                          style={{ color: 'red' }}
+                          icon={faExclamationTriangle}
+                          className="mr-2 fa-xs"
+                          data-tip="Error"
+                          id="errorIcon"
+                        />
+                        <div style={{ color: 'red', display: 'inline-block' }}>
+                          {' '}
+                          {this.state.error}
+                        </div>
+                      </Col>
+                    ) : null}
+                    <Col>
+                      <Button
+                        id="registerButton"
+                        color="success"
+                        block
+                        onClick={this.onRegisterClick}
+                        disabled={!this.state.ToS_accepted}
+                        style={{
+                          marginBottom: 10,
+                        }}
+                      >
+                        Register
+                      </Button>
+                    </Col>
+                  </Col>
+                </Row>
+              </CardBody>
+            </Card>
           </Col>
         </Row>
       </Container>
