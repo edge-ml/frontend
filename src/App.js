@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
 import MobileHeader from './components/MobileHeader/MobileHeader';

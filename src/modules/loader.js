@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BeatLoader as LoaderAnimation } from 'react-spinners';
+import { Spinner } from 'reactstrap';
 
 class Loader extends Component {
   render() {
@@ -15,10 +15,10 @@ class Loader extends Component {
             justifyContent: 'center',
           }}
         >
-          <LoaderAnimation
+          <Spinner
             className="loader"
             sizeUnit={'px'}
-            color={'rgba(100, 100, 100, 0.5)'}
+            color="primary"
             loading={true}
           />
         </div>
