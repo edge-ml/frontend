@@ -80,7 +80,7 @@ class LoginPage extends Component {
           refreshToken,
           decoded.email,
           decoded.twoFactorEnabled,
-          decoded.userName
+          decoded.userName,
         );
         this.setState({
           isLoggedIn: true,
@@ -104,7 +104,7 @@ class LoginPage extends Component {
             decoded.email,
             decoded.twoFactorEnabled,
             decoded.userName,
-            decoded.subscriptionLevel
+            decoded.subscriptionLevel,
           );
         })
         .catch((err) => {
@@ -120,7 +120,7 @@ class LoginPage extends Component {
         $merge: {
           userMail: event.target.value,
         },
-      })
+      }),
     );
   }
 
@@ -130,7 +130,7 @@ class LoginPage extends Component {
         $merge: {
           password: event.target.value,
         },
-      })
+      }),
     );
   }
 
@@ -177,7 +177,7 @@ class LoginPage extends Component {
             data.refresh_token,
             decoded.email,
             decoded.twoFactorEnabled,
-            decoded.userName
+            decoded.userName,
           );
           this.setState({
             isLoggedIn: true,
@@ -217,7 +217,7 @@ class LoginPage extends Component {
             token: '',
           });
         }, 300);
-      }
+      },
     );
   }
 
@@ -227,9 +227,12 @@ class LoginPage extends Component {
       .then((serverTime) => this.setState({ time: serverTime }))
       .catch((err) => {});
     this.interval = setInterval(this.tick, 1000);
-    this.checkLoggedInInterval = setInterval(() => {
-      this.checkLoggedInStatus();
-    }, this.refreshThreshold - 10 * 1000); // check every 5 minutes
+    this.checkLoggedInInterval = setInterval(
+      () => {
+        this.checkLoggedInStatus();
+      },
+      this.refreshThreshold - 10 * 1000,
+    ); // check every 5 minutes
   }
 
   componentWillUnmount() {
@@ -266,7 +269,7 @@ class LoginPage extends Component {
           </Alert>
           <Row>
             <Col className="login" xs={11} sm={6} lg={4}>
-              <Fade duration="0.3s" playState="running">
+              <div>
                 <Card
                   style={
                     this.state.loginFailed
@@ -392,7 +395,7 @@ class LoginPage extends Component {
                     </Button>
                   </CardBody>
                 </Card>
-              </Fade>
+              </div>
             </Col>
           </Row>
         </Container>

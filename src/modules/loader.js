@@ -15,12 +15,7 @@ class Loader extends Component {
             justifyContent: 'center',
           }}
         >
-          <Spinner
-            className="loader"
-            sizeUnit={'px'}
-            color="primary"
-            loading={true}
-          />
+          <Spinner className="loader" color="primary" loading={true} />
         </div>
       );
     } else {
@@ -31,9 +26,8 @@ class Loader extends Component {
 
 export default Loader;
 
-export const withLoader = (pred, Wrapped) => (props) =>
-  (
-    <Loader loading={!pred(props)}>
-      {pred(props) ? <Wrapped {...props} /> : null}
-    </Loader>
-  );
+export const withLoader = (pred, Wrapped) => (props) => (
+  <Loader loading={!pred(props)}>
+    {pred(props) ? <Wrapped {...props} /> : null}
+  </Loader>
+);
