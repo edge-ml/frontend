@@ -91,6 +91,7 @@ class UploadBLE extends Component {
     this.handleLabelingSelect = this.handleLabelingSelect.bind(this);
     this.toggleLabelingActive = this.toggleLabelingActive.bind(this);
     this.resetLabelingState = this.resetLabelingState.bind(this);
+    this.delay = this.delay.bind(this);
 
     this.recorderMap = undefined;
     this.recorderDataset = undefined;
@@ -268,14 +269,23 @@ class UploadBLE extends Component {
     return bleDevice;
   }
 
+  async delay(milliseconds) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, milliseconds);
+    });
+  }
+
   async connectDevice(bleDevice) {
+    await this.delay(200);
     const gattServer = await bleDevice.gatt.connect();
+    await this.delay(200);
     const primaryService = await gattServer.getPrimaryService(
       this.sensorServiceUuid,
     );
     const deviceInfoService = await gattServer.getPrimaryService(
       this.deviceInfoServiceUuid,
     );
+    await this.delay(200);
     const deviceIdentifierCharacteristic =
       await deviceInfoService.getCharacteristic(this.deviceIdentifierUuid);
     const deviceGenerationCharacteristic =
