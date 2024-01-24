@@ -208,14 +208,14 @@ class UploadBLE extends Component {
             uniqueNamesGenerator({
               dictionaries: [adjectives, names],
               length: 2,
-            })
+            }),
           );
         }
         this.setState({ recorderState: 'startup' });
         await this.bleDeviceProcessor.startRecording(
           this.state.selectedSensors,
           this.state.latency,
-          this.state.datasetName
+          this.state.datasetName,
         );
         this.setState({ recorderState: 'recording' });
         break;
@@ -265,17 +265,17 @@ class UploadBLE extends Component {
       ],
     };
     const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
-    console.log(bleDevice);
     return bleDevice;
   }
 
   async connectDevice(bleDevice) {
-    const primaryService = await bleDevice.gatt.connect().then((server) => {
-      return server.getPrimaryService(this.sensorServiceUuid);
-    });
-    const deviceInfoService = await bleDevice.gatt.connect().then((server) => {
-      return server.getPrimaryService(this.deviceInfoServiceUuid);
-    });
+    const gattServer = await bleDevice.gatt.connect();
+    const primaryService = await gattServer.getPrimaryService(
+      this.sensorServiceUuid,
+    );
+    const deviceInfoService = await gattServer.getPrimaryService(
+      this.deviceInfoServiceUuid,
+    );
     const deviceIdentifierCharacteristic =
       await deviceInfoService.getCharacteristic(this.deviceIdentifierUuid);
     const deviceGenerationCharacteristic =
@@ -286,11 +286,11 @@ class UploadBLE extends Component {
       await deviceGenerationCharacteristic.readValue();
     const deviceName = this.textEncoder.decode(deviceIdentifierArrayBuffer);
     const deviceGeneration = this.textEncoder.decode(
-      deviceGenerationArrayBuffer
+      deviceGenerationArrayBuffer,
     );
     const deviceInfo = await getDeviceByNameAndGeneration(
       deviceName,
-      deviceGeneration
+      deviceGeneration,
     );
     console.log(deviceInfo);
     this.setState({
@@ -309,10 +309,10 @@ class UploadBLE extends Component {
     const [bleDevice, primaryService] = data;
     // Get necessary Characteristics from Service
     this.sensorConfigCharacteristic = await primaryService.getCharacteristic(
-      this.sensorConfigCharacteristicUuid
+      this.sensorConfigCharacteristicUuid,
     );
     this.sensorDataCharacteristic = await primaryService.getCharacteristic(
-      this.sensorDataCharacteristicUuid
+      this.sensorDataCharacteristicUuid,
     );
     this.bleDeviceProcessor = new BleDeviceProcessor(
       bleDevice,
@@ -320,7 +320,7 @@ class UploadBLE extends Component {
       this.state.deviceSensors,
       this.sensorConfigCharacteristic,
       this.sensorDataCharacteristic,
-      this
+      this,
     );
     this.setState({
       connectedBLEDevice: bleDevice,
