@@ -105,8 +105,27 @@ class DatasetPage extends Component {
   }
 
   setActiveSeries(ids) {
-    this.setState({
-      activeSeries: ids,
+    const ts = this.state.dataset.timeSeries.filter((ts) =>
+      ids.includes(ts._id),
+    );
+    const newStart = Math.min(...ts.map((elm) => elm.start));
+    const newEnd = Math.max(...ts.map((elm) => elm.end));
+
+    this.memoizedGetDatasetTimeseries(this.props.match.params.id, ids, {
+      max_resolution: window.innerWidth / 2,
+    }).then((tsData) => {
+      this.setState({
+        previewTimeSeriesData: tsData,
+        activeSeries: ids,
+        shownStart: newStart,
+        shownEnd: newEnd,
+      });
+    });
+
+    Highcharts.charts.forEach((chart) => {
+      if (chart) {
+        chart.xAxis[0].setExtremes(newStart, newEnd, true, false);
+      }
     });
   }
 
@@ -120,7 +139,7 @@ class DatasetPage extends Component {
     }
 
     const ts = this.state.dataset.timeSeries.filter((ts) =>
-      series.includes(ts._id)
+      series.includes(ts._id),
     );
     const newStart = Math.min(...ts.map((elm) => elm.start));
     const newEnd = Math.max(...ts.map((elm) => elm.end));
@@ -199,7 +218,7 @@ class DatasetPage extends Component {
     const dataset = await getDatasetMeta(this.props.match.params.id);
     const dataset_end = Math.max(...dataset.timeSeries.map((elm) => elm.end));
     const dataset_start = Math.min(
-      ...dataset.timeSeries.map((elm) => elm.start)
+      ...dataset.timeSeries.map((elm) => elm.start),
     );
     dataset.end = dataset_end;
     dataset.start = dataset_start;
@@ -221,7 +240,7 @@ class DatasetPage extends Component {
     const dataset = await getDatasetMeta(this.props.match.params.id);
     const dataset_end = Math.max(...dataset.timeSeries.map((elm) => elm.end));
     const dataset_start = Math.min(
-      ...dataset.timeSeries.map((elm) => elm.start)
+      ...dataset.timeSeries.map((elm) => elm.start),
     );
     dataset.end = dataset_end;
     dataset.start = dataset_start;
@@ -238,7 +257,7 @@ class DatasetPage extends Component {
       activeSeries,
       {
         max_resolution: window.innerWidth / 2,
-      }
+      },
     ).then((timeseriesData) => {
       if (this.state.previewTimeSeriesData) {
         return;
@@ -258,7 +277,7 @@ class DatasetPage extends Component {
         max_resolution,
         start,
         end,
-      }
+      },
     );
     return res;
   }
@@ -274,7 +293,7 @@ class DatasetPage extends Component {
     this.setState({ dataset }, () =>
       subscribeLabelingsAndLabels().then((labelings) => {
         this.onLabelingsAndLabelsChanged(labelings);
-      })
+      }),
     );
   }
 
@@ -328,7 +347,7 @@ class DatasetPage extends Component {
         // If no label is selected, just chnage the used labeltype
         if (!this.state.controlStates.selectedLabelId) {
           const newType = this.state.labelings.find(
-            (elm) => elm._id === this.state.controlStates.selectedLabelingId
+            (elm) => elm._id === this.state.controlStates.selectedLabelingId,
           ).labels[number - 1]._id;
           this.setState({
             controlStates: {
@@ -342,11 +361,11 @@ class DatasetPage extends Component {
 
         const labelingIdx = this.state.dataset.labelings.findIndex(
           (elm) =>
-            elm.labelingId === this.state.controlStates.selectedLabelingId
+            elm.labelingId === this.state.controlStates.selectedLabelingId,
         );
         if (
           this.state.labelings.find(
-            (elm) => elm._id === this.state.controlStates.selectedLabelingId
+            (elm) => elm._id === this.state.controlStates.selectedLabelingId,
           ).labels.length < number
         ) {
           e.stopPropagation();
@@ -355,11 +374,11 @@ class DatasetPage extends Component {
         const labelIdx = this.state.dataset.labelings[
           labelingIdx
         ].labels.findIndex(
-          (elm) => elm._id === this.state.controlStates.selectedLabelId
+          (elm) => elm._id === this.state.controlStates.selectedLabelId,
         );
         const newDataset = this.state.dataset;
         const newType = this.state.labelings.find(
-          (elm) => elm._id === this.state.controlStates.selectedLabelingId
+          (elm) => elm._id === this.state.controlStates.selectedLabelingId,
         ).labels[number - 1]._id;
         newDataset.labelings[labelingIdx].labels[labelIdx].type = newType;
         const newControllState = this.state.controlStates;
@@ -370,7 +389,7 @@ class DatasetPage extends Component {
         changeDatasetLabel(
           newDataset._id,
           this.state.controlStates.selectedLabelingId,
-          newDataset.labelings[labelingIdx].labels[labelIdx]
+          newDataset.labelings[labelingIdx].labels[labelIdx],
         );
       }
     }
@@ -414,13 +433,13 @@ class DatasetPage extends Component {
 
       for (let j = 0; j < labelings.length; j++) {
         let labelTypes = this.state.labels.filter((labelType) =>
-          labelings[j].labels.includes(labelType['_id'])
+          labelings[j].labels.includes(labelType['_id']),
         );
 
         if (label.labelingId === labelings[j]['_id']) {
           if (!labelTypes.some((type) => type['_id'] === label.typeId)) {
             window.alert(
-              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`
+              `The typeId ${label.typeId} does not match any defined label type of labeling ${label.labelingId}.`,
             );
             return null;
           }
@@ -443,7 +462,7 @@ class DatasetPage extends Component {
 
     if (labels.length !== 0) {
       window.alert(
-        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`
+        `The labelingId ${labels[0].labelingId} does not match any defined labeling.`,
       );
       return;
     }
@@ -471,7 +490,7 @@ class DatasetPage extends Component {
     drawingPosition,
     newPosition,
     canEdit,
-    fromLastPosition = this.state.controlStates.fromLastPosition
+    fromLastPosition = this.state.controlStates.fromLastPosition,
   ) {
     this.setState({
       controlStates: {
@@ -487,7 +506,7 @@ class DatasetPage extends Component {
 
   onSelectedLabelingIdChanged(selectedLabelingId) {
     let labeling = this.state.labelings.filter(
-      (labeling) => labeling['_id'] === selectedLabelingId
+      (labeling) => labeling['_id'] === selectedLabelingId,
     )[0];
 
     const labelTypes = labeling.labels;
@@ -512,13 +531,13 @@ class DatasetPage extends Component {
     });
     if (this.state.controlStates.selectedLabelId) {
       const labelingIdx = this.state.dataset.labelings.findIndex(
-        (elm) => elm.labelingId === this.state.controlStates.selectedLabelingId
+        (elm) => elm.labelingId === this.state.controlStates.selectedLabelingId,
       );
 
       const labelIdx = this.state.dataset.labelings[
         labelingIdx
       ].labels.findIndex(
-        (elm) => elm._id === this.state.controlStates.selectedLabelId
+        (elm) => elm._id === this.state.controlStates.selectedLabelId,
       );
       const newDataset = this.state.dataset;
       newDataset.labelings[labelingIdx].labels[labelIdx].type =
@@ -531,7 +550,7 @@ class DatasetPage extends Component {
       changeDatasetLabel(
         newDataset._id,
         this.state.controlStates.selectedLabelingId,
-        newDataset.labelings[labelingIdx].labels[labelIdx]
+        newDataset.labelings[labelingIdx].labels[labelIdx],
       );
     }
   }
@@ -539,11 +558,11 @@ class DatasetPage extends Component {
   onSelectedLabelChanged(selectedLabelId) {
     let labeling = this.state.dataset.labelings.filter(
       (labeling) =>
-        labeling.labelingId === this.state.controlStates.selectedLabelingId
+        labeling.labelingId === this.state.controlStates.selectedLabelingId,
     )[0];
     if (!labeling) return;
     let label = labeling.labels.filter(
-      (label) => label['_id'] === selectedLabelId
+      (label) => label['_id'] === selectedLabelId,
     )[0];
 
     this.setState({
@@ -571,7 +590,7 @@ class DatasetPage extends Component {
     }
 
     const labelingIdx = this.state.dataset.labelings.findIndex(
-      (elm) => elm.labelingId === this.state.controlStates.selectedLabelingId
+      (elm) => elm.labelingId === this.state.controlStates.selectedLabelingId,
     );
 
     if (
@@ -617,7 +636,7 @@ class DatasetPage extends Component {
       // Click for the second time to finish label creation
       const newDataset = this.state.dataset;
       const labelIdx = newDataset.labelings[labelingIdx].labels.findIndex(
-        (elm) => elm._id === this.state.controlStates.drawingId
+        (elm) => elm._id === this.state.controlStates.drawingId,
       );
       const newLabel = newDataset.labelings[labelingIdx].labels[labelIdx];
       newLabel.end = position;
@@ -649,11 +668,11 @@ class DatasetPage extends Component {
         {
           ...newDataset.labelings[labelingIdx].labels[labelIdx],
           _id: undefined,
-        }
+        },
       )
         .then((generatedLabel) => {
           const labelIdx = newDataset.labelings[labelingIdx].labels.findIndex(
-            (elm) => elm._id === newLabel._id
+            (elm) => elm._id === newLabel._id,
           );
           newDataset.labelings[labelingIdx].labels[labelIdx] = generatedLabel;
           this.setState({
@@ -684,10 +703,10 @@ class DatasetPage extends Component {
     const newDataset = this.state.dataset;
     const labelingIdx = newDataset.labelings.findIndex(
       (labeling) =>
-        labeling.labelingId === this.state.controlStates.selectedLabelingId
+        labeling.labelingId === this.state.controlStates.selectedLabelingId,
     );
     var labelIdx = newDataset.labelings[labelingIdx].labels.findIndex(
-      (label) => label._id === labelId
+      (label) => label._id === labelId,
     );
     const newLabel = newDataset.labelings[labelingIdx].labels[labelIdx];
     const backUpLabel = JSON.parse(JSON.stringify(newLabel));
@@ -701,7 +720,7 @@ class DatasetPage extends Component {
     changeDatasetLabel(
       newDataset._id,
       newDataset.labelings[labelingIdx].labelingId,
-      newLabel
+      newLabel,
     ).catch(() => {
       this.showSnackbar('Could not change label', 5000);
       // Revert changes
@@ -717,14 +736,14 @@ class DatasetPage extends Component {
       let dataset = this.state.dataset;
       let labeling = dataset.labelings.filter(
         (labeling) =>
-          labeling.labelingId === this.state.controlStates.selectedLabelingId
+          labeling.labelingId === this.state.controlStates.selectedLabelingId,
       )[0];
 
       /*labeling.labels = labeling.labels.filter(
         (label) => label["_id"] !== this.state.controlStates.selectedLabelId
       );*/
       const labelIdxToDelete = labeling.labels.findIndex(
-        (label) => label['_id'] === this.state.controlStates.selectedLabelId
+        (label) => label['_id'] === this.state.controlStates.selectedLabelId,
       );
 
       const labelToDelete = labeling.labels[labelIdxToDelete];
@@ -734,7 +753,7 @@ class DatasetPage extends Component {
       // Delete labeling when no labels are present for this labeling
       if (labeling.labels.length === 0) {
         dataset.labelings = dataset.labelings.filter(
-          (elm) => elm._id !== labeling._id
+          (elm) => elm._id !== labeling._id,
         );
       }
 
@@ -819,14 +838,14 @@ class DatasetPage extends Component {
     // exponential backoff
     return Math.min(
       MAXIMUM_POLLING_INTERVAL,
-      1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100
+      1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100,
     );
   }
 
   async handleDatasetNameChange(newName) {
     const nameChangeSuccessful = await changeDatasetName(
       this.state.dataset._id,
-      newName
+      newName,
     );
     if (nameChangeSuccessful) {
       this.setState((prevState) => ({
@@ -847,18 +866,19 @@ class DatasetPage extends Component {
 
     let selectedLabeling = this.state.labelings.filter(
       (labeling) =>
-        labeling['_id'] === this.state.controlStates.selectedLabelingId
+        labeling['_id'] === this.state.controlStates.selectedLabelingId,
     )[0];
 
     let selectedDatasetlabeling = this.state.dataset.labelings.filter(
-      (labeling) => selectedLabeling['_id'] === labeling.labelingId
+      (labeling) => selectedLabeling['_id'] === labeling.labelingId,
     )[0];
 
     if (!selectedDatasetlabeling) selectedDatasetlabeling = {};
     let selectedDatasetLabel =
       selectedDatasetlabeling && selectedDatasetlabeling.labels
         ? selectedDatasetlabeling.labels.find(
-            (label) => label['_id'] === this.state.controlStates.selectedLabelId
+            (label) =>
+              label['_id'] === this.state.controlStates.selectedLabelId,
           )
         : null;
 
@@ -893,10 +913,10 @@ class DatasetPage extends Component {
           <TimeSeriesCollectionPanel
             udateTimeSeries={this.udateTimeSeries}
             datasetStart={Math.min(
-              ...this.state.dataset.timeSeries.map((elm) => elm.start)
+              ...this.state.dataset.timeSeries.map((elm) => elm.start),
             )}
             datasetEnd={Math.max(
-              ...this.state.dataset.timeSeries.map((elm) => elm.end)
+              ...this.state.dataset.timeSeries.map((elm) => elm.end),
             )}
             activeSeries={this.state.activeSeries}
             timeSeries={this.state.dataset.timeSeries}
@@ -967,10 +987,12 @@ class DatasetPage extends Component {
                     </div>
                     <MetadataContainer
                       start={Math.min(
-                        ...this.state.dataset.timeSeries.map((elm) => elm.start)
+                        ...this.state.dataset.timeSeries.map(
+                          (elm) => elm.start,
+                        ),
                       )}
                       end={Math.max(
-                        ...this.state.dataset.timeSeries.map((elm) => elm.end)
+                        ...this.state.dataset.timeSeries.map((elm) => elm.end),
                       )}
                       user={this.state.dataset.userId}
                       name={this.state.dataset.name}
