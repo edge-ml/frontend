@@ -7,11 +7,14 @@ export const parseData = (sensor, data) => {
   scheme.forEach((element) => {
     //var name = element['name'];
     var valueType = element.type;
-    var scale = element.scaleFactor;
+    var scale = element.scaleFactor || 1;
     var size = 0;
 
     if (valueType == 'uint8') {
       value = data.getUint8(dataIndex, true) * scale;
+      size = 1;
+    } else if (valueType == 'int8') {
+      value = data.getInt8(dataIndex, true) * scale;
       size = 1;
     } else if (valueType == 'uint24') {
       value =
@@ -24,16 +27,17 @@ export const parseData = (sensor, data) => {
         (data.getUint16(dataIndex + 2, true) << 16);
       size = 4;
     } else if (valueType == 'int16') {
-      console.log(data);
       value = data.getInt16(dataIndex, true) * scale;
+      size = 2;
+    } else if (valueType == 'uint16') {
+      value = data.getUint16(dataIndex, true) * scale;
       size = 2;
     } else if (valueType == 'float') {
       value = data.getFloat32(dataIndex, true) * scale;
       size = 4;
     } else {
-      console.log('Error: unknown type');
+      console.log('Error: unknown type', valueType);
     }
-    //result = result + element.name + ': ' + value + '   ';
     values.push(value);
     dataIndex += size;
   });
@@ -61,12 +65,14 @@ export const prepareSensorBleObject = (sensorArray) => {
   });
   return result;
 };
+
 export const getBaseDataset = (sensors, datasetName) => {
   const timeSeries = [];
   sensors.forEach((sensor) => {
     sensor.parseScheme.forEach((scheme) => {
       timeSeries.push({
         name: sensor.name + '_' + scheme.name,
+        unit: scheme.unit,
         start: new Date().getTime() + 10000000,
         end: new Date().getTime(),
         data: [],
@@ -85,13 +91,13 @@ export const parseTimeSeriesData = (
   dataset,
   recordedData,
   recordingSensors,
-  sensors
+  sensors,
 ) => {
   const timeSeries = [];
   const sensorData = {};
   [...recordingSensors].forEach((sensorKey) => {
     sensorData[sensorKey] = recordedData.filter(
-      (elm) => elm.sensor.toString() === sensorKey.toString()
+      (elm) => elm.sensor.toString() === sensorKey.toString(),
     );
   });
   Object.keys(sensorData).forEach((key) => {
@@ -102,7 +108,7 @@ export const parseTimeSeriesData = (
       });
       timeSeries.push({
         _id: dataset.timeSeries.find(
-          (elm) => elm.name === sensor.name + '_' + scheme.name
+          (elm) => elm.name === sensor.name + '_' + scheme.name,
         )._id,
         data: data,
       });

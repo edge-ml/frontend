@@ -22,6 +22,7 @@ import { uniqueNamesGenerator } from 'unique-names-generator';
 import { BleLabelingMenu } from '../components/BLE/BleLabelingMenu';
 
 import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
+import { get_parse_schema } from '../utils/ble';
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -105,12 +106,15 @@ class UploadBLE extends Component {
     this.sensorConfigCharacteristic = null;
     this.sensorDataCharacteristic = null;
     this.sensorServiceUuid = '34c2e3bb-34aa-11eb-adc1-0242ac120002';
+    this.parseInfoServiceUuid = 'caa25cb7-7e1b-44f2-adc9-e8c06c9ced43';
     this.sensorConfigCharacteristicUuid =
       '34c2e3bd-34aa-11eb-adc1-0242ac120002';
     this.sensorDataCharacteristicUuid = '34c2e3bc-34aa-11eb-adc1-0242ac120002';
     this.deviceInfoServiceUuid = '45622510-6468-465a-b141-0b9b0f96b468';
     this.deviceIdentifierUuid = '45622511-6468-465a-b141-0b9b0f96b468';
     this.deviceGenerationUuid = '45622512-6468-465a-b141-0b9b0f96b468';
+    this.deviceParseSchemaUuid = 'caa25cb8-7e1b-44f2-adc9-e8c06c9ced43';
+
     this.shortcutKeys = '1234567890abcdefghijklmnopqrstuvwxyz';
     this.bleDeviceProcessor = undefined;
     this.textEncoder = new TextDecoder('utf-8');
@@ -263,6 +267,7 @@ class UploadBLE extends Component {
         this.deviceInfoServiceUuid,
         this.sensorServiceUuid,
         this.dfuServiceUuid,
+        this.parseInfoServiceUuid,
       ],
     };
     const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
@@ -285,11 +290,28 @@ class UploadBLE extends Component {
     const deviceInfoService = await gattServer.getPrimaryService(
       this.deviceInfoServiceUuid,
     );
+
+    var sensorSchema = undefined;
+    // Get parsing Schema
+    const deviceParseSchemaService = await gattServer.getPrimaryService(
+      this.parseInfoServiceUuid,
+    );
+    if (deviceParseSchemaService) {
+      console.log('Getting parsing info from device');
+      const parsingSchemaCharacterisitc =
+        await deviceParseSchemaService.getCharacteristic(
+          this.deviceParseSchemaUuid,
+        );
+      const parsingSchemaBuffer = await parsingSchemaCharacterisitc.readValue();
+      sensorSchema = get_parse_schema(parsingSchemaBuffer);
+    }
+
     await this.delay(200);
     const deviceIdentifierCharacteristic =
       await deviceInfoService.getCharacteristic(this.deviceIdentifierUuid);
     const deviceGenerationCharacteristic =
       await deviceInfoService.getCharacteristic(this.deviceGenerationUuid);
+
     const deviceIdentifierArrayBuffer =
       await deviceIdentifierCharacteristic.readValue();
     const deviceGenerationArrayBuffer =
@@ -298,17 +320,21 @@ class UploadBLE extends Component {
     const deviceGeneration = this.textEncoder.decode(
       deviceGenerationArrayBuffer,
     );
-    const deviceInfo = await getDeviceByNameAndGeneration(
-      deviceName,
-      deviceGeneration,
-    );
-    console.log(deviceInfo);
+    // Check if we have the information from the sensor-parse-characteristic directly from the device
+    if (!sensorSchema) {
+      console.log('Getting parsing info from backend');
+      const deviceInfo = await getDeviceByNameAndGeneration(
+        deviceName,
+        deviceGeneration,
+      );
+      sensorSchema = deviceInfo.sensors;
+    }
     this.setState({
       connectedDeviceData: {
-        ...deviceInfo.device,
+        name: deviceName,
         installedFWVersion: deviceGeneration,
       },
-      deviceSensors: prepareSensorBleObject(deviceInfo.sensors),
+      deviceSensors: prepareSensorBleObject(sensorSchema),
       outdatedVersionInstalled:
         deviceGeneration < this.state.latestEdgeMLVersion,
     });
@@ -573,6 +599,8 @@ class UploadBLE extends Component {
     if (!this.state.bleStatus) {
       return <BleNotActivated></BleNotActivated>;
     }
+
+    console.log(this.state);
 
     return (
       <div

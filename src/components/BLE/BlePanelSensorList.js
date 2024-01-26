@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { Table, Input, InputGroup, InputGroupAddon, Badge } from 'reactstrap';
 import Checkbox from '../Common/Checkbox';
 
 function BlePanelSensorList(props) {
@@ -60,7 +60,14 @@ function BlePanelSensorList(props) {
                     </InputGroup>
                   </td>
                   <td>
-                    {sensorData.parseScheme.map((elm) => elm.name).join('; ')}
+                    {/* {sensorData.parseScheme.map((elm) => elm.name).join('; ')} */}
+                    {sensorData.parseScheme.map((elm) => {
+                      return (
+                        <Badge color="primary">
+                          {elm.name + (elm.unit ? ' (' + elm.unit + ')' : '')}
+                        </Badge>
+                      );
+                    })}
                   </td>
                 </tr>
               );
