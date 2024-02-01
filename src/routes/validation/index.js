@@ -144,8 +144,11 @@ const ValidationPage = () => {
 
   const checkExportC = (model) => {
     const res = model.pipeline.selectedPipeline.steps.map((step) => {
+      if (!setStepOptions) {
+        return false;
+      }
       const stepOption = stepOptions.find(
-        (elm) => elm.name === step.options.name
+        (elm) => elm.name === step.options.name,
       );
       if (
         ['PRE', 'CORE'].includes(stepOption.type) &&
@@ -224,7 +227,7 @@ const ValidationPage = () => {
                   model.error || model.trainStatus !== 'done'
                     ? undefined
                     : model.pipeline.selectedPipeline.steps.filter(
-                        (elm) => elm.type === 'EVAL'
+                        (elm) => elm.type === 'EVAL',
                       )[0].options.metrics.metrics;
                 return (
                   <TableEntry index={index}>
