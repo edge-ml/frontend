@@ -57,7 +57,7 @@ export function get_parse_schema(dataView) {
       const unit = readCharArray(dataView, cursor, unit_length);
       cursor = cursor + unit_length;
       parseScheme.push({
-        name: component_name,
+        name: group_name + '_' + component_name,
         unit: unit,
         type: convert_type(group_type),
       });
