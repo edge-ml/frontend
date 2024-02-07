@@ -363,6 +363,21 @@ class UploadBLE extends Component {
     });
   }
 
+  connectToDevice = async (bleDevice, retryCount = 0) => {
+    try {
+      const server = await bleDevice.gatt.connect();
+      console.log(server);
+      return server;
+    } catch (error) {
+      if (retryCount < 3) {
+        console.log('Connection failed! Retry...');
+        setTimeout(() => this.connectToDevice(bleDevice, retryCount + 1), 4000);
+      } else {
+        throw error;
+      }
+    }
+  };
+
   async checkServicesAndGetLatestFWVersion(bleDevice) {
     bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
     let promisedSetState = (newState) =>
@@ -374,7 +389,7 @@ class UploadBLE extends Component {
     let hasDeviceInfo = false;
     let hasDFUFunction = false;
     let hasSensorService = false;
-    const server = await bleDevice.gatt.connect();
+    const server = await this.connectToDevice(bleDevice, 0);
     const services = await server.getPrimaryServices();
     services.forEach((service) => {
       if (service.uuid === this.deviceInfoServiceUuid) {
