@@ -120,10 +120,10 @@ class App extends Component {
 
   navigateTo(location) {
     const project = this.state.projects.filter(
-      (x) => x._id === this.state.currentProjectId
+      (x) => x._id === this.state.currentProjectId,
     )[0];
     this.props.history.push(
-      '/' + project.admin.userName + '/' + project.name + '/' + location
+      '/' + project.admin.userName + '/' + project.name + '/' + location,
     );
     this.setState({
       projectLocation: location,
@@ -150,7 +150,7 @@ class App extends Component {
 
     var newProject = false;
     var projectIndex = projects.findIndex(
-      (elm) => elm._id === this.state.currentProjectId
+      (elm) => elm._id === this.state.currentProjectId,
     );
     if (projectIndex === -1) {
       projectIndex = 0;
@@ -221,7 +221,7 @@ class App extends Component {
         // if the user comes to a url parse the name of the project from it
         const params = this.props.history.location.pathname.split('/');
         const projectIndex = projects.findIndex(
-          (elm) => elm.name === params[2]
+          (elm) => elm.name === params[2],
         );
         const retrievedProjectLocation = params[3];
         this.setState({
@@ -240,14 +240,14 @@ class App extends Component {
               '/' +
               projects[projectIndex].name +
               '/' +
-              params.slice(3).join('/')
+              params.slice(3).join('/'),
           );
           return;
         }
 
         // verify now project was openend last, otherwise start with first project open
         var storedProjectIndex = projects.findIndex(
-          (elm) => elm._id === getProject()
+          (elm) => elm._id === getProject(),
         );
 
         if (storedProjectIndex === -1) {
@@ -265,7 +265,7 @@ class App extends Component {
             projects[storedProjectIndex].admin.userName +
             '/' +
             projects[storedProjectIndex].name +
-            '/datasets'
+            '/datasets',
         );
       })
       .catch((errorStatus) => {
@@ -329,7 +329,7 @@ class App extends Component {
   render() {
     var projectIndex = this.state.projects
       ? this.state.projects.findIndex(
-          (x) => x._id === this.state.currentProjectId
+          (x) => x._id === this.state.currentProjectId,
         )
       : -1;
     const projectAvailable = this.state.projects
@@ -376,73 +376,69 @@ class App extends Component {
               onUserLoggedIn={this.onUserLoggedIn}
               on2FA={this.on2FA}
             >
-              <DataLossPage>
-                <Loader
-                  loading={!(this.state.isLoggedIn && this.state.projects)}
-                >
-                  <AppView
-                    mobileNavbarShown={this.state.mobileNavbarShown}
-                    onMobileNavbarClose={this.onMobileNavbarClose}
-                    mobileHeader={
-                      <MobileHeader
-                        mobileNavbarShown={this.state.mobileNavbarShown}
-                        onMenuButton={this.onMobileNavbarToggle}
-                        projectAvailable={projectAvailable}
-                      />
-                    }
-                    navbar={
-                      <Navbar
-                        userName={this.state.userName}
-                        enable2FA={this.enable2FA}
-                        userMail={this.state.userMail}
-                        onLogout={this.onLogout}
-                        currentProjectId={this.state.currentProjectId}
-                        twoFAEnabled={this.state.twoFAEnabled}
-                        location={this.props.location}
-                        projectAvailable={projectAvailable}
-                        projects={this.state.projects}
-                        selectedProjectId={this.state.selectedProjectId}
-                        onProjectClick={this.onProjectClick}
-                        navigateTo={this.navigateTo}
-                        onProjectEditModal={this.onProjectEditModal}
-                      ></Navbar>
-                    }
-                    content={
-                      <Fragment>
-                        {projectAvailable ? null : (
-                          <NoProjectPage
-                            onCreateProject={(e) => {
-                              e.preventDefault();
-                              this.onProjectEditModal(true);
-                            }}
-                          ></NoProjectPage>
+              <Loader loading={!(this.state.isLoggedIn && this.state.projects)}>
+                <AppView
+                  mobileNavbarShown={this.state.mobileNavbarShown}
+                  onMobileNavbarClose={this.onMobileNavbarClose}
+                  mobileHeader={
+                    <MobileHeader
+                      mobileNavbarShown={this.state.mobileNavbarShown}
+                      onMenuButton={this.onMobileNavbarToggle}
+                      projectAvailable={projectAvailable}
+                    />
+                  }
+                  navbar={
+                    <Navbar
+                      userName={this.state.userName}
+                      enable2FA={this.enable2FA}
+                      userMail={this.state.userMail}
+                      onLogout={this.onLogout}
+                      currentProjectId={this.state.currentProjectId}
+                      twoFAEnabled={this.state.twoFAEnabled}
+                      location={this.props.location}
+                      projectAvailable={projectAvailable}
+                      projects={this.state.projects}
+                      selectedProjectId={this.state.selectedProjectId}
+                      onProjectClick={this.onProjectClick}
+                      navigateTo={this.navigateTo}
+                      onProjectEditModal={this.onProjectEditModal}
+                    ></Navbar>
+                  }
+                  content={
+                    <Fragment>
+                      {projectAvailable ? null : (
+                        <NoProjectPage
+                          onCreateProject={(e) => {
+                            e.preventDefault();
+                            this.onProjectEditModal(true);
+                          }}
+                        ></NoProjectPage>
+                      )}
+                      <Route
+                        {...this.props}
+                        path="/:userName/:projectID"
+                        render={(props) => (
+                          <AppContent
+                            {...props}
+                            userName={this.state.userName}
+                            userMail={this.state.userMail}
+                            onDeleteProject={this.onDeleteProject}
+                            onLeaveProject={this.onLeaveProject}
+                            modalOpen={modalOpen}
+                            project={
+                              this.state.projects.filter(
+                                (x) => x._id === this.state.currentProjectId,
+                              )[0]
+                            }
+                            onProjectsChanged={this.onProjectsChanged}
+                            navigateTo={this.navigateTo}
+                          />
                         )}
-                        <Route
-                          {...this.props}
-                          path="/:userName/:projectID"
-                          render={(props) => (
-                            <AppContent
-                              {...props}
-                              userName={this.state.userName}
-                              userMail={this.state.userMail}
-                              onDeleteProject={this.onDeleteProject}
-                              onLeaveProject={this.onLeaveProject}
-                              modalOpen={modalOpen}
-                              project={
-                                this.state.projects.filter(
-                                  (x) => x._id === this.state.currentProjectId
-                                )[0]
-                              }
-                              onProjectsChanged={this.onProjectsChanged}
-                              navigateTo={this.navigateTo}
-                            />
-                          )}
-                        ></Route>
-                      </Fragment>
-                    }
-                  />
-                </Loader>
-              </DataLossPage>
+                      ></Route>
+                    </Fragment>
+                  }
+                />
+              </Loader>
             </AuthWall>
           ) : null}
         </Fragment>
