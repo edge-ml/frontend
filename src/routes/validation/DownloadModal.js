@@ -33,8 +33,8 @@ const DownloadModal = ({ model, onClose }) => {
       return;
     }
 
-    const blob = await downloadDeploymentModel(model._id, language);
-    downloadBlob(blob, `${model.name}_${language}.zip`);
+    const blob = await downloadDeploymentModel(model._id, 'C');
+    downloadBlob(blob, `${model.name}_${'language'}.zip`);
   };
 
   const getCode = () => {
