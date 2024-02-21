@@ -76,7 +76,7 @@ class TimeSeriesPanel extends Component {
 
     if (plotlines) {
       plotlines = plotlines.filter(
-        (plotline) => plotline.id === 'plotline_cursor'
+        (plotline) => plotline.id === 'plotline_cursor',
       );
       if (plotlines.length > 0) {
         let chartOptions = this.state.chartOptions;
@@ -90,7 +90,7 @@ class TimeSeriesPanel extends Component {
     let filteredLabels =
       this.props.labeling.labels !== undefined
         ? this.props.labeling.labels.filter(
-            (label) => label.start === undefined || label.end === undefined
+            (label) => label.start === undefined || label.end === undefined,
           )
         : undefined;
 
@@ -103,7 +103,7 @@ class TimeSeriesPanel extends Component {
         filteredLabels[0]['_id'],
         this.props.drawingPosition,
         this.props.newPosition,
-        this.props.canEdit
+        this.props.canEdit,
       );
     }
     if (!this.chart.current) {
@@ -125,9 +125,9 @@ class TimeSeriesPanel extends Component {
   afterSetExtremesFunc(min, max, width) {
     if (this.chart && this.chart.current && this.chart.current.chart) {
       const chart = this.chart.current.chart;
-      if (this.props.index !== 0) {
-        chart.showLoading('Loading from server...');
-      }
+      // if (this.props.index !== 0) {
+      //   chart.showLoading('Loading from server...');
+      // }
       this.props
         .onTimeSeriesWindow(Math.floor(min), Math.floor(max), Math.round(width))
         .then((ts) => {
@@ -187,30 +187,30 @@ class TimeSeriesPanel extends Component {
                 },
               ]
             : !Array.isArray(props.name)
-            ? [
-                {
-                  showInLegend: false,
-                  name:
-                    props.unit === ''
-                      ? props.name
-                      : props.name + ' (' + props.unit + ')',
-                  data: props.data,
-                  lineWidth: 1.5,
-                  enableMouseTracking: false,
-                },
-              ]
-            : props.data.map((dataItem, indexOuter) => {
-                return {
-                  name:
-                    props.name[indexOuter] +
-                    ' (' +
-                    props.unit[indexOuter] +
-                    ')',
-                  data: props.data,
-                  lineWidth: 1.5,
-                  enableMouseTracking: false,
-                };
-              }),
+              ? [
+                  {
+                    showInLegend: false,
+                    name:
+                      props.unit === ''
+                        ? props.name
+                        : props.name + ' (' + props.unit + ')',
+                    data: props.data,
+                    lineWidth: 1.5,
+                    enableMouseTracking: false,
+                  },
+                ]
+              : props.data.map((dataItem, indexOuter) => {
+                  return {
+                    name:
+                      props.name[indexOuter] +
+                      ' (' +
+                      props.unit[indexOuter] +
+                      ')',
+                    data: props.data,
+                    lineWidth: 1.5,
+                    enableMouseTracking: false,
+                  };
+                }),
         xAxis: {
           lineWidth: this.props.index === 0 ? 0 : 1,
           tickLength: this.props.index === 0 ? 0 : 10,
@@ -225,7 +225,7 @@ class TimeSeriesPanel extends Component {
               : this.labelingToPlotBands(
                   props.labeling,
                   props.labelTypes,
-                  props.selectedLabelId
+                  props.selectedLabelId,
                 ),
           plotLines:
             //state.chartOptions.xAxis.plotLines
@@ -234,7 +234,7 @@ class TimeSeriesPanel extends Component {
               : this.labelingToPlotLines(
                   props.labeling.labels,
                   props.labelTypes,
-                  props.selectedLabelId
+                  props.selectedLabelId,
                 ),
           crosshair: false,
           min: props.start,
@@ -252,7 +252,7 @@ class TimeSeriesPanel extends Component {
                     e.max,
                     e.target.width,
                     false,
-                    false
+                    false,
                   );
                 }
               });
@@ -321,7 +321,7 @@ class TimeSeriesPanel extends Component {
       this.onPlotBandMouseDown(
         e,
         plotBand.options.id,
-        plotBand.options.labelId
+        plotBand.options.labelId,
       );
       return;
     }
@@ -330,14 +330,14 @@ class TimeSeriesPanel extends Component {
     }
     const clickLocation = e.pageX - e.target.getBoundingClientRect().left;
     let position = this.chart.current.chart.xAxis[0].toValue(
-      clickLocation // TODO hack hardcoded 2 pixels how to fix? This only works in full screen
+      clickLocation, // TODO hack hardcoded 2 pixels how to fix? This only works in full screen
     );
 
     // Check if a label has been clicked
     if (this.props.labeling && this.props.labeling.labels) {
       const onLabel = this.props.labeling.labels.find(
         (elm) =>
-          elm.start && elm.end && elm.start <= position && elm.end >= position
+          elm.start && elm.end && elm.start <= position && elm.end >= position,
       );
       if (onLabel) {
         // Label has been clicked
@@ -421,7 +421,7 @@ class TimeSeriesPanel extends Component {
     // Current mouse position, takes neighbours into account
     const dragPosition = Math.min(
       Math.max(mousePos, leftBound + 1),
-      rightBound - 1
+      rightBound - 1,
     );
 
     let offset = dragPosition + box_offset - 1;
@@ -438,7 +438,7 @@ class TimeSeriesPanel extends Component {
       : activePlotbandOptions.from;
 
     let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-      Math.max(leftBound, Math.min(mousePos, rightBound))
+      Math.max(leftBound, Math.min(mousePos, rightBound)),
     );
 
     draggedPosition = Math.max(0, draggedPosition);
@@ -482,7 +482,7 @@ class TimeSeriesPanel extends Component {
     // Clip between neighbours
     let val = Math.min(
       Math.max(leftNeighbour + 1, e.pageX + offset),
-      rightNeighbour - 1
+      rightNeighbour - 1,
     );
 
     // Clip between start and end of chart
@@ -492,13 +492,13 @@ class TimeSeriesPanel extends Component {
 
     let remainingValue = this.getSecondBoundaryByPlotLineIdAndLabelId(
       activePlotLine.options.id,
-      activePlotLine.options.labelId
+      activePlotLine.options.labelId,
     ).options.value;
 
     this.props.onLabelPositionUpdate(
       activePlotLine.options.labelId,
       newValue,
-      remainingValue
+      remainingValue,
     );
 
     this.setState({
@@ -510,7 +510,7 @@ class TimeSeriesPanel extends Component {
       this.props.drawingId,
       undefined,
       undefined,
-      this.props.canEdit
+      this.props.canEdit,
     );
   }
 
@@ -562,7 +562,7 @@ class TimeSeriesPanel extends Component {
       })
       .map((label) => {
         let labelType = labelTypes.filter(
-          (type) => type['_id'] === label.type
+          (type) => type['_id'] === label.type,
         )[0];
 
         return {
@@ -597,7 +597,7 @@ class TimeSeriesPanel extends Component {
 
     var plotLinesAndBands = this.chart.current.chart.xAxis[0].plotLinesAndBands;
     var plotBand = plotLinesAndBands.filter(
-      (item) => !item.options.isPlotline && item.options.labelId === labelId
+      (item) => !item.options.isPlotline && item.options.labelId === labelId,
     )[0];
 
     return plotBand;
@@ -607,10 +607,10 @@ class TimeSeriesPanel extends Component {
     if (!this.chart.current || !this.chart.current.chart) return;
 
     var plotBands = this.chart.current.chart.xAxis[0].plotLinesAndBands.filter(
-      (item) => !item.options.isPlotline
+      (item) => !item.options.isPlotline,
     );
     var plotBand = plotBands.filter(
-      (item) => item.options.className === 'selected'
+      (item) => item.options.className === 'selected',
     )[0];
 
     return plotBand;
@@ -642,7 +642,7 @@ class TimeSeriesPanel extends Component {
       this.props.drawingId,
       undefined,
       undefined,
-      this.props.canEdit
+      this.props.canEdit,
     );
   }
 
@@ -665,7 +665,7 @@ class TimeSeriesPanel extends Component {
             label.start,
             selectedLabelId === label['_id'],
             true,
-            labelTypes
+            labelTypes,
           ),
           this.generatePlotLine(
             label['_id'],
@@ -673,10 +673,10 @@ class TimeSeriesPanel extends Component {
             label.end,
             selectedLabelId === label['_id'],
             false,
-            labelTypes
-          )
+            labelTypes,
+          ),
         ) && result,
-      []
+      [],
     );
 
     /*
@@ -712,7 +712,7 @@ class TimeSeriesPanel extends Component {
     value,
     isLabelSelected,
     isLeft,
-    labelTypes
+    labelTypes,
   ) {
     var plotLineId = isLeft
       ? prefixLeftPlotLine + labelId
@@ -721,7 +721,7 @@ class TimeSeriesPanel extends Component {
       ? false
       : this.state.controlStates.activePlotLineId === plotLineId;
     var labelColor = labelTypes.filter(
-      (labelType) => labelType['_id'] === labelTypeId
+      (labelType) => labelType['_id'] === labelTypeId,
     )[0].color;
 
     var mouseDownHandler = this.onPlotLineMouseDown;
@@ -749,7 +749,7 @@ class TimeSeriesPanel extends Component {
 
     var plotLinesAndBands = this.chart.current.chart.xAxis[0].plotLinesAndBands;
     var plotLine = plotLinesAndBands.filter(
-      (item) => item.options.isPlotline && item.options.id === id
+      (item) => item.options.isPlotline && item.options.id === id,
     )[0];
 
     return plotLine;
@@ -765,7 +765,7 @@ class TimeSeriesPanel extends Component {
 
     var plotLinesAndBands = this.chart.current.chart.xAxis[0].plotLinesAndBands;
     var plotLine = plotLinesAndBands.find(
-      (item) => item.options.isPlotline && item.options.isActive
+      (item) => item.options.isPlotline && item.options.isActive,
     );
 
     return plotLine;
@@ -786,7 +786,7 @@ class TimeSeriesPanel extends Component {
       (item) =>
         item.options.isPlotline &&
         item.options.labelId === labelId &&
-        item.options.id !== id
+        item.options.id !== id,
     )[0];
 
     return plotLine;
@@ -801,7 +801,7 @@ class TimeSeriesPanel extends Component {
     const sign = direction === ScrollDirection.LEFT ? -1 : 1;
     this.chart.current.chart.xAxis[0].setExtremes(
       min + sign * width * scrollFactor,
-      max + sign * width * scrollFactor
+      max + sign * width * scrollFactor,
     );
   }
 
@@ -816,10 +816,10 @@ class TimeSeriesPanel extends Component {
     console.log(sign, width, zoomFactor, sign * width * zoomFactor);
 
     const newMin = Math.floor(
-      this.chart.current.chart.xAxis[0].min + sign * width * zoomFactor
+      this.chart.current.chart.xAxis[0].min + sign * width * zoomFactor,
     );
     const newMax = Math.floor(
-      this.chart.current.chart.xAxis[0].max - sign * width * zoomFactor
+      this.chart.current.chart.xAxis[0].max - sign * width * zoomFactor,
     );
 
     console.log(newMin, newMax);

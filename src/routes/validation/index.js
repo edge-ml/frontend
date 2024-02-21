@@ -33,6 +33,7 @@ import {
   faInfo,
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
+import ConfirmRejectModal from '../../components/Common/ConfirmRejectModal';
 
 const ValidationPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -114,9 +115,7 @@ const ValidationPage = () => {
     toggleDeleteModal();
   };
 
-  const onDeleteSingleModel = (model_id) => {
-    const model = models.find((elm) => elm._id === model_id);
-
+  const onDeleteSingleModel = (model) => {
     if (model) {
       setSelectedModels([model._id]);
       toggleDeleteModal();
@@ -400,6 +399,9 @@ const ValidationPage = () => {
           </Button>
         </ModalFooter>
       </Modal>
+      {/* <ConfirmRejectModal
+        headerText={"Delete the following?"}
+      ></ConfirmRejectModal> */}
     </Container>
   );
 };
