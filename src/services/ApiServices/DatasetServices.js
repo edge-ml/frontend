@@ -9,8 +9,8 @@ export const getDatasets = () => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS
-      )
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS,
+      ),
     )
       .then((result) => {
         console.log(result);
@@ -28,7 +28,7 @@ export const getDatasetsWithPagination = (
   pageSize,
   sort,
   selectedFilter,
-  selectedFilterParams
+  selectedFilterParams,
 ) => {
   const queryParams = {
     page: currentPage,
@@ -48,7 +48,7 @@ export const getDatasetsWithPagination = (
     apiConsts.HTTP_METHODS.POST,
     apiConsts.DATASET_STORE,
     apiConsts.DATASET_STORE_ENDPOINTS.DATASETS_VIEW,
-    requestBody
+    requestBody,
   );
   request.params = queryParams;
   return new Promise((resolve, reject) => {
@@ -64,8 +64,8 @@ export const getDatasetsWithPagination = (
   });
 };
 
-export const getDatasetTimeseries = (id, info) => {
-  console.log(info);
+export const getDatasetTimeseries = (datasetId, timeSeriesId, info) => {
+  console.log(datasetId, timeSeriesId);
   const { max_resolution, start, end } = info;
   return new Promise((resolve, reject) => {
     axios(
@@ -73,33 +73,33 @@ export const getDatasetTimeseries = (id, info) => {
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
-          `${id}/ts/${start}/${end}/${max_resolution}`
-      )
+          `timeseries/${datasetId}/${timeSeriesId}/${start}/${end}/${max_resolution}`,
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
   });
 };
 
-export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
-  console.log(info);
-  console.log(ts_ids);
-  console.log('Get time series partial');
-  const { max_resolution, start, end } = info;
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.POST,
-        apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
-          `${id}/ts/${start}/${end}/${max_resolution}`,
-        ts_ids
-      )
-    )
-      .then((data) => resolve(data.data))
-      .catch((err) => reject(err.response));
-  });
-};
+// export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
+//   console.log(info);
+//   console.log(ts_ids);
+//   console.log('Get time series partial');
+//   const { max_resolution, start, end } = info;
+//   return new Promise((resolve, reject) => {
+//     axios(
+//       apiConsts.generateApiRequest(
+//         apiConsts.HTTP_METHODS.POST,
+//         apiConsts.DATASET_STORE,
+//         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
+//           `timeseries/${id}/${start}/${end}/${max_resolution}`,
+//         ts_ids
+//       )
+//     )
+//       .then((data) => resolve(data.data))
+//       .catch((err) => reject(err.response));
+//   });
+// };
 
 export const getDataset = (id) => {
   return new Promise((resolve, reject) => {
@@ -107,8 +107,8 @@ export const getDataset = (id) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
-      )
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`,
+      ),
     )
       .then((dataset) => resolve(dataset.data))
       .catch((err) => reject(err.response));
@@ -121,8 +121,8 @@ export const getDatasetMeta = (id) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
-      )
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`,
+      ),
     )
       .then((dataset) => {
         console.log(dataset);
@@ -141,8 +141,8 @@ export const getDatasetLock = (id) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.DATASETS_CAN_EDIT + `/${id}`
-      )
+        apiConsts.API_ENDPOINTS.DATASETS_CAN_EDIT + `/${id}`,
+      ),
     )
       .then((lock) => {
         resolve(lock.data ? lock.data.canEdit : undefined);
@@ -167,8 +167,8 @@ export const deleteDataset = (id) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.DELETE,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
-      )
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`,
+      ),
     )
       .then(resolve())
       .catch((err) => reject(err.response));
@@ -182,8 +182,8 @@ export const updateDataset = (dataset) => {
         apiConsts.HTTP_METHODS.PUT,
         apiConsts.DATASET_STORE,
         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${dataset['_id']}`,
-        dataset
-      )
+        dataset,
+      ),
     )
       .then((updatedDataset) => {
         resolve(updatedDataset.data);
@@ -199,8 +199,8 @@ export const createDataset = (dataset) => {
         apiConsts.HTTP_METHODS.POST,
         apiConsts.DATASET_STORE,
         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS,
-        dataset
-      )
+        dataset,
+      ),
     )
       .then(() => {
         getDatasets().then((datasets) => {
@@ -219,9 +219,9 @@ export const createDatasets = (datasets) => {
           apiConsts.HTTP_METHODS.POST,
           apiConsts.DATASET_STORE,
           apiConsts.DATASET_STORE_ENDPOINTS.DATASETS,
-          dataset
-        )
-      )
+          dataset,
+        ),
+      ),
     );
     Promise.all(promises)
       .then(() => {
@@ -244,8 +244,8 @@ export const appendToDataset = (dataset, data) => {
       apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
         `${dataset['_id']}` +
         '/append',
-      data
-    )
+      data,
+    ),
   )
     .then((result) => result.data)
     .catch((err) => err.response);
@@ -257,8 +257,8 @@ export const getUploadProcessingProgress = (datasetId) => {
       apiConsts.HTTP_METHODS.GET,
       apiConsts.DATASET_STORE,
       apiConsts.DATASET_STORE_ENDPOINTS.GET_PROCESSING_PROGRESS +
-        `?datasetId=${datasetId}`
-    )
+        `?datasetId=${datasetId}`,
+    ),
   )
     .then((result) => result.data.progress)
     .catch((err) => err.response);
@@ -271,8 +271,8 @@ export const changeDatasetName = (datasetId, newName) => {
       apiConsts.DATASET_STORE,
       apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
         datasetId +
-        `/rename?newName=${newName}`
-    )
+        `/rename?newName=${newName}`,
+    ),
   )
     .then((result) => result.data.message)
     .catch((err) => err.response);
@@ -283,7 +283,7 @@ export const updateTimeSeriesConfig = (
   tsId,
   unit,
   scaling,
-  offset
+  offset,
 ) => {
   return axios(
     apiConsts.generateApiRequest(
@@ -291,8 +291,8 @@ export const updateTimeSeriesConfig = (
       apiConsts.DATASET_STORE,
       apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
         datasetId +
-        `/changeUnitConfig?tsId=${tsId}&unit=${unit}&scaling=${scaling}&offset=${offset}`
-    )
+        `/changeUnitConfig?tsId=${tsId}&unit=${unit}&scaling=${scaling}&offset=${offset}`,
+    ),
   )
     .then((result) => result.data.message)
     .catch((err) => err.response);

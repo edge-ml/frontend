@@ -13,7 +13,7 @@ import {
   updateDataset,
   deleteDataset,
   getDatasetMeta,
-  getTimeSeriesDataPartial,
+  getDatasetTimeseries,
   getUploadProcessingProgress,
   changeDatasetName,
 } from '../services/ApiServices/DatasetServices';
@@ -62,7 +62,7 @@ class DatasetPage extends Component {
       consecutiveNoUpdateCount: 0,
     };
 
-    this.memoizedGetDatasetTimeseries = pmemoize(getTimeSeriesDataPartial, {
+    this.memorizedGetDatasetTimeseries = pmemoize(getDatasetTimeseries, {
       resolve: 'json',
       maxAge: TIMESERIES_CACHE_MAX_AGE,
     });
@@ -104,23 +104,37 @@ class DatasetPage extends Component {
     this.maxSeries = 3;
   }
 
-  setActiveSeries(ids) {
+  async setActiveSeries(ids) {
     const ts = this.state.dataset.timeSeries.filter((ts) =>
       ids.includes(ts._id),
     );
     const newStart = Math.min(...ts.map((elm) => elm.start));
     const newEnd = Math.max(...ts.map((elm) => elm.end));
 
-    this.memoizedGetDatasetTimeseries(this.props.match.params.id, ids, {
-      max_resolution: window.innerWidth / 2,
-    }).then((tsData) => {
-      this.setState({
-        previewTimeSeriesData: tsData,
-        activeSeries: ids,
-        shownStart: newStart,
-        shownEnd: newEnd,
-      });
+    const timeSeriesData = await Promise.all(
+      ids.map((elm) =>
+        this.memorizedGetDatasetTimeseries(this.props.match.params.id, elm, {
+          max_resolution: window.innerWidth / 2,
+        }),
+      ),
+    );
+    this.setState({
+      previewTimeSeriesData: timeSeriesData,
+      activeSeries: ids,
+      shownStart: newStart,
+      shownEnd: newEnd,
     });
+
+    // this.memorizedGetDatasetTimeseries(this.props.match.params.id, ids, {
+    //   max_resolution: window.innerWidth / 2,
+    // }).then((tsData) => {
+    //   this.setState({
+    //     previewTimeSeriesData: tsData,
+    //     activeSeries: ids,
+    //     shownStart: newStart,
+    //     shownEnd: newEnd,
+    //   });
+    // });
 
     Highcharts.charts.forEach((chart) => {
       if (chart) {
@@ -129,7 +143,7 @@ class DatasetPage extends Component {
     });
   }
 
-  onClickSelectSeries(_id) {
+  async onClickSelectSeries(_id) {
     console.log('Click: ', _id);
     var series = this.state.activeSeries;
     if (series.includes(_id)) {
@@ -144,15 +158,18 @@ class DatasetPage extends Component {
     const newStart = Math.min(...ts.map((elm) => elm.start));
     const newEnd = Math.max(...ts.map((elm) => elm.end));
 
-    this.memoizedGetDatasetTimeseries(this.props.match.params.id, series, {
-      max_resolution: window.innerWidth / 2,
-    }).then((tsData) => {
-      this.setState({
-        previewTimeSeriesData: tsData,
-        activeSeries: series,
-        shownStart: newStart,
-        shownEnd: newEnd,
-      });
+    const timeSeriesData = await Promise.all(
+      series.map((elm) =>
+        this.memorizedGetDatasetTimeseries(this.props.match.params.id, elm, {
+          max_resolution: window.innerWidth / 2,
+        }),
+      ),
+    );
+    this.setState({
+      previewTimeSeriesData: timeSeriesData,
+      activeSeries: series,
+      shownStart: newStart,
+      shownEnd: newEnd,
     });
 
     Highcharts.charts.forEach((chart) => {
@@ -252,34 +269,31 @@ class DatasetPage extends Component {
     }
     this.onDatasetChanged(dataset);
 
-    this.memoizedGetDatasetTimeseries(
-      this.props.match.params.id,
-      activeSeries,
-      {
-        max_resolution: window.innerWidth / 2,
-      },
-    ).then((timeseriesData) => {
-      if (this.state.previewTimeSeriesData) {
-        return;
-      }
-      this.setState({
-        previewTimeSeriesData: timeseriesData,
-      });
+    console.log(this.props.match.params.id, activeSeries);
+    const timeSeriesData = await Promise.all(
+      activeSeries.map((elm) =>
+        this.memorizedGetDatasetTimeseries(this.props.match.params.id, elm, {
+          max_resolution: window.innerWidth / 2,
+        }),
+      ),
+    );
+    if (this.state.previewTimeSeriesData) {
+      return;
+    }
+    this.setState({
+      previewTimeSeriesData: timeSeriesData,
     });
   }
 
   async getDatasetWindow(start, end) {
-    const max_resolution = window.innerWidth / 2;
-    const res = await this.memoizedGetDatasetTimeseries(
-      this.props.match.params.id,
-      this.state.activeSeries,
-      {
-        max_resolution,
-        start,
-        end,
-      },
+    const timeSeriesData = await Promise.all(
+      this.state.activeSeries.map((elm) =>
+        this.memorizedGetDatasetTimeseries(this.props.match.params.id, elm, {
+          max_resolution: window.innerWidth / 2,
+        }),
+      ),
     );
-    return res;
+    return timeSeriesData;
   }
 
   componentWillUnmount() {

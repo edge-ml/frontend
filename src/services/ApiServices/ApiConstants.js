@@ -5,29 +5,22 @@ const currentHost = window.location.host.split(':')[0];
 export const AUTH_URI =
   process.env.NODE_ENV === 'production'
     ? '/auth/'
-    : window.location.host === 'edge-ml.ngrok.io'
-    ? 'http://auth.edge-ml.ngrok.io/auth/'
     : `http://${currentHost}:3002/auth/`;
 
 export const API_URI =
   process.env.NODE_ENV === 'production'
     ? '/api/'
-    : window.location.host === 'edge-ml.ngrok.io'
-    ? 'http://backend.edge-ml.ngrok.io/api/'
     : `http://${currentHost}:3001/api/`;
+
 export const ML_URI =
   process.env.NODE_ENV === 'production'
     ? '/ml/'
-    : window.location.host === 'edge-ml.ngrok.io'
-    ? 'http://ml.edge-ml.ngrok.io/ml/'
     : `http://${currentHost}:3003/ml/`;
 
 export const DATASET_STORE =
   process.env.NODE_ENV === 'production'
     ? '/ds/'
-    : window.location.host === 'edge-ml.ngrok.io'
-    ? 'http://ds.edge-ml.ngrok.io/ds/'
-    : `http://${currentHost}:3004/ds/`;
+    : `http://${currentHost}:3004/`;
 
 export const HTTP_METHODS = {
   GET: 'GET',
@@ -98,7 +91,7 @@ export const generateApiRequest = (
   endpoint = this.API_ENDPOINTS.DEFAULT,
   body = {},
   params = {},
-  contentType = 'application/json'
+  contentType = 'application/json',
 ) => {
   const project = localStorageService.getProject();
   return {
