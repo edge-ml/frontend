@@ -225,6 +225,23 @@ class UploadBLE extends Component {
         this.setState({ recorderState: 'recording' });
         break;
       case 'recording':
+        // End label if active
+        if (this.state.currentLabel.id !== undefined) {
+          const timestamp = Date.now();
+          console.log('stop current labeling');
+          const currentLabelingData =
+            this.labelingData.current[this.labelingData.current.length - 1];
+          currentLabelingData.end = timestamp;
+          const newCurrentLabel = {
+            ...this.state.currentLabel,
+            end: timestamp,
+          };
+          this.bleDeviceProcessor.addLabel(newCurrentLabel);
+          this.setState((prevState) => ({
+            currentLabel: newCurrentLabel,
+          }));
+        }
+
         this.setState({ recorderState: 'finalizing' });
         await this.bleDeviceProcessor.stopRecording();
         this.setState({ recorderState: 'ready' });
