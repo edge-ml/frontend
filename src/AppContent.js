@@ -10,6 +10,8 @@ import ValidationPage from './routes/validation';
 import UploadBLE from './routes/uploadBLE';
 import { UploadWebPage } from './routes/uploadWeb';
 import Settings from './routes/settings/Settings';
+import ModelLivePage from './routes/ModelLivePage';
+import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 
 const AppContent = (props) => {
   const {
@@ -78,6 +80,15 @@ const AppContent = (props) => {
           </ProjectRefresh>
         )}
       />
+      <Route
+        exact
+        path={match.path + '/models/live/:model_id'}
+        render={(modelProps) => (
+          <ModelLivePage
+            modelId={modelProps.match.params.model_id}
+          ></ModelLivePage>
+        )}
+      ></Route>
       <Route
         exact
         path={match.path + '/models'}

@@ -35,6 +35,8 @@ import {
 import DeployModal from './DeployModal';
 import ConfirmRejectModal from '../../components/Common/ConfirmRejectModal';
 
+import { useHistory } from 'react-router-dom';
+
 const ValidationPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -50,6 +52,8 @@ const ValidationPage = () => {
   const [updateModels, setUpdateModels] = useState(false);
   const [error, setError] = useState(undefined);
   const [stepOptions, setStepOptions] = useState(undefined);
+
+  const history = useHistory();
 
   useEffect(() => {
     refreshModels();
@@ -129,6 +133,10 @@ const ValidationPage = () => {
   const onWizardClose = () => {
     setModalOpen(false);
     getModels().then((models) => setModels(models));
+  };
+
+  const onClickLive = (model) => {
+    history.push('Models/live/' + model._id);
   };
 
   if (error) {
@@ -302,12 +310,16 @@ const ValidationPage = () => {
                                 }}
                                 disabled={!checkExportC(model)}
                               ></ListButton>
-                              <ListButton
+                              {/* <ListButton
                                 icon={faPlay}
                                 onClick={(e) => {
                                   setModelLiveInference(model);
                                   setLiveInferenceModalOpen(true);
                                 }}
+                              ></ListButton> */}
+                              <ListButton
+                                icon={faPlay}
+                                onClick={(e) => onClickLive(model)}
                               ></ListButton>
                             </div>
                           ) : (
