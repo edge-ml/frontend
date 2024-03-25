@@ -86,12 +86,15 @@ class EditProjectModal extends Component {
       createProject(this.state.project)
         .then((data) => {
           const projectIndex = data.findIndex(
-            (elm) => elm.name === this.state.project.name
+            (elm) => elm.name === this.state.project.name,
           );
+          console.log(data);
+          console.log(projectIndex);
           this.props.projectChanged(data, projectIndex);
           this.setState({ error: undefined });
         })
         .catch((err) => {
+          console.log(err);
           this.setState({
             error: err,
           });
@@ -132,7 +135,7 @@ class EditProjectModal extends Component {
       },
       () => {
         this.props.onClose();
-      }
+      },
     );
   }
 
@@ -232,7 +235,7 @@ class EditProjectModal extends Component {
             </thead>
             <tbody>
               {this.state.project.users.map((elm, index) =>
-                this.generateTableEntry(elm.userName, index)
+                this.generateTableEntry(elm.userName, index),
               )}
             </tbody>
           </Table>

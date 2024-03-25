@@ -163,16 +163,20 @@ class App extends Component {
 
     setProject(projects[projectIndex]._id);
 
-    this.setState({
-      projects: projects,
-      currentProjectId: projects[projectIndex]._id,
-      projectEditModalOpen: false,
-      projectLocation: 'datasets',
-    });
-    this.changeURL(this.state.projects[projectIndex]);
-    if (newProject) {
-      this.navigateTo('datasets');
-    }
+    this.setState(
+      {
+        projects: projects,
+        currentProjectId: projects[projectIndex]._id,
+        projectEditModalOpen: false,
+        projectLocation: 'datasets',
+      },
+      () => {
+        this.changeURL(this.state.projects[projectIndex]);
+        if (newProject) {
+          this.navigateTo('datasets');
+        }
+      },
+    );
   }
 
   onProjectModalClose() {
