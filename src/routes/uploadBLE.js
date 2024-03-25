@@ -226,7 +226,10 @@ class UploadBLE extends Component {
         break;
       case 'recording':
         // End label if active
-        if (this.state.currentLabel.id !== undefined) {
+        if (
+          this.state.currentLabel.id !== undefined &&
+          this.state.currentLabel.end === undefined
+        ) {
           const timestamp = Date.now();
           console.log('stop current labeling');
           const currentLabelingData =
