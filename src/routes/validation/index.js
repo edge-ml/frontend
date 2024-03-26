@@ -245,11 +245,11 @@ const ValidationPage = () => {
                           className="w-100 d-flex justify-content-between align-items-center"
                           onClick={() => onViewModel(model)}
                         >
-                          <Col>
+                          <Col className="col-3 ml-2">
                             <b>{model.name}</b>
                             <div>{model.pipeline.selectedPipeline.name}</div>
                           </Col>
-                          <Col>
+                          <Col className="col-2">
                             {model.error == '' ? null : (
                               <>
                                 <div
@@ -283,7 +283,7 @@ const ValidationPage = () => {
                               </div>
                             ) : null}
                           </Col>
-                          <Col className="d-flex justify-content-end mr-3 mr-md-4">
+                          <Col className="d-flex col-6 justify-content-end mr-3 mr-md-4">
                             {model.trainStatus === 'done' ? (
                               <div>
                                 <ListButton
