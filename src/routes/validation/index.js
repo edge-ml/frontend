@@ -34,6 +34,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 import ConfirmRejectModal from '../../components/Common/ConfirmRejectModal';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const ValidationPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -50,6 +51,8 @@ const ValidationPage = () => {
   const [updateModels, setUpdateModels] = useState(false);
   const [error, setError] = useState(undefined);
   const [stepOptions, setStepOptions] = useState(undefined);
+
+  const history = useHistory();
 
   useEffect(() => {
     refreshModels();
@@ -310,10 +313,13 @@ const ValidationPage = () => {
                                 </ListButton>
                                 <ListButton
                                   icon={faPlay}
-                                  onClick={(e) => {
-                                    setModelLiveInference(model);
-                                    setLiveInferenceModalOpen(true);
-                                  }}
+                                  // onClick={(e) => {
+                                  //   setModelLiveInference(model);
+                                  //   setLiveInferenceModalOpen(true);
+                                  // }}
+                                  onClick={() =>
+                                    history.push('models/live/' + model._id)
+                                  }
                                 >
                                   View live
                                 </ListButton>
