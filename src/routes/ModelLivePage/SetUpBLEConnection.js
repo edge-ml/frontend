@@ -1,12 +1,17 @@
-import { Button } from 'reactstrap';
+import { Button, Toast, ToastBody, ToastHeader } from 'reactstrap';
 import ClassificationDevice from './ClassificationDevice';
+import { useState } from 'react';
 
 const CLASSIFICATION_SERVICE_UUID =
   '6E400001-B5A3-F393-E0A9-E50E24DCCA9E'.toLowerCase();
 const CLASSIFICATION_CHARACTERISTICS_UUID =
   '3c6e98a5-f027-49aa-8b2e-c7b3f8a9c18c'.toLowerCase();
 
-const SetUpBLEConnection = ({ model, setBLEDevice }) => {
+const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
+  const handleDisconnect = () => {
+    onDeviceDisconnect();
+  };
+
   const onClickConnect = async () => {
     try {
       console.log('Connecting');
@@ -31,7 +36,7 @@ const SetUpBLEConnection = ({ model, setBLEDevice }) => {
         characteristic,
       );
 
-      console.log(classificationDevice);
+      device.addEventListener('gattserverdisconnected', handleDisconnect);
       setBLEDevice(classificationDevice);
     } catch (error) {
       console.log('Got an error');

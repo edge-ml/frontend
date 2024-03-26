@@ -11,7 +11,12 @@ const LivePage = ({ bleDevice, model }) => {
 
   bleDevice.notify((idx) => {
     console.log(idx);
-    setPredictedLabel(labels[idx]);
+
+    if (idx >= 0 && idx < labels.length) {
+      setPredictedLabel(labels[idx]);
+    } else {
+      setPredictedLabel({ name: 'Invalid label', color: '#3d3d3d' });
+    }
   });
 
   return (
