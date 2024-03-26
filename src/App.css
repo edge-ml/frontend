@@ -60,7 +60,9 @@ a .octicon-trashcan:hover {
   opacity: 0.8;
   fill-opacity: 0.3;
   cursor: pointer;
-  transition: fill 0.15s, opacity 0.15s;
+  transition:
+    fill 0.15s,
+    opacity 0.15s;
 }
 
 .dataset-plotband-selected {
@@ -68,7 +70,9 @@ a .octicon-trashcan:hover {
   opacity: 0.8;
   fill-opacity: 0.4;
   cursor: pointer;
-  transition: fill 0.15s, opacity 0.15s;
+  transition:
+    fill 0.15s,
+    opacity 0.15s;
 }
 
 @keyframes dash {
@@ -154,13 +158,19 @@ button {
 
 .dataset-plotline {
   z-index: 9;
-  transition: stroke 0.15s, opacity 0.15s, stroke-width 0.15s;
+  transition:
+    stroke 0.15s,
+    opacity 0.15s,
+    stroke-width 0.15s;
   opacity: 0.5;
 }
 
 .dataset-plotline-selected {
   z-index: 10;
-  transition: stroke 0.15s, opacity 0.15s, stroke-width 0.15s;
+  transition:
+    stroke 0.15s,
+    opacity 0.15s,
+    stroke-width 0.15s;
   cursor: ew-resize;
   opacity: 0.75;
   stroke-width: 5px;

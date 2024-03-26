@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Children, Fragment, useEffect, useState } from 'react';
 import {
   getModels,
   deleteModel,
@@ -161,7 +161,7 @@ const ValidationPage = () => {
     return res.every((elm) => elm === true);
   };
 
-  const ListButton = ({ onClick, icon, disabled = false }) => {
+  const ListButton = ({ onClick, icon, children, disabled = false }) => {
     const onClickStop = (e) => {
       onClick(e);
       e.stopPropagation();
@@ -174,6 +174,9 @@ const ValidationPage = () => {
         onClick={onClickStop}
       >
         <FontAwesomeIcon icon={icon}></FontAwesomeIcon>
+        <div>
+          <small>{children}</small>
+        </div>
       </Button>
     );
   };
@@ -229,100 +232,112 @@ const ValidationPage = () => {
                         (elm) => elm.type === 'EVAL',
                       )[0].options.metrics.metrics;
                 return (
-                  <TableEntry index={index}>
-                    <div className="p-2 d-flex">
-                      <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
-                        <Checkbox
-                          isSelected={selectedModels.includes(model._id)}
-                          onClick={() => clickCheckBox(model)}
-                        ></Checkbox>
-                      </div>
-                      <Row
-                        className="w-100 d-flex justify-content-between align-items-center"
-                        onClick={() => onViewModel(model)}
-                      >
-                        <Col>
-                          <b>{model.name}</b>
-                          <div>{model.pipeline.selectedPipeline.name}</div>
-                        </Col>
-                        <Col>
-                          {model.error == '' ? null : (
-                            <>
-                              <div
-                                className="ml-5 flex-grow-1 d-flex justify-content-center align-items-center"
-                                style={{ color: 'red' }}
-                              >
-                                An error occured while training!
-                                <FontAwesomeIcon
-                                  id={'tooltip' + model._id}
-                                  className="m-2"
-                                  icon={faCircleInfo}
-                                ></FontAwesomeIcon>
-                              </div>
-                              <UncontrolledTooltip
-                                target={'tooltip' + model._id}
-                              >
-                                {model.error}
-                              </UncontrolledTooltip>
-                            </>
-                          )}
-                          {model.trainStatus === 'done' ? (
-                            <div>
-                              <div>
-                                <b>Acc: </b>
-                                {metric(metrics.accuracy_score)}%
-                              </div>
-                              <div>
-                                <b>F1: </b>
-                                {metric(metrics.f1_score)}%
-                              </div>
-                            </div>
-                          ) : null}
-                        </Col>
-                        <Col className="d-flex justify-content-end mr-3 mr-md-4">
-                          {model.trainStatus === 'done' ? (
-                            <div>
-                              <ListButton
-                                icon={faInfoCircle}
-                                onClick={() => onViewModel(model)}
-                              ></ListButton>
-                              <ListButton
-                                icon={faDownload}
-                                onClick={() => setModelDownload(model)}
-                              ></ListButton>
-                              <ListButton
-                                icon={faTrashAlt}
-                                onClick={() => onDeleteSingleModel(model)}
-                              ></ListButton>
-                              <ListButton
-                                icon={faMicrochip}
-                                onClick={() => {
-                                  setModelDeploy(model);
-                                  setDeployModalOpen(true);
-                                }}
-                                disabled={!checkExportC(model)}
-                              ></ListButton>
-                              <ListButton
-                                icon={faPlay}
-                                onClick={(e) => {
-                                  setModelLiveInference(model);
-                                  setLiveInferenceModalOpen(true);
-                                }}
-                              ></ListButton>
-                            </div>
-                          ) : (
-                            <div>
-                              {model.error === '' ? (
-                                <div>
-                                  <Spinner color="primary"></Spinner>
+                  <div className="model-table-entry-focus">
+                    <TableEntry index={index}>
+                      <div className="p-2 d-flex">
+                        <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
+                          <Checkbox
+                            isSelected={selectedModels.includes(model._id)}
+                            onClick={() => clickCheckBox(model)}
+                          ></Checkbox>
+                        </div>
+                        <Row
+                          className="w-100 d-flex justify-content-between align-items-center"
+                          onClick={() => onViewModel(model)}
+                        >
+                          <Col>
+                            <b>{model.name}</b>
+                            <div>{model.pipeline.selectedPipeline.name}</div>
+                          </Col>
+                          <Col>
+                            {model.error == '' ? null : (
+                              <>
+                                <div
+                                  className="ml-5 flex-grow-1 d-flex justify-content-center align-items-center"
+                                  style={{ color: 'red' }}
+                                >
+                                  An error occured while training!
+                                  <FontAwesomeIcon
+                                    id={'tooltip' + model._id}
+                                    className="m-2"
+                                    icon={faCircleInfo}
+                                  ></FontAwesomeIcon>
                                 </div>
-                              ) : null}
-                            </div>
-                          )}
-                        </Col>
-                      </Row>
-                    </div>
-                  </TableEntry>
+                                <UncontrolledTooltip
+                                  target={'tooltip' + model._id}
+                                >
+                                  {model.error}
+                                </UncontrolledTooltip>
+                              </>
+                            )}
+                            {model.trainStatus === 'done' ? (
+                              <div>
+                                <div>
+                                  <b>Acc: </b>
+                                  {metric(metrics.accuracy_score)}%
+                                </div>
+                                <div>
+                                  <b>F1: </b>
+                                  {metric(metrics.f1_score)}%
+                                </div>
+                              </div>
+                            ) : null}
+                          </Col>
+                          <Col className="d-flex justify-content-end mr-3 mr-md-4">
+                            {model.trainStatus === 'done' ? (
+                              <div>
+                                <ListButton
+                                  icon={faTrashAlt}
+                                  onClick={() => onDeleteSingleModel(model)}
+                                >
+                                  Delete
+                                </ListButton>
+                                <ListButton
+                                  icon={faDownload}
+                                  onClick={() => setModelDownload(model)}
+                                >
+                                  Download
+                                </ListButton>
+                                <ListButton
+                                  icon={faMicrochip}
+                                  onClick={() => {
+                                    setModelDeploy(model);
+                                    setDeployModalOpen(true);
+                                  }}
+                                  disabled={!checkExportC(model)}
+                                >
+                                  Deploy
+                                </ListButton>
+                                <ListButton
+                                  icon={faPlay}
+                                  onClick={(e) => {
+                                    setModelLiveInference(model);
+                                    setLiveInferenceModalOpen(true);
+                                  }}
+                                >
+                                  View live
+                                </ListButton>
+                                <ListButton
+                                  icon={faInfoCircle}
+                                  onClick={() => onViewModel(model)}
+                                >
+                                  Info
+                                </ListButton>
+                              </div>
+                            ) : (
+                              <div>
+                                {model.error === '' ? (
+                                  <div>
+                                    <Spinner color="primary"></Spinner>
+                                  </div>
+                                ) : null}
+                              </div>
+                            )}
+                          </Col>
+                        </Row>
+                      </div>
+                    </TableEntry>
+                  </div>
                 );
               })}
             </Table>
