@@ -1,28 +1,25 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Spinner } from 'reactstrap';
 
-class Loader extends Component {
-  render() {
-    {
-      console.log(this.props.loading);
-    }
-    if (this.props.loading) {
-      return (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'middle',
-            justifyContent: 'center',
-          }}
-        >
-          <Spinner className="loader" color="primary" loading={true} />
-        </div>
-      );
-    } else {
-      return this.props.children;
-    }
+const Loader = (props) => {
+  console.log(props.loading);
+  
+  if (props.loading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'middle',
+          justifyContent: 'center',
+        }}
+      >
+        <Spinner className="loader" color="primary" loading={props.loading.toString()} />
+      </div>
+    );
+  } else {
+    return props.children;
   }
-}
+};
 
 export default Loader;
 
