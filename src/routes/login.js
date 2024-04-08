@@ -14,7 +14,6 @@ import {
   Alert,
   Fade,
 } from 'reactstrap';
-import { PersonIcon, ShieldIcon } from 'react-octicons';
 import update from 'immutability-helper';
 import { getServerTime } from '../services/helpers.js';
 import {
@@ -30,6 +29,9 @@ import {
   setToken,
 } from '../services/LocalStorageService';
 import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChrome, faEdge } from '@fortawesome/free-brands-svg-icons';
+import { faPerson, faShield, faUser } from '@fortawesome/free-solid-svg-icons';
 
 class LoginPage extends Component {
   constructor(props) {
@@ -300,7 +302,9 @@ class LoginPage extends Component {
                           <InputGroup>
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText style={{ background: '#ced4da' }}>
-                                <PersonIcon fill="#444" width="15" />
+                                <FontAwesomeIcon
+                                  icon={faUser}
+                                ></FontAwesomeIcon>
                               </InputGroupText>
                             </InputGroupAddon>
 
@@ -318,7 +322,9 @@ class LoginPage extends Component {
                           <InputGroup>
                             <InputGroupAddon addonType="prepend">
                               <InputGroupText style={{ background: '#ced4da' }}>
-                                <ShieldIcon fill="#444" width="15" />
+                                <FontAwesomeIcon
+                                  icon={faShield}
+                                ></FontAwesomeIcon>
                               </InputGroupText>
                             </InputGroupAddon>
                             <Input
