@@ -12,9 +12,7 @@ import {
   CardBody,
   CardHeader,
   Alert,
-  Fade,
 } from 'reactstrap';
-import update from 'immutability-helper';
 import { getServerTime } from '../services/helpers.js';
 import {
   loginUser,
@@ -30,8 +28,7 @@ import {
 } from '../services/LocalStorageService';
 import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChrome, faEdge } from '@fortawesome/free-brands-svg-icons';
-import { faPerson, faShield, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faShield, faUser } from '@fortawesome/free-solid-svg-icons';
 
 class LoginPage extends Component {
   constructor(props) {
@@ -117,23 +114,15 @@ class LoginPage extends Component {
   }
 
   emailChange(event) {
-    this.setState(
-      update(this.state, {
-        $merge: {
-          userMail: event.target.value,
-        },
-      }),
-    );
+    this.setState({
+      userMail: event.target.value,
+    });
   }
 
   passChange(event) {
-    this.setState(
-      update(this.state, {
-        $merge: {
-          password: event.target.value,
-        },
-      }),
-    );
+    this.setState({
+      password: event.target.value,
+    });
   }
 
   passHandleKey(event) {

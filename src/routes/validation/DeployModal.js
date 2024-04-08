@@ -30,7 +30,6 @@ import {
   EdgeMLTableHeader,
 } from '../../components/Common/EdgeMLTable';
 import DFUManager from '../../components/BLE/DFUModal/DFU';
-import { Brand } from 'react-bootstrap/lib/Navbar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 
@@ -62,9 +61,9 @@ const DeployModal = ({ model, onClose }) => {
         setFlashState,
         setFlashError,
         setFlashProgress,
-        setConnectedDevice
+        setConnectedDevice,
       ),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -168,7 +167,7 @@ const DeployModal = ({ model, onClose }) => {
       selectedSensors,
       parameters,
       selectedDevice,
-      a_settings
+      a_settings,
     );
     /**const buffer = new ArrayBuffer(10000);
     const view = new Uint8Array(buffer);
@@ -195,7 +194,7 @@ const DeployModal = ({ model, onClose }) => {
       selectedSensors,
       parameters,
       selectedDevice,
-      a_settings
+      a_settings,
     );
     console.log(res);
     const downloadLink = document.createElement('a');
@@ -210,7 +209,7 @@ const DeployModal = ({ model, onClose }) => {
   const handleHyperparameterChange = ({ parameter_name, state }) => {
     console.log(parameter_name, state);
     const idx = parameters.findIndex(
-      (elm) => elm.parameter_name === parameter_name
+      (elm) => elm.parameter_name === parameter_name,
     );
     parameters[idx].value = state;
     setParameters([...parameters]);
@@ -387,14 +386,14 @@ const DeployModal = ({ model, onClose }) => {
                                       selectSensor(
                                         ts_idx,
                                         sensor_idx,
-                                        component_idx
+                                        component_idx,
                                       )
                                     }
                                   >
                                     {sensor.name + '_' + component.name}
                                   </DropdownItem>
-                                )
-                              )
+                                ),
+                              ),
                             )}
                           </DropdownMenu>
                         </UncontrolledDropdown>
