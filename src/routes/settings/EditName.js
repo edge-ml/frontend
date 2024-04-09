@@ -16,9 +16,7 @@ const EditName = (props) => {
   return (
     <Container>
       <InputGroup>
-        <InputGroupAddon addonType="prepend">
-          <InputGroupText>{'Name'}</InputGroupText>
-        </InputGroupAddon>
+        <InputGroupText>{'Name'}</InputGroupText>
         <Input
           id="projectName"
           readOnly={props.readOnly}
@@ -37,9 +35,7 @@ const EditName = (props) => {
         </div>
       </InputGroup>
       <InputGroup>
-        <InputGroupAddon addonType="prepend">
-          <InputGroupText>{'Admin'}</InputGroupText>
-        </InputGroupAddon>
+        <InputGroupText>{'Admin'}</InputGroupText>
         <Input value={props.adminUserName} readOnly />
       </InputGroup>
     </Container>

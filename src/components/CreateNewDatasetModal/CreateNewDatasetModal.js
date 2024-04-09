@@ -9,7 +9,6 @@ import {
   Input,
   Table,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
 } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
@@ -217,7 +216,7 @@ class CreateNewDatasetModal extends Component {
     try {
       this.setState({ onUploading: true });
       const nameValid = this.state.datasets.every((elm) =>
-        elm.timeSeries.every((timeElm) => timeElm.name !== '')
+        elm.timeSeries.every((timeElm) => timeElm.name !== ''),
       );
       if (!nameValid) {
         window.alert('Every timeSeries needs a name');
@@ -237,7 +236,7 @@ class CreateNewDatasetModal extends Component {
               addLabeling({
                 ...this.state.labelings[i][j].labeling,
                 labels: this.state.labelings[i][j].labels,
-              })
+              }),
             );
           }
         }
@@ -246,7 +245,7 @@ class CreateNewDatasetModal extends Component {
         const newDatasets = generateLabeledDataset(
           labelings,
           this.state.labelings,
-          this.state.datasets
+          this.state.datasets,
         );
         const data = await createDatasets(newDatasets);
         this.props.onDatasetComplete(data);
@@ -254,7 +253,7 @@ class CreateNewDatasetModal extends Component {
       } else {
         const fusedDataset = extendExistingDataset(
           this.props.dataset,
-          this.state.datasets
+          this.state.datasets,
         );
         const data = await updateDataset(fusedDataset);
         this.setState(this.baseState);
@@ -305,11 +304,9 @@ class CreateNewDatasetModal extends Component {
                           <tr>
                             <th colSpan="2" style={{ padding: '0 12px 0 0' }}>
                               <InputGroup size="md">
-                                <InputGroupAddon addonType="prepend">
-                                  <InputGroupText>
-                                    <b>Dataset-name</b>
-                                  </InputGroupText>
-                                </InputGroupAddon>
+                                <InputGroupText>
+                                  <b>Dataset-name</b>
+                                </InputGroupText>
                                 <Input
                                   className="font-weight-bold"
                                   id={'datasetName' + String(fileIndex)}
@@ -358,9 +355,7 @@ class CreateNewDatasetModal extends Component {
                                       }}
                                     >
                                       <InputGroup size="sm">
-                                        <InputGroupAddon addonType="prepend">
-                                          <InputGroupText>name</InputGroupText>
-                                        </InputGroupAddon>
+                                        <InputGroupText>name</InputGroupText>
                                         <Input
                                           id={
                                             'nameInput' +
@@ -378,7 +373,7 @@ class CreateNewDatasetModal extends Component {
                                             this.onNameChange(
                                               e,
                                               fileIndex,
-                                              seriesIndex
+                                              seriesIndex,
                                             )
                                           }
                                         />
@@ -391,9 +386,7 @@ class CreateNewDatasetModal extends Component {
                                       }}
                                     >
                                       <InputGroup size="sm">
-                                        <InputGroupAddon addonType="prepend">
-                                          <InputGroupText>Unit</InputGroupText>
-                                        </InputGroupAddon>
+                                        <InputGroupText>Unit</InputGroupText>
                                         <Input
                                           id={
                                             'unitInput' +
@@ -412,7 +405,7 @@ class CreateNewDatasetModal extends Component {
                                             this.onUnitChange(
                                               e,
                                               fileIndex,
-                                              seriesIndex
+                                              seriesIndex,
                                             )
                                           }
                                         />
@@ -438,7 +431,7 @@ class CreateNewDatasetModal extends Component {
                                         onClick={() =>
                                           this.onDeleteTimeSeries(
                                             fileIndex,
-                                            seriesIndex
+                                            seriesIndex,
                                           )
                                         }
                                       >
@@ -447,7 +440,7 @@ class CreateNewDatasetModal extends Component {
                                     </td>
                                   </tr>
                                 );
-                              }
+                              },
                             )}
                           </tbody>
                         )}
@@ -478,7 +471,7 @@ class CreateNewDatasetModal extends Component {
                                   onClick={() =>
                                     this.onDeleteLabeling(
                                       fileIndex,
-                                      labelingIndex
+                                      labelingIndex,
                                     )
                                   }
                                 >
@@ -486,7 +479,7 @@ class CreateNewDatasetModal extends Component {
                                 </Button>
                               </div>
                             );
-                          }
+                          },
                         )}
                       </div>
                     </div>

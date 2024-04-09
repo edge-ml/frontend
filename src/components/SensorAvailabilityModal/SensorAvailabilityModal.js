@@ -1,27 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
-import {
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Input,
-  UncontrolledDropdown,
-  FormGroup,
-  CustomInput,
-  Progress,
-  Spinner,
-} from 'reactstrap';
-
-import {
-  EdgeMLTable,
-  EdgeMLTableEntry,
-  EdgeMLTableHeader,
-} from '../../components/Common/EdgeMLTable';
+import { Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
 
 const SensorAvailabilityModal = ({ isOpen, onClose }) => {
   const onGoBack = () => {};

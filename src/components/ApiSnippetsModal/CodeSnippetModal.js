@@ -12,7 +12,7 @@ import {
   FormGroup,
   Label,
   Row,
-  Col
+  Col,
 } from 'reactstrap';
 import CodeSnippet from './CodeSnippet';
 import CodeSettings from './CodeSettings';
@@ -23,7 +23,7 @@ class CodeSnippetModal extends Component {
     this.state = {
       platform: 'Java',
       datasetName: undefined,
-      servertime: false
+      servertime: false,
     };
     this.onPlatformChange = this.onPlatformChange.bind(this);
     this.onDatasetNameChanged = this.onDatasetNameChanged.bind(this);
@@ -35,7 +35,7 @@ class CodeSnippetModal extends Component {
     this.setState({
       platform: 'Java',
       datasetName: undefined,
-      servertime: false
+      servertime: false,
     });
     this.props.onCancel();
   }
@@ -43,19 +43,19 @@ class CodeSnippetModal extends Component {
   onServerTimeChange(e) {
     const val = e.target.value === 'Yes' ? true : false;
     this.setState({
-      servertime: val
+      servertime: val,
     });
   }
 
   onDatasetNameChanged(e) {
     this.setState({
-      datasetName: e.target.value
+      datasetName: e.target.value,
     });
   }
 
   onPlatformChange(e) {
     this.setState({
-      platform: e.target.value
+      platform: e.target.value,
     });
   }
 
@@ -65,9 +65,7 @@ class CodeSnippetModal extends Component {
         <ModalHeader>Generate code snippet</ModalHeader>
         <ModalBody>
           <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText>{'Dataset-name'}</InputGroupText>
-            </InputGroupAddon>
+            <InputGroupText>{'Dataset-name'}</InputGroupText>
             <Input
               id="inputProjectName"
               placeholder={'Dataset-name'}

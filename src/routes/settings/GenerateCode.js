@@ -4,7 +4,6 @@ import {
   FormGroup,
   CustomInput,
   InputGroup,
-  InputGroupAddon,
   Input,
   Button,
   InputGroupText,
@@ -53,15 +52,11 @@ class GenerateCode extends Component {
         {this.props.project.enableDeviceApi || this.props.project.users ? (
           <div>
             <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>{'Backend-URL'}</InputGroupText>
-              </InputGroupAddon>
+              <InputGroupText>{'Backend-URL'}</InputGroupText>
               <Input value={this.props.backendUrl} readOnly />
             </InputGroup>
             <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>{'Read Key'}</InputGroupText>
-              </InputGroupAddon>
+              <InputGroupText>{'Read Key'}</InputGroupText>
               <Input
                 value={
                   this.props.readApiKey
@@ -72,9 +67,7 @@ class GenerateCode extends Component {
               />
             </InputGroup>
             <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>{'Write Key'}</InputGroupText>
-              </InputGroupAddon>
+              <InputGroupText>{'Write Key'}</InputGroupText>
               <Input
                 value={
                   this.props.writeApiKey

@@ -6,6 +6,7 @@ import {
   Input,
   InputGroup,
   InputGroupAddon,
+  InputGroupText,
 } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -47,7 +48,7 @@ class MetadataPanel extends Component {
   async handleNameSave() {
     this.setState({ nameEditActive: false });
     const nameChangeSuccessful = await this.props.handleDatasetNameChange(
-      this.state.editedName
+      this.state.editedName,
     );
     if (nameChangeSuccessful) {
       this.setState({ datasetName: this.state.editedName });
@@ -78,14 +79,14 @@ class MetadataPanel extends Component {
                         value={this.state.editedName}
                         onChange={this.handleNameInput}
                       />
-                      <InputGroupAddon addonType="append">
+                      <InputGroupText addonType="append">
                         <button
                           className="confirmDatasetNameButton"
                           onClick={this.handleNameSave}
                         >
                           <FontAwesomeIcon icon={faCheck} />
                         </button>
-                      </InputGroupAddon>
+                      </InputGroupText>
                     </InputGroup>
                   </FormGroup>
                 </Form>
@@ -106,11 +107,11 @@ class MetadataPanel extends Component {
             'Start',
             this.props.start !== undefined
               ? unixTimeToString(this.props.start)
-              : ''
+              : '',
           )}
           {this.metaDataItem(
             'End',
-            this.props.end != undefined ? unixTimeToString(this.props.end) : ''
+            this.props.end != undefined ? unixTimeToString(this.props.end) : '',
           )}
           {this.metaDataItem('User', this.props.user)}
         </div>

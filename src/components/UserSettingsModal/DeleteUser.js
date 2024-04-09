@@ -51,9 +51,7 @@ class DeleteUser extends Component {
           <div>All projects where you are admin will be deleted</div>
         </div>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>E-Mail</InputGroupText>
-          </InputGroupAddon>
+          <InputGroupText>E-Mail</InputGroupText>
           <Input
             type="text"
             id="E-Mail"

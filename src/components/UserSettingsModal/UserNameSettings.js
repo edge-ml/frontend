@@ -59,9 +59,7 @@ class UserNameSettings extends Component {
       <div>
         <h4 className="font-weight-bold">Change UserName</h4>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>Username</InputGroupText>
-          </InputGroupAddon>
+          <InputGroupText>Username</InputGroupText>
           <Input
             id="inputUserName"
             placeholder="New username"
@@ -69,9 +67,7 @@ class UserNameSettings extends Component {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>Username</InputGroupText>
-          </InputGroupAddon>
+          <InputGroupText>Username</InputGroupText>
           <Input
             id="inputUserNameConfirm"
             placeholder="Retype new username"

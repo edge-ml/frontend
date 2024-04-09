@@ -50,9 +50,7 @@ function BlePanelRecorderSettings(props) {
       </div>
       <div className="body-wrapper p-3">
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>{'Dataset name'}</InputGroupText>
-          </InputGroupAddon>
+          <InputGroupText>{'Dataset name'}</InputGroupText>
           <Input
             id="bleDatasetName"
             placeholder={'dataset name'}

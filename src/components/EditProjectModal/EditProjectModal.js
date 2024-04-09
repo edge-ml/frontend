@@ -176,9 +176,7 @@ class EditProjectModal extends Component {
         </ModalHeader>
         <ModalBody>
           <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText>{'Name'}</InputGroupText>
-            </InputGroupAddon>
+            <InputGroupText>{'Name'}</InputGroupText>
             <Input
               id="inputProjectName"
               placeholder={'Project-name'}
@@ -187,9 +185,7 @@ class EditProjectModal extends Component {
             />
           </InputGroup>
           <InputGroup>
-            <InputGroupAddon addonType="prepend">
-              <InputGroupText>{'Admin'}</InputGroupText>
-            </InputGroupAddon>
+            <InputGroupText>{'Admin'}</InputGroupText>
             <Input
               readOnly
               id="inputProjectAdmin"
@@ -199,9 +195,7 @@ class EditProjectModal extends Component {
           </InputGroup>
           {this.props.isNewProject ? null : (
             <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>{'Admin'}</InputGroupText>
-              </InputGroupAddon>
+              <InputGroupText>{'Admin'}</InputGroupText>
               <Input value={this.state.project.admin.userName} readOnly />
             </InputGroup>
           )}

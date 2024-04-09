@@ -153,13 +153,9 @@ class RegisterPage extends Component {
                   <Col>
                     <Col>
                       <InputGroup>
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <FontAwesomeIcon
-                              icon={faEnvelope}
-                            ></FontAwesomeIcon>
-                          </InputGroupText>
-                        </InputGroupAddon>
+                        <InputGroupText>
+                          <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
+                        </InputGroupText>
                         <Input
                           type="email"
                           name="email"
@@ -171,11 +167,9 @@ class RegisterPage extends Component {
                     </Col>
                     <Col>
                       <InputGroup>
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
-                          </InputGroupText>
-                        </InputGroupAddon>
+                        <InputGroupText>
+                          <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
+                        </InputGroupText>
                         <Input
                           type="password"
                           name="password"
@@ -187,11 +181,9 @@ class RegisterPage extends Component {
                     </Col>
                     <Col>
                       <InputGroup>
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
-                          </InputGroupText>
-                        </InputGroupAddon>
+                        <InputGroupText>
+                          <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
+                        </InputGroupText>
                         <Input
                           type="password"
                           name="password"
@@ -203,11 +195,9 @@ class RegisterPage extends Component {
                     </Col>
                     <Col>
                       <InputGroup>
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
-                          </InputGroupText>
-                        </InputGroupAddon>
+                        <InputGroupText>
+                          <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
+                        </InputGroupText>
                         <Input
                           type="text"
                           name="username"

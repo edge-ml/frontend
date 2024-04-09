@@ -289,13 +289,9 @@ class LoginPage extends Component {
                       <Col>
                         <Col>
                           <InputGroup>
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText style={{ background: '#ced4da' }}>
-                                <FontAwesomeIcon
-                                  icon={faUser}
-                                ></FontAwesomeIcon>
-                              </InputGroupText>
-                            </InputGroupAddon>
+                            <InputGroupText style={{ background: '#ced4da' }}>
+                              <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
+                            </InputGroupText>
 
                             <Input
                               type="email"
@@ -309,13 +305,11 @@ class LoginPage extends Component {
                         </Col>
                         <Col>
                           <InputGroup>
-                            <InputGroupAddon addonType="prepend">
-                              <InputGroupText style={{ background: '#ced4da' }}>
-                                <FontAwesomeIcon
-                                  icon={faShield}
-                                ></FontAwesomeIcon>
-                              </InputGroupText>
-                            </InputGroupAddon>
+                            <InputGroupText style={{ background: '#ced4da' }}>
+                              <FontAwesomeIcon
+                                icon={faShield}
+                              ></FontAwesomeIcon>
+                            </InputGroupText>
                             <Input
                               type="password"
                               name="password"

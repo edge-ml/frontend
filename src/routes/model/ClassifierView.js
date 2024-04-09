@@ -10,6 +10,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  InputGroupText,
 } from 'reactstrap';
 
 import { faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -48,7 +49,7 @@ export const ClassifierView = ({
       </CardHeader>
       <CardBody className="h-100 d-flex flex-column align-items-start flex-column justify-content-between">
         <InputGroup style={{ maxWidth: '350px' }}>
-          <InputGroupAddon addonType="prepend">Model Name</InputGroupAddon>
+          <InputGroupText addonType="prepend">Model Name</InputGroupText>
           <Input
             type={'text'}
             value={modelName}

@@ -93,7 +93,7 @@ class MetaDataEditModal extends Component {
     return this.state.metaData.map((elm, idx) => (
       <div key={idx}>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText addonType="prepend">
             <Input
               style={{
                 background: 'lightGrey',
@@ -105,7 +105,7 @@ class MetaDataEditModal extends Component {
               invalid={this.checkError(elm)}
               placeholder="key"
             ></Input>
-          </InputGroupAddon>
+          </InputGroupText>
           <Input
             className="shadow-none"
             // style={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
@@ -114,7 +114,7 @@ class MetaDataEditModal extends Component {
             invalid={this.checkError(elm) || elm.data == ''}
             placeholder="data"
           ></Input>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText addonType="prepend">
             <Button
               style={{
                 borderBottomRightRadius: '0.25rem',
@@ -125,7 +125,7 @@ class MetaDataEditModal extends Component {
             >
               X
             </Button>
-          </InputGroupAddon>
+          </InputGroupText>
 
           <FormFeedback>
             {this.checkError(elm)

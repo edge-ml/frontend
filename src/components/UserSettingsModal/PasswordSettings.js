@@ -74,9 +74,7 @@ class PasswordSettings extends Component {
       <div>
         <h4 className="font-weight-bold">Change password</h4>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>Password</InputGroupText>
-          </InputGroupAddon>
+          <InputGroupText>Password</InputGroupText>
           <Input
             id="inputNewPassword"
             type="password"
@@ -85,9 +83,7 @@ class PasswordSettings extends Component {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>Password</InputGroupText>
-          </InputGroupAddon>
+          <InputGroupText>Password</InputGroupText>
           <Input
             id="inputNewPasswordConfirm"
             type="password"
@@ -96,9 +92,7 @@ class PasswordSettings extends Component {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>Password</InputGroupText>
-          </InputGroupAddon>
+          <InputGroupText>Password</InputGroupText>
           <Input
             id="inputCurrentPassword"
             type="password"

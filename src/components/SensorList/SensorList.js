@@ -1,4 +1,11 @@
-import { Badge, Table, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import {
+  Badge,
+  Table,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+} from 'reactstrap';
 import {
   useBootstrapMDBreakpoint,
   usePersistedState,
@@ -39,7 +46,7 @@ export const SensorList = ({
   const isDesktop = useBootstrapMDBreakpoint();
   const [collapseState, setCollapseState] = usePersistedState(
     {},
-    uiPersistentStateKey
+    uiPersistentStateKey,
   );
 
   return (
@@ -80,7 +87,7 @@ export const SensorList = ({
                   min={0}
                   max={50}
                 ></Input>{' '}
-                <InputGroupAddon addonType="append">Hz</InputGroupAddon>
+                <InputGroupText addonType="append">Hz</InputGroupText>
               </InputGroup>
             );
 
@@ -89,7 +96,7 @@ export const SensorList = ({
                 shortComponent: c,
                 component: components[i],
                 sensor: sensor,
-              })
+              }),
             );
 
             const toggleDetails = () =>
@@ -136,7 +143,7 @@ export const SensorList = ({
                     <React.Fragment>
                       <Td
                         style={visibilityStyle(
-                          !areDetailsShownWhenOnlyShowSelectedDetails
+                          !areDetailsShownWhenOnlyShowSelectedDetails,
                         )}
                       >
                         {fixedFrequency ? null : rateInput}
@@ -144,7 +151,7 @@ export const SensorList = ({
                       <Td
                         style={{
                           ...displayStyle(
-                            !areDetailsShownWhenOnlyShowSelectedDetails
+                            !areDetailsShownWhenOnlyShowSelectedDetails,
                           ),
                           width: '100%',
                         }}

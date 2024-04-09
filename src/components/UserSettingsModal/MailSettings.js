@@ -62,9 +62,7 @@ class MailSettings extends Component {
       <div>
         <h4 className="font-weight-bold">Change Mail</h4>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>E-Mail</InputGroupText>
-          </InputGroupAddon>
+          <InputGroupText>E-Mail</InputGroupText>
           <Input
             id="inputNewMail"
             placeholder="New e-mail"
@@ -72,9 +70,7 @@ class MailSettings extends Component {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
-            <InputGroupText>E-Mail</InputGroupText>
-          </InputGroupAddon>
+          <InputGroupText>E-Mail</InputGroupText>
           <Input
             id="inputNewMailConfirm"
             placeholder="Retype new e-mail"

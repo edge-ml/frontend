@@ -116,9 +116,7 @@ class LabelingPanel extends Component {
           </div>
           <div className="informationBox">
             <InputGroup className="inputGroup m-1">
-              <InputGroupAddon addonType="prepend" className="inputGroupAddon">
-                <InputGroupText className="inputLabel">From</InputGroupText>
-              </InputGroupAddon>
+              <InputGroupText className="inputLabel">From</InputGroupText>
               <Input
                 value={
                   this.state.from
@@ -130,9 +128,7 @@ class LabelingPanel extends Component {
               />
             </InputGroup>
             <InputGroup className="inputGroup m-1">
-              <InputGroupAddon addonType="prepend" className="inputGroupAddon">
-                <InputGroupText className="inputLabel">To</InputGroupText>
-              </InputGroupAddon>
+              <InputGroupText className="inputLabel">To</InputGroupText>
               <Input
                 value={
                   this.state.to

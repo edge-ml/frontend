@@ -27,9 +27,7 @@ export const RecorderSettings = ({
 }) => (
   <React.Fragment>
     <InputGroup>
-      <InputGroupAddon addonType="prepend">
-        <InputGroupText>Dataset name</InputGroupText>
-      </InputGroupAddon>
+      <InputGroupText>Dataset name</InputGroupText>
       <Input
         id="datasetName"
         placeholder="dataset name"

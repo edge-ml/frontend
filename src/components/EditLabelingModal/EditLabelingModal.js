@@ -77,7 +77,7 @@ class EditLabelingModal extends Component {
   labelNameInvalid(label, labelIdx) {
     return this.state.labeling.labels.some(
       (elm, idx) =>
-        elm.name === label.name && idx !== labelIdx && label.name !== ''
+        elm.name === label.name && idx !== labelIdx && label.name !== '',
     );
   }
 
@@ -150,7 +150,7 @@ class EditLabelingModal extends Component {
           const found = l.labels.find((e) => e.type === delLabel['_id']);
           if (found) {
             const label = this.state.deletedLabels.find(
-              (elm) => elm._id === found.type
+              (elm) => elm._id === found.type,
             );
             labels.push(label);
             labelConflict = true;
@@ -189,7 +189,7 @@ class EditLabelingModal extends Component {
     //label conflict and user chose to delete labels. Deletes them in the backend too.
     this.props.onDeleteLabeling(
       this.state.labeling['_id'],
-      this.state.conflictingDatasetIdsForLabelingDeletion
+      this.state.conflictingDatasetIdsForLabelingDeletion,
     );
   }
 
@@ -257,7 +257,7 @@ class EditLabelingModal extends Component {
     });
 
     const confirmString = this.props.getConfirmStringLabelingSet(
-      conflictingDatasetNames
+      conflictingDatasetNames,
     );
     if (labelConflict) {
       //label conflict and user chose to delete labels. Deletes them in the backend too.
@@ -323,7 +323,7 @@ class EditLabelingModal extends Component {
       this.props.labelings.some(
         (elm) =>
           elm.name === this.state.labeling.name &&
-          elm._id != this.state.labeling._id
+          elm._id != this.state.labeling._id,
       )
     );
   }
@@ -354,9 +354,7 @@ class EditLabelingModal extends Component {
         <ModalBody className="edit-labeling-body">
           <div className="d-flex flex-row align-items-center">
             <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>Labeling Set</InputGroupText>
-              </InputGroupAddon>
+              <InputGroupText>Labeling Set</InputGroupText>
               <Input
                 invalid={this.labelingNameInValid()}
                 id="labelingName"
@@ -401,9 +399,7 @@ class EditLabelingModal extends Component {
           {this.state.labeling.labels
             ? this.state.labeling.labels.map((label, index) => (
                 <InputGroup key={'label' + index}>
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>Label</InputGroupText>
-                  </InputGroupAddon>
+                  <InputGroupText>Label</InputGroupText>
                   <Input
                     invalid={this.labelNameInvalid(label, index)}
                     id={'labelName' + index}
@@ -413,9 +409,7 @@ class EditLabelingModal extends Component {
                       this.onLabelNameChanged(index, e.target.value)
                     }
                   />
-                  <InputGroupAddon addonType="append">
-                    <InputGroupText>Color</InputGroupText>
-                  </InputGroupAddon>
+                  <InputGroupText>Color</InputGroupText>
                   <Input
                     id={'labelColor' + index}
                     placeholder="Color"
@@ -435,7 +429,7 @@ class EditLabelingModal extends Component {
                       this.onLabelColorChanged(index, e.target.value)
                     }
                   />
-                  <InputGroupAddon addonType="append">
+                  <InputGroupText addonType="append">
                     <Button
                       id={'buttonDeleteLabel' + index}
                       className="m-0 deleteBtnRadius"
@@ -447,7 +441,7 @@ class EditLabelingModal extends Component {
                     >
                       ✕
                     </Button>
-                  </InputGroupAddon>
+                  </InputGroupText>
                   <FormFeedback id="labelFeedback">
                     {!isValidColor(label.color)
                       ? 'Invalid color'

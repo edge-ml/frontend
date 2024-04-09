@@ -16,7 +16,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
       labelings: fileConfig.labelings.map((l) =>
         l.originalName !== labelingToDeleteOriginalName
           ? l
-          : { ...l, removed: true }
+          : { ...l, removed: true },
       ),
     });
   };
@@ -53,11 +53,9 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
           <tr>
             <th colSpan="2" style={{ padding: '0 12px 0 0' }}>
               <InputGroup size="md">
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <b>Dataset-name</b>
-                  </InputGroupText>
-                </InputGroupAddon>
+                <InputGroupText>
+                  <b>Dataset-name</b>
+                </InputGroupText>
                 <Input
                   className="font-weight-bold"
                   id={'datasetName' + String(0)}
@@ -115,9 +113,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>Name</InputGroupText>
-                      </InputGroupAddon>
+                      <InputGroupText>Name</InputGroupText>
                       <Input
                         data-testid="nameInput"
                         type="text"
@@ -148,9 +144,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>Unit</InputGroupText>
-                      </InputGroupAddon>
+                      <InputGroupText>Unit</InputGroupText>
                       <Input
                         data-testid="unitInput"
                         type="text"
@@ -182,9 +176,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>Scale</InputGroupText>
-                      </InputGroupAddon>
+                      <InputGroupText>Scale</InputGroupText>
                       <Input
                         data-testid="scaleInput"
                         type="text"
@@ -222,9 +214,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>Offset</InputGroupText>
-                      </InputGroupAddon>
+                      <InputGroupText>Offset</InputGroupText>
                       <Input
                         data-testid="offsetInput"
                         type="text"
@@ -276,7 +266,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                         changeConfig(fileId, {
                           ...fileConfig,
                           timeSeries: fileConfig.timeSeries.map((ts) =>
-                            ts !== timeSeries ? ts : { ...ts, removed: true }
+                            ts !== timeSeries ? ts : { ...ts, removed: true },
                           ),
                         })
                       }

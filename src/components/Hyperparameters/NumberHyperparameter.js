@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { InputGroupAddon, Input } from 'reactstrap';
+import { InputGroupAddon, Input, InputGroupText } from 'reactstrap';
 
 import Hyperparameter from './Hyperparameter';
 
 const NumberHyperparameter = (props) => {
   return (
     <Hyperparameter {...props}>
-      <InputGroupAddon className="w-100" addonType="append">
+      <InputGroupText className="w-100" addonType="append">
         <Input
           style={{ minHeight: '38px' }}
           type="number"
@@ -30,7 +30,7 @@ const NumberHyperparameter = (props) => {
                   : 'border border-danger'
               }`}
         />
-      </InputGroupAddon>
+      </InputGroupText>
     </Hyperparameter>
   );
 };
