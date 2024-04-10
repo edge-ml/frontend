@@ -34,7 +34,7 @@ class ListItemModal extends Component {
           <div className="body-wrapper p-2">
             <div className="p-3">
               <Button outline color="primary" onClick={this.toggleModal}>
-                <FontAwesomeIcon icon={faArrowRight}></FontAwesomeIcon>
+                  Edit
               </Button>
             </div>
           </div>
