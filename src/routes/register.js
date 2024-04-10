@@ -14,12 +14,16 @@ import {
   FormGroup,
   Label,
 } from 'reactstrap';
-import { MailIcon, PersonIcon, ShieldIcon } from 'react-octicons';
 import { registerNewUser } from '../services/ApiServices/AuthentificationServices';
 import { clearToken } from '../services/LocalStorageService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faEnvelope,
+  faExclamationTriangle,
+  faShield,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons';
 import { validateEmail } from '../services/helpers';
 import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
 
@@ -98,7 +102,7 @@ class RegisterPage extends Component {
       registerNewUser(
         this.state.email,
         this.state.password,
-        this.state.userName
+        this.state.userName,
       )
         .then(() => {
           clearToken();
@@ -151,7 +155,9 @@ class RegisterPage extends Component {
                       <InputGroup>
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
-                            <MailIcon fill="#444" width="15" />
+                            <FontAwesomeIcon
+                              icon={faEnvelope}
+                            ></FontAwesomeIcon>
                           </InputGroupText>
                         </InputGroupAddon>
                         <Input
@@ -167,7 +173,7 @@ class RegisterPage extends Component {
                       <InputGroup>
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
-                            <ShieldIcon fill="#444" width="15" />
+                            <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
                           </InputGroupText>
                         </InputGroupAddon>
                         <Input
@@ -183,7 +189,7 @@ class RegisterPage extends Component {
                       <InputGroup>
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
-                            <ShieldIcon fill="#444" width="15" />
+                            <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
                           </InputGroupText>
                         </InputGroupAddon>
                         <Input
@@ -199,7 +205,7 @@ class RegisterPage extends Component {
                       <InputGroup>
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
-                            <PersonIcon fill="#444" width="15" />
+                            <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
                           </InputGroupText>
                         </InputGroupAddon>
                         <Input

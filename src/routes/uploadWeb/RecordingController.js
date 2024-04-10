@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-import Semaphore from 'semaphore-async-await';
 
 import {
   createDataset,
@@ -14,7 +13,7 @@ export class RecordingController extends EventEmitter {
     sensors,
     sampleRates,
     datasetName,
-    uploadInterval = UDDATE_INTERVAL
+    uploadInterval = UDDATE_INTERVAL,
   ) {
     super();
     this._sensors = sensors;
@@ -96,7 +95,7 @@ export class RecordingController extends EventEmitter {
               start: new Date().getTime() + 10000000,
               end: 0,
               data: [],
-            }))
+            })),
           )
           .flat(),
       })

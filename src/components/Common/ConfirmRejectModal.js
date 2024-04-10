@@ -1,6 +1,4 @@
-import { Modal } from 'react-bootstrap';
-import { Button } from 'react-bootstrap/lib/InputGroup';
-import { ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { ModalBody, ModalFooter, ModalHeader, Modal, Button } from 'reactstrap';
 
 const ConfirmRejectModal = ({ headerText, onConfrim, onReject, children }) => {
   return (
