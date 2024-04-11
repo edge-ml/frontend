@@ -1,7 +1,7 @@
 name: Publish Docker image
 on:
   push:
-    branches: [ main ]
+    branches: [ beta ]
     
 jobs:
   push_to_registry:
@@ -16,7 +16,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: tecokit/explorer-frontend
+          repository: tecokit/edge-ml_frontend_beta
           tag_with_ref: true
   on_failure:
       runs-on: ubuntu-latest
