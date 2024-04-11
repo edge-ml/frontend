@@ -8,7 +8,6 @@ jobs:
   push_to_registry:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -19,9 +18,3 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: tecokit/edge-ml_frontend_beta
           tag_with_ref: true
-  on_failure:
-      runs-on: ubuntu-latest
-      if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-      steps:
-        - name: Try to fail
-          run: exit 1
