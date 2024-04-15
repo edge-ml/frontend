@@ -24,6 +24,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64,linux/arm64,linux/aarch64,darwin/amd64
+          platforms: linux/amd64,linux/arm64,linux/aarch64
           push: true
           tags: tecokit/edge-ml_frontend_beta:latest
