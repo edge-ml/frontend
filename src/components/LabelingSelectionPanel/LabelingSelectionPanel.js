@@ -88,28 +88,30 @@ const LabelingSelectionPanel = (props) => {
               {props.activeSeries.length + '/' + props.timeSeries.length}
             </div>{' '}
           </DropdownToggle>
-          <DropdownMenu className="scrollable-dropdown">
-            {props.timeSeries.map((elm) => {
-              return (
-                <DropdownItem className="p-0 p-2 dropdownItemTS">
-                  <div
-                    onClick={(e) => {
-                      onClickSelectSeries(elm._id);
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    <div className="d-flex align-items-center">
-                      <Checkbox
-                        isSelected={selectedTs.includes(elm._id)}
-                        onClick={() => console.log('click checkbox')}
-                      ></Checkbox>
-                      <div className="ml-2">{elm.name}</div>
+          <DropdownMenu>
+            <div className="scrollable-dropdown">
+              {props.timeSeries.map((elm) => {
+                return (
+                  <DropdownItem className="p-0 p-2">
+                    <div
+                      onClick={(e) => {
+                        onClickSelectSeries(elm._id);
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
+                      <div className="d-flex align-items-center">
+                        <Checkbox
+                          isSelected={selectedTs.includes(elm._id)}
+                          onClick={() => console.log('click checkbox')}
+                        ></Checkbox>
+                        <div className="ml-2">{elm.name}</div>
+                      </div>
                     </div>
-                  </div>
-                </DropdownItem>
-              );
-            })}
+                  </DropdownItem>
+                );
+              })}
+            </div>
             <DropdownItem divider></DropdownItem>
             <DropdownItem className="p-1">
               <Button
@@ -203,15 +205,15 @@ const LabelingSelectionPanel = (props) => {
               props.hideLabels
                 ? { label: 'Select Labeling', value: hideLabelsSymbol }
                 : props.selectedLabelingId
-                ? {
-                    value: props.selectedLabelingId,
-                    label:
-                      'Labeling: ' +
-                      props.labelings.find(
-                        (x) => x._id === props.selectedLabelingId
-                      ).name,
-                  }
-                : null
+                  ? {
+                      value: props.selectedLabelingId,
+                      label:
+                        'Labeling: ' +
+                        props.labelings.find(
+                          (x) => x._id === props.selectedLabelingId,
+                        ).name,
+                    }
+                  : null
             }
             onChange={(x) => handleLabelingClicked(null, x.value)}
             options={[
