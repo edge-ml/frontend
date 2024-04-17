@@ -292,20 +292,26 @@ class DatasetPage extends Component {
     if (!dataset) return;
     this.setState({ dataset }, () =>
       subscribeLabelingsAndLabels().then((labelings) => {
-        this.onLabelingsAndLabelsChanged(labelings);
+        this.onLabelingsAndLabelsChanged(labelings, dataset);
       }),
     );
   }
 
-  onLabelingsAndLabelsChanged(labelings) {
-    let selectedLabeling = labelings[0];
+  onLabelingsAndLabelsChanged(labelings, dataset) {
+    let selectedLabeling;
+    if (dataset && dataset.labelings && dataset.labelings[0]) {
+      let labelingId = dataset.labelings[0].labelingId;
+      selectedLabeling = labelings.find((elm) => elm._id === labelingId);
+    } else {
+      selectedLabeling = labelings[0];
+    }
     let selectedLabelTypes = undefined;
     if (
       selectedLabeling &&
       selectedLabeling.labels &&
       selectedLabeling.labels.length
     ) {
-      selectedLabelTypes = labelings[0].labels;
+      selectedLabelTypes = selectedLabeling.labels;
     }
     this.setState({
       labelings: labelings || [],
