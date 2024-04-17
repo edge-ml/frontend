@@ -44,7 +44,7 @@ const Navbar = (props) => {
 
   const getNavBarItemClasses = (location) => {
     const project = props.projects.filter(
-      (x) => x._id === props.currentProjectId
+      (x) => x._id === props.currentProjectId,
     )[0];
     const isSelected =
       props.location.pathname.toLowerCase() ===
@@ -64,7 +64,7 @@ const Navbar = (props) => {
 
   const scrollProjectIntoView = () => {
     const project = props.projects.find(
-      (x) => x._id === props.currentProjectId
+      (x) => x._id === props.currentProjectId,
     );
 
     if (project) {
@@ -320,10 +320,6 @@ const Navbar = (props) => {
       <UserSettingsModal
         isOpen={userSettingsModalOpen}
         onClose={toggleUserSettingsModal}
-        twoFAEnabled={props.twoFAEnabled}
-        onLogout={() => props.onLogout(true)}
-        enable2FA={props.enable2FA}
-        userMail={props.userMail}
       ></UserSettingsModal>
       <NotificationHandler
         onClose={() => setNotificationModalOpen(false)}

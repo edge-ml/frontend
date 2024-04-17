@@ -3,7 +3,6 @@ import { NavbarBrand } from 'reactstrap';
 import logoSvg from '../../logo.svg';
 
 const EdgeMLBrandLogo = ({ href }) => {
-  console.log(window.location.host);
   if (window.location.host === 'edge-ml-beta.dmz.teco.edu') {
     return (
       <NavbarBrand

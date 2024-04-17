@@ -500,3 +500,11 @@ div.card {
 .child-gap > * {
   margin: 2px;
 }
+
+.bg-login {
+  background: linear-gradient(
+    0deg,
+    rgba(11, 12, 89, 1) 0%,
+    rgba(7, 55, 99, 1) 100%
+  );
+}
