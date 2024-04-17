@@ -21,13 +21,12 @@ import EdgeMLBrandLogo from '../EdgeMLBrandLogo/EdgeMLBrandLogo';
 import NotificationHandler from '../NotificationHandler';
 import NotificationContext from '../NotificationHandler/NotificationProvider';
 import { KITLogo, TECOLogo } from '../Common/logos';
+import { PopoverBody, Button, Popover } from 'reactstrap';
+import { ProjectContext } from '../../ProjectProvider';
 import {
-  PopoverBody,
-  PopoverHeader,
-  UncontrolledPopover,
-  Button,
-  Popover,
-} from 'reactstrap';
+  useHistory,
+  useLocation,
+} from 'react-router-dom/cjs/react-router-dom.min';
 
 const navbarProjectId = (id) => `navbar-project-${id}`;
 
@@ -38,23 +37,27 @@ const Navbar = (props) => {
 
   const { activeNotifications } = useContext(NotificationContext);
 
+  const { projects, currentProject, onProjectClick } =
+    useContext(ProjectContext);
+
+  const location = useLocation();
+  const history = useHistory();
+
   const toggleUserPopOver = () => {
     setUserPopoverOpen(!userPopoverOpen);
   };
 
-  const getNavBarItemClasses = (location) => {
-    const project = props.projects.filter(
-      (x) => x._id === props.currentProjectId,
-    )[0];
+  const getNavBarItemClasses = (location_data) => {
+    const project = currentProject;
     const isSelected =
-      props.location.pathname.toLowerCase() ===
+      location.pathname.toLowerCase() ===
       (
         '/' +
         project.admin.userName +
         '/' +
         project.name +
         '/' +
-        location
+        location_data
       ).toLowerCase();
     return (
       'pt-2 pb-2 pl-4 small ' +
@@ -63,9 +66,7 @@ const Navbar = (props) => {
   };
 
   const scrollProjectIntoView = () => {
-    const project = props.projects.find(
-      (x) => x._id === props.currentProjectId,
-    );
+    const project = projects.find((x) => x._id === props.currentProjectId);
 
     if (project) {
       const element = document.getElementById(navbarProjectId(project._id));
@@ -73,6 +74,18 @@ const Navbar = (props) => {
         element.scrollIntoView({ inline: 'nearest', block: 'nearest' });
       }
     }
+  };
+
+  const navigateTo = (subPage) => {
+    console.log(currentProject.name);
+    history.push(
+      '/' +
+        currentProject.admin.userName +
+        '/' +
+        currentProject.name +
+        '/' +
+        subPage,
+    );
   };
 
   const toggleUserSettingsModal = () => {
@@ -100,16 +113,16 @@ const Navbar = (props) => {
           href={
             props.projectAvailable
               ? '/' +
-                props.projectAvailable.admin.userName +
+                currentProject.admin.userName +
                 '/' +
-                props.projectAvailable.name +
+                currentProject.name +
                 '/' +
                 'datasets'
               : null
           }
         />
         <div className="w-100 mt-3 overflow-auto">
-          {props.projects.map((project, index) => {
+          {projects.map((project, index) => {
             return (
               <div
                 className="w-100 text-left"
@@ -118,7 +131,7 @@ const Navbar = (props) => {
               >
                 <div
                   className="d-flex align-items-center mt-1 pt-2 pb-2 pl-2 navbar-project"
-                  onClick={() => props.onProjectClick(project._id)}
+                  onClick={() => onProjectClick(project)}
                   style={{
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
@@ -131,7 +144,7 @@ const Navbar = (props) => {
                       cursor: 'pointer',
                     }}
                     icon={
-                      props.currentProjectId === project._id
+                      currentProject._id === project._id
                         ? faCaretDown
                         : faCaretRight
                     }
@@ -148,7 +161,7 @@ const Navbar = (props) => {
                     <b>{project.name}</b>
                   </div>
                 </div>
-                {props.currentProjectId === project._id ? (
+                {currentProject._id === project._id ? (
                   <div>
                     {[
                       ['Datasets', faDatabase],
@@ -160,7 +173,7 @@ const Navbar = (props) => {
                       <div
                         key={elm + index}
                         onClick={() => {
-                          props.navigateTo(elm[0]);
+                          navigateTo(elm[0]);
                         }}
                         className={getNavBarItemClasses(elm[0])}
                       >

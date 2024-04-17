@@ -1,38 +1,24 @@
-import React, { Component } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import NoProjectPage from './../NoProjectPage/NoProjectPage';
+import { ProjectContext } from '../../ProjectProvider';
 
-class ProjectRefresh extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      project: props.project
-    };
-  }
+const ProjectRefresh = ({ children }) => {
+  const { currentProject } = useContext(ProjectContext);
 
-  componentDidUpdate(prevProps) {
-    if (!this.props.project) return;
-    if (prevProps.project && prevProps.project._id === this.props.project._id)
-      return;
-    this.setState({
-      project: this.props.project
-    });
-  }
+  const childrenWithProps = React.Children.map(children, (child) => {
+    if (!currentProject || Object.keys(currentProject).length === 0) {
+      return <NoProjectPage></NoProjectPage>;
+    }
+    if (React.isValidElement(child)) {
+      return React.cloneElement(child, {
+        key: currentProject._id,
+        project: currentProject,
+      });
+    }
+    return child;
+  });
 
-  render() {
-    const childrenWithProps = React.Children.map(this.props.children, child => {
-      if (!this.props.project || this.props.project.length === 0) {
-        return <NoProjectPage></NoProjectPage>;
-      }
-      if (React.isValidElement(child)) {
-        return React.cloneElement(child, {
-          key: this.props.project._id,
-          project: this.props.project
-        });
-      }
-      return child;
-    });
-    return childrenWithProps;
-  }
-}
+  return childrenWithProps;
+};
 
 export default ProjectRefresh;

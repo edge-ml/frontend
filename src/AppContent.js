@@ -1,4 +1,4 @@
-import React, { createContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
 import ListPage from './routes/list/index';
@@ -11,39 +11,30 @@ import UploadBLE from './routes/uploadBLE';
 import { UploadWebPage } from './routes/uploadWeb';
 import Settings from './routes/settings/Settings';
 import ModelLivePage from './routes/ModelLivePage';
+import { ProjectContext } from './ProjectProvider';
 
 const AppContent = (props) => {
-  const {
-    match,
-    project,
-    navigateTo,
-    modalOpen,
-    onProjectsChanged,
-    userName,
-    onDeleteProject,
-    onLeaveProject,
-    userMail,
-  } = props;
+  const { currentProject } = useContext(ProjectContext);
 
   return (
     <Switch>
-      <Route
+      {/* <Route
         exact
         forceRefresh
-        path={[match.path + '/datasets', match.path + '/']}
+        path={[match.path + "/datasets", match.path + "/"]}
         render={(props) => {
           let path = match.url;
-          if (path.endsWith('datasets')) {
-            return <Redirect to={path + '/view'} />;
+          if (path.endsWith("datasets")) {
+            return <Redirect to={path + "/view"} />;
           } else {
-            return <Redirect to={path + '/datasets/view'} />;
+            return <Redirect to={path + "/datasets/view"} />;
           }
         }}
       />
       <Route
         exact
         forceRefresh
-        path={match.path + '/datasets/view'}
+        path={match.path + "/datasets/view"}
         render={(props) => {
           return (
             <ProjectRefresh project={project}>
@@ -51,17 +42,17 @@ const AppContent = (props) => {
             </ProjectRefresh>
           );
         }}
-      />
+      /> */}
       <Route
-        path={[match.path + '/labelings']}
-        render={(props) => (
-          <ProjectRefresh project={project}>
+        path={'/:userName/:projectId/labelings'}
+        render={() => (
+          <ProjectRefresh project={currentProject}>
             <LabelingsPage {...props} />
           </ProjectRefresh>
         )}
       />
-      <Route
-        path={match.path + '/datasets/:id'}
+      {/* <Route
+        path={match.path + "/datasets/:id"}
         render={(props) => (
           <DatasetPage
             {...props}
@@ -72,7 +63,7 @@ const AppContent = (props) => {
       />
       <Route
         exact
-        path={[match.path + '/experiments', match.path + '/experiments/new']}
+        path={[match.path + "/experiments", match.path + "/experiments/new"]}
         render={(props) => (
           <ProjectRefresh project={project}>
             <ExperimentsPage {...props} />
@@ -81,7 +72,7 @@ const AppContent = (props) => {
       />
       <Route
         exact
-        path={match.path + '/models'}
+        path={match.path + "/models"}
         render={(props) => (
           <ProjectRefresh project={project}>
             <ValidationPage {...props}></ValidationPage>
@@ -90,7 +81,7 @@ const AppContent = (props) => {
       />
       <Route
         exact
-        path={match.path + '/models/live/:model_id'}
+        path={match.path + "/models/live/:model_id"}
         render={(modelProps) => (
           <ModelLivePage
             modelId={modelProps.match.params.model_id}
@@ -99,7 +90,7 @@ const AppContent = (props) => {
       ></Route>
       <Route
         exact
-        path={match.path + '/settings'}
+        path={match.path + "/settings"}
         render={(props) => (
           <ProjectRefresh project={project}>
             <Settings
@@ -115,7 +106,7 @@ const AppContent = (props) => {
       />
       <Route
         exact
-        path={match.path + '/settings/getCode'}
+        path={match.path + "/settings/getCode"}
         render={(props) => (
           <ProjectRefresh project={project}>
             <Settings
@@ -132,7 +123,7 @@ const AppContent = (props) => {
       />
       <Route
         exact
-        path={match.path + '/ble'}
+        path={match.path + "/ble"}
         render={(props) => (
           <ProjectRefresh project={project}>
             <UploadBLE {...props}></UploadBLE>
@@ -141,13 +132,13 @@ const AppContent = (props) => {
       />
       <Route
         exact
-        path={match.path + '/uploadweb'}
+        path={match.path + "/uploadweb"}
         render={(props) => (
           <ProjectRefresh project={project}>
             <UploadWebPage {...props}></UploadWebPage>
           </ProjectRefresh>
         )}
-      />
+      /> */}
     </Switch>
   );
 };

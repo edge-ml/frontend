@@ -66,27 +66,35 @@ class LabelingsPage extends Component {
     this.initComponent();
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.project._id !== prevProps.project._id) {
+      this.initComponent();
+    }
+  }
+
   initComponent() {
     Promise.all([getDatasets(), subscribeLabelingsAndLabels()]).then(
       (result) => {
+        console.log(result);
         this.onContentChanged(
           result[1], // labelings,
-          result[0] // datasets
+          result[0], // datasets
         );
-        if (this.props.location.pathname.includes('/labelings/new')) {
+        const { pathname, search } = window.location;
+        if (pathname.includes('/labelings/new')) {
           this.onModalAddLabeling();
         } else {
-          const searchParams = new URLSearchParams(this.props.location.search);
+          const searchParams = new URLSearchParams(search);
           const id = searchParams.get('id');
 
           if (id) {
             let labeling = this.state.labelings.filter(
-              (labeling) => labeling['_id'] === id
+              (labeling) => labeling['_id'] === id,
             )[0];
             this.toggleModal(labeling, false);
           }
         }
-      }
+      },
     );
   }
 
@@ -136,7 +144,7 @@ class LabelingsPage extends Component {
         name: '',
         labels: [],
       },
-      true
+      true,
     );
   }
 
@@ -178,7 +186,7 @@ class LabelingsPage extends Component {
     });
 
     const confirmString = this.getConfirmStringLabelingSet(
-      conflictingDatasetNames
+      conflictingDatasetNames,
     );
 
     if (labelConflict) {
@@ -298,7 +306,7 @@ class LabelingsPage extends Component {
     this.resetConfirmationDialogueModalState();
     this.setState({
       labelingsToDelete: this.state.labelingsToDelete.filter(
-        (id) => !labelingIds.includes(id)
+        (id) => !labelingIds.includes(id),
       ),
     });
   }
@@ -343,39 +351,6 @@ class LabelingsPage extends Component {
     this.onCloseModal();
   }
 
-  // async onSave(labeling, labels, deletedLabels) {
-  //   deletedLabels = deletedLabels.map((elm) => elm._id);
-  //   if (!labeling || !labels) return;
-
-  //   if (labeling.updated || labels.some((elm) => elm.updated)) {
-  //     const labelings = await updateLabelingandLabels(labeling, labels);
-  //     this.onContentChanged(labelings);
-  //   }
-
-  //   if (this.state.modal.isNewLabeling) {
-  //     addLabeling({ ...labeling, labels: labels }).then((labelings) =>
-  //       this.onContentChanged(labelings)
-  //     );
-  //   } else {
-  //     //add new labels to labeling/delete labels from labeling
-  //     addLabelTypesToLabeling(labeling, labels).then((result) => {
-  //       if (deletedLabels !== []) {
-  //         deleteLabelTypesFromLabeling(labeling, deletedLabels).then(
-  //           (newResult) =>
-  //             this.onContentChanged(
-  //               newResult.labelings,
-  //               newResult.labels
-  //             )
-  //         );
-  //       } else {
-  //         this.onContentChanged(result.labeling, result.labels);
-  //       }
-  //     });
-  //   }
-
-  //   this.onCloseModal();
-  // }
-
   resetURL() {
     const newPath = this.props.history.location.pathname.split('/');
     if (newPath[newPath.length - 1].toLowerCase() !== 'labelings') {
@@ -409,7 +384,7 @@ class LabelingsPage extends Component {
     } else {
       this.setState({
         labelingsToDelete: this.state.labelingsToDelete.filter(
-          (id) => id !== labelingId
+          (id) => id !== labelingId,
         ),
       });
     }

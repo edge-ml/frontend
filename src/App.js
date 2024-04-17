@@ -5,7 +5,7 @@ import './App.css';
 import Navbar from './components/Navbar/Navbar';
 import MobileHeader from './components/MobileHeader/MobileHeader';
 import { NotificationProvider } from './components/NotificationHandler/NotificationProvider';
-
+import NavbarLayout from './NavbarLayout';
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
 import AppContent from './AppContent';
@@ -14,6 +14,8 @@ import ErrorPage from './components/ErrorPage/ErrorPage';
 import AppView from './AppView';
 import { Switch } from 'react-router-dom/cjs/react-router-dom.min';
 import { AuthProvider } from './AuthProvider';
+import { ProjectProvider } from './ProjectProvider';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 const App = () => {
   const [projectIndex, setProjectIndex] = useState(undefined);
@@ -48,55 +50,11 @@ const App = () => {
           <AuthProvider>
             <AuthWall>
               <NotificationProvider>
-                <AppView
-                  mobileNavbarShown={this.state.mobileNavbarShown}
-                  onMobileNavbarClose={this.onMobileNavbarClose}
-                  mobileHeader={
-                    <MobileHeader
-                      mobileNavbarShown={this.state.mobileNavbarShown}
-                      onMenuButton={this.onMobileNavbarToggle}
-                      projectAvailable={projectAvailable}
-                    />
-                  }
-                  //   navbar={
-                  //     <Navbar
-                  //       currentProjectId={this.state.currentProjectId}
-                  //       location={this.props.location}
-                  //       projectAvailable={projectAvailable}
-                  //       projects={this.state.projects}
-                  //       selectedProjectId={this.state.selectedProjectId}
-                  //       onProjectClick={this.onProjectClick}
-                  //       navigateTo={this.navigateTo}
-                  //       onProjectEditModal={this.onProjectEditModal}
-                  //     ></Navbar>
-                  //   }
-                  content={
-                    <Fragment>
-                      {projectAvailable ? null : (
-                        <NoProjectPage
-                          onCreateProject={(e) => {
-                            e.preventDefault();
-                            this.onProjectEditModal(true);
-                          }}
-                        ></NoProjectPage>
-                      )}
-                      <Route
-                        path="/:userName/:projectID"
-                        render={(props) => (
-                          <AppContent
-                            {...props}
-                            onDeleteProject={this.onDeleteProject}
-                            onLeaveProject={this.onLeaveProject}
-                            //   modalOpen={modalOpen}
-                            project={projectAvailable}
-                            onProjectsChanged={this.onProjectsChanged}
-                            navigateTo={this.navigateTo}
-                          />
-                        )}
-                      ></Route>
-                    </Fragment>
-                  }
-                />
+                <ProjectProvider>
+                  <NavbarLayout>
+                    <AppContent></AppContent>
+                  </NavbarLayout>
+                </ProjectProvider>
               </NotificationProvider>
             </AuthWall>
           </AuthProvider>
