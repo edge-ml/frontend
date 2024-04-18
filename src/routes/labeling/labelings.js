@@ -66,12 +66,6 @@ class LabelingsPage extends Component {
     this.initComponent();
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.project._id !== prevProps.project._id) {
-      this.initComponent();
-    }
-  }
-
   initComponent() {
     Promise.all([getDatasets(), subscribeLabelingsAndLabels()]).then(
       (result) => {

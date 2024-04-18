@@ -18,7 +18,7 @@ import {
 import React, { Fragment, useState } from 'react';
 import { Badge, Button, Col, Row } from 'reactstrap';
 
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
 import Checkbox from '../../components/Common/Checkbox';
@@ -54,7 +54,7 @@ const Labelings = (props) => {
 
   const labelings = props.dataset.labelings
     .map((elm) =>
-      props.labelings.find((labeling) => labeling._id === elm.labelingId)
+      props.labelings.find((labeling) => labeling._id === elm.labelingId),
     )
     .filter((elm) => elm !== undefined);
 
@@ -73,7 +73,7 @@ const Labelings = (props) => {
               <div>
                 {labeling.labels.map((label, index) => {
                   const labelTypes = props.dataset.labelings[idx].labels.map(
-                    (elm) => elm.type
+                    (elm) => elm.type,
                   );
                   if (!labelTypes.includes(label._id)) {
                     return null;
@@ -210,7 +210,7 @@ const ExpandButton = (props) => {
 
 const DatasetTableEntry = (props) => {
   const dataset = props.dataset;
-  const history = useHistory();
+  const history = useNavigate();
 
   const [isOpen, setOpen] = useState(false);
   return (
@@ -265,7 +265,7 @@ const DatasetTableEntry = (props) => {
                       const id = dataset['_id'];
                       const newPathname = currentPathname.replace(
                         /\/view$/,
-                        `/${id}`
+                        `/${id}`,
                       );
                       history.push({
                         pathname: newPathname,

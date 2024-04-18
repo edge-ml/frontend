@@ -15,7 +15,7 @@ import {
 } from 'reactstrap';
 import NotificationContext from '../../components/NotificationHandler/NotificationProvider';
 import Loader from '../../modules/loader';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import './index.css';
 
@@ -59,7 +59,7 @@ const ListPage = (props) => {
   const selectedFilterParamsRef = useRef(selectedFilterParams);
 
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const toggleModal = () => {
     setModal(!modal);
@@ -74,7 +74,9 @@ const ListPage = (props) => {
       setModal(false);
       setSelectedDatasets([]);
       setDatasets(
-        datasets.filter((dataset) => !selectedDatasets.includes(dataset['_id']))
+        datasets.filter(
+          (dataset) => !selectedDatasets.includes(dataset['_id']),
+        ),
       );
     });
     // resetDropdown().catch((err) => {
@@ -108,9 +110,9 @@ const ListPage = (props) => {
         .filter((elm) =>
           elm.timeSeries
             .map((x) => x.length)
-            .every((y) => y === 0 || y === null)
+            .every((y) => y === 0 || y === null),
         )
-        .map((elm) => elm._id)
+        .map((elm) => elm._id),
     );
   };
 
@@ -143,7 +145,8 @@ const ListPage = (props) => {
     } else {
       searchParams.set('sort', selectedSorting);
     }
-    history.replace({ search: `?${searchParams.toString()}` });
+    // history.replace({ search: `?${searchParams.toString()}` });
+    // navigate.navigate()
 
     selectedSortingRef.current = sortUpdate;
     currentPageRef.current = pageUpdate;
@@ -163,7 +166,7 @@ const ListPage = (props) => {
     searchParams.set('page', currentPage + 1);
     searchParams.set('page_size', pageSize);
     searchParams.set('sort', sort);
-    history.replace({ search: `?${searchParams.toString()}` });
+    // history.replace({ search: `?${searchParams.toString()}` });
   };
 
   const fetchDatasetets = (
@@ -171,14 +174,14 @@ const ListPage = (props) => {
     pageSize,
     sort,
     selectedFilter,
-    selectedFilterParams
+    selectedFilterParams,
   ) => {
     getDatasetsWithPagination(
       currentPage + 1,
       pageSize,
       sort,
       selectedFilter,
-      selectedFilterParams
+      selectedFilterParams,
     ).then((data) => {
       onDatasetsChanged(data.datasets);
       total_datasetsRef.current = data.total_datasets;
@@ -193,7 +196,7 @@ const ListPage = (props) => {
       getDatasetsWithPagination(
         pageInit.pageUpdate,
         pageInit.pageSizeUpdate,
-        pageInit.sortUpdate
+        pageInit.sortUpdate,
       ),
       subscribeLabelingsAndLabels().then((labelings) => {
         setLabelings(labelings);
@@ -225,7 +228,7 @@ const ListPage = (props) => {
         pageSize,
         selectedSortingRef.current,
         selectedFilterRef.current,
-        selectedFilterParamsRef.current
+        selectedFilterParamsRef.current,
       );
     }
   }, [pageSize]);
@@ -238,7 +241,7 @@ const ListPage = (props) => {
         pageSizeRef.current,
         selectedSorting,
         selectedFilterRef.current,
-        selectedFilterParamsRef.current
+        selectedFilterParamsRef.current,
       );
     }
   }, [selectedSorting]);
@@ -251,7 +254,7 @@ const ListPage = (props) => {
         pageSizeRef.current,
         selectedSortingRef.current,
         selectedFilterRef.current,
-        selectedFilterParamsRef.current
+        selectedFilterParamsRef.current,
       );
     }
   }, [currentPage]);
@@ -292,7 +295,7 @@ const ListPage = (props) => {
 
   const goToLastPage = () => {
     setCurrentPage(
-      Math.ceil(total_datasetsRef.current / pageSizeRef.current) - 1
+      Math.ceil(total_datasetsRef.current / pageSizeRef.current) - 1,
     );
   };
 
@@ -353,7 +356,7 @@ const ListPage = (props) => {
       pageSize,
       selectedSorting,
       currentFilter,
-      currentFilterParams
+      currentFilterParams,
     );
   };
 
@@ -367,7 +370,7 @@ const ListPage = (props) => {
       pageSize,
       selectedSorting,
       selectedFilterRef.current,
-      selectedFilterParamsRef.current
+      selectedFilterParamsRef.current,
     );
   };
 

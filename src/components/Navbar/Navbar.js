@@ -23,10 +23,7 @@ import NotificationContext from '../NotificationHandler/NotificationProvider';
 import { KITLogo, TECOLogo } from '../Common/logos';
 import { PopoverBody, Button, Popover } from 'reactstrap';
 import { ProjectContext } from '../../ProjectProvider';
-import {
-  useHistory,
-  useLocation,
-} from 'react-router-dom/cjs/react-router-dom.min';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const navbarProjectId = (id) => `navbar-project-${id}`;
 
@@ -41,7 +38,7 @@ const Navbar = (props) => {
     useContext(ProjectContext);
 
   const location = useLocation();
-  const history = useHistory();
+  const history = useNavigate();
 
   const toggleUserPopOver = () => {
     setUserPopoverOpen(!userPopoverOpen);

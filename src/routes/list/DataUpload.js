@@ -11,11 +11,11 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
 
 const DataUpload = (props) => {
-  const history = useHistory();
+  const history = useNavigate();
 
   return (
     <div

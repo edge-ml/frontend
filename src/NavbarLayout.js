@@ -2,9 +2,9 @@ import Navbar from './components/Navbar/Navbar';
 
 const NavbarLayout = ({ children }) => {
   return (
-    <div className="d-flex">
+    <div className="d-flex vh-100">
       <Navbar></Navbar>
-      {children}
+      <div className="overflow-auto">{children}</div>
     </div>
   );
 };

@@ -12,134 +12,22 @@ import { UploadWebPage } from './routes/uploadWeb';
 import Settings from './routes/settings/Settings';
 import ModelLivePage from './routes/ModelLivePage';
 import { ProjectContext } from './ProjectProvider';
+import { Router, Routes } from 'react-router-dom';
 
-const AppContent = (props) => {
+const AppContent = ({ match }) => {
   const { currentProject } = useContext(ProjectContext);
 
   return (
-    <Switch>
-      {/* <Route
-        exact
-        forceRefresh
-        path={[match.path + "/datasets", match.path + "/"]}
-        render={(props) => {
-          let path = match.url;
-          if (path.endsWith("datasets")) {
-            return <Redirect to={path + "/view"} />;
-          } else {
-            return <Redirect to={path + "/datasets/view"} />;
-          }
-        }}
-      />
-      <Route
-        exact
-        forceRefresh
-        path={match.path + "/datasets/view"}
-        render={(props) => {
-          return (
-            <ProjectRefresh project={project}>
-              <ListPage {...props} />
-            </ProjectRefresh>
-          );
-        }}
-      /> */}
-      <Route
-        path={'/:userName/:projectId/labelings'}
-        render={() => (
-          <ProjectRefresh project={currentProject}>
-            <LabelingsPage {...props} />
-          </ProjectRefresh>
-        )}
-      />
-      {/* <Route
-        path={match.path + "/datasets/:id"}
-        render={(props) => (
-          <DatasetPage
-            {...props}
-            navigateTo={navigateTo}
-            modalOpen={modalOpen}
-          />
-        )}
-      />
-      <Route
-        exact
-        path={[match.path + "/experiments", match.path + "/experiments/new"]}
-        render={(props) => (
-          <ProjectRefresh project={project}>
-            <ExperimentsPage {...props} />
-          </ProjectRefresh>
-        )}
-      />
-      <Route
-        exact
-        path={match.path + "/models"}
-        render={(props) => (
-          <ProjectRefresh project={project}>
-            <ValidationPage {...props}></ValidationPage>
-          </ProjectRefresh>
-        )}
-      />
-      <Route
-        exact
-        path={match.path + "/models/live/:model_id"}
-        render={(modelProps) => (
-          <ModelLivePage
-            modelId={modelProps.match.params.model_id}
-          ></ModelLivePage>
-        )}
-      ></Route>
-      <Route
-        exact
-        path={match.path + "/settings"}
-        render={(props) => (
-          <ProjectRefresh project={project}>
-            <Settings
-              onProjectsChanged={onProjectsChanged}
-              userName={userName}
-              onDeleteProject={onDeleteProject}
-              onLeaveProject={onLeaveProject}
-              userMail={userMail}
-              {...props}
-            />
-          </ProjectRefresh>
-        )}
-      />
-      <Route
-        exact
-        path={match.path + "/settings/getCode"}
-        render={(props) => (
-          <ProjectRefresh project={project}>
-            <Settings
-              onProjectsChanged={onProjectsChanged}
-              codeSnippetModalOpen={true}
-              userName={userName}
-              userMail={userMail}
-              onDeleteProject={onDeleteProject}
-              onLeaveProject={onLeaveProject}
-              {...props}
-            />
-          </ProjectRefresh>
-        )}
-      />
-      <Route
-        exact
-        path={match.path + "/ble"}
-        render={(props) => (
-          <ProjectRefresh project={project}>
-            <UploadBLE {...props}></UploadBLE>
-          </ProjectRefresh>
-        )}
-      />
-      <Route
-        exact
-        path={match.path + "/uploadweb"}
-        render={(props) => (
-          <ProjectRefresh project={project}>
-            <UploadWebPage {...props}></UploadWebPage>
-          </ProjectRefresh>
-        )}
-      /> */}
-    </Switch>
+    <Routes>
+      <Route path="/:userName/:projectId/">
+        <Route path="test" element={<div>test</div>}></Route>
+        <Route
+          path="labelings"
+          element={<LabelingsPage></LabelingsPage>}
+        ></Route>
+        <Route path="Datasets" element={<ListPage></ListPage>}></Route>
+      </Route>
+    </Routes>
   );
 };
 

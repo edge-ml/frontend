@@ -7,8 +7,6 @@ import EditName from './EditName';
 import GenerateCode from './GenerateCode';
 import UserEdit from './UserEdit';
 
-import { Prompt } from 'react-router-dom';
-
 import { updateProject } from './../../services/ApiServices/ProjectService';
 import {
   getDeviceApiKey,
@@ -177,7 +175,7 @@ class Settings extends Component {
       },
       () => {
         this.onSave();
-      }
+      },
     );
   }
 
@@ -244,7 +242,7 @@ class Settings extends Component {
       },
       () => {
         this.onSave();
-      }
+      },
     );
   }
 
@@ -379,7 +377,7 @@ class Settings extends Component {
         this.state.project.name !== this.props.project.name ||
         !(
           this.state.project.users.map((elm) =>
-            originalUsers.includes(elm.user)
+            originalUsers.includes(elm.user),
           ) &&
           this.state.project.users.length === this.props.project.users.length
         );
@@ -392,7 +390,7 @@ class Settings extends Component {
       <Container className="my-5">
         <h4 className="font-weight-bold">{'PROJECT SETTINGS'}</h4>
         {this.mapOptions()}
-        <Prompt
+        {/* <Prompt
           when={changes}
           message={(location, action) => {
             if (this.props.location.pathname === location.pathname) {
@@ -400,7 +398,7 @@ class Settings extends Component {
             }
             return 'Changes have not been saved. Do you want to leave?';
           }}
-        />
+        /> */}
         {this.state.alertText ? (
           <Alert
             color={this.state.saveSuccess ? 'success' : 'danger'}

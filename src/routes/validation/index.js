@@ -34,7 +34,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 import ConfirmRejectModal from '../../components/Common/ConfirmRejectModal';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { useNavigate } from 'react-router-dom';
 
 const ValidationPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -52,7 +52,7 @@ const ValidationPage = () => {
   const [error, setError] = useState(undefined);
   const [stepOptions, setStepOptions] = useState(undefined);
 
-  const history = useHistory();
+  const history = useNavigate();
 
   useEffect(() => {
     refreshModels();

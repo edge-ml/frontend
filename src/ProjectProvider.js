@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from 'react';
 import { getProjects } from './services/ApiServices/ProjectService';
+import { setProject } from './services/LocalStorageService';
 
 const ProjectContext = createContext();
 
@@ -7,10 +8,15 @@ const ProjectProvider = ({ children }) => {
   const [projects, setProjects] = useState([]);
   const [currentProject, setCurrentProject] = useState(undefined);
 
+  const setCurrentProjectAll = (project) => {
+    setProject(project._id);
+    setCurrentProject(project);
+  };
+
   const refreshProjects = async () => {
     const projects = await getProjects();
     setProjects(projects);
-    setCurrentProject(projects.length ? projects[0] : undefined);
+    setCurrentProjectAll(projects.length ? projects[0] : undefined);
   };
 
   useEffect(() => {
@@ -20,9 +26,9 @@ const ProjectProvider = ({ children }) => {
   const onProjectClick = (project) => {
     console.log('CLICK ON PROJECT', project);
     if (currentProject && currentProject._id == project._id) {
-      setCurrentProject(undefined);
+      setCurrentProjectAll(undefined);
     }
-    setCurrentProject(project);
+    setCurrentProjectAll(project);
   };
 
   return (
