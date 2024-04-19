@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   InputGroup,
   InputGroupAddon,
@@ -7,11 +7,13 @@ import {
   Container,
   Button,
 } from 'reactstrap';
+import { ProjectContext } from '../../ProjectProvider';
 
 import './Settings.css';
 
-const EditName = (props) => {
-  const [projectName, setProjectName] = useState(props.projectName);
+const EditName = () => {
+  const { currentProject } = useContext(ProjectContext);
+  const [projectName, setProjectName] = useState();
 
   return (
     <Container>

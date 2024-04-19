@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Input, Alert, Container } from 'reactstrap';
+import { Alert, Container } from 'reactstrap';
 import ListItem from './ListItem';
 import ListItemModal from './ListItemModal';
 import DeleteProject from './DeleteProject';
@@ -15,8 +15,6 @@ import {
   switchDeviceApiActive,
 } from '../../services/ApiServices/DeviceApiService';
 import { API_URI } from './../../services/ApiServices/ApiConstants';
-
-import NoProjectPage from './../../components/NoProjectPage/NoProjectPage';
 
 const options = [
   {
@@ -321,8 +319,6 @@ class Settings extends Component {
       case 0:
         return (
           <EditName
-            readonly={!this.props.project.users}
-            value={this.state.project.name}
             onProjectNameSave={this.onProjectNameSave}
             adminUserName={this.props.project.admin.userName}
             projectName={this.state.project.name}
@@ -383,9 +379,6 @@ class Settings extends Component {
         );
     }
 
-    if (!this.props.project) {
-      return <NoProjectPage></NoProjectPage>;
-    }
     return (
       <Container className="my-5">
         <h4 className="font-weight-bold">{'PROJECT SETTINGS'}</h4>

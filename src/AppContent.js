@@ -11,6 +11,7 @@ import Settings from './routes/settings/Settings';
 import ModelLivePage from './routes/ModelLivePage';
 import { ProjectContext } from './ProjectProvider';
 import { Routes, Navigate } from 'react-router-dom';
+import NoProjectPage from './components/NoProjectPage/NoProjectPage';
 
 const ParamsAdapter = ({ children }) => {
   if (!children) {
@@ -23,9 +24,14 @@ const ParamsAdapter = ({ children }) => {
   return childrenWithProps;
 };
 
-const AppContent = ({ match }) => {
+const AppContent = () => {
   const { currentProject } = useContext(ProjectContext);
   const projectId = currentProject ? currentProject._id : 'default_key';
+
+  if (!currentProject) {
+    return <NoProjectPage></NoProjectPage>;
+  }
+
   return (
     <Routes>
       <Route path="/:userName/:projectId/">
