@@ -10,7 +10,7 @@ import { UploadWebPage } from './routes/uploadWeb';
 import Settings from './routes/settings/Settings';
 import ModelLivePage from './routes/ModelLivePage';
 import { ProjectContext } from './ProjectProvider';
-import { Routes } from 'react-router-dom';
+import { Routes, Navigate } from 'react-router-dom';
 
 const ParamsAdapter = ({ children }) => {
   if (!children) {
@@ -26,7 +26,6 @@ const ParamsAdapter = ({ children }) => {
 const AppContent = ({ match }) => {
   const { currentProject } = useContext(ProjectContext);
   const projectId = currentProject ? currentProject._id : 'default_key';
-  console.log(projectId);
   return (
     <Routes>
       <Route path="/:userName/:projectId/">
@@ -87,6 +86,8 @@ const AppContent = ({ match }) => {
           path="uploadWeb"
           element={<UploadWebPage key={projectId}></UploadWebPage>}
         ></Route>
+        {/* Default to the datasets-page */}
+        <Route path="" element={<Navigate to="Datasets"></Navigate>}></Route>
       </Route>
     </Routes>
   );

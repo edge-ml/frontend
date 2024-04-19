@@ -1,89 +1,34 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import UserSettingsModal from '../UserSettingsModal/UserSettingsModal';
-import {
-  faCaretDown,
-  faCaretRight,
-  faPlus,
-  faUser,
-  faDatabase,
-  faCogs,
-  faPen,
-  faLightbulb,
-  faMicrochip,
-  faDownload,
-} from '@fortawesome/free-solid-svg-icons';
-
-import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faPlus, faDownload } from '@fortawesome/free-solid-svg-icons';
 
 import './Navbar.css';
 import EdgeMLBrandLogo from '../EdgeMLBrandLogo/EdgeMLBrandLogo';
 import NotificationHandler from '../NotificationHandler';
 import NotificationContext from '../NotificationHandler/NotificationProvider';
-import { KITLogo, TECOLogo } from '../Common/logos';
-import { PopoverBody, Button, Popover } from 'reactstrap';
 import { ProjectContext } from '../../ProjectProvider';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import useProjectRouter from '../../Hooks/ProjectRouter';
-import { AuthContext } from '../../AuthProvider';
-
-const navbarProjectId = (id) => `navbar-project-${id}`;
+import NavbarUserSettings from './NavbarUserSettings';
+import NavbarInfo from './NavbarInfo';
+import NavbarProject from './NavbarProject';
 
 const Navbar = (props) => {
-  const [userSettingsModalOpen, setUserSettingsModalOpen] = useState(false);
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
-  const [userPopoverOpen, setUserPopoverOpen] = useState(false);
 
   const { activeNotifications } = useContext(NotificationContext);
-
   const { projects, currentProject, onProjectClick } =
     useContext(ProjectContext);
-
-  const { logout } = useContext(AuthContext);
-
-  const location = useLocation();
-  const navigate = useProjectRouter();
-
-  const toggleUserPopOver = () => {
-    setUserPopoverOpen(!userPopoverOpen);
-  };
-
-  const getNavBarItemClasses = (location_data) => {
-    const project = currentProject;
-    const isSelected =
-      location.pathname.toLowerCase() ===
-      (
-        '/' +
-        project.admin.userName +
-        '/' +
-        project.name +
-        '/' +
-        location_data
-      ).toLowerCase();
-    return (
-      'pt-2 pb-2 pl-4 small ' +
-      (isSelected ? 'navbar-project-item-active' : 'navbar-project-item')
-    );
-  };
 
   const scrollProjectIntoView = () => {
     const project = projects.find((x) => x._id === props.currentProjectId);
 
     if (project) {
-      const element = document.getElementById(navbarProjectId(project._id));
+      const element = document.getElementById(project._id);
       if (element) {
         element.scrollIntoView({ inline: 'nearest', block: 'nearest' });
       }
     }
-  };
-
-  const navigateTo = (subPage) => {
-    console.log(currentProject.name);
-    navigate(subPage);
-  };
-
-  const toggleUserSettingsModal = () => {
-    setUserSettingsModalOpen(!userSettingsModalOpen);
   };
 
   const toggleNotificationModal = () => {
@@ -117,71 +62,7 @@ const Navbar = (props) => {
         />
         <div className="w-100 mt-3 overflow-auto">
           {projects.map((project, index) => {
-            return (
-              <div
-                className="w-100 text-left"
-                key={project._id}
-                id={navbarProjectId(project._id)}
-              >
-                <div
-                  className="d-flex align-items-center mt-1 pt-2 pb-2 pl-2 navbar-project"
-                  onClick={() => onProjectClick(project)}
-                  style={{
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  <FontAwesomeIcon
-                    style={{
-                      color: '#8b8d8f',
-                      float: 'left',
-                      cursor: 'pointer',
-                    }}
-                    icon={
-                      currentProject._id === project._id
-                        ? faCaretDown
-                        : faCaretRight
-                    }
-                    className="mr-2 fa-s"
-                  ></FontAwesomeIcon>
-                  <div
-                    className="navbar-project pr-1"
-                    style={{
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <b>{project.name}</b>
-                  </div>
-                </div>
-                {currentProject._id === project._id ? (
-                  <div>
-                    {[
-                      ['Datasets', faDatabase],
-                      ['Labelings', faPen],
-                      // ['Model', faBrain],
-                      ['Models', faMicrochip],
-                      ['Settings', faCogs],
-                    ].map((elm, index) => (
-                      <div
-                        key={elm + index}
-                        onClick={() => {
-                          navigateTo(elm[0]);
-                        }}
-                        className={getNavBarItemClasses(elm[0])}
-                      >
-                        <FontAwesomeIcon
-                          className="mr-2"
-                          icon={elm[1]}
-                        ></FontAwesomeIcon>
-                        {elm[0]}
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            );
+            return <NavbarProject project={project}></NavbarProject>;
           })}
         </div>
 
@@ -222,45 +103,7 @@ const Navbar = (props) => {
             </small>
           </div>
         ) : null}
-        <div
-          className="pt-3 pb-3 navbar-project-item w-100 text-center"
-          onClick={() =>
-            window.open('https://github.com/edge-ml/edge-ml/issues', '_blank')
-          }
-        >
-          <small>
-            <FontAwesomeIcon icon={faGithub} className="mr-2" />
-            Report a bug
-          </small>
-        </div>
-        <div
-          className="pt-3 pb-3 navbar-project-item w-100 text-center"
-          onClick={() =>
-            window.open('https://github.com/edge-ml/edge-ml/wiki', '_blank')
-          }
-        >
-          <small>
-            <FontAwesomeIcon icon={faLightbulb} className="mr-2" />
-            Documentation
-          </small>
-        </div>
-        <div className="navbar-project-item-color navbar-logos pt-3 px-3 pb-1">
-          <div>
-            <small>Open source from</small>
-          </div>
-          <div className="my-1 d-flex justify-content-between">
-            <div>
-              <a href="https://www.teco.edu" target="_blank">
-                <TECOLogo style={{ width: '50px' }}></TECOLogo>
-              </a>
-            </div>
-            <div>
-              <a href="https://www.kit.edu" target="_blank">
-                <KITLogo style={{ width: '50px' }}></KITLogo>
-              </a>
-            </div>
-          </div>
-        </div>
+        <NavbarInfo></NavbarInfo>
         <div
           style={{
             height: '1px',
@@ -269,65 +112,8 @@ const Navbar = (props) => {
             width: '95%',
           }}
         ></div>
-        <div
-          id="userProfileSettings"
-          className="d-flex flex-row justify-content-center navbar-project-item align-items-center pt-3 pb-3 w-100"
-          onClick={toggleUserPopOver}
-        >
-          <Popover
-            target="userProfileSettings"
-            placement="right"
-            isOpen={userPopoverOpen}
-          >
-            <PopoverBody>
-              <div className="d-flex justify-content-center align-items-center flex-column">
-                <div className="m-2 w-100">
-                  <Button
-                    className="w-100"
-                    color="primary"
-                    outline
-                    onClick={toggleUserSettingsModal}
-                  >
-                    Settings
-                  </Button>
-                </div>
-                <div className="m-2 w-100">
-                  <Button
-                    className="w-100"
-                    color="danger"
-                    outline
-                    onClick={logout}
-                  >
-                    Logout
-                  </Button>
-                </div>
-              </div>
-            </PopoverBody>
-          </Popover>
-          <div
-            style={{
-              backgroundColor: 'lightgray',
-              border: '0px solid darkgray',
-              width: '26px',
-              height: '26px',
-              borderRadius: '13px',
-              overflow: 'hidden',
-            }}
-            className="mr-2 d-flex justify-content-center align-items-center"
-          >
-            <FontAwesomeIcon
-              icon={faUser}
-              style={{ fontSize: 'x-large', color: 'white' }}
-              className="mt-2"
-            />
-          </div>
-          {props.userName}
-        </div>
+        <NavbarUserSettings></NavbarUserSettings>
       </div>
-      <UserSettingsModal
-        isOpen={userSettingsModalOpen}
-        onClose={toggleUserSettingsModal}
-      ></UserSettingsModal>
       <NotificationHandler
         onClose={() => setNotificationModalOpen(false)}
         isOpen={notificationModalOpen}

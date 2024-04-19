@@ -23,7 +23,7 @@ import { loginUser } from '../services/ApiServices/AuthentificationServices';
 import { AuthContext } from '../AuthProvider';
 
 const LoginPage = ({ children }) => {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, login } = useContext(AuthContext);
 
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -48,10 +48,7 @@ const LoginPage = ({ children }) => {
 
   const submit = async () => {
     try {
-      const userData = await loginUser(email, password);
-      const decoded = jwt_decode(userData.access_token);
-      setToken(userData.access_token, userData.refresh_token);
-      setUser(decoded.email, decoded.userName);
+      await login(email, password);
     } catch {
       console.log('ERROR loggin in!');
     }

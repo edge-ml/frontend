@@ -1,17 +1,31 @@
 import { createContext, useState } from 'react';
+import jwt_decode from 'jwt-decode';
+import { setToken, clearToken } from './services/LocalStorageService';
+import { loginUser } from './services/ApiServices/AuthentificationServices';
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState();
+  const [user, setUserInternal] = useState();
+
+  const setUser = (mail, name) => {
+    setUserInternal({ mail: mail, name: name });
+  };
 
   const logout = () => {
-    console.log('LOGOUT');
-    setUser(undefined);
+    clearToken();
+    setUserInternal(undefined);
+  };
+
+  const login = async (email, password) => {
+    const userData = await loginUser(email, password);
+    const decoded = jwt_decode(userData.access_token);
+    setToken(userData.access_token, userData.refresh_token);
+    setUser(decoded.email, decoded.userName);
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout, login }}>
       {children}
     </AuthContext.Provider>
   );
