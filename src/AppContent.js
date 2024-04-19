@@ -1,31 +1,92 @@
-import React, { createContext, useContext, useMemo } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Route, useParams } from 'react-router-dom';
 
 import ListPage from './routes/list/index';
 import DatasetPage from './routes/dataset';
 import LabelingsPage from './routes/labeling/labelings';
-import ExperimentsPage from './routes/experiments';
-import ProjectRefresh from './components/ProjectRefresh/ProjectRefresh';
 import ValidationPage from './routes/validation';
 import UploadBLE from './routes/uploadBLE';
 import { UploadWebPage } from './routes/uploadWeb';
 import Settings from './routes/settings/Settings';
 import ModelLivePage from './routes/ModelLivePage';
 import { ProjectContext } from './ProjectProvider';
-import { Router, Routes } from 'react-router-dom';
+import { Routes } from 'react-router-dom';
+
+const ParamsAdapter = ({ children }) => {
+  if (!children) {
+    throw Error('ParamsAdapter needs a child');
+  }
+  const params = useParams();
+  const childrenWithProps = React.Children.map(children, (child) =>
+    React.cloneElement(child, { ...params }),
+  );
+  return childrenWithProps;
+};
 
 const AppContent = ({ match }) => {
   const { currentProject } = useContext(ProjectContext);
-
+  const projectId = currentProject ? currentProject._id : 'default_key';
+  console.log(projectId);
   return (
     <Routes>
       <Route path="/:userName/:projectId/">
-        <Route path="test" element={<div>test</div>}></Route>
+        {/*  Datasets-List */}
+        <Route
+          path="Datasets"
+          element={<ListPage key={projectId}></ListPage>}
+        ></Route>
+        <Route
+          path="Datasets/view"
+          element={<ListPage key={projectId}></ListPage>}
+        ></Route>
+        <Route
+          path="view"
+          element={<ListPage key={projectId}></ListPage>}
+        ></Route>
+        {/* Dataset */}
+        {/* <Route path="Datasets/:id" element={<DatasetPage></DatasetPage>} key={projectId}></Route> */}
+        <Route
+          path="Datasets/:datasetId"
+          element={
+            <ParamsAdapter>
+              <DatasetPage key={projectId}></DatasetPage>
+            </ParamsAdapter>
+          }
+        ></Route>
+        {/* Labelings */}
         <Route
           path="labelings"
-          element={<LabelingsPage></LabelingsPage>}
+          element={<LabelingsPage key={projectId}></LabelingsPage>}
         ></Route>
-        <Route path="Datasets" element={<ListPage></ListPage>}></Route>
+        {/* Models */}
+        <Route
+          path="Models"
+          element={<ValidationPage key={projectId}></ValidationPage>}
+        ></Route>
+        {/* Models-Live-Page */}
+        <Route
+          path="Models/live/:model_id"
+          element={<ModelLivePage key={projectId}></ModelLivePage>}
+        ></Route>
+        {/* Settings */}
+        <Route
+          path="Settings"
+          element={<Settings key={projectId}></Settings>}
+        ></Route>
+        <Route
+          path="Settings/getCode"
+          element={<Settings key={projectId}></Settings>}
+        ></Route>
+        {/* BLE-Recording */}
+        <Route
+          path="BLE"
+          element={<UploadBLE key={projectId}></UploadBLE>}
+        ></Route>
+        {/* Upload-Web */}
+        <Route
+          path="uploadWeb"
+          element={<UploadWebPage key={projectId}></UploadWebPage>}
+        ></Route>
       </Route>
     </Routes>
   );

@@ -19,6 +19,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
 
 import Checkbox from '../Common/Checkbox';
+import useProjectRouter from '../../Hooks/ProjectRouter';
 
 const hideLabelsSymbol = 'hide labels' + Math.floor(Math.random() * 1000);
 
@@ -27,6 +28,8 @@ const LabelingSelectionPanel = (props) => {
   const [isTSDropdownOpen, setIsTSDropdownOpen] = useState(false);
   const { registerDatasetDownload } = useContext(NotificationContext);
   const [selectedTs, setSelectedTs] = useState([]);
+
+  const navigate = useProjectRouter();
 
   useEffect(() => {
     setSelectedTs(props.activeSeries);
@@ -152,7 +155,10 @@ const LabelingSelectionPanel = (props) => {
                   </DropdownItem>
                 ))}
                 <DropdownItem divider></DropdownItem>
-                <DropdownItem className="font-weight-bold">
+                <DropdownItem
+                  className="font-weight-bold"
+                  onClick={navigate('labelings/new')}
+                >
                   + Add Labeling Set
                 </DropdownItem>
                 {props.hideLabels ? null : (
@@ -230,7 +236,7 @@ const LabelingSelectionPanel = (props) => {
             id="buttonAddLabeling"
             className="m-1"
             color="secondary"
-            onClick={props.onAddLabeling}
+            onClick={() => console.log('Labeling')}
           >
             + Add Labeling Set
           </Button>

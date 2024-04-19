@@ -1,30 +1,22 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faAngleRight,
-  faCross,
-  faEllipsisV,
   faExclamationTriangle,
-  faEye,
-  faInfoCircle,
   faList,
   faPen,
-  faPenAlt,
-  faQuestion,
   faTimes,
-  faTrash,
   faTrashAlt,
 } from '@fortawesome/free-solid-svg-icons';
 
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 import { Badge, Button, Col, Row } from 'reactstrap';
 
 import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames';
 
 import Checkbox from '../../components/Common/Checkbox';
-import { hexToRgb } from '../../services/ColorService';
 import { displayTime } from '../../services/helpers';
 import LabelBadge from '../../components/Common/LabelBadge';
+import useProjectRouter from '../../Hooks/ProjectRouter';
 
 // s as unix timestamp in milliseconds
 const format_time = (s) => {
@@ -211,6 +203,7 @@ const ExpandButton = (props) => {
 const DatasetTableEntry = (props) => {
   const dataset = props.dataset;
   const history = useNavigate();
+  const navigate = useProjectRouter();
 
   const [isOpen, setOpen] = useState(false);
   return (
@@ -260,18 +253,7 @@ const DatasetTableEntry = (props) => {
                   <Button
                     color="secondary"
                     className="btn-edit mr-3 mr-md-4"
-                    onClick={(e) => {
-                      const currentPathname = history.location.pathname;
-                      const id = dataset['_id'];
-                      const newPathname = currentPathname.replace(
-                        /\/view$/,
-                        `/${id}`,
-                      );
-                      history.push({
-                        pathname: newPathname,
-                        state: dataset,
-                      });
-                    }}
+                    onClick={() => navigate(`Datasets/${dataset._id}`)}
                   >
                     <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
                   </Button>

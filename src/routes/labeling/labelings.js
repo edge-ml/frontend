@@ -106,21 +106,18 @@ class LabelingsPage extends Component {
 
   toggleModal(labeling, isNewLabeling) {
     if (isNewLabeling) {
-      if (!this.props.history.location.pathname.includes('labelings/new')) {
-        this.props.history.replace({
-          pathname: this.props.history.location.pathname + '/new',
-          search: null,
-        });
+      if (!window.location.pathname.includes('labelings/new')) {
+        // navigate("labelings/new")
       }
     } else {
-      const pName = this.props.history.location.pathname
-        .split('/')
-        .splice(-1, 1)
-        .join('/');
-      this.props.history.replace({
-        pathname: pName,
-        search: '?id=' + labeling['_id'],
-      });
+      // const pName = this.props.history.location.pathname
+      //   .split('/')
+      //   .splice(-1, 1)
+      //   .join('/');
+      // this.props.history.replace({
+      //   pathname: pName,
+      //   search: '?id=' + labeling['_id'],
+      // });
     }
     console.log(labeling);
     this.setState({
@@ -346,11 +343,11 @@ class LabelingsPage extends Component {
   }
 
   resetURL() {
-    const newPath = this.props.history.location.pathname.split('/');
-    if (newPath[newPath.length - 1].toLowerCase() !== 'labelings') {
-      newPath.pop();
-    }
-    this.props.history.replace({ pathname: newPath.join('/'), search: null });
+    // const newPath = this.props.history.location.pathname.split('/');
+    // if (newPath[newPath.length - 1].toLowerCase() !== 'labelings') {
+    //   newPath.pop();
+    // }
+    // this.props.history.replace({ pathname: newPath.join('/'), search: null });
   }
 
   onClickEdit = (labeling) => {

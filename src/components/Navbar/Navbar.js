@@ -24,6 +24,8 @@ import { KITLogo, TECOLogo } from '../Common/logos';
 import { PopoverBody, Button, Popover } from 'reactstrap';
 import { ProjectContext } from '../../ProjectProvider';
 import { useNavigate, useLocation } from 'react-router-dom';
+import useProjectRouter from '../../Hooks/ProjectRouter';
+import { AuthContext } from '../../AuthProvider';
 
 const navbarProjectId = (id) => `navbar-project-${id}`;
 
@@ -37,8 +39,10 @@ const Navbar = (props) => {
   const { projects, currentProject, onProjectClick } =
     useContext(ProjectContext);
 
+  const { logout } = useContext(AuthContext);
+
   const location = useLocation();
-  const history = useNavigate();
+  const navigate = useProjectRouter();
 
   const toggleUserPopOver = () => {
     setUserPopoverOpen(!userPopoverOpen);
@@ -75,14 +79,7 @@ const Navbar = (props) => {
 
   const navigateTo = (subPage) => {
     console.log(currentProject.name);
-    history.push(
-      '/' +
-        currentProject.admin.userName +
-        '/' +
-        currentProject.name +
-        '/' +
-        subPage,
-    );
+    navigate(subPage);
   };
 
   const toggleUserSettingsModal = () => {
@@ -299,7 +296,7 @@ const Navbar = (props) => {
                     className="w-100"
                     color="danger"
                     outline
-                    onClick={props.onLogout}
+                    onClick={logout}
                   >
                     Logout
                   </Button>

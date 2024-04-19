@@ -25,7 +25,7 @@ import { AuthContext } from '../AuthProvider';
 const LoginPage = ({ children }) => {
   const { user, setUser } = useContext(AuthContext);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [email, setEmail] = useState(undefined);
   const [password, setPassword] = useState(undefined);
@@ -43,7 +43,6 @@ const LoginPage = ({ children }) => {
       if (decoded.exp * 1000 >= Date.now()) {
         setUser(decoded.email, decoded.userName);
       }
-      setIsLoggedIn(true);
     }
   };
 
@@ -53,13 +52,12 @@ const LoginPage = ({ children }) => {
       const decoded = jwt_decode(userData.access_token);
       setToken(userData.access_token, userData.refresh_token);
       setUser(decoded.email, decoded.userName);
-      setIsLoggedIn(true);
     } catch {
       console.log('ERROR loggin in!');
     }
   };
 
-  if (isLoggedIn) {
+  if (user) {
     return children;
   }
 

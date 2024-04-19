@@ -85,7 +85,6 @@ class DatasetPage extends Component {
     this.onDeleteTimeSeries = this.onDeleteTimeSeries.bind(this);
     this.updateControlStates = this.updateControlStates.bind(this);
     this.onDeleteDataset = this.onDeleteDataset.bind(this);
-    this.onAddLabeling = this.onAddLabeling.bind(this);
     this.onClickPosition = this.onClickPosition.bind(this);
     this.onLabelPositionUpdate = this.onLabelPositionUpdate.bind(this);
     this.showSnackbar = this.showSnackbar.bind(this);
@@ -111,7 +110,7 @@ class DatasetPage extends Component {
     const newStart = Math.min(...ts.map((elm) => elm.start));
     const newEnd = Math.max(...ts.map((elm) => elm.end));
 
-    this.memoizedGetDatasetTimeseries(this.props.match.params.id, ids, {
+    this.memoizedGetDatasetTimeseries(this.props.datasetId, ids, {
       max_resolution: window.innerWidth / 2,
     }).then((tsData) => {
       this.setState({
@@ -144,7 +143,7 @@ class DatasetPage extends Component {
     const newStart = Math.min(...ts.map((elm) => elm.start));
     const newEnd = Math.max(...ts.map((elm) => elm.end));
 
-    this.memoizedGetDatasetTimeseries(this.props.match.params.id, series, {
+    this.memoizedGetDatasetTimeseries(this.props.datasetId, series, {
       max_resolution: window.innerWidth / 2,
     }).then((tsData) => {
       this.setState({
@@ -199,15 +198,6 @@ class DatasetPage extends Component {
     }, duration);
   }
 
-  onAddLabeling() {
-    const newHistory = this.props.history.location.pathname.split('/');
-    newHistory.length -= 2;
-
-    this.props.history.push({
-      pathname: newHistory.join('/') + '/labelings/new',
-    });
-  }
-
   setModalOpen(isOpen) {
     this.setState({
       modalOpen: isOpen,
@@ -215,7 +205,7 @@ class DatasetPage extends Component {
   }
 
   async loadData() {
-    const dataset = await getDatasetMeta(this.props.match.params.id);
+    const dataset = await getDatasetMeta(this.props.datasetId);
     const dataset_end = Math.max(...dataset.timeSeries.map((elm) => elm.end));
     const dataset_start = Math.min(
       ...dataset.timeSeries.map((elm) => elm.start),
@@ -237,7 +227,7 @@ class DatasetPage extends Component {
     this.startPolling();
 
     var activeSeries = [];
-    const dataset = await getDatasetMeta(this.props.match.params.id);
+    const dataset = await getDatasetMeta(this.props.datasetId);
     const dataset_end = Math.max(...dataset.timeSeries.map((elm) => elm.end));
     const dataset_start = Math.min(
       ...dataset.timeSeries.map((elm) => elm.start),
@@ -252,13 +242,9 @@ class DatasetPage extends Component {
     }
     this.onDatasetChanged(dataset);
 
-    this.memoizedGetDatasetTimeseries(
-      this.props.match.params.id,
-      activeSeries,
-      {
-        max_resolution: window.innerWidth / 2,
-      },
-    ).then((timeseriesData) => {
+    this.memoizedGetDatasetTimeseries(this.props.datasetId, activeSeries, {
+      max_resolution: window.innerWidth / 2,
+    }).then((timeseriesData) => {
       if (this.state.previewTimeSeriesData) {
         return;
       }
@@ -271,7 +257,7 @@ class DatasetPage extends Component {
   async getDatasetWindow(start, end) {
     const max_resolution = window.innerWidth / 2;
     const res = await this.memoizedGetDatasetTimeseries(
-      this.props.match.params.id,
+      this.props.datasetId,
       this.state.activeSeries,
       {
         max_resolution,
@@ -907,7 +893,6 @@ class DatasetPage extends Component {
             objectType={'labelings'}
             history={this.props.history}
             labelings={this.state.labelings}
-            onAddLabeling={this.onAddLabeling}
             selectedLabelingId={this.state.controlStates.selectedLabelingId}
             onSelectedLabelingIdChanged={this.onSelectedLabelingIdChanged}
             onCanEditChanged={this.onCanEditChanged}
