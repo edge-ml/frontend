@@ -278,7 +278,12 @@ class UploadBLE extends Component {
   async getDeviceInfo() {
     let options = {
       filters: [{ services: [this.deviceInfoServiceUuid] }],
-      acceptAllDevices: false,
+      optionalServices: [
+        this.deviceInfoServiceUuid,
+        this.sensorServiceUuid,
+        this.dfuServiceUuid,
+        this.parseInfoServiceUuid,
+      ],
     };
 
     let newOptions = {
@@ -403,8 +408,10 @@ class UploadBLE extends Component {
     let promisedSetState = (newState) =>
       new Promise((resolve) => this.setState(newState, resolve));
     //get latest edge-ml fw version
-    const latestEdgeMLVersion = await getLatestEdgeMLVersionNumber();
-    await promisedSetState({ latestEdgeMLVersion: latestEdgeMLVersion });
+    try {
+      const latestEdgeMLVersion = await getLatestEdgeMLVersionNumber();
+      this.setState({ latestEdgeMLVersion: latestEdgeMLVersion });
+    } catch {}
     //check for available services on device
     let hasDeviceInfo = false;
     let hasDFUFunction = false;
