@@ -157,7 +157,7 @@ const LabelingSelectionPanel = (props) => {
                 <DropdownItem divider></DropdownItem>
                 <DropdownItem
                   className="font-weight-bold"
-                  onClick={navigate('labelings/new')}
+                  onClick={() => navigate('labelings/new')}
                 >
                   + Add Labeling Set
                 </DropdownItem>

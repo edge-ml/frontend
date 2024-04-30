@@ -15,7 +15,7 @@ import useProjectSettings from '../../Hooks/useProjectSettings';
 const EditName = () => {
   const { currentProject } = useContext(ProjectContext);
   const { changeProjectName } = useProjectSettings();
-  const [projectName, setProjectName] = useState();
+  const [projectName, setProjectName] = useState(currentProject.name);
 
   return (
     <Container>

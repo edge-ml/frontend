@@ -3,7 +3,7 @@ import { ProjectContext } from '../ProjectProvider';
 import { updateProject } from '../services/ApiServices/ProjectService';
 
 const useProjectSettings = () => {
-  const currentProject = useContext(ProjectContext);
+  const { currentProject, setProjects } = useContext(ProjectContext);
 
   const changeProjectName = async (projectName) => {
     await updateProject({ ...currentProject, name: projectName });
@@ -16,7 +16,11 @@ const useProjectSettings = () => {
   const enableDeviceApi = async () => {};
 
   const changeUserNames = async (userNames) => {
-    await updateProject({ ...currentProject, userNames: userNames });
+    const projects = await updateProject({
+      ...currentProject,
+      userNames: userNames,
+    });
+    setProjects(projects);
   };
 
   return {

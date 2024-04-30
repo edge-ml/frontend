@@ -26,6 +26,17 @@ const ProjectProvider = ({ children }) => {
     refreshProjects();
   }, []);
 
+  useEffect(() => {
+    console.log('Get new projects');
+    let newCurrentProject = projects.find(
+      (elm) => elm._id === currentProject._id,
+    );
+    if (!newCurrentProject) {
+      newCurrentProject = projects[0];
+    }
+    setCurrentProject(newCurrentProject);
+  }, [projects]);
+
   const onProjectClick = (project) => {
     if (currentProject && currentProject._id == project._id) {
       setCurrentProjectAll(undefined);
@@ -40,7 +51,7 @@ const ProjectProvider = ({ children }) => {
 
   return (
     <ProjectContext.Provider
-      value={{ projects, currentProject, onProjectClick }}
+      value={{ projects, currentProject, onProjectClick, setProjects }}
     >
       {children}
     </ProjectContext.Provider>
