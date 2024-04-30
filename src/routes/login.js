@@ -41,7 +41,7 @@ const LoginPage = ({ children }) => {
     if (accessToken) {
       const decoded = jwt_decode(accessToken);
       if (decoded.exp * 1000 >= Date.now()) {
-        setUser(decoded.email, decoded.userName);
+        setUser(decoded.email, decoded.userName, decoded.id);
       }
     }
   };

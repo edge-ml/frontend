@@ -11,10 +11,10 @@ class ListItem extends Component {
     return (
       <div className="p-2 my-2">
         <div className="header-wrapper d-flex flex-column align-content-center">
-          <h5>{this.props.value.name}</h5>
-          <div>{this.props.value.description}</div>
+          <h5>{name}</h5>
+          <div>{description}</div>
         </div>
-        <div className="body-wrapper p-3">{this.props.component}</div>
+        <div className="body-wrapper p-3">{component}</div>
       </div>
     );
   }

@@ -1,11 +1,16 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { Button } from 'reactstrap';
 import ConfirmationDialogueModal from '../../components/ConfirmationDilaogueModal/ConfirmationDialogueModal';
+import { ProjectContext } from '../../ProjectProvider';
+import { AuthContext } from '../../AuthProvider';
 
 const DeleteProject = (props) => {
-  const [isAdmin, setIsAdmin] = useState(
-    props.userName === props.project.admin.userName
-  );
+  const { currentProject } = useContext(ProjectContext);
+  const { user } = useContext(AuthContext);
+  console.log(user);
+  console.log(currentProject);
+  const isAdmin = user._id === currentProject.admin._id;
+
   const [modalOpen, setModalOpen] = useState(false);
 
   const onCloseModal = useCallback(() => {
@@ -14,7 +19,7 @@ const DeleteProject = (props) => {
 
   return (
     <div className="align-space-between">
-      {props.project.users && isAdmin ? ( // users exists only on admin?
+      {currentProject.users && isAdmin ? ( // users exists only on admin?
         <Button
           outline
           id="buttonDeleteProject"
@@ -23,7 +28,7 @@ const DeleteProject = (props) => {
         >
           Delete project
         </Button>
-      ) : props.project.users && !isAdmin ? (
+      ) : currentProject.users && !isAdmin ? (
         <Button
           outline
           id="buttonLeaveProject"

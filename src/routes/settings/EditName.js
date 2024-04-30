@@ -10,9 +10,11 @@ import {
 import { ProjectContext } from '../../ProjectProvider';
 
 import './Settings.css';
+import useProjectSettings from '../../Hooks/useProjectSettings';
 
 const EditName = () => {
   const { currentProject } = useContext(ProjectContext);
+  const { changeProjectName } = useProjectSettings();
   const [projectName, setProjectName] = useState();
 
   return (
@@ -23,7 +25,7 @@ const EditName = () => {
         </InputGroupAddon>
         <Input
           id="projectName"
-          readOnly={props.readOnly}
+          readOnly={false}
           placeholder={'Name'}
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
@@ -32,7 +34,7 @@ const EditName = () => {
           <Button
             outline
             color="primary"
-            onClick={() => props.onProjectNameSave(projectName)}
+            onClick={() => changeProjectName(projectName)}
           >
             Save
           </Button>
@@ -42,7 +44,7 @@ const EditName = () => {
         <InputGroupAddon addonType="prepend">
           <InputGroupText>{'Admin'}</InputGroupText>
         </InputGroupAddon>
-        <Input value={props.adminUserName} readOnly />
+        <Input value={currentProject.admin.userName} readOnly />
       </InputGroup>
     </Container>
   );
