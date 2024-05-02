@@ -63,7 +63,7 @@ const useDatasetAPI = (project) => {
     return res;
   };
 
-  const updateDataset = async () => {
+  const updateDataset = async (dataset) => {
     const res = await api.request(
       apiConsts.HTTP_METHODS.PUT,
       apiConsts.DATASET_STORE,
@@ -77,31 +77,32 @@ const useDatasetAPI = (project) => {
     getDatasets: getDatasets,
     deleteDataset: deleteDataset,
     deleteDatasets: deleteDatasets,
+    updateDataset: updateDataset,
     getDatasetsWithPagination: getDatasetsWithPagination,
   };
 };
 
 export default useDatasetAPI;
 
-// export const getDatasets = () => {
-//   return new Promise((resolve, reject) => {
-//     axios(
-//       apiConsts.generateApiRequest(
-//         apiConsts.HTTP_METHODS.GET,
-//         apiConsts.DATASET_STORE,
-//         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS
-//       )
-//     )
-//       .then((result) => {
-//         console.log(result);
-//         resolve(result.data);
-//       })
-//       .catch((err) => {
-//         console.log(err.response);
-//         reject(err.response);
-//       });
-//   });
-// };
+export const getDatasets = () => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS,
+      ),
+    )
+      .then((result) => {
+        console.log(result);
+        resolve(result.data);
+      })
+      .catch((err) => {
+        console.log(err.response);
+        reject(err.response);
+      });
+  });
+};
 
 // export const getDatasetsWithPagination = (
 //   currentPage,
@@ -181,96 +182,96 @@ export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
   });
 };
 
-// export const getDataset = (id) => {
-//   return new Promise((resolve, reject) => {
-//     axios(
-//       apiConsts.generateApiRequest(
-//         apiConsts.HTTP_METHODS.GET,
-//         apiConsts.DATASET_STORE,
-//         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
-//       )
-//     )
-//       .then((dataset) => resolve(dataset.data))
-//       .catch((err) => reject(err.response));
-//   });
-// };
+export const getDataset = (id) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`,
+      ),
+    )
+      .then((dataset) => resolve(dataset.data))
+      .catch((err) => reject(err.response));
+  });
+};
 
-// export const getDatasetMeta = (id) => {
-//   return new Promise((resolve, reject) => {
-//     axios(
-//       apiConsts.generateApiRequest(
-//         apiConsts.HTTP_METHODS.GET,
-//         apiConsts.DATASET_STORE,
-//         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
-//       )
-//     )
-//       .then((dataset) => {
-//         console.log(dataset);
-//         resolve(dataset.data);
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//         reject(err.response);
-//       });
-//   });
-// };
+export const getDatasetMeta = (id) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`,
+      ),
+    )
+      .then((dataset) => {
+        console.log(dataset);
+        resolve(dataset.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        reject(err.response);
+      });
+  });
+};
 
-// export const getDatasetLock = (id) => {
-//   return new Promise((resolve, reject) => {
-//     axios(
-//       apiConsts.generateApiRequest(
-//         apiConsts.HTTP_METHODS.GET,
-//         apiConsts.API_URI,
-//         apiConsts.API_ENDPOINTS.DATASETS_CAN_EDIT + `/${id}`
-//       )
-//     )
-//       .then((lock) => {
-//         resolve(lock.data ? lock.data.canEdit : undefined);
-//       })
-//       .catch((err) => reject(err.response));
-//   });
-// };
+export const getDatasetLock = (id) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.GET,
+        apiConsts.API_URI,
+        apiConsts.API_ENDPOINTS.DATASETS_CAN_EDIT + `/${id}`,
+      ),
+    )
+      .then((lock) => {
+        resolve(lock.data ? lock.data.canEdit : undefined);
+      })
+      .catch((err) => reject(err.response));
+  });
+};
 
-// export const deleteDatasets = (ids) => {
-//   try {
-//     const promises = ids.map((elm) => deleteDataset(elm));
-//     return Promise.all(promises);
-//   } catch (e) {
-//     console.log(e);
-//     return e;
-//   }
-// };
+export const deleteDatasets = (ids) => {
+  try {
+    const promises = ids.map((elm) => deleteDataset(elm));
+    return Promise.all(promises);
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+};
 
-// export const deleteDataset = (id) => {
-//   return new Promise((resolve, reject) => {
-//     axios(
-//       apiConsts.generateApiRequest(
-//         apiConsts.HTTP_METHODS.DELETE,
-//         apiConsts.DATASET_STORE,
-//         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
-//       )
-//     )
-//       .then(resolve())
-//       .catch((err) => reject(err.response));
-//   });
-// };
+export const deleteDataset = (id) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.DELETE,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`,
+      ),
+    )
+      .then(resolve())
+      .catch((err) => reject(err.response));
+  });
+};
 
-// export const updateDataset = (dataset) => {
-//   return new Promise((resolve, reject) => {
-//     axios(
-//       apiConsts.generateApiRequest(
-//         apiConsts.HTTP_METHODS.PUT,
-//         apiConsts.DATASET_STORE,
-//         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${dataset["_id"]}`,
-//         dataset
-//       )
-//     )
-//       .then((updatedDataset) => {
-//         resolve(updatedDataset.data);
-//       })
-//       .catch((err) => reject(err.response));
-//   });
-// };
+export const updateDataset = (dataset) => {
+  return new Promise((resolve, reject) => {
+    axios(
+      apiConsts.generateApiRequest(
+        apiConsts.HTTP_METHODS.PUT,
+        apiConsts.DATASET_STORE,
+        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${dataset['_id']}`,
+        dataset,
+      ),
+    )
+      .then((updatedDataset) => {
+        resolve(updatedDataset.data);
+      })
+      .catch((err) => reject(err.response));
+  });
+};
 
 export const createDataset = (dataset) => {
   return new Promise((resolve, reject) => {
