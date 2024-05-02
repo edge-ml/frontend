@@ -6,14 +6,12 @@ const axios = ax.create();
 
 export const getProjects = () => {
   return new Promise((resolve, reject) => {
-    console.log(apiConsts.API_URI);
-    console.log(apiConsts.API_ENDPOINTS.PROJECTS);
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PROJECTS
-      )
+        apiConsts.API_ENDPOINTS.PROJECTS,
+      ),
     )
       .then((result) => {
         resolve(result.data);
@@ -34,8 +32,8 @@ export const createProject = (project) => {
           apiConsts.HTTP_METHODS.POST,
           apiConsts.API_URI,
           apiConsts.API_ENDPOINTS.PROJECTS,
-          project
-        )
+          project,
+        ),
       )
         .then(() => {
           getProjects().then((data) => resolve(data));
@@ -47,31 +45,24 @@ export const createProject = (project) => {
   });
 };
 
-export const updateProject = (project) => {
-  return new Promise((resolve, reject) => {
-    const tmpProject = project;
-    getUserIds(project.users.map((elm) => elm.userName))
-      .then((userData) => {
-        tmpProject.users = userData;
-        axios(
-          apiConsts.generateApiRequest(
-            apiConsts.HTTP_METHODS.PUT,
-            apiConsts.API_URI,
-            apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}`,
-            project
-          )
-        )
-          .then(() => {
-            getProjects().then((data) => resolve(data));
-          })
-          .catch((err) => {
-            reject(err.response.data.error);
-          });
-      })
-      .catch((err) => {
-        reject(err.data.error);
-      });
-  });
+export const updateProject = async (project) => {
+  try {
+    const tmpProject = { ...project };
+    const userData = await getUserIds(project.users.map((elm) => elm.userName));
+    tmpProject.users = userData;
+
+    const requestConfig = apiConsts.generateApiRequest(
+      apiConsts.HTTP_METHODS.PUT,
+      apiConsts.API_URI,
+      apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}`,
+      project,
+    );
+
+    await axios(requestConfig);
+    return;
+  } catch (error) {
+    throw error.response?.data?.error || error.data?.error || error;
+  }
 };
 
 export const deleteProject = (project) => {
@@ -80,8 +71,8 @@ export const deleteProject = (project) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.DELETE,
         apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}`
-      )
+        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}`,
+      ),
     )
       .then(() => {
         getProjects().then((data) => resolve(data));
@@ -96,8 +87,8 @@ export const leaveProject = (project) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}` + '/leave'
-      )
+        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}` + '/leave',
+      ),
     )
       .then(() => {
         getProjects().then((data) => resolve(data));
@@ -112,8 +103,8 @@ export const getProjectSensorStreams = (project) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}/sensorStreams`
-      )
+        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}/sensorStreams`,
+      ),
     ).then((x) => {
       resolve(x['data'].sensorStreams);
     });
@@ -126,8 +117,8 @@ export const getProjectCustomMetaData = (project) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}/customMetaData`
-      )
+        apiConsts.API_ENDPOINTS.PROJECTS + `/${project['_id']}/customMetaData`,
+      ),
     ).then((x) => {
       resolve(x['data']);
     });

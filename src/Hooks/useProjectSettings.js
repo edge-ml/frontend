@@ -1,19 +1,36 @@
 import { useContext } from 'react';
 import { ProjectContext } from '../ProjectProvider';
-import { updateProject } from '../services/ApiServices/ProjectService';
+import {
+  getProjects,
+  updateProject,
+  deleteProject as deleteProject_API,
+} from '../services/ApiServices/ProjectService';
+import { switchDeviceApiActive } from '../services/ApiServices/DeviceApiService';
 
 const useProjectSettings = () => {
-  const { currentProject, setProjects } = useContext(ProjectContext);
+  const { currentProject, setCurrentProject, setProjects } =
+    useContext(ProjectContext);
 
-  const changeProjectName = async (projectName) => {
-    await updateProject({ ...currentProject, name: projectName });
+  const refreshProjects = async () => {
+    const projects = await getProjects();
+    setProjects(projects);
   };
 
-  const leaveProject = async () => {};
+  const changeProjectName = async (projectName) => {
+    const newProject = { ...currentProject, name: projectName };
+    await updateProject(newProject);
+    await refreshProjects();
+  };
 
-  const deleteProject = async () => {};
+  const leaveProject = async () => {
+    await leaveProject(currentProject);
+    await refreshProjects();
+  };
 
-  const enableDeviceApi = async () => {};
+  const deleteProject = async () => {
+    await deleteProject_API(currentProject);
+    await refreshProjects();
+  };
 
   const changeUserNames = async (userNames) => {
     const projects = await updateProject({
@@ -26,6 +43,7 @@ const useProjectSettings = () => {
   return {
     changeProjectName: changeProjectName,
     changeUserNames: changeUserNames,
+    deleteProject: deleteProject,
   };
 };
 

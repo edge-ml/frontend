@@ -3,12 +3,12 @@ import { Button } from 'reactstrap';
 import ConfirmationDialogueModal from '../../components/ConfirmationDilaogueModal/ConfirmationDialogueModal';
 import { ProjectContext } from '../../ProjectProvider';
 import { AuthContext } from '../../AuthProvider';
+import useProjectSettings from '../../Hooks/useProjectSettings';
 
 const DeleteProject = (props) => {
   const { currentProject } = useContext(ProjectContext);
   const { user } = useContext(AuthContext);
-  console.log(user);
-  console.log(currentProject);
+  const { deleteProject, leaveProject } = useProjectSettings();
   const isAdmin = user._id === currentProject.admin._id;
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -16,6 +16,11 @@ const DeleteProject = (props) => {
   const onCloseModal = useCallback(() => {
     setModalOpen(false);
   }, []);
+
+  const onConfirmDelte = () => {
+    isAdmin ? deleteProject() : leaveProject();
+    onCloseModal();
+  };
 
   return (
     <div className="align-space-between">
@@ -47,7 +52,7 @@ const DeleteProject = (props) => {
               ? 'Do you want to delete this project?'
               : 'Do you want to leave this project? If you change your mind, you will have to ask the project admin to add you again.'
           }
-          onConfirm={isAdmin ? props.onDeleteProject : props.onLeaveProject}
+          onConfirm={onConfirmDelte}
           onCancel={onCloseModal}
         />
       ) : null}

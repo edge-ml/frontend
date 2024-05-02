@@ -7,8 +7,6 @@ import EdgeMLBrandLogo from '../EdgeMLBrandLogo/EdgeMLBrandLogo';
 import NotificationHandler from '../NotificationHandler';
 import NotificationContext from '../NotificationHandler/NotificationProvider';
 import { ProjectContext } from '../../ProjectProvider';
-import { useLocation } from 'react-router-dom';
-import useProjectRouter from '../../Hooks/ProjectRouter';
 import NavbarUserSettings from './NavbarUserSettings';
 import NavbarInfo from './NavbarInfo';
 import NavbarProject from './NavbarProject';
@@ -38,6 +36,9 @@ const Navbar = (props) => {
   useEffect(() => {
     scrollProjectIntoView();
   }, [props.currentProjectId]);
+
+  console.log('NavbarProjects');
+  console.log(projects);
 
   return (
     <div

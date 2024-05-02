@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useRef,
-  createRef,
-} from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import {
   Container,
   Button,
@@ -31,7 +25,7 @@ import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDa
 import PageSelection from './PageSelection';
 import PageSizeInput from './PageSizeInput';
 import FilterSelectionModal from './FilterSelection';
-import { filter } from 'jszip';
+import { ProjectContext } from '../../ProjectProvider';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -60,6 +54,8 @@ const ListPage = (props) => {
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { currentProject } = useContext(ProjectContext);
 
   const toggleModal = () => {
     setModal(!modal);
@@ -373,6 +369,8 @@ const ListPage = (props) => {
       selectedFilterParamsRef.current,
     );
   };
+
+  console.log(currentProject);
 
   return (
     <div id="dataList">

@@ -1,5 +1,9 @@
 import { createContext, useEffect, useState } from 'react';
-import { getProjects } from './services/ApiServices/ProjectService';
+import {
+  deleteProject,
+  getProjects,
+  leaveProject,
+} from './services/ApiServices/ProjectService';
 import { setProject } from './services/LocalStorageService';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -11,15 +15,16 @@ const ProjectProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const setCurrentProjectAll = (project) => {
-    setProject(project._id);
-    setCurrentProject(project);
-  };
+  useEffect(() => {
+    if (currentProject) {
+      setProject(currentProject._id);
+    }
+  }, [currentProject]);
 
   const refreshProjects = async () => {
     const projects = await getProjects();
     setProjects(projects);
-    setCurrentProjectAll(projects.length ? projects[0] : undefined);
+    setCurrentProject(projects.length ? projects[0] : undefined);
   };
 
   useEffect(() => {
@@ -39,9 +44,9 @@ const ProjectProvider = ({ children }) => {
 
   const onProjectClick = (project) => {
     if (currentProject && currentProject._id == project._id) {
-      setCurrentProjectAll(undefined);
+      setCurrentProject(undefined);
     }
-    setCurrentProjectAll(project);
+    setCurrentProject(project);
     const path = location.pathname.split('/');
     path[1] = project.admin.userName;
     path[2] = project.name;
@@ -51,7 +56,13 @@ const ProjectProvider = ({ children }) => {
 
   return (
     <ProjectContext.Provider
-      value={{ projects, currentProject, onProjectClick, setProjects }}
+      value={{
+        projects,
+        currentProject,
+        setCurrentProject,
+        onProjectClick,
+        setProjects,
+      }}
     >
       {children}
     </ProjectContext.Provider>

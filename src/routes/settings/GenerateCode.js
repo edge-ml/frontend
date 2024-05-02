@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import {
   Container,
   FormGroup,
@@ -9,24 +9,12 @@ import {
   Button,
   InputGroupText,
 } from 'reactstrap';
-import CodeSnippetModal from '../../components/ApiSnippetsModal/CodeSnippetModal';
 import { ProjectContext } from '../../ProjectProvider';
+import useDeviceApi from '../../Hooks/useDeviceAPI';
 
 const GenerateCode = (props) => {
   const { currentProject } = useContext(ProjectContext);
-
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const toggleCodeSnippetModal = () => {
-    let newPath;
-    if (props.codeSnippetModalOpen && modalOpen) {
-      newPath = '.';
-    }
-    setModalOpen(!modalOpen);
-    props.history.push(newPath);
-  };
-
-  const onDeviceApiSwitch = () => {};
+  const { toggleDevieApi, generateApiKeys, readKey, writeKey } = useDeviceApi();
 
   return (
     <Container>
@@ -40,7 +28,7 @@ const GenerateCode = (props) => {
               type="switch"
               id="exampleCustomSwitch"
               checked={currentProject.enableDeviceApi}
-              onChange={(e) => onDeviceApiSwitch(e.target.checked)}
+              onChange={(e) => toggleDevieApi(e.target.checked)}
             />
           </FormGroup>
         ) : null}
@@ -58,11 +46,7 @@ const GenerateCode = (props) => {
               <InputGroupText>{'Read Key'}</InputGroupText>
             </InputGroupAddon>
             <Input
-              value={
-                props.readApiKey
-                  ? props.readApiKey
-                  : 'Device-API is disabled for your user'
-              }
+              value={readKey ? readKey : 'Device-API is disabled for your user'}
               readOnly
             />
           </InputGroup>
@@ -72,9 +56,7 @@ const GenerateCode = (props) => {
             </InputGroupAddon>
             <Input
               value={
-                props.writeApiKey
-                  ? props.writeApiKey
-                  : 'Device-API is disabled for your user'
+                writeKey ? writeKey : 'Device-API is disabled for your user'
               }
               readOnly
             />
@@ -85,7 +67,7 @@ const GenerateCode = (props) => {
               className="my-1"
               disabled={!currentProject.enableDeviceApi}
               color="primary"
-              onClick={props.onEnableDeviceApi}
+              onClick={generateApiKeys}
             >
               {props.state ? 'Change key' : 'Generate key'}
             </Button>
@@ -98,27 +80,10 @@ const GenerateCode = (props) => {
             >
               Remove key
             </Button>
-            <Button
-              outline
-              className="my-1"
-              color="primary"
-              disabled={!currentProject.enableDeviceApi || !props.deviceKey}
-              onClick={() => toggleCodeSnippetModal()}
-            >
-              Get code
-            </Button>
           </div>
         </div>
       ) : (
         <h6>Feature disabled by project admin</h6>
-      )}
-      {modalOpen && (
-        <CodeSnippetModal
-          isOpen={modalOpen}
-          onCancel={() => toggleCodeSnippetModal()}
-          backendUrl={props.backendUrl}
-          deviceApiKey={props.deviceKey}
-        />
       )}
     </Container>
   );
