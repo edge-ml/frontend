@@ -1,9 +1,9 @@
-import React, { Children, Fragment, useEffect, useState } from 'react';
-import {
-  getModels,
-  deleteModel,
-  getStepOptions,
-} from '../../services/ApiServices/MlService';
+import React, { Fragment, useEffect, useState } from 'react';
+// import {
+//   getModels,
+//   deleteModel,
+//   getStepOptions,
+// } from '../../services/ApiServices/MlService';
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 import TrainingWizard from '../../components/TrainingWizard';
 import {
@@ -30,10 +30,8 @@ import {
   faMicrochip,
   faCircleInfo,
   faPlay,
-  faInfo,
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
-import ConfirmRejectModal from '../../components/Common/ConfirmRejectModal';
 import { useNavigate } from 'react-router-dom';
 
 const ValidationPage = () => {
