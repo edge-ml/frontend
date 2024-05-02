@@ -87,7 +87,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
           <EdgeMLTableHeader>Downloads</EdgeMLTableHeader>
           {activeNotifications.map((elm, idx) => {
             return (
-              <EdgeMLTableEntry>
+              <EdgeMLTableEntry key={'notification' + idx}>
                 <div className="m-2 d-flex justify-content-between algin-items-center">
                   <div>
                     <b>{elm.datasetName ? elm.datasetName : elm.projectName}</b>

@@ -1,11 +1,7 @@
 import { createContext, useEffect, useState } from 'react';
-import {
-  deleteProject,
-  getProjects,
-  leaveProject,
-} from './services/ApiServices/ProjectService';
 import { setProject } from './services/LocalStorageService';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useProjectAPI from './services/ApiServices/ProjectService';
 
 const ProjectContext = createContext();
 
@@ -14,6 +10,7 @@ const ProjectProvider = ({ children }) => {
   const [currentProject, setCurrentProject] = useState(undefined);
   const navigate = useNavigate();
   const location = useLocation();
+  const projectAPI = useProjectAPI();
 
   useEffect(() => {
     if (currentProject) {
@@ -22,7 +19,7 @@ const ProjectProvider = ({ children }) => {
   }, [currentProject]);
 
   const refreshProjects = async () => {
-    const projects = await getProjects();
+    const projects = await projectAPI.getProjects();
     setProjects(projects);
     setCurrentProject(projects.length ? projects[0] : undefined);
   };

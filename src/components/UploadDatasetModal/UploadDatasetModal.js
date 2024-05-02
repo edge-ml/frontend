@@ -80,7 +80,7 @@ export const UploadDatasetModal = ({
           };
         }
         return file;
-      })
+      }),
     );
   };
 
@@ -94,7 +94,7 @@ export const UploadDatasetModal = ({
           };
         }
         return file;
-      })
+      }),
     );
   };
 
@@ -109,7 +109,7 @@ export const UploadDatasetModal = ({
           };
         }
         return file;
-      })
+      }),
     );
   };
 
@@ -138,7 +138,7 @@ export const UploadDatasetModal = ({
           };
         }
         return file;
-      })
+      }),
     );
   };
 
@@ -152,7 +152,7 @@ export const UploadDatasetModal = ({
           };
         }
         return file;
-      })
+      }),
     );
   };
 
@@ -178,8 +178,8 @@ export const UploadDatasetModal = ({
       fr.onerror = function () {
         setFiles((prevFiles) =>
           prevFiles.map((f) =>
-            f.id === fileId ? { ...f, error: fr.error } : f
-          )
+            f.id === fileId ? { ...f, error: fr.error } : f,
+          ),
         );
         reject(fr.error);
       };
@@ -200,7 +200,7 @@ export const UploadDatasetModal = ({
   const parseHeader = (header) => {
     const fields = header.split(',').map((f) => f.trim());
     const invalid = fields.find(
-      (f) => !f.startsWith('sensor_') && !f.startsWith('label_') && f != 'time'
+      (f) => !f.startsWith('sensor_') && !f.startsWith('label_') && f != 'time',
     );
     if (invalid || fields.length < 2) {
       return [undefined, undefined];
@@ -235,7 +235,7 @@ export const UploadDatasetModal = ({
       .reduce((acc, label, index) => {
         // reduce over labels
         const idx = acc.findIndex(
-          (labeling) => labeling.name === label.labelingItBelongs
+          (labeling) => labeling.name === label.labelingItBelongs,
         );
         if (idx >= 0) {
           acc[idx].labels.push(label.name);
@@ -271,8 +271,8 @@ export const UploadDatasetModal = ({
                   status: FileStatus.ERROR,
                   progress: 100,
                 }
-              : f
-          )
+              : f,
+          ),
         );
         continue;
       }
@@ -289,7 +289,7 @@ export const UploadDatasetModal = ({
     const [cancellationHandler, response] = processCSVBackend(
       formData,
       file.id,
-      handleProgress
+      handleProgress,
     );
     setController(file.id, cancellationHandler);
     try {
@@ -303,14 +303,14 @@ export const UploadDatasetModal = ({
                 status: FileStatus.PROCESSING,
                 processingStep: 'Started processing',
               }
-            : f
-        )
+            : f,
+        ),
       );
       onDatasetComplete();
     } catch (err) {
       const message = err?.response?.data?.detail || err.message;
       setFiles((prevFiles) =>
-        prevFiles.map((f) => (f.id === file.id ? { ...f, error: message } : f))
+        prevFiles.map((f) => (f.id === file.id ? { ...f, error: message } : f)),
       );
       handleStatus(file.id, FileStatus.ERROR);
       return false;
@@ -322,8 +322,6 @@ export const UploadDatasetModal = ({
     async () => {
       let pollResultedInUpdate = false;
       let allComplete = true;
-      console.log('Checking status');
-      console.log(files.length);
       for (const file of files) {
         // if the file is uploading, skip polling but not count it as complete
         allComplete = allComplete && file.status !== FileStatus.UPLOADING;
@@ -340,7 +338,6 @@ export const UploadDatasetModal = ({
           currentTimeseries = undefined,
           totalTimeseries = undefined,
         ] = await getUploadProcessingProgress(file.datasetId);
-        console.log(step, progress, currentTimeseries);
         if (
           step !== file.processingStep ||
           file.processedTimeseries[0] !== currentTimeseries
@@ -357,13 +354,12 @@ export const UploadDatasetModal = ({
                     processingStep: step,
                     processedTimeseries: [currentTimeseries, totalTimeseries],
                   }
-                : f
-            )
+                : f,
+            ),
           );
           allComplete = allComplete && progress === 100;
         }
       }
-      console.log('Allcomplete', allComplete);
       if (allComplete) {
         setConsecutiveNoUpdateCount(null); // stop polling
         if (files.length > 0) {
@@ -379,8 +375,8 @@ export const UploadDatasetModal = ({
       ? null
       : Math.min(
           MAXIMUM_POLLING_INTERVAL,
-          1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100
-        )
+          1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100,
+        ),
   );
 
   const handleUploadAll = async () => {
@@ -388,12 +384,12 @@ export const UploadDatasetModal = ({
       prevFiles.map((f) => ({
         ...f,
         config: { ...f.config, editingModeActive: false },
-      }))
+      })),
     );
     await Promise.all(
       files
         .filter((elm) => elm.status === FileStatus.CONFIGURATION)
-        .map((elm) => handleUpload(elm))
+        .map((elm) => handleUpload(elm)),
     );
   };
 
@@ -480,9 +476,9 @@ export const UploadDatasetModal = ({
                       f.status === FileStatus.COMPLETE
                         ? 'success'
                         : f.status === FileStatus.ERROR ||
-                          f.status === FileStatus.CANCELLED
-                        ? 'danger'
-                        : 'primary'
+                            f.status === FileStatus.CANCELLED
+                          ? 'danger'
+                          : 'primary'
                     }
                   >
                     {f.status === FileStatus.ERROR
@@ -582,7 +578,7 @@ export const UploadDatasetModal = ({
                   changeConfig={changeConfig}
                   backendId={f.backendId}
                 />
-              )
+              ),
             )}
           </div>
         ) : null}

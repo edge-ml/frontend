@@ -37,9 +37,6 @@ const Navbar = (props) => {
     scrollProjectIntoView();
   }, [props.currentProjectId]);
 
-  console.log('NavbarProjects');
-  console.log(projects);
-
   return (
     <div
       className="d-flex flex-column bg-light align-items-center justify-content-between navbar-base user-select-none"
@@ -63,7 +60,12 @@ const Navbar = (props) => {
         />
         <div className="w-100 mt-3 overflow-auto">
           {projects.map((project, index) => {
-            return <NavbarProject project={project}></NavbarProject>;
+            return (
+              <NavbarProject
+                project={project}
+                key={'navbarItem' + project._id}
+              ></NavbarProject>
+            );
           })}
         </div>
 

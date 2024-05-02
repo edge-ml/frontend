@@ -13,11 +13,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import './index.css';
 
-import {
-  getDatasets,
-  deleteDatasets,
-  getDatasetsWithPagination,
-} from '../../services/ApiServices/DatasetServices';
+// import {
+//   getDatasets,
+//   deleteDatasets,
+//   getDatasetsWithPagination,
+// } from "../../services/ApiServices/DatasetServices";
+import useDatasetAPI from '../../services/ApiServices/DatasetServices';
+
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import DatasetTable from './DatasetTable';
 import DataUpload from './DataUpload';
@@ -56,6 +58,7 @@ const ListPage = (props) => {
   const navigate = useNavigate();
 
   const { currentProject } = useContext(ProjectContext);
+  const datasetApi = useDatasetAPI(currentProject);
 
   const toggleModal = () => {
     setModal(!modal);
@@ -66,7 +69,7 @@ const ListPage = (props) => {
   };
 
   const deleteSelectedDatasets = () => {
-    deleteDatasets(selectedDatasets).then(() => {
+    datasetApi.deleteDatasets(selectedDatasets).then(() => {
       setModal(false);
       setSelectedDatasets([]);
       setDatasets(
@@ -88,7 +91,7 @@ const ListPage = (props) => {
 
   const toggleCreateNewDatasetModal = () => {
     if (isCreateNewDatasetOpen) {
-      Promise.all([getDatasets(), subscribeLabelingsAndLabels()])
+      Promise.all([datasetApi.getDatasets(), subscribeLabelingsAndLabels()])
         .then(([datasets, labelings]) => {
           onDatasetsChanged(datasets);
           setLabelings(labelings);
@@ -172,24 +175,35 @@ const ListPage = (props) => {
     selectedFilter,
     selectedFilterParams,
   ) => {
-    getDatasetsWithPagination(
-      currentPage + 1,
-      pageSize,
-      sort,
-      selectedFilter,
-      selectedFilterParams,
-    ).then((data) => {
-      onDatasetsChanged(data.datasets);
-      total_datasetsRef.current = data.total_datasets;
-      setTotalDatasets(data.total_datasets);
-      changeURLSearchParams(currentPage, pageSize, sort);
-    });
+    datasetApi
+      .getDatasetsWithPagination(
+        currentPage + 1,
+        pageSize,
+        sort,
+        selectedFilter,
+        selectedFilterParams,
+      )
+      .then((data) => {
+        onDatasetsChanged(data.datasets);
+        total_datasetsRef.current = data.total_datasets;
+        setTotalDatasets(data.total_datasets);
+        changeURLSearchParams(currentPage, pageSize, sort);
+      });
   };
+
+  useEffect(() => {
+    Promise.all([datasetApi.getDatasets(), subscribeLabelingsAndLabels()]).then(
+      (data) => {
+        setDatasets(data[0]);
+        setLabelings(data[1]);
+      },
+    );
+  }, [currentProject]);
 
   useEffect(() => {
     const pageInit = initURLSearchParams();
     Promise.all([
-      getDatasetsWithPagination(
+      datasetApi.getDatasetsWithPagination(
         pageInit.pageUpdate,
         pageInit.pageSizeUpdate,
         pageInit.sortUpdate,
@@ -318,7 +332,7 @@ const ListPage = (props) => {
 
   const refreshList = () => {
     subscribeLabelingsAndLabels().then((labelings) => setLabelings(labelings));
-    getDatasets().then((datasets) => setDatasets(datasets));
+    datasetApi.getDatasets().then((datasets) => setDatasets(datasets));
     resetDropdown();
   };
 
@@ -369,8 +383,6 @@ const ListPage = (props) => {
       selectedFilterParamsRef.current,
     );
   };
-
-  console.log(currentProject);
 
   return (
     <div id="dataList">

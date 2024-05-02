@@ -18,6 +18,7 @@ const Checkbox = (props) => {
     >
       <input
         onClick={(e) => onClick(e)}
+        onChange={() => {}}
         type="checkbox"
         disabled={disabled}
         checked={props.isSelected}

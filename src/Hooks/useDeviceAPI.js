@@ -1,15 +1,17 @@
 import { useContext, useEffect, useState } from 'react';
 import { ProjectContext } from '../ProjectProvider';
-import { getProjects } from '../services/ApiServices/ProjectService';
 import {
   getDeviceApiKey,
   switchDeviceApiActive,
   setDeviceApiKey as generateApiKeys_API,
 } from '../services/ApiServices/DeviceApiService';
+import useProjectAPI from '../services/ApiServices/ProjectService';
 
 const useDeviceApi = () => {
   const { currentProject, setCurrentProject, setProjects } =
     useContext(ProjectContext);
+
+  const projectAPI = useProjectAPI();
 
   const [readKey, setReadKey] = useState(undefined);
   const [writeKey, setWriteKey] = useState(undefined);
@@ -30,7 +32,7 @@ const useDeviceApi = () => {
   }, [currentProject]);
 
   const refreshProjects = async () => {
-    const projects = await getProjects();
+    const projects = await projectAPI.getProjects();
     setProjects(projects);
   };
 

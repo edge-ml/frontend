@@ -32,7 +32,7 @@ export const NotificationProvider = ({ children }) => {
 
   const removeNotification = (id) => {
     const newNotifications = activeNotifications.filter(
-      (elm) => elm.downloadId !== id
+      (elm) => elm.downloadId !== id,
     );
     cancelDownload(id);
     setActiveNotifications(newNotifications);
@@ -48,8 +48,6 @@ export const NotificationProvider = ({ children }) => {
     setActiveNotifications(notifications);
     const uncompletedNotifications =
       notifications.map((elm) => elm.status).filter((elm) => elm != 100) > 0;
-    console.log(!uncompletedNotifications || notifications.length === 0);
-    console.log(uncompletedNotifications, notifications);
     if (!uncompletedNotifications || notifications.length === 0) {
       stopUpdates();
     }
