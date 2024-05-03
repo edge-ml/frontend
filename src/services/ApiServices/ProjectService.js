@@ -28,6 +28,18 @@ const useProjectAPI = (project) => {
     return res;
   };
 
+  const createProject = async (project) => {
+    const userData = await getUserIds(project.users.map((elm) => elm.userName));
+    project.users = userData;
+    const res = await api.request(
+      HTTP_METHODS.POST,
+      API_URI,
+      API_ENDPOINTS.PROJECTS,
+      project,
+    );
+    return res;
+  };
+
   // export const createProject = (project) => {
   //   return new Promise((resolve, reject) => {
   //     const tmpProject = project;
@@ -135,6 +147,7 @@ const useProjectAPI = (project) => {
   return {
     getProjects: getProjects,
     updateProject: updateProject,
+    createProject: createProject,
   };
 };
 

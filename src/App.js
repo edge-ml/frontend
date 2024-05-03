@@ -15,35 +15,29 @@ import { ProjectProvider } from './ProjectProvider';
 const App = () => {
   return (
     <div className="h-100vh">
-      {/* <EditProjectModal
-        project={
-          this.state.projects ? this.state.projects[projectIndex] : undefined
-        }
-        isOpen={this.state.projectEditModalOpen}
-        isNewProject={this.state.projectEditModalNew}
-        userName={this.state.userName}
-        onClose={this.onProjectModalClose}
-        projectChanged={this.onProjectsChanged}
-      ></EditProjectModal> */}
-
       <Routes>
         <Route path="/register" element={<RegisterPage></RegisterPage>} />
+        <Route
+          path="*"
+          element={
+            <AuthProvider>
+              <AuthWall>
+                <NotificationProvider>
+                  <ProjectProvider>
+                    <NavbarLayout>
+                      <AppContent></AppContent>
+                    </NavbarLayout>
+                  </ProjectProvider>
+                </NotificationProvider>
+              </AuthWall>
+            </AuthProvider>
+          }
+        ></Route>
       </Routes>
       {/* <Route
           path={"/errorpage/:error/:errorText?/:statusText?"}
           render={(props) => <ErrorPage {...props} />}
         /> */}
-      <AuthProvider>
-        <AuthWall>
-          <NotificationProvider>
-            <ProjectProvider>
-              <NavbarLayout>
-                <AppContent></AppContent>
-              </NavbarLayout>
-            </ProjectProvider>
-          </NotificationProvider>
-        </AuthWall>
-      </AuthProvider>
     </div>
   );
 };

@@ -33,11 +33,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 import { useNavigate } from 'react-router-dom';
+import useModels from '../../Hooks/useModels';
 
 const ValidationPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [models, setModels] = useState([]);
+  const { models, stepOptions, deleteModel } = useModels();
+
   const [modalModel, setModalModel] = useState(undefined);
   const [modelDownload, setModelDownload] = useState(undefined);
   const [modelDeploy, setModelDeploy] = useState(undefined);
@@ -48,35 +50,8 @@ const ValidationPage = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [updateModels, setUpdateModels] = useState(false);
   const [error, setError] = useState(undefined);
-  const [stepOptions, setStepOptions] = useState(undefined);
 
   const history = useNavigate();
-
-  useEffect(() => {
-    refreshModels();
-    getStepOptions().then((data) => setStepOptions(data));
-  }, []);
-
-  const refreshModels = async () => {
-    getModels()
-      .then((models) => {
-        setModels(models);
-        setError(undefined);
-      })
-      .catch(() => {
-        setError(true);
-      });
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refreshModels();
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [modalOpen]);
 
   const metric = (metric) => Math.round(metric * 100 * 100) / 100;
 
@@ -129,7 +104,6 @@ const ValidationPage = () => {
 
   const onWizardClose = () => {
     setModalOpen(false);
-    getModels().then((models) => setModels(models));
   };
 
   if (error) {

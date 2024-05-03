@@ -10,32 +10,23 @@ import { ProjectContext } from '../../ProjectProvider';
 import NavbarUserSettings from './NavbarUserSettings';
 import NavbarInfo from './NavbarInfo';
 import NavbarProject from './NavbarProject';
+import EditProjectModal from '../EditProjectModal/EditProjectModal';
 
-const Navbar = (props) => {
+const Navbar = () => {
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
+  const [projectModalOpen, setProjectModalOpen] = useState(false);
 
   const { activeNotifications } = useContext(NotificationContext);
   const { projects, currentProject, onProjectClick } =
     useContext(ProjectContext);
 
-  const scrollProjectIntoView = () => {
-    const project = projects.find((x) => x._id === props.currentProjectId);
-
-    if (project) {
-      const element = document.getElementById(project._id);
-      if (element) {
-        element.scrollIntoView({ inline: 'nearest', block: 'nearest' });
-      }
-    }
+  const onProjectEditModal = () => {
+    setProjectModalOpen(true);
   };
 
   const toggleNotificationModal = () => {
     setNotificationModalOpen(!notificationModalOpen);
   };
-
-  useEffect(() => {
-    scrollProjectIntoView();
-  }, [props.currentProjectId]);
 
   return (
     <div
@@ -48,7 +39,7 @@ const Navbar = (props) => {
       >
         <EdgeMLBrandLogo
           href={
-            props.projectAvailable
+            currentProject
               ? '/' +
                 currentProject.admin.userName +
                 '/' +
@@ -70,7 +61,7 @@ const Navbar = (props) => {
         </div>
 
         <div
-          onClick={() => props.onProjectEditModal(true)}
+          onClick={() => onProjectEditModal(true)}
           className="w-100 mt-3 pt-2 pb-2 navbar-project text-center"
           style={{
             backgroundColor: '#eee',
@@ -121,6 +112,11 @@ const Navbar = (props) => {
         onClose={() => setNotificationModalOpen(false)}
         isOpen={notificationModalOpen}
       ></NotificationHandler>
+      <EditProjectModal
+        isOpen={projectModalOpen}
+        isNewProject={true}
+        onClose={() => setProjectModalOpen(false)}
+      ></EditProjectModal>
     </div>
   );
 };
