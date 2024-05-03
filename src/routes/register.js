@@ -123,166 +123,152 @@ class RegisterPage extends Component {
 
   render() {
     return (
-      <Container
-        className="Page"
-        style={{
-          paddingLeft: 0,
-          paddingRight: 0,
-          background:
-            'linear-gradient(0deg, rgba(11, 12, 89, 1) 0%, rgba(7, 55, 99, 1) 100%)',
-        }}
-      >
-        <Row>
-          <Col className="login" xs={11} sm={6} lg={4}>
-            <Card
+      <div className="vh-100 d-flex justify-content-center align-items-center bg-login">
+        <Col xs={11} sm={8} lg={5}>
+          <Card>
+            <CardHeader
+              hidden={this.state.isLoggedIn}
               style={{
-                marginBottom: -149,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              <CardHeader
-                hidden={this.state.isLoggedIn}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <EdgeMLBrandLogo></EdgeMLBrandLogo>
-              </CardHeader>
-              <CardBody hidden={this.state.isLoggedIn}>
-                <Row>
+              <EdgeMLBrandLogo></EdgeMLBrandLogo>
+            </CardHeader>
+            <CardBody hidden={this.state.isLoggedIn}>
+              <Row>
+                <Col>
                   <Col>
-                    <Col>
-                      <InputGroup>
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <FontAwesomeIcon
-                              icon={faEnvelope}
-                            ></FontAwesomeIcon>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          type="email"
-                          name="email"
-                          id="email"
-                          placeholder="email"
-                          onChange={this.onEMailChanged}
-                        />
-                      </InputGroup>
-                    </Col>
-                    <Col>
-                      <InputGroup>
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          type="password"
-                          name="password"
-                          id="password"
-                          placeholder="password"
-                          onChange={this.onPasswordChanged}
-                        />
-                      </InputGroup>
-                    </Col>
-                    <Col>
-                      <InputGroup>
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          type="password"
-                          name="password"
-                          id="passwordRepeat"
-                          placeholder="repeat password"
-                          onChange={this.onPasswordRepeatChanged}
-                        />
-                      </InputGroup>
-                    </Col>
-                    <Col>
-                      <InputGroup>
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          type="text"
-                          name="username"
-                          id="username"
-                          placeholder="username"
-                          onChange={this.onUserNameChanged}
-                        />
-                      </InputGroup>
-                    </Col>
-                    <Col
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="email"
+                        name="email"
+                        id="email"
+                        placeholder="email"
+                        onChange={this.onEMailChanged}
+                      />
+                    </InputGroup>
+                  </Col>
+                  <Col>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="password"
+                        name="password"
+                        id="password"
+                        placeholder="password"
+                        onChange={this.onPasswordChanged}
+                      />
+                    </InputGroup>
+                  </Col>
+                  <Col>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="password"
+                        name="password"
+                        id="passwordRepeat"
+                        placeholder="repeat password"
+                        onChange={this.onPasswordRepeatChanged}
+                      />
+                    </InputGroup>
+                  </Col>
+                  <Col>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        type="text"
+                        name="username"
+                        id="username"
+                        placeholder="username"
+                        onChange={this.onUserNameChanged}
+                      />
+                    </InputGroup>
+                  </Col>
+                  <Col
+                    style={{
+                      paddingBottom: '10px',
+                      textAlign: 'left',
+                    }}
+                  >
+                    <FormGroup
+                      check
                       style={{
-                        paddingBottom: '10px',
-                        textAlign: 'left',
+                        marginTop: 20,
+                        marginBottom: 10,
                       }}
                     >
-                      <FormGroup
-                        check
-                        style={{
-                          marginTop: 20,
-                          marginBottom: 10,
-                        }}
-                      >
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            onChange={this.onToS_checked}
-                          />{' '}
-                          I have read and agree to the{' '}
-                          <a href="/terms_of_service.html" target="_blank">
-                            terms of service
-                          </a>{' '}
-                          .
-                        </Label>
-                      </FormGroup>
-                    </Col>
-                    {this.state.error ? (
-                      <Col
-                        className="my-1"
-                        style={{ paddingRight: '15px', paddingLeft: '15px' }}
-                      >
-                        <FontAwesomeIcon
-                          style={{ color: 'red' }}
-                          icon={faExclamationTriangle}
-                          className="mr-2 fa-xs"
-                          data-tip="Error"
-                          id="errorIcon"
-                        />
-                        <div style={{ color: 'red', display: 'inline-block' }}>
-                          {' '}
-                          {this.state.error}
-                        </div>
-                      </Col>
-                    ) : null}
-                    <Col>
-                      <Button
-                        id="registerButton"
-                        color="success"
-                        block
-                        onClick={this.onRegisterClick}
-                        disabled={!this.state.ToS_accepted}
-                        style={{
-                          marginBottom: 10,
-                        }}
-                      >
-                        Register
-                      </Button>
-                    </Col>
+                      <Label check>
+                        <Input type="checkbox" onChange={this.onToS_checked} />{' '}
+                        I have read and agree to the{' '}
+                        <a href="/terms_of_service.html" target="_blank">
+                          terms of service
+                        </a>{' '}
+                        .
+                      </Label>
+                    </FormGroup>
                   </Col>
-                </Row>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </Container>
+                  {this.state.error ? (
+                    <Col
+                      className="my-1"
+                      style={{ paddingRight: '15px', paddingLeft: '15px' }}
+                    >
+                      <FontAwesomeIcon
+                        style={{ color: 'red' }}
+                        icon={faExclamationTriangle}
+                        className="mr-2 fa-xs"
+                        data-tip="Error"
+                        id="errorIcon"
+                      />
+                      <div style={{ color: 'red', display: 'inline-block' }}>
+                        {' '}
+                        {this.state.error}
+                      </div>
+                    </Col>
+                  ) : null}
+                  <Col>
+                    <Button
+                      id="registerButton"
+                      color="success"
+                      block
+                      onClick={this.onRegisterClick}
+                      disabled={!this.state.ToS_accepted}
+                      style={{
+                        marginBottom: 10,
+                      }}
+                    >
+                      Register
+                    </Button>
+                    <hr></hr>
+                    <div>
+                      <span>Login instead? </span>
+                      <a href="/login">Click here!</a>
+                    </div>
+                  </Col>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+        </Col>
+      </div>
     );
   }
 }

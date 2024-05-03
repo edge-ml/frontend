@@ -1,7 +1,31 @@
-import apiConsts from './ApiConstants';
+import apiConsts, {
+  DATASET_STORE,
+  DATASET_STORE_ENDPOINTS,
+  HTTP_METHODS,
+} from './ApiConstants';
 import ax from 'axios';
+import useApiCalls from './useApiCalls';
 
 const axios = ax.create();
+
+const useLabelingAPI = (project) => {
+  const api = useApiCalls(project);
+
+  const getLabelingsAndLabels = async () => {
+    const res = await api.request(
+      HTTP_METHODS.GET,
+      DATASET_STORE,
+      DATASET_STORE_ENDPOINTS.LABELING,
+    );
+    return res;
+  };
+
+  return {
+    getLabelingsAndLabels: getLabelingsAndLabels,
+  };
+};
+
+export default useLabelingAPI;
 
 export const subscribeLabelingsAndLabels = () => {
   return new Promise((resolve, reject) => {
@@ -9,8 +33,8 @@ export const subscribeLabelingsAndLabels = () => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.LABELING
-      )
+        apiConsts.DATASET_STORE_ENDPOINTS.LABELING,
+      ),
     )
       .then((result) => {
         console.log(result.data);
@@ -28,8 +52,8 @@ export const addLabeling = (newLabeling) => {
         apiConsts.HTTP_METHODS.POST,
         apiConsts.DATASET_STORE,
         apiConsts.DATASET_STORE_ENDPOINTS.LABELING,
-        newLabeling
-      )
+        newLabeling,
+      ),
     )
       .then(() => {
         subscribeLabelingsAndLabels().then((data) => resolve(data));
@@ -44,8 +68,8 @@ export const deleteLabeling = (labelingId, conflictingDatasetIds) => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.DELETE,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.LABELING + `${labelingId}`
-      )
+        apiConsts.DATASET_STORE_ENDPOINTS.LABELING + `${labelingId}`,
+      ),
     ).then(() => {
       subscribeLabelingsAndLabels()
         .then((data) => resolve(data))
@@ -62,10 +86,10 @@ export const deleteMultipleLabelings = (labelingIds) => {
           apiConsts.generateApiRequest(
             apiConsts.HTTP_METHODS.DELETE,
             apiConsts.DATASET_STORE,
-            apiConsts.DATASET_STORE_ENDPOINTS.LABELING + `${id}`
-          )
-        )
-      )
+            apiConsts.DATASET_STORE_ENDPOINTS.LABELING + `${id}`,
+          ),
+        ),
+      ),
     ).then(() => {
       subscribeLabelingsAndLabels()
         .then((data) => resolve(data))
@@ -81,8 +105,8 @@ export const updateLabelingandLabels = (labeling, labels) => {
         apiConsts.HTTP_METHODS.PUT,
         apiConsts.DATASET_STORE,
         apiConsts.DATASET_STORE_ENDPOINTS.LABELING + `${labeling['_id']}`,
-        labeling
-      )
+        labeling,
+      ),
     )
       .then(() => {
         subscribeLabelingsAndLabels()
@@ -92,41 +116,3 @@ export const updateLabelingandLabels = (labeling, labels) => {
       .catch((err) => window.alert(err));
   });
 };
-
-// export const addLabelTypesToLabeling = (labeling, labels) => {
-//   return new Promise((resolve, reject) => {
-//     axios(
-//       apiConsts.generateApiRequest(
-//         apiConsts.HTTP_METHODS.POST,
-//         apiConsts.API_URI,
-//         apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS +
-//           `/${labeling['_id']}` +
-//           '/createlabeltypes',
-//         labels.filter((elm) => elm.isNewLabel)
-//       )
-//     ).then(() => {
-//       subscribeLabelingsAndLabels()
-//         .then((data) => resolve(data))
-//         .catch((err) => console.log(err));
-//     });
-//   });
-// };
-
-// export const deleteLabelTypesFromLabeling = (labeling, labels) => {
-//   return new Promise((resolve, reject) => {
-//     axios(
-//       apiConsts.generateApiRequest(
-//         apiConsts.HTTP_METHODS.POST,
-//         apiConsts.API_URI,
-//         apiConsts.API_ENDPOINTS.LABEL_DEFINITIONS +
-//           `/${labeling['_id']}` +
-//           '/deletelabeltypes',
-//         labels
-//       )
-//     ).then(() => {
-//       subscribeLabelingsAndLabels()
-//         .then((data) => resolve(data))
-//         .catch((err) => console.log(err));
-//     });
-//   });
-// };

@@ -55,17 +55,12 @@ const ListPage = (props) => {
   const selectedFilterParamsRef = useRef(selectedFilterParams);
 
   const location = useLocation();
-  const navigate = useNavigate();
 
   const { currentProject } = useContext(ProjectContext);
   const datasetApi = useDatasetAPI(currentProject);
 
   const toggleModal = () => {
     setModal(!modal);
-  };
-
-  const getFilteredDatasets = () => {
-    //deselect selected datasets to not cause confusion with datasets, which aren't visible
   };
 
   const deleteSelectedDatasets = () => {
@@ -78,10 +73,6 @@ const ListPage = (props) => {
         ),
       );
     });
-    // resetDropdown().catch((err) => {
-    //   window.alert('Error deleting datasets');
-    //   setModal(false);
-    // });
   };
 
   const deleteEntry = (datasetId) => {
@@ -352,7 +343,7 @@ const ListPage = (props) => {
   };
 
   if (!ready) {
-    return <Loader loading={!ready} />;
+    return <Loader loading={true}></Loader>;
   }
 
   const applyFilter = (currentFilter, currentFilterParams) => {

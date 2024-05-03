@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -7,8 +7,6 @@ import NavbarLayout from './NavbarLayout';
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
 import AppContent from './AppContent';
-import ErrorPage from './components/ErrorPage/ErrorPage';
-import { Switch } from 'react-router-dom';
 import { AuthProvider } from './AuthProvider';
 import { ProjectProvider } from './ProjectProvider';
 

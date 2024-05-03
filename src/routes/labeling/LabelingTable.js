@@ -46,7 +46,7 @@ const LabelingTable = (props) => {
                   id="deleteDatasetsButton"
                   size="sm"
                   color="secondary"
-                  disabled={props.labelingsToDelete.length === 0}
+                  disabled={props.selectedLabelings.length === 0}
                   onClick={props.onClickDeleteButton}
                 >
                   <FontAwesomeIcon
@@ -72,7 +72,7 @@ const LabelingTable = (props) => {
                   labels={props.labels}
                   onClickEdit={props.onClickEdit}
                   index={index}
-                  isSelected={props.labelingsToDelete.includes(labeling['_id'])}
+                  isSelected={props.selectedLabelings.includes(labeling['_id'])}
                   toggleCheck={props.toggleCheck}
                   onClickDeleteLabelingIcon={props.onClickDeleteLabelingIcon}
                 />

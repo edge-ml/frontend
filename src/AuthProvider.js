@@ -1,12 +1,20 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import jwt_decode from 'jwt-decode';
 import { setToken, clearToken } from './services/LocalStorageService';
 import { loginUser } from './services/ApiServices/AuthentificationServices';
+import {
+  getAccessToken,
+  getRefreshToken,
+} from './services/LocalStorageService';
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUserInternal] = useState();
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
 
   const setUser = (mail, name, id) => {
     setUserInternal({ mail: mail, name: name, _id: id });
@@ -21,12 +29,22 @@ const AuthProvider = ({ children }) => {
     const userData = await loginUser(email, password);
     const decoded = jwt_decode(userData.access_token);
     setToken(userData.access_token, userData.refresh_token);
-    console.log(decoded.id);
     setUser(decoded.email, decoded.userName, decoded.id);
   };
 
+  const checkLoginStatus = () => {
+    const accessToken = getAccessToken();
+    const refreshToken = getRefreshToken();
+    if (accessToken) {
+      const decoded = jwt_decode(accessToken);
+      if (decoded.exp * 1000 >= Date.now()) {
+        setUser(decoded.email, decoded.userName, decoded.id);
+      }
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser, logout, login }}>
+    <AuthContext.Provider value={{ user, logout, login }}>
       {children}
     </AuthContext.Provider>
   );

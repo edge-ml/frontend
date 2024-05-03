@@ -12,37 +12,30 @@ import {
 } from 'reactstrap';
 import jwt_decode from 'jwt-decode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faShield } from '@fortawesome/free-solid-svg-icons';
-import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
 import {
-  getAccessToken,
-  getRefreshToken,
-  setToken,
-} from '../services/LocalStorageService';
-import { loginUser } from '../services/ApiServices/AuthentificationServices';
+  faUser,
+  faShield,
+  faTriangleExclamation,
+} from '@fortawesome/free-solid-svg-icons';
+import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
 import { AuthContext } from '../AuthProvider';
 
 const LoginPage = ({ children }) => {
-  const { user, setUser, login } = useContext(AuthContext);
-
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, login } = useContext(AuthContext);
 
   const [email, setEmail] = useState(undefined);
   const [password, setPassword] = useState(undefined);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    checkLoginStatus();
-  }, []);
+    if (error) {
+      setTimeout(() => setError(false), 3000);
+    }
+  }, [error]);
 
-  const checkLoginStatus = () => {
-    const accessToken = getAccessToken();
-    const refreshToken = getRefreshToken();
-
-    if (accessToken) {
-      const decoded = jwt_decode(accessToken);
-      if (decoded.exp * 1000 >= Date.now()) {
-        setUser(decoded.email, decoded.userName, decoded.id);
-      }
+  const onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      submit();
     }
   };
 
@@ -51,6 +44,7 @@ const LoginPage = ({ children }) => {
       await login(email, password);
     } catch {
       console.log('ERROR loggin in!');
+      setError(true);
     }
   };
 
@@ -59,7 +53,10 @@ const LoginPage = ({ children }) => {
   }
 
   return (
-    <div className="vh-100 d-flex justify-content-center align-items-center bg-login">
+    <div
+      onKeyDown={onKeyDown}
+      className="vh-100 d-flex justify-content-center align-items-center bg-login"
+    >
       <Col xs={11} sm={8} lg={5}>
         <Card>
           <CardHeader className="d-flex justify-content-center">
@@ -107,6 +104,12 @@ const LoginPage = ({ children }) => {
             >
               Login
             </Button>
+            {error ? (
+              <div className="mt-3" style={{ color: 'red' }}>
+                <FontAwesomeIcon icon={faTriangleExclamation}></FontAwesomeIcon>
+                Wrong credentials!
+              </div>
+            ) : null}
             <hr
               style={{
                 marginTop: 25,
