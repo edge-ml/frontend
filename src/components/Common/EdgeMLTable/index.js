@@ -2,13 +2,13 @@ import React, { Fragment } from 'react';
 
 const EdgeMLTable = ({ children, className, style }) => {
   const header = React.Children.toArray(children).find(
-    (child) => child.type === EdgeMLTableHeader
+    (child) => child.type === EdgeMLTableHeader,
   );
-  console.log(React.Children.toArray(children));
   const body = React.Children.toArray(children)
-    .filter((elm) => elm.type === EdgeMLTableEntry)
+    .filter((elm) => elm.type !== EdgeMLTableHeader)
     .map((child, index) => {
-      return React.cloneElement(child, { index });
+      console.log(index);
+      return React.cloneElement(child, { index: index });
     });
 
   return (

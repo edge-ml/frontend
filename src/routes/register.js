@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import {
-  Container,
   Col,
   Row,
   Input,
@@ -14,8 +13,6 @@ import {
   FormGroup,
   Label,
 } from 'reactstrap';
-import { registerNewUser } from '../services/ApiServices/AuthentificationServices';
-import { clearToken } from '../services/LocalStorageService';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -24,252 +21,182 @@ import {
   faShield,
   faUser,
 } from '@fortawesome/free-solid-svg-icons';
-import { validateEmail } from '../services/helpers';
 import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
+import { useNavigate } from 'react-router-dom';
+import useRegister from '../Hooks/useRegister';
 
-class RegisterPage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: '',
-      password: '',
-      passwordRepeat: '',
-      userName: '',
-      ToS_accepted: false,
-      error: '',
-    };
-    this.onEMailChanged = this.onEMailChanged.bind(this);
-    this.onPasswordChanged = this.onPasswordChanged.bind(this);
-    this.onPasswordRepeatChanged = this.onPasswordRepeatChanged.bind(this);
-    this.onError = this.onError.bind(this);
-    this.onToS_checked = this.onToS_checked.bind(this);
-    this.onRegisterClick = this.onRegisterClick.bind(this);
-    this.onUserNameChanged = this.onUserNameChanged.bind(this);
-  }
+const RegisterPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordRepeat, setPasswordRepeat] = useState('');
+  const [userName, setUserName] = useState('');
+  const [ToS_accepted, setToS_accepted] = useState(false);
+  const [error, setError] = useState('');
 
-  onUserNameChanged(e) {
-    this.setState({
-      userName: e.target.value,
-    });
-  }
+  const register = useRegister();
 
-  onEMailChanged(e) {
-    this.setState({
-      email: e.target.value,
-    });
-  }
+  const onEMailChanged = (e) => {
+    setEmail(e.target.value);
+  };
 
-  onPasswordChanged(e) {
-    this.setState({
-      password: e.target.value,
-    });
-  }
+  const onPasswordChanged = (e) => {
+    setPassword(e.target.value);
+  };
 
-  onPasswordRepeatChanged(e) {
-    this.setState({
-      passwordRepeat: e.target.value,
-    });
-  }
+  const onPasswordRepeatChanged = (e) => {
+    setPasswordRepeat(e.target.value);
+  };
 
-  onError(err) {
-    if (err.includes('email_1 dup key')) {
-      err = 'E-Mail already exists';
+  const onUserNameChanged = (e) => {
+    setUserName(e.target.value);
+  };
+
+  const onToS_checked = () => {
+    setToS_accepted(!ToS_accepted);
+  };
+
+  const onRegisterClick = async () => {
+    try {
+      await register(userName, email, password, passwordRepeat);
+    } catch (e) {
+      console.log(e);
+      setError(e.message);
     }
+  };
 
-    if (err.includes('userName_1 dup key')) {
-      err = 'Username already exists';
-    }
-
-    this.setState({
-      error: err,
-    });
-  }
-
-  onToS_checked() {
-    this.setState({
-      ToS_accepted: !this.state.ToS_accepted,
-    });
-  }
-
-  onRegisterClick() {
-    if (!validateEmail(this.state.email)) {
-      this.onError('Enter a valid E-mail');
-    } else if (this.state.password === '') {
-      this.onError('Enter a password');
-    } else if (this.state.password !== this.state.passwordRepeat) {
-      this.onError('The passwords have to match');
-    } else {
-      registerNewUser(
-        this.state.email,
-        this.state.password,
-        this.state.userName,
-      )
-        .then(() => {
-          clearToken();
-          this.setState({
-            error: '',
-          });
-          this.props.history.push({
-            pathname: '/',
-            search: '',
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-          this.onError(err);
-        });
-    }
-  }
-
-  render() {
-    return (
-      <div className="vh-100 d-flex justify-content-center align-items-center bg-login">
-        <Col xs={11} sm={8} lg={5}>
-          <Card>
-            <CardHeader
-              hidden={this.state.isLoggedIn}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <EdgeMLBrandLogo></EdgeMLBrandLogo>
-            </CardHeader>
-            <CardBody hidden={this.state.isLoggedIn}>
-              <Row>
+  return (
+    <div className="vh-100 d-flex justify-content-center align-items-center bg-login">
+      <Col xs={11} sm={8} lg={5}>
+        <Card>
+          <CardHeader
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <EdgeMLBrandLogo />
+          </CardHeader>
+          <CardBody>
+            <Row>
+              <Col>
                 <Col>
-                  <Col>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <FontAwesomeIcon icon={faEnvelope}></FontAwesomeIcon>
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input
-                        type="email"
-                        name="email"
-                        id="email"
-                        placeholder="email"
-                        onChange={this.onEMailChanged}
-                      />
-                    </InputGroup>
-                  </Col>
-                  <Col>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input
-                        type="password"
-                        name="password"
-                        id="password"
-                        placeholder="password"
-                        onChange={this.onPasswordChanged}
-                      />
-                    </InputGroup>
-                  </Col>
-                  <Col>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input
-                        type="password"
-                        name="password"
-                        id="passwordRepeat"
-                        placeholder="repeat password"
-                        onChange={this.onPasswordRepeatChanged}
-                      />
-                    </InputGroup>
-                  </Col>
-                  <Col>
-                    <InputGroup>
-                      <InputGroupAddon addonType="prepend">
-                        <InputGroupText>
-                          <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
-                        </InputGroupText>
-                      </InputGroupAddon>
-                      <Input
-                        type="text"
-                        name="username"
-                        id="username"
-                        placeholder="username"
-                        onChange={this.onUserNameChanged}
-                      />
-                    </InputGroup>
-                  </Col>
+                  <InputGroup>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <FontAwesomeIcon icon={faEnvelope} />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input
+                      type="email"
+                      name="email"
+                      id="email"
+                      placeholder="email"
+                      onChange={onEMailChanged}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col>
+                  <InputGroup>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <FontAwesomeIcon icon={faShield} />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input
+                      type="password"
+                      name="password"
+                      id="password"
+                      placeholder="password"
+                      onChange={onPasswordChanged}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col>
+                  <InputGroup>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <FontAwesomeIcon icon={faShield} />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input
+                      type="password"
+                      name="passwordRepeat"
+                      id="passwordRepeat"
+                      placeholder="repeat password"
+                      onChange={onPasswordRepeatChanged}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col>
+                  <InputGroup>
+                    <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
+                        <FontAwesomeIcon icon={faUser} />
+                      </InputGroupText>
+                    </InputGroupAddon>
+                    <Input
+                      type="text"
+                      name="username"
+                      id="username"
+                      placeholder="username"
+                      onChange={onUserNameChanged}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col style={{ paddingBottom: '10px', textAlign: 'left' }}>
+                  <FormGroup check style={{ marginTop: 20, marginBottom: 10 }}>
+                    <Label check>
+                      <Input type="checkbox" onChange={onToS_checked} /> I have
+                      read and agree to the{' '}
+                      <a href="/terms_of_service.html" target="_blank">
+                        terms of service
+                      </a>
+                      .
+                    </Label>
+                  </FormGroup>
+                </Col>
+                {error ? (
                   <Col
-                    style={{
-                      paddingBottom: '10px',
-                      textAlign: 'left',
-                    }}
+                    className="my-1"
+                    style={{ paddingRight: '15px', paddingLeft: '15px' }}
                   >
-                    <FormGroup
-                      check
-                      style={{
-                        marginTop: 20,
-                        marginBottom: 10,
-                      }}
-                    >
-                      <Label check>
-                        <Input type="checkbox" onChange={this.onToS_checked} />{' '}
-                        I have read and agree to the{' '}
-                        <a href="/terms_of_service.html" target="_blank">
-                          terms of service
-                        </a>{' '}
-                        .
-                      </Label>
-                    </FormGroup>
-                  </Col>
-                  {this.state.error ? (
-                    <Col
-                      className="my-1"
-                      style={{ paddingRight: '15px', paddingLeft: '15px' }}
-                    >
-                      <FontAwesomeIcon
-                        style={{ color: 'red' }}
-                        icon={faExclamationTriangle}
-                        className="mr-2 fa-xs"
-                        data-tip="Error"
-                        id="errorIcon"
-                      />
-                      <div style={{ color: 'red', display: 'inline-block' }}>
-                        {' '}
-                        {this.state.error}
-                      </div>
-                    </Col>
-                  ) : null}
-                  <Col>
-                    <Button
-                      id="registerButton"
-                      color="success"
-                      block
-                      onClick={this.onRegisterClick}
-                      disabled={!this.state.ToS_accepted}
-                      style={{
-                        marginBottom: 10,
-                      }}
-                    >
-                      Register
-                    </Button>
-                    <hr></hr>
-                    <div>
-                      <span>Login instead? </span>
-                      <a href="/login">Click here!</a>
+                    <FontAwesomeIcon
+                      style={{ color: 'red' }}
+                      icon={faExclamationTriangle}
+                      className="mr-2 fa-xs"
+                      data-tip="Error"
+                      id="errorIcon"
+                    />
+                    <div style={{ color: 'red', display: 'inline-block' }}>
+                      {error}
                     </div>
                   </Col>
+                ) : null}
+                <Col>
+                  <Button
+                    id="registerButton"
+                    color="success"
+                    block
+                    onClick={onRegisterClick}
+                    disabled={!ToS_accepted}
+                    style={{ marginBottom: 10 }}
+                  >
+                    Register
+                  </Button>
+                  <hr />
+                  <div>
+                    <span>Login instead? </span>
+                    <a href="/login">Click here!</a>
+                  </div>
                 </Col>
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>
-      </div>
-    );
-  }
-}
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
+      </Col>
+    </div>
+  );
+};
+
 export default RegisterPage;

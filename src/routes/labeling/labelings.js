@@ -14,10 +14,41 @@ import LabelingTable from './LabelingTable';
 import ConfirmationDialogueModal from '../../components/ConfirmationDilaogueModal/ConfirmationDialogueModal';
 import useLabelings from '../../Hooks/useLabelings';
 import { ProjectContext } from '../../ProjectProvider';
+import Page from '../../components/Common/Page';
 
 const Labelings = () => {
   const { currentProject } = useContext(ProjectContext);
   const { labelings } = useLabelings(currentProject);
+
+  const onModalAddLabeling = () => {};
+
+  return (
+    <Loader loading={!labelings}>
+      <Page
+        header={
+          <>
+            <div className="font-weight-bold h4 justify-self-start">
+              LABELING SETS
+            </div>
+            <div className="justify-content-end">
+              <Button
+                outline
+                onClick={onModalAddLabeling}
+                className="btn-neutral ml-auto"
+              >
+                Create Labeling Set
+              </Button>
+            </div>
+          </>
+        }
+      >
+        <LabelingTable
+          labelings={labelings}
+          selectedLabelings={[]}
+        ></LabelingTable>
+      </Page>
+    </Loader>
+  );
 
   return (
     <Loader loading={!labelings}>

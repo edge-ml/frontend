@@ -19,6 +19,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
 import { AuthContext } from '../AuthProvider';
+import Loader from '../modules/loader';
 
 const LoginPage = ({ children }) => {
   const { user, login } = useContext(AuthContext);
