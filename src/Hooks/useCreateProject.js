@@ -2,9 +2,10 @@ import { useContext, useState } from 'react';
 import useProjectAPI from '../services/ApiServices/ProjectService';
 import useProjectRefresh from './useProjectsRefresh';
 import { AuthContext } from '../AuthProvider';
+import useAuth from './useAuth';
 
 const useCreateProject = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   const [projectName, setProjectName] = useState('');
   const [projectUsers, setProjectUsers] = useState([]);

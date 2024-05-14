@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -10,7 +10,6 @@ import {
   CardBody,
   Col,
 } from 'reactstrap';
-import jwt_decode from 'jwt-decode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser,
@@ -18,12 +17,11 @@ import {
   faTriangleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
 import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
-import { AuthContext } from '../AuthProvider';
-import Loader from '../modules/loader';
+import useAuth from '../Hooks/useAuth';
 
 const LoginPage = ({ children }) => {
-  const { user, login } = useContext(AuthContext);
-
+  const { login } = useAuth();
+  const user = useAuth((state) => state.user);
   const [email, setEmail] = useState(undefined);
   const [password, setPassword] = useState(undefined);
   const [error, setError] = useState(false);
@@ -41,13 +39,16 @@ const LoginPage = ({ children }) => {
   };
 
   const submit = async () => {
-    try {
-      await login(email, password);
-    } catch {
-      console.log('ERROR loggin in!');
-      setError(true);
-    }
+    await login(email, password);
+    // try {
+    //   await login(email, password);
+    // } catch {
+    //   console.log("ERROR loggin in!");
+    //   setError(true);
+    // }
   };
+
+  console.log(user);
 
   if (user) {
     return children;

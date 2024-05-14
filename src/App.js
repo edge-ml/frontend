@@ -18,17 +18,17 @@ const App = () => {
         <Route
           path="*"
           element={
-            <AuthProvider>
-              <AuthWall>
-                <NotificationProvider>
-                  <ProjectProvider>
-                    <NavbarLayout>
-                      <AppContent></AppContent>
-                    </NavbarLayout>
-                  </ProjectProvider>
-                </NotificationProvider>
-              </AuthWall>
-            </AuthProvider>
+            // <AuthProvider>
+            <AuthWall>
+              <NotificationProvider>
+                <ProjectProvider>
+                  <NavbarLayout>
+                    <AppContent></AppContent>
+                  </NavbarLayout>
+                </ProjectProvider>
+              </NotificationProvider>
+            </AuthWall>
+            // </AuthProvider>
           }
         ></Route>
       </Routes>

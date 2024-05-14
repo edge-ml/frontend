@@ -13,7 +13,7 @@ const useLabelings = (project) => {
 
   useEffect(() => {
     refreshLabelings();
-  }, []);
+  }, [project]);
 
   return { labelings };
 };

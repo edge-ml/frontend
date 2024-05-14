@@ -4,10 +4,11 @@ import ConfirmationDialogueModal from '../../components/ConfirmationDilaogueModa
 import { ProjectContext } from '../../ProjectProvider';
 import { AuthContext } from '../../AuthProvider';
 import useProjectSettings from '../../Hooks/useProjectSettings';
+import useAuth from '../../Hooks/useAuth';
 
 const DeleteProject = (props) => {
   const { currentProject } = useContext(ProjectContext);
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const { deleteProject, leaveProject } = useProjectSettings();
   const isAdmin = user._id === currentProject.admin._id;
 
