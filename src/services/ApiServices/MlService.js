@@ -1,7 +1,35 @@
 import apiConsts from './ApiConstants';
 import ax from 'axios';
+import useApiCalls from './useApiCalls';
 
 const axios = ax.create();
+
+const useMLAPI = (project) => {
+  const api = useApiCalls(project);
+
+  const getStepOptions = async () => {
+    const res = await api.request(
+      apiConsts.HTTP_METHODS.GET,
+      apiConsts.ML_URI,
+      apiConsts.ML_ENDPOINTS.TRAIN + '/pipeline/options',
+    );
+    return res;
+  };
+
+  const getModels = async () => {
+    const res = await api.request(
+      apiConsts.HTTP_METHODS.GET,
+      apiConsts.ML_URI,
+      apiConsts.ML_ENDPOINTS.MODELS,
+    );
+    return res;
+  };
+
+  return {
+    getModels: getModels,
+    getStepOptions: getStepOptions,
+  };
+};
 
 export const getStepOptions = () => {
   return new Promise((resolve, reject) => {
@@ -9,8 +37,8 @@ export const getStepOptions = () => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAIN + '/pipeline/options'
-      )
+        apiConsts.ML_ENDPOINTS.TRAIN + '/pipeline/options',
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
@@ -23,8 +51,8 @@ export const getModels = function () {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.MODELS
-      )
+        apiConsts.ML_ENDPOINTS.MODELS,
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
@@ -36,8 +64,8 @@ export const deleteModel = async (modelId) => {
     apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.DELETE,
       apiConsts.ML_URI,
-      apiConsts.ML_ENDPOINTS.MODELS + `/${modelId}`
-    )
+      apiConsts.ML_ENDPOINTS.MODELS + `/${modelId}`,
+    ),
   );
   return res.data;
 };
@@ -48,8 +76,8 @@ export const getTrainconfig = () => {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAIN
-      )
+        apiConsts.ML_ENDPOINTS.TRAIN,
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
@@ -62,8 +90,8 @@ export const getTrainedModels = function () {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAINED_MODELS
-      )
+        apiConsts.ML_ENDPOINTS.TRAINED_MODELS,
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
@@ -76,8 +104,8 @@ export const getTrained = function (id) {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id
-      )
+        apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id,
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
@@ -90,8 +118,8 @@ export const deleteTrained = function (id) {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.DELETE,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id
-      )
+        apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id,
+      ),
     )
       .then((resp) => resolve(resp.data))
       .catch((err) => reject(err.response));
@@ -105,8 +133,8 @@ export const train = function (data) {
         apiConsts.HTTP_METHODS.POST,
         apiConsts.ML_URI,
         apiConsts.ML_ENDPOINTS.TRAIN,
-        data
-      )
+        data,
+      ),
     )
       .then(() => resolve()) // TODO: ml should return training id
       .catch((err) => reject(err.response));
@@ -119,8 +147,8 @@ export const getActiveTrainingById = function (trainId) {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAIN_ONGOING + '/' + trainId
-      )
+        apiConsts.ML_ENDPOINTS.TRAIN_ONGOING + '/' + trainId,
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
@@ -133,8 +161,8 @@ export const getAllActiveTrainings = function () {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAIN_ONGOING
-      )
+        apiConsts.ML_ENDPOINTS.TRAIN_ONGOING,
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
@@ -147,8 +175,8 @@ export const getTrainedDeployments = function (id) {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id + '/deployments'
-      )
+        apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id + '/deployments',
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
@@ -162,8 +190,8 @@ export const deployTrained = function (id, data) {
         apiConsts.HTTP_METHODS.POST,
         apiConsts.ML_URI,
         apiConsts.ML_ENDPOINTS.TRAINED_MODELS + '/' + id + '/deploy',
-        data
-      )
+        data,
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
@@ -177,8 +205,8 @@ export const getDeployDevices = function (id) {
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + id
-      )
+        apiConsts.ML_ENDPOINTS.DEPLOY + '/' + id,
+      ),
     )
       .then((data) => resolve(data.data))
       .catch((err) => reject(err.response));
@@ -190,7 +218,7 @@ export const deployModel = function (
   tsMap,
   parameters,
   selectedDevice,
-  additionalSettings
+  additionalSettings,
 ) {
   console.log('Getting devices');
   return new Promise((resolve, reject) => {
@@ -203,7 +231,7 @@ export const deployModel = function (
         parameters: parameters,
         device: selectedDevice,
         additionalSettings: additionalSettings,
-      }
+      },
     );
     request['responseType'] = 'arraybuffer';
     axios(request)
@@ -217,7 +245,7 @@ export const downloadFirmware = function (
   tsMap,
   parameters,
   selectedDevice,
-  additionalSettings
+  additionalSettings,
 ) {
   console.log('Getting devices');
   return new Promise((resolve, reject) => {
@@ -230,7 +258,7 @@ export const downloadFirmware = function (
         parameters: parameters,
         device: selectedDevice,
         additionalSettings: additionalSettings,
-      }
+      },
     );
     request['responseType'] = 'arraybuffer';
     axios(request)
@@ -238,3 +266,5 @@ export const downloadFirmware = function (
       .catch((err) => reject(err.response));
   });
 };
+
+export default useMLAPI;

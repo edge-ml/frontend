@@ -20,6 +20,9 @@ import {
 import { Empty } from './components/Empty';
 import { downloadBlob } from '../../services/helpers';
 import { platforms } from './platforms';
+import useMLModels from '../../Hooks/useMLModels';
+
+const { models } = useMLModels();
 
 const createBasename = (platform, selectedModel) =>
   `${selectedModel.name}_${platform}`;
@@ -32,7 +35,7 @@ const ExportPage = () => {
   const location = useLocation();
   const history = useHistory();
   const [selectedModelId, setSelectedModelId] = useState(
-    location.state ? location.state.id : null
+    location.state ? location.state.id : null,
   );
 
   const [platform, setPlatform] = useState(null);
@@ -51,7 +54,7 @@ const ExportPage = () => {
       return labels;
     },
     [selectedModelId],
-    []
+    [],
   );
 
   const platformContents = useAsyncMemo(
@@ -60,21 +63,21 @@ const ExportPage = () => {
       return (await getPlatformCode(selectedModelId, platform))
         .replace(
           '___DOWNLOADED_MODEL_BASENAME___',
-          createBasename(platform, selectedModel)
+          createBasename(platform, selectedModel),
         )
         .replace(
           '___DOWNLOADED_MODEL_NAME___',
-          createName(platform, selectedModel)
+          createName(platform, selectedModel),
         );
     },
     [selectedModelId, platform, selectedModel && selectedModel.name],
-    ''
+    '',
   );
 
   useEffect(() => {
     if (!selectedModel) return;
     setPlatform(
-      selectedModel.platforms.length > 0 ? selectedModel.platforms[0] : null
+      selectedModel.platforms.length > 0 ? selectedModel.platforms[0] : null,
     );
   }, [selectedModel]);
 

@@ -34,6 +34,7 @@ import {
 import DeployModal from './DeployModal';
 import { useNavigate } from 'react-router-dom';
 import useModels from '../../Hooks/useModels';
+import Loader from '../../modules/loader';
 
 const ValidationPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -155,6 +156,10 @@ const ValidationPage = () => {
       </Button>
     );
   };
+
+  if (!models) {
+    return <Loader loading></Loader>;
+  }
 
   return (
     <Container>
