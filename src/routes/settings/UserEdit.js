@@ -23,11 +23,12 @@ import { ProjectContext } from '../../ProjectProvider';
 import { AuthContext } from '../../AuthProvider';
 import useProjectSettings from '../../Hooks/useProjectSettings';
 import useAuth from '../../Hooks/useAuth';
+import useUserStore from '../../Hooks/useUser';
 
 const UserEdit = () => {
   const { currentProject } = useContext(ProjectContext);
   const { changeUserNames } = useProjectSettings();
-  const { user } = useAuth();
+  const { user } = useUserStore();
 
   const [userSearchValue, setUserSearchValue] = useState('');
   const [userNames, setUserNames] = useState(currentProject.users);

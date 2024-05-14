@@ -5,10 +5,11 @@ import { ProjectContext } from '../../ProjectProvider';
 import { AuthContext } from '../../AuthProvider';
 import useProjectSettings from '../../Hooks/useProjectSettings';
 import useAuth from '../../Hooks/useAuth';
+import useUserStore from '../../Hooks/useUser';
 
 const DeleteProject = (props) => {
   const { currentProject } = useContext(ProjectContext);
-  const { user } = useAuth();
+  const { user } = useUserStore();
   const { deleteProject, leaveProject } = useProjectSettings();
   const isAdmin = user._id === currentProject.admin._id;
 

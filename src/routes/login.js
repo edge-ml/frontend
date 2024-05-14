@@ -18,10 +18,11 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
 import useAuth from '../Hooks/useAuth';
+import useUserStore from '../Hooks/useUser';
 
 const LoginPage = ({ children }) => {
   const { login } = useAuth();
-  const user = useAuth((state) => state.user);
+  const user = useUserStore((state) => state.user);
   const [email, setEmail] = useState(undefined);
   const [password, setPassword] = useState(undefined);
   const [error, setError] = useState(false);
@@ -39,13 +40,12 @@ const LoginPage = ({ children }) => {
   };
 
   const submit = async () => {
-    await login(email, password);
-    // try {
-    //   await login(email, password);
-    // } catch {
-    //   console.log("ERROR loggin in!");
-    //   setError(true);
-    // }
+    try {
+      await login(email, password);
+    } catch {
+      console.log('ERROR loggin in!');
+      setError(true);
+    }
   };
 
   console.log(user);

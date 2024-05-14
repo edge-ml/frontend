@@ -21,10 +21,11 @@ import { getUserNameSuggestions } from '../../services/ApiServices/Authentificat
 import './EditProjectModal.css';
 import { AuthContext } from '../../AuthProvider';
 import useAuth from '../../Hooks/useAuth';
+import useUserStore from '../../Hooks/useUser';
 
 const EditProjectModal = ({ isOpen, onClose }) => {
   const [userSearchValue, setUserSearchValue] = useState('');
-  const { user } = useAuth();
+  const { user } = useUserStore();
 
   const { project, setProjectName, createProject, addUser, removeUser } =
     useCreateProject();

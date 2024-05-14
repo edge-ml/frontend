@@ -7,12 +7,14 @@ import { PopoverBody, Button, Popover } from 'reactstrap';
 import { AuthContext } from '../../AuthProvider';
 import UserSettingsModal from '../UserSettingsModal/UserSettingsModal';
 import useAuth from '../../Hooks/useAuth';
+import useUserStore from '../../Hooks/useUser';
 
 const NavbarUserSettings = () => {
   const [userPopoverOpen, setUserPopoverOpen] = useState(false);
   const [userSettingsModalOpen, setUserSettingsModalOpen] = useState(false);
 
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
+  const { user } = useUserStore();
 
   const toggleUserPopOver = () => {
     setUserPopoverOpen(!userPopoverOpen);
