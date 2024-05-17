@@ -147,8 +147,12 @@ const RegisterPage = () => {
                 <Col style={{ paddingBottom: '10px', textAlign: 'left' }}>
                   <FormGroup check style={{ marginTop: 20, marginBottom: 10 }}>
                     <Label check>
-                      <Input type="checkbox" onChange={onToS_checked} /> I have
-                      read and agree to the{' '}
+                      <Input
+                        type="checkbox"
+                        onChange={onToS_checked}
+                        id="termsCheckbox"
+                      />{' '}
+                      I have read and agree to the{' '}
                       <a href="/terms_of_service.html" target="_blank">
                         terms of service
                       </a>

@@ -62,6 +62,8 @@
     ]
   },
   "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "@types/node": "^20.12.12",
     "enzyme": "^3.11.0",
     "husky": "^4.3.0",
     "nodemon": "^3.0.3"

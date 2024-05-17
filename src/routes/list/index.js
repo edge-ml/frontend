@@ -13,18 +13,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import './index.css';
 
-// import {
-//   getDatasets,
-//   deleteDatasets,
-//   getDatasetsWithPagination,
-// } from "../../services/ApiServices/DatasetServices";
 import useDatasetAPI from '../../services/ApiServices/DatasetServices';
 
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
 import DatasetTable from './DatasetTable';
 import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
-// import UploadDatasetModal from '../../components/UploadDatasetModal';
 import PageSelection from './PageSelection';
 import PageSizeInput from './PageSizeInput';
 import FilterSelectionModal from './FilterSelection';
