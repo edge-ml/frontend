@@ -7,6 +7,15 @@ const axios = ax.create();
 const useDatasetAPI = (project) => {
   const api = useApiCalls(project);
 
+  const getDataset = async (id) => {
+    const res = await api.request(
+      apiConsts.HTTP_METHODS.GET,
+      apiConsts.DATASET_STORE,
+      apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`,
+    );
+    return res;
+  };
+
   const getDatasets = async () => {
     const res = await api.request(
       apiConsts.HTTP_METHODS.GET,
@@ -74,6 +83,7 @@ const useDatasetAPI = (project) => {
   };
 
   return {
+    getDataset: getDataset,
     getDatasets: getDatasets,
     deleteDataset: deleteDataset,
     deleteDatasets: deleteDatasets,

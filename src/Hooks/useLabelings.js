@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import useLabelingAPI from '../services/ApiServices/LabelingServices';
+import { useContext } from 'react';
+import { ProjectContext } from '../ProjectProvider';
 
-const useLabelings = (project) => {
-  const labelingAPI = useLabelingAPI(project);
+const useLabelings = () => {
+  const { currentProject } = useContext(ProjectContext);
+  const labelingAPI = useLabelingAPI(currentProject);
 
   const [labelings, setLabelings] = useState(undefined);
 
@@ -13,7 +16,7 @@ const useLabelings = (project) => {
 
   useEffect(() => {
     refreshLabelings();
-  }, [project]);
+  }, [currentProject]);
 
   return { labelings };
 };
