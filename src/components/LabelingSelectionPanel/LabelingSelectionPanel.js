@@ -1,7 +1,5 @@
-import React, { useState, useContext, Fragment, useEffect } from 'react';
+import React, { useState, useContext, Fragment } from 'react';
 import {
-  Card,
-  CardBody,
   Button,
   UncontrolledDropdown,
   DropdownToggle,
@@ -9,7 +7,6 @@ import {
   DropdownItem,
   Dropdown,
 } from 'reactstrap';
-import Select from 'react-select';
 import './LabelingSelectionPanel.css';
 
 import HelpModal from './HelpModal';
@@ -21,20 +18,29 @@ import { faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import Checkbox from '../Common/Checkbox';
 import useProjectRouter from '../../Hooks/ProjectRouter';
 import { LabelingContext } from '../../routes/dataset/LabelingContext';
-import useLabelings from '../../Hooks/useLabelings';
-import { TimeSeriesContext } from '../../routes/dataset/TimeSeriesContext';
+import { DatasetContext } from '../../routes/dataset/DatasetContext';
 
 const hideLabelsSymbol = 'hide labels' + Math.floor(Math.random() * 1000);
 
-const LabelingSelectionPanel = (props) => {
+const LabelingSelectionPanel = () => {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isTSDropdownOpen, setIsTSDropdownOpen] = useState(false);
   const { registerDatasetDownload } = useContext(NotificationContext);
-  const [selectedTs, setSelectedTs] = useState([]);
 
-  const { labelings } = useContext(LabelingContext);
-  const { activeSeries, timeSeries } = useContext(TimeSeriesContext);
-  console.log(activeSeries);
+  // const { labelings, disableSelectedLabelings, activeLabeling, setActiveLabeling } = useContext(LabelingContext);
+  const {
+    activeSeries,
+    timeSeries,
+    setActiveSeries,
+    dataset,
+    labelings,
+    activeLabeling,
+    setActiveLabeling,
+  } = useContext(DatasetContext);
+
+  const [selectedTs, setSelectedTs] = useState(
+    activeSeries.map((elm) => elm._id),
+  );
 
   const navigate = useProjectRouter();
 
@@ -43,23 +49,15 @@ const LabelingSelectionPanel = (props) => {
   };
 
   const downloadDataSet = () => {
-    registerDatasetDownload(props.dataset);
-  };
-
-  const handleLabelingClicked = (e, id) => {
-    if (e) e.preventDefault();
-    if (id === hideLabelsSymbol) {
-      props.onHideLabels();
-    } else {
-      if (props.hideLabels) {
-        props.onHideLabels();
-      }
-      props.onSelectedLabelingIdChanged(id);
-    }
+    registerDatasetDownload(dataset);
   };
 
   const onApplyTs = () => {
-    props.setActiveSeries(selectedTs);
+    setActiveSeries(
+      selectedTs.map((select_id) =>
+        dataset.timeSeries.find((elm) => elm._id === select_id),
+      ),
+    );
   };
 
   const onClickSelectSeries = (elm_id) => {
@@ -79,7 +77,6 @@ const LabelingSelectionPanel = (props) => {
     console.log(selectedTs);
     return (
       <div>
-        {/* {props.timeSeries.map(elm => <div>{elm.name}</div>)} */}
         <Dropdown
           isOpen={isTSDropdownOpen}
           toggle={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
@@ -135,8 +132,7 @@ const LabelingSelectionPanel = (props) => {
     );
   };
 
-  const l = labelings.find((x) => x._id === props.selectedLabelingId);
-  const name = l && l.name;
+  const name = activeLabeling && activeLabeling.name;
 
   return (
     <div>
@@ -146,16 +142,14 @@ const LabelingSelectionPanel = (props) => {
             <TimeSeriesSelection></TimeSeriesSelection>
             <UncontrolledDropdown>
               <DropdownToggle caret>
-                {props.hideLabels ? 'Select Labeling' : 'Selected Labeling: '}
+                {activeLabeling ? 'Select Labeling: ' : 'Selected Labeling: '}
                 <div className="d-inline font-weight-normal">
                   {name || 'None'}
                 </div>
               </DropdownToggle>
               <DropdownMenu className="scrollable-dropdown">
                 {labelings.map((elm) => (
-                  <DropdownItem
-                    onClick={() => props.onSelectedLabelingIdChanged(elm._id)}
-                  >
+                  <DropdownItem onClick={() => setActiveLabeling(elm)}>
                     {elm.name}
                   </DropdownItem>
                 ))}
@@ -166,12 +160,12 @@ const LabelingSelectionPanel = (props) => {
                 >
                   + Add Labeling Set
                 </DropdownItem>
-                {props.hideLabels ? null : (
+                {activeLabeling ? null : (
                   <Fragment>
                     <DropdownItem divider></DropdownItem>
                     <DropdownItem
                       className="text-danger"
-                      onClick={props.onHideLabels}
+                      onClick={() => setActiveLabeling(undefined)}
                     >
                       Hide Labels
                     </DropdownItem>

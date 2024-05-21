@@ -47,7 +47,6 @@ const useTimeSeriesApi = (project) => {
     end,
     max_resolution,
   ) => {
-    console.log(ts_id);
     const res = await api.request(
       apiConsts.HTTP_METHODS.GET,
       apiConsts.DATASET_STORE,

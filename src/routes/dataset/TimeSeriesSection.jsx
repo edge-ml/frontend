@@ -1,14 +1,17 @@
 import { useContext } from 'react';
-import { TimeSeriesContext } from './TimeSeriesContext';
+import { DatasetContext } from './DatasetContext';
 import TimeSeriesDisplay from './TimeSeriesDisplay';
 import ChartSlider from './ChartSlider';
 
 const TimeSeriesSection = () => {
-  const { activeSeries } = useContext(TimeSeriesContext);
+  const { activeSeries } = useContext(DatasetContext);
+
+  const globalStart = Math.min(...activeSeries.map((elm) => elm.start));
+  const globalEnd = Math.max(...activeSeries.map((elm) => elm.end));
 
   return (
-    <div>
-      <ChartSlider></ChartSlider>
+    <div className="flex-grow-1">
+      <ChartSlider start={globalStart} end={globalEnd}></ChartSlider>
       {activeSeries.map((elm) => (
         <TimeSeriesDisplay timeSeries={elm}></TimeSeriesDisplay>
       ))}

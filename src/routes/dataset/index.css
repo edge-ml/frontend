@@ -1,0 +1,11 @@
+.plotband-selected {
+  opacity: 0.5;
+}
+
+.plotband-deselected {
+  opacity: 0.2;
+}
+
+.plotline-deselected {
+  opacity: 0.7;
+}
