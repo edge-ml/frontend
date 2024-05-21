@@ -12,12 +12,6 @@ const DatasetProvider = ({ children, dataset, labelings }) => {
   });
   const [activeLabeling, _setActiveLabeling] = useState(labelings[0]);
 
-  // const [selectedLabelId, setSelectedLabelId] = useState(undefined);
-
-  // const changeDatasetLabel = (labeling) => {
-  //   setActiveDataSetLabelsId(dataset.labeling.find(elm => elm.labelingId === labeling._id))
-  // }
-
   const setActiveLabeling = (labeling) => {
     _setActiveLabeling(labeling);
   };

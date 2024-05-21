@@ -63,32 +63,29 @@ const ChartSlider = ({ start, end }) => {
         crosshair: false,
         min: start,
         max: end,
-        events: {
-          afterSetExtremes: (e) => {
-            const min = e.min;
-            const max = e.max;
-            // setStartEnd(min, max);
-          },
-        },
         // events: {
         //   afterSetExtremes: (e) => {
-        //     this.min = e.min;
-        //     this.max = e.max;
-        //     this.width = e.target.width;
-        //     this.changeNavigator = true;
-        //     Highcharts.charts.forEach((elm) => {
-        //       if (elm) {
-        //         elm.xAxis[0].setExtremes(
-        //           e.min,
-        //           e.max,
-        //           e.target.width,
-        //           false,
-        //           false
-        //         );
-        //       }
-        //     });
+        //     const min = e.min;
+        //     const max = e.max;
+        //     // setStartEnd(min, max);
         //   },
         // },
+        events: {
+          afterSetExtremes: (e) => {
+            console.log(e);
+            Highcharts.charts.forEach((elm) => {
+              if (elm) {
+                elm.xAxis[0].setExtremes(
+                  e.min,
+                  e.max,
+                  e.target.width,
+                  false,
+                  false,
+                );
+              }
+            });
+          },
+        },
       },
       yAxis: {
         height: 0,

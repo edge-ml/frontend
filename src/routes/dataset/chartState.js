@@ -1,11 +1,13 @@
+import useTimeSeriesData from '../../Hooks/useTimeSeriesData';
 import { generatePlotBands, generatePlotLines } from './chartUtils';
+import Highcharts from 'highcharts/highstock';
 
 const generateChartState = (
   ts,
   ts_data,
   labelings,
-  labelTypes,
   selectedLabelId,
+  refreshData,
 ) => {
   const { name, unit, start, end } = ts;
 
@@ -68,25 +70,11 @@ const generateChartState = (
       crosshair: false,
       min: start,
       max: end,
-      // events: {
-      //   afterSetExtremes: (e) => {
-      //     this.min = e.min;
-      //     this.max = e.max;
-      //     this.width = e.target.width;
-      //     this.changeNavigator = true;
-      //     Highcharts.charts.forEach((elm) => {
-      //       if (elm) {
-      //         elm.xAxis[0].setExtremes(
-      //           e.min,
-      //           e.max,
-      //           e.target.width,
-      //           false,
-      //           false
-      //         );
-      //       }
-      //     });
-      //   },
-      // },
+      events: {
+        afterSetExtremes: (e) => {
+          refreshData(e.min, e.max);
+        },
+      },
     },
     yAxis: {
       height: false ? 0 : undefined,

@@ -10,14 +10,25 @@ import './index.css';
 const TimeSeriesDisplay = ({ timeSeries }) => {
   const { dataset, activeDatasetLabels, selectedLabelId, startEnd } =
     useContext(DatasetContext);
-  const { timeSeriesData } = useTimeSeriesData(dataset._id, timeSeries._id);
+  const { timeSeriesData, getTimeSeriesPatial } = useTimeSeriesData(
+    dataset._id,
+    timeSeries._id,
+  );
 
   const chartRef = useRef();
+
+  const refreshData = async (start, end) => {
+    const res = await getTimeSeriesPatial(Math.floor(start), Math.ceil(end));
+    const chart = chartRef.current.chart;
+    chart.series[0].setData(res, false, false);
+  };
+
   const chartOptions = generateChartState(
     timeSeries,
     timeSeriesData,
     activeDatasetLabels,
     selectedLabelId,
+    refreshData,
   );
 
   console.log(startEnd);

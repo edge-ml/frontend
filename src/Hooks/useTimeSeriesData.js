@@ -16,15 +16,21 @@ const useTimeSeriesData = (dataset_id, timeSeries_id) => {
       end,
       window.innerWidth,
     );
+    return res;
+  };
+
+  const updateTimeSeries = async (start, end) => {
+    const res = await getTimeSeriesPatial(start, end);
     setTimeSeriesPartial(res);
   };
 
   useEffect(() => {
-    getTimeSeriesPatial();
+    updateTimeSeries();
   }, []);
 
   return {
     timeSeriesData: timeSeriesPartial,
+    getTimeSeriesPatial: getTimeSeriesPatial,
   };
 };
 

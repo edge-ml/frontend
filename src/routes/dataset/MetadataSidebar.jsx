@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronLeft,
   faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
-import { Fragment, Container } from 'react';
+import { Fragment } from 'react';
 import MetadataContainer from '../../components/MetadataPanel/MetadataContainer';
+import { DatasetContext } from './DatasetContext';
+import { Container } from 'reactstrap';
 
 const MetadataSidebar = () => {
   const [isExtended, setExtendend] = useState(false);
+  const { dataset } = useContext(DatasetContext);
 
   const toggleMetaData = () => {
     setExtendend(!isExtended);
@@ -44,17 +47,13 @@ const MetadataSidebar = () => {
                 <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
               </div>
               <MetadataContainer
-                start={Math.min(
-                  ...this.state.dataset.timeSeries.map((elm) => elm.start),
-                )}
-                end={Math.max(
-                  ...this.state.dataset.timeSeries.map((elm) => elm.end),
-                )}
-                user={this.state.dataset.userId}
-                name={this.state.dataset.name}
-                handleDatasetNameChange={this.handleDatasetNameChange}
-                metaData={this.state.dataset.metaData}
-                onUpdateMetaData={this.onUpdateMetaData}
+                start={Math.min(...dataset.timeSeries.map((elm) => elm.start))}
+                end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
+                user={dataset.userId}
+                name={dataset.name}
+                handleDatasetNameChange={() => {}}
+                metaData={dataset.metaData}
+                onUpdateMetaData={() => {}}
               ></MetadataContainer>
             </div>
           </div>
