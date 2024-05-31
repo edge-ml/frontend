@@ -5,7 +5,7 @@ import { UploadWebView } from './UploadWebView';
 import { SUPPORTED_SENSORS } from '../../services/WebSensorServices';
 import { RecorderSettings } from './RecorderSettings';
 import { throttle, debounce } from '../../services/helpers';
-import { RecordingController } from './RecordingController';
+// import { RecordingController } from './RecordingController';
 import { SensorGraphs } from './SensorGraphs';
 import { usePersistedState } from '../../services/ReactHooksService';
 import { FloatingActionButtons } from './FloatingActionButtons';

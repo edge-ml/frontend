@@ -1,6 +1,5 @@
 import apiConsts from './ApiConstants';
 import ax from 'axios';
-import { getProjects } from './ProjectService';
 
 const axios = ax.create();
 

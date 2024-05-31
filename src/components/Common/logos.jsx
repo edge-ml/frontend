@@ -1,3 +1,4 @@
+import React from 'react';
 import LogoTeco from '../../assets/teco_logo.png';
 import LogoKIT from '../../assets/KITlogo_4c_englisch.png';
 
