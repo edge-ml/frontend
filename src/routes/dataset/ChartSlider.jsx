@@ -1,3 +1,4 @@
+import React from 'react';
 import { useContext, useRef } from 'react';
 import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts/highstock';

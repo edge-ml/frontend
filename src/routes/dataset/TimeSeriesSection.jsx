@@ -1,3 +1,4 @@
+import React from 'react';
 import { useContext } from 'react';
 import { DatasetContext } from './DatasetContext';
 import TimeSeriesDisplay from './TimeSeriesDisplay';

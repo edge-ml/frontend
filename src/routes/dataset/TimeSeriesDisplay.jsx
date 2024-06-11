@@ -1,3 +1,4 @@
+import React from 'react';
 import { useContext, useRef } from 'react';
 import useTimeSeriesData from '../../Hooks/useTimeSeriesData';
 import { DatasetContext } from './DatasetContext';
