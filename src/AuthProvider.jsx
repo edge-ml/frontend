@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { setToken, clearToken } from './services/LocalStorageService';
 import { loginUser } from './services/ApiServices/AuthentificationServices';
 import {
@@ -27,7 +27,7 @@ const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const userData = await loginUser(email, password);
-    const decoded = jwt_decode(userData.access_token);
+    const decoded = jwtDecode(userData.access_token);
     setToken(userData.access_token, userData.refresh_token);
     setUser(decoded.email, decoded.userName, decoded.id);
   };
