@@ -1,3 +1,4 @@
+import React from 'react';
 import MetadataPanel from './MetadataPanel';
 import CustomMetadataPanel from './CustomMetadataPanel';
 

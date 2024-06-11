@@ -9,6 +9,7 @@ import {
   Button,
   CardBody,
   Col,
+  Form,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -65,47 +66,49 @@ const LoginPage = ({ children }) => {
             <EdgeMLBrandLogo></EdgeMLBrandLogo>
           </CardHeader>
           <CardBody>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText style={{ background: '#ced4da' }}>
-                  <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
-                </InputGroupText>
-              </InputGroupAddon>
+            <Form>
+              <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                  <InputGroupText style={{ background: '#ced4da' }}>
+                    <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
+                  </InputGroupText>
+                </InputGroupAddon>
 
-              <Input
-                type="email"
-                name="email"
-                id="email"
-                placeholder="email or username"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </InputGroup>
-            <InputGroup>
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText style={{ background: '#ced4da' }}>
-                  <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                type="password"
-                name="password"
-                id="password"
-                placeholder="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </InputGroup>
-            <Button
-              id="login-button"
-              onClick={submit}
-              // disabled={this.state.buttonDisabled}
-              color="primary"
-              block
-              className="btn-success"
-            >
-              Login
-            </Button>
+                <Input
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="email or username"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </InputGroup>
+              <InputGroup>
+                <InputGroupAddon addonType="prepend">
+                  <InputGroupText style={{ background: '#ced4da' }}>
+                    <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
+                  </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </InputGroup>
+              <Button
+                id="login-button"
+                onClick={submit}
+                // disabled={this.state.buttonDisabled}
+                color="primary"
+                block
+                className="btn-success"
+              >
+                Login
+              </Button>
+            </Form>
             {error ? (
               <div className="mt-3" style={{ color: 'red' }}>
                 <FontAwesomeIcon icon={faTriangleExclamation}></FontAwesomeIcon>
