@@ -6,7 +6,7 @@ import {
   ModalFooter,
   Button,
   InputGroup,
-  InputGroupAddon,
+  InputGroupText,
   InputGroupText,
   Input,
   UncontrolledDropdown,
@@ -136,9 +136,9 @@ class EditInstructionModal extends Component {
         </ModalHeader>
         <ModalBody>
           <InputGroup>
-            <InputGroupAddon addonType="prepend">
+            <InputGroupText>
               <InputGroupText>Name</InputGroupText>
-            </InputGroupAddon>
+            </InputGroupText>
             <Input
               value={
                 this.state.experiment && this.state.experiment.name
@@ -153,7 +153,7 @@ class EditInstructionModal extends Component {
             ? this.state.experiment.instructions.map(
                 (instruction, index, array) => (
                   <InputGroup key={'instruction' + index}>
-                    <InputGroupAddon addonType="append" className="mr-2">
+                    <InputGroupText className="mr-2">
                       <div className="arrow-container">
                         <div
                           className={
@@ -176,7 +176,7 @@ class EditInstructionModal extends Component {
                           &#x25BC;
                         </div>
                       </div>
-                    </InputGroupAddon>
+                    </InputGroupText>
 
                     <UncontrolledDropdown className="mr-2 instruction-dropdown">
                       <DropdownToggle caret>
@@ -277,11 +277,11 @@ class EditInstructionModal extends Component {
                       }
                       value={instruction.duration}
                     />
-                    <InputGroupAddon addonType="append" className="mr-2">
+                    <InputGroupText className="mr-2">
                       <InputGroupText>ms</InputGroupText>
-                    </InputGroupAddon>
+                    </InputGroupText>
 
-                    <InputGroupAddon addonType="append">
+                    <InputGroupText>
                       <Button
                         className="m-0"
                         color="danger"
@@ -292,7 +292,7 @@ class EditInstructionModal extends Component {
                       >
                         ✕
                       </Button>
-                    </InputGroupAddon>
+                    </InputGroupText>
                   </InputGroup>
                 ),
               )

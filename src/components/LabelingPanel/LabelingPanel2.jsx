@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Button,
   Card,
   CardBody,
   InputGroup,
   InputGroupText,
-  InputGroupAddon,
+  InputGroupText,
   Input,
-} from 'reactstrap';
-import './LabelingPanel.css';
+} from "reactstrap";
+import "./LabelingPanel.css";
 
 class LabelingPanel extends Component {
   constructor(props) {
@@ -57,11 +57,11 @@ class LabelingPanel extends Component {
   }
 
   onAddLabel() {
-    const newHistory = this.props.history.location.pathname.split('/');
+    const newHistory = this.props.history.location.pathname.split("/");
     newHistory.length -= 2;
     this.props.history.push({
-      pathname: newHistory.join('/') + '/labelings',
-      search: '?id=' + this.state.labeling['_id'],
+      pathname: newHistory.join("/") + "/labelings",
+      search: "?id=" + this.state.labeling["_id"],
       state: this.props.history.location.pathname,
     });
   }
@@ -93,7 +93,7 @@ class LabelingPanel extends Component {
                           backgroundColor:
                             label._id === this.state.selectedLabelTypeId
                               ? label.color
-                              : 'white',
+                              : "white",
                           borderColor:
                             label._id === this.state.selectedLabelTypeId
                               ? null
@@ -108,7 +108,7 @@ class LabelingPanel extends Component {
                         }
                         key={index}
                       >
-                        {label.name} {'(' + (index + 1) + ')'}
+                        {label.name} {"(" + (index + 1) + ")"}
                       </Button>
                     );
                   })
@@ -116,28 +116,24 @@ class LabelingPanel extends Component {
           </div>
           <div className="informationBox">
             <InputGroup className="inputGroup m-1">
-              <InputGroupAddon addonType="prepend" className="inputGroupAddon">
-                <InputGroupText className="inputLabel">From</InputGroupText>
-              </InputGroupAddon>
+              <InputGroupText className="inputLabel">From</InputGroupText>
               <Input
                 value={
                   this.state.from
-                    ? new Date(this.state.from).toUTCString().split(' ')[4]
-                    : ''
+                    ? new Date(this.state.from).toUTCString().split(" ")[4]
+                    : ""
                 }
                 readOnly
                 className="timeInput text-center"
               />
             </InputGroup>
             <InputGroup className="inputGroup m-1">
-              <InputGroupAddon addonType="prepend" className="inputGroupAddon">
-                <InputGroupText className="inputLabel">To</InputGroupText>
-              </InputGroupAddon>
+              <InputGroupText className="inputLabel">To</InputGroupText>
               <Input
                 value={
                   this.state.to
-                    ? new Date(this.state.to).toUTCString().split(' ')[4]
-                    : ''
+                    ? new Date(this.state.to).toUTCString().split(" ")[4]
+                    : ""
                 }
                 readOnly
                 className="timeInput text-center"

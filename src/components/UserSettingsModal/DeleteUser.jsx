@@ -3,7 +3,6 @@ import {
   Button,
   Input,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
   Modal,
   ModalHeader,
@@ -51,9 +50,9 @@ class DeleteUser extends Component {
           <div>All projects where you are admin will be deleted</div>
         </div>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText>
             <InputGroupText>E-Mail</InputGroupText>
-          </InputGroupAddon>
+          </InputGroupText>
           <Input
             type="text"
             id="E-Mail"

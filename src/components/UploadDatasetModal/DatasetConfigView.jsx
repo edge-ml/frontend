@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Table,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
   Input,
   Button,
@@ -53,11 +52,11 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
           <tr>
             <th colSpan="2" style={{ padding: '0 12px 0 0' }}>
               <InputGroup size="md">
-                <InputGroupAddon addonType="prepend">
+                <InputGroupText>
                   <InputGroupText>
                     <b>Dataset-name</b>
                   </InputGroupText>
-                </InputGroupAddon>
+                </InputGroupText>
                 <Input
                   className="font-weight-bold"
                   id={'datasetName' + String(0)}
@@ -115,9 +114,9 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
                         <InputGroupText>Name</InputGroupText>
-                      </InputGroupAddon>
+                      </InputGroupText>
                       <Input
                         data-testid="nameInput"
                         type="text"
@@ -148,9 +147,9 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
                         <InputGroupText>Unit</InputGroupText>
-                      </InputGroupAddon>
+                      </InputGroupText>
                       <Input
                         data-testid="unitInput"
                         type="text"
@@ -182,9 +181,9 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
                         <InputGroupText>Scale</InputGroupText>
-                      </InputGroupAddon>
+                      </InputGroupText>
                       <Input
                         data-testid="scaleInput"
                         type="text"
@@ -222,9 +221,9 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupAddon addonType="prepend">
+                      <InputGroupText>
                         <InputGroupText>Offset</InputGroupText>
-                      </InputGroupAddon>
+                      </InputGroupText>
                       <Input
                         data-testid="offsetInput"
                         type="text"

@@ -6,7 +6,7 @@ import {
   ModalFooter,
   Button,
   InputGroup,
-  InputGroupAddon,
+  InputGroupText,
   InputGroupText,
   Input,
   Table,
@@ -176,9 +176,9 @@ class EditProjectModal extends Component {
         </ModalHeader>
         <ModalBody>
           <InputGroup>
-            <InputGroupAddon addonType="prepend">
+            <InputGroupText>
               <InputGroupText>{'Name'}</InputGroupText>
-            </InputGroupAddon>
+            </InputGroupText>
             <Input
               id="inputProjectName"
               placeholder={'Project-name'}
@@ -187,9 +187,9 @@ class EditProjectModal extends Component {
             />
           </InputGroup>
           <InputGroup>
-            <InputGroupAddon addonType="prepend">
+            <InputGroupText>
               <InputGroupText>{'Admin'}</InputGroupText>
-            </InputGroupAddon>
+            </InputGroupText>
             <Input
               readOnly
               id="inputProjectAdmin"
@@ -199,9 +199,9 @@ class EditProjectModal extends Component {
           </InputGroup>
           {this.props.isNewProject ? null : (
             <InputGroup>
-              <InputGroupAddon addonType="prepend">
+              <InputGroupText>
                 <InputGroupText>{'Admin'}</InputGroupText>
-              </InputGroupAddon>
+              </InputGroupText>
               <Input value={this.state.project.admin.userName} readOnly />
             </InputGroup>
           )}

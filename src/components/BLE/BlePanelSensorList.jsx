@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Input, InputGroup, InputGroupAddon, Badge } from 'reactstrap';
+import { Table, Input, InputGroup, InputGroupText, Badge } from 'reactstrap';
 import Checkbox from '../Common/Checkbox';
 
 function BlePanelSensorList(props) {
@@ -56,7 +56,7 @@ function BlePanelSensorList(props) {
                         min={0}
                         max={50}
                       ></Input>{' '}
-                      <InputGroupAddon addonType="append">Hz</InputGroupAddon>
+                      <InputGroupText>Hz</InputGroupText>
                     </InputGroup>
                   </td>
                   <td>

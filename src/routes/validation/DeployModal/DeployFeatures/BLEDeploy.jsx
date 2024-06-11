@@ -4,7 +4,7 @@ import {
   EdgeMLTableEntry,
   EdgeMLTableHeader,
 } from '../../../../components/Common/EdgeMLTable';
-import { FormGroup, CustomInput, Input } from 'reactstrap';
+import { FormGroup, Input } from 'reactstrap';
 
 const BLEDeploy = ({ onUpdateState }) => {
   const [useBLE, setUseBLE] = useState(false);
@@ -29,7 +29,7 @@ const BLEDeploy = ({ onUpdateState }) => {
         <div className="d-flex justify-content-center w-100">
           <div>Use BLE</div>
           <FormGroup style={{ margin: 0 }}>
-            <CustomInput
+            <Input
               className="ml-2"
               inline
               onChange={(e) => setUseBLE(!useBLE)}

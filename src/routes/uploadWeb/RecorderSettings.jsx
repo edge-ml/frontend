@@ -2,7 +2,6 @@ import {
   Alert,
   Input,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
 } from 'reactstrap';
 import React from 'react';
@@ -27,9 +26,9 @@ export const RecorderSettings = ({
 }) => (
   <React.Fragment>
     <InputGroup>
-      <InputGroupAddon addonType="prepend">
+      <InputGroupText>
         <InputGroupText>Dataset name</InputGroupText>
-      </InputGroupAddon>
+      </InputGroupText>
       <Input
         id="datasetName"
         placeholder="dataset name"

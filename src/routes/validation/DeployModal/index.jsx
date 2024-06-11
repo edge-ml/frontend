@@ -12,7 +12,6 @@ import {
   Input,
   UncontrolledDropdown,
   FormGroup,
-  CustomInput,
   Progress,
   Spinner,
 } from 'reactstrap';
@@ -396,7 +395,7 @@ const DeployModal = ({ model, onClose }) => {
                   <div className="d-flex justify-content-center w-100">
                     <div>Use BLE</div>
                     <FormGroup style={{ margin: 0 }}>
-                      <CustomInput
+                      <Input
                         className="ml-2"
                         inline
                         onChange={(e) => setUseBLE(!useBLE)}

@@ -6,7 +6,6 @@ import {
   ModalFooter,
   Button,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
   Input,
   FormFeedback,
@@ -354,9 +353,9 @@ class EditLabelingModal extends Component {
         <ModalBody className="edit-labeling-body">
           <div className="d-flex flex-row align-items-center">
             <InputGroup>
-              <InputGroupAddon addonType="prepend">
+              <InputGroupText>
                 <InputGroupText>Labeling Set</InputGroupText>
-              </InputGroupAddon>
+              </InputGroupText>
               <Input
                 invalid={this.labelingNameInValid()}
                 id="labelingName"
@@ -401,9 +400,9 @@ class EditLabelingModal extends Component {
           {this.state.labeling.labels
             ? this.state.labeling.labels.map((label, index) => (
                 <InputGroup key={'label' + index}>
-                  <InputGroupAddon addonType="prepend">
+                  <InputGroupText>
                     <InputGroupText>Label</InputGroupText>
-                  </InputGroupAddon>
+                  </InputGroupText>
                   <Input
                     invalid={this.labelNameInvalid(label, index)}
                     id={'labelName' + index}
@@ -413,9 +412,7 @@ class EditLabelingModal extends Component {
                       this.onLabelNameChanged(index, e.target.value)
                     }
                   />
-                  <InputGroupAddon addonType="append">
                     <InputGroupText>Color</InputGroupText>
-                  </InputGroupAddon>
                   <Input
                     id={'labelColor' + index}
                     placeholder="Color"
@@ -435,7 +432,7 @@ class EditLabelingModal extends Component {
                       this.onLabelColorChanged(index, e.target.value)
                     }
                   />
-                  <InputGroupAddon addonType="append">
+                  <InputGroupText>
                     <Button
                       id={'buttonDeleteLabel' + index}
                       className="m-0 deleteBtnRadius"
@@ -447,7 +444,7 @@ class EditLabelingModal extends Component {
                     >
                       ✕
                     </Button>
-                  </InputGroupAddon>
+                  </InputGroupText>
                   <FormFeedback id="labelFeedback">
                     {!isValidColor(label.color)
                       ? 'Invalid color'

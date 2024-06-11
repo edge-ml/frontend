@@ -5,7 +5,7 @@ import {
   Button,
   Input,
   InputGroup,
-  InputGroupAddon,
+  InputGroupText,
   InputGroupText,
 } from 'reactstrap';
 import Select from 'react-select';

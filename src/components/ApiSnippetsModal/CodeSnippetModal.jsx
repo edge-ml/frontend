@@ -7,7 +7,7 @@ import {
   Button,
   InputGroup,
   Input,
-  InputGroupAddon,
+  InputGroupText,
   InputGroupText,
   FormGroup,
   Label,
@@ -65,9 +65,9 @@ class CodeSnippetModal extends Component {
         <ModalHeader>Generate code snippet</ModalHeader>
         <ModalBody>
           <InputGroup>
-            <InputGroupAddon addonType="prepend">
+            <InputGroupText>
               <InputGroupText>{'Dataset-name'}</InputGroupText>
-            </InputGroupAddon>
+            </InputGroupText>
             <Input
               id="inputProjectName"
               placeholder={'Dataset-name'}

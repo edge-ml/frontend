@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   CardBody,
   Form,
   FormGroup,
   Input,
   InputGroup,
-  InputGroupAddon,
-} from 'reactstrap';
+  InputGroupText,
+} from "reactstrap";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faCheck } from '@fortawesome/free-solid-svg-icons'; // Added faCheck icon
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen, faCheck } from "@fortawesome/free-solid-svg-icons"; // Added faCheck icon
 
-import { unixTimeToString } from '../../services/helpers';
-import './MetadataPanel.css';
+import { unixTimeToString } from "../../services/helpers";
+import "./MetadataPanel.css";
 
 class MetadataPanel extends Component {
   constructor(props) {
@@ -47,7 +47,7 @@ class MetadataPanel extends Component {
   async handleNameSave() {
     this.setState({ nameEditActive: false });
     const nameChangeSuccessful = await this.props.handleDatasetNameChange(
-      this.state.editedName,
+      this.state.editedName
     );
     if (nameChangeSuccessful) {
       this.setState({ datasetName: this.state.editedName });
@@ -65,7 +65,7 @@ class MetadataPanel extends Component {
             <div className="customMetaDataItem_key">Name</div>
             <div
               className={`customMetaDataItem_value ${
-                this.state.nameEditActive ? 'editing' : ''
+                this.state.nameEditActive ? "editing" : ""
               }`}
             >
               {this.state.nameEditActive ? (
@@ -78,14 +78,14 @@ class MetadataPanel extends Component {
                         value={this.state.editedName}
                         onChange={this.handleNameInput}
                       />
-                      <InputGroupAddon addonType="append">
+                      <InputGroupText>
                         <button
                           className="confirmDatasetNameButton"
                           onClick={this.handleNameSave}
                         >
                           <FontAwesomeIcon icon={faCheck} />
                         </button>
-                      </InputGroupAddon>
+                      </InputGroupText>
                     </InputGroup>
                   </FormGroup>
                 </Form>
@@ -103,16 +103,16 @@ class MetadataPanel extends Component {
             </div>
           </div>
           {this.metaDataItem(
-            'Start',
+            "Start",
             this.props.start !== undefined
               ? unixTimeToString(this.props.start)
-              : '',
+              : ""
           )}
           {this.metaDataItem(
-            'End',
-            this.props.end != undefined ? unixTimeToString(this.props.end) : '',
+            "End",
+            this.props.end != undefined ? unixTimeToString(this.props.end) : ""
           )}
-          {this.metaDataItem('User', this.props.user)}
+          {this.metaDataItem("User", this.props.user)}
         </div>
       </>
     );

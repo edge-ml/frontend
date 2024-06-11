@@ -3,7 +3,6 @@ import {
   Button,
   Input,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
 } from 'reactstrap';
 
@@ -59,9 +58,9 @@ class UserNameSettings extends Component {
       <div>
         <h4 className="font-weight-bold">Change UserName</h4>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText>
             <InputGroupText>Username</InputGroupText>
-          </InputGroupAddon>
+          </InputGroupText>
           <Input
             id="inputUserName"
             placeholder="New username"
@@ -69,9 +68,9 @@ class UserNameSettings extends Component {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText>
             <InputGroupText>Username</InputGroupText>
-          </InputGroupAddon>
+          </InputGroupText>
           <Input
             id="inputUserNameConfirm"
             placeholder="Retype new username"

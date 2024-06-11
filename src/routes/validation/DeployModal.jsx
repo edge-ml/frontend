@@ -9,10 +9,7 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
-  Input,
   UncontrolledDropdown,
-  FormGroup,
-  CustomInput,
   Progress,
   Spinner,
 } from 'reactstrap';

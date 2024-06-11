@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
+import { Input, InputGroup, InputGroupText } from 'reactstrap';
 import SpinnerButton from '../Common/SpinnerButton';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -50,9 +50,9 @@ function BlePanelRecorderSettings(props) {
       </div>
       <div className="body-wrapper p-3">
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText>
             <InputGroupText>{'Dataset name'}</InputGroupText>
-          </InputGroupAddon>
+          </InputGroupText>
           <Input
             id="bleDatasetName"
             placeholder={'dataset name'}
@@ -63,9 +63,9 @@ function BlePanelRecorderSettings(props) {
         </InputGroup>
         {/* TODO reenable this when sample rate issues have been resolved
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText>
             <InputGroupText>{'SampleRate'}</InputGroupText>
-          </InputGroupAddon>
+          </InputGroupText>
           <Input
             invalid={samplingRateError}
             id="bleSampleRate"

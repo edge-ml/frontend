@@ -1,4 +1,4 @@
-import { Input, ModalBody, InputGroup, InputGroupAddon } from 'reactstrap';
+import { Input, ModalBody, InputGroup } from 'reactstrap';
 import { Fragment } from 'react';
 
 const Select_Name = ({ modelName, setModelName, screen }) => {
@@ -6,7 +6,7 @@ const Select_Name = ({ modelName, setModelName, screen }) => {
     <div className="m-2">
       <h3 className="font-weight-bold">{screen + 1 + '. Model Metadata'}</h3>
       <InputGroup style={{ maxWidth: '350px' }}>
-        <InputGroupAddon addonType="prepend">Model Name</InputGroupAddon>
+        <InputGroupText>Model Name</InputGroupText>
         <Input
           type={'text'}
           value={modelName}

@@ -4,7 +4,6 @@ import {
   Row,
   Input,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
   Button,
   Card,
@@ -82,11 +81,11 @@ const RegisterPage = () => {
               <Col>
                 <Col>
                   <InputGroup>
-                    <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
                       <InputGroupText>
                         <FontAwesomeIcon icon={faEnvelope} />
                       </InputGroupText>
-                    </InputGroupAddon>
+                    </InputGroupText>
                     <Input
                       type="email"
                       name="email"
@@ -98,11 +97,11 @@ const RegisterPage = () => {
                 </Col>
                 <Col>
                   <InputGroup>
-                    <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
                       <InputGroupText>
                         <FontAwesomeIcon icon={faShield} />
                       </InputGroupText>
-                    </InputGroupAddon>
+                    </InputGroupText>
                     <Input
                       type="password"
                       name="password"
@@ -114,11 +113,11 @@ const RegisterPage = () => {
                 </Col>
                 <Col>
                   <InputGroup>
-                    <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
                       <InputGroupText>
                         <FontAwesomeIcon icon={faShield} />
                       </InputGroupText>
-                    </InputGroupAddon>
+                    </InputGroupText>
                     <Input
                       type="password"
                       name="passwordRepeat"
@@ -130,11 +129,11 @@ const RegisterPage = () => {
                 </Col>
                 <Col>
                   <InputGroup>
-                    <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
                       <InputGroupText>
                         <FontAwesomeIcon icon={faUser} />
                       </InputGroupText>
-                    </InputGroupAddon>
+                    </InputGroupText>
                     <Input
                       type="text"
                       name="username"

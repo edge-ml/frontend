@@ -5,7 +5,7 @@ import {
   Row,
   Input,
   InputGroup,
-  InputGroupAddon,
+  InputGroupText,
   InputGroupText,
   Button,
   Card,
@@ -289,13 +289,13 @@ class LoginPage extends Component {
                       <Col>
                         <Col>
                           <InputGroup>
-                            <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
                               <InputGroupText style={{ background: '#ced4da' }}>
                                 <FontAwesomeIcon
                                   icon={faUser}
                                 ></FontAwesomeIcon>
                               </InputGroupText>
-                            </InputGroupAddon>
+                            </InputGroupText>
 
                             <Input
                               type="email"
@@ -309,13 +309,13 @@ class LoginPage extends Component {
                         </Col>
                         <Col>
                           <InputGroup>
-                            <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
                               <InputGroupText style={{ background: '#ced4da' }}>
                                 <FontAwesomeIcon
                                   icon={faShield}
                                 ></FontAwesomeIcon>
                               </InputGroupText>
-                            </InputGroupAddon>
+                            </InputGroupText>
                             <Input
                               type="password"
                               name="password"

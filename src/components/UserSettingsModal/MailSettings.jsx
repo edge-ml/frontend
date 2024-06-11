@@ -3,7 +3,6 @@ import {
   Button,
   Input,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
 } from 'reactstrap';
 
@@ -62,9 +61,9 @@ class MailSettings extends Component {
       <div>
         <h4 className="font-weight-bold">Change Mail</h4>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText>
             <InputGroupText>E-Mail</InputGroupText>
-          </InputGroupAddon>
+          </InputGroupText>
           <Input
             id="inputNewMail"
             placeholder="New e-mail"
@@ -72,9 +71,9 @@ class MailSettings extends Component {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText>
             <InputGroupText>E-Mail</InputGroupText>
-          </InputGroupAddon>
+          </InputGroupText>
           <Input
             id="inputNewMailConfirm"
             placeholder="Retype new e-mail"

@@ -4,7 +4,7 @@ import Select from 'react-select';
 import {
   Button,
   InputGroup,
-  InputGroupAddon,
+  InputGroupText,
   Input,
   FormFeedback,
   Card,
@@ -48,7 +48,7 @@ export const ClassifierView = ({
       </CardHeader>
       <CardBody className="h-100 d-flex flex-column align-items-start flex-column justify-content-between">
         <InputGroup style={{ maxWidth: '350px' }}>
-          <InputGroupAddon addonType="prepend">Model Name</InputGroupAddon>
+          <InputGroupText>Model Name</InputGroupText>
           <Input
             type={'text'}
             value={modelName}

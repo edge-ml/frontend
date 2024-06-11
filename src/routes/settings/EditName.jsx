@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import {
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
   Input,
   Container,
@@ -20,9 +19,9 @@ const EditName = () => {
   return (
     <Container>
       <InputGroup>
-        <InputGroupAddon addonType="prepend">
+        <InputGroupText>
           <InputGroupText>{'Name'}</InputGroupText>
-        </InputGroupAddon>
+        </InputGroupText>
         <Input
           id="projectName"
           readOnly={false}
@@ -41,9 +40,9 @@ const EditName = () => {
         </div>
       </InputGroup>
       <InputGroup>
-        <InputGroupAddon addonType="prepend">
+        <InputGroupText>
           <InputGroupText>{'Admin'}</InputGroupText>
-        </InputGroupAddon>
+        </InputGroupText>
         <Input value={currentProject.admin.userName} readOnly />
       </InputGroup>
     </Container>

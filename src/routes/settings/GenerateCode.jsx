@@ -2,12 +2,10 @@ import React, { useContext } from 'react';
 import {
   Container,
   FormGroup,
-  CustomInput,
   InputGroup,
-  InputGroupAddon,
+  InputGroupText,
   Input,
   Button,
-  InputGroupText,
 } from 'reactstrap';
 import { ProjectContext } from '../../ProjectProvider';
 import useDeviceApi from '../../Hooks/useDeviceAPI';
@@ -22,7 +20,7 @@ const GenerateCode = (props) => {
         <div>Device-API</div>
         {currentProject.users ? (
           <FormGroup style={{ margin: 0 }}>
-            <CustomInput
+            <Input
               className="ml-2"
               inline
               type="switch"
@@ -36,24 +34,24 @@ const GenerateCode = (props) => {
       {currentProject.enableDeviceApi || currentProject.users ? (
         <div>
           <InputGroup>
-            <InputGroupAddon addonType="prepend">
+            <InputGroupText>
               <InputGroupText>{'Backend-URL'}</InputGroupText>
-            </InputGroupAddon>
+            </InputGroupText>
             <Input value={props.backendUrl} readOnly />
           </InputGroup>
           <InputGroup>
-            <InputGroupAddon addonType="prepend">
+            <InputGroupText>
               <InputGroupText>{'Read Key'}</InputGroupText>
-            </InputGroupAddon>
+            </InputGroupText>
             <Input
               value={readKey ? readKey : 'Device-API is disabled for your user'}
               readOnly
             />
           </InputGroup>
           <InputGroup>
-            <InputGroupAddon addonType="prepend">
+            <InputGroupText>
               <InputGroupText>{'Write Key'}</InputGroupText>
-            </InputGroupAddon>
+            </InputGroupText>
             <Input
               value={
                 writeKey ? writeKey : 'Device-API is disabled for your user'

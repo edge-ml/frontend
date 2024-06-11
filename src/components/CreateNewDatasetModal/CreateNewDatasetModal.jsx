@@ -9,7 +9,7 @@ import {
   Input,
   Table,
   InputGroup,
-  InputGroupAddon,
+  InputGroupText,
   InputGroupText,
 } from 'reactstrap';
 import DragDrop from '../Common/DragDrop';
@@ -305,11 +305,11 @@ class CreateNewDatasetModal extends Component {
                           <tr>
                             <th colSpan="2" style={{ padding: '0 12px 0 0' }}>
                               <InputGroup size="md">
-                                <InputGroupAddon addonType="prepend">
+                                <InputGroupText>
                                   <InputGroupText>
                                     <b>Dataset-name</b>
                                   </InputGroupText>
-                                </InputGroupAddon>
+                                </InputGroupText>
                                 <Input
                                   className="font-weight-bold"
                                   id={'datasetName' + String(fileIndex)}
@@ -358,9 +358,9 @@ class CreateNewDatasetModal extends Component {
                                       }}
                                     >
                                       <InputGroup size="sm">
-                                        <InputGroupAddon addonType="prepend">
+                                        <InputGroupText>
                                           <InputGroupText>name</InputGroupText>
-                                        </InputGroupAddon>
+                                        </InputGroupText>
                                         <Input
                                           id={
                                             'nameInput' +
@@ -391,9 +391,9 @@ class CreateNewDatasetModal extends Component {
                                       }}
                                     >
                                       <InputGroup size="sm">
-                                        <InputGroupAddon addonType="prepend">
+                                        <InputGroupText>
                                           <InputGroupText>Unit</InputGroupText>
-                                        </InputGroupAddon>
+                                        </InputGroupText>
                                         <Input
                                           id={
                                             'unitInput' +

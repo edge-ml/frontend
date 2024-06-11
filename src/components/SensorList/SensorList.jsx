@@ -1,4 +1,4 @@
-import { Badge, Table, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { Badge, Table, Input, InputGroup, InputGroupText } from 'reactstrap';
 import {
   useBootstrapMDBreakpoint,
   usePersistedState,
@@ -80,7 +80,7 @@ export const SensorList = ({
                   min={0}
                   max={50}
                 ></Input>{' '}
-                <InputGroupAddon addonType="append">Hz</InputGroupAddon>
+                <InputGroupText>Hz</InputGroupText>
               </InputGroup>
             );
 

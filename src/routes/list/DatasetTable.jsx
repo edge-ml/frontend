@@ -15,7 +15,7 @@ const DatasetTable = (props) => {
   return (
     <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2">
       <Fragment>
-        <div className="w-100 d-flex flex-row justify-content-center align-items-center">
+        <div className="w-100 d-flex justify-content-between">
           <div className="font-weight-bold h4">DATASETS</div>
           <Button
             id="downloadAllDatasetsButton"

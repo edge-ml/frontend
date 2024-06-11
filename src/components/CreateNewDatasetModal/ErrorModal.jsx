@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Input,
   InputGroup,
-  InputGroupAddon,
+  InputGroupText,
   InputGroupText,
   FormFeedback,
   Modal,

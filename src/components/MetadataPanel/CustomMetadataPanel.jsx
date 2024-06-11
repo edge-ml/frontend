@@ -1,14 +1,6 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import {
-  Card,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Input,
-  CardBody,
-  CardHeader,
   Button,
-  CardFooter,
 } from 'reactstrap';
 import MetaDataEditModal from './MetaDataEditModal';
 import './MetadataPanel.css';

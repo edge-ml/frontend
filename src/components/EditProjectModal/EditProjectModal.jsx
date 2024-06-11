@@ -6,7 +6,6 @@ import {
   ModalFooter,
   Button,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
   Input,
   Table,
@@ -36,9 +35,9 @@ const EditProjectModal = ({ isOpen, onClose }) => {
       <ModalHeader>Create new Project</ModalHeader>
       <ModalBody>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText>
             <InputGroupText>{'Name'}</InputGroupText>
-          </InputGroupAddon>
+          </InputGroupText>
           <Input
             id="inputProjectName"
             placeholder={'Project-name'}
@@ -47,9 +46,9 @@ const EditProjectModal = ({ isOpen, onClose }) => {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupAddon addonType="prepend">
+          <InputGroupText>
             <InputGroupText>{'Admin'}</InputGroupText>
-          </InputGroupAddon>
+          </InputGroupText>
           <Input
             readOnly
             id="inputProjectAdmin"

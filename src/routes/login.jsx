@@ -4,7 +4,6 @@ import {
   CardHeader,
   Input,
   InputGroup,
-  InputGroupAddon,
   InputGroupText,
   Button,
   CardBody,
@@ -68,11 +67,11 @@ const LoginPage = ({ children }) => {
           <CardBody>
             <Form>
               <InputGroup>
-                <InputGroupAddon addonType="prepend">
+                <InputGroupText>
                   <InputGroupText style={{ background: '#ced4da' }}>
                     <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
                   </InputGroupText>
-                </InputGroupAddon>
+                </InputGroupText>
 
                 <Input
                   type="email"
@@ -84,11 +83,11 @@ const LoginPage = ({ children }) => {
                 />
               </InputGroup>
               <InputGroup>
-                <InputGroupAddon addonType="prepend">
+                <InputGroupText>
                   <InputGroupText style={{ background: '#ced4da' }}>
                     <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
                   </InputGroupText>
-                </InputGroupAddon>
+                </InputGroupText>
                 <Input
                   type="password"
                   name="password"
