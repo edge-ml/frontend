@@ -35,9 +35,7 @@ const EditProjectModal = ({ isOpen, onClose }) => {
       <ModalHeader>Create new Project</ModalHeader>
       <ModalBody>
         <InputGroup>
-          <InputGroupText>
             <InputGroupText>{'Name'}</InputGroupText>
-          </InputGroupText>
           <Input
             id="inputProjectName"
             placeholder={'Project-name'}
@@ -46,11 +44,9 @@ const EditProjectModal = ({ isOpen, onClose }) => {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupText>
             <InputGroupText>{'Admin'}</InputGroupText>
-          </InputGroupText>
           <Input
-            readOnly
+            disabled
             id="inputProjectAdmin"
             placeholder={'Project-admin'}
             value={project.admin.name + ' (' + project.admin.mail + ')'}

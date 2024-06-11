@@ -51,12 +51,12 @@ const Labelings = (props) => {
     .filter((elm) => elm !== undefined);
 
   return (
-    <div className="mt-1 ml-4 p-lg-0 m-lg-0">
-      <Row className="pl-1 ml-1 p-lg-0 m-lg-0 ">
+    <div className="mt-1 ms-4 p-lg-0 m-lg-0">
+      <Row className="ps-1 ms-1 p-lg-0 m-lg-0 ">
         <Col>
           {labelings.map((labeling, idx) => (
             <Badge
-              className="mr-2 badgeSize badgeLabelings pb-2 mt-2 mb-2"
+              className="me-2 badgeSize badgeLabelings pb-2 mt-2 mb-2"
               key={labeling + idx}
             >
               <div className="labelingBadgeWrapper">
@@ -97,15 +97,15 @@ const Metadata = (props) => {
   return (
     <div>
       <Row>
-        <Col className="col-auto pr-0">
-          <div className="mt-2 d-inline font-weight-bold">Metadata: </div>
+        <Col className="col-auto pe-0">
+          <div className="mt-2 d-inline fw-bold">Metadata: </div>
         </Col>
         <Col>
           <div className="d-inline">
             {Object.keys(dataset.metaData).map((key, idx) => {
               const value = dataset.metaData[key];
               return (
-                <Badge className="mr-2 badgeSize" color="primary">
+                <Badge className="me-2 badgeSize" color="primary">
                   <b>{key}: </b>
                   {value}
                 </Badge>
@@ -143,7 +143,7 @@ const DatasetInfo = (props) => {
     .every((elm) => elm === 0 || elm === null);
   return (
     <div className="text-left d-inline-block m-2">
-      <div className="font-weight-bold font-size-lg h5 d-inline">
+      <div className="fw-bold font-size-lg h5 d-inline">
         {dataset.name}
       </div>
       {!empty ? (
@@ -169,7 +169,7 @@ const DatasetInfo = (props) => {
               icon={faExclamationTriangle}
             ></FontAwesomeIcon>
           </div>
-          <div className="text-left d-inline ml-1">Dataset is empty</div>
+          <div className="text-left d-inline ms-1">Dataset is empty</div>
         </div>
       )}
     </div>
@@ -215,7 +215,7 @@ const DatasetTableEntry = (props) => {
         }}
       >
         <div className="d-flex">
-          <div className="d-flex align-items-center p-2 ml-2 mr-0 ml-md-3 mr-md-3">
+          <div className="d-flex align-items-center p-2 ms-2 me-0 ml-md-3 me-md-3">
             <Checkbox
               isSelected={props.isSelected}
               className="d-inline-block"
@@ -238,21 +238,21 @@ const DatasetTableEntry = (props) => {
               </Col>
               <Col className="col-2 ">
                 <div className="d-flex justify-content-end align-items-center h-100">
-                  <div className="d-block d-lg-none mr-2">
+                  <div className="d-block d-lg-none me-2">
                     <ExpandButton
                       isOpen={isOpen}
                       setOpen={setOpen}
                     ></ExpandButton>
                   </div>
                   <Button
-                    className="btn-delete mr-2"
+                    className="btn-delete me-2"
                     onClick={() => props.deleteEntry(dataset._id)}
                   >
                     <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
                   </Button>
                   <Button
                     color="secondary"
-                    className="btn-edit mr-3 mr-md-4"
+                    className="btn-edit me-3 me-md-4"
                     onClick={() => navigate(`Datasets/${dataset._id}`)}
                   >
                     <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>

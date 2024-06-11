@@ -70,7 +70,7 @@ const NavbarUserSettings = () => {
             borderRadius: '13px',
             overflow: 'hidden',
           }}
-          className="mr-2 d-flex justify-content-center align-items-center"
+          className="me-2 d-flex justify-content-center align-items-center"
         >
           <FontAwesomeIcon
             icon={faUser}

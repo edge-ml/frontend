@@ -92,7 +92,7 @@ function BlePanelRecorderSettings(props) {
           }}
         >
           <SpinnerButton
-            className="mr-2"
+            className="me-2"
             outline
             style={
               buttonErrorAnimate
@@ -130,7 +130,7 @@ function BlePanelRecorderSettings(props) {
                   className="stream-check"
                   id="stream-check"
                 />
-                <div className="ml-2">Disable sensor streaming</div>
+                <div className="ms-2">Disable sensor streaming</div>
               </div>
               <div className="d-flex flex-row mt-2">
                 <Checkbox
@@ -138,7 +138,7 @@ function BlePanelRecorderSettings(props) {
                   className="sampleRate-check"
                   id="sampleRate-check"
                 />
-                <div className="ml-2">
+                <div className="ms-2">
                   Show sensor data at full sampling rate
                 </div>
               </div>

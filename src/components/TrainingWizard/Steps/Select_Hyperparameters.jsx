@@ -51,7 +51,7 @@ const Wizard_Hyperparameters = ({
 
   return (
     <Fragment>
-      <h3 className="font-weight-bold">3. Select Classifier</h3>
+      <h3 className="fw-bold">3. Select Classifier</h3>
       <Dropdown isOpen={dropdownOpen} toggle={toggle}>
         <DropdownToggle caret size="lg">
           {classifier[classififier_index].name}
@@ -71,7 +71,7 @@ const Wizard_Hyperparameters = ({
       </Dropdown>
       <div>
         <div className="w-100 align-items-center mb-2">
-          <div className="font-weight-bold h5 justify-self-start">
+          <div className="fw-bold h5 justify-self-start">
             Hyperparameters
           </div>
         </div>
@@ -93,7 +93,7 @@ const Wizard_Hyperparameters = ({
           <Fragment>
             <div className="advancedHeading">
               <div className="w-100 align-items-center mb-2">
-                <div className="font-weight-bold h5 justify-self-start">
+                <div className="fw-bold h5 justify-self-start">
                   Advanced Hyperparameters
                 </div>
                 <div

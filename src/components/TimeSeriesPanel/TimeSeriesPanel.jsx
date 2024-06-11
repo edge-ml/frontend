@@ -846,7 +846,7 @@ class TimeSeriesPanel extends Component {
           onMouseDown={this.onMouseDown}
         >
           {this.props.index !== 0 ? (
-            <div className="font-weight-bold d-flex">
+            <div className="fw-bold d-flex">
               {this.props.name +
                 ' (' +
                 (this.props.unit ? this.props.unit : 'No unit') +

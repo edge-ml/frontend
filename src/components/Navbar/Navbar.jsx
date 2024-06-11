@@ -62,6 +62,7 @@ const Navbar = () => {
 
         <div
           onClick={() => onProjectEditModal(true)}
+          id="btn-add-project"
           className="w-100 mt-3 pt-2 pb-2 navbar-project text-center"
           style={{
             backgroundColor: '#eee',
@@ -74,7 +75,7 @@ const Navbar = () => {
           <FontAwesomeIcon
             id="btnAddProject"
             icon={faPlus}
-            className="fa-s mr-1"
+            className="fa-s me-1"
           />
           Add Project
         </div>
@@ -88,7 +89,7 @@ const Navbar = () => {
             onClick={toggleNotificationModal}
           >
             <small>
-              <FontAwesomeIcon icon={faDownload} className="mr-2" />
+              <FontAwesomeIcon icon={faDownload} className="me-2" />
               {`${activeNotifications.length} ${
                 activeNotifications.length > 1
                   ? 'Notifications'

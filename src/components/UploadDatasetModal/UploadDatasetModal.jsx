@@ -463,12 +463,12 @@ export const UploadDatasetModal = ({
                   key={f.id}
                   className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11"
                 >
-                  <div className="d-flex flex-column align-items-center mr-2 ml-2 mt-2 col-lg-2">
+                  <div className="d-flex flex-column align-items-center me-2 ms-2 mt-2 col-lg-2">
                     <FontAwesomeIcon icon={faFile} size="3x" />
                     <span className="text-center">{f.name}</span>
                   </div>
                   <Progress
-                    className="w-75 mr-1 flex-shrink-0" //remove shrink and set w-100 to align the second button otherwise
+                    className="w-75 me-1 flex-shrink-0" //remove shrink and set w-100 to align the second button otherwise
                     striped
                     id={`progress-bar-${f.id}`}
                     value={f.progress}
@@ -495,7 +495,7 @@ export const UploadDatasetModal = ({
                     {f.status === FileStatus.COMPLETE && (
                       <Button
                         close
-                        className="modal-icon-button mr-2"
+                        className="modal-icon-button me-2"
                         onClick={() => handleDelete(f.id)}
                       >
                         <FontAwesomeIcon
@@ -507,7 +507,7 @@ export const UploadDatasetModal = ({
                     )}
                     {f.status === FileStatus.CONFIGURATION && (
                       <div className="d-flex">
-                        <Button close className="modal-icon-button mr-1">
+                        <Button close className="modal-icon-button me-1">
                           <FontAwesomeIcon
                             icon={faCog}
                             title="Opens configuration menu"
@@ -523,7 +523,7 @@ export const UploadDatasetModal = ({
                         <Button
                           close
                           title="Removes item from list"
-                          className="modal-icon-button mr-2"
+                          className="modal-icon-button me-2"
                           onClick={(e) => handleDelete(f.id)}
                         >
                           <FontAwesomeIcon
@@ -537,7 +537,7 @@ export const UploadDatasetModal = ({
                       <Button
                         close
                         title="Cancels ongoing upload"
-                        className="modal-icon-button mr-2"
+                        className="modal-icon-button me-2"
                       >
                         <FontAwesomeIcon
                           icon={faBan}
@@ -551,7 +551,7 @@ export const UploadDatasetModal = ({
                         <Button
                           close
                           title="Removes item from list"
-                          className="modal-icon-button mr-2"
+                          className="modal-icon-button me-2"
                           onClick={(e) => handleDelete(f.id)}
                         >
                           <FontAwesomeIcon
@@ -565,7 +565,7 @@ export const UploadDatasetModal = ({
                         spin
                         size="2x"
                         style={{ marginLeft: '1px' }}
-                        className="mr-2"
+                        className="me-2"
                         icon={faSpinner}
                       />
                     )}

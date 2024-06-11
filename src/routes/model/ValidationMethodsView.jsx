@@ -99,7 +99,7 @@ const LOSO = ({
       <div>
         {Object.entries(customMetaData.metaDataKeyFrequency).map(
           ([key, freq]) => (
-            <Badge pill className="mr-1">{`${key} (${freq})`}</Badge>
+            <Badge pill className="me-1">{`${key} (${freq})`}</Badge>
           ),
         )}
       </div>

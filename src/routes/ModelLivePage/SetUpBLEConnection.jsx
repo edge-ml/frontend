@@ -49,7 +49,7 @@ const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
     <div className="w-100 h-100 d-flex justify-content-center">
       <div className="m-5 w-100 d-flex justify-content-center align-items-center flex-column">
         <div className="w-75 m-5 d-flex flex-column align-items-center">
-          <h5 className="font-weight-bold">1. Select the correct UUIDs</h5>
+          <h5 className="fw-bold">1. Select the correct UUIDs</h5>
           <InputGroup>
             <InputGroupText>Service UUID</InputGroupText>
             <Input
@@ -69,11 +69,11 @@ const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
             />
           </InputGroup>
         </div>
-        <h5 className="m-5 font-weight-bold">
+        <h5 className="m-5 fw-bold">
           2. Make sure your MCU is equipped with the model <b>{model.name}</b>
         </h5>
         <div className="m-5 d-flex flex-column align-items-center">
-          <h5 className="font-weight-bold">
+          <h5 className="fw-bold">
             3. Connect your MCU over BLE here:
           </h5>
           <Button className="btn-neutral" size="lg" onClick={onClickConnect}>

@@ -21,7 +21,7 @@ const GenerateCode = (props) => {
         {currentProject.users ? (
           <FormGroup style={{ margin: 0 }}>
             <Input
-              className="ml-2"
+              className="ms-2"
               inline
               type="switch"
               id="exampleCustomSwitch"

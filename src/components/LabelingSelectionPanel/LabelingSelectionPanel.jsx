@@ -80,7 +80,7 @@ const LabelingSelectionPanel = () => {
         <Dropdown
           isOpen={isTSDropdownOpen}
           toggle={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
-          className="mr-2"
+          className="me-2"
         >
           <DropdownToggle
             caret
@@ -108,7 +108,7 @@ const LabelingSelectionPanel = () => {
                           isSelected={selectedTs.includes(elm._id)}
                           onClick={() => console.log('click checkbox')}
                         ></Checkbox>
-                        <div className="ml-2">{elm.name}</div>
+                        <div className="ms-2">{elm.name}</div>
                       </div>
                     </div>
                   </DropdownItem>
@@ -155,7 +155,7 @@ const LabelingSelectionPanel = () => {
                 ))}
                 <DropdownItem divider></DropdownItem>
                 <DropdownItem
-                  className="font-weight-bold"
+                  className="fw-bold"
                   onClick={() => navigate('labelings/new')}
                 >
                   + Add Labeling Set

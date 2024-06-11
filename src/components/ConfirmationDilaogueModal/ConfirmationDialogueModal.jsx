@@ -57,7 +57,7 @@ class ConfirmationDialogueModal extends Component {
               <Button
                 outline
                 color="secondary"
-                className="m-1 mr-auto"
+                className="m-1 me-auto"
                 onClick={this.props.onCancel}
               >
                 Cancel

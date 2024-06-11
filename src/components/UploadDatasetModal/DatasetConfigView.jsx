@@ -58,7 +58,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                   </InputGroupText>
                 </InputGroupText>
                 <Input
-                  className="font-weight-bold"
+                  className="fw-bold"
                   id={'datasetName' + String(0)}
                   type="text"
                   placeholder="Name"

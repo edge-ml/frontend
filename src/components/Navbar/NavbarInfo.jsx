@@ -17,7 +17,7 @@ const NavbarInfo = () => {
         }
       >
         <small>
-          <FontAwesomeIcon icon={faGithub} className="mr-2" />
+          <FontAwesomeIcon icon={faGithub} className="me-2" />
           Report a bug
         </small>
       </div>
@@ -28,7 +28,7 @@ const NavbarInfo = () => {
         }
       >
         <small>
-          <FontAwesomeIcon icon={faLightbulb} className="mr-2" />
+          <FontAwesomeIcon icon={faLightbulb} className="me-2" />
           Documentation
         </small>
       </div>

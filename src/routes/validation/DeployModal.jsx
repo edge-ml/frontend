@@ -322,7 +322,7 @@ const DeployModal = ({ model, onClose }) => {
         {page === 0 ? (
           <div>
             <div className="d-flex justify-content-start align-items-center">
-              <h5 className="font-weight-bold m-0 mr-2">1. Select Device: </h5>
+              <h5 className="fw-bold m-0 me-2">1. Select Device: </h5>
               <Dropdown
                 isOpen={deviceDropDownOpen}
                 toggle={toggleDeviceDropDown}
@@ -340,9 +340,9 @@ const DeployModal = ({ model, onClose }) => {
               </Dropdown>
             </div>
             <hr></hr>
-            <h5 className="font-weight-bold">2. Configure Device:</h5>
+            <h5 className="fw-bold">2. Configure Device:</h5>
             <div className="d-flex">
-              <div className="my-4 ml-2 mr-4" style={{ width: '500px' }}>
+              <div className="my-4 ms-2 me-4" style={{ width: '500px' }}>
                 <div className="header-wrapper d-flex justify-content-center align-content-center">
                   <b>Configure TimeSeries</b>
                 </div>
@@ -356,7 +356,7 @@ const DeployModal = ({ model, onClose }) => {
                       }}
                     >
                       <div className="d-flex align-items-center justify-content-between">
-                        <strong className="pl-2">{elm}</strong>
+                        <strong className="ps-2">{elm}</strong>
                         <UncontrolledDropdown
                           direction="left"
                           style={{ position: 'relative' }}
@@ -406,7 +406,7 @@ const DeployModal = ({ model, onClose }) => {
             </div>
             <hr></hr>
             <div className="m-2">
-              <h5 className="font-weight-bold">3. Additional Settings:</h5>
+              <h5 className="fw-bold">3. Additional Settings:</h5>
               <HyperparameterView
                 hyperparameters={parameters}
                 isAdvanced={false}
@@ -414,7 +414,7 @@ const DeployModal = ({ model, onClose }) => {
               ></HyperparameterView>
             </div>
             {flashError ? (
-              <div className="d-flex flex-row ml-2">
+              <div className="d-flex flex-row ms-2">
                 <div>
                   <FontAwesomeIcon icon={faCircleExclamation} color="red" />
                 </div>

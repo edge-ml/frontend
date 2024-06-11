@@ -43,7 +43,7 @@ const Wizard_SelectLabeling = ({
 
   return (
     <div className="p-2">
-      <h3 className="font-weight-bold">1. Select Labeling</h3>
+      <h3 className="fw-bold">1. Select Labeling</h3>
       <EdgeMLTable>
         <EdgeMLTableHeader>
           <div>
@@ -56,7 +56,7 @@ const Wizard_SelectLabeling = ({
               onClick={() => toggleZeroClass(!zeroClass)}
               isSelected={zeroClass}
             ></Checkbox>
-            <div className="ml-2">Use 0-Class</div>
+            <div className="ms-2">Use 0-Class</div>
           </div>
         </EdgeMLTableHeader>
         {labelings

@@ -47,7 +47,7 @@ const SelectEvaluation = ({
 
   return (
     <Fragment>
-      <h3 className="font-weight-bold">7. Select Evaluation Strategy</h3>
+      <h3 className="fw-bold">7. Select Evaluation Strategy</h3>
       <Dropdown
         isOpen={dropDownOpen}
         toggle={() => setDropDownOpen(!dropDownOpen)}
@@ -84,7 +84,7 @@ export const HyperparameterView = ({
           hyperparameters.map((h) => {
             if (h.parameter_type === 'number') {
               return (
-                <Col className="col-md-6 col-12 pl-0">
+                <Col className="col-md-6 col-12 ps-0">
                   <NumberHyperparameter
                     {...h}
                     id={'input_' + h.parameter_name}
@@ -95,7 +95,7 @@ export const HyperparameterView = ({
               );
             } else if (h.parameter_type === 'selection') {
               return (
-                <Col className="col-md-6 col-12 pl-0">
+                <Col className="col-md-6 col-12 ps-0">
                   <SelectionHyperparameter
                     {...h}
                     id={'input_' + h.parameter_name}

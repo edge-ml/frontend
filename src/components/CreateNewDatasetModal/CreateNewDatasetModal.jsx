@@ -311,7 +311,7 @@ class CreateNewDatasetModal extends Component {
                                   </InputGroupText>
                                 </InputGroupText>
                                 <Input
-                                  className="font-weight-bold"
+                                  className="fw-bold"
                                   id={'datasetName' + String(fileIndex)}
                                   type="text"
                                   placeholder="Name"
@@ -506,7 +506,7 @@ class CreateNewDatasetModal extends Component {
             <Button
               id="cancelButton"
               color="secondary"
-              className="m-1 mr-auto"
+              className="m-1 me-auto"
               onClick={this.onCloseModal}
             >
               Cancel

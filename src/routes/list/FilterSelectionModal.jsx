@@ -66,7 +66,7 @@ const FilterSelectionModal = ({
         <ModalHeader>Filter Selection</ModalHeader>
         <ModalBody>
           <div>
-            <FormGroup className="ml-3 d-flex flex-column justify-content-center">
+            <FormGroup className="ms-3 d-flex flex-column justify-content-center">
               <Label>Select a filter:</Label>
               {filters.map((filter) => (
                 <div key={filter.value}>

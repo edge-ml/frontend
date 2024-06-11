@@ -1,35 +1,28 @@
-import React, { Component, useContext } from 'react';
-import { Container, Col, Row, Table, Badge, Button } from 'reactstrap';
-import Loader from '../../modules/loader';
-import EditLabelingModal from '../../components/EditLabelingModal/EditLabelingModal';
-import { getDatasets } from '../../services/ApiServices/DatasetServices';
-import {
-  updateLabelingandLabels,
-  subscribeLabelingsAndLabels,
-  addLabeling,
-  deleteLabeling,
-  deleteMultipleLabelings,
-} from '../../services/ApiServices/LabelingServices';
-import LabelingTable from './LabelingTable';
-import ConfirmationDialogueModal from '../../components/ConfirmationDilaogueModal/ConfirmationDialogueModal';
-import useLabelings from '../../Hooks/useLabelings';
-import { ProjectContext } from '../../ProjectProvider';
-import Page from '../../components/Common/Page';
+import React, { useContext, useState } from "react";
+import { Container, Button } from "reactstrap";
+import Loader from "../../modules/loader";
+import EditLabelingModal from "../../components/EditLabelingModal/EditLabelingModal";
+import LabelingTable from "./LabelingTable";
+import useLabelings from "../../Hooks/useLabelings";
+import { ProjectContext } from "../../ProjectProvider";
+import Page from "../../components/Common/Page";
 
 const Labelings = () => {
   const { currentProject } = useContext(ProjectContext);
   const { labelings } = useLabelings(currentProject);
 
-  const onModalAddLabeling = () => {};
+  const [editModalOpen, setEditModalOpen] = useState(false);
+
+  const onModalAddLabeling = () => {
+    setEditModalOpen(true)
+  };
 
   return (
     <Loader loading={!labelings}>
       <Page
         header={
           <>
-            <div className="font-weight-bold h4 justify-self-start">
-              LABELING SETS
-            </div>
+            <div className="fw-bold h4 justify-self-start">LABELING SETS</div>
             <div className="justify-content-end">
               <Button
                 outline
@@ -47,6 +40,9 @@ const Labelings = () => {
           selectedLabelings={[]}
         ></LabelingTable>
       </Page>
+      {/* <EditLabelingModal
+        isOpen={editModalOpen}
+      ></EditLabelingModal> */}
     </Loader>
   );
 
@@ -75,20 +71,26 @@ const Labelings = () => {
             >
             </EditLabelingModal> */}
 
-      {/* {this.state.modal.isOpen ? (
-                <EditLabelingModal
-                    datasets={this.state.datasets}
-                    labeling={this.state.modal.labeling}
-                    labelings={this.state.labelings}
-                    labels={this.state.modal.labels}
-                    isOpen={this.state.modal.isOpen}
-                    onCloseModal={this.onCloseModal}
-                    onDeleteLabeling={this.onDeleteLabeling}
-                    onSave={this.onSave}
-                    isNewLabeling={this.state.modal.isNewLabeling}
-                    getConfirmStringLabelingSet={this.getConfirmStringLabelingSet}
-                />
-            ) : null} */}
+        <EditLabelingModal
+          isOpen={true}
+        >
+          
+        </EditLabelingModal>
+
+
+      {/* <EditLabelingModal
+        datasets={this.state.datasets}
+        labeling={this.state.modal.labeling}
+        labelings={this.state.labelings}
+        labels={this.state.modal.labels}
+        isOpen={editModalOpen}
+        onCloseModal={this.onCloseModal}
+        onDeleteLabeling={this.onDeleteLabeling}
+        onSave={this.onSave}
+        isNewLabeling={this.state.modal.isNewLabeling}
+        getConfirmStringLabelingSet={this.getConfirmStringLabelingSet}
+      /> */}
+
       {/* {this.state.confirmationDialogueModal.isOpen ? (
                 <ConfirmationDialogueModal
                     isOpen={this.state.confirmationDialogueModal.isOpen}

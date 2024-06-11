@@ -26,7 +26,7 @@ const PageSizeInput = ({ pageSize, setPageSize }) => {
   };
 
   return (
-    <div className="mr-2">
+    <div className="me-2">
       <FormGroup>
         <Input
           type="number"

@@ -7,7 +7,7 @@ const FileList = ({ file }) => {
   return (
     <div className="d-flex justify-content-between m-3 align-items-center">
       <div>
-        <div className="font-weight-bold">{file.name}</div>
+        <div className="fw-bold">{file.name}</div>
       </div>
       <div>
         <Button>

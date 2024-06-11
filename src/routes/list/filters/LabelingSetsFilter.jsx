@@ -86,7 +86,7 @@ const LabelingSetsFilter = ({
       return null;
     } else {
       return (
-        <div className="d-flex flex-row mr-2 badgeSize pb-2">
+        <div className="d-flex flex-row me-2 badgeSize pb-2">
           {labels.map((label, index) => {
             return (
               <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -126,13 +126,13 @@ const LabelingSetsFilter = ({
           {labelings.map((labeling, index) => (
             <ListGroupItem key={index}>
               <div className="d-flex flex-row">
-                <div className="d-flex align-items-center mr-2">
+                <div className="d-flex align-items-center me-2">
                   <Checkbox
                     isSelected={isSelectedLabeling(labeling._id)}
                     className="d-inline-block"
                     onClick={() => onSelectLabelingSet(labeling)}
                   ></Checkbox>
-                  <div className="ml-2">
+                  <div className="ms-2">
                     <b>{labeling.name}</b>
                   </div>
                 </div>

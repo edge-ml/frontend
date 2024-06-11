@@ -18,7 +18,7 @@ const LabelingTableEntry = ({
 
   return (
     <EdgeMLTableEntry key={'labeling' + labeling._id}>
-      <div className="d-flex align-items-center p-2 ml-2 mr-0 ml-md-3 mr-md-3">
+      <div className="d-flex align-items-center p-2 ms-2 me-0 ml-md-3 me-md-3">
         <Checkbox
           isSelected={isSelected}
           className="d-inline-block"
@@ -31,7 +31,7 @@ const LabelingTableEntry = ({
                 <div
                   className={
                     labeling.name !== ''
-                      ? 'font-weight-bold font-size-lg h5 d-inline'
+                      ? 'fw-bold font-size-lg h5 d-inline'
                       : 'font-weight-normal font-italic font-size-lg h5 d-inline'
                   }
                 >
@@ -46,14 +46,14 @@ const LabelingTableEntry = ({
             </Col>
             <Col className="d-flex flex-nowrap col-2 align-self-center justify-content-end">
               <Button
-                className="btn-delete mr-3 mr-md-4"
+                className="btn-delete me-3 me-md-4"
                 onClick={(e) => onDelete()}
               >
                 <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
               </Button>
               <Button
                 //outline
-                className="mr-3 mr-md-4"
+                className="me-3 me-md-4"
                 onClick={() => onClickEdit()}
               >
                 <FontAwesomeIcon icon={faPen} />

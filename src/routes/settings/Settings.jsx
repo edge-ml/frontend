@@ -63,7 +63,7 @@ const SettingItem = ({ name, description, children }) => {
 const Settings = () => {
   return (
     <Container className="my-5">
-      <h4 className="font-weight-bold">{'PROJECT SETTINGS'}</h4>
+      <h4 className="fw-bold">{'PROJECT SETTINGS'}</h4>
       <SettingItem
         name="Edit Project Name"
         description="Edit the name of this project"

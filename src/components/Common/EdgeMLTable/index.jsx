@@ -13,7 +13,7 @@ const EdgeMLTable = ({ children, className, style }) => {
 
   return (
     <div style={{ borderRadius: 10, ...style }} className={className}>
-      <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline align-items-center font-weight-bold fs-medium">
+      <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row flex-column align-content-baseline align-items-center fw-bold fs-medium">
         {header}
       </div>
       <div

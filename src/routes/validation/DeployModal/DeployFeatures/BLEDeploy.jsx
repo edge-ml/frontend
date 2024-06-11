@@ -30,7 +30,7 @@ const BLEDeploy = ({ onUpdateState }) => {
           <div>Use BLE</div>
           <FormGroup style={{ margin: 0 }}>
             <Input
-              className="ml-2"
+              className="ms-2"
               inline
               onChange={(e) => setUseBLE(!useBLE)}
               type="switch"
@@ -43,7 +43,7 @@ const BLEDeploy = ({ onUpdateState }) => {
       </EdgeMLTableHeader>
       <EdgeMLTableEntry>
         <div className="d-flex p-2 align-items-center">
-          <div className="font-weight-bold" style={{ width: '200px' }}>
+          <div className="fw-bold" style={{ width: '200px' }}>
             Service-UUID
           </div>
           <Input
@@ -55,7 +55,7 @@ const BLEDeploy = ({ onUpdateState }) => {
       </EdgeMLTableEntry>
       <EdgeMLTableEntry>
         <div className="d-flex p-2 algin-items-center">
-          <div className="font-weight-bold" style={{ width: '200px' }}>
+          <div className="fw-bold" style={{ width: '200px' }}>
             Characteristic-UUID
           </div>
           <Input

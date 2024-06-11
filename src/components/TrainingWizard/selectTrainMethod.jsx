@@ -31,7 +31,7 @@ const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
     >
       <div className="d-flex justify-content-between">
         <div>
-          <div className="font-weight-bold">{pipeline.name}</div>
+          <div className="fw-bold">{pipeline.name}</div>
           <div>{pipeline.description}</div>
         </div>
         <div className="d-flex align-items-center">

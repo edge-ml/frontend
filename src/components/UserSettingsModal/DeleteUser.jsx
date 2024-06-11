@@ -42,7 +42,7 @@ class DeleteUser extends Component {
   render() {
     return (
       <div className="mt-3">
-        <h4 className="font-weight-bold">Delete User</h4>
+        <h4 className="fw-bold">Delete User</h4>
         <div>
           <h6>
             Please type <b>{this.props.userMail}</b> to confirm
@@ -63,7 +63,7 @@ class DeleteUser extends Component {
         <Button
           id="buttonDeleteUser"
           color="danger"
-          className="m-1 mr-auto"
+          className="m-1 me-auto"
           disabled={this.state.confirmationMail !== this.props.userMail}
           onClick={this.toggleConfirmationModal}
         >

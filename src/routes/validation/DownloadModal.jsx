@@ -61,7 +61,7 @@ int main() {
 
     if (code === '') {
       return (
-        <div className="d-flex w-100 justify-content-center align-items-center mh-25 font-weight-bold">
+        <div className="d-flex w-100 justify-content-center align-items-center mh-25 fw-bold">
           No sample code available
         </div>
       );
@@ -81,7 +81,7 @@ int main() {
       <ModalBody>
         <div className="d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
-            <b className="mr-2">Language:</b>
+            <b className="me-2">Language:</b>
             <Dropdown
               isOpen={languageDropdownOpen}
               toggle={() => setLanguageDropdownOpen(!languageDropdownOpen)}

@@ -41,7 +41,7 @@ const TimeDisplay = ({ from, to }) => {
   return (
     <div className="mx-2">
       <small>
-        <div className="d-flex justify-content-center font-weight-bold">
+        <div className="d-flex justify-content-center fw-bold">
           Selected Label
         </div>
       </small>
@@ -89,7 +89,7 @@ const LabelingPanel = ({
         {!hideLabels ? (
           <div className="d-flex">
             <Button
-              className="labelingButton m-1 mr-2"
+              className="labelingButton m-1 me-2"
               color="secondary"
               onClick={onAddLabel}
             >

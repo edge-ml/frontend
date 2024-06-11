@@ -29,7 +29,7 @@ const EditName = () => {
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
         />
-        <div className="ml-2">
+        <div className="ms-2">
           <Button
             outline
             color="primary"

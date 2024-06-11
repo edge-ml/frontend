@@ -111,7 +111,7 @@ const ValidationPage = () => {
     return (
       <Container style={{ height: '100vh' }}>
         <div className="h-100 d-flex justify-content-center align-items-center">
-          <h2 className="font-weight-bold">Cannot connect to the backend</h2>
+          <h2 className="fw-bold">Cannot connect to the backend</h2>
         </div>
       </Container>
     );
@@ -146,7 +146,7 @@ const ValidationPage = () => {
     return (
       <Button
         disabled={disabled}
-        className="btn-edit ml-2 my-2"
+        className="btn-edit ms-2 my-2"
         onClick={onClickStop}
       >
         <FontAwesomeIcon icon={icon}></FontAwesomeIcon>
@@ -163,10 +163,10 @@ const ValidationPage = () => {
 
   return (
     <Container>
-      <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 mt-3">
+      <div className="ps-2 pe-2 ps-md-4 pe-md-4 pb-2 mt-3">
         <Fragment>
           <div className="w-100 d-flex justify-content-between align-items-center mb-2">
-            <h4 className="font-weight-bold">MODELS</h4>
+            <h4 className="fw-bold">MODELS</h4>
             <Button className="btn-neutral" onClick={() => setModalOpen(true)}>
               Train a model
             </Button>
@@ -174,7 +174,7 @@ const ValidationPage = () => {
           {models.length === 0 ? (
             <div
               style={{ marginTop: '30vh', fontSize: 'large' }}
-              className="d-flex h-100 justify-content-center align-items-center font-weight-bold"
+              className="d-flex h-100 justify-content-center align-items-center fw-bold"
             >
               No models trained yet!
             </div>
@@ -182,7 +182,7 @@ const ValidationPage = () => {
             <Table
               header={
                 <>
-                  <div className="ml-0 mr-0 ml-md-2 mr-md-3 ">
+                  <div className="ml-0 me-0 ml-md-2 me-md-3 ">
                     <Checkbox
                       isSelected={models.length == selectedModels.length}
                       onClick={onSelectAll}
@@ -196,7 +196,7 @@ const ValidationPage = () => {
                     onClick={onOpenDeleteModal}
                   >
                     <FontAwesomeIcon
-                      className="mr-2"
+                      className="me-2"
                       icon={faTrashAlt}
                     ></FontAwesomeIcon>
                     Delete
@@ -215,7 +215,7 @@ const ValidationPage = () => {
                   <div className="model-table-entry-focus">
                     <TableEntry index={index}>
                       <div className="p-2 d-flex">
-                        <div className="d-flex align-items-center ml-2 mr-0 ml-md-3 mr-md-3">
+                        <div className="d-flex align-items-center ms-2 me-0 ml-md-3 me-md-3">
                           <Checkbox
                             isSelected={selectedModels.includes(model._id)}
                             onClick={() => clickCheckBox(model)}
@@ -225,7 +225,7 @@ const ValidationPage = () => {
                           className="w-100 d-flex justify-content-between align-items-center"
                           onClick={() => onViewModel(model)}
                         >
-                          <Col className="col-3 ml-2">
+                          <Col className="col-3 ms-2">
                             <b>{model.name}</b>
                             <div>{model.pipeline.selectedPipeline.name}</div>
                           </Col>
@@ -233,7 +233,7 @@ const ValidationPage = () => {
                             {model.error == '' ? null : (
                               <>
                                 <div
-                                  className="ml-5 flex-grow-1 d-flex justify-content-center align-items-center"
+                                  className="ms-5 flex-grow-1 d-flex justify-content-center align-items-center"
                                   style={{ color: 'red' }}
                                 >
                                   An error occured while training!
@@ -263,7 +263,7 @@ const ValidationPage = () => {
                               </div>
                             ) : null}
                           </Col>
-                          <Col className="d-flex col-6 justify-content-end mr-3 mr-md-4">
+                          <Col className="d-flex col-6 justify-content-end me-3 me-md-4">
                             {model.trainStatus === 'done' ? (
                               <div>
                                 <ListButton

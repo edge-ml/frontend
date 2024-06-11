@@ -6,13 +6,13 @@ const CodeSettings = (props) => {
     <div>
       <Row>
         <Col className="col-3">
-          <Label for="platformCheck" className="mr-sm-2">
+          <Label for="platformCheck" className="me-sm-2">
             Platform:
           </Label>
         </Col>
         <Col>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <FormGroup className="mr-2" id="platformCheck" check>
+            <FormGroup className="me-2" id="platformCheck" check>
               <Label check>
                 <Input
                   value="Java"
@@ -60,13 +60,13 @@ const CodeSettings = (props) => {
         </Col>
         <div className="w-100"></div>
         <Col className="col-3">
-          <Label for="serverTimeCheck" className="mr-sm-2">
+          <Label for="serverTimeCheck" className="me-sm-2">
             Use deviceTime:
           </Label>
         </Col>
         <Col>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <FormGroup className="mr-2" id="serverTimeCheck" check>
+            <FormGroup className="me-2" id="serverTimeCheck" check>
               <Label check>
                 <Input
                   type="radio"

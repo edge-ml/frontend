@@ -378,7 +378,7 @@ class EditLabelingModal extends Component {
                 The same name already exists
               </FormFeedback>
             </InputGroup>
-            <div className="d-flex flex-row ml-2">
+            <div className="d-flex flex-row ms-2">
               {this.state.labeling && !this.state.isNewLabeling ? (
                 <div>
                   <Button

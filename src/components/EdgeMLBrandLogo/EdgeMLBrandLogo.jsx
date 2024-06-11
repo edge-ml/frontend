@@ -17,7 +17,7 @@ const EdgeMLBrandLogo = ({ href }) => {
               <div style={{ color: 'black' }}>edge-ml</div>
               <div
                 style={{ textAlign: 'end', transform: 'translate(0px, -10px)' }}
-                className="font-size-small text-danger small font-weight-bold"
+                className="font-size-small text-danger small fw-bold"
               >
                 Beta
               </div>

@@ -15,7 +15,7 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
   };
 
   return (
-    <div className="ml-5">
+    <div className="ms-5">
       <table>
         <tr>
           <td></td>
@@ -38,7 +38,7 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
         {cm.map((row, rowIdx) => (
           <tr>
             <td
-              className="pr-2"
+              className="pe-2"
               style={{
                 textAlign: 'end',
                 borderRight: '1px solid black',

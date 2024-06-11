@@ -35,7 +35,7 @@ const Select_Windowing = ({
 
   return (
     <Fragment>
-      <h3 className="font-weight-bold">4. Select Windowing</h3>
+      <h3 className="fw-bold">4. Select Windowing</h3>
       <Dropdown
         isOpen={dropDownOpen}
         toggle={() => setDropDownOpen(!dropDownOpen)}

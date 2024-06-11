@@ -56,7 +56,7 @@ class UserNameSettings extends Component {
   render() {
     return (
       <div>
-        <h4 className="font-weight-bold">Change UserName</h4>
+        <h4 className="fw-bold">Change UserName</h4>
         <InputGroup>
           <InputGroupText>
             <InputGroupText>Username</InputGroupText>
@@ -84,7 +84,7 @@ class UserNameSettings extends Component {
           }
           id="buttonSaveUserName"
           color="primary"
-          className="m-1 mr-auto"
+          className="m-1 me-auto"
           onClick={this.onUserNameSubmit}
         >
           Save new username

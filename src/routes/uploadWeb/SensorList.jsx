@@ -122,7 +122,7 @@ export const SensorList = ({
                       <tr style={tableVisibilityStyle(name)}>
                         <Td className="p-0" />
                         <Td className="p-0" colSpan="2">
-                          <div className="d-flex align-items-center pr-3">
+                          <div className="d-flex align-items-center pe-3">
                             <small>
                               <b>Sample Rate:</b>
                             </small>

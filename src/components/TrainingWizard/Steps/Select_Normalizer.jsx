@@ -24,7 +24,7 @@ const Select_Normalizer = ({
   }
   return (
     <Fragment>
-      <h3 className="font-weight-bold">6. Select Normalization</h3>
+      <h3 className="fw-bold">6. Select Normalization</h3>
       <Dropdown
         isOpen={dropDownOpen}
         toggle={() => setDropDownOpen(!dropDownOpen)}

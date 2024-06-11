@@ -47,8 +47,8 @@ const ModelLivePage = ({ modelId }) => {
         className="d-flex flex-column overflow-hidden"
         style={{ height: '100vh' }}
       >
-        <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2 pt-3">
-          <h4 className="font-weight-bold">{'LIVE MODEL'}</h4>
+        <div className="ps-2 pe-2 ps-md-4 pe-md-4 pb-2 pt-3">
+          <h4 className="fw-bold">{'LIVE MODEL'}</h4>
           <div className="d-flex justify-content-left m-2">
             <div className="font-large mt-5">
               <h5>

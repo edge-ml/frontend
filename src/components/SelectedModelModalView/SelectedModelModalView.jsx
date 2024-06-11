@@ -49,7 +49,7 @@ export const SelectedModelModalView = ({
                   <PerformanceInfo metrics={metrics.metrics}></PerformanceInfo>
                 </div>
                 <div>
-                  <Button className="mr-auto" onClick={() => {}} color="danger">
+                  <Button className="me-auto" onClick={() => {}} color="danger">
                     Delete
                   </Button>
                 </div>
@@ -68,7 +68,7 @@ export const SelectedModelModalView = ({
             <ModalFooter className="justify-content-between">
               <div>
                 <Button
-                  className="mr-2"
+                  className="me-2"
                   onClick={(e) => {
                     onButtonDownload(model);
                     e.stopPropagation();

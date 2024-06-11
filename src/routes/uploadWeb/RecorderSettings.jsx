@@ -46,7 +46,7 @@ export const RecorderSettings = ({
       onClickRecordButton={onClickRecordButton}
     />
     {mobileAndTabletCheck() ? null : (
-      <small className="ml-3">
+      <small className="ms-3">
         <b>
           <i>Note:</i>
         </b>{' '}

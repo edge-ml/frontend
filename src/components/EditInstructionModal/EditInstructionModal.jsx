@@ -153,7 +153,7 @@ class EditInstructionModal extends Component {
             ? this.state.experiment.instructions.map(
                 (instruction, index, array) => (
                   <InputGroup key={'instruction' + index}>
-                    <InputGroupText className="mr-2">
+                    <InputGroupText className="me-2">
                       <div className="arrow-container">
                         <div
                           className={
@@ -178,7 +178,7 @@ class EditInstructionModal extends Component {
                       </div>
                     </InputGroupText>
 
-                    <UncontrolledDropdown className="mr-2 instruction-dropdown">
+                    <UncontrolledDropdown className="me-2 instruction-dropdown">
                       <DropdownToggle caret>
                         {instruction.labelingId
                           ? labelings.filter(
@@ -211,7 +211,7 @@ class EditInstructionModal extends Component {
                       </DropdownMenu>
                     </UncontrolledDropdown>
 
-                    <UncontrolledDropdown className="mr-2 instruction-dropdown">
+                    <UncontrolledDropdown className="me-2 instruction-dropdown">
                       <DropdownToggle caret>
                         {instruction.labelType
                           ? this.state.labelTypes.filter(
@@ -277,7 +277,7 @@ class EditInstructionModal extends Component {
                       }
                       value={instruction.duration}
                     />
-                    <InputGroupText className="mr-2">
+                    <InputGroupText className="me-2">
                       <InputGroupText>ms</InputGroupText>
                     </InputGroupText>
 
@@ -328,7 +328,7 @@ class EditInstructionModal extends Component {
         <ModalFooter>
           <Button
             color="primary"
-            className="m-1 mr-auto"
+            className="m-1 me-auto"
             id="onSaveExperiment"
             onClick={(e) => {
               this.state.onSave(this.state.experiment);

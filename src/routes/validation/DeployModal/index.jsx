@@ -333,7 +333,7 @@ const DeployModal = ({ model, onClose }) => {
               </Dropdown>
             </div>
             <div className="d-flex">
-              <div className="my-4 ml-2 mr-4" style={{ width: '500px' }}>
+              <div className="my-4 ms-2 me-4" style={{ width: '500px' }}>
                 <div className="header-wrapper d-flex justify-content-center align-content-center">
                   <b>Configure TimeSeries</b>
                 </div>
@@ -347,7 +347,7 @@ const DeployModal = ({ model, onClose }) => {
                       }}
                     >
                       <div className="d-flex align-items-center justify-content-between">
-                        <strong className="pl-2">{elm}</strong>
+                        <strong className="ps-2">{elm}</strong>
                         <UncontrolledDropdown
                           direction="left"
                           style={{ position: 'relative' }}
@@ -396,7 +396,7 @@ const DeployModal = ({ model, onClose }) => {
                     <div>Use BLE</div>
                     <FormGroup style={{ margin: 0 }}>
                       <Input
-                        className="ml-2"
+                        className="ms-2"
                         inline
                         onChange={(e) => setUseBLE(!useBLE)}
                         type="switch"
@@ -410,7 +410,7 @@ const DeployModal = ({ model, onClose }) => {
                 <EdgeMLTableEntry>
                   <div className="d-flex p-2 align-items-center">
                     <div
-                      className="font-weight-bold"
+                      className="fw-bold"
                       style={{ width: '200px' }}
                     >
                       Service-UUID
@@ -424,7 +424,7 @@ const DeployModal = ({ model, onClose }) => {
                 <EdgeMLTableEntry>
                   <div className="d-flex p-2 algin-items-center">
                     <div
-                      className="font-weight-bold"
+                      className="fw-bold"
                       style={{ width: '200px' }}
                     >
                       Characteristic-UUID
@@ -438,7 +438,7 @@ const DeployModal = ({ model, onClose }) => {
               </EdgeMLTable>
             </div>
             <div className="m-2">
-              <div className="font-weight-bold fs-medium">Settings</div>
+              <div className="fw-bold fs-medium">Settings</div>
               <HyperparameterView
                 hyperparameters={parameters}
                 isAdvanced={false}
@@ -446,7 +446,7 @@ const DeployModal = ({ model, onClose }) => {
               ></HyperparameterView>
             </div>
             {flashError ? (
-              <div className="d-flex flex-row ml-2">
+              <div className="d-flex flex-row ms-2">
                 <div>
                   <FontAwesomeIcon icon={faCircleExclamation} color="red" />
                 </div>

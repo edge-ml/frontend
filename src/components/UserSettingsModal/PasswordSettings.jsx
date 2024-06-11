@@ -71,7 +71,7 @@ class PasswordSettings extends Component {
   render() {
     return (
       <div>
-        <h4 className="font-weight-bold">Change password</h4>
+        <h4 className="fw-bold">Change password</h4>
         <InputGroup>
           <InputGroupText>
             <InputGroupText>Password</InputGroupText>
@@ -108,7 +108,7 @@ class PasswordSettings extends Component {
         <Button
           id="buttonSaveNewPassword"
           color="primary"
-          className="m-1 mr-auto"
+          className="m-1 me-auto"
           disabled={
             !(
               this.state.currentPassword &&

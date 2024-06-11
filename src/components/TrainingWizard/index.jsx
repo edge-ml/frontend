@@ -35,7 +35,7 @@ export const WizardFooter = ({
   return (
     <ModalFooter className="fotter">
       <div>
-        <Button color="secondary" onClick={onClose} className="mr-2">
+        <Button color="secondary" onClick={onClose} className="me-2">
           Cancel
         </Button>
         <Button color="secondary" onClick={onBack}>
@@ -51,7 +51,7 @@ export const WizardFooter = ({
         {invalidResult || 'No problems'}
       </Alert>
       <div>
-        <span className="mr-3">
+        <span className="me-3">
           {step + 1}/{maxSteps}
         </span>
         <Button
@@ -278,7 +278,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
         labelings &&
         (datasets.length === 0 || labelings.length === 0) ? (
           <div
-            className="d-flex justify-content-center align-items-center font-weight-bold"
+            className="d-flex justify-content-center align-items-center fw-bold"
             style={{ height: '30vh' }}
           >
             You need datasets and labelings to train models!
@@ -345,7 +345,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
           ) : null}
         </div>
         {selectedPipeline ? (
-          <span className="mr-3">
+          <span className="me-3">
             {screen + 1}/{maxSteps}
           </span>
         ) : null}

@@ -123,7 +123,7 @@ function BlePanelConnectDevice(props) {
               padding: '4',
             }}
           >
-            <div className="mr-2">{getButtonView(props)}</div>
+            <div className="me-2">{getButtonView(props)}</div>
             <SpinnerButton
               outline
               loadingtext={

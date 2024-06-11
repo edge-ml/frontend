@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Col,
   Row,
@@ -11,26 +11,26 @@ import {
   CardHeader,
   FormGroup,
   Label,
-} from 'reactstrap';
+} from "reactstrap";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEnvelope,
   faExclamationTriangle,
   faShield,
   faUser,
-} from '@fortawesome/free-solid-svg-icons';
-import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
-import { useNavigate } from 'react-router-dom';
-import useRegister from '../Hooks/useRegister';
+} from "@fortawesome/free-solid-svg-icons";
+import EdgeMLBrandLogo from "../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
+import { useNavigate } from "react-router-dom";
+import useRegister from "../Hooks/useRegister";
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordRepeat, setPasswordRepeat] = useState('');
-  const [userName, setUserName] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordRepeat, setPasswordRepeat] = useState("");
+  const [userName, setUserName] = useState("");
   const [ToS_accepted, setToS_accepted] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const register = useRegister();
 
@@ -58,7 +58,6 @@ const RegisterPage = () => {
     try {
       await register(userName, email, password, passwordRepeat);
     } catch (e) {
-      console.log(e);
       setError(e.message);
     }
   };
@@ -69,9 +68,9 @@ const RegisterPage = () => {
         <Card>
           <CardHeader
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <EdgeMLBrandLogo />
@@ -82,9 +81,7 @@ const RegisterPage = () => {
                 <Col>
                   <InputGroup>
                     <InputGroupText>
-                      <InputGroupText>
-                        <FontAwesomeIcon icon={faEnvelope} />
-                      </InputGroupText>
+                      <FontAwesomeIcon icon={faEnvelope} />
                     </InputGroupText>
                     <Input
                       type="email"
@@ -98,9 +95,7 @@ const RegisterPage = () => {
                 <Col>
                   <InputGroup>
                     <InputGroupText>
-                      <InputGroupText>
-                        <FontAwesomeIcon icon={faShield} />
-                      </InputGroupText>
+                      <FontAwesomeIcon icon={faShield} />
                     </InputGroupText>
                     <Input
                       type="password"
@@ -114,9 +109,7 @@ const RegisterPage = () => {
                 <Col>
                   <InputGroup>
                     <InputGroupText>
-                      <InputGroupText>
-                        <FontAwesomeIcon icon={faShield} />
-                      </InputGroupText>
+                      <FontAwesomeIcon icon={faShield} />
                     </InputGroupText>
                     <Input
                       type="password"
@@ -130,9 +123,7 @@ const RegisterPage = () => {
                 <Col>
                   <InputGroup>
                     <InputGroupText>
-                      <InputGroupText>
-                        <FontAwesomeIcon icon={faUser} />
-                      </InputGroupText>
+                      <FontAwesomeIcon icon={faUser} />
                     </InputGroupText>
                     <Input
                       type="text"
@@ -143,15 +134,15 @@ const RegisterPage = () => {
                     />
                   </InputGroup>
                 </Col>
-                <Col style={{ paddingBottom: '10px', textAlign: 'left' }}>
+                <Col style={{ paddingBottom: "10px", textAlign: "left" }}>
                   <FormGroup check style={{ marginTop: 20, marginBottom: 10 }}>
                     <Label check>
                       <Input
                         type="checkbox"
                         onChange={onToS_checked}
                         id="termsCheckbox"
-                      />{' '}
-                      I have read and agree to the{' '}
+                      />{" "}
+                      I have read and agree to the{" "}
                       <a href="/terms_of_service.html" target="_blank">
                         terms of service
                       </a>
@@ -162,16 +153,16 @@ const RegisterPage = () => {
                 {error ? (
                   <Col
                     className="my-1"
-                    style={{ paddingRight: '15px', paddingLeft: '15px' }}
+                    style={{ paddingRight: "15px", paddingLeft: "15px" }}
                   >
                     <FontAwesomeIcon
-                      style={{ color: 'red' }}
+                      style={{ color: "red" }}
                       icon={faExclamationTriangle}
-                      className="mr-2 fa-xs"
+                      className="me-2 fa-xs"
                       data-tip="Error"
                       id="errorIcon"
                     />
-                    <div style={{ color: 'red', display: 'inline-block' }}>
+                    <div style={{ color: "red", display: "inline-block" }}>
                       {error}
                     </div>
                   </Col>

@@ -16,7 +16,7 @@ const DownloadDataset = (props) => {
           <img style={{ width: '256px' }} src={logoSvg} />
           <b>
             <div
-              className="pl-4"
+              className="ps-4"
               style={{ color: 'black', fontSize: 'xxx-large' }}
             >
               edge-ml

@@ -50,7 +50,7 @@ const Pipelinestep = ({
     <div className="p-2">
       <div className="d-flex justify-content-between">
         <div>
-          <h3 className="font-weight-bold">{stepNum + 1 + '. ' + step.name}</h3>
+          <h3 className="fw-bold">{stepNum + 1 + '. ' + step.name}</h3>
           <h5>{step.description}</h5>
         </div>
       </div>
@@ -61,7 +61,7 @@ const Pipelinestep = ({
             <b>Method: </b>
             <div>
               <Dropdown
-                className="ml-2"
+                className="ms-2"
                 style={{ position: 'unset', padding: 'unset' }}
                 isOpen={dropdownOpen}
                 toggle={toggleDropdown}
@@ -116,7 +116,7 @@ const Pipelinestep = ({
         0 && (
         <div>
           <div className="d-flex align-items-center">
-            <div className="mr-2 font-weight-bold">Advanced parameters</div>
+            <div className="me-2 fw-bold">Advanced parameters</div>
             <FontAwesomeIcon
               size="1x"
               icon={isOpen ? faCaretDown : faCaretRight}

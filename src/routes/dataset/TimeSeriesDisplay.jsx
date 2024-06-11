@@ -36,7 +36,7 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
 
   return (
     <div className="m-2">
-      <h4 className="font-weight-bold">{timeSeries.name}</h4>
+      <h4 className="fw-bold">{timeSeries.name}</h4>
       <div style={{ height: '200px' }}>
         <HighchartsReact
           ref={chartRef}

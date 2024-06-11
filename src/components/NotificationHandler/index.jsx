@@ -58,7 +58,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
               {elm.status < 100 ? (
                 <div className="d-flex  align-items-center">
                   <Spinner></Spinner>
-                  <div className="ml-2">{elm.status}%</div>
+                  <div className="ms-2">{elm.status}%</div>
                 </div>
               ) : (
                 <div>
@@ -103,7 +103,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                     {elm.status < 100 ? (
                       <div className="d-flex  align-items-center">
                         <Spinner></Spinner>
-                        <div className="ml-2">{elm.status}%</div>
+                        <div className="ms-2">{elm.status}%</div>
                       </div>
                     ) : (
                       <div>
@@ -121,7 +121,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                         )}
                       </div>
                     )}
-                    <div className="ml-2">
+                    <div className="ms-2">
                       <Button
                         onClick={() => removeNotification(elm.downloadId)}
                         color="danger"

@@ -118,7 +118,7 @@ const Wizard_SelectDataset = ({
     .every((elm) => elm.selected);
   return (
     <div className="p-2">
-      <h3 className="font-weight-bold">2. Select datasets</h3>
+      <h3 className="fw-bold">2. Select datasets</h3>
       <Row className="mx-0">
         <Col>
           <EdgeMLTable>
@@ -133,7 +133,7 @@ const Wizard_SelectDataset = ({
                     )
                   }
                 ></Checkbox>
-                <div className="ml-2 align-self-center">Select all</div>
+                <div className="ms-2 align-self-center">Select all</div>
               </div>
               <h4>
                 <b>Datasets</b>
@@ -161,7 +161,7 @@ const Wizard_SelectDataset = ({
         <Col className="pt-3">
           {datasets.filter((elm) => elm.selected).length ? (
             <Fragment>
-              <h5 className="font-weight-bold">Selected Timeseries</h5>
+              <h5 className="fw-bold">Selected Timeseries</h5>
               <div style={{ overflow: 'auto' }}>
                 {intersectingTSNames.length > 0 ? (
                   intersectingTSNames.map((tsNameObj) => (
@@ -210,7 +210,7 @@ const Wizard_SelectDataset = ({
                 For training, all time-series will be downsampled to{' '}
                 {Math.round(1000 / minSamplingRate)} Hz
               </div>
-              <h5 className="font-weight-bold mt-4">Covered Labels</h5>
+              <h5 className="fw-bold mt-4">Covered Labels</h5>
               <Table size="sm" borderless style={{ width: 'unset' }}>
                 <thead>
                   <tr>

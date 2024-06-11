@@ -59,7 +59,7 @@ class MailSettings extends Component {
   render() {
     return (
       <div>
-        <h4 className="font-weight-bold">Change Mail</h4>
+        <h4 className="fw-bold">Change Mail</h4>
         <InputGroup>
           <InputGroupText>
             <InputGroupText>E-Mail</InputGroupText>
@@ -87,7 +87,7 @@ class MailSettings extends Component {
             this.state.newEmail !== this.state.confirmationEmail
           }
           color="primary"
-          className="m-1 mr-auto"
+          className="m-1 me-auto"
           onClick={this.onEmailChangeSubmit}
         >
           Save new e-mail

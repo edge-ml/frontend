@@ -34,7 +34,7 @@ const NavbarProject = ({ project }) => {
         location_data
       ).toLowerCase();
     return (
-      'pt-2 pb-2 pl-4 small ' +
+      'pt-2 pb-2 ps-4 small ' +
       (isSelected ? 'navbar-project-item-active' : 'navbar-project-item')
     );
   };
@@ -42,7 +42,7 @@ const NavbarProject = ({ project }) => {
   return (
     <div className="w-100 text-left" key={project._id} id={project._id}>
       <div
-        className="d-flex align-items-center mt-1 pt-2 pb-2 pl-2 navbar-project"
+        className="d-flex align-items-center mt-1 pt-2 pb-2 ps-2 navbar-project"
         onClick={() => onProjectClick(project)}
         style={{
           overflow: 'hidden',
@@ -56,10 +56,10 @@ const NavbarProject = ({ project }) => {
             cursor: 'pointer',
           }}
           icon={currentProject._id === project._id ? faCaretDown : faCaretRight}
-          className="mr-2 fa-s"
+          className="me-2 fa-s"
         ></FontAwesomeIcon>
         <div
-          className="navbar-project pr-1"
+          className="navbar-project pe-1"
           style={{
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -84,7 +84,7 @@ const NavbarProject = ({ project }) => {
               }}
               className={getNavBarItemClasses(elm[0])}
             >
-              <FontAwesomeIcon className="mr-2" icon={elm[1]}></FontAwesomeIcon>
+              <FontAwesomeIcon className="me-2" icon={elm[1]}></FontAwesomeIcon>
               {elm[0]}
             </div>
           ))}

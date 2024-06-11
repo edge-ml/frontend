@@ -153,7 +153,7 @@ class EditProjectModal extends Component {
             size="sm"
             onClick={() => this.deleteUserName(userName)}
           >
-            <FontAwesomeIcon className="mr-2" icon={faTrash}></FontAwesomeIcon>
+            <FontAwesomeIcon className="me-2" icon={faTrash}></FontAwesomeIcon>
           </Button>
         </td>
       </tr>

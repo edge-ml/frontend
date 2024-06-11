@@ -36,7 +36,7 @@ export const ClassifierView = ({
   return (
     <Card>
       <CardHeader className="d-flex flex-row justify-content-between w-100">
-        <h4 className="mr-2">Classifier</h4>
+        <h4 className="me-2">Classifier</h4>
         <Select
           options={models.map((m) => {
             return { value: m.id, label: m.name };
@@ -77,7 +77,7 @@ export const ClassifierView = ({
           project={project}
         >
           <div>
-            <span className="mr-1">Train Model</span>
+            <span className="me-1">Train Model</span>
             <FontAwesomeIcon
               icon={requestInProgress ? faSpinner : faCheck}
               pulse={requestInProgress}

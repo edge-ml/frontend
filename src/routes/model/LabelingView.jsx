@@ -36,7 +36,7 @@ export const LabelingView = ({
                           checked={selectedLabeling === x._id}
                         ></input>
                         <label
-                          className="mb-0 ml-1 mr-1"
+                          className="mb-0 ms-1 me-1"
                           for={x._id}
                           onClick={(y) => changeSelectedLabeling(x._id)}
                         >
@@ -58,7 +58,7 @@ export const LabelingView = ({
                               <input
                                 type="checkbox"
                                 disabled={selectedLabeling !== x._id}
-                                className="ml-1 float-right"
+                                className="ms-1 float-right"
                                 checked={selectedLabelsFor[x._id][labelId]}
                                 onClick={(y) =>
                                   changeLabelSelection(x._id, labelId)

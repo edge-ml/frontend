@@ -220,7 +220,7 @@ const ScreenOne = memo(
                           <Td>
                             <Button
                               color="danger"
-                              className="btn-edit mr-3 mr-md-4"
+                              className="btn-edit me-3 me-md-4"
                               onClick={() => setMatch(name, null)}
                             >
                               <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
@@ -245,14 +245,14 @@ const ScreenOne = memo(
           </Col>
           <Col className="mt-2 d-flex flex-column justify-content-end align-items-end">
             <div className="mb-2 d-flex justify-content-end align-items-center">
-              <div className="d-flex justify-content-center align-items-center mr-2">
+              <div className="d-flex justify-content-center align-items-center me-2">
                 <Checkbox
                   isSelected={downloadSingleFile}
                   onClick={(e) => {
                     setDownloadSingleFile(e.target.checked);
                   }}
                 />
-                <span className="ml-1">Single file</span>
+                <span className="ms-1">Single file</span>
               </div>
               <Button
                 outline

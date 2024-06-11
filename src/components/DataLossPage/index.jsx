@@ -30,7 +30,7 @@ const DataLossPage = ({ children }) => {
     <>
       {children}
       <div
-        className="d-flex justify-content-center align-items-center vh-100 vw-100 flex-column font-weight-bold position-absolute fixed-top left-0 z-index-10000"
+        className="d-flex justify-content-center align-items-center vh-100 vw-100 flex-column fw-bold position-absolute fixed-top left-0 z-index-10000"
         style={{ backgroundColor: 'rgba(255,255,255,0.9)' }}
       >
         <div className="d-flex align-items-center m-5">

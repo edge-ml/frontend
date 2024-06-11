@@ -17,7 +17,7 @@ export const HyperparameterView = ({
             .map((h) => {
               if (h.parameter_type === 'number') {
                 return (
-                  <Col className="col-md-6 col-12 pl-0">
+                  <Col className="col-md-6 col-12 ps-0">
                     <NumberHyperparameter
                       {...h}
                       id={'input_' + h.parameter_name}
@@ -28,7 +28,7 @@ export const HyperparameterView = ({
                 );
               } else if (h.parameter_type === 'selection') {
                 return (
-                  <Col className="col-md-6 col-12 pl-0">
+                  <Col className="col-md-6 col-12 ps-0">
                     <SelectionHyperparameter
                       {...h}
                       id={'input_' + h.parameter_name}
@@ -39,7 +39,7 @@ export const HyperparameterView = ({
                 );
               } else if (h.parameter_type === 'text') {
                 return (
-                  <Col className="col-md-6 col-12 pl-0">
+                  <Col className="col-md-6 col-12 ps-0">
                     <TextHyperparameter
                       {...h}
                       id={'input_' + h.parameter_name}

@@ -24,7 +24,7 @@ const LabelingTable = ({
     <EdgeMLTable>
       <EdgeMLTableHeader>
         <div className="d-flex flex-row align-items-center p-1">
-          <div className="ml-md-2 mr-md-3 ">
+          <div className="ml-md-2 me-md-3 ">
             <Checkbox
               isSelected={areAllSelected}
               onClick={(e) => {
@@ -38,7 +38,7 @@ const LabelingTable = ({
             ></Checkbox>
           </div>
           <Button
-            className="ml-3 btn-delete"
+            className="ms-3 btn-delete"
             id="deleteDatasetsButton"
             size="sm"
             color="secondary"
@@ -46,7 +46,7 @@ const LabelingTable = ({
             onClick={onClickDeleteButton}
           >
             <FontAwesomeIcon
-              className="mr-2"
+              className="me-2"
               icon={faTrashAlt}
             ></FontAwesomeIcon>
             Delete
@@ -63,10 +63,10 @@ const LabelingTable = ({
   );
 
   // return (
-  //   <div className="pl-2 pr-2 pl-md-4 pr-md-4 pb-2">
+  //   <div className="ps-2 pe-2 ps-md-4 pe-md-4 pb-2">
   //     <Fragment>
   //       <div className="w-100 d-flex justify-content-between align-items-center mb-2">
-  //         <div className="font-weight-bold h4 justify-self-start">
+  //         <div className="fw-bold h4 justify-self-start">
   //           LABELING SETS
   //         </div>
   //         <div className="justify-content-end">
@@ -83,7 +83,7 @@ const LabelingTable = ({
   //         <div style={{ borderRadius: 10 }}>
   //           <div className="datasets-header-wrapper d-flex d-flex justify-content-between flex-md-row flex-column align-content-baseline">
   //             <div className="d-flex flex-row align-items-center p-1">
-  //               <div className="ml-md-2 mr-md-3 ">
+  //               <div className="ml-md-2 me-md-3 ">
   //                 <Checkbox
   //                   isSelected={areAllSelected}
   //                   onClick={(e) => {
@@ -97,7 +97,7 @@ const LabelingTable = ({
   //                 ></Checkbox>
   //               </div>
   //               <Button
-  //                 className="ml-3 btn-delete"
+  //                 className="ms-3 btn-delete"
   //                 id="deleteDatasetsButton"
   //                 size="sm"
   //                 color="secondary"
@@ -105,7 +105,7 @@ const LabelingTable = ({
   //                 onClick={props.onClickDeleteButton}
   //               >
   //                 <FontAwesomeIcon
-  //                   className="mr-2"
+  //                   className="me-2"
   //                   icon={faTrashAlt}
   //                 ></FontAwesomeIcon>
   //                 Delete

@@ -408,7 +408,7 @@ const ListPage = (props) => {
             goToPreviousPage={goToPreviousPage}
             goToFirstPage={gotToFirstPage}
           />
-          <div className="position-relative ml-3">
+          <div className="position-relative ms-3">
             <PageSizeInput pageSize={pageSize} setPageSize={setPageSize} />
           </div>
         </div>

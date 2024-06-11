@@ -67,11 +67,9 @@ const LoginPage = ({ children }) => {
           <CardBody>
             <Form>
               <InputGroup>
-                <InputGroupText>
                   <InputGroupText style={{ background: '#ced4da' }}>
                     <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
                   </InputGroupText>
-                </InputGroupText>
 
                 <Input
                   type="email"
@@ -83,11 +81,9 @@ const LoginPage = ({ children }) => {
                 />
               </InputGroup>
               <InputGroup>
-                <InputGroupText>
                   <InputGroupText style={{ background: '#ced4da' }}>
                     <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
                   </InputGroupText>
-                </InputGroupText>
                 <Input
                   type="password"
                   name="password"

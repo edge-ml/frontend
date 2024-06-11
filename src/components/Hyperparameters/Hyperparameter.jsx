@@ -15,7 +15,7 @@ const Hyperparameter = (props) => (
           id={'hyperparameter' + props.parameter_name}
           style={{ color: '#8b8d8f' }}
           icon={faInfoCircle}
-          className="mr-2 fa-s"
+          className="me-2 fa-s"
         />
         <UncontrolledTooltip
           placement="top-start"

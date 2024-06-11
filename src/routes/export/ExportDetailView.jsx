@@ -64,7 +64,7 @@ export const ExportDetailView = ({
                     options={nPlatforms}
                   />
                 </span>
-                <Button onClick={onClickDownloadModel} className="ml-3">
+                <Button onClick={onClickDownloadModel} className="ms-3">
                   Download model
                 </Button>
               </div>
