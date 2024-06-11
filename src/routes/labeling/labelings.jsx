@@ -6,16 +6,22 @@ import LabelingTable from "./LabelingTable";
 import useLabelings from "../../Hooks/useLabelings";
 import { ProjectContext } from "../../ProjectProvider";
 import Page from "../../components/Common/Page";
+import { Empty } from "../export/components/Empty";
 
 const Labelings = () => {
   const { currentProject } = useContext(ProjectContext);
   const { labelings } = useLabelings(currentProject);
 
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(true);
 
   const onModalAddLabeling = () => {
     setEditModalOpen(true)
   };
+
+  if (!labelings) {
+    return <Loader loading></Loader>
+  }
+
 
   return (
     <Loader loading={!labelings}>
@@ -35,14 +41,16 @@ const Labelings = () => {
           </>
         }
       >
+        {labelings.length === 0 ?
+        <Empty>No labelings yet</Empty> :
         <LabelingTable
           labelings={labelings}
           selectedLabelings={[]}
-        ></LabelingTable>
+        ></LabelingTable>}
       </Page>
-      {/* <EditLabelingModal
+      <EditLabelingModal
         isOpen={editModalOpen}
-      ></EditLabelingModal> */}
+      ></EditLabelingModal>
     </Loader>
   );
 
