@@ -34,9 +34,15 @@ const EditLabelingModal = ({ isOpen, currentLabeling }) => {
     setLabeling(newLabeling);
   };
 
-  const onColorChange = (index, color) => {
+  const onLabelChange = (index, label) => {
     const newLabeling = { ...labeling };
-    newLabeling.labels[index].color = color;
+    newLabeling.labels[index] = label;
+    setLabeling(newLabeling);
+  };
+
+  const onLabelDelete = (index) => {
+    const newLabeling = { ...labeling };
+    newLabeling.labels.splice(index, 1);
     setLabeling(newLabeling);
   };
 
@@ -52,7 +58,6 @@ const EditLabelingModal = ({ isOpen, currentLabeling }) => {
               <InputGroup className="d-flex">
                 <InputGroupText>Labeling Set</InputGroupText>
                 <Input
-                  // invalid={this.labelingNameInValid()}
                   id="labelingName"
                   placeholder="Name"
                   // value={
@@ -87,7 +92,11 @@ const EditLabelingModal = ({ isOpen, currentLabeling }) => {
 
             <h6 className="fw-bold mt-2">Labels</h6>
             {labeling.labels.map((label, index) => (
-              <EditLabelingModalEntry label={label}></EditLabelingModalEntry>
+              <EditLabelingModalEntry
+                label={label}
+                onChangeLabel={(label) => onLabelChange(index, label)}
+                onDelete={() => onLabelDelete(index)}
+              ></EditLabelingModalEntry>
             ))}
 
             <hr></hr>

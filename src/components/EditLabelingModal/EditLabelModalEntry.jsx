@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { InputGroup, InputGroupText, Input, FormFeedback } from "reactstrap";
+import {
+  InputGroup,
+  InputGroupText,
+  Input,
+  FormFeedback,
+  Button,
+} from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faL, faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -8,47 +14,28 @@ import {
 } from "../../services/ColorService";
 import ColorPicker from "../ColorPicker";
 
-const EditLabelingModalEntry = ({ label }) => {
+const EditLabelingModalEntry = ({ label, onChangeLabel, onDelete }) => {
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
 
-  const onSaveColor = (color) => {
-    console.log(color)
+  const onChangeColor = (color) => {
+    onChangeLabel({ ...label, color: color });
     setColorPickerOpen(false);
   };
 
-  console.log(colorPickerOpen)
+  const onChangeName = (e) => {
+    onChangeLabel({ ...label, name: e.target.value });
+  };
 
   return (
-    <InputGroup key={"label" + label.name}>
+    <InputGroup>
       <InputGroupText>Name</InputGroupText>
       <Input
         // invalid={this.labelNameInvalid(label, index)}
         placeholder="Name"
         value={label.name}
-        // onChange={(e) =>
-        //   this.onLabelNameChanged(index, e.target.value)
-        // }
+        onChange={onChangeName}
       />
       <InputGroupText>Color</InputGroupText>
-      {/* <Input
-                  id={"labelColor" + index}
-                  placeholder="Color"
-                  // className={
-                  //   isValidColor(label.color)
-                  //     ? "input-group-append is-valid"
-                  //     : "input-group-append clear is-invalid"
-                  // }
-                  style={{
-                    backgroundColor: isValidColor(label.color)
-                      ? label.color
-                      : null,
-                    color: hexToForegroundColor(label.color),
-                  }}
-                  value={label.color}
-                  // onChange={(e) =>
-                  //   this.onLabelColorChanged(index, e.target.value)
-                  // }
-                /> */}
       <div
         className="d-flex justify-content-center align-items-center cursor-pointer"
         style={{ backgroundColor: label.color, width: "100px" }}
@@ -58,32 +45,21 @@ const EditLabelingModalEntry = ({ label }) => {
           color={hexToForegroundColor(label.color)}
           icon={faPen}
         ></FontAwesomeIcon>
-        <div className="position-absolute">
+        <div className="position-absolute z-10000">
           <div>
             <ColorPicker
               isOpen={colorPickerOpen}
-              className="position-relative z-1000"
+              className="position-relative"
               color={label.color}
-              onSave={onSaveColor}
+              onSave={onChangeColor}
               disableAlpha
             ></ColorPicker>
           </div>
         </div>
       </div>
-      <InputGroupText>
-        {/* <Button
-                    id={"buttonDeleteLabel" + index}
-                    className="m-0 deleteBtnRadius"
-                    color="danger"
-                    outline
-                    //   onClick={(e) => {
-                    //     this.onDeleteLabel(index);
-                    //   }}
-                  >
-                    
-                  </Button> */}
+      <Button className="ms-1" color="danger" outline onClick={onDelete}>
         <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
-      </InputGroupText>
+      </Button>
       <FormFeedback id="labelFeedback">
         {!isValidColor(label.color)
           ? "Invalid color"
