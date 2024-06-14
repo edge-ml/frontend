@@ -28,6 +28,7 @@ const Checkbox = (props) => {
           style={{ width: size, height: size }}
           className="checkBoxIcon"
           icon={faCheck}
+          fixedWidth
         ></FontAwesomeIcon>
       </span>
     </label>

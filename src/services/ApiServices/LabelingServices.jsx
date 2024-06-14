@@ -40,11 +40,11 @@ const useLabelingAPI = (project) => {
     return res;
   }
 
-  const deleteLabeling = async (labeling) => {
+  const deleteLabeling = async (labeling_id) => {
     const res = await api.request(
       HTTP_METHODS.DELETE,
       DATASET_STORE,
-      DATASET_STORE_ENDPOINTS.LABELING + `${labeling['_id']}`,
+      DATASET_STORE_ENDPOINTS.LABELING + labeling_id,
     )
     return res;
   }

@@ -24,8 +24,8 @@ const useLabelings = () => {
     refreshLabelings();
   }
 
-  const deleteLabeling = async (labeling) => {
-    await labelingAPI.deleteLabeling(labeling);
+  const deleteLabeling = async (labeling_id) => {
+    await labelingAPI.deleteLabeling(labeling_id);
     refreshLabelings();
   }
 

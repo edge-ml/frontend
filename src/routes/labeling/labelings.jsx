@@ -13,6 +13,7 @@ const Labelings = () => {
   const { labelings, updateLabeling, addLabeling, deleteLabeling } = useLabelings(currentProject);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedLabelings, setSelectedLabelings] = useState([]);
 
   const onModalAddLabeling = () => {
     setEditModalOpen(true)
@@ -22,6 +23,35 @@ const Labelings = () => {
     return <Loader loading></Loader>
   }
 
+
+  const toggleCheck = (e, labeling) => {
+    const isChecked = e.target.checked;
+    setSelectedLabelings(prevSelectedLabelings => {
+      if (isChecked) {
+        return [...prevSelectedLabelings, labeling];
+      } else {
+        return prevSelectedLabelings.map(elm => elm._id).filter(id => id !== labeling._id);
+      }
+    });
+  }
+
+
+  const labelingIdSet = new Set(labelings.map(elm => elm._id)).size
+  const selectedLabelingSet = new Set(selectedLabelings).size;
+  const allSelected = labelingIdSet === selectedLabelingSet
+
+
+  const selectAll = () => {
+    console.log(allSelected)
+    if (allSelected) {
+      setSelectedLabelings([]);
+    }
+    else {
+      setSelectedLabelings(labelings.map(elm => elm._id))
+    }
+  }
+
+  console.log(selectedLabelings)
 
   return (
     <Loader loading={!labelings}>
@@ -45,12 +75,16 @@ const Labelings = () => {
         <Empty>No labelings yet</Empty> :
         <LabelingTable
           labelings={labelings}
-          selectedLabelings={[]}
           updateLabeling={updateLabeling}
           deleteLabeling={deleteLabeling}
+          selectedLabelings={selectedLabelings}
+          toggleCheck={toggleCheck}
+          allSelected={allSelected}
+          selectAll={selectAll}
         ></LabelingTable>}
       </Page>
       <EditLabelingModal
+        labelings={labelings}
         onCancel={() => setEditModalOpen(false)}
         onSave={(labeling) => {addLabeling(labeling); setEditModalOpen(false)}}
         isOpen={editModalOpen}
@@ -65,7 +99,7 @@ const Labelings = () => {
           <LabelingTable
             labelings={labelings}
             selectedLabelings={[]}
-            // onClickEdit={this.onClickEdit}
+            // onClick^Edit={this.onClickEdit}
             // onModalAddLabeling={this.onModalAddLabeling}
             // labelingsToDelete={this.state.labelingsToDelete}
             // toggleCheck={this.toggleCheck}

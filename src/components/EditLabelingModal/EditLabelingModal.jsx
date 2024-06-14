@@ -8,6 +8,7 @@ import {
   Input,
   Button,
   ModalFooter,
+  FormFeedback,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
@@ -17,7 +18,7 @@ import {
 } from "../../services/ColorService";
 import EditLabelingModalEntry from "./EditLabelModalEntry";
 
-const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel }) => {
+const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel, labelings }) => {
   const [labeling, setLabeling] = useState(
     currentLabeling
       ? currentLabeling
@@ -54,11 +55,15 @@ const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel }) => {
               <InputGroup className="d-flex">
                 <InputGroupText>Labeling Set</InputGroupText>
                 <Input
+                  invalid={labelings.map(elm => elm.name).includes(labeling.name)}
                   id="labelingName"
                   placeholder="Name"
                   value={labeling.name}
                   onChange={(e) => { setLabeling({ ...labeling, name: e.target.value }) }}>
                 </Input>
+                <FormFeedback>
+                  Oh no! That name is already taken
+                </FormFeedback>
               </InputGroup>
               {labeling ? (
                 <Button

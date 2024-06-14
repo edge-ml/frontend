@@ -1,26 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from 'reactstrap';
 import Checkbox from '../../components/Common/Checkbox';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import {
   EdgeMLTable,
-  EdgeMLTableEntry,
   EdgeMLTableHeader,
 } from '../../components/Common/EdgeMLTable';
 import LabelingTableEntry from './LabelingTableEntry';
 
 const LabelingTable = ({
   labelings,
-  deselectAll,
-  selectAll,
   selectedLabelings,
-  onClickDeleteButton,
   toggleCheck,
   updateLabeling,
-  deleteLabeling
+  deleteLabeling,
+  allSelected,
+  selectAll
 }) => {
-  const [areAllSelected, setAllSelected] = useState(false);
+
+  const deleteSelectedLabelings = async () => {
+    const res = await Promise.all(selectedLabelings.map(elm => deleteLabeling(elm)))
+  }
 
   return (
     <EdgeMLTable>
@@ -28,15 +29,8 @@ const LabelingTable = ({
         <div className="d-flex flex-row align-items-center p-1">
           <div className="ml-md-2 me-md-3 ">
             <Checkbox
-              isSelected={areAllSelected}
-              onClick={(e) => {
-                setAllSelected(!areAllSelected);
-                if (areAllSelected) {
-                  deselectAll();
-                } else {
-                  selectAll();
-                }
-              }}
+              isSelected={allSelected}
+              onClick={selectAll}
             ></Checkbox>
           </div>
           <Button
@@ -45,7 +39,7 @@ const LabelingTable = ({
             size="sm"
             color="secondary"
             disabled={selectedLabelings.length === 0}
-            onClick={onClickDeleteButton}
+            onClick={deleteSelectedLabelings}
           >
             <FontAwesomeIcon
               className="me-2"
@@ -59,8 +53,11 @@ const LabelingTable = ({
         <LabelingTableEntry
           key={'labeling' + index}
           labeling={labeling}
+          labelings={labelings}
+          isSelected={selectedLabelings.includes(labeling._id)}
           updateLabeling={updateLabeling}
           deleteLabeling={deleteLabeling}
+          toggleCheck={toggleCheck}
         ></LabelingTableEntry>
       ))}
     </EdgeMLTable>

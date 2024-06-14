@@ -24,7 +24,7 @@ const LabelingTableEntry = ({
         <Checkbox
           isSelected={isSelected}
           className="d-inline-block"
-          onClick={(e) => toggleCheck(e, labeling._id)}
+          onClick={(e) => toggleCheck(e, labeling)}
         ></Checkbox>
         <div className="w-100">
           <Row className="p-1">
@@ -49,7 +49,7 @@ const LabelingTableEntry = ({
             <Col className="d-flex flex-nowrap col-2 align-self-center justify-content-end">
               <Button
                 className="btn-delete me-3 me-md-4"
-                onClick={() => deleteLabeling(labeling)}
+                onClick={() => deleteLabeling(labeling._id)}
               >
                 <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
               </Button>
@@ -64,6 +64,7 @@ const LabelingTableEntry = ({
         </div>
       </div>
       <EditLabelingModal
+        labelings={labelings}
         currentLabeling={labeling}
         isOpen={labelingModalOpen}
         onCancel={() => setLabelingModalOpen(false)}
