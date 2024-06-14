@@ -19,9 +19,7 @@ const EditName = () => {
   return (
     <Container>
       <InputGroup>
-        <InputGroupText>
-          <InputGroupText>{'Name'}</InputGroupText>
-        </InputGroupText>
+        <InputGroupText>{'Name'}</InputGroupText>
         <Input
           id="projectName"
           readOnly={false}
@@ -40,9 +38,7 @@ const EditName = () => {
         </div>
       </InputGroup>
       <InputGroup>
-        <InputGroupText>
-          <InputGroupText>{'Admin'}</InputGroupText>
-        </InputGroupText>
+        <InputGroupText>{'Admin'}</InputGroupText>
         <Input value={currentProject.admin.userName} readOnly />
       </InputGroup>
     </Container>

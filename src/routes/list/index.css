@@ -35,10 +35,6 @@
   transform: rotate(90deg);
 }
 
-.badgeSize {
-  font-size: 0.8rem;
-}
-
 .badgeLabelings {
   color: black;
   background-color: unset;

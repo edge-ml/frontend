@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import {
   EdgeMLTable,
+  EdgeMLTableEntry,
   EdgeMLTableHeader,
 } from '../../components/Common/EdgeMLTable';
 import LabelingTableEntry from './LabelingTableEntry';
@@ -50,15 +51,17 @@ const LabelingTable = ({
         </div>
       </EdgeMLTableHeader>
       {labelings.map((labeling, index) => (
-        <LabelingTableEntry
-          key={'labeling' + index}
-          labeling={labeling}
-          labelings={labelings}
-          isSelected={selectedLabelings.includes(labeling._id)}
-          updateLabeling={updateLabeling}
-          deleteLabeling={deleteLabeling}
-          toggleCheck={toggleCheck}
-        ></LabelingTableEntry>
+        <EdgeMLTableEntry>
+          <LabelingTableEntry
+            key={'labeling' + index}
+            labeling={labeling}
+            labelings={labelings}
+            isSelected={selectedLabelings.includes(labeling._id)}
+            updateLabeling={updateLabeling}
+            deleteLabeling={deleteLabeling}
+            toggleCheck={toggleCheck}
+          ></LabelingTableEntry>
+        </EdgeMLTableEntry>
       ))}
     </EdgeMLTable>
   );

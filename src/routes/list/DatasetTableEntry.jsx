@@ -57,6 +57,7 @@ const Labelings = (props) => {
           {labelings.map((labeling, idx) => (
             <Badge
               className="me-2 badgeSize badgeLabelings pb-2 mt-2 mb-2"
+              color='unset'
               key={labeling + idx}
             >
               <div className="labelingBadgeWrapper">
@@ -105,7 +106,7 @@ const Metadata = (props) => {
             {Object.keys(dataset.metaData).map((key, idx) => {
               const value = dataset.metaData[key];
               return (
-                <Badge className="me-2 badgeSize" color="primary">
+                <Badge className="me-2 badgeSize" color="white">
                   <b>{key}: </b>
                   {value}
                 </Badge>

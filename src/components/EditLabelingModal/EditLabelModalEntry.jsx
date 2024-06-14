@@ -14,7 +14,7 @@ import {
 } from "../../services/ColorService";
 import ColorPicker from "../ColorPicker";
 
-const EditLabelingModalEntry = ({ label, onChangeLabel, onDelete }) => {
+const EditLabelingModalEntry = ({ label, onChangeLabel, onDelete, invalid }) => {
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
 
   const onChangeColor = (color) => {
@@ -30,7 +30,7 @@ const EditLabelingModalEntry = ({ label, onChangeLabel, onDelete }) => {
     <InputGroup>
       <InputGroupText>Name</InputGroupText>
       <Input
-        // invalid={this.labelNameInvalid(label, index)}
+        invalid={invalid}
         placeholder="Name"
         value={label.name}
         onChange={onChangeName}

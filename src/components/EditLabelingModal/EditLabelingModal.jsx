@@ -43,6 +43,19 @@ const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel, labeling
     setLabeling(newLabeling);
   };
 
+  const isDuplicateLabelName = () => {
+    const labelNames = labeling.labels.map((label) => label.name);
+    const duplicateLabel = labelNames.find(
+      (name, index) => labelNames.indexOf(name) !== index
+    );
+    return duplicateLabel;
+  };
+
+  const saveDisabled = () => {
+    return labeling.name === "" || isDuplicateLabelName();
+  };
+  
+
   return (
     <Modal isOpen={isOpen}>
       <ModalHeader>
@@ -90,6 +103,7 @@ const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel, labeling
             <h6 className="fw-bold mt-2">Labels</h6>
             {labeling.labels.map((label, index) => (
               <EditLabelingModalEntry
+                invalid={isDuplicateLabelName()}
                 label={label}
                 onChangeLabel={(label) => onLabelChange(index, label)}
                 onDelete={() => onLabelDelete(index)}

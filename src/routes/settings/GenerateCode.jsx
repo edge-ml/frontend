@@ -34,24 +34,18 @@ const GenerateCode = (props) => {
       {currentProject.enableDeviceApi || currentProject.users ? (
         <div>
           <InputGroup>
-            <InputGroupText>
-              <InputGroupText>{'Backend-URL'}</InputGroupText>
-            </InputGroupText>
+            <InputGroupText>{'Backend-URL'}</InputGroupText>
             <Input value={props.backendUrl} readOnly />
           </InputGroup>
           <InputGroup>
-            <InputGroupText>
-              <InputGroupText>{'Read Key'}</InputGroupText>
-            </InputGroupText>
+            <InputGroupText>{'Read Key'}</InputGroupText>
             <Input
               value={readKey ? readKey : 'Device-API is disabled for your user'}
               readOnly
             />
           </InputGroup>
           <InputGroup>
-            <InputGroupText>
-              <InputGroupText>{'Write Key'}</InputGroupText>
-            </InputGroupText>
+            <InputGroupText>{'Write Key'}</InputGroupText>
             <Input
               value={
                 writeKey ? writeKey : 'Device-API is disabled for your user'
