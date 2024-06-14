@@ -17,6 +17,8 @@ const LabelingTable = ({
   selectedLabelings,
   onClickDeleteButton,
   toggleCheck,
+  updateLabeling,
+  deleteLabeling
 }) => {
   const [areAllSelected, setAllSelected] = useState(false);
 
@@ -57,6 +59,8 @@ const LabelingTable = ({
         <LabelingTableEntry
           key={'labeling' + index}
           labeling={labeling}
+          updateLabeling={updateLabeling}
+          deleteLabeling={deleteLabeling}
         ></LabelingTableEntry>
       ))}
     </EdgeMLTable>

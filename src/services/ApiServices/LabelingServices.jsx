@@ -20,8 +20,40 @@ const useLabelingAPI = (project) => {
     return res;
   };
 
+  const updateLabeling = async (labeling) => {
+    const res = await api.request(
+      HTTP_METHODS.PUT,
+      DATASET_STORE,
+      DATASET_STORE_ENDPOINTS.LABELING + `${labeling['_id']}`,
+      labeling
+    )
+    return res;
+  }
+
+  const addLabeling = async (labeling) => {
+    const res = await api.request(
+      HTTP_METHODS.POST,
+      DATASET_STORE,
+      DATASET_STORE_ENDPOINTS.LABELING,
+      labeling
+    )
+    return res;
+  }
+
+  const deleteLabeling = async (labeling) => {
+    const res = await api.request(
+      HTTP_METHODS.DELETE,
+      DATASET_STORE,
+      DATASET_STORE_ENDPOINTS.LABELING + `${labeling['_id']}`,
+    )
+    return res;
+  }
+
   return {
     getLabelingsAndLabels: getLabelingsAndLabels,
+    updateLabeling: updateLabeling,
+    addLabeling: addLabeling,
+    deleteLabeling: deleteLabeling
   };
 };
 
@@ -97,6 +129,7 @@ export const deleteMultipleLabelings = (labelingIds) => {
     });
   });
 };
+
 
 export const updateLabelingandLabels = (labeling, labels) => {
   return new Promise((resolve, reject) => {

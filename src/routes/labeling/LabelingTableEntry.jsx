@@ -1,20 +1,22 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Row, Col, Button, Badge } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import Checkbox from '../../components/Common/Checkbox';
 import LabelBadge from '../../components/Common/LabelBadge';
 import { EdgeMLTableEntry } from '../../components/Common/EdgeMLTable';
+import EditLabelingModal from '../../components/EditLabelingModal/EditLabelingModal';
 
 const LabelingTableEntry = ({
   labelings,
   labeling,
   isSelected,
   toggleCheck,
+  updateLabeling,
+  deleteLabeling
 }) => {
-  const onDelete = () => {};
 
-  const onClickEdit = () => {};
+  const [labelingModalOpen, setLabelingModalOpen] = useState(false);
 
   return (
     <EdgeMLTableEntry key={'labeling' + labeling._id}>
@@ -47,14 +49,13 @@ const LabelingTableEntry = ({
             <Col className="d-flex flex-nowrap col-2 align-self-center justify-content-end">
               <Button
                 className="btn-delete me-3 me-md-4"
-                onClick={(e) => onDelete()}
+                onClick={() => deleteLabeling(labeling)}
               >
                 <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
               </Button>
               <Button
-                //outline
                 className="me-3 me-md-4"
-                onClick={() => onClickEdit()}
+                onClick={() => setLabelingModalOpen(true)}
               >
                 <FontAwesomeIcon icon={faPen} />
               </Button>
@@ -62,6 +63,13 @@ const LabelingTableEntry = ({
           </Row>
         </div>
       </div>
+      <EditLabelingModal
+        currentLabeling={labeling}
+        isOpen={labelingModalOpen}
+        onCancel={() => setLabelingModalOpen(false)}
+        onSave={(labeling) => { updateLabeling(labeling); setLabelingModalOpen(false) }}
+        onDelete={(labeling) => { deleteLabeling(labeling); setLabelingModalOpen(false) }}
+      ></EditLabelingModal>
     </EdgeMLTableEntry>
   );
 };

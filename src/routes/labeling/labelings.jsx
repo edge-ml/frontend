@@ -10,9 +10,9 @@ import { Empty } from "../export/components/Empty";
 
 const Labelings = () => {
   const { currentProject } = useContext(ProjectContext);
-  const { labelings } = useLabelings(currentProject);
+  const { labelings, updateLabeling, addLabeling, deleteLabeling } = useLabelings(currentProject);
 
-  const [editModalOpen, setEditModalOpen] = useState(true);
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   const onModalAddLabeling = () => {
     setEditModalOpen(true)
@@ -46,9 +46,13 @@ const Labelings = () => {
         <LabelingTable
           labelings={labelings}
           selectedLabelings={[]}
+          updateLabeling={updateLabeling}
+          deleteLabeling={deleteLabeling}
         ></LabelingTable>}
       </Page>
       <EditLabelingModal
+        onCancel={() => setEditModalOpen(false)}
+        onSave={(labeling) => {addLabeling(labeling); setEditModalOpen(false)}}
         isOpen={editModalOpen}
       ></EditLabelingModal>
     </Loader>

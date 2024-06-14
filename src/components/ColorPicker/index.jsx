@@ -5,7 +5,7 @@ import { Button } from "reactstrap";
 import "./index.css";
 
 const ColorPicker = (props) => {
-  const [color, setColor] = useState({"hex": props.color});
+  const [color, setColor] = useState({ "hex": props.color });
 
   const onChangeComplete = (color, event) => {
     setColor(color);
@@ -25,7 +25,9 @@ const ColorPicker = (props) => {
   console.log(props)
 
   return (
-    <div className="wrapper bg-white d-flex justiy-content-end flex-column">
+    <div className="wrapper bg-white d-flex justiy-content-end flex-column"
+      onClick={(e) => { e.stopPropagation }}
+      onDragStart={e => { e.stopPropagation() }}>
       <SketchPicker
         className="sketch-picker"
         {...props}

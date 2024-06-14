@@ -7,25 +7,21 @@ import {
   InputGroup,
   Input,
   Button,
-  FormFeedback,
   ModalFooter,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  isValidColor,
-  hexToForegroundColor,
   generateRandomColor,
 } from "../../services/ColorService";
-import ColorPicker from "../ColorPicker";
 import EditLabelingModalEntry from "./EditLabelModalEntry";
 
-const EditLabelingModal = ({ isOpen, currentLabeling }) => {
+const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel }) => {
   const [labeling, setLabeling] = useState(
     currentLabeling
       ? currentLabeling
-      : { name: "", labels: [{ name: "test", color: "#ffaaff" }] }
+      : { name: "", labels: [] }
   );
 
   const onAddLabel = () => {
@@ -60,13 +56,9 @@ const EditLabelingModal = ({ isOpen, currentLabeling }) => {
                 <Input
                   id="labelingName"
                   placeholder="Name"
-                  // value={
-                  // this.state.labeling && this.state.labeling.name
-                  //     ? this.state.labeling.name
-                  //     : ''
-                  // }
-                  // onChange={(e) => this.onLabelingNameChanged(e.target.value)}
-                />
+                  value={labeling.name}
+                  onChange={(e) => { setLabeling({ ...labeling, name: e.target.value }) }}>
+                </Input>
               </InputGroup>
               {labeling ? (
                 <Button
@@ -119,7 +111,8 @@ const EditLabelingModal = ({ isOpen, currentLabeling }) => {
           id="buttonClose"
           color="secondary"
           className="m-1 mr-auto"
-          //   onClick={this.props.onCloseModal}
+          onClick={onCancel}
+        //   onClick={this.props.onCloseModal}
         >
           Cancel
         </Button>
@@ -128,8 +121,8 @@ const EditLabelingModal = ({ isOpen, currentLabeling }) => {
           id="buttonSaveLabeling"
           color="primary"
           className="m-1"
-          //   onClick={this.onClickingSave}
-          //   disabled={this.saveDisabled()}
+          onClick={() => onSave(labeling)}
+        //   disabled={this.saveDisabled()}
         >
           Save
         </Button>

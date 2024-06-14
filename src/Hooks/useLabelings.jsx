@@ -14,11 +14,26 @@ const useLabelings = () => {
     setLabelings(data);
   };
 
+  const updateLabeling = async (labeling) => {
+    await labelingAPI.updateLabeling(labeling);
+    refreshLabelings();
+  }
+
+  const addLabeling = async (labeling) => {
+    await labelingAPI.addLabeling(labeling);
+    refreshLabelings();
+  }
+
+  const deleteLabeling = async (labeling) => {
+    await labelingAPI.deleteLabeling(labeling);
+    refreshLabelings();
+  }
+
   useEffect(() => {
     refreshLabelings();
   }, [currentProject]);
 
-  return { labelings };
+  return { labelings, updateLabeling, addLabeling, deleteLabeling };
 };
 
 export default useLabelings;
