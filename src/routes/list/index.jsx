@@ -22,7 +22,7 @@ import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDa
 import PageSelection from './PageSelection';
 import PageSizeInput from './PageSizeInput';
 import FilterSelectionModal from './FilterSelection';
-import { ProjectContext } from '../../ProjectProvider';
+import useProjectStore from '../../stores/projectStore';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -51,7 +51,7 @@ const ListPage = (props) => {
 
   const location = useLocation();
 
-  const { currentProject } = useContext(ProjectContext);
+  const { currentProject } = useProjectStore();
   const datasetApi = useDatasetAPI(currentProject);
 
   const toggleModal = () => {

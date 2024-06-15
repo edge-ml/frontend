@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -7,10 +7,16 @@ import NavbarLayout from './NavbarLayout';
 import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
 import AppContent from './AppContent';
-import { AuthProvider } from './AuthProvider';
-import { ProjectProvider } from './ProjectProvider';
+import useProjectStore from './stores/projectStore';
 
 const App = () => {
+
+  const { currentProject, getProjects } = useProjectStore();
+
+  useEffect(() => {
+    getProjects();
+  }, []);
+
   return (
     <div className="h-100vh">
       <Routes>
@@ -18,17 +24,13 @@ const App = () => {
         <Route
           path="*"
           element={
-            // <AuthProvider>
             <AuthWall>
               <NotificationProvider>
-                <ProjectProvider>
-                  <NavbarLayout>
-                    <AppContent></AppContent>
-                  </NavbarLayout>
-                </ProjectProvider>
+                <NavbarLayout>
+                  <AppContent></AppContent>
+                </NavbarLayout>
               </NotificationProvider>
             </AuthWall>
-            // </AuthProvider>
           }
         ></Route>
       </Routes>

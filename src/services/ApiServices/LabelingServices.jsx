@@ -5,6 +5,18 @@ import apiConsts, {
 } from './ApiConstants';
 import ax from 'axios';
 import useApiCalls from './useApiCalls';
+import apiRequest from './request';
+
+
+export const getLabelingsAndLabels = async () => {
+  const res = await apiRequest(
+    HTTP_METHODS.GET,
+    DATASET_STORE,
+    DATASET_STORE_ENDPOINTS.LABELING,
+  );
+  return res;
+};
+
 
 const axios = ax.create();
 

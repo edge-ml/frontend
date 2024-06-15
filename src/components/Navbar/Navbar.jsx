@@ -6,19 +6,18 @@ import './Navbar.css';
 import EdgeMLBrandLogo from '../EdgeMLBrandLogo/EdgeMLBrandLogo';
 import NotificationHandler from '../NotificationHandler';
 import NotificationContext from '../NotificationHandler/NotificationProvider';
-import { ProjectContext } from '../../ProjectProvider';
 import NavbarUserSettings from './NavbarUserSettings';
 import NavbarInfo from './NavbarInfo';
 import NavbarProject from './NavbarProject';
 import EditProjectModal from '../EditProjectModal/EditProjectModal';
+import useProjectStore from '../../stores/projectStore';
 
 const Navbar = () => {
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
   const [projectModalOpen, setProjectModalOpen] = useState(false);
 
   const { activeNotifications } = useContext(NotificationContext);
-  const { projects, currentProject, onProjectClick } =
-    useContext(ProjectContext);
+  const { projects, currentProject, setCurrentProject } = useProjectStore();
 
   const onProjectEditModal = () => {
     setProjectModalOpen(true);
@@ -27,6 +26,10 @@ const Navbar = () => {
   const toggleNotificationModal = () => {
     setNotificationModalOpen(!notificationModalOpen);
   };
+
+  const onProjectClick = (project) => {
+    setCurrentProject(project);
+  }
 
   return (
     <div
@@ -41,11 +44,11 @@ const Navbar = () => {
           href={
             currentProject
               ? '/' +
-                currentProject.admin.userName +
-                '/' +
-                currentProject.name +
-                '/' +
-                'datasets'
+              currentProject.admin.userName +
+              '/' +
+              currentProject.name +
+              '/' +
+              'datasets'
               : null
           }
         />
@@ -53,8 +56,11 @@ const Navbar = () => {
           {projects.map((project, index) => {
             return (
               <NavbarProject
+                currentProject={currentProject}
+                projects={projects}
                 project={project}
                 key={'navbarItem' + project._id}
+                onProjectClick={onProjectClick}
               ></NavbarProject>
             );
           })}
@@ -90,11 +96,10 @@ const Navbar = () => {
           >
             <small>
               <FontAwesomeIcon icon={faDownload} className="me-2" />
-              {`${activeNotifications.length} ${
-                activeNotifications.length > 1
-                  ? 'Notifications'
-                  : 'Notification'
-              }`}
+              {`${activeNotifications.length} ${activeNotifications.length > 1
+                ? 'Notifications'
+                : 'Notification'
+                }`}
             </small>
           </div>
         ) : null}

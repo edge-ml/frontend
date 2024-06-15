@@ -1,6 +1,18 @@
 import { getUserIds } from '../ApiServices/AuthentificationServices';
 import { HTTP_METHODS, API_URI, API_ENDPOINTS } from './ApiConstants';
 import useApiCalls from './useApiCalls';
+import apiRequest from './request';
+
+
+export const getProjects = async () => {
+  const res = await apiRequest(
+    HTTP_METHODS.GET,
+    API_URI,
+    API_ENDPOINTS.PROJECTS,
+  );
+  return res;
+}
+
 
 const useProjectAPI = (project) => {
   const api = useApiCalls(project);

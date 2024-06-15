@@ -10,14 +10,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import './Navbar.css';
-import { ProjectContext } from '../../ProjectProvider';
 import useProjectRouter from '../../Hooks/ProjectRouter';
 import { useLocation } from 'react-router-dom';
 
-const NavbarProject = ({ project }) => {
-  const { projects, currentProject, onProjectClick } =
-    useContext(ProjectContext);
-
+const NavbarProject = ({ project, projects, currentProject, onProjectClick }) => {
   const location = useLocation();
   const navigate = useProjectRouter();
 

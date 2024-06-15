@@ -19,14 +19,14 @@ import {
   EdgeMLTableEntry,
   EdgeMLTableHeader,
 } from '../../components/Common/EdgeMLTable';
-import { ProjectContext } from '../../ProjectProvider';
 import { AuthContext } from '../../AuthProvider';
 import useProjectSettings from '../../Hooks/useProjectSettings';
 import useAuth from '../../Hooks/useAuth';
 import useUserStore from '../../Hooks/useUser';
+import useProjectStore from '../../stores/projectStore';
 
 const UserEdit = () => {
-  const { currentProject } = useContext(ProjectContext);
+  const { currentProject } = useProjectStore();
   const { changeUserNames } = useProjectSettings();
   const { user } = useUserStore();
 

@@ -9,9 +9,9 @@ import UploadBLE from './routes/uploadBLE';
 import { UploadWebPage } from './routes/uploadWeb';
 import Settings from './routes/settings/Settings';
 import ModelLivePage from './routes/ModelLivePage';
-import { ProjectContext } from './ProjectProvider';
 import { Routes, Navigate } from 'react-router-dom';
 import NoProjectPage from './components/NoProjectPage/NoProjectPage';
+import useProjectStore from './stores/projectStore';
 
 const ParamsAdapter = ({ children }) => {
   if (!children) {
@@ -25,7 +25,7 @@ const ParamsAdapter = ({ children }) => {
 };
 
 const AppContent = () => {
-  const { currentProject } = useContext(ProjectContext);
+  const { currentProject } = useProjectStore();
   const projectId = currentProject ? currentProject._id : 'default_key';
 
   if (!currentProject) {

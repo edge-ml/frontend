@@ -1,10 +1,10 @@
 import { useContext } from 'react';
-import { ProjectContext } from '../ProjectProvider';
 import { useNavigate } from 'react-router-dom';
+import useProjectStore from '../stores/projectStore';
 
 const useProjectRouter = () => {
   const navigate = useNavigate();
-  const { currentProject } = useContext(ProjectContext);
+  const { currentProject } = useProjectStore();
 
   const navigateTo = (path) => {
     // Ensure the context and required properties are available

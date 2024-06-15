@@ -6,13 +6,13 @@ import {
   Container,
   Button,
 } from 'reactstrap';
-import { ProjectContext } from '../../ProjectProvider';
 
 import './Settings.css';
 import useProjectSettings from '../../Hooks/useProjectSettings';
+import useProjectStore from '../../stores/projectStore';
 
 const EditName = () => {
-  const { currentProject } = useContext(ProjectContext);
+  const { currentProject } = useProjectStore();
   const { changeProjectName } = useProjectSettings();
   const [projectName, setProjectName] = useState(currentProject.name);
 

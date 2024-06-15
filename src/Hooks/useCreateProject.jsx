@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react';
 import useProjectAPI from '../services/ApiServices/ProjectService';
-import useProjectRefresh from './useProjectsRefresh';
 import { AuthContext } from '../AuthProvider';
 import useAuth from './useAuth';
 import useUserStore from './useUser';
@@ -12,7 +11,6 @@ const useCreateProject = () => {
   const [projectUsers, setProjectUsers] = useState([]);
 
   const projectAPI = useProjectAPI();
-  const refreshProjects = useProjectRefresh();
 
   const createProject = async () => {
     const res = await projectAPI.createProject({
@@ -21,7 +19,6 @@ const useCreateProject = () => {
       users: projectUsers,
     });
     console.log(res);
-    await refreshProjects(res);
   };
 
   const addUSer = (user) => {};

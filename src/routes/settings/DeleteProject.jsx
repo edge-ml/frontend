@@ -1,14 +1,14 @@
 import React, { useState, useCallback, useContext } from 'react';
 import { Button } from 'reactstrap';
 import ConfirmationDialogueModal from '../../components/ConfirmationDilaogueModal/ConfirmationDialogueModal';
-import { ProjectContext } from '../../ProjectProvider';
 import { AuthContext } from '../../AuthProvider';
 import useProjectSettings from '../../Hooks/useProjectSettings';
 import useAuth from '../../Hooks/useAuth';
 import useUserStore from '../../Hooks/useUser';
+import useProjectStore from '../../stores/projectStore';
 
 const DeleteProject = (props) => {
-  const { currentProject } = useContext(ProjectContext);
+  const { currentProject } = useProjectStore();
   const { user } = useUserStore();
   const { deleteProject, leaveProject } = useProjectSettings();
   const isAdmin = user._id === currentProject.admin._id;

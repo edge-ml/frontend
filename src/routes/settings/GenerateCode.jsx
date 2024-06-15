@@ -7,11 +7,11 @@ import {
   Input,
   Button,
 } from 'reactstrap';
-import { ProjectContext } from '../../ProjectProvider';
 import useDeviceApi from '../../Hooks/useDeviceAPI';
+import useProjectStore from '../../stores/projectStore';
 
 const GenerateCode = (props) => {
-  const { currentProject } = useContext(ProjectContext);
+  const { currentProject } = useProjectStore();
   const { toggleDevieApi, generateApiKeys, readKey, writeKey } = useDeviceApi();
 
   return (

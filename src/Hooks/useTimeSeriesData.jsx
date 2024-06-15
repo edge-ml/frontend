@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
-import { ProjectContext } from '../ProjectProvider';
 import useTimeSeriesApi from '../services/ApiServices/TimeSeriesService';
+import useProjectStore from '../stores/projectStore';
 
 const useTimeSeriesData = (dataset_id, timeSeries_id) => {
-  const { currentProject } = useContext(ProjectContext);
+  const { currentProject } = useProjectStore();
   const api = useTimeSeriesApi(currentProject);
 
   const [timeSeriesPartial, setTimeSeriesPartial] = useState(undefined);

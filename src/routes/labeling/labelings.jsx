@@ -1,22 +1,20 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Container, Button } from "reactstrap";
 import Loader from "../../modules/loader";
 import EditLabelingModal from "../../components/EditLabelingModal/EditLabelingModal";
 import LabelingTable from "./LabelingTable";
 import useLabelings from "../../Hooks/useLabelings";
-import { ProjectContext } from "../../ProjectProvider";
 import Page from "../../components/Common/Page";
 import { Empty } from "../export/components/Empty";
 
 const Labelings = () => {
-  const { currentProject } = useContext(ProjectContext);
-  const { labelings, updateLabeling, addLabeling, deleteLabeling } = useLabelings(currentProject);
+  const { labelings, updateLabeling, addLabeling, deleteLabeling } = useLabelings();
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [selectedLabelings, setSelectedLabelings] = useState([]);
 
   const onModalAddLabeling = () => {
-    setEditModalOpen(true)
+    setEditModalOpen(true);
   };
 
   if (!labelings) {

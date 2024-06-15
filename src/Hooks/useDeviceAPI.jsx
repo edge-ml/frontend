@@ -1,15 +1,14 @@
 import { useContext, useEffect, useState } from 'react';
-import { ProjectContext } from '../ProjectProvider';
 import {
   getDeviceApiKey,
   switchDeviceApiActive,
   setDeviceApiKey as generateApiKeys_API,
 } from '../services/ApiServices/DeviceApiService';
 import useProjectAPI from '../services/ApiServices/ProjectService';
+import useProjectStore from '../stores/projectStore';
 
 const useDeviceApi = () => {
-  const { currentProject, setCurrentProject, setProjects } =
-    useContext(ProjectContext);
+  const { currentProject, setCurrentProject, setProjects } = useProjectStore();
 
   const projectAPI = useProjectAPI();
 
