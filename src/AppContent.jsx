@@ -95,6 +95,7 @@ const AppContent = () => {
         {/* Default to the datasets-page */}
         <Route path="" element={<Navigate to="Datasets"></Navigate>}></Route>
       </Route>
+      <Route path="*" element={<Navigate to={`${currentProject.admin.userName}/${currentProject.name}/Datasets`}></Navigate>}></Route>
     </Routes>
   );
 };

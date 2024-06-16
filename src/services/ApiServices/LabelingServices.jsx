@@ -8,7 +8,7 @@ import useApiCalls from './useApiCalls';
 import apiRequest from './request';
 
 
-export const getLabelingsAndLabels = async () => {
+export const getLabelings = async () => {
   const res = await apiRequest(
     HTTP_METHODS.GET,
     DATASET_STORE,

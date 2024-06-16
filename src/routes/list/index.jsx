@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import {
   Container,
   Button,
@@ -9,13 +9,12 @@ import {
 } from 'reactstrap';
 import NotificationContext from '../../components/NotificationHandler/NotificationProvider';
 import Loader from '../../modules/loader';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import './index.css';
 
-import useDatasetAPI from '../../services/ApiServices/DatasetServices';
 
-import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
+import useLabelings from '../../Hooks/useLabelings';
 import DatasetTable from './DatasetTable';
 import DataUpload from './DataUpload';
 import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
@@ -23,16 +22,15 @@ import PageSelection from './PageSelection';
 import PageSizeInput from './PageSizeInput';
 import FilterSelectionModal from './FilterSelection';
 import useProjectStore from '../../stores/projectStore';
+import useDatasets from '../../Hooks/useDatasets';
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
   //underlying datasets which get sorted, but not filtered
-  const [datasets, setDatasets] = useState(undefined);
   const [total_datasets, setTotalDatasets] = useState(0);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [ready, setReady] = useState(false);
   const [isCreateNewDatasetOpen, setIsCreateNewDatasetOpen] = useState(false);
-  const [labelings, setLabelings] = useState(undefined);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
@@ -51,8 +49,11 @@ const ListPage = (props) => {
 
   const location = useLocation();
 
+
   const { currentProject } = useProjectStore();
-  const datasetApi = useDatasetAPI(currentProject);
+
+  const { labelings } = useLabelings();
+  const { datasets } = useDatasets();
 
   const toggleModal = () => {
     setModal(!modal);
@@ -75,19 +76,19 @@ const ListPage = (props) => {
     toggleModal();
   };
 
-  const toggleCreateNewDatasetModal = () => {
-    if (isCreateNewDatasetOpen) {
-      Promise.all([datasetApi.getDatasets(), subscribeLabelingsAndLabels()])
-        .then(([datasets, labelings]) => {
-          onDatasetsChanged(datasets);
-          setLabelings(labelings);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
-    setIsCreateNewDatasetOpen(!isCreateNewDatasetOpen);
-  };
+  // const toggleCreateNewDatasetModal = () => {
+  //   if (isCreateNewDatasetOpen) {
+  //     Promise.all([datasetApi.getDatasets(), getLabelings()])
+  //       .then(([datasets, labelings]) => {
+  //         onDatasetsChanged(datasets);
+  //         setLabelings(labelings);
+  //       })
+  //       .catch((error) => {
+  //         console.error(error);
+  //       });
+  //   }
+  //   setIsCreateNewDatasetOpen(!isCreateNewDatasetOpen);
+  // };
 
   const selectAllEmpty = () => {
     setSelectedDatasets(
@@ -177,83 +178,74 @@ const ListPage = (props) => {
       });
   };
 
-  useEffect(() => {
-    Promise.all([datasetApi.getDatasets(), subscribeLabelingsAndLabels()]).then(
-      (data) => {
-        setDatasets(data[0]);
-        setLabelings(data[1]);
-      },
-    );
-  }, [currentProject]);
+  // useEffect(() => {
+  //   const pageInit = initURLSearchParams();
+  //   Promise.all([
+  //     datasetApi.getDatasetsWithPagination(
+  //       pageInit.pageUpdate,
+  //       pageInit.pageSizeUpdate,
+  //       pageInit.sortUpdate,
+  //     ),
+  //     getLabelings().then((labelings) => {
+  //       setLabelings(labelings);
+  //     }),
+  //   ])
+  //     .then(([data, _]) => {
+  //       onDatasetsChanged(data.datasets);
+  //       total_datasetsRef.current = data.total_datasets;
+  //       setTotalDatasets(data.total_datasets);
+  //     })
 
-  useEffect(() => {
-    const pageInit = initURLSearchParams();
-    Promise.all([
-      datasetApi.getDatasetsWithPagination(
-        pageInit.pageUpdate,
-        pageInit.pageSizeUpdate,
-        pageInit.sortUpdate,
-      ),
-      subscribeLabelingsAndLabels().then((labelings) => {
-        setLabelings(labelings);
-      }),
-    ])
-      .then(([data, _]) => {
-        onDatasetsChanged(data.datasets);
-        total_datasetsRef.current = data.total_datasets;
-        setTotalDatasets(data.total_datasets);
-      })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
 
-      .catch((error) => {
-        console.error(error);
-      });
+  //   window.addEventListener('keydown', handleKeyDown);
+  //   return () => {
+  //     window.removeEventListener('keydown', handleKeyDown);
+  //   };
+  // }, []);
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
+  // useEffect(() => {
+  //   if (pageSizeRef.current !== pageSize && ready) {
+  //     pageSizeRef.current = pageSize;
+  //     currentPageRef.current = 0;
+  //     setCurrentPage(0);
+  //     fetchDatasetets(
+  //       0,
+  //       pageSize,
+  //       selectedSortingRef.current,
+  //       selectedFilterRef.current,
+  //       selectedFilterParamsRef.current,
+  //     );
+  //   }
+  // }, [pageSize]);
 
-  useEffect(() => {
-    if (pageSizeRef.current !== pageSize && ready) {
-      pageSizeRef.current = pageSize;
-      currentPageRef.current = 0;
-      setCurrentPage(0);
-      fetchDatasetets(
-        0,
-        pageSize,
-        selectedSortingRef.current,
-        selectedFilterRef.current,
-        selectedFilterParamsRef.current,
-      );
-    }
-  }, [pageSize]);
+  // useEffect(() => {
+  //   if (selectedSortingRef.current !== selectedSorting && ready) {
+  //     selectedSortingRef.current = selectedSorting;
+  //     fetchDatasetets(
+  //       currentPageRef.current,
+  //       pageSizeRef.current,
+  //       selectedSorting,
+  //       selectedFilterRef.current,
+  //       selectedFilterParamsRef.current,
+  //     );
+  //   }
+  // }, [selectedSorting]);
 
-  useEffect(() => {
-    if (selectedSortingRef.current !== selectedSorting && ready) {
-      selectedSortingRef.current = selectedSorting;
-      fetchDatasetets(
-        currentPageRef.current,
-        pageSizeRef.current,
-        selectedSorting,
-        selectedFilterRef.current,
-        selectedFilterParamsRef.current,
-      );
-    }
-  }, [selectedSorting]);
-
-  useEffect(() => {
-    if (currentPageRef.current !== currentPage && ready) {
-      currentPageRef.current = currentPage;
-      fetchDatasetets(
-        currentPage,
-        pageSizeRef.current,
-        selectedSortingRef.current,
-        selectedFilterRef.current,
-        selectedFilterParamsRef.current,
-      );
-    }
-  }, [currentPage]);
+  // useEffect(() => {
+  //   if (currentPageRef.current !== currentPage && ready) {
+  //     currentPageRef.current = currentPage;
+  //     fetchDatasetets(
+  //       currentPage,
+  //       pageSizeRef.current,
+  //       selectedSortingRef.current,
+  //       selectedFilterRef.current,
+  //       selectedFilterParamsRef.current,
+  //     );
+  //   }
+  // }, [currentPage]);
 
   const handleKeyDown = (e) => {
     switch (e.key) {
@@ -304,7 +296,7 @@ const ListPage = (props) => {
   };
 
   const onDatasetsChanged = async (datasets) => {
-    const labelings = await subscribeLabelingsAndLabels();
+    const labelings = await getLabelings();
     console.log(datasets);
     if (!datasets) return;
     setDatasets(datasets);
@@ -317,7 +309,7 @@ const ListPage = (props) => {
   };
 
   const refreshList = () => {
-    subscribeLabelingsAndLabels().then((labelings) => setLabelings(labelings));
+    getLabelings().then((labelings) => setLabelings(labelings));
     datasetApi.getDatasets().then((datasets) => setDatasets(datasets));
     resetDropdown();
   };
@@ -337,7 +329,13 @@ const ListPage = (props) => {
     registerProjectDownload();
   };
 
-  if (!ready) {
+
+  const toggleCreateNewDatasetModal = () => {
+
+  }
+
+
+  if (!datasets || !labelings) {
     return <Loader loading={true}></Loader>;
   }
 
@@ -451,7 +449,7 @@ const ListPage = (props) => {
         onCloseModal={toggleCreateNewDatasetModal}
         onDatasetComplete={refreshList}
       />
-      {filterModalOpen ? (
+      {/* {filterModalOpen ? (
         <FilterSelectionModal
           selectedFilter={selectedFilter}
           setSelectedFilter={setSelectedFilter}
@@ -463,7 +461,7 @@ const ListPage = (props) => {
           labelings={labelings}
           removeFilter={removeFilter}
         />
-      ) : null}
+      ) : null} */}
     </div>
   );
 };
