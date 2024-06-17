@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { NotificationProvider } from './components/NotificationHandler/NotificationProvider';
 import NavbarLayout from './NavbarLayout';
@@ -8,6 +7,8 @@ import AuthWall from './routes/login';
 import RegisterPage from './routes/register';
 import AppContent from './AppContent';
 import useProjectStore from './stores/projectStore';
+
+import '../scss/custom.scss'
 
 const App = () => {
 

@@ -17,6 +17,7 @@ const DatasetTable = (props) => {
       <Fragment>
         <div className="w-100 d-flex justify-content-between">
           <div className="fw-bold h4">DATASETS</div>
+          <Button color='primary'>test</Button>
           <Button
             id="downloadAllDatasetsButton"
             size="sm"
