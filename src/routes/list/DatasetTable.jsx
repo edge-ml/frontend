@@ -17,12 +17,9 @@ const DatasetTable = (props) => {
       <Fragment>
         <div className="w-100 d-flex justify-content-between">
           <div className="fw-bold h4">DATASETS</div>
-          <Button color='primary'>test</Button>
           <Button
-            id="downloadAllDatasetsButton"
+            className='btn btn-primary'
             size="sm"
-            color="secondary"
-            className="btn-download-all ml-auto"
             disabled={props.datasets.length === 0}
             onClick={props.downloadAllDatasets}
           >

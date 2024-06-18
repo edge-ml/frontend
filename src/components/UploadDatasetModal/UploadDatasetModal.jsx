@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Modal,
   ModalHeader,
@@ -8,10 +8,10 @@ import {
   ModalFooter,
   Alert,
   ButtonGroup,
-} from 'reactstrap';
-import DragDrop from '../Common/DragDrop';
+} from "reactstrap";
+import DragDrop from "../Common/DragDrop";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSpinner,
   faTrashAlt,
@@ -19,19 +19,19 @@ import {
   faCheckCircle,
   faCheck,
   faBan,
-} from '@fortawesome/free-solid-svg-icons';
-import { faFile } from '@fortawesome/free-regular-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
+import { faFile } from "@fortawesome/free-regular-svg-icons";
 
-import { processCSVBackend } from '../../services/ApiServices/CSVServices';
-import { DatasetConfigView } from './DatasetConfigView';
+import { processCSVBackend } from "../../services/ApiServices/CSVServices";
+import { DatasetConfigView } from "./DatasetConfigView";
 
-import './UploadDatasetModal.css';
+import "./UploadDatasetModal.css";
 
 import {
   getUploadProcessingProgress,
   updateDataset,
-} from '../../services/ApiServices/DatasetServices';
-import { useInterval } from '../../services/ReactHooksService';
+} from "../../services/ApiServices/DatasetServices";
+import { useInterval } from "../../services/ReactHooksService";
 
 export const UploadDatasetModal = ({
   isOpen,
@@ -45,12 +45,12 @@ export const UploadDatasetModal = ({
   const MAXIMUM_POLLING_INTERVAL = 60 * 1000; // 60 seconds
 
   const FileStatus = Object.freeze({
-    CONFIGURATION: 'Configuration',
-    UPLOADING: 'Uploading',
-    PROCESSING: 'Processing',
-    COMPLETE: 'Complete',
-    ERROR: 'Error',
-    CANCELLED: 'Cancelled',
+    CONFIGURATION: "Configuration",
+    UPLOADING: "Uploading",
+    PROCESSING: "Processing",
+    COMPLETE: "Complete",
+    ERROR: "Error",
+    CANCELLED: "Cancelled",
   });
 
   const addFiles = (inputFiles) => {
@@ -80,7 +80,7 @@ export const UploadDatasetModal = ({
           };
         }
         return file;
-      }),
+      })
     );
   };
 
@@ -94,7 +94,7 @@ export const UploadDatasetModal = ({
           };
         }
         return file;
-      }),
+      })
     );
   };
 
@@ -109,7 +109,7 @@ export const UploadDatasetModal = ({
           };
         }
         return file;
-      }),
+      })
     );
   };
 
@@ -130,7 +130,7 @@ export const UploadDatasetModal = ({
             config: {
               timeSeries: timeSeries,
               labelings: labelings,
-              name: file.name.endsWith('.csv')
+              name: file.name.endsWith(".csv")
                 ? file.name.substring(0, file.name.length - 4)
                 : file.name,
               editingModeActive: false,
@@ -138,7 +138,7 @@ export const UploadDatasetModal = ({
           };
         }
         return file;
-      }),
+      })
     );
   };
 
@@ -152,7 +152,7 @@ export const UploadDatasetModal = ({
           };
         }
         return file;
-      }),
+      })
     );
   };
 
@@ -161,12 +161,12 @@ export const UploadDatasetModal = ({
       const CHUNK_SIZE = 128;
       const decoder = new TextDecoder();
       let offset = 0;
-      let results = '';
+      let results = "";
       const fr = new FileReader();
 
       fr.onload = function () {
         results += decoder.decode(fr.result, { stream: true });
-        const lines = results.split('\n');
+        const lines = results.split("\n");
         if (lines.length > 1) {
           resolve(lines[0]);
         }
@@ -178,8 +178,8 @@ export const UploadDatasetModal = ({
       fr.onerror = function () {
         setFiles((prevFiles) =>
           prevFiles.map((f) =>
-            f.id === fileId ? { ...f, error: fr.error } : f,
-          ),
+            f.id === fileId ? { ...f, error: fr.error } : f
+          )
         );
         reject(fr.error);
       };
@@ -198,20 +198,20 @@ export const UploadDatasetModal = ({
   };
 
   const parseHeader = (header) => {
-    const fields = header.split(',').map((f) => f.trim());
+    const fields = header.split(",").map((f) => f.trim());
     const invalid = fields.find(
-      (f) => !f.startsWith('sensor_') && !f.startsWith('label_') && f != 'time',
+      (f) => !f.startsWith("sensor_") && !f.startsWith("label_") && f != "time"
     );
     if (invalid || fields.length < 2) {
       return [undefined, undefined];
     }
     const unitPattern = /\[([^\[\]]*)\]$/;
     const timeSeries = fields
-      .filter((f) => f.startsWith('sensor_'))
+      .filter((f) => f.startsWith("sensor_"))
       .map((f, idx) => {
         const match = f.match(unitPattern);
         const name = match ? f.slice(7, match.index) : f.slice(7);
-        const unit = match ? match[1] : '';
+        const unit = match ? match[1] : "";
         return {
           name: name,
           originalName: name,
@@ -224,9 +224,9 @@ export const UploadDatasetModal = ({
         };
       });
     const labelings = fields
-      .filter((f) => f.startsWith('label_'))
+      .filter((f) => f.startsWith("label_"))
       .map((f) => {
-        const [, labeling, label] = f.split('_');
+        const [, labeling, label] = f.split("_");
         return {
           name: label,
           labelingItBelongs: labeling,
@@ -235,7 +235,7 @@ export const UploadDatasetModal = ({
       .reduce((acc, label, index) => {
         // reduce over labels
         const idx = acc.findIndex(
-          (labeling) => labeling.name === label.labelingItBelongs,
+          (labeling) => labeling.name === label.labelingItBelongs
         );
         if (idx >= 0) {
           acc[idx].labels.push(label.name);
@@ -267,12 +267,12 @@ export const UploadDatasetModal = ({
             f.id === fileIds[i]
               ? {
                   ...f,
-                  error: 'Invalid format, parsing failed',
+                  error: "Invalid format, parsing failed",
                   status: FileStatus.ERROR,
                   progress: 100,
                 }
-              : f,
-          ),
+              : f
+          )
         );
         continue;
       }
@@ -282,14 +282,14 @@ export const UploadDatasetModal = ({
 
   const handleUpload = async (file) => {
     const formData = new FormData();
-    formData.append('CSVFile', file.csv);
-    formData.append('CSVConfig', JSON.stringify(file.config));
+    formData.append("CSVFile", file.csv);
+    formData.append("CSVConfig", JSON.stringify(file.config));
     handleStatus(file.id, FileStatus.UPLOADING);
     setConsecutiveNoUpdateCount(0);
     const [cancellationHandler, response] = processCSVBackend(
       formData,
       file.id,
-      handleProgress,
+      handleProgress
     );
     setController(file.id, cancellationHandler);
     try {
@@ -301,16 +301,16 @@ export const UploadDatasetModal = ({
                 ...f,
                 datasetId: result.data.datasetId,
                 status: FileStatus.PROCESSING,
-                processingStep: 'Started processing',
+                processingStep: "Started processing",
               }
-            : f,
-        ),
+            : f
+        )
       );
       onDatasetComplete();
     } catch (err) {
       const message = err?.response?.data?.detail || err.message;
       setFiles((prevFiles) =>
-        prevFiles.map((f) => (f.id === file.id ? { ...f, error: message } : f)),
+        prevFiles.map((f) => (f.id === file.id ? { ...f, error: message } : f))
       );
       handleStatus(file.id, FileStatus.ERROR);
       return false;
@@ -354,8 +354,8 @@ export const UploadDatasetModal = ({
                     processingStep: step,
                     processedTimeseries: [currentTimeseries, totalTimeseries],
                   }
-                : f,
-            ),
+                : f
+            )
           );
           allComplete = allComplete && progress === 100;
         }
@@ -375,8 +375,8 @@ export const UploadDatasetModal = ({
       ? null
       : Math.min(
           MAXIMUM_POLLING_INTERVAL,
-          1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100,
-        ),
+          1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100
+        )
   );
 
   const handleUploadAll = async () => {
@@ -384,12 +384,12 @@ export const UploadDatasetModal = ({
       prevFiles.map((f) => ({
         ...f,
         config: { ...f.config, editingModeActive: false },
-      })),
+      }))
     );
     await Promise.all(
       files
         .filter((elm) => elm.status === FileStatus.CONFIGURATION)
-        .map((elm) => handleUpload(elm)),
+        .map((elm) => handleUpload(elm))
     );
   };
 
@@ -427,11 +427,9 @@ export const UploadDatasetModal = ({
     <Modal className="modal-xl" data-testid="modal" isOpen={isOpen}>
       <ModalHeader>
         <span>Create new dataset</span>
-        <Button
-          className="modal-close-button"
-          close
-          onClick={handleModalClose}
-        />
+        <div className="modal-close-button">
+          <Button close onClick={handleModalClose} />
+        </div>
       </ModalHeader>
       <ModalBody>
         <Alert isOpen={showWarning} color="danger">
@@ -451,7 +449,8 @@ export const UploadDatasetModal = ({
           </div>
         </Alert>
         <DragDrop
-          style={{ height: '100px' }}
+          onClick={() => {}}
+          style={{ height: "100px" }}
           className="my-2"
           onFileInput={onFileInput}
         />
@@ -474,11 +473,11 @@ export const UploadDatasetModal = ({
                     value={f.progress}
                     color={
                       f.status === FileStatus.COMPLETE
-                        ? 'success'
+                        ? "success"
                         : f.status === FileStatus.ERROR ||
                             f.status === FileStatus.CANCELLED
-                          ? 'danger'
-                          : 'primary'
+                          ? "danger"
+                          : "primary"
                     }
                   >
                     {f.status === FileStatus.ERROR
@@ -488,7 +487,7 @@ export const UploadDatasetModal = ({
                             ? f.processedTimeseries[0]
                               ? `: ${f.processingStep} - Timeseries Processed: ${f.processedTimeseries[0]}/${f.processedTimeseries[1]} `
                               : `: ${f.processingStep} `
-                            : ''
+                            : ""
                         } ${f.progress.toFixed(2)}%`}
                   </Progress>
                   <div className="d-flex align-items-center">
@@ -500,18 +499,18 @@ export const UploadDatasetModal = ({
                       >
                         <FontAwesomeIcon
                           icon={faCheckCircle}
-                          style={{ fontSize: '1.2em' }}
+                          style={{ fontSize: "1.2em" }}
                           title="Removes item from list"
                         />
                       </Button>
                     )}
                     {f.status === FileStatus.CONFIGURATION && (
                       <div className="d-flex">
-                        <Button close className="modal-icon-button me-1">
+                        <div className="me-1">
                           <FontAwesomeIcon
                             icon={faCog}
                             title="Opens configuration menu"
-                            style={{ fontSize: '1.2em' }}
+                            // style={{ fontSize: "1.2em" }}
                             onClick={(e) =>
                               changeConfig(f.id, {
                                 ...f.config,
@@ -519,18 +518,16 @@ export const UploadDatasetModal = ({
                               })
                             }
                           />
-                        </Button>
-                        <Button
-                          close
-                          title="Removes item from list"
-                          className="modal-icon-button me-2"
+                        </div>
+                        <div
+                          className="me-2"
                           onClick={(e) => handleDelete(f.id)}
                         >
                           <FontAwesomeIcon
-                            style={{ fontSize: '1.2em' }}
+                            style={{ fontSize: "1.2em" }}
                             icon={faTrashAlt}
                           />
-                        </Button>
+                        </div>
                       </div>
                     )}
                     {f.status === FileStatus.UPLOADING && (
@@ -541,7 +538,7 @@ export const UploadDatasetModal = ({
                       >
                         <FontAwesomeIcon
                           icon={faBan}
-                          style={{ fontSize: '1.2em' }}
+                          style={{ fontSize: "1.2em" }}
                           onClick={(e) => handleCancel(f)}
                         />
                       </Button>
@@ -555,7 +552,7 @@ export const UploadDatasetModal = ({
                           onClick={(e) => handleDelete(f.id)}
                         >
                           <FontAwesomeIcon
-                            style={{ fontSize: '1.2em' }}
+                            style={{ fontSize: "1.2em" }}
                             icon={faTrashAlt}
                           />
                         </Button>
@@ -564,7 +561,7 @@ export const UploadDatasetModal = ({
                       <FontAwesomeIcon
                         spin
                         size="2x"
-                        style={{ marginLeft: '1px' }}
+                        style={{ marginLeft: "1px" }}
                         className="me-2"
                         icon={faSpinner}
                       />
@@ -578,17 +575,17 @@ export const UploadDatasetModal = ({
                   changeConfig={changeConfig}
                   backendId={f.backendId}
                 />
-              ),
+              )
             )}
           </div>
         ) : null}
       </ModalBody>
       <ModalFooter className="d-flex justify-content-between">
         <div>
-          {' '}
+          {" "}
           <a href="/example_file.csv" download="example_file.csv">
             Click here
-          </a>{' '}
+          </a>{" "}
           to download an example CSV file.
         </div>
         <Button

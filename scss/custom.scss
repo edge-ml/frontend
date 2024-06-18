@@ -1,4 +1,15 @@
 
 $primary: rgb(72, 187, 120);
 
+.btn-primary {
+    background-color: $primary;
+    border-color: $primary;
+    color: white
+}
+
+.input {
+    border-radius: 0.25rem;
+}
+
+
 @import "../node_modules/bootstrap/scss/bootstrap";

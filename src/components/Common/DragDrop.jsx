@@ -1,13 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 class DragDrop extends Component {
   constructor(props) {
     super(props);
 
     this.state = { inputKey: 0 };
+    this.fileInputRef = React.createRef();
     this.onCancel = this.onCancel.bind(this);
     this.onDrop = this.onDrop.bind(this);
     this.onFileInput = this.onFileInput.bind(this);
+    this.onClick = this.onClick.bind(this);
   }
 
   onFileInput(e) {
@@ -19,7 +21,7 @@ class DragDrop extends Component {
   onCancel(e) {
     e.stopPropagation();
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
+    e.dataTransfer.dropEffect = "copy";
   }
 
   onDrop(e) {
@@ -29,25 +31,35 @@ class DragDrop extends Component {
     this.props.onFileInput(files);
   }
 
+  onClick() {
+    this.fileInputRef.current.click();
+  }
+
   render() {
     return (
-      <div style={this.props.style}>
+      <div
+        role="button"
+        className="cursor-pointer"
+        style={this.props.style}
+        onClick={this.props.onClick}
+      >
         <div
           style={{
-            cursor: 'pointer !important',
-            border: '3px dashed black',
-            borderRadius: '10px',
-            height: 'inherit',
-            padding: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            textAlign: 'center',
+            cursor: "pointer !important",
+            border: "3px dashed black",
+            borderRadius: "10px",
+            height: "inherit",
+            padding: "8px",
+            display: "flex",
+            alignItems: "center",
+            textAlign: "center",
           }}
           onDrop={this.onDrop}
           onDragOver={this.onCancel}
           onDragEnter={this.onCancel}
         >
           <input
+            ref={this.fileInputRef} // Step 3: Attach the ref to the file input
             onDrop={this.onDrop}
             onDragOver={this.onCancel}
             onDragEnter={(e) => {
@@ -55,11 +67,11 @@ class DragDrop extends Component {
               e.stopPropagation();
             }}
             style={{
-              cursor: 'pointer',
+              cursor: "pointer",
               opacity: 0,
-              position: 'absolute',
-              boxSizing: 'inherit',
-              height: 'inherit',
+              position: "absolute",
+              boxSizing: "inherit",
+              height: "inherit",
             }}
             id="fileInput"
             data-testid="fileInput"
@@ -75,22 +87,19 @@ class DragDrop extends Component {
             onDragOver={this.onCancel}
             onDragEnter={this.onCancel}
             style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: 'inherit',
-              fontSize: 'larger',
-              fontWeight: 'bold',
-              justifyContent: 'center',
-              width: '100%',
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "inherit",
+              fontSize: "larger",
+              fontWeight: "bold",
+              justifyContent: "center",
+              width: "100%",
             }}
           >
-            {' '}
             <div className="mt-2">
-              Drag 'n' drop some files here, or{' '}
-              <a style={{ cursor: 'pointer' }} href="#">
-                {' click here '}
-              </a>{' '}
+              Drag 'n drop some files here, or{" "}
+              <span className="text-primary" onClick={this.onClick}><u>click here</u> </span>
               to select files
             </div>
           </div>

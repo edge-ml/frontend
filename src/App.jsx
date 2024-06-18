@@ -1,22 +1,27 @@
-import React, { useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import './App.css';
-import { NotificationProvider } from './components/NotificationHandler/NotificationProvider';
-import NavbarLayout from './NavbarLayout';
-import AuthWall from './routes/login';
-import RegisterPage from './routes/register';
-import AppContent from './AppContent';
-import useProjectStore from './stores/projectStore';
+import React, { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
+import "./App.css";
+import { NotificationProvider } from "./components/NotificationHandler/NotificationProvider";
+import NavbarLayout from "./NavbarLayout";
+import AuthWall from "./routes/login";
+import RegisterPage from "./routes/register";
+import AppContent from "./AppContent";
+import useProjectStore from "./stores/projectStore";
 
-import '../scss/custom.scss'
+import "../scss/custom.scss";
+import useDatasetStore from "./stores/datasetStore";
 
 const App = () => {
-
   const { currentProject, getProjects } = useProjectStore();
+  const { refreshDatasets } = useDatasetStore();
 
   useEffect(() => {
     getProjects();
   }, []);
+
+  useEffect(() => {
+    refreshDatasets();
+  },[currentProject]);
 
   return (
     <div className="h-100vh">

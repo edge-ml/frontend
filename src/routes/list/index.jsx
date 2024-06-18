@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useContext, useRef } from "react";
 import {
   Container,
   Button,
@@ -6,23 +6,23 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from 'reactstrap';
-import NotificationContext from '../../components/NotificationHandler/NotificationProvider';
-import Loader from '../../modules/loader';
-import { useLocation } from 'react-router-dom';
+} from "reactstrap";
+import NotificationContext from "../../components/NotificationHandler/NotificationProvider";
+import Loader from "../../modules/loader";
+import { useLocation } from "react-router-dom";
 
-import './index.css';
+import "./index.css";
 
-
-import useLabelings from '../../Hooks/useLabelings';
-import DatasetTable from './DatasetTable';
-import DataUpload from './DataUpload';
-import { UploadDatasetModal } from '../../components/UploadDatasetModal/UploadDatasetModal';
-import PageSelection from './PageSelection';
-import PageSizeInput from './PageSizeInput';
-import FilterSelectionModal from './FilterSelection';
-import useProjectStore from '../../stores/projectStore';
-import useDatasets from '../../Hooks/useDatasets';
+import useLabelings from "../../Hooks/useLabelings";
+import DatasetTable from "./DatasetTable";
+import DataUpload from "./DataUpload";
+import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
+import PageSelection from "./PageSelection";
+import PageSizeInput from "./PageSizeInput";
+import FilterSelectionModal from "./FilterSelection";
+import useProjectStore from "../../stores/projectStore";
+import useDatasets from "../../Hooks/useDatasets";
+import useDatasetStore from "../../stores/datasetStore";
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -34,26 +34,25 @@ const ListPage = (props) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
-  const [selectedSorting, setSelectedSorting] = useState('alphaAsc'); //alphaAsc, alphaDesc, dateAsc, dateDesc
+  const [selectedSorting, setSelectedSorting] = useState("alphaAsc"); //alphaAsc, alphaDesc, dateAsc, dateDesc
   const [selectedFilter, setSelectedFilter] = useState(undefined); //name and display value of filter
   const [selectedFilterParams, setSelectedFilterParams] = useState(undefined); // obj containing filter params
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const { registerProjectDownload } = useContext(NotificationContext);
   //needed to access newest state in key event handler
-  const total_datasetsRef = useRef(total_datasets);
-  const currentPageRef = useRef(currentPage);
-  const pageSizeRef = useRef(pageSize);
-  const selectedSortingRef = useRef(selectedSorting);
-  const selectedFilterRef = useRef(selectedFilter);
-  const selectedFilterParamsRef = useRef(selectedFilterParams);
+  // const total_datasetsRef = useRef(total_datasets);
+  // const currentPageRef = useRef(currentPage);
+  // const pageSizeRef = useRef(pageSize);
+  // const selectedSortingRef = useRef(selectedSorting);
+  // const selectedFilterRef = useRef(selectedFilter);
+  // const selectedFilterParamsRef = useRef(selectedFilterParams);
 
   const location = useLocation();
-
 
   const { currentProject } = useProjectStore();
 
   const { labelings } = useLabelings();
-  const { datasets } = useDatasets();
+  const { datasets } = useDatasetStore();
 
   const toggleModal = () => {
     setModal(!modal);
@@ -64,9 +63,7 @@ const ListPage = (props) => {
       setModal(false);
       setSelectedDatasets([]);
       setDatasets(
-        datasets.filter(
-          (dataset) => !selectedDatasets.includes(dataset['_id']),
-        ),
+        datasets.filter((dataset) => !selectedDatasets.includes(dataset["_id"]))
       );
     });
   };
@@ -96,9 +93,9 @@ const ListPage = (props) => {
         .filter((elm) =>
           elm.timeSeries
             .map((x) => x.length)
-            .every((y) => y === 0 || y === null),
+            .every((y) => y === 0 || y === null)
         )
-        .map((elm) => elm._id),
+        .map((elm) => elm._id)
     );
   };
 
@@ -110,73 +107,73 @@ const ListPage = (props) => {
     setSelectedDatasets([]);
   };
 
-  const initURLSearchParams = () => {
-    //TODO error handling
-    let pageUpdate = currentPage;
-    let pageSizeUpdate = pageSize;
-    let sortUpdate = selectedSorting;
-    const searchParams = new URLSearchParams(location.search);
-    if (searchParams.has('page')) {
-      pageUpdate = parseInt(searchParams.get('page')) - 1;
-    } else {
-      searchParams.set('page', currentPage + 1);
-    }
-    if (searchParams.has('page_size')) {
-      pageSizeUpdate = parseInt(searchParams.get('page_size'));
-    } else {
-      searchParams.set('page_size', pageSize);
-    }
-    if (searchParams.has('sort')) {
-      sortUpdate = searchParams.get('sort');
-    } else {
-      searchParams.set('sort', selectedSorting);
-    }
-    // history.replace({ search: `?${searchParams.toString()}` });
-    // navigate.navigate()
+  // const initURLSearchParams = () => {
+  //   //TODO error handling
+  //   let pageUpdate = currentPage;
+  //   let pageSizeUpdate = pageSize;
+  //   let sortUpdate = selectedSorting;
+  //   const searchParams = new URLSearchParams(location.search);
+  //   if (searchParams.has('page')) {
+  //     pageUpdate = parseInt(searchParams.get('page')) - 1;
+  //   } else {
+  //     searchParams.set('page', currentPage + 1);
+  //   }
+  //   if (searchParams.has('page_size')) {
+  //     pageSizeUpdate = parseInt(searchParams.get('page_size'));
+  //   } else {
+  //     searchParams.set('page_size', pageSize);
+  //   }
+  //   if (searchParams.has('sort')) {
+  //     sortUpdate = searchParams.get('sort');
+  //   } else {
+  //     searchParams.set('sort', selectedSorting);
+  //   }
+  //   // history.replace({ search: `?${searchParams.toString()}` });
+  //   // navigate.navigate()
 
-    selectedSortingRef.current = sortUpdate;
-    currentPageRef.current = pageUpdate;
-    pageSizeRef.current = pageSizeUpdate;
-    setCurrentPage(pageUpdate);
-    setPageSize(pageSizeUpdate);
-    setSelectedSorting(sortUpdate);
-    return {
-      pageUpdate: pageUpdate === 0 ? 1 : pageUpdate,
-      pageSizeUpdate: pageSizeUpdate,
-      sortUpdate: sortUpdate,
-    };
-  };
+  //   selectedSortingRef.current = sortUpdate;
+  //   currentPageRef.current = pageUpdate;
+  //   pageSizeRef.current = pageSizeUpdate;
+  //   setCurrentPage(pageUpdate);
+  //   setPageSize(pageSizeUpdate);
+  //   setSelectedSorting(sortUpdate);
+  //   return {
+  //     pageUpdate: pageUpdate === 0 ? 1 : pageUpdate,
+  //     pageSizeUpdate: pageSizeUpdate,
+  //     sortUpdate: sortUpdate,
+  //   };
+  // };
 
-  const changeURLSearchParams = (currentPage, pageSize, sort) => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.set('page', currentPage + 1);
-    searchParams.set('page_size', pageSize);
-    searchParams.set('sort', sort);
-    // history.replace({ search: `?${searchParams.toString()}` });
-  };
+  // const changeURLSearchParams = (currentPage, pageSize, sort) => {
+  //   const searchParams = new URLSearchParams(location.search);
+  //   searchParams.set('page', currentPage + 1);
+  //   searchParams.set('page_size', pageSize);
+  //   searchParams.set('sort', sort);
+  //   // history.replace({ search: `?${searchParams.toString()}` });
+  // };
 
-  const fetchDatasetets = (
-    currentPage,
-    pageSize,
-    sort,
-    selectedFilter,
-    selectedFilterParams,
-  ) => {
-    datasetApi
-      .getDatasetsWithPagination(
-        currentPage + 1,
-        pageSize,
-        sort,
-        selectedFilter,
-        selectedFilterParams,
-      )
-      .then((data) => {
-        onDatasetsChanged(data.datasets);
-        total_datasetsRef.current = data.total_datasets;
-        setTotalDatasets(data.total_datasets);
-        changeURLSearchParams(currentPage, pageSize, sort);
-      });
-  };
+  // const fetchDatasetets = (
+  //   currentPage,
+  //   pageSize,
+  //   sort,
+  //   selectedFilter,
+  //   selectedFilterParams,
+  // ) => {
+  //   datasetApi
+  //     .getDatasetsWithPagination(
+  //       currentPage + 1,
+  //       pageSize,
+  //       sort,
+  //       selectedFilter,
+  //       selectedFilterParams,
+  //     )
+  //     .then((data) => {
+  //       onDatasetsChanged(data.datasets);
+  //       total_datasetsRef.current = data.total_datasets;
+  //       setTotalDatasets(data.total_datasets);
+  //       changeURLSearchParams(currentPage, pageSize, sort);
+  //     });
+  // };
 
   // useEffect(() => {
   //   const pageInit = initURLSearchParams();
@@ -249,12 +246,12 @@ const ListPage = (props) => {
 
   const handleKeyDown = (e) => {
     switch (e.key) {
-      case 'ArrowLeft':
-        console.log('left');
+      case "ArrowLeft":
+        console.log("left");
         goToPreviousPage();
         break;
-      case 'ArrowRight':
-        console.log('right');
+      case "ArrowRight":
+        console.log("right");
         goToNextPage();
         break;
       default:
@@ -283,7 +280,7 @@ const ListPage = (props) => {
 
   const goToLastPage = () => {
     setCurrentPage(
-      Math.ceil(total_datasetsRef.current / pageSizeRef.current) - 1,
+      Math.ceil(total_datasetsRef.current / pageSizeRef.current) - 1
     );
   };
 
@@ -329,11 +326,7 @@ const ListPage = (props) => {
     registerProjectDownload();
   };
 
-
-  const toggleCreateNewDatasetModal = () => {
-
-  }
-
+  const toggleCreateNewDatasetModal = () => {};
 
   if (!datasets || !labelings) {
     return <Loader loading={true}></Loader>;
@@ -350,7 +343,7 @@ const ListPage = (props) => {
       pageSize,
       selectedSorting,
       currentFilter,
-      currentFilterParams,
+      currentFilterParams
     );
   };
 
@@ -364,35 +357,33 @@ const ListPage = (props) => {
       pageSize,
       selectedSorting,
       selectedFilterRef.current,
-      selectedFilterParamsRef.current,
+      selectedFilterParamsRef.current
     );
   };
 
   return (
     <div id="dataList">
-      <Container style={{ padding: 0 }}>
-        <DataUpload
-          toggleCreateNewDatasetModal={toggleCreateNewDatasetModal}
-        ></DataUpload>
-        <DatasetTable
-          datasets={datasets}
-          selectedDatasets={selectedDatasets}
-          openDeleteModal={toggleModal}
-          selectAllEmpty={selectAllEmpty}
-          downloadAllDatasets={downloadAllDatasets}
-          toggleCheck={toggleCheck}
-          labelings={labelings}
-          deleteEntry={deleteEntry}
-          selectAll={selectAll}
-          deselectAll={deselectAll}
-          sortDropDownIsOpen={sortDropDownIsOpen}
-          setSortDropdownIsOpen={setSortDropdownIsOpen}
-          selectedSorting={selectedSorting}
-          setSelectedSorting={setSelectedSorting}
-          setFilterModalOpen={setFilterModalOpen}
-          selectedFilter={selectedFilter}
-        ></DatasetTable>
-      </Container>
+      <DataUpload
+        toggleCreateNewDatasetModal={toggleCreateNewDatasetModal}
+      ></DataUpload>
+      <DatasetTable
+        datasets={datasets}
+        selectedDatasets={selectedDatasets}
+        openDeleteModal={toggleModal}
+        selectAllEmpty={selectAllEmpty}
+        downloadAllDatasets={downloadAllDatasets}
+        toggleCheck={toggleCheck}
+        labelings={labelings}
+        deleteEntry={deleteEntry}
+        selectAll={selectAll}
+        deselectAll={deselectAll}
+        sortDropDownIsOpen={sortDropDownIsOpen}
+        setSortDropdownIsOpen={setSortDropdownIsOpen}
+        selectedSorting={selectedSorting}
+        setSelectedSorting={setSelectedSorting}
+        setFilterModalOpen={setFilterModalOpen}
+        selectedFilter={selectedFilter}
+      ></DatasetTable>
 
       {datasets.length > 0 ? (
         <div className="d-flex flex-row justify-content-center mt-3">
@@ -438,17 +429,12 @@ const ListPage = (props) => {
             onClick={deleteSelectedDatasets}
           >
             Yes
-          </Button>{' '}
+          </Button>{" "}
           <Button outline color="secondary" onClick={toggleModal}>
             No
           </Button>
         </ModalFooter>
       </Modal>
-      <UploadDatasetModal
-        isOpen={isCreateNewDatasetOpen}
-        onCloseModal={toggleCreateNewDatasetModal}
-        onDatasetComplete={refreshList}
-      />
       {/* {filterModalOpen ? (
         <FilterSelectionModal
           selectedFilter={selectedFilter}

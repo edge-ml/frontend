@@ -1,31 +1,36 @@
 // Import necessary libraries and components
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Row, Col } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, Row, Col } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCode,
   faFile,
   faMicrochip,
   faMobileAlt,
-} from '@fortawesome/free-solid-svg-icons';
-import useProjectRouter from '../../Hooks/ProjectRouter';
+} from "@fortawesome/free-solid-svg-icons";
+import useProjectRouter from "../../Hooks/ProjectRouter";
+import useDatasetStore from "../../stores/datasetStore";
+import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
 
 // Component for Data Upload Panel
-const DataUpload = ({ toggleCreateNewDatasetModal }) => {
+const DataUpload = () => {
   const navigate = useProjectRouter();
 
-  const iconSize = 'xs';
-  const buttonColor = 'secondary';
-  const linkTarget = '_blank';
+  const [csvModalOpen, setCSVModalOpen] = useState(true);
+  const { refreshDatasets } = useDatasetStore();
+
+  const iconSize = "xs";
+  const buttonColor = "secondary";
+  const linkTarget = "_blank";
 
   const dataUploadOptions = [
     {
       icon: faMicrochip,
-      title: 'WebBLE Direct Connect',
+      title: "WebBLE Direct Connect",
       description: (
         <>
-          Learn how to prepare your Arduino{' '}
+          Learn how to prepare your Arduino{" "}
           <a
             href="https://github.com/edge-ml/EdgeML-Arduino"
             target={linkTarget}
@@ -35,15 +40,15 @@ const DataUpload = ({ toggleCreateNewDatasetModal }) => {
           .
         </>
       ),
-      buttonText: 'Connect BLE Device',
-      buttonAction: () => navigate('ble'),
+      buttonText: "Connect BLE Device",
+      buttonAction: () => navigate("ble"),
     },
     {
       icon: faFile,
-      title: 'CSV File Upload',
+      title: "CSV File Upload",
       description: (
         <>
-          Learn how to prepare your CSV file{' '}
+          Learn how to prepare your CSV file{" "}
           <a
             href="https://github.com/edge-ml/EdgeML-Arduino"
             target={linkTarget}
@@ -53,22 +58,22 @@ const DataUpload = ({ toggleCreateNewDatasetModal }) => {
           .
         </>
       ),
-      buttonText: 'Upload CSV Files',
-      buttonAction: toggleCreateNewDatasetModal,
+      buttonText: "Upload CSV Files",
+      buttonAction: () => setCSVModalOpen(true),
     },
     {
       icon: faCode,
-      title: 'Library Upload',
-      description: 'Implement custom logic using edge-ml libraries.',
-      buttonText: 'Generate Code',
-      buttonAction: () => navigate('settings/getCode'),
+      title: "Library Upload",
+      description: "Implement custom logic using edge-ml libraries.",
+      buttonText: "Generate Code",
+      buttonAction: () => navigate("settings/getCode"),
     },
     {
       icon: faMobileAlt,
-      title: 'Web Sensor API',
-      description: 'Collect sensor data from a smartphone in a browser.',
-      buttonText: 'Collect Web Sensor Data',
-      buttonAction: () => navigate('uploadWeb'),
+      title: "Web Sensor API",
+      description: "Collect sensor data from a smartphone in a browser.",
+      buttonText: "Collect Web Sensor Data",
+      buttonAction: () => navigate("uploadWeb"),
     },
   ];
 
@@ -76,10 +81,10 @@ const DataUpload = ({ toggleCreateNewDatasetModal }) => {
     <div
       className="p-4 pt-4 pb-5 mb-4 data-upload-panel"
       style={{
-        background: 'linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72))',
+        background: "linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72))",
       }}
     >
-      <div className="mt-2 mb-4" style={{ color: 'white', opacity: 0.7 }}>
+      <div className="mt-2 mb-4" style={{ color: "white", opacity: 0.7 }}>
         <b>DATA UPLOAD</b>
       </div>
 
@@ -89,7 +94,7 @@ const DataUpload = ({ toggleCreateNewDatasetModal }) => {
           <Col
             key={index}
             className="col-sm-6 col-xl-3 col-12 p-3 d-flex flex-row align-items-start justify-content-start"
-            style={{ color: 'white' }}
+            style={{ color: "white" }}
           >
             <div className="data-upload-icon">
               <FontAwesomeIcon icon={option.icon} size={iconSize} />
@@ -103,11 +108,11 @@ const DataUpload = ({ toggleCreateNewDatasetModal }) => {
                 </small>
               </div>
               <Button
-                id={`buttonUpload${option.title.replace(/ /g, '')}`}
+                id={`buttonUpload${option.title.replace(/ /g, "")}`}
                 className="mt-2 btn-upload align-self-stretch align-self-md-start"
                 color={buttonColor}
                 onClick={option.buttonAction}
-                style={{ padding: '0px' }}
+                style={{ padding: "0px" }}
               >
                 <small>{option.buttonText}</small>
               </Button>
@@ -115,6 +120,11 @@ const DataUpload = ({ toggleCreateNewDatasetModal }) => {
           </Col>
         ))}
       </Row>
+      <UploadDatasetModal
+        isOpen={csvModalOpen}
+        onCloseModal={() => setCSVModalOpen(false)}
+        onDatasetComplete={refreshDatasets}
+      />
     </div>
   );
 };
