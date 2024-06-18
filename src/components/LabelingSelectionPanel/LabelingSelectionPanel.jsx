@@ -78,6 +78,7 @@ const LabelingSelectionPanel = () => {
     return (
       <div>
         <Dropdown
+          outline
           isOpen={isTSDropdownOpen}
           toggle={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
           className="me-2"
@@ -176,13 +177,14 @@ const LabelingSelectionPanel = () => {
           </div>
         </div>
         <div className="d-flex align-items-center">
-          <Button id="btn-secondary" className="m-1" onClick={downloadDataSet}>
+          <Button outline id="btn-secondary" className="m-1" onClick={downloadDataSet}>
             <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon>
           </Button>
           <Button
+            outline
             id="buttonOpenHelpModal"
             className="m-1"
-            color="secondary"
+            color="info"
             onClick={toggleHelpModal}
           >
             <FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon>

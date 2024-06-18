@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useContext } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
   faCaretRight,
@@ -7,31 +7,35 @@ import {
   faCogs,
   faPen,
   faMicrochip,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
-import './Navbar.css';
-import useProjectRouter from '../../Hooks/ProjectRouter';
-import { useLocation } from 'react-router-dom';
+import "./Navbar.css";
+import useProjectRouter from "../../Hooks/ProjectRouter";
+import { useLocation } from "react-router-dom";
 
-const NavbarProject = ({ project, projects, currentProject, onProjectClick }) => {
+const NavbarProject = ({
+  project,
+  projects,
+  currentProject,
+  onProjectClick,
+}) => {
   const location = useLocation();
   const navigate = useProjectRouter();
 
   const getNavBarItemClasses = (location_data) => {
     const project = currentProject;
-    const isSelected =
-      location.pathname.toLowerCase() ===
-      (
-        '/' +
-        project.admin.userName +
-        '/' +
-        project.name +
-        '/' +
-        location_data
-      ).toLowerCase();
+    const matchName =
+      "/" +
+      project.admin.userName +
+      "/" +
+      project.name +
+      "/" +
+      location_data
+    const pathName = location.pathname.toLowerCase();
+    const isSelected = pathName.startsWith(matchName.toLowerCase());
     return (
-      'pt-2 pb-2 ps-4 small ' +
-      (isSelected ? 'navbar-project-item-active' : 'navbar-project-item')
+      "pt-2 pb-2 ps-4 small " +
+      (isSelected ? "navbar-project-item-active" : "navbar-project-item")
     );
   };
 
@@ -41,15 +45,15 @@ const NavbarProject = ({ project, projects, currentProject, onProjectClick }) =>
         className="d-flex align-items-center mt-1 pt-2 pb-2 ps-2 navbar-project"
         onClick={() => onProjectClick(project)}
         style={{
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
+          overflow: "hidden",
+          textOverflow: "ellipsis",
         }}
       >
         <FontAwesomeIcon
           style={{
-            color: '#8b8d8f',
-            float: 'left',
-            cursor: 'pointer',
+            color: "#8b8d8f",
+            float: "left",
+            cursor: "pointer",
           }}
           icon={currentProject._id === project._id ? faCaretDown : faCaretRight}
           className="me-2 fa-s"
@@ -57,9 +61,9 @@ const NavbarProject = ({ project, projects, currentProject, onProjectClick }) =>
         <div
           className="navbar-project pe-1"
           style={{
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            cursor: 'pointer',
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            cursor: "pointer",
           }}
         >
           <b>{project.name}</b>
@@ -68,10 +72,10 @@ const NavbarProject = ({ project, projects, currentProject, onProjectClick }) =>
       {currentProject._id === project._id ? (
         <div>
           {[
-            ['Datasets', faDatabase],
-            ['Labelings', faPen],
-            ['Models', faMicrochip],
-            ['Settings', faCogs],
+            ["Datasets", faDatabase],
+            ["Labelings", faPen],
+            ["Models", faMicrochip],
+            ["Settings", faCogs],
           ].map((elm, index) => (
             <div
               key={elm + index}
