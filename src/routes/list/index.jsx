@@ -22,7 +22,7 @@ const ListPage = (props) => {
   const { registerProjectDownload } = useContext(NotificationContext);
 
   const { labelings } = useLabelings();
-  const { datasets, refreshDatasets, page, setPage } = usePaginatedDatasets(1);
+  const { datasets, refreshDatasets, page, setPage, totalPages } = usePaginatedDatasets(1);
 
   const toggleModal = () => {
     setModal(!modal);
@@ -127,6 +127,7 @@ const ListPage = (props) => {
         <PageSelection
           currentPage={page}
           setPage={setPage}
+          totalPages={totalPages}
         ></PageSelection>
       </div>
     </div>

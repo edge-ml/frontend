@@ -5,7 +5,7 @@ const usePaginatedDatasets = (initialPage) => {
   const [datasets, setDatasets] = useState(undefined);
   const [page, setPageInternal] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
-  const [tableLenth, setTableLength] = useState(3);
+  const [tableLenth, setTableLength] = useState(20);
 
   const refreshDatasets = async () => {
     const datasets = await getDatasetsPagination(
@@ -13,7 +13,7 @@ const usePaginatedDatasets = (initialPage) => {
       tableLenth * page
     );
     setDatasets(datasets.datasets);
-    setTotalPages(datasets.total_datasets);
+    setTotalPages(Math.ceil(datasets.total_datasets / tableLenth));
   };
 
   useEffect(() => {

@@ -1,11 +1,12 @@
-import React, { Fragment, useState } from 'react';
-import { Row, Col, Button, Badge } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import Checkbox from '../../components/Common/Checkbox';
-import LabelBadge from '../../components/Common/LabelBadge';
-import { EdgeMLTableEntry } from '../../components/Common/EdgeMLTable';
-import EditLabelingModal from '../../components/EditLabelingModal/EditLabelingModal';
+import React, { Fragment, useState } from "react";
+import { Row, Col, Button, Badge } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import Checkbox from "../../components/Common/Checkbox";
+import LabelBadge from "../../components/Common/LabelBadge";
+import { EdgeMLTableEntry } from "../../components/Common/EdgeMLTable";
+import EditLabelingModal from "../../components/EditLabelingModal/EditLabelingModal";
+import DeleteConfirmationModal from "../../components/DeleteConfirmModal";
 
 const LabelingTableEntry = ({
   labelings,
@@ -13,13 +14,13 @@ const LabelingTableEntry = ({
   isSelected,
   toggleCheck,
   updateLabeling,
-  deleteLabeling
+  deleteLabelings,
 }) => {
-
   const [labelingModalOpen, setLabelingModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   return (
-    <EdgeMLTableEntry key={'labeling' + labeling._id}>
+    <EdgeMLTableEntry key={"labeling" + labeling._id}>
       <div className="d-flex align-items-center p-2 ms-2 me-0 ml-md-3 me-md-3">
         <Checkbox
           isSelected={isSelected}
@@ -32,12 +33,12 @@ const LabelingTableEntry = ({
               <div className="text-left d-inline-block m-2 text-break">
                 <div
                   className={
-                    labeling.name !== ''
-                      ? 'fw-bold font-size-lg h5 d-inline'
-                      : 'font-weight-normal font-italic font-size-lg h5 d-inline'
+                    labeling.name !== ""
+                      ? "fw-bold font-size-lg h5 d-inline"
+                      : "font-weight-normal font-italic font-size-lg h5 d-inline"
                   }
                 >
-                  {labeling.name !== '' ? labeling.name : 'Untitled'}
+                  {labeling.name !== "" ? labeling.name : "Untitled"}
                 </div>
               </div>
             </Col>
@@ -51,13 +52,13 @@ const LabelingTableEntry = ({
                 outline
                 color="danger"
                 className="btn-delete"
-                onClick={() => deleteLabeling(labeling._id)}
+                onClick={() => setDeleteModalOpen(true)}
               >
-                <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
+                <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{" "}
               </Button>
               <Button
                 outline
-                color='primary'
+                color="primary"
                 className="ms-2"
                 onClick={() => setLabelingModalOpen(true)}
               >
@@ -72,9 +73,25 @@ const LabelingTableEntry = ({
         currentLabeling={labeling}
         isOpen={labelingModalOpen}
         onCancel={() => setLabelingModalOpen(false)}
-        onSave={(labeling) => { updateLabeling(labeling); setLabelingModalOpen(false) }}
-        onDelete={(labeling) => { deleteLabeling(labeling); setLabelingModalOpen(false) }}
+        onSave={(labeling) => {
+          updateLabeling(labeling);
+          setLabelingModalOpen(false);
+        }}
+        onDelete={(labeling) => {
+          deleteLabelings([labeling]);
+          setLabelingModalOpen(false);
+        }}
       ></EditLabelingModal>
+      <DeleteConfirmationModal 
+      isOpen={deleteModalOpen}
+      onConfirm={() => {deleteLabelings([labeling]); setDeleteModalOpen(false)}}
+      onCancel={() => setDeleteModalOpen(false)}
+      >
+        <div>
+          <div>Are you sure you want to delete this labeling:</div>
+          <div className="m-2">{labeling.name}</div>
+        </div>
+      </DeleteConfirmationModal>
     </EdgeMLTableEntry>
   );
 };
@@ -93,7 +110,7 @@ const Labeling = (props) => {
         {labels.map((label, index) => {
           return (
             <LabelBadge key={label._id} color={label.color}>
-              {label.name !== '' ? label.name : 'Untitled'}{' '}
+              {label.name !== "" ? label.name : "Untitled"}{" "}
             </LabelBadge>
           );
         })}

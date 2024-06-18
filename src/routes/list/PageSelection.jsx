@@ -1,7 +1,7 @@
 import React from "react";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
-const PageSelection = ({ currentPage, setPage }) => {
+const PageSelection = ({ currentPage, setPage, totalPages }) => {
   const onClick = () => {
     setPage(currentPage);
   };
@@ -15,7 +15,7 @@ const PageSelection = ({ currentPage, setPage }) => {
         <PaginationLink href="#" previous />
       </PaginationItem>
       <PaginationItem>
-        <PaginationLink>{currentPage}</PaginationLink>
+        <PaginationLink>{currentPage + "/" + totalPages}</PaginationLink>
       </PaginationItem>
       <PaginationItem onClick={()=> setPage(currentPage + 1)}>
         <PaginationLink href="#" next />

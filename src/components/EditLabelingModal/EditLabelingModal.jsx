@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   InputGroupText,
   Modal,
@@ -10,8 +10,6 @@ import {
   ModalFooter,
   FormFeedback,
 } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { generateRandomColor } from "../../services/ColorService";
 import EditLabelingModalEntry from "./EditLabelModalEntry";
@@ -26,6 +24,15 @@ const EditLabelingModal = ({
   const [labeling, setLabeling] = useState(
     currentLabeling ? currentLabeling : { name: "", labels: [] }
   );
+
+  useEffect(() => {
+    if (isOpen) {
+      setLabeling(currentLabeling ? { ...currentLabeling } : { name: "", labels: [] });
+    } else {
+      setLabeling({ name: "", labels: [] });
+    }
+  }, [isOpen, currentLabeling]);
+
 
   const onAddLabel = () => {
     const newLabeling = { ...labeling };
@@ -82,6 +89,9 @@ const EditLabelingModal = ({
         return true;
       }
     }
+    if (labeling.labels.length === 0) {
+      return true;
+    }
   };
 
   return (
@@ -106,7 +116,7 @@ const EditLabelingModal = ({
                 />
                 <FormFeedback>Oh no! That name is already taken</FormFeedback>
               </InputGroup>
-              {labeling ? (
+              {/* {labeling ? (
                 <Button
                   id="buttonDeleteLabeling"
                   color="danger"
@@ -118,7 +128,7 @@ const EditLabelingModal = ({
                 >
                   <FontAwesomeIcon icon={faTrashAlt} />
                 </Button>
-              ) : null}
+              ) : null} */}
             </div>
 
             <h6 className="fw-bold mt-2">Labels</h6>
