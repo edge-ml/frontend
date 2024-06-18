@@ -1,3 +1,4 @@
+import React from 'react';
 import { Badge } from 'reactstrap';
 import '../index.css';
 import Checkbox from '../../../components/Common/Checkbox';

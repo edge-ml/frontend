@@ -11,6 +11,7 @@ import NavbarInfo from './NavbarInfo';
 import NavbarProject from './NavbarProject';
 import EditProjectModal from '../EditProjectModal/EditProjectModal';
 import useProjectStore from '../../stores/projectStore';
+import Loader from '../../modules/loader';
 
 const Navbar = () => {
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
@@ -29,6 +30,10 @@ const Navbar = () => {
 
   const onProjectClick = (project) => {
     setCurrentProject(project);
+  }
+
+  if (!projects) {
+    return <Loader isLoading></Loader>
   }
 
   return (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { ModalBody, ModalFooter, ModalHeader, Modal } from 'reactstrap';
 
 import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';

@@ -1,29 +1,31 @@
-// import { ReactComponent as CPPSVG } from './CPP.svg';
-// import { ReactComponent as JSSVG } from './JS.svg';
+import React from 'react';
 
-// const PlatformList = ({ platforms, size, color }) => {
-//   const platformsSet = new Set(platforms);
+const svgComponents = {
+  JS: React.lazy(() => import('./JS.svg')),
+  CPP: React.lazy(() => import('./CPP.svg'))
+};
 
-//   if (platformsSet.size === 0) {
-//     return <div className="d-inline">No Platforms</div>;
-//   }
-//   return (
-//     <div className="child-gap">
-//       {platformsSet.has('JS') && (
-//         <JSSVG style={{ height: '2rem', width: '2rem' }}></JSSVG>
-//       )}
-//       {platformsSet.has('C') && (
-//         <CPPSVG style={{ height: '2rem', width: '2rem' }}></CPPSVG>
-//       )}
-//     </div>
-//   );
-// };
+const PlatformList = ({ platforms, size, color }) => {
+  const platformsSet = new Set(platforms);
 
-// export default PlatformList;
+  if (platformsSet.size === 0) {
+    return <div className="d-inline">No Platforms</div>;
+  }
 
-
-const PlatformList = () => {
-  return (<div></div>) 
-}
+  return (
+    <div className="child-gap">
+      {Array.from(platformsSet).map(platform => {
+        const SvgComponent = svgComponents[platform];
+        return (
+          SvgComponent && (
+            <React.Suspense fallback={<div>Loading...</div>} key={platform}>
+              <SvgComponent style={{ height: size, width: size, fill: color }} />
+            </React.Suspense>
+          )
+        );
+      })}
+    </div>
+  );
+};
 
 export default PlatformList;

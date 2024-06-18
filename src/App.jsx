@@ -12,17 +12,6 @@ import "../scss/custom.scss";
 import useDatasetStore from "./stores/datasetStore";
 
 const App = () => {
-  const { currentProject, getProjects } = useProjectStore();
-  const { refreshDatasets } = useDatasetStore();
-
-  useEffect(() => {
-    getProjects();
-  }, []);
-
-  useEffect(() => {
-    refreshDatasets();
-  },[currentProject]);
-
   return (
     <div className="h-100vh">
       <Routes>

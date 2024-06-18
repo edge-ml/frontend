@@ -1,6 +1,6 @@
+import React from 'react';
 import { useState, Fragment } from 'react';
 import {
-  ModalBody,
   Row,
   Col,
   Container,

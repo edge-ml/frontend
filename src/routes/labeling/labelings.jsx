@@ -60,6 +60,7 @@ const Labelings = () => {
             <div className="justify-content-end">
               <Button
                 outline
+                color="primary"
                 onClick={onModalAddLabeling}
                 className="btn-neutral ml-auto"
               >

@@ -18,8 +18,9 @@ const DatasetTable = (props) => {
         <div className="w-100 d-flex justify-content-between">
           <div className="fw-bold h4">DATASETS</div>
           <Button
-            className='btn btn-primary'
+            color='secondary'
             size="sm"
+            outline
             disabled={props.datasets.length === 0}
             onClick={props.downloadAllDatasets}
           >
@@ -44,11 +45,12 @@ const DatasetTable = (props) => {
                   ></Checkbox>
                 </div>
                 <Button
+                  outline
                   className="ms-3 btn-delete"
                   id="deleteDatasetsButton"
                   size="sm"
                   disabled={props.selectedDatasets.length === 0}
-                  color="secondary"
+                  color="danger"
                   onClick={props.openDeleteModal}
                 >
                   <FontAwesomeIcon
@@ -60,6 +62,7 @@ const DatasetTable = (props) => {
                 <Button
                   id="selectAllEmptyButton"
                   size="sm"
+                  outline
                   color="secondary"
                   onClick={props.selectAllEmpty}
                   /* disabled={props.datasets.every((elm) => elm.end != 0)}*/

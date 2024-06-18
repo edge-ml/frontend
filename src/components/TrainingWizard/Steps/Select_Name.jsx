@@ -1,5 +1,5 @@
 import { Input, ModalBody, InputGroup } from 'reactstrap';
-import { Fragment } from 'react';
+import React, { Fragment } from 'react';
 
 const Select_Name = ({ modelName, setModelName, screen }) => {
   return (

@@ -167,7 +167,7 @@ const ValidationPage = () => {
         <Fragment>
           <div className="w-100 d-flex justify-content-between align-items-center mb-2">
             <h4 className="fw-bold">MODELS</h4>
-            <Button className="btn-neutral" onClick={() => setModalOpen(true)}>
+            <Button outline color='primary' className="btn-neutral" onClick={() => setModalOpen(true)}>
               Train a model
             </Button>
           </div>

@@ -16,8 +16,6 @@ const UploadDatasetModal = ({ isOpen, onCloseModal, onDatasetComplete }) => {
     setFiles([...fileList]);
   };
 
-  console.log(files);
-
   return (
     <Modal isOpen={isOpen} size="xl">
       <ModalHeader>Upload</ModalHeader>

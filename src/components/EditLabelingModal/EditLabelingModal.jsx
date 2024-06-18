@@ -13,16 +13,18 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
-import {
-  generateRandomColor,
-} from "../../services/ColorService";
+import { generateRandomColor } from "../../services/ColorService";
 import EditLabelingModalEntry from "./EditLabelModalEntry";
 
-const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel, labelings }) => {
+const EditLabelingModal = ({
+  isOpen,
+  currentLabeling,
+  onSave,
+  onCancel,
+  labelings,
+}) => {
   const [labeling, setLabeling] = useState(
-    currentLabeling
-      ? currentLabeling
-      : { name: "", labels: [] }
+    currentLabeling ? currentLabeling : { name: "", labels: [] }
   );
 
   const onAddLabel = () => {
@@ -43,18 +45,44 @@ const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel, labeling
     setLabeling(newLabeling);
   };
 
-  const isDuplicateLabelName = () => {
+  const isDuplicateLabelName = (index) => {
     const labelNames = labeling.labels.map((label) => label.name);
-    const duplicateLabel = labelNames.find(
-      (name, index) => labelNames.indexOf(name) !== index
+    const currentLabelName = labelNames[index];
+    const duplicateCount = labelNames.reduce((count, name, idx) => {
+      if (name === currentLabelName && idx !== index) {
+        return count + 1;
+      }
+      return count;
+    }, 0);
+    return duplicateCount > 0;
+  };
+
+  const isLabelingNameDuplicate = () => {
+    return labelings.some(
+      (existingLabeling) =>
+        existingLabeling.name === labeling.name &&
+        existingLabeling._id !== labeling._id
     );
-    return duplicateLabel;
   };
 
   const saveDisabled = () => {
-    return labeling.name === "" || isDuplicateLabelName();
+    if (labeling.name === "") {
+      return true;
+    }
+    if (isLabelingNameDuplicate()) {
+      return true;
+    }
+    for (const label of labeling.labels) {
+      if (label.name === "") {
+        return true;
+      }
+    }
+    for (let i = 0; i < labeling.labels.length; i++) {
+      if (isDuplicateLabelName(i)) {
+        return true;
+      }
+    }
   };
-  
 
   return (
     <Modal isOpen={isOpen}>
@@ -62,21 +90,21 @@ const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel, labeling
         {labeling ? "Edit labeling" : "Create labeling"}
       </ModalHeader>
       <ModalBody>
-        <div className="d-flex flex-column algin-items-center">
-          <div>
+        <div className="d-flex flex-column align-items-center">
+          <div className="w-100">
             <div className="d-flex align-items-center">
               <InputGroup className="d-flex">
                 <InputGroupText>Labeling Set</InputGroupText>
                 <Input
-                  invalid={labelings.map(elm => elm.name).includes(labeling.name)}
+                  invalid={isLabelingNameDuplicate() && labeling.name !== ""}
                   id="labelingName"
                   placeholder="Name"
                   value={labeling.name}
-                  onChange={(e) => { setLabeling({ ...labeling, name: e.target.value }) }}>
-                </Input>
-                <FormFeedback>
-                  Oh no! That name is already taken
-                </FormFeedback>
+                  onChange={(e) => {
+                    setLabeling({ ...labeling, name: e.target.value });
+                  }}
+                />
+                <FormFeedback>Oh no! That name is already taken</FormFeedback>
               </InputGroup>
               {labeling ? (
                 <Button
@@ -92,25 +120,19 @@ const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel, labeling
                 </Button>
               ) : null}
             </div>
-            {/* {labeling
-              ? labeling.labels.map((elm) => {
-                  <InputGroup>
-                    <InputGroupText>Label</InputGroupText>
-                  </InputGroup>;
-                })
-              : null} */}
 
             <h6 className="fw-bold mt-2">Labels</h6>
             {labeling.labels.map((label, index) => (
               <EditLabelingModalEntry
-                invalid={isDuplicateLabelName()}
+                key={index}
+                invalid={isDuplicateLabelName(index) && label.name !== ""}
                 label={label}
                 onChangeLabel={(label) => onLabelChange(index, label)}
                 onDelete={() => onLabelDelete(index)}
-              ></EditLabelingModalEntry>
+              />
             ))}
 
-            <hr></hr>
+            <hr />
             <Button
               id="buttonAddLabel"
               className="m-0"
@@ -131,7 +153,6 @@ const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel, labeling
           color="secondary"
           className="m-1 mr-auto"
           onClick={onCancel}
-        //   onClick={this.props.onCloseModal}
         >
           Cancel
         </Button>
@@ -141,7 +162,7 @@ const EditLabelingModal = ({ isOpen, currentLabeling, onSave, onCancel, labeling
           color="primary"
           className="m-1"
           onClick={() => onSave(labeling)}
-        //   disabled={this.saveDisabled()}
+          disabled={saveDisabled()}
         >
           Save
         </Button>

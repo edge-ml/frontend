@@ -3,7 +3,7 @@ import { getProjects as getProjects_API } from '../services/ApiServices/ProjectS
 import { getProject } from '../services/LocalStorageService';
 
 const useProjectStore = create((set) => ({
-    projects: [],
+    projects: undefined,
     currentProject: undefined,
 
     setProjects: (projects) => set({ projects }),

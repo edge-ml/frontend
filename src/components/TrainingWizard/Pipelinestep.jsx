@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from "react";
 
 import {
   Dropdown,
@@ -7,11 +7,11 @@ import {
   DropdownToggle,
   Collapse,
   Button,
-} from 'reactstrap';
-import { HyperparameterView } from '../Hyperparameters/HyperparameterView';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PlatformList from '../Common/PlatformList';
-import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
+} from "reactstrap";
+import { HyperparameterView } from "../Hyperparameters/HyperparameterView";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PlatformList from "../Common/PlatformList";
+import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 const Pipelinestep = ({
   step,
@@ -32,14 +32,14 @@ const Pipelinestep = ({
   };
 
   const onSelectStepOption = (option) => {
-    console.log('CLICK');
+    console.log("CLICK");
     setPipelineStep(option);
   };
 
   const onHandleHyperparameterChange = ({ parameter_name, state }) => {
     const tmpSelectedPipelineStep = selectedPipelineStep;
     const idx = tmpSelectedPipelineStep.parameters.findIndex(
-      (elm) => elm.parameter_name == parameter_name,
+      (elm) => elm.parameter_name == parameter_name
     );
     tmpSelectedPipelineStep.parameters[idx].value = state;
     setPipelineStep(tmpSelectedPipelineStep);
@@ -50,7 +50,7 @@ const Pipelinestep = ({
     <div className="p-2">
       <div className="d-flex justify-content-between">
         <div>
-          <h3 className="fw-bold">{stepNum + 1 + '. ' + step.name}</h3>
+          <h3 className="fw-bold">{stepNum + 1 + ". " + step.name}</h3>
           <h5>{step.description}</h5>
         </div>
       </div>
@@ -62,7 +62,7 @@ const Pipelinestep = ({
             <div>
               <Dropdown
                 className="ms-2"
-                style={{ position: 'unset', padding: 'unset' }}
+                style={{ position: "unset", padding: "unset" }}
                 isOpen={dropdownOpen}
                 toggle={toggleDropdown}
               >
@@ -83,7 +83,7 @@ const Pipelinestep = ({
             <b>Description: </b>
             {selectedPipelineStep.description}
           </div>
-          {selectedPipelineStep.type !== 'EVAL' && (
+          {selectedPipelineStep.type !== "EVAL" && (
             <div className="my-2">
               <b>Platforms: </b>
               <PlatformList
@@ -98,8 +98,8 @@ const Pipelinestep = ({
       <hr></hr>
       {console.log(
         selectedPipelineStep.parameters.filter(
-          (elm) => elm.is_advanced !== true,
-        ),
+          (elm) => elm.is_advanced !== true
+        )
       )}
       {selectedPipelineStep.parameters.filter((elm) => !elm.is_advanced)
         .length > 0 ? (

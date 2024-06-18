@@ -17,7 +17,7 @@ import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDa
 const DataUpload = () => {
   const navigate = useProjectRouter();
 
-  const [csvModalOpen, setCSVModalOpen] = useState(true);
+  const [csvModalOpen, setCSVModalOpen] = useState(false);
   const { refreshDatasets } = useDatasetStore();
 
   const iconSize = "xs";

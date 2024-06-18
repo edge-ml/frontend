@@ -35,10 +35,11 @@ const LabelingTable = ({
             ></Checkbox>
           </div>
           <Button
+            outline
             className="ms-3 btn-delete"
             id="deleteDatasetsButton"
             size="sm"
-            color="secondary"
+            color="danger"
             disabled={selectedLabelings.length === 0}
             onClick={deleteSelectedLabelings}
           >

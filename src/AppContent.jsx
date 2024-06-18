@@ -1,32 +1,51 @@
-import React, { useContext } from 'react';
-import { Route, useParams } from 'react-router-dom';
+import React, { useContext, useEffect } from "react";
+import { Route, useParams } from "react-router-dom";
 
-import ListPage from './routes/list/index';
-import DatasetPage from './routes/dataset';
-import LabelingsPage from './routes/labeling/labelings';
-import ValidationPage from './routes/validation';
-import UploadBLE from './routes/uploadBLE';
-import { UploadWebPage } from './routes/uploadWeb';
-import Settings from './routes/settings/Settings';
-import ModelLivePage from './routes/ModelLivePage';
-import { Routes, Navigate } from 'react-router-dom';
-import NoProjectPage from './components/NoProjectPage/NoProjectPage';
-import useProjectStore from './stores/projectStore';
+import ListPage from "./routes/list/index";
+import DatasetPage from "./routes/dataset";
+import LabelingsPage from "./routes/labeling/labelings";
+import ValidationPage from "./routes/validation";
+import UploadBLE from "./routes/uploadBLE";
+import { UploadWebPage } from "./routes/uploadWeb";
+import Settings from "./routes/settings/Settings";
+import ModelLivePage from "./routes/ModelLivePage";
+import { Routes, Navigate } from "react-router-dom";
+import NoProjectPage from "./components/NoProjectPage/NoProjectPage";
+import useProjectStore from "./stores/projectStore";
+import useDatasetStore from "./stores/datasetStore";
+import Loader from "./modules/loader";
 
 const ParamsAdapter = ({ children }) => {
   if (!children) {
-    throw Error('ParamsAdapter needs a child');
+    throw Error("ParamsAdapter needs a child");
   }
   const params = useParams();
   const childrenWithProps = React.Children.map(children, (child) =>
-    React.cloneElement(child, { ...params }),
+    React.cloneElement(child, { ...params })
   );
   return childrenWithProps;
 };
 
 const AppContent = () => {
-  const { currentProject } = useProjectStore();
-  const projectId = currentProject ? currentProject._id : 'default_key';
+  const { currentProject, getProjects, projects } = useProjectStore();
+  const projectId = currentProject ? currentProject._id : "default_key";
+  const { refreshDatasets, datasets } = useDatasetStore();
+
+  useEffect(() => {
+    getProjects();
+  }, []);
+
+  useEffect(() => {
+    refreshDatasets();
+  }, [currentProject]);
+
+  if (!projects || !datasets) {
+    return (
+      <div>
+        <Loader isLoading></Loader>
+      </div>
+    );
+  }
 
   if (!currentProject) {
     return <NoProjectPage></NoProjectPage>;
@@ -95,7 +114,14 @@ const AppContent = () => {
         {/* Default to the datasets-page */}
         <Route path="" element={<Navigate to="Datasets"></Navigate>}></Route>
       </Route>
-      <Route path="*" element={<Navigate to={`${currentProject.admin.userName}/${currentProject.name}/Datasets`}></Navigate>}></Route>
+      <Route
+        path="*"
+        element={
+          <Navigate
+            to={`${currentProject.admin.userName}/${currentProject.name}/Datasets`}
+          ></Navigate>
+        }
+      ></Route>
     </Routes>
   );
 };

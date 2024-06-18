@@ -1,26 +1,13 @@
-import { useEffect, useState, Fragment } from 'react';
-import { getDatasets } from '../../../services/ApiServices/DatasetServices';
-import Checkbox from '../../Common/Checkbox';
-import classNames from 'classnames';
-import {
-  Badge,
-  Button,
-  ModalBody,
-  ModalFooter,
-  Table,
-  Row,
-  Col,
-} from 'reactstrap';
-import {
-  unixTimeToString,
-  humanDuration,
-  intersect,
-} from '../../../services/helpers';
+import React, { Fragment } from "react";
+import Checkbox from "../../Common/Checkbox";
+import classNames from "classnames";
+import { Badge, Table, Row, Col } from "reactstrap";
+import { humanDuration, intersect } from "../../../services/helpers";
 import {
   EdgeMLTable,
   EdgeMLTableEntry,
   EdgeMLTableHeader,
-} from '../../Common/EdgeMLTable';
+} from "../../Common/EdgeMLTable";
 
 const Wizard_SelectDataset = ({
   datasets,
@@ -60,17 +47,17 @@ const Wizard_SelectDataset = ({
       .filter((elm) => elm.selected)
       .map((elm) =>
         elm.timeSeries.filter(
-          (ts) => !disabledTimeseriesNames.includes(ts.name),
-        ),
+          (ts) => !disabledTimeseriesNames.includes(ts.name)
+        )
       )
       .flat()
-      .map((elm) => elm.samplingRate.mean),
+      .map((elm) => elm.samplingRate.mean)
   );
 
   const coveredLabels = datasets
     .filter((elm) => elm.selected)
     .map((e) =>
-      e.labelings.find((ls) => ls.labelingId === selectedLabeling._id),
+      e.labelings.find((ls) => ls.labelingId === selectedLabeling._id)
     )
     .filter((x) => x)
     .map((ls) => ls.labels)
@@ -93,7 +80,7 @@ const Wizard_SelectDataset = ({
   const selectedIntersectionNames = intersect(
     ...datasets
       .filter((e) => e.selected)
-      .map((e) => e.timeSeries.map((t) => t.name)),
+      .map((e) => e.timeSeries.map((t) => t.name))
   );
 
   const selectedDatasetTimeseriesNames = [
@@ -107,10 +94,10 @@ const Wizard_SelectDataset = ({
   });
 
   const intersectingTSNames = selectedDatasetTimeseriesNames.filter(
-    (tno) => tno.inIntersection,
+    (tno) => tno.inIntersection
   );
   const nonintersectingTSNames = selectedDatasetTimeseriesNames.filter(
-    (tno) => !tno.inIntersection,
+    (tno) => !tno.inIntersection
   );
 
   const selectedAllActive = datasets
@@ -129,7 +116,7 @@ const Wizard_SelectDataset = ({
                   onClick={() =>
                     toggleAllDatasets(
                       datasets.filter((elm) => !checkUsable(elm)),
-                      !selectedAllActive,
+                      !selectedAllActive
                     )
                   }
                 ></Checkbox>
@@ -144,7 +131,7 @@ const Wizard_SelectDataset = ({
               .map((dataset) => {
                 return (
                   <EdgeMLTableEntry
-                    className={classNames('datasetRow', {
+                    className={classNames("datasetRow", {
                       disabled: checkUsable(dataset),
                     })}
                   >
@@ -162,20 +149,20 @@ const Wizard_SelectDataset = ({
           {datasets.filter((elm) => elm.selected).length ? (
             <Fragment>
               <h5 className="fw-bold">Selected Timeseries</h5>
-              <div style={{ overflow: 'auto' }}>
+              <div style={{ overflow: "auto" }}>
                 {intersectingTSNames.length > 0 ? (
                   intersectingTSNames.map((tsNameObj) => (
                     <Badge
                       onClick={() => toggleDisableTimeseries(tsNameObj.name)}
                       style={{
                         ...(tsNameObj.disabled
-                          ? { textDecoration: 'line-through' }
+                          ? { textDecoration: "line-through" }
                           : {}),
-                        userSelect: 'none',
+                        userSelect: "none",
                       }}
                       {...(tsNameObj.disabled
-                        ? { color: 'light' }
-                        : { color: 'primary' })}
+                        ? { color: "light" }
+                        : { color: "primary" })}
                     >
                       {`${tsNameObj.name}`}
                     </Badge>
@@ -195,8 +182,8 @@ const Wizard_SelectDataset = ({
                     {nonintersectingTSNames.map((tsNameObj) => (
                       <Badge
                         style={{
-                          textDecoration: 'line-through',
-                          userSelect: 'none',
+                          textDecoration: "line-through",
+                          userSelect: "none",
                         }}
                         color="light"
                       >
@@ -207,11 +194,11 @@ const Wizard_SelectDataset = ({
                 ) : null}
               </div>
               <div className="my-2">
-                For training, all time-series will be downsampled to{' '}
+                For training, all time-series will be downsampled to{" "}
                 {Math.round(1000 / minSamplingRate)} Hz
               </div>
               <h5 className="fw-bold mt-4">Covered Labels</h5>
-              <Table size="sm" borderless style={{ width: 'unset' }}>
+              <Table size="sm" borderless style={{ width: "unset" }}>
                 <thead>
                   <tr>
                     <th scope="col"></th>
@@ -222,7 +209,7 @@ const Wizard_SelectDataset = ({
                 <tbody>
                   {selectedLabeling.labels
                     .filter(
-                      (l) => !selectedLabeling.disabledLabels.includes(l._id),
+                      (l) => !selectedLabeling.disabledLabels.includes(l._id)
                     )
                     .map((label) => (
                       <tr>
@@ -231,7 +218,7 @@ const Wizard_SelectDataset = ({
                             className="badge"
                             style={{
                               backgroundColor: label.color,
-                              userSelect: 'none',
+                              userSelect: "none",
                             }}
                           >
                             {label.name}
@@ -240,7 +227,7 @@ const Wizard_SelectDataset = ({
                         <td>{coveredLabels[label._id]?.count ?? 0}</td>
                         <td>
                           {humanDuration(
-                            coveredLabels[label._id]?.duration ?? 0,
+                            coveredLabels[label._id]?.duration ?? 0
                           )}
                         </td>
                       </tr>
@@ -264,12 +251,12 @@ Wizard_SelectDataset.validate = ({
   const selDS = datasets.filter((elm) => elm.selected);
 
   if (selDS.length === 0) {
-    return 'You need to select at least one dataset';
+    return "You need to select at least one dataset";
   }
 
   const coveredLabels = selDS
     .map((e) =>
-      e.labelings.find((ls) => ls.labelingId === selectedLabeling._id),
+      e.labelings.find((ls) => ls.labelingId === selectedLabeling._id)
     )
     .filter((x) => x)
     .map((ls) => ls.labels)
@@ -287,22 +274,22 @@ Wizard_SelectDataset.validate = ({
 
   const coveredCount = Object.values(coveredLabels).filter(
     (elm) =>
-      !selectedLabeling.disabledLabels.includes(elm.type) && elm.count > 0,
+      !selectedLabeling.disabledLabels.includes(elm.type) && elm.count > 0
   ).length;
 
   if (coveredCount < 1) {
-    return 'Selected datasets do not contain any labels';
+    return "Selected datasets do not contain any labels";
   }
 
   if (coveredCount === 1 && !zeroClass) {
-    return 'Selected datasets contain only one label. At least two labels are needed with zero class disabled';
+    return "Selected datasets contain only one label. At least two labels are needed with zero class disabled";
   }
 
   const allDuplTimeseries = selDS.map((ds) => ds.timeSeries).flat();
   const selectedIntersectionNames = intersect(
     ...datasets
       .filter((e) => e.selected)
-      .map((e) => e.timeSeries.map((t) => t.name)),
+      .map((e) => e.timeSeries.map((t) => t.name))
   );
 
   const selectedDatasetTimeseriesNames = [
@@ -316,13 +303,13 @@ Wizard_SelectDataset.validate = ({
   });
 
   const intersectingTSNames = selectedDatasetTimeseriesNames.filter(
-    (tno) => tno.inIntersection,
+    (tno) => tno.inIntersection
   );
 
   if (intersectingTSNames.length === 0)
-    return 'Selected datasets do not have any timeseries in common';
+    return "Selected datasets do not have any timeseries in common";
   if (intersectingTSNames.filter((tno) => !tno.disabled).length === 0)
-    return 'At least one timeseries should remain enabled';
+    return "At least one timeseries should remain enabled";
 };
 
 export default Wizard_SelectDataset;

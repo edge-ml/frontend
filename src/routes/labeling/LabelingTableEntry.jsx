@@ -46,15 +46,19 @@ const LabelingTableEntry = ({
                 <Labeling labeling={labeling} />
               </div>
             </Col>
-            <Col className="d-flex flex-nowrap col-2 align-self-center justify-content-end">
+            <Col className="d-flex flex-nowrap col-2 p-0 justify-content-end">
               <Button
-                className="btn-delete me-3 me-md-4"
+                outline
+                color="danger"
+                className="btn-delete"
                 onClick={() => deleteLabeling(labeling._id)}
               >
                 <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
               </Button>
               <Button
-                className="me-3 me-md-4"
+                outline
+                color='primary'
+                className="ms-2"
                 onClick={() => setLabelingModalOpen(true)}
               >
                 <FontAwesomeIcon icon={faPen} />
