@@ -10,8 +10,18 @@ export const getDatasets = async (project) => {
   const res = apiRequest(
     apiConsts.HTTP_METHODS.GET,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS,
-    project=project
+    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS
+  );
+  return res;
+};
+
+export const getDatasetsPagination = async (skip, limit, sort) => {
+  const res = apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.DATASET_STORE,
+    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + "view",
+    {},
+    { skip: skip, limit: limit, sort: sort }
   );
   return res;
 };

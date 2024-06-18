@@ -13,7 +13,7 @@ import DatasetSorting from './DatasetSorting';
 const DatasetTable = (props) => {
   const [areAllSelected, setAllSelected] = useState(false);
   return (
-    <div className="ps-2 pe-2 ps-md-4 pe-md-4 pb-2">
+    <div className="ps-2 pe-2 ps-md-4 pe-md-4 pb-2 flex-grow-1">
       <Fragment>
         <div className="w-100 d-flex justify-content-between">
           <div className="fw-bold h4">DATASETS</div>

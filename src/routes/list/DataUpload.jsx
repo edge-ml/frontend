@@ -14,11 +14,10 @@ import useDatasetStore from "../../stores/datasetStore";
 import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
 
 // Component for Data Upload Panel
-const DataUpload = () => {
+const DataUpload = ({refreshDatasets}) => {
   const navigate = useProjectRouter();
 
   const [csvModalOpen, setCSVModalOpen] = useState(false);
-  const { refreshDatasets } = useDatasetStore();
 
   const iconSize = "xs";
   const buttonColor = "secondary";

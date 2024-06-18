@@ -29,23 +29,15 @@ const ParamsAdapter = ({ children }) => {
 const AppContent = () => {
   const { currentProject, getProjects, projects } = useProjectStore();
   const projectId = currentProject ? currentProject._id : "default_key";
-  const { refreshDatasets, datasets } = useDatasetStore();
+  // const { refreshDatasets, datasets } = useDatasetStore();
 
   useEffect(() => {
     getProjects();
   }, []);
 
-  useEffect(() => {
-    refreshDatasets();
-  }, [currentProject]);
-
-  if (!projects || !datasets) {
-    return (
-      <div>
-        <Loader isLoading></Loader>
-      </div>
-    );
-  }
+  // useEffect(() => {
+  //   refreshDatasets();
+  // }, [currentProject]);
 
   if (!currentProject) {
     return <NoProjectPage></NoProjectPage>;
