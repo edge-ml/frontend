@@ -78,13 +78,14 @@ const LabelingSelectionPanel = () => {
     return (
       <div>
         <Dropdown
-          outline
           isOpen={isTSDropdownOpen}
           toggle={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
           className="me-2"
         >
           <DropdownToggle
             caret
+            outline
+            color='secondary'
             onClick={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
           >
             Selected Timeseries:{' '}
@@ -142,7 +143,7 @@ const LabelingSelectionPanel = () => {
           <div className="d-flex">
             <TimeSeriesSelection></TimeSeriesSelection>
             <UncontrolledDropdown>
-              <DropdownToggle caret>
+              <DropdownToggle caret outline color='secondary'>
                 {activeLabeling ? 'Select Labeling: ' : 'Selected Labeling: '}
                 <div className="d-inline font-weight-normal">
                   {name || 'None'}

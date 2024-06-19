@@ -4,7 +4,7 @@ import { DatasetContext } from './DatasetContext';
 import TimeSeriesDisplay from './TimeSeriesDisplay';
 import ChartSlider from './ChartSlider';
 
-const TimeSeriesSection = () => {
+const TimeSeriesSection = ({selectedLabeling}) => {
   const { activeSeries } = useContext(DatasetContext);
 
   const globalStart = Math.min(...activeSeries.map((elm) => elm.start));
@@ -14,7 +14,8 @@ const TimeSeriesSection = () => {
     <div className="flex-grow-1">
       <ChartSlider start={globalStart} end={globalEnd}></ChartSlider>
       {activeSeries.map((elm) => (
-        <TimeSeriesDisplay timeSeries={elm}></TimeSeriesDisplay>
+        <TimeSeriesDisplay
+          timeSeries={elm}></TimeSeriesDisplay>
       ))}
     </div>
   );

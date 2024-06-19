@@ -1,6 +1,4 @@
-import useTimeSeriesData from '../../Hooks/useTimeSeriesData';
 import { generatePlotBands, generatePlotLines } from './chartUtils';
-import Highcharts from 'highcharts/highstock';
 
 const generateChartState = (
   ts,
@@ -12,9 +10,7 @@ const generateChartState = (
   const { name, unit, start, end } = ts;
 
   const plotBands = generatePlotBands(labelings, selectedLabelId);
-
   const plotLines = generatePlotLines(labelings, selectedLabelId);
-  console.log(plotLines);
 
   return {
     height: '200px',
@@ -22,15 +18,18 @@ const generateChartState = (
       maskFill: '#0080ff22',
       enabled: false,
       series: {
-        color: '#ffffff',
+        color: '#000000',
         lineWidth: 0,
       },
       xAxis: {
         crosshair: false,
         isInternal: true,
+        lineColor: '#000000',  // Added line color
       },
       yAxis: {
         isInternal: true,
+        lineColor: '#000000',  // Added line color
+        gridLineColor: '#000000',  // Added grid line color
       },
       stickyTracking: false,
     },
@@ -46,6 +45,7 @@ const generateChartState = (
             name: unit === '' ? name : name + ' (' + unit + ')',
             data: ts_data,
             lineWidth: 1.5,
+            color: 'black',  // Updated series line color
             enableMouseTracking: false,
           },
         ]
@@ -54,12 +54,13 @@ const generateChartState = (
             name: name[indexOuter] + ' (' + unit[indexOuter] + ')',
             data: ts_data,
             lineWidth: 1.5,
+            color: 'black',  // Updated series line color
             enableMouseTracking: false,
           };
         }),
     xAxis: {
-      lineWidth: false ? 0 : 1,
-      tickLength: false ? 0 : 10,
+      lineWidth: 1,
+      tickLength: 10,
       labels: {
         enabled: true,
       },
@@ -75,10 +76,12 @@ const generateChartState = (
           refreshData(e.min, e.max);
         },
       },
+      lineColor: '#000000',  // Added line color
+      tickColor: '#000000',  // Added tick color
     },
     yAxis: {
-      height: false ? 0 : undefined,
-      gridLineWidth: false ? 0 : 1,
+      height: undefined,
+      gridLineWidth: 1,
       labels: {
         enabled: true,
         align: 'left',
@@ -89,6 +92,8 @@ const generateChartState = (
         enabled: false,
       },
       opposite: false,
+      lineColor: 'rgb(233,233,233)',  // Added line color
+      gridLineColor: 'rgb(233,233,233)',  // Added grid line color
     },
     legend: {
       align: 'left',
@@ -106,7 +111,7 @@ const generateChartState = (
     },
     scrollbar: {
       height: 0,
-      buttonArrowColor: '#fff',
+      buttonArrowColor: 'rgb(233,233,233)',  // Updated scrollbar arrow color
     },
   };
 };

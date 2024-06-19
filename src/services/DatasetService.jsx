@@ -8,6 +8,7 @@ import {
   DATASET_STORE_ENDPOINTS,
 } from './ApiServices/ApiConstants';
 import ax from 'axios';
+import apiRequest from './ApiServices/request';
 
 const axios = ax.create();
 
@@ -32,18 +33,28 @@ const registerProjectDownload = async () => {
 };
 
 const datasetDownloadStatus = async () => {
-  try {
-    const request_params = generateApiRequest(
-      HTTP_METHODS.GET,
-      DATASET_STORE,
-      DATASET_STORE_ENDPOINTS.CSV + 'status/',
-    );
-    const response = await axios(request_params);
-    return response.data;
-  } catch {
-    return 404;
-  }
+  const res = await apiRequest(
+    HTTP_METHODS.GET,
+    DATASET_STORE,
+    DATASET_STORE_ENDPOINTS.CSV + 'status/',
+  );
+  return res;
 };
+
+
+// const datasetDownloadStatus = async () => {
+//   try {
+//     const request_params = generateApiRequest(
+//       HTTP_METHODS.GET,
+//       DATASET_STORE,
+//       DATASET_STORE_ENDPOINTS.CSV + 'status/',
+//     );
+//     const response = await axios(request_params);
+//     return response.data;
+//   } catch {
+//     return 404;
+//   }
+// };
 
 const cancelDownload = async (downloadId) => {
   try {
