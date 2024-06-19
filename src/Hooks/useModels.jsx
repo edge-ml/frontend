@@ -5,7 +5,7 @@ import {
   deleteModel as deleteModel_API,
 } from '../services/ApiServices/MlService';
 
-const useModels = (project) => {
+const useModels = () => {
   const [models, setModels] = useState(undefined);
   const [stepOptions, setStepOptions] = useState(undefined);
 
@@ -21,6 +21,7 @@ const useModels = (project) => {
 
   useEffect(() => {
     getStepOptions();
+    refreshModels();
   }, []);
 
   useEffect(() => {

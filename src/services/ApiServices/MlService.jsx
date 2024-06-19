@@ -1,6 +1,7 @@
 import apiConsts from './ApiConstants';
 import ax from 'axios';
 import useApiCalls from './useApiCalls';
+import apiRequest from './request';
 
 const axios = ax.create();
 
@@ -45,19 +46,29 @@ export const getStepOptions = () => {
   });
 };
 
-export const getModels = function () {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.GET,
-        apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.MODELS,
-      ),
-    )
-      .then((data) => resolve(data.data))
-      .catch((err) => reject(err.response));
-  });
-};
+export const getModels = async () => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.MODELS,
+  )
+  return res;
+}
+
+
+// export const getModels = function () {
+//   return new Promise((resolve, reject) => {
+//     axios(
+//       apiConsts.generateApiRequest(
+//         apiConsts.HTTP_METHODS.GET,
+//         apiConsts.ML_URI,
+//         apiConsts.ML_ENDPOINTS.MODELS,
+//       ),
+//     )
+//       .then((data) => resolve(data.data))
+//       .catch((err) => reject(err.response));
+//   });
+// };
 
 export const deleteModel = async (modelId) => {
   const res = await axios(

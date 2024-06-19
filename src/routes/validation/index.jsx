@@ -157,6 +157,8 @@ const ValidationPage = () => {
     );
   };
 
+  console.log(models)
+
   if (!models) {
     return <Loader loading></Loader>;
   }

@@ -28,7 +28,6 @@ const apiRequest = async (
     },
   };
 
-  console.log(currentProject);
   const res = await axios(requestConfig);
   return res.data;
 };
