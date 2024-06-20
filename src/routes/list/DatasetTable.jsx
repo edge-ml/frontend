@@ -2,15 +2,29 @@ import {
   faDownload,
   faFilter,
   faTrashAlt,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { Fragment, useState } from 'react';
-import { Button, Container } from 'reactstrap';
-import Checkbox from '../../components/Common/Checkbox';
-import DatasetTableEntry from './DatasetTableEntry';
-import DatasetSorting from './DatasetSorting';
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { Fragment, useState } from "react";
+import { Button, Container } from "reactstrap";
+import Checkbox from "../../components/Common/Checkbox";
+import DatasetTableEntry from "./DatasetTableEntry";
+import DatasetSorting from "./DatasetSorting";
 
-const DatasetTable = (props) => {
+const DatasetTable = ({
+  datasets,
+  downloadAllDatasets,
+  selectedDatasets,
+  openDeleteModal,
+  selectAllEmpty,
+  selectedSorting,
+  setSelectedSorting,
+  selectAll,
+  deselectAll,
+  toggleCheck,
+  labelings,
+  labels,
+  deleteEntry
+}) => {
   const [areAllSelected, setAllSelected] = useState(false);
   return (
     <div className="ps-2 pe-2 ps-md-4 pe-md-4 pb-2 flex-grow-1">
@@ -18,16 +32,16 @@ const DatasetTable = (props) => {
         <div className="w-100 d-flex justify-content-between">
           <div className="fw-bold h4">DATASETS</div>
           <Button
-            color='secondary'
+            color="secondary"
             size="sm"
             outline
-            disabled={props.datasets.length === 0}
-            onClick={props.downloadAllDatasets}
+            disabled={datasets.length === 0}
+            onClick={downloadAllDatasets}
           >
             <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon> Download All
           </Button>
         </div>
-        {props.datasets.length > 0 ? (
+        {datasets.length > 0 ? (
           <div style={{ borderRadius: 10 }}>
             <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row align-content-baseline">
               <div className="d-flex flex-row align-items-center p-1">
@@ -37,9 +51,9 @@ const DatasetTable = (props) => {
                     onClick={(e) => {
                       setAllSelected(!areAllSelected);
                       if (areAllSelected) {
-                        props.deselectAll();
+                        deselectAll();
                       } else {
-                        props.selectAll();
+                        selectAll();
                       }
                     }}
                   ></Checkbox>
@@ -49,9 +63,9 @@ const DatasetTable = (props) => {
                   className="ms-3 btn-delete"
                   id="deleteDatasetsButton"
                   size="sm"
-                  disabled={props.selectedDatasets.length === 0}
+                  disabled={selectedDatasets.length === 0}
                   color="danger"
-                  onClick={props.openDeleteModal}
+                  onClick={openDeleteModal}
                 >
                   <FontAwesomeIcon
                     className="me-2"
@@ -64,7 +78,7 @@ const DatasetTable = (props) => {
                   size="sm"
                   outline
                   color="secondary"
-                  onClick={props.selectAllEmpty}
+                  onClick={selectAllEmpty}
                   /* disabled={props.datasets.every((elm) => elm.end != 0)}*/
                   className="ms-2"
                 >
@@ -78,14 +92,13 @@ const DatasetTable = (props) => {
               <div className="d-flex flex-md-row justify-content-end position-relative">
                 <div className="d-flex align-items-center me-2">
                   <DatasetSorting
-                    sortDropDownIsOpen={props.sortDropDownIsOpen}
-                    setSortDropdownIsOpen={props.setSortDropdownIsOpen}
-                    selectedSorting={props.selectedSorting}
-                    setSelectedSorting={props.setSelectedSorting}
+                    selectedSorting={selectedSorting}
+                    setSelectedSorting={setSelectedSorting}
                   />
                 </div>
-                <div className="d-flex align-items-center">
+                {/* <div className="d-flex align-items-center">
                   <Button
+                    outline
                     active={props.filterSelected}
                     className="me-3"
                     size="sm"
@@ -93,27 +106,27 @@ const DatasetTable = (props) => {
                   >
                     <FontAwesomeIcon icon={faFilter} size="sm" />
                   </Button>
-                </div>
+                </div> */}
               </div>
             </div>
             <div
               className="w-100 position-relative"
               style={{
-                border: '2px solid rgb(230, 230, 234)',
-                borderRadius: '0px 0px 10px 10px',
-                overflow: 'hidden',
+                border: "2px solid rgb(230, 230, 234)",
+                borderRadius: "0px 0px 10px 10px",
+                overflow: "hidden",
               }}
             >
-              {props.datasets.map((dataset, index) => (
+              {datasets.map((dataset, index) => (
                 <DatasetTableEntry
                   key={dataset + index}
                   dataset={dataset}
                   index={index}
-                  toggleCheck={props.toggleCheck}
-                  isSelected={props.selectedDatasets.includes(dataset['_id'])}
-                  labelings={props.labelings}
-                  labels={props.labels}
-                  deleteEntry={props.deleteEntry}
+                  toggleCheck={toggleCheck}
+                  isSelected={selectedDatasets.includes(dataset["_id"])}
+                  labelings={labelings}
+                  labels={labels}
+                  deleteEntry={deleteEntry}
                 ></DatasetTableEntry>
               ))}
             </div>
@@ -121,7 +134,7 @@ const DatasetTable = (props) => {
         ) : (
           <Container
             className="d-flex flex-column justify-content-center align-items-center"
-            style={{ height: '50vh' }}
+            style={{ height: "50vh" }}
           >
             <div className="text-center">No datasets available yet.</div>
           </Container>

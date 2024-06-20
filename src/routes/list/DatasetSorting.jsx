@@ -1,35 +1,23 @@
-import React from 'react';
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
-import { faSort } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import './DatasetFilter.css';
-import { useState } from 'react';
+import React, { useState } from "react";
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 
-const DatasetSorting = ({
-  sortDropDownIsOpen,
-  setSortDropdownIsOpen,
-  selectedSorting,
-  setSelectedSorting,
-}) => {
-  const [sortingText, setSortingText] = useState(null);
+const sortingOptions = {
+  alphaDesc: "Alphabetical (descending)",
+  alphaAsc: "Alphabetical (ascending)",
+  dateDesc: "Recording Date (descending)",
+  dateAsc: "Recording Date (ascending)",
+};
+
+const DatasetSorting = ({ setSelectedSorting, selectedSorting }) => {
+  const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
 
   const toggleDropdown = () => {
     setSortDropdownIsOpen(!sortDropDownIsOpen);
   };
 
-  const handleItemClick = (e) => {
-    sortDatasets(e.currentTarget.getAttribute('data-dropdownvalue'));
-    setSortingText(e.currentTarget.textContent);
+  const handleItemClick = (value) => {
+    setSelectedSorting(value);
     toggleDropdown();
-  };
-
-  const sortDatasets = (dropdownvalue) => {
-    setSelectedSorting(dropdownvalue);
   };
 
   return (
@@ -40,23 +28,20 @@ const DatasetSorting = ({
       size="sm"
       className="dataset-sorting"
     >
-      <DropdownToggle caret>
-        {sortingText || <FontAwesomeIcon icon={faSort} />}
+      <DropdownToggle caret outline>
+        {sortingOptions[selectedSorting] || <FontAwesomeIcon icon={faSort} />}
       </DropdownToggle>
       <DropdownMenu>
         <DropdownItem header>Filter Selection</DropdownItem>
-        <DropdownItem onClick={handleItemClick} data-dropdownvalue="alphaDesc">
-          Alphabetical (descending)
-        </DropdownItem>
-        <DropdownItem onClick={handleItemClick} data-dropdownvalue="alphaAsc">
-          Alphabetical (ascending)
-        </DropdownItem>
-        <DropdownItem onClick={handleItemClick} data-dropdownvalue="dateDesc">
-          Recording Date (descending)
-        </DropdownItem>
-        <DropdownItem onClick={handleItemClick} data-dropdownvalue="dateAsc">
-          Recording Date (ascending)
-        </DropdownItem>
+        {Object.entries(sortingOptions).map(([value, label]) => (
+          <DropdownItem
+            key={value}
+            onClick={() => handleItemClick(value)}
+            data-dropdownvalue={value}
+          >
+            {label}
+          </DropdownItem>
+        ))}
       </DropdownMenu>
     </Dropdown>
   );

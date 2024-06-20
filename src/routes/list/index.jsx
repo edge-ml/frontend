@@ -17,12 +17,19 @@ const ListPage = (props) => {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [pageSize, setPageSize] = useState(5);
   const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
-  const [selectedSorting, setSelectedSorting] = useState("alphaAsc"); //alphaAsc, alphaDesc, dateAsc, dateDesc
   const [selectedFilter, setSelectedFilter] = useState(undefined); //name and display value of filter
   const { registerProjectDownload } = useContext(NotificationContext);
 
   const { labelings } = useLabelings();
-  const { datasets, refreshDatasets, page, setPage, totalPages } = usePaginatedDatasets(1);
+  const {
+    datasets,
+    refreshDatasets,
+    page,
+    setPage,
+    totalPages,
+    sorting,
+    setSorting,
+  } = usePaginatedDatasets(1);
 
   const toggleModal = () => {
     setModal(!modal);
@@ -90,13 +97,7 @@ const ListPage = (props) => {
     selectedFilterRef.current = currentFilter;
     selectedFilterParamsRef.current = currentFilterParams;
     setCurrentPage(0);
-    fetchDatasetets(
-      0,
-      pageSize,
-      selectedSorting,
-      currentFilter,
-      currentFilterParams
-    );
+    fetchDatasetets(0, pageSize, sorting, currentFilter, currentFilterParams);
   };
 
   return (
@@ -118,9 +119,8 @@ const ListPage = (props) => {
         deselectAll={deselectAll}
         sortDropDownIsOpen={sortDropDownIsOpen}
         setSortDropdownIsOpen={setSortDropdownIsOpen}
-        selectedSorting={selectedSorting}
-        setSelectedSorting={setSelectedSorting}
-        // setFilterModalOpen={setFilterModalOpen}
+        selectedSorting={sorting}
+        setSelectedSorting={setSorting}
         selectedFilter={selectedFilter}
       ></DatasetTable>
       <div className="d-flex justify-content-center">

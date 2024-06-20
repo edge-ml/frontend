@@ -12,7 +12,7 @@ const LabelBadge = ({ color, children, ...props }) => {
   return (
     <Badge
       color={hexToForegroundColor(color)}
-      style={{ backgroundColor: color }}
+      style={{ backgroundColor: color, fontSize: "1em" }}
       {...props}
     >
       {children}

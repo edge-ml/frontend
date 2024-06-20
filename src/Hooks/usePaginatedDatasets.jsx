@@ -6,18 +6,20 @@ const usePaginatedDatasets = (initialPage) => {
   const [page, setPageInternal] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
   const [tableLenth, setTableLength] = useState(20);
+  const [sorting, setSortingInternal] = useState("alphaAsc");
 
-  const refreshDatasets = async () => {
+  const refreshDatasets = async (page, tableLenth, sorting) => {
     const datasets = await getDatasetsPagination(
       (page - 1) * tableLenth,
-      tableLenth * page
+      tableLenth * page,
+      sorting
     );
     setDatasets(datasets.datasets);
     setTotalPages(Math.ceil(datasets.total_datasets / tableLenth));
   };
 
   useEffect(() => {
-    refreshDatasets();
+    refreshDatasets(page, tableLenth, sorting);
   }, [page]);
 
   const setPage = (page) => {
@@ -25,7 +27,21 @@ const usePaginatedDatasets = (initialPage) => {
     setPageInternal(newPage);
   };
 
-  return { datasets, page, totalPages, setPage, refreshDatasets };
+  const setSorting = (sorting) => {
+    setSortingInternal(sorting);
+    setPage(1);
+    refreshDatasets(1, tableLenth, sorting);
+  };
+
+  return {
+    datasets,
+    page,
+    totalPages,
+    setPage,
+    refreshDatasets,
+    sorting,
+    setSorting,
+  };
 };
 
 export default usePaginatedDatasets;
