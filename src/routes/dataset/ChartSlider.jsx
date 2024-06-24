@@ -73,7 +73,6 @@ const ChartSlider = ({ start, end }) => {
         // },
         events: {
           afterSetExtremes: (e) => {
-            console.log(e);
             Highcharts.charts.forEach((elm) => {
               if (elm) {
                 elm.xAxis[0].setExtremes(
@@ -124,7 +123,7 @@ const ChartSlider = ({ start, end }) => {
   };
 
   return (
-    <div style={{ height: '80px' }}>
+    <div style={{ height: '200px' }}>
       <HighchartsReact
         ref={chartRef}
         highcharts={Highcharts}

@@ -1,22 +1,24 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faEdit,
   faExclamationTriangle,
   faList,
   faPen,
   faTimes,
   faTrashAlt,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
-import React, { Fragment, useContext, useState } from 'react';
-import { Badge, Button, Col, Row } from 'reactstrap';
+import React, { Fragment, useContext, useState } from "react";
+import { Badge, Button, Col, Row } from "reactstrap";
 
-import { useNavigate } from 'react-router-dom';
-import classNames from 'classnames';
+import { useNavigate } from "react-router-dom";
+import classNames from "classnames";
 
-import Checkbox from '../../components/Common/Checkbox';
-import { displayTime } from '../../services/helpers';
-import LabelBadge from '../../components/Common/LabelBadge';
-import useProjectRouter from '../../Hooks/ProjectRouter';
+import Checkbox from "../../components/Common/Checkbox";
+import { displayTime } from "../../services/helpers";
+import LabelBadge from "../../components/Common/LabelBadge";
+import useProjectRouter from "../../Hooks/ProjectRouter";
+import EditModal from "../../components/EditModal";
 
 // s as unix timestamp in milliseconds
 const format_time = (s) => {
@@ -24,15 +26,15 @@ const format_time = (s) => {
 
   // Calculate the number of minutes and seconds from the remaining seconds
   const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60).toLocaleString('en-US', {
+  const remainingSeconds = Math.floor(seconds % 60).toLocaleString("en-US", {
     minimumIntegerDigits: 2,
   });
 
   // Calculate the number of hours, minutes, and seconds from the remaining minutes
-  const hours = Math.floor(minutes / 60).toLocaleString('en-US', {
+  const hours = Math.floor(minutes / 60).toLocaleString("en-US", {
     minimumIntegerDigits: 2,
   });
-  const remainingMinutes = (minutes % 60).toLocaleString('en-US', {
+  const remainingMinutes = (minutes % 60).toLocaleString("en-US", {
     minimumIntegerDigits: 2,
   });
 
@@ -46,7 +48,7 @@ const Labelings = (props) => {
 
   const labelings = props.dataset.labelings
     .map((elm) =>
-      props.labelings.find((labeling) => labeling._id === elm.labelingId),
+      props.labelings.find((labeling) => labeling._id === elm.labelingId)
     )
     .filter((elm) => elm !== undefined);
 
@@ -57,7 +59,7 @@ const Labelings = (props) => {
           {labelings.map((labeling, idx) => (
             <Badge
               className="me-2 badgeSize badgeLabelings pb-2 mt-2 mb-2"
-              color='unset'
+              color="unset"
               key={labeling + idx}
             >
               <div className="labelingBadgeWrapper">
@@ -66,7 +68,7 @@ const Labelings = (props) => {
               <div>
                 {labeling.labels.map((label, index) => {
                   const labelTypes = props.dataset.labelings[idx].labels.map(
-                    (elm) => elm.type,
+                    (elm) => elm.type
                   );
                   if (!labelTypes.includes(label._id)) {
                     return null;
@@ -134,7 +136,10 @@ const AdditionalInfo = (props) => {
 };
 
 const DatasetInfo = (props) => {
-  const { dataset } = props;
+  const { dataset, updateDataset } = props;
+
+  const [datasetNameEditOpen, setDatasetNameEditOpen] = useState(false);
+
   const datasetStart = Math.min(...dataset.timeSeries.map((elm) => elm.start));
   const datasetEnd = Math.max(...dataset.timeSeries.map((elm) => elm.end));
 
@@ -146,16 +151,22 @@ const DatasetInfo = (props) => {
     <div className="text-left d-inline-block m-2">
       <div className="fw-bold font-size-lg h5 d-inline">
         {dataset.name}
+        <FontAwesomeIcon
+          className="ms-1 cursor-pointer"
+          color="rgb(131, 136, 159)"
+          icon={faPen}
+          onClick={() => setDatasetNameEditOpen(true)}
+        ></FontAwesomeIcon>
       </div>
       {!empty ? (
         <Fragment>
-          <div style={{ color: 'rgb(131, 136, 159)' }}>
+          <div style={{ color: "rgb(131, 136, 159)" }}>
             <small>
               <b>START </b>
               {displayTime(datasetStart)}
             </small>
           </div>
-          <div style={{ color: 'rgb(131, 136, 159)' }}>
+          <div style={{ color: "rgb(131, 136, 159)" }}>
             <small>
               <b>DURATION </b>
               {format_time(duration)}
@@ -164,15 +175,26 @@ const DatasetInfo = (props) => {
         </Fragment>
       ) : (
         <div className="d-flex align-items-center">
-          <div className="d-inline" style={{ color: 'rgb(131, 136, 159)' }}>
+          <div className="d-inline" style={{ color: "rgb(131, 136, 159)" }}>
             <FontAwesomeIcon
-              style={{ fontSize: '1rem' }}
+              style={{ fontSize: "1rem" }}
               icon={faExclamationTriangle}
             ></FontAwesomeIcon>
           </div>
           <div className="text-left d-inline ms-1">Dataset is empty</div>
         </div>
       )}
+      <EditModal
+        isOpen={datasetNameEditOpen}
+        headerText="Edit Name"
+        value={""}
+        placeholder="Enter new datast name"
+        onSave={(text) => {
+          updateDataset({ ...dataset, name: text });
+          setDatasetNameEditOpen(false);
+        }}
+        onCancel={() => setDatasetNameEditOpen(false)}
+      ></EditModal>
     </div>
   );
 };
@@ -187,7 +209,7 @@ const ExpandButton = (props) => {
       }}
     >
       <div
-        className={classNames('d-flex align-items-center animationDuration', {
+        className={classNames("d-flex align-items-center animationDuration", {
           collapse_arrow: props.isOpen,
         })}
       >
@@ -203,6 +225,7 @@ const ExpandButton = (props) => {
 
 const DatasetTableEntry = (props) => {
   const dataset = props.dataset;
+  const updateDataset = props.updateDataset;
   const history = useNavigate();
   const navigate = useProjectRouter();
 
@@ -212,7 +235,7 @@ const DatasetTableEntry = (props) => {
       <div
         className="datasetCard"
         style={{
-          background: props.index % 2 === 1 ? 'rgb(249, 251, 252)' : '',
+          background: props.index % 2 === 1 ? "rgb(249, 251, 252)" : "",
         }}
       >
         <div className="d-flex">
@@ -221,13 +244,13 @@ const DatasetTableEntry = (props) => {
               isSelected={props.isSelected}
               className="d-inline-block"
               // onClick={(e) => console.log("Click")}
-              onClick={(e) => props.toggleCheck(e, dataset['_id'])}
+              onClick={(e) => props.toggleCheck(e, dataset["_id"])}
             ></Checkbox>
           </div>
           <div className="w-100">
             <Row>
               <Col className="text-left align-self-center col-lg-4 col-xl-3">
-                <DatasetInfo dataset={dataset}></DatasetInfo>
+                <DatasetInfo dataset={dataset} updateDataset={updateDataset}></DatasetInfo>
               </Col>
               <Col className="d-none d-lg-block">
                 <div className="d-flex h-100 flex-column justify-content-center">
@@ -247,11 +270,11 @@ const DatasetTableEntry = (props) => {
                   </div>
                   <Button
                     outline
-                    color='danger'
+                    color="danger"
                     className="btn-delete me-2"
                     onClick={() => props.deleteEntry(dataset._id)}
                   >
-                    <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{' '}
+                    <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{" "}
                   </Button>
                   <Button
                     outline
@@ -267,7 +290,7 @@ const DatasetTableEntry = (props) => {
           </div>
         </div>
         <div
-          className={classNames('animationDuration d-block d-lg-none', {
+          className={classNames("animationDuration d-block d-lg-none", {
             showInfo: !isOpen,
           })}
         >

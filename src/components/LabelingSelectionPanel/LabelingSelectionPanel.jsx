@@ -97,7 +97,7 @@ const LabelingSelectionPanel = () => {
             <div className="scrollable-dropdown">
               {timeSeries.map((elm) => {
                 return (
-                  <DropdownItem className="p-0 p-2">
+                  <DropdownItem key={elm._id} className="p-0 p-2">
                     <div
                       onClick={(e) => {
                         onClickSelectSeries(elm._id);
@@ -151,7 +151,7 @@ const LabelingSelectionPanel = () => {
               </DropdownToggle>
               <DropdownMenu className="scrollable-dropdown">
                 {labelings.map((elm) => (
-                  <DropdownItem onClick={() => setActiveLabeling(elm)}>
+                  <DropdownItem key={elm._id} onClick={() => setActiveLabeling(elm)}>
                     {elm.name}
                   </DropdownItem>
                 ))}

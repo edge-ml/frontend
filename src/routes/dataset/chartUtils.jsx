@@ -15,7 +15,6 @@ export const generatePlotBands = (
         selectedLabelId === label['_id']
           ? 'plotband-selected'
           : 'plotband-deselected',
-      className: 'plotband-deselected',
       color: label.color,
       label: {
         text: label.name,

@@ -15,7 +15,7 @@ import './index.css';
 
 const Dataset = () => {
   const { datasetId } = useParams();
-  const { dataset } = useDataset(datasetId);
+  const { dataset, addLabel } = useDataset(datasetId);
   const { labelings } = useLabelings();
 
   if (!dataset || !labelings) {
@@ -24,10 +24,10 @@ const Dataset = () => {
 
   return (
     <div>
-      <DatasetProvider dataset={dataset} labelings={labelings}>
+      <DatasetProvider dataset={dataset} addLabel={addLabel} labelings={labelings}>
         <LabelingProvider labelings={labelings}>
-          <div className="d-flex w-100">
-            <div className="d-flex flex-column justify-content-between flex-grow-1">
+          <div className="d-flex w-100 h-100">
+            <div className="d-flex flex-column justify-content-between flex-grow-1" style={{height: "100vh"}}>
               <LabelingSelectionPanel
                 dataset={dataset}
               ></LabelingSelectionPanel>

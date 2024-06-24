@@ -29,6 +29,7 @@ const ListPage = (props) => {
     totalPages,
     sorting,
     setSorting,
+    updateDataset
   } = usePaginatedDatasets(1);
 
   const toggleModal = () => {
@@ -122,6 +123,7 @@ const ListPage = (props) => {
         selectedSorting={sorting}
         setSelectedSorting={setSorting}
         selectedFilter={selectedFilter}
+        updateDataset={updateDataset}
       ></DatasetTable>
       <div className="d-flex justify-content-center">
         <PageSelection

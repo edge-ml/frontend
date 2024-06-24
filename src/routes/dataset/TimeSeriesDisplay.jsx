@@ -12,26 +12,22 @@ import './index.css';
 const TimeSeriesDisplay = ({ timeSeries }) => {
 
   const chartRef = useRef();
-  const { dataset, activeDatasetLabels, selectedLabelId, startEnd, activeLabeling } =
+  const { dataset, activeDatasetLabels, startEnd, activeLabeling } =
     useContext(DatasetContext);
 
   const selectedDatasetLabeling = dataset.labelings.find(elm => elm.labelingId === activeLabeling._id);
-  console.log(dataset)
-  console.log(activeLabeling)
-  console.log(selectedDatasetLabeling)
 
-  const { onMouseDown, onMouseMoved, onMouseUp } = useChartEvents(chartRef, selectedDatasetLabeling);
+
+  const { onMouseDown, onMouseMoved, onMouseUp, selectedLabelId } = useChartEvents(chartRef, selectedDatasetLabeling);
 
 
   useEffect(() => {
     document.addEventListener('mousemove', onMouseMoved);
     document.addEventListener('mouseup', onMouseUp);
-    document.addEventListener('mousedown', onMouseDown)
 
     return () => {
       document.removeEventListener('mousemove', onMouseMoved);
       document.removeEventListener('mouseup', onMouseUp);
-      document.removeEventListener('mousedown', onMouseDown)
     }
   }, []);
 
@@ -55,9 +51,8 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
     activeDatasetLabels,
     selectedLabelId,
     refreshData,
+    onMouseDown
   );
-
-  console.log(startEnd);
 
   return (
     <div className="m-2">

@@ -26,6 +26,17 @@ export const getDatasetsPagination = async (skip, limit, sort) => {
   return res;
 };
 
+export const updateDataset = async (dataset) => {
+  console.log(dataset);
+  const res = apiRequest(
+    apiConsts.HTTP_METHODS.PUT,
+    apiConsts.DATASET_STORE,
+    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${dataset["_id"]}`,
+    dataset
+  );
+  return res;
+};
+
 const useDatasetAPI = () => {
   const { currentProject } = useProjectStore();
   const api = useApiCalls(currentProject);
@@ -95,15 +106,15 @@ const useDatasetAPI = () => {
     return res;
   };
 
-  const updateDataset = async (dataset) => {
-    const res = await api.request(
-      apiConsts.HTTP_METHODS.PUT,
-      apiConsts.DATASET_STORE,
-      apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${dataset["_id"]}`,
-      dataset
-    );
-    return res;
-  };
+  // const updateDataset = async (dataset) => {
+  //   const res = await api.request(
+  //     apiConsts.HTTP_METHODS.PUT,
+  //     apiConsts.DATASET_STORE,
+  //     apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${dataset["_id"]}`,
+  //     dataset
+  //   );
+  //   return res;
+  // };
 
   return {
     getDataset: getDataset,
@@ -289,22 +300,22 @@ export const deleteDataset = (id) => {
   });
 };
 
-export const updateDataset = (dataset) => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.PUT,
-        apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${dataset["_id"]}`,
-        dataset
-      )
-    )
-      .then((updatedDataset) => {
-        resolve(updatedDataset.data);
-      })
-      .catch((err) => reject(err.response));
-  });
-};
+// export const updateDataset = (dataset) => {
+//   return new Promise((resolve, reject) => {
+//     axios(
+//       apiConsts.generateApiRequest(
+//         apiConsts.HTTP_METHODS.PUT,
+//         apiConsts.DATASET_STORE,
+//         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${dataset["_id"]}`,
+//         dataset
+//       )
+//     )
+//       .then((updatedDataset) => {
+//         resolve(updatedDataset.data);
+//       })
+//       .catch((err) => reject(err.response));
+//   });
+// };
 
 export const createDataset = (dataset) => {
   return new Promise((resolve, reject) => {

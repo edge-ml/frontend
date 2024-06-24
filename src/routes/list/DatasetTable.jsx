@@ -23,7 +23,8 @@ const DatasetTable = ({
   toggleCheck,
   labelings,
   labels,
-  deleteEntry
+  deleteEntry,
+  updateDataset
 }) => {
   const [areAllSelected, setAllSelected] = useState(false);
   return (
@@ -127,6 +128,7 @@ const DatasetTable = ({
                   labelings={labelings}
                   labels={labels}
                   deleteEntry={deleteEntry}
+                  updateDataset={updateDataset}
                 ></DatasetTableEntry>
               ))}
             </div>

@@ -1,8 +1,10 @@
-import React from 'react';
-import { Button } from 'reactstrap';
-import { hexToForegroundColor } from '../../services/ColorService';
+import React, { act } from "react";
+import { Button } from "reactstrap";
+import { hexToForegroundColor } from "../../services/ColorService";
+import { useContext } from "react";
+import { DatasetContext } from "../../routes/dataset/DatasetContext";
 
-import './LabelingPanel.css';
+import "./LabelingPanel.css";
 
 const LabelButtonView = ({
   labeling,
@@ -19,7 +21,7 @@ const LabelButtonView = ({
             disabled={selectedLabelTypeId === undefined || !canEdit}
             style={{
               backgroundColor:
-                label._id === selectedLabelTypeId ? label.color : 'white',
+                label._id === selectedLabelTypeId ? label.color : "white",
               borderColor:
                 label._id === selectedLabelTypeId ? null : label.color,
               color:
@@ -30,7 +32,7 @@ const LabelButtonView = ({
             onClick={(e) => handleLabelTypeClicked(e, label._id)}
             key={index}
           >
-            {label.name} {'(' + (index + 1) + ')'}
+            {label.name} {"(" + (index + 1) + ")"}
           </Button>
         ))}
     </div>
@@ -48,7 +50,7 @@ const TimeDisplay = ({ from, to }) => {
       <div className="d-flex align-items-center">
         <small>
           <div className="monospace text-sm">
-            {new Date(from).toUTCString().split(' ')[4]}
+            {new Date(from).toUTCString().split(" ")[4]}
           </div>
         </small>
         <small>
@@ -56,7 +58,7 @@ const TimeDisplay = ({ from, to }) => {
         </small>
         <small>
           <div className="monospace">
-            {new Date(to).toUTCString().split(' ')[4]}
+            {new Date(to).toUTCString().split(" ")[4]}
           </div>
         </small>
       </div>
@@ -66,9 +68,7 @@ const TimeDisplay = ({ from, to }) => {
 
 const LabelingPanel = ({
   labeling,
-  onSelectedLabelTypeIdChanged,
   hideLabels,
-  selectedLabelTypeId,
   canEdit,
   onAddLabel,
   from,
@@ -81,7 +81,8 @@ const LabelingPanel = ({
     onSelectedLabelTypeIdChanged(id);
   };
 
-  console.log(selectedLabelTypeId);
+  const { activeLabeling, selectedLabelTypeId } = useContext(DatasetContext);
+
   return (
     <div>
       <div className="labelingPanelBorder"></div>
@@ -96,7 +97,7 @@ const LabelingPanel = ({
               + Add Label
             </Button>
             <LabelButtonView
-              labeling={labeling}
+              labeling={activeLabeling}
               selectedLabelTypeId={selectedLabelTypeId}
               handleLabelTypeClicked={handleLabelTypeClicked}
               canEdit={canEdit}

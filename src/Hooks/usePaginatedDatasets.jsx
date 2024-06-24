@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getDatasetsPagination } from "../services/ApiServices/DatasetServices";
+import { getDatasetsPagination, updateDataset as updateDataset_api } from "../services/ApiServices/DatasetServices";
 
 const usePaginatedDatasets = (initialPage) => {
   const [datasets, setDatasets] = useState(undefined);
@@ -33,6 +33,11 @@ const usePaginatedDatasets = (initialPage) => {
     refreshDatasets(1, tableLenth, sorting);
   };
 
+  const updateDataset = async (dataset) => {
+    await updateDataset_api(dataset);
+    refreshDatasets(page, tableLenth, sorting);
+  }
+
   return {
     datasets,
     page,
@@ -41,6 +46,7 @@ const usePaginatedDatasets = (initialPage) => {
     refreshDatasets,
     sorting,
     setSorting,
+    updateDataset,
   };
 };
 
