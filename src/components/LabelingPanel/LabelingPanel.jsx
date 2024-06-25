@@ -1,10 +1,11 @@
-import React, { act } from "react";
+import React, { useState } from "react";
 import { Button } from "reactstrap";
 import { hexToForegroundColor } from "../../services/ColorService";
 import { useContext } from "react";
 import { DatasetContext } from "../../routes/dataset/DatasetContext";
 
 import "./LabelingPanel.css";
+import DeleteModal from "../Common/DeleteModal";
 
 const LabelButtonView = ({
   labeling,
@@ -82,6 +83,8 @@ const LabelingPanel = ({
     onSelectedLabelTypeIdChanged(id);
   };
 
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);  
+
   return (
     <div>
       <div className="labelingPanelBorder"></div>
@@ -108,14 +111,21 @@ const LabelingPanel = ({
         <div className="d-flex">
           <TimeDisplay from={from} to={to}></TimeDisplay>
           <Button
-            disabled={selectedLabelId === undefined || !canEdit}
+            disabled={selectedLabelId === undefined}
             className="deleteButton m-1"
             outline
             color="danger"
-            onClick={onDeleteSelectedLabel}
+            onClick={() => setDeleteModalOpen(true)}
           >
             Delete
           </Button>
+          <DeleteModal
+            isOpen={deleteModalOpen}
+            onCancel={() => setDeleteModalOpen(false)}
+            onDelete={() => {onDeleteSelectedLabel(); setDeleteModalOpen(false)}}
+          >
+            <div>SelectedLabel</div>
+          </DeleteModal>
         </div>
       </div>
     </div>

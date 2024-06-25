@@ -15,12 +15,12 @@ const useDataset = (dataset_id) => {
     setDataset(dataset);
   };
 
-  const addLabel = (newLabel) => {
+  const addLabel = (labelingId, newLabel) => {
     console.log("Creating label")
     const newDataset = { ...dataset };
     console.log(newDataset)
     newDataset.labelings = newDataset.labelings.map((labeling) => {
-      if (labeling._id === newLabel.labelingId) {
+      if (labeling._id === labelingId.labelingId) {
         console.log("Pusing label")
         labeling.labels.push(newLabel);
       }
@@ -31,6 +31,19 @@ const useDataset = (dataset_id) => {
     refreshDataset();
   }
 
+  const deleteLabel = (labelId) => {
+    if (labelId) {
+      const newDataset = {...dataset};
+      newDataset.labelings = newDataset.labelings.map(labeling => {
+        labeling.labels = labeling.labels.filter(label => label._id !== labelId);
+        return labeling;
+      });
+      updateDataset(newDataset);
+      refreshDataset();
+    }
+  }
+
+
   useEffect(() => {
     refreshDataset();
   }, []);
@@ -38,6 +51,7 @@ const useDataset = (dataset_id) => {
   return {
     dataset: dataset,
     addLabel: addLabel,
+    deleteLabel: deleteLabel
   };
 };
 

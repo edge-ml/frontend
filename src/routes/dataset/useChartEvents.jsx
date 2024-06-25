@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { DatasetContext } from "./DatasetContext";
 
-const useChartEvents = (chart, labeling, selectedLabelId) => {
+const useChartEvents = (chart, labeling, selectedLabelId, setSelectedLabelId) => {
   let mouseDown = false;
 
   const [activePlotLineId, setActivePlotLineId] = useState(null);

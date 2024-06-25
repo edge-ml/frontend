@@ -121,7 +121,7 @@ const ChartSlider = ({ start, end, setStartEnd }) => {
   };
 
   return (
-    <div style={{ height: '200px' }}>
+    <div style={{ height: '80px' }}>
       <HighchartsReact
         ref={chartRef}
         highcharts={Highcharts}

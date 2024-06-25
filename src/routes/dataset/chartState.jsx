@@ -5,8 +5,10 @@ const generateChartState = (
   ts_data,
   dataset,
   activeLabeling,
+  selectedLabelId,
   refreshData,
-  onChartClick
+  onChartClick,
+  onClickLabel
 ) => {
   const { name, unit, start, end } = ts;
 
@@ -26,8 +28,8 @@ const generateChartState = (
     }
 
 
-    plotBands = generatePlotBands(datasetLabeling && datasetLabeling.labels, activeLabeling._id);
-    plotLines = generatePlotLines(datasetLabeling && datasetLabeling.labels, activeLabeling._id);
+    plotBands = generatePlotBands(datasetLabeling && datasetLabeling.labels, selectedLabelId, onClickLabel);
+    plotLines = generatePlotLines(datasetLabeling && datasetLabeling.labels, selectedLabelId, onClickLabel);
 
 
     console.log(plotBands)

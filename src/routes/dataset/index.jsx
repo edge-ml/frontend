@@ -16,9 +16,9 @@ import useEditDataset from './useEditDataset';
 
 const Dataset = () => {
   const { datasetId } = useParams();
-  const { dataset, addLabel } = useDataset(datasetId);
+  const { dataset, addLabel, deleteLabel } = useDataset(datasetId);
   const { labelings } = useLabelings();
-  const datasetEdit = useEditDataset(dataset, labelings);
+  const datasetEdit = useEditDataset(dataset, labelings, deleteLabel);
 
 
 
@@ -28,12 +28,16 @@ const Dataset = () => {
     activeLabeling,
     setActiveLabeling,
     selectedLabelId,
-    setStartEnd
+    setStartEnd,
+    setSelectedLabelId,
+    onDeleteSelectedLabel
   } = datasetEdit;
 
   if (!dataset || !labelings) {
     return <Loader loading></Loader>;
   }
+
+  console.log(setSelectedLabelId)
 
   return (
     <div>
@@ -56,9 +60,13 @@ const Dataset = () => {
               activeTimeSeries={activeTimeSeries}
               setStartEnd={setStartEnd}
               activeLabeling={activeLabeling}
+              selectedLabelId={selectedLabelId}
+              setSelectedLabelId={setSelectedLabelId}
             ></TimeSeriesSection>
             <LabelingPanel
               activeLabeling={activeLabeling}
+              selectedLabelId={selectedLabelId}
+              onDeleteSelectedLabel={onDeleteSelectedLabel}
             ></LabelingPanel>
           </div>
           <MetadataSidebar

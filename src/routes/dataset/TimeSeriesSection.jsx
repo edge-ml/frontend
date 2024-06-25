@@ -9,7 +9,11 @@ const TimeSeriesSection = ({
   activeLabeling,
   lableings,
   dataset,
+  selectedLabelId,
+  setSelectedLabelId,
   setStartEnd }) => {
+
+    console.log(selectedLabelId)
 
   const globalStart = Math.min(...activeTimeSeries.map((elm) => elm.start));
   const globalEnd = Math.max(...activeTimeSeries.map((elm) => elm.end));
@@ -25,6 +29,8 @@ const TimeSeriesSection = ({
             labelings={lableings}
             dataset={dataset}
             activeLabeling={activeLabeling}
+            selectedLabelId={selectedLabelId}
+            setSelectedLabelId={setSelectedLabelId}
           ></TimeSeriesDisplay>
         ))}
       </div>
