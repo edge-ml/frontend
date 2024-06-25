@@ -4,10 +4,8 @@ import HighchartsReact from 'highcharts-react-official';
 import Highcharts from 'highcharts/highstock';
 import { DatasetContext } from './DatasetContext';
 
-const ChartSlider = ({ start, end }) => {
+const ChartSlider = ({ start, end, setStartEnd }) => {
   const chartRef = useRef();
-
-  const { setStartEnd } = useContext(DatasetContext);
 
   const data = [];
   const step = (end - start) / (window.innerWidth - 1);

@@ -11,9 +11,6 @@ import './MetaDataSidebar.css';
 export const MetaDataSidebar = ({
   metaDataExtended,
   toggleMetaData,
-  onClickSelectSeries,
-  timeSeries,
-  activeSeries,
   start,
   end,
   user,

@@ -67,7 +67,6 @@ const TimeDisplay = ({ from, to }) => {
 };
 
 const LabelingPanel = ({
-  labeling,
   hideLabels,
   canEdit,
   onAddLabel,
@@ -75,13 +74,13 @@ const LabelingPanel = ({
   to,
   onDeleteSelectedLabel,
   selectedLabelId,
+  activeLabeling,
+  selectedLabelTypeId
 }) => {
   const handleLabelTypeClicked = (e, id) => {
     e.preventDefault();
     onSelectedLabelTypeIdChanged(id);
   };
-
-  const { activeLabeling, selectedLabelTypeId } = useContext(DatasetContext);
 
   return (
     <div>

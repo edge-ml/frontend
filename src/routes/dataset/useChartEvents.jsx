@@ -1,19 +1,19 @@
 import { useContext, useState } from "react";
 import { DatasetContext } from "./DatasetContext";
 
-const useChartEvents = (chart, labeling) => {
+const useChartEvents = (chart, labeling, selectedLabelId) => {
   let mouseDown = false;
 
   const [activePlotLineId, setActivePlotLineId] = useState(null);
-  const {
-    selectedLabelId,
-    setSelectedLabelId,
-    provisionalLabeling,
-    setProvisionalLabeling,
-    selectedLabelTypeId,
-    addLabel,
-    activeLabeling,
-  } = useContext(DatasetContext);
+  // const {
+  //   selectedLabelId,
+  //   setSelectedLabelId,
+  //   provisionalLabeling,
+  //   setProvisionalLabeling,
+  //   selectedLabelTypeId,
+  //   addLabel,
+  //   activeLabeling,
+  // } = useContext(DatasetContext);
 
   const onClickPosition = (position) => {
     console.log("Clicked position", position);

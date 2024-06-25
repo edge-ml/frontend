@@ -35,6 +35,9 @@ const DatasetProvider = ({ children, dataset, labelings, addLabel }) => {
     const usedLabels = provisionalLabeling
       ? [...datasetLabeling.labels, provisionalLabeling]
       : datasetLabeling.labels;
+    if (!usedLabels) {
+      return { labels: [] };
+    }
     datasetLabeling.labels = usedLabels.map((elm) => {
       const label = activeLabeling.labels.find((l) => l._id === elm.type);
       return { ...label, ...elm };

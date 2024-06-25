@@ -9,16 +9,19 @@ import useChartEvents from './useChartEvents'
 
 import './index.css';
 
-const TimeSeriesDisplay = ({ timeSeries }) => {
+const TimeSeriesDisplay = ({ timeSeries, dataset, activeDatasetLabels, activeLabeling }) => {
 
   const chartRef = useRef();
-  const { dataset, activeDatasetLabels, startEnd, activeLabeling } =
-    useContext(DatasetContext);
 
-  const selectedDatasetLabeling = dataset.labelings.find(elm => elm.labelingId === activeLabeling._id);
+  let selectedDatasetLabeling = undefined;
+  if (dataset && dataset.labelings && activeLabeling) {
+    console.log(dataset)
+    selectedDatasetLabeling = dataset.labelings.find(elm => elm.labelingId === activeLabeling._id);
+  }
 
+  console.log(activeLabeling, selectedDatasetLabeling);
 
-  const { onMouseDown, onMouseMoved, onMouseUp, selectedLabelId } = useChartEvents(chartRef, selectedDatasetLabeling);
+  const { onMouseDown, onMouseMoved, onMouseUp } = useChartEvents(chartRef, selectedDatasetLabeling);
 
 
   useEffect(() => {
@@ -48,8 +51,8 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
   const chartOptions = generateChartState(
     timeSeries,
     timeSeriesData,
-    activeDatasetLabels,
-    selectedLabelId,
+    dataset,
+    activeLabeling,
     refreshData,
     onMouseDown
   );

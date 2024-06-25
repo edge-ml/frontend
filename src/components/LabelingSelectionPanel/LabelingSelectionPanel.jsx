@@ -22,24 +22,13 @@ import { DatasetContext } from '../../routes/dataset/DatasetContext';
 
 const hideLabelsSymbol = 'hide labels' + Math.floor(Math.random() * 1000);
 
-const LabelingSelectionPanel = () => {
+const LabelingSelectionPanel = ({ activeTimeSeries, setActiveTimeSeries, dataset, labelings, activeLabeling, setActiveLabeling }) => {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isTSDropdownOpen, setIsTSDropdownOpen] = useState(false);
   const { registerDatasetDownload } = useContext(NotificationContext);
 
-  // const { labelings, disableSelectedLabelings, activeLabeling, setActiveLabeling } = useContext(LabelingContext);
-  const {
-    activeSeries,
-    timeSeries,
-    setActiveSeries,
-    dataset,
-    labelings,
-    activeLabeling,
-    setActiveLabeling,
-  } = useContext(DatasetContext);
-
   const [selectedTs, setSelectedTs] = useState(
-    activeSeries.map((elm) => elm._id),
+    activeTimeSeries.map((elm) => elm._id),
   );
 
   const navigate = useProjectRouter();
@@ -53,7 +42,7 @@ const LabelingSelectionPanel = () => {
   };
 
   const onApplyTs = () => {
-    setActiveSeries(
+    setActiveTimeSeries(
       selectedTs.map((select_id) =>
         dataset.timeSeries.find((elm) => elm._id === select_id),
       ),
@@ -90,12 +79,12 @@ const LabelingSelectionPanel = () => {
           >
             Selected Timeseries:{' '}
             <div className="d-inline font-weight-normal">
-              {activeSeries.length + '/' + timeSeries.length}
+              {activeTimeSeries.length + '/' + dataset.timeSeries.length}
             </div>{' '}
           </DropdownToggle>
           <DropdownMenu>
             <div className="scrollable-dropdown">
-              {timeSeries.map((elm) => {
+              {dataset.timeSeries.map((elm) => {
                 return (
                   <DropdownItem key={elm._id} className="p-0 p-2">
                     <div

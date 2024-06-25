@@ -12,11 +12,24 @@ import MetadataSidebar from './MetadataSidebar';
 import TimeSeriesSection from './TimeSeriesSection';
 
 import './index.css';
+import useEditDataset from './useEditDataset';
 
 const Dataset = () => {
   const { datasetId } = useParams();
   const { dataset, addLabel } = useDataset(datasetId);
   const { labelings } = useLabelings();
+  const datasetEdit = useEditDataset(dataset, labelings);
+
+
+
+  const {
+    activeTimeSeries,
+    setActiveTimeSeries,
+    activeLabeling,
+    setActiveLabeling,
+    selectedLabelId,
+    setStartEnd
+  } = datasetEdit;
 
   if (!dataset || !labelings) {
     return <Loader loading></Loader>;
@@ -24,20 +37,37 @@ const Dataset = () => {
 
   return (
     <div>
-      <DatasetProvider dataset={dataset} addLabel={addLabel} labelings={labelings}>
-        <LabelingProvider labelings={labelings}>
-          <div className="d-flex w-100 h-100">
-            <div className="d-flex flex-column justify-content-between flex-grow-1" style={{height: "100vh"}}>
-              <LabelingSelectionPanel
-                dataset={dataset}
-              ></LabelingSelectionPanel>
-              <TimeSeriesSection></TimeSeriesSection>
-              <LabelingPanel></LabelingPanel>
-            </div>
-            <MetadataSidebar></MetadataSidebar>
+      {/* <DatasetProvider dataset={dataset} addLabel={addLabel} labelings={labelings}> */}
+      <LabelingProvider labelings={labelings}>
+        <div className="d-flex w-100 h-100">
+          <div className="d-flex flex-column justify-content-between flex-grow-1" style={{ height: "100vh" }}>
+            <LabelingSelectionPanel
+              activeTimeSeries={activeTimeSeries}
+              setActiveTimeSeries={setActiveTimeSeries}
+              activeLabeling={activeLabeling}
+              selectedLabelId={selectedLabelId}
+              setActiveLabeling={setActiveLabeling}
+              labelings={labelings}
+              dataset={dataset}
+            ></LabelingSelectionPanel>
+            <TimeSeriesSection
+              labelings={labelings}
+              dataset={dataset}
+              activeTimeSeries={activeTimeSeries}
+              setStartEnd={setStartEnd}
+              activeLabeling={activeLabeling}
+            ></TimeSeriesSection>
+            <LabelingPanel
+              activeLabeling={activeLabeling}
+            ></LabelingPanel>
           </div>
-        </LabelingProvider>
-      </DatasetProvider>
+          <MetadataSidebar
+            dataset={dataset}
+          >
+          </MetadataSidebar>
+        </div>
+      </LabelingProvider>
+      {/* </DatasetProvider> */}
     </div>
   );
 };

@@ -3,18 +3,53 @@ import { generatePlotBands, generatePlotLines } from "./chartUtils";
 const generateChartState = (
   ts,
   ts_data,
-  labelings,
-  selectedLabelId,
+  dataset,
+  activeLabeling,
   refreshData,
   onChartClick
 ) => {
   const { name, unit, start, end } = ts;
 
-  const plotBands = generatePlotBands(labelings, selectedLabelId);
-  const plotLines = generatePlotLines(labelings, selectedLabelId);
+  let plotBands = [];
+  let plotLines = [];
+
+
+  if (dataset && dataset.labelings && activeLabeling) {
+
+    const datasetLabeling = dataset.labelings.find(elm => elm.labelingId === activeLabeling._id);
+
+    if (datasetLabeling) {
+      datasetLabeling.labels = datasetLabeling.labels.map(elm => {
+        const label = activeLabeling.labels.find((l) => l._id === elm.type);
+        return { ...label, ...elm };
+      });
+    }
+
+
+    plotBands = generatePlotBands(datasetLabeling && datasetLabeling.labels, activeLabeling._id);
+    plotLines = generatePlotLines(datasetLabeling && datasetLabeling.labels, activeLabeling._id);
+
+
+    console.log(plotBands)
+  }
+
+  console.log(plotBands)
+
 
   return {
-    height: "200px",
+    chart: {
+      zooming: {
+        mouseWheel: {
+          enabled: false
+        }
+      },
+      events: {
+        click: (event) => {
+          const xValue = event.xAxis[0];
+          onChartClick(xValue);
+        },
+      },
+    },
     navigator: {
       maskFill: "#0080ff22",
       enabled: false,
@@ -25,12 +60,12 @@ const generateChartState = (
       xAxis: {
         crosshair: false,
         isInternal: true,
-        lineColor: "#000000", // Added line color
+        lineColor: "#000000",
       },
       yAxis: {
         isInternal: true,
-        lineColor: "#000000", // Added line color
-        gridLineColor: "#000000", // Added grid line color
+        lineColor: "#000000",
+        gridLineColor: "#000000",
       },
       stickyTracking: false,
     },
@@ -41,24 +76,24 @@ const generateChartState = (
     title: null,
     series: !Array.isArray(name)
       ? [
-          {
-            showInLegend: false,
-            name: unit === "" ? name : name + " (" + unit + ")",
-            data: ts_data,
-            lineWidth: 1.5,
-            color: "black", // Updated series line color
-            enableMouseTracking: false,
-          },
-        ]
+        {
+          showInLegend: false,
+          name: unit === "" ? name : name + " (" + unit + ")",
+          data: ts_data,
+          lineWidth: 1.5,
+          color: "black",
+          enableMouseTracking: false,
+        },
+      ]
       : ts_data.map((dataItem, indexOuter) => {
-          return {
-            name: name[indexOuter] + " (" + unit[indexOuter] + ")",
-            data: ts_data,
-            lineWidth: 1.5,
-            color: "black", // Updated series line color
-            enableMouseTracking: false,
-          };
-        }),
+        return {
+          name: name[indexOuter] + " (" + unit[indexOuter] + ")",
+          data: ts_data,
+          lineWidth: 1.5,
+          color: "black",
+          enableMouseTracking: false,
+        };
+      }),
     xAxis: {
       lineWidth: 1,
       tickLength: 10,
@@ -77,8 +112,8 @@ const generateChartState = (
           refreshData(e.min, e.max);
         },
       },
-      lineColor: "#000000", // Added line color
-      tickColor: "#000000", // Added tick color
+      lineColor: "#000000",
+      tickColor: "#000000",
     },
     yAxis: {
       height: undefined,
@@ -93,8 +128,8 @@ const generateChartState = (
         enabled: false,
       },
       opposite: false,
-      lineColor: "rgb(233,233,233)", // Added line color
-      gridLineColor: "rgb(233,233,233)", // Added grid line color
+      lineColor: "rgb(233,233,233)",
+      gridLineColor: "rgb(233,233,233)",
     },
     legend: {
       align: "left",
@@ -112,15 +147,7 @@ const generateChartState = (
     },
     scrollbar: {
       height: 0,
-      buttonArrowColor: "rgb(233,233,233)", // Updated scrollbar arrow color
-    },
-    chart: {
-      events: {
-        click: (event) => {
-          const xValue = event.xAxis[0];
-          onChartClick(xValue);
-        },
-      },
+      buttonArrowColor: "rgb(233,233,233)",
     },
   };
 };

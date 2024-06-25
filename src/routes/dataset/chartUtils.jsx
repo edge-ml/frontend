@@ -1,10 +1,14 @@
 export const generatePlotBands = (
-  labeling,
+  labels,
   selectedLabelId,
   mouseDownHandler,
 ) => {
-  if (labeling.labels === undefined) return [];
-  return labeling.labels.map((label) => {
+  
+  if (labels === undefined) return [];
+
+
+
+  return labels.map((label) => {
     return {
       id: 'band_' + label['_id'],
       labelId: label['_id'],
@@ -34,12 +38,10 @@ export const generatePlotBands = (
   });
 };
 
-export const generatePlotLines = (labeling, selectedLabelId) => {
-  if (!labeling || !labeling.labels) {
-    return [];
-  }
+export const generatePlotLines = (labels, selectedLabelId) => {
+  if (!labels) return [];
   var results = [];
-  labeling.labels.forEach((label) => {
+  labels.forEach((label) => {
     results.push(
       generatePlotLine(label, selectedLabelId === label['_id'], true),
     );

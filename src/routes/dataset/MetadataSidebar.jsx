@@ -10,9 +10,8 @@ import MetadataContainer from '../../components/MetadataPanel/MetadataContainer'
 import { DatasetContext } from './DatasetContext';
 import { Container } from 'reactstrap';
 
-const MetadataSidebar = () => {
+const MetadataSidebar = ({ dataset }) => {
   const [isExtended, setExtendend] = useState(false);
-  const { dataset } = useContext(DatasetContext);
 
   const toggleMetaData = () => {
     setExtendend(!isExtended);
@@ -52,9 +51,9 @@ const MetadataSidebar = () => {
                 end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
                 user={dataset.userId}
                 name={dataset.name}
-                handleDatasetNameChange={() => {}}
+                handleDatasetNameChange={() => { }}
                 metaData={dataset.metaData}
-                onUpdateMetaData={() => {}}
+                onUpdateMetaData={() => { }}
               ></MetadataContainer>
             </div>
           </div>
