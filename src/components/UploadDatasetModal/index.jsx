@@ -12,7 +12,7 @@ const UploadDatasetModal = ({ isOpen, onCloseModal, onDatasetComplete }) => {
   const [files, setFiles] = useState([]);
 
   const onFileInput = (fileList) => {
-    console.log(fileList);
+    
     setFiles([...fileList]);
   };
 

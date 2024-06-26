@@ -112,7 +112,7 @@ const DeployModal = ({ model, onClose }) => {
       sensor_id: sensor_idx,
       component_id: component_idx,
     };
-    console.log(selectedSensors);
+    
     setSelectedSensors([...selectedSensors]);
     if (checkAllSensorsSelected()) {
       setShowSelectAllSensorWarning(false);
@@ -152,8 +152,8 @@ const DeployModal = ({ model, onClose }) => {
     setFlashState('modelDownload');
 
     // const a_settings = {};
-    console.log('DEPLOYFEATURES');
-    console.log(deployFeatures);
+    
+    
     // a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
 
     const res = await deployModel(
@@ -167,7 +167,7 @@ const DeployModal = ({ model, onClose }) => {
     const view = new Uint8Array(buffer);
 
     view.fill(0); // Fill the ArrayBuffer with zeroes */
-    console.log('Compiled model length: ', res.length);
+    
     setComiledModel(res);
   };
 
@@ -183,8 +183,8 @@ const DeployModal = ({ model, onClose }) => {
     // const a_settings = {};
     // a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
 
-    console.log('DEPLOYFEATURES');
-    console.log(deployFeatures);
+    
+    
 
     const res = await downloadFirmware(
       model._id,
@@ -193,7 +193,7 @@ const DeployModal = ({ model, onClose }) => {
       selectedDevice,
       deployFeatures,
     );
-    console.log(res);
+    
     const downloadLink = document.createElement('a');
     const blob = new Blob([res]);
     const objectUrl = URL.createObjectURL(blob);
@@ -204,14 +204,14 @@ const DeployModal = ({ model, onClose }) => {
   };
 
   const handleHyperparameterChange = ({ parameter_name, state }) => {
-    console.log(parameter_name, state);
+    
     const idx = parameters.findIndex(
       (elm) => elm.parameter_name === parameter_name,
     );
     parameters[idx].value = state;
     setParameters([...parameters]);
   };
-  console.log(parameters);
+  
   if (!model || !selectedDevice || !selectedSensors || !parameters) {
     return null;
   }
@@ -220,7 +220,7 @@ const DeployModal = ({ model, onClose }) => {
     return flashState === 'modelDownload' || flashState === 'uploading';
   };
 
-  console.log(selectedDevice);
+  
 
   const renderDeployPart = () => {
     return (

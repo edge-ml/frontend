@@ -6,7 +6,7 @@ import { Input } from 'reactstrap';
 import Hyperparameter from './Hyperparameter';
 
 const TextHyperparameter = (props) => {
-  console.log(props.value);
+  
   return (
     <Hyperparameter {...props}>
       <Input

@@ -11,26 +11,27 @@ const LabelButtonView = ({
   labeling,
   selectedLabelTypeId,
   canEdit,
-  handleLabelTypeClicked,
+  setSelectedLabelTypeId,
 }) => {
+
+  
+
   return (
     <div>
       {labeling &&
         labeling.labels.map((label, index) => (
           <Button
             className="m-1 labelingButton"
-            disabled={selectedLabelTypeId === undefined || !canEdit}
+            disabled={selectedLabelTypeId === undefined}
             style={{
               backgroundColor:
                 label._id === selectedLabelTypeId ? label.color : "white",
-              borderColor:
-                label._id === selectedLabelTypeId ? null : label.color,
               color:
                 label._id === selectedLabelTypeId
                   ? hexToForegroundColor(label.color)
                   : label.color,
             }}
-            onClick={(e) => handleLabelTypeClicked(e, label._id)}
+            onClick={(e) => setSelectedLabelTypeId(label._id)}
             key={index}
           >
             {label.name} {"(" + (index + 1) + ")"}
@@ -67,23 +68,27 @@ const TimeDisplay = ({ from, to }) => {
   );
 };
 
-const LabelingPanel = ({
-  hideLabels,
-  canEdit,
-  onAddLabel,
-  from,
-  to,
-  onDeleteSelectedLabel,
-  selectedLabelId,
-  activeLabeling,
-  selectedLabelTypeId
-}) => {
+const LabelingPanel = ({ }) => {
+
+
+  const { hideLabels,
+    canEdit,
+    onAddLabel,
+    from,
+    to,
+    onDeleteSelectedLabel,
+    selectedLabelId,
+    activeLabeling,
+    selectedLabelTypeId,
+    setSelectedLabelTypeId } = useContext(DatasetContext);
+
+
   const handleLabelTypeClicked = (e, id) => {
     e.preventDefault();
     onSelectedLabelTypeIdChanged(id);
   };
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);  
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   return (
     <div>
@@ -91,17 +96,10 @@ const LabelingPanel = ({
       <div className="d-flex justify-content-between p-1">
         {!hideLabels ? (
           <div className="d-flex">
-            <Button
-              className="labelingButton m-1 me-2"
-              color="secondary"
-              onClick={onAddLabel}
-            >
-              + Add Label
-            </Button>
             <LabelButtonView
               labeling={activeLabeling}
               selectedLabelTypeId={selectedLabelTypeId}
-              handleLabelTypeClicked={handleLabelTypeClicked}
+              setSelectedLabelTypeId={setSelectedLabelTypeId}
               canEdit={canEdit}
             ></LabelButtonView>
           </div>
@@ -122,7 +120,7 @@ const LabelingPanel = ({
           <DeleteModal
             isOpen={deleteModalOpen}
             onCancel={() => setDeleteModalOpen(false)}
-            onDelete={() => {onDeleteSelectedLabel(); setDeleteModalOpen(false)}}
+            onDelete={() => { onDeleteSelectedLabel(); setDeleteModalOpen(false) }}
           >
             <div>SelectedLabel</div>
           </DeleteModal>

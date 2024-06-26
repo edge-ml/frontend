@@ -1,54 +1,50 @@
 import { useContext, useState } from "react";
 import { DatasetContext } from "./DatasetContext";
 
-const useChartEvents = (chart, labeling, selectedLabelId, setSelectedLabelId) => {
+const useChartEvents = (chart, labeling) => {
   let mouseDown = false;
 
   const [activePlotLineId, setActivePlotLineId] = useState(null);
-  // const {
-  //   selectedLabelId,
-  //   setSelectedLabelId,
-  //   provisionalLabeling,
-  //   setProvisionalLabeling,
-  //   selectedLabelTypeId,
-  //   addLabel,
-  //   activeLabeling,
-  // } = useContext(DatasetContext);
+  const {
+    selectedLabelId,
+    setSelectedLabelId,
+    provisionalLabel,
+    setProvisionalLabel,
+    selectedLabelTypeId,
+    activeLabeling,
+  } = useContext(DatasetContext);
 
   const onClickPosition = (position) => {
-    console.log("Clicked position", position);
-    if (!provisionalLabeling) {
-      // Create a new label with a start position
-      const newLabel = {
+    
+    if (!provisionalLabel) {
+      setProvisionalLabel({
         start: Math.floor(position),
         end: undefined,
         type: selectedLabelTypeId,
-      };
-      setProvisionalLabeling(newLabel);
+      })
       return;
     }
-    
+
     // Set the end position for the existing provisional label
     const updatedLabel = {
-      ...provisionalLabeling,
+      ...provisionalLabel,
       end: Math.floor(position),
     };
-    
+
     // Ensure start is less than end
     if (updatedLabel.start > updatedLabel.end) {
       const temp = updatedLabel.start;
       updatedLabel.start = updatedLabel.end;
       updatedLabel.end = temp;
     }
-    
+
     // Add the label and reset provisional labeling
     const labelToAdd = {
       ...updatedLabel,
       name: activeLabeling.labels.find(elm => elm._id === updatedLabel.type).name
     };
-    
-    setProvisionalLabeling(undefined);
-    addLabel(labelToAdd);
+
+    setProvisionalLabel(labelToAdd);
   };
 
   const onClickLabel = (label) => {
@@ -182,10 +178,11 @@ const useChartEvents = (chart, labeling, selectedLabelId, setSelectedLabelId) =>
   };
 
   const onMouseDown = (e) => {
-    console.log(e);
+    
     mouseDown = true;
     var plotBand = getSelectedPlotBand();
     if (plotBand) {
+      
       this.onPlotBandMouseDown(
         e,
         plotBand.options.id,
@@ -196,9 +193,6 @@ const useChartEvents = (chart, labeling, selectedLabelId, setSelectedLabelId) =>
 
     let position = e.value;
 
-    if (!labeling || !labeling.labels) {
-      return;
-    }
 
     // Check if a label has been clicked
     if (labeling && labeling.labels) {
@@ -211,6 +205,7 @@ const useChartEvents = (chart, labeling, selectedLabelId, setSelectedLabelId) =>
         return;
       }
     }
+    
     onClickPosition(position);
   };
 

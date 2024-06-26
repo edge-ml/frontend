@@ -6,12 +6,12 @@ const RangeSlider = () => {
   const [valueLeft, onsetValueLeft] = useState(1000);
 
   const setValueLeft = (e) => {
-    console.log(e.target.value);
+    
     onsetValueLeft(e.target.value);
   };
 
   const setValueRight = (e) => {
-    console.log(e.target.value);
+    
     onsetValueRight(e.target.value);
   };
 

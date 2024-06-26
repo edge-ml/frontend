@@ -36,7 +36,7 @@ export const parseData = (sensor, data) => {
       value = data.getFloat32(dataIndex, true) * scale;
       size = 4;
     } else {
-      console.log('Error: unknown type', valueType);
+      
     }
     values.push(value);
     dataIndex += size;

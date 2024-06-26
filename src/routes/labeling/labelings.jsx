@@ -50,7 +50,7 @@ const Labelings = () => {
   const allSelected = labelingIdSet === selectedLabelingSet;
 
   const selectAll = () => {
-    console.log(allSelected);
+    
     if (allSelected) {
       setSelectedLabelings([]);
     } else {
@@ -58,7 +58,7 @@ const Labelings = () => {
     }
   };
 
-  console.log(selectedLabelings);
+  
 
   return (
     <Loader loading={!labelings}>

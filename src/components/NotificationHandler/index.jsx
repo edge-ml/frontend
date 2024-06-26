@@ -40,7 +40,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
     <Modal isOpen={isOpen} size="xl">
       <ModalHeader toggle={onClose}>Notifications</ModalHeader>
       <ModalBody>
-        {/* {console.log(activeNotifications)}
+        {/* {
         {activeNotifications.map((elm, idx) => (
           <Row className="mt-2" key={elm + idx}>
             <Col>
@@ -62,7 +62,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                 </div>
               ) : (
                 <div>
-                  {console.log(elm)}
+                  {
                   {elm.error ? null : (
                     <Button
                       onClick={() => datasetDownloadfromId(elm.downloadId)}
@@ -107,7 +107,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                       </div>
                     ) : (
                       <div>
-                        {console.log(elm)}
+
                         {elm.error ? null : (
                           <Button
                             onClick={() =>

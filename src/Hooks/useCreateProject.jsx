@@ -18,7 +18,7 @@ const useCreateProject = () => {
       admin: user,
       users: projectUsers,
     });
-    console.log(res);
+    
   };
 
   const addUSer = (user) => {};

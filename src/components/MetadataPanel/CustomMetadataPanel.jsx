@@ -18,7 +18,7 @@ class CustomMetadataPanel extends Component {
   }
 
   onCancelEdit() {
-    console.log('cancel edit');
+    
     this.setState({
       editModalOpen: false,
     });
@@ -31,14 +31,14 @@ class CustomMetadataPanel extends Component {
   }
 
   onSave(newMetaData) {
-    console.log('ONSAVE');
+    
     const metaDataAsObj = {};
     newMetaData
       .filter((elm) => elm.key !== '')
       .forEach((elm) => {
         metaDataAsObj[elm.key] = elm.data;
       });
-    console.log(newMetaData);
+    
     this.props.onUpdateMetaData({ metaData: metaDataAsObj });
     this.setState({
       editModalOpen: false,

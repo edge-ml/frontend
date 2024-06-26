@@ -210,7 +210,7 @@ export const deployTrained = function (id, data) {
 };
 
 export const getDeployDevices = function (id) {
-  console.log('Getting devices');
+  
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -231,7 +231,7 @@ export const deployModel = function (
   selectedDevice,
   additionalSettings,
 ) {
-  console.log('Getting devices');
+  
   return new Promise((resolve, reject) => {
     const request = apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
@@ -258,7 +258,7 @@ export const downloadFirmware = function (
   selectedDevice,
   additionalSettings,
 ) {
-  console.log('Getting devices');
+  
   return new Promise((resolve, reject) => {
     const request = apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,

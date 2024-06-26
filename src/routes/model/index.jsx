@@ -140,7 +140,7 @@ class ModelPage extends Component {
           customMetaData: customMetaData,
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => 
   }
 
   handleTrainButton = (e) => {
@@ -247,7 +247,7 @@ class ModelPage extends Component {
         resetAlert();
       })
       .catch((err) => {
-        console.log(err);
+        
         this.setState({
           alertText: err.data.detail, // breaks if err is undefined
           trainSuccess: false,

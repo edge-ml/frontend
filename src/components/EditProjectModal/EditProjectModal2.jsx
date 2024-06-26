@@ -88,13 +88,13 @@ class EditProjectModal extends Component {
           const projectIndex = data.findIndex(
             (elm) => elm.name === this.state.project.name,
           );
-          console.log(data);
-          console.log(projectIndex);
+          
+          
           this.props.projectChanged(data, projectIndex);
           this.setState({ error: undefined });
         })
         .catch((err) => {
-          console.log(err);
+          
           this.setState({
             error: err,
           });
@@ -105,7 +105,7 @@ class EditProjectModal extends Component {
           this.props.projectChanged(data);
         })
         .catch((err) => {
-          console.log(err);
+          
         });
     }
   }

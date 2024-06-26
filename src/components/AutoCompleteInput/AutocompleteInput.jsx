@@ -37,7 +37,7 @@ class AutocompleteInput extends Component {
           this.openMenu();
         })
         .catch((err) => {
-          console.log(err);
+          
         });
     }
 

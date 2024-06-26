@@ -22,7 +22,11 @@ import { DatasetContext } from '../../routes/dataset/DatasetContext';
 
 const hideLabelsSymbol = 'hide labels' + Math.floor(Math.random() * 1000);
 
-const LabelingSelectionPanel = ({ activeTimeSeries, setActiveTimeSeries, dataset, labelings, activeLabeling, setActiveLabeling }) => {
+const LabelingSelectionPanel = () => {
+
+
+  const { activeTimeSeries, setActiveTimeSeries, dataset, labelings, activeLabeling, setActiveLabeling } = useContext(DatasetContext);
+
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isTSDropdownOpen, setIsTSDropdownOpen] = useState(false);
   const { registerDatasetDownload } = useContext(NotificationContext);
@@ -63,7 +67,7 @@ const LabelingSelectionPanel = ({ activeTimeSeries, setActiveTimeSeries, dataset
   };
 
   const TimeSeriesSelection = () => {
-    console.log(selectedTs);
+
     return (
       <div>
         <Dropdown
@@ -97,7 +101,6 @@ const LabelingSelectionPanel = ({ activeTimeSeries, setActiveTimeSeries, dataset
                       <div className="d-flex align-items-center">
                         <Checkbox
                           isSelected={selectedTs.includes(elm._id)}
-                          onClick={() => console.log('click checkbox')}
                         ></Checkbox>
                         <div className="ms-2">{elm.name}</div>
                       </div>

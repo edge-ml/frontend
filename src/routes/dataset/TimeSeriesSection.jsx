@@ -4,16 +4,17 @@ import { DatasetContext } from "./DatasetContext";
 import TimeSeriesDisplay from "./TimeSeriesDisplay";
 import ChartSlider from "./ChartSlider";
 
-const TimeSeriesSection = ({
-  activeTimeSeries,
-  activeLabeling,
-  lableings,
-  dataset,
-  selectedLabelId,
-  setSelectedLabelId,
-  setStartEnd }) => {
+const TimeSeriesSection = ({ }) => {
 
-    console.log(selectedLabelId)
+  const {
+    activeTimeSeries,
+    activeLabeling,
+    lableings,
+    dataset,
+    selectedLabelId,
+    setSelectedLabelId,
+    setStartEnd
+  } = useContext(DatasetContext);
 
   const globalStart = Math.min(...activeTimeSeries.map((elm) => elm.start));
   const globalEnd = Math.max(...activeTimeSeries.map((elm) => elm.end));
@@ -24,13 +25,8 @@ const TimeSeriesSection = ({
       <div className="flex-grow-1 overflow-auto">
         {activeTimeSeries.map((elm, index) => (
           <TimeSeriesDisplay
-            key={activeTimeSeries.name + index}
+            // key={activeTimeSeries.name + index}
             timeSeries={elm}
-            labelings={lableings}
-            dataset={dataset}
-            activeLabeling={activeLabeling}
-            selectedLabelId={selectedLabelId}
-            setSelectedLabelId={setSelectedLabelId}
           ></TimeSeriesDisplay>
         ))}
       </div>

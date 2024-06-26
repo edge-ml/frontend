@@ -17,7 +17,7 @@ const useDeviceApi = () => {
 
   const updateKeys = async () => {
     const keys = await getDeviceApiKey();
-    console.log(keys);
+    
     setReadKey(keys.readApiKey);
     setWriteKey(keys.writeApiKey);
   };

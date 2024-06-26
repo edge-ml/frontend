@@ -5,12 +5,12 @@ import { hexToForegroundColor } from '../../services/ColorService';
 const LivePage = ({ bleDevice, model }) => {
   const [predictedLabel, setPredictedLabel] = useState(undefined);
 
-  console.log(model);
+  
 
   const labels = model.labels;
 
   bleDevice.notify((idx) => {
-    console.log(idx);
+    
 
     if (idx >= 0 && idx < labels.length) {
       setPredictedLabel(labels[idx]);

@@ -31,11 +31,9 @@ const generateChartState = (
     plotBands = generatePlotBands(datasetLabeling && datasetLabeling.labels, selectedLabelId, onClickLabel);
     plotLines = generatePlotLines(datasetLabeling && datasetLabeling.labels, selectedLabelId, onClickLabel);
 
-
-    console.log(plotBands)
   }
 
-  console.log(plotBands)
+  
 
 
   return {

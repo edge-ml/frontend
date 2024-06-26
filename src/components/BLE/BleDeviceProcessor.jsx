@@ -160,7 +160,7 @@ class BleDeviceProcessor {
 
     // Upload labels
     for (const label of this.labels) {
-      console.log(label);
+      
       await createDatasetLabel(this.newDataset._id, label.labelingId, label);
     }
 

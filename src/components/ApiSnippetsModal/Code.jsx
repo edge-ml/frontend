@@ -76,7 +76,7 @@ try {
   );
 } catch (e) {
   // Error occurred, cannot use the collector as a function to upload
-  console.log(e);
+  
 }
 
 try {
@@ -88,7 +88,7 @@ try {
   // Uploads all remaining data points to the server
   await collector.onComplete();
 } catch (e) {
-  console.log(e);
+  
 }`;
 
 export const codeJs = (
@@ -114,7 +114,7 @@ export const codeJs = (
     );
   } catch (e) {
     // Error occurred, cannot use the collector as a function to upload
-    console.log(e);
+    
   }
 
   try {
@@ -127,7 +127,7 @@ export const codeJs = (
     await collector.onComplete();
   } catch (e) {
     // Error adding data points
-    console.log(e);
+    
   }
 </script>`;
 

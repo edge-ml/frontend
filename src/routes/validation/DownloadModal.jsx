@@ -28,7 +28,7 @@ const DownloadModal = ({ model, onClose }) => {
 
   const downloadModel = async () => {
     if (language === 'python') {
-      console.log('Downloading python');
+      
       downloadModalLink(getProject(), model._id, 'python');
       return;
     }

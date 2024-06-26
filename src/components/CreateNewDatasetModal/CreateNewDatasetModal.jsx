@@ -93,7 +93,7 @@ class CreateNewDatasetModal extends Component {
   }
 
   async onFileInput(files) {
-    console.log('onFileInput');
+    
     let results = [];
     for (let i = 0; i < files.length; ++i) {
       const formData = new FormData();
@@ -118,10 +118,10 @@ class CreateNewDatasetModal extends Component {
       });
     }
 
-    // console.log('state')
-    // console.log(this.state.datasets)
-    // console.log('result');
-    // console.log(results.map(e => e.dataset));
+    // 
+    // 
+    // 
+    // 
     this.setState({
       files: [...this.state.files, ...files],
       datasets: [...this.state.datasets, ...results.map((e) => e.dataset)],
@@ -262,7 +262,7 @@ class CreateNewDatasetModal extends Component {
       }
       this.setState({ onUploading: false });
     } catch (e) {
-      console.log(e);
+      
       this.setState({ onUploading: false });
       if (e.status === 413) {
         // HTTP Payload Too Large

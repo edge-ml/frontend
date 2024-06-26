@@ -123,7 +123,7 @@ class UploadBLE extends Component {
   onChangeSampleRate(bleKey, sampleRate) {
     const tmpDeviceSensors = this.state.deviceSensors;
     tmpDeviceSensors[bleKey].sampleRate = parseInt(sampleRate);
-    console.log(tmpDeviceSensors);
+    
     this.setState({
       deviceSensors: tmpDeviceSensors,
     });
@@ -231,7 +231,7 @@ class UploadBLE extends Component {
           this.state.currentLabel.end === undefined
         ) {
           const timestamp = Date.now();
-          console.log('stop current labeling');
+          
           const currentLabelingData =
             this.labelingData.current[this.labelingData.current.length - 1];
           currentLabelingData.end = timestamp;
@@ -272,7 +272,7 @@ class UploadBLE extends Component {
   onConnection() {
     this.currentData = new Array(Object.keys(this.state.deviceSensors).length);
     this.sensorKeys = Object.keys(this.state.deviceSensors);
-    console.log('Device is now connected');
+    
   }
 
   async getDeviceInfo() {
@@ -317,7 +317,7 @@ class UploadBLE extends Component {
       this.parseInfoServiceUuid,
     );
     if (deviceParseSchemaService) {
-      console.log('Getting parsing info from device');
+      
       const parsingSchemaCharacterisitc =
         await deviceParseSchemaService.getCharacteristic(
           this.deviceParseSchemaUuid,
@@ -342,7 +342,7 @@ class UploadBLE extends Component {
     );
     // Check if we have the information from the sensor-parse-characteristic directly from the device
     if (!sensorSchema) {
-      console.log('Getting parsing info from backend');
+      
       const deviceInfo = await getDeviceByNameAndGeneration(
         deviceName,
         deviceGeneration,
@@ -386,11 +386,11 @@ class UploadBLE extends Component {
   connectToDevice = async (bleDevice, retryCount = 0) => {
     try {
       const server = await bleDevice.gatt.connect();
-      console.log(server);
+      
       return server;
     } catch (error) {
       if (retryCount < 3) {
-        console.log('Connection failed! Retry...');
+        
         setTimeout(() => this.connectToDevice(bleDevice, retryCount + 1), 4000);
       } else {
         throw error;
@@ -450,7 +450,7 @@ class UploadBLE extends Component {
         }
       })
       .catch((err) => {
-        console.log(err);
+        
       });
   }
 
@@ -491,7 +491,7 @@ class UploadBLE extends Component {
     // initial state, currentLabel.id is only undefined when no label recording have ever took place
     // during the current sensor data collection
     if (this.state.currentLabel.id === undefined) {
-      console.log('initial state');
+      
       this.labelingData.current = [
         {
           start: timestamp,
@@ -516,7 +516,7 @@ class UploadBLE extends Component {
       this.state.currentLabel.id === keyPressedLabel._id &&
       this.state.currentLabel.end === undefined
     ) {
-      console.log('stop current labeling');
+      
       const currentLabelingData =
         this.labelingData.current[this.labelingData.current.length - 1];
       currentLabelingData.end = timestamp;
@@ -529,7 +529,7 @@ class UploadBLE extends Component {
 
     // the current label is stopped by the user previously and now a new one is requested
     else if (this.state.currentLabel.end !== undefined) {
-      console.log('start new labeling');
+      
       this.labelingData.current.push({
         start: timestamp,
         labelType: keyPressedLabel._id,
@@ -555,7 +555,7 @@ class UploadBLE extends Component {
       this.state.currentLabel.end === undefined &&
       this.state.currentLabel.id !== keyPressedLabel._id
     ) {
-      console.log('abruptly stop and start new labeling');
+      
       const currentLabelingData =
         this.labelingData.current[this.labelingData.current.length - 1];
       currentLabelingData.end = timestamp - 1; // -1 to avoid overlap between previous and new label
@@ -635,7 +635,7 @@ class UploadBLE extends Component {
       return <BleNotActivated></BleNotActivated>;
     }
 
-    console.log(this.state);
+    
 
     return (
       <div

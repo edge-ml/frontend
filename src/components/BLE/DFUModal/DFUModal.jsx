@@ -49,7 +49,7 @@ const DFUModal = ({
 
   useEffect(() => {
     if (flashError) {
-      console.log(flashError);
+      
       onDisconnection();
     }
   }, [flashError]);

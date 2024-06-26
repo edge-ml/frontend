@@ -279,8 +279,8 @@ class EditLabelingModal extends Component {
     const labeling = this.state.labeling;
     const deletedLabel = this.state.labeling.labels[index];
     labeling.labels.splice(index, 1);
-    console.log(this.state.labeling.labels);
-    console.log(index);
+    
+    
 
     this.setState((prevState) => ({
       labeling: labeling,

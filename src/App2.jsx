@@ -193,7 +193,7 @@ class App extends Component {
   }
 
   onProjectClick(id) {
-    console.log(id);
+    
     if (this.state.currentProjectId === id) {
       this.setState({
         currentProjectId: undefined,

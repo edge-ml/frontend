@@ -29,12 +29,12 @@ const Wizard_SelectLabeling = ({
   };
 
   useEffect(() => {
-    console.log('ValidateInput');
+    
     validateInput();
   }, [selectedLabeling, zeroClass]);
 
   useEffect(() => {
-    console.log('Validate new');
+    
     validateInput();
   }, []);
 

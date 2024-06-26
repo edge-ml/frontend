@@ -10,7 +10,10 @@ import MetadataContainer from '../../components/MetadataPanel/MetadataContainer'
 import { DatasetContext } from './DatasetContext';
 import { Container } from 'reactstrap';
 
-const MetadataSidebar = ({ dataset }) => {
+const MetadataSidebar = ({ }) => {
+
+  const { dataste } = useContext(DatasetContext);
+
   const [isExtended, setExtendend] = useState(false);
 
   const toggleMetaData = () => {

@@ -99,7 +99,7 @@ const LabelingTableEntry = ({
 export default LabelingTableEntry;
 
 const Labeling = (props) => {
-  console.log(props);
+  
   const labels = props.labeling.labels;
 
   if (labels.length === 0) {

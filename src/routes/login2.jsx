@@ -95,7 +95,7 @@ class LoginPage extends Component {
         .then((res) => {
           const refreshedAccessToken = 'Bearer ' + res.access_token;
           const decoded = jwt_decode(refreshedAccessToken);
-          console.log(refreshedAccessToken);
+          
           setToken(refreshedAccessToken, refreshToken);
           this.props.onUserLoggedIn(
             refreshedAccessToken,
@@ -107,7 +107,7 @@ class LoginPage extends Component {
           );
         })
         .catch((err) => {
-          console.log(err);
+          
         });
       return;
     }
@@ -183,8 +183,8 @@ class LoginPage extends Component {
         }
       })
       .catch((err) => {
-        console.log('Error');
-        console.log(err);
+        
+        
         this.onLoginError();
       });
   }

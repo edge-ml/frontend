@@ -21,7 +21,7 @@ const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
 
   const onClickConnect = async () => {
     try {
-      console.log('Connecting');
+      
       const options = {
         filters: [{ services: [classification_service_uuid] }],
       };

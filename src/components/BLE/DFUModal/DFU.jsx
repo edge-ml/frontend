@@ -40,7 +40,7 @@ class DFUManager {
     if (connectedDevice.gatt && connectedDevice.gatt.disconnect) {
       try {
         await connectedDevice.gatt.disconnect();
-        console.log('Disconnected from the device');
+        
       } catch (error) {
         console.error('Error occurred during disconnection:', error);
       }
@@ -58,7 +58,7 @@ class DFUManager {
       this.dfuCharacteristic = await service.getCharacteristic(
         DFU_INTERNALL_CHARACTERISTIC,
       );
-      console.log('Device connected');
+      
       this.setFlashState('connected');
     } catch (err) {
       this.setFlashError(err);
@@ -75,7 +75,7 @@ class DFUManager {
     this.dfuCharacteristic = await service.getCharacteristic(
       DFU_INTERNALL_CHARACTERISTIC,
     );
-    console.log('Device connected');
+    
     this.setFlashState('connected');
     this.setConnectedDevice(device);
   }
@@ -84,24 +84,24 @@ class DFUManager {
     this.arrayFW = new Uint8Array(firmware);
     this.fwLen = this.arrayFW.length;
 
-    console.log('Binary file length: ', this.fwLen);
+    
     if (this.debug === true) {
-      console.log(this.arrayFW);
+      
     }
     this.crc8();
-    console.log('Computed 8-bit CRC: ', this.crc8bit);
+    
 
     this.iterations = Math.floor(this.fwLen / this.dataLen);
     this.spareBytes = this.fwLen % this.dataLen;
     this.iterations++;
     if (this.debug === true) {
-      console.log('Iterations: ', this.iterations);
-      console.log('Spare bytes: ', this.spareBytes);
+      
+      
     }
     if (this.spareBytes === 0) {
       if (this.debug === true) {
-        console.log('No remaining bytes in last packet to write CRC.');
-        console.log('CRC will be sent alone in a new packet');
+        
+        
       }
       this.onlyCRCleft = true;
     }
@@ -126,7 +126,7 @@ class DFUManager {
   update = (index) => {
     //clearTimeout(dfuTimeout);
     if (this.debug === true) {
-      console.log(index);
+      
     }
 
     var filePtr = this.dataLen * index;
@@ -135,8 +135,8 @@ class DFUManager {
       this.bytesArray[0] = 1;
       var bytesleft = this.spareBytes + 1; //add CRC to the count
       if (this.debug === true) {
-        console.log('Packaging last byte with CRC');
-        console.log('Total bytes left: ', this.bytesleft);
+        
+        
       }
       var spare = new Uint8Array([
         bytesleft & 0x00ff,
@@ -157,8 +157,8 @@ class DFUManager {
       ]);
 
       if (this.debug === true) {
-        console.log('crc[0]: ', crc[0]);
-        console.log('crc[1]: ', crc[1]);
+        
+        
       }
 
       //write CRC after the spare bytes
@@ -179,8 +179,8 @@ class DFUManager {
         3,
       );
     }
-    console.log(this.bytesArray);
-    console.log('Writing 67 bytes array...');
+    
+    
     this.dfuCharacteristic
       .writeValue(this.bytesArray)
       .then((_) => {
@@ -189,11 +189,11 @@ class DFUManager {
 
         this.increaseIndex();
         if (this.debug === true) {
-          console.log('Written');
+          
         }
       })
       .catch((e) => {
-        console.log(e);
+        
         this.resetState(
           true,
           'An error occured while sending package to BLE device',
@@ -206,7 +206,7 @@ class DFUManager {
       this.updateIndex++;
       this.update(this.updateIndex);
     } else {
-      console.log('firmware sent');
+      
       this.setFlashState('finished');
       return;
     }

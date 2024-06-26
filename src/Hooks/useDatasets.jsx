@@ -10,7 +10,7 @@ const useDatasets = () => {
 
     const refreshDatasets = async () => {
         const res = await datasetAPI.getDatasets();
-        console.log(res);
+        
         setDatasets(res);
     };
 

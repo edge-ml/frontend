@@ -27,7 +27,7 @@ export const getDatasetsPagination = async (skip, limit, sort) => {
 };
 
 export const updateDataset = async (dataset) => {
-  console.log(dataset);
+  
   const res = apiRequest(
     apiConsts.HTTP_METHODS.PUT,
     apiConsts.DATASET_STORE,
@@ -138,11 +138,11 @@ export default useDatasetAPI;
 //       )
 //     )
 //       .then((result) => {
-//         console.log(result);
+//         
 //         resolve(result.data);
 //       })
 //       .catch((err) => {
-//         console.log(err.response);
+//         
 //         reject(err.response);
 //       });
 //   });
@@ -179,18 +179,18 @@ export default useDatasetAPI;
 //   return new Promise((resolve, reject) => {
 //     axios(request)
 //       .then((result) => {
-//         console.log(result);
+//         
 //         resolve(result.data);
 //       })
 //       .catch((err) => {
-//         console.log(err.response);
+//         
 //         reject(err.response);
 //       });
 //   });
 // };
 
 export const getDatasetTimeseries = (id, info) => {
-  console.log(info);
+  
   const { max_resolution, start, end } = info;
   return new Promise((resolve, reject) => {
     axios(
@@ -207,9 +207,9 @@ export const getDatasetTimeseries = (id, info) => {
 };
 
 export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
-  console.log(info);
-  console.log(ts_ids);
-  console.log("Get time series partial");
+  
+  
+  
   const { max_resolution, start, end } = info;
   return new Promise((resolve, reject) => {
     axios(
@@ -250,11 +250,11 @@ export const getDatasetMeta = (id) => {
       )
     )
       .then((dataset) => {
-        console.log(dataset);
+        
         resolve(dataset.data);
       })
       .catch((err) => {
-        console.log(err);
+        
         reject(err.response);
       });
   });
@@ -281,7 +281,7 @@ export const deleteDatasets = (ids) => {
     const promises = ids.map((elm) => deleteDataset(elm));
     return Promise.all(promises);
   } catch (e) {
-    console.log(e);
+    
     return e;
   }
 };
@@ -355,7 +355,7 @@ export const createDatasets = (datasets) => {
         });
       })
       .catch((err) => {
-        console.log(err);
+        
         reject(err.response);
       });
   });

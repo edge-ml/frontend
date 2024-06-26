@@ -26,7 +26,7 @@ const ValidationMethodsViewRaw = ({
   validationMethodOptions,
   onValidationMethodOptionsChange = () => {},
 }) => {
-  console.log(currentValidationMethod);
+  
 
   return (
     <div className="w-100 text-left">

@@ -308,7 +308,7 @@ export const UploadDatasetModal = ({
       );
       onDatasetComplete();
     } catch (err) {
-      console.log(err);
+      
       const message = err?.response?.data?.detail || err.message;
       setFiles((prevFiles) =>
         prevFiles.map((f) => (f.id === file.id ? { ...f, error: message } : f))

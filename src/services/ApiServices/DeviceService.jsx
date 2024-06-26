@@ -28,7 +28,7 @@ export const getDeviceById = (deviceId) => {
       )
     )
       .then((data) => {
-        console.log(data.data);
+        
         resolve(data.data);
       })
       .catch((err) => reject(err.response));

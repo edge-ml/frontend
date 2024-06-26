@@ -243,7 +243,7 @@ const DatasetTableEntry = (props) => {
             <Checkbox
               isSelected={props.isSelected}
               className="d-inline-block"
-              // onClick={(e) => console.log("Click")}
+              // onClick={(e) => 
               onClick={(e) => props.toggleCheck(e, dataset["_id"])}
             ></Checkbox>
           </div>

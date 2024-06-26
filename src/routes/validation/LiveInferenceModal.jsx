@@ -307,7 +307,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
       // // but I could not get it working with webpack either, so script tag it is.
 
       // import(blobURL).then((Module) => {
-      //   console.log(Module);
+      //   
       // })
 
       if (typeof Module !== 'undefined') {
@@ -323,9 +323,9 @@ const ScreenTwo = ({ model, legalMatches }) => {
         await delay(100);
       }
 
-      console.log('emscripten Module', Module);
+      
       const instance = await Module();
-      console.log(instance);
+      
 
       setWASMBlobLoaded(true);
       setModelInstance(instance);
@@ -372,20 +372,20 @@ const ScreenTwo = ({ model, legalMatches }) => {
     const onSensorError =
       (sensor, isWarning = false) =>
       (error) => {
-        console.log('Sensor error!');
+        
         setSensorErrors((prev) => ({
           ...prev,
           [sensor.name]: { error, isWarning },
         }));
       };
 
-    console.log('sensor configgggggs', sensorConfigs);
+    
     setSensorConfigs(sensorConfigs);
 
     const f = async () => {
       for (const config of sensorConfigs) {
         const sensor = config.sensor;
-        console.log('sensor', sensor);
+        
         sensor.removeAllListeners();
 
         sensor.on('warn', onSensorError(sensor, true));
@@ -430,7 +430,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
     return null;
   }
 
-  console.log(legalMatches, model);
+  
 
   return (
     <ModalBody>
@@ -540,7 +540,7 @@ const LiveInferenceModal = ({ model, onClose: onCloseOrig }) => {
     }
 
     // classify
-    console.log('classify', legalMatches);
+    
     setLegalMatches(legalMatches);
     setPage(2);
   };

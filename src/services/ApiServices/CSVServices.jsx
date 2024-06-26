@@ -33,7 +33,7 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
       Authorization: localStorageService.getAccessToken(),
     }
   };
-  console.log(axiosInput);
+  
 
   const req = axios(axiosInput);
 

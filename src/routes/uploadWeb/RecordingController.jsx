@@ -32,7 +32,7 @@
 //   getErrors = () => ({ ...this._errors });
 
 //   _upload = async (series) => {
-//     console.log('Uploading data');
+//     
 //     let data = Object.entries(series).map(([name, data]) => ({
 //       name,
 //       data,
@@ -52,7 +52,7 @@
 //     (sensor, isWarning = false) =>
 //     (error) => {
 //       this._errors[sensor.name] = { error, isWarning };
-//       console.log('Sensor error!');
+//       
 //       this.emit('error', this);
 //     };
 //   _onSensorData =

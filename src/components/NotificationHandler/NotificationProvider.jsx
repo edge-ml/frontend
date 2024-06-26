@@ -15,7 +15,7 @@ export const NotificationProvider = ({ children }) => {
 
   const registerProjectDownload = async () => {
     const res = await reg_project_download();
-    console.log(res);
+    
     setActiveNotifications((prevState) => [...prevState, res]);
     setHasNewNotifications(true);
     startUpdates();
@@ -23,7 +23,7 @@ export const NotificationProvider = ({ children }) => {
 
   const registerDatasetDownload = async (datasetId) => {
     const res = await reg_dataset_download(datasetId);
-    console.log(res);
+    
     setActiveNotifications((prevState) => [...prevState, res]);
     setHasNewNotifications(true);
     startUpdates();
@@ -53,7 +53,7 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const startUpdates = () => {
-    console.log('Starting updates');
+    
     if (updateHandle.current === null) {
       const handle = setInterval(updateNotifications, 2000);
       updateHandle.current = handle;
@@ -61,7 +61,7 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const stopUpdates = () => {
-    console.log('Stopping updates');
+    
     clearInterval(updateHandle.current);
     updateHandle.current = null;
   };

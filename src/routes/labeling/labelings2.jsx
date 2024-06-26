@@ -69,7 +69,7 @@ class LabelingsPage extends Component {
   initComponent() {
     Promise.all([getDatasets(), subscribeLabelingsAndLabels()]).then(
       (result) => {
-        console.log(result);
+        
         this.onContentChanged(
           result[1], // labelings,
           result[0], // datasets
@@ -93,10 +93,10 @@ class LabelingsPage extends Component {
   }
 
   onContentChanged(labelings, datasets) {
-    console.log(labelings);
+    
     labelings = labelings || this.state.labelings;
     datasets = datasets || this.state.datasets;
-    console.log(labelings);
+    
     this.setState({
       labelings: labelings,
       datasets: datasets,
@@ -119,7 +119,7 @@ class LabelingsPage extends Component {
       //   search: '?id=' + labeling['_id'],
       // });
     }
-    console.log(labeling);
+    
     this.setState({
       modal: {
         labeling: labeling,
@@ -291,7 +291,7 @@ class LabelingsPage extends Component {
 
   onClickConfirmlDeleteLabelings(labelingIds) {
     deleteMultipleLabelings(labelingIds).then((result) => {
-      console.log(result);
+      
       this.onContentChanged(result);
     });
     this.resetConfirmationDialogueModalState();
@@ -322,21 +322,21 @@ class LabelingsPage extends Component {
     this.onCloseModal();
     deleteLabeling(labelingId, conflictingDatasetIds).then((labelings) => {
       this.onContentChanged(labelings);
-      console.log(labelings);
+      
     });
   }
 
   async onSave(labeling) {
-    console.log('onSAve');
-    console.log(labeling);
-    console.log(this.state.modal.isNewLabeling);
+    
+    
+    
     var newLabeling = undefined;
     if (this.state.modal.isNewLabeling) {
       newLabeling = await addLabeling(labeling);
     } else {
-      console.log(labeling);
+      
       newLabeling = await updateLabelingandLabels(labeling);
-      console.log(newLabeling);
+      
     }
     this.onContentChanged(newLabeling);
     this.onCloseModal();

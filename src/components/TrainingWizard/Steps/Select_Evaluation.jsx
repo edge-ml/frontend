@@ -18,7 +18,7 @@ const SelectEvaluation = ({
   setSelectedEval,
   footer,
 }) => {
-  console.log(evaluation);
+  
 
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const [selectedEvaluation, setSelectedEvaluation] = useState(0);
@@ -40,7 +40,7 @@ const SelectEvaluation = ({
     setSelectedEval(newEval[selectedEvaluation]);
   };
 
-  console.log(evaluation.length);
+  
   if (evaluation.length === 0) {
     return;
   }

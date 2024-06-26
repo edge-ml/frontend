@@ -32,7 +32,7 @@ const Pipelinestep = ({
   };
 
   const onSelectStepOption = (option) => {
-    console.log("CLICK");
+    
     setPipelineStep(option);
   };
 
@@ -45,7 +45,7 @@ const Pipelinestep = ({
     setPipelineStep(tmpSelectedPipelineStep);
   };
 
-  console.log(selectedPipelineStep);
+  
   return (
     <div className="p-2">
       <div className="d-flex justify-content-between">
@@ -96,11 +96,6 @@ const Pipelinestep = ({
         </div>
       </div>
       <hr></hr>
-      {console.log(
-        selectedPipelineStep.parameters.filter(
-          (elm) => elm.is_advanced !== true
-        )
-      )}
       {selectedPipelineStep.parameters.filter((elm) => !elm.is_advanced)
         .length > 0 ? (
         <div>

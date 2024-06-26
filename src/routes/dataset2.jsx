@@ -129,7 +129,7 @@ class DatasetPage extends Component {
   }
 
   onClickSelectSeries(_id) {
-    console.log('Click: ', _id);
+    
     var series = this.state.activeSeries;
     if (series.includes(_id)) {
       series = series.filter((elm) => elm !== _id);
@@ -179,7 +179,7 @@ class DatasetPage extends Component {
       ...newDataset.metaData,
       ...updatedDataset.metaData,
     };
-    console.log(newDataset);
+    
     updateDataset(newDataset, true).then(() => {
       this.setState({
         dataset: { ...newDataset, timeSeries: this.state.dataset.timeSeries },

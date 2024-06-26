@@ -22,7 +22,7 @@ const ColorPicker = (props) => {
     return null;
   }
 
-  console.log(props)
+  
 
   return (
     <div className="wrapper bg-white d-flex justiy-content-end flex-column"

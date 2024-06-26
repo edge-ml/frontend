@@ -5,7 +5,7 @@ import makeAnimated from 'react-select/animated';
 import Hyperparameter from './Hyperparameter';
 
 const SelectionHyperparameter = (props) => {
-  console.log(props.value);
+  
   return (
     <Hyperparameter {...props}>
       <Select

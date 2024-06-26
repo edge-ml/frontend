@@ -9,7 +9,7 @@ const readCharArray = (dataView, startByte, numBytes) => {
 };
 
 const convert_type = (val) => {
-  console.log('VAL: ', val);
+  
   const type_map = {
     0: 'int8', // PARSE_TYPE_INT8
     1: 'uint8',

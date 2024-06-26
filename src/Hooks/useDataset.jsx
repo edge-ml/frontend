@@ -15,21 +15,28 @@ const useDataset = (dataset_id) => {
     setDataset(dataset);
   };
 
-  const addLabel = (labelingId, newLabel) => {
-    console.log("Creating label")
+
+  const addLabel = async (labelingId, newLabel) => {
     const newDataset = { ...dataset };
-    console.log(newDataset)
-    newDataset.labelings = newDataset.labelings.map((labeling) => {
-      if (labeling._id === labelingId.labelingId) {
-        console.log("Pusing label")
-        labeling.labels.push(newLabel);
-      }
-      return labeling;
-    });
+  
+    const labeling = newDataset.labelings.find(labeling => labeling.labelingId === labelingId);
+  
+    if (labeling) {
+      labeling.labels = [...labeling.labels, newLabel];
+    } else {
+      const newLabeling = {
+        labelingId: labelingId,
+        labels: [newLabel]
+      };
+      newDataset.labelings = [...newDataset.labelings, newLabeling];
+    }
+  
     console.log(newDataset);
-    updateDataset(newDataset);
-    refreshDataset();
+  
+    await updateDataset(newDataset);
+    await refreshDataset();
   }
+  
 
   const deleteLabel = (labelId) => {
     if (labelId) {

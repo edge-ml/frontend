@@ -43,7 +43,7 @@ const LoginPage = ({ children }) => {
     try {
       await login(email, password);
     } catch {
-      console.log('ERROR loggin in!');
+      
       setError(true);
     }
   };

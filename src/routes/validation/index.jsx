@@ -129,7 +129,7 @@ const ValidationPage = () => {
         ['PRE', 'CORE'].includes(stepOption.type) &&
         !stepOption.platforms.includes('C')
       ) {
-        console.log(stepOption.name, stepOption.platforms);
+        
         return false;
       }
       return true;
@@ -157,7 +157,7 @@ const ValidationPage = () => {
     );
   };
 
-  console.log(models)
+  
 
   if (!models) {
     return <Loader loading></Loader>;

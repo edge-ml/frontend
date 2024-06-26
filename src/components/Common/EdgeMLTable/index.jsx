@@ -7,7 +7,7 @@ const EdgeMLTable = ({ children, className, style }) => {
   const body = React.Children.toArray(children)
     .filter((elm) => elm.type !== EdgeMLTableHeader)
     .map((child, index) => {
-      console.log(index);
+      
       return React.cloneElement(child, { index: index });
     });
 

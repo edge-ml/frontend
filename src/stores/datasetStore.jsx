@@ -9,7 +9,7 @@ const useDatasetStore = create((set) => {
     refreshDatasets: async () => {
       const { currentProject } = useProjectStore.getState();
       const res = await getDatasets_API(currentProject);
-      console.log(res);
+      
       set({ datasets: res });
     },
   };
