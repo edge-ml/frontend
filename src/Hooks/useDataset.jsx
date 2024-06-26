@@ -31,8 +31,6 @@ const useDataset = (dataset_id) => {
       newDataset.labelings = [...newDataset.labelings, newLabeling];
     }
   
-    console.log(newDataset);
-  
     await updateDataset(newDataset);
     await refreshDataset();
   }

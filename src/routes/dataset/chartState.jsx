@@ -1,4 +1,6 @@
+import { useContext } from "react";
 import { generatePlotBands, generatePlotLines } from "./chartUtils";
+import { DatasetContext } from "./DatasetContext";
 
 const generateChartState = (
   ts,
@@ -15,25 +17,15 @@ const generateChartState = (
   let plotBands = [];
   let plotLines = [];
 
-
-  if (dataset && dataset.labelings && activeLabeling) {
-
-    const datasetLabeling = dataset.labelings.find(elm => elm.labelingId === activeLabeling._id);
-
-    if (datasetLabeling) {
-      datasetLabeling.labels = datasetLabeling.labels.map(elm => {
-        const label = activeLabeling.labels.find((l) => l._id === elm.type);
-        return { ...label, ...elm };
-      });
-    }
+  const { labelsToShow } = useContext(DatasetContext);
 
 
-    plotBands = generatePlotBands(datasetLabeling && datasetLabeling.labels, selectedLabelId, onClickLabel);
-    plotLines = generatePlotLines(datasetLabeling && datasetLabeling.labels, selectedLabelId, onClickLabel);
+  plotBands = generatePlotBands(labelsToShow, selectedLabelId, onClickLabel);
+  plotLines = generatePlotLines(labelsToShow, selectedLabelId, onClickLabel);
 
-  }
 
-  
+
+
 
 
   return {

@@ -26,7 +26,7 @@ const useEditDataset = (datasetUtils, labelings) => {
     const [selectedLabelId, setSelectedLabelId] = useState(undefined);
     const [start, setStart] = useState(undefined);
     const [end, setEnd] = useState(undefined);
-    const [selectedLabelTypeId, setSelectedLabelTypeId] = useState(undefined);
+    const [selectedLabelTypeId, _setSelectedLabelTypeId] = useState(undefined);
     const [provisionalLabel, _setProvisionalLabel] = useState(undefined);
 
     useEffect(() => {
@@ -50,6 +50,11 @@ const useEditDataset = (datasetUtils, labelings) => {
         }
     }, [labelings]);
 
+    const setSelectedLabelTypeId = (labelTypeId) => {
+        _setSelectedLabelTypeId(labelTypeId);
+        setProvisionalLabel(undefined);
+    }
+
     const setStartEnd = (start, end) => {
         setStart(start);
         setEnd(end);
@@ -67,6 +72,7 @@ const useEditDataset = (datasetUtils, labelings) => {
         if (labeling && labeling.labels.length > 0) {
             setSelectedLabelTypeId(labeling.labels[0]._id)
         }
+        setProvisionalLabel(undefined);
     }
 
 
@@ -97,6 +103,22 @@ const useEditDataset = (datasetUtils, labelings) => {
 
     }
 
+
+    let labelsToShow = undefined
+    if (dataset && dataset.labelings && activeLabeling) {
+
+        const datasetLabeling = dataset.labelings.find(elm => elm.labelingId === activeLabeling._id);
+
+        if (datasetLabeling) {
+            const labelsToUse = provisionalLabel ? [...datasetLabeling.labels, provisionalLabel] : datasetLabeling.labels;
+            labelsToShow = labelsToUse.map(elm => {
+                const label = activeLabeling.labels.find((l) => l._id === elm.type);
+                return { ...label, ...elm };
+            });
+        }
+    }
+
+
     return {
         activeTimeSeries,
         setActiveTimeSeries,
@@ -109,7 +131,8 @@ const useEditDataset = (datasetUtils, labelings) => {
         selectedLabelTypeId,
         setSelectedLabelTypeId,
         provisionalLabel,
-        setProvisionalLabel
+        setProvisionalLabel,
+        labelsToShow
     };
 }
 
