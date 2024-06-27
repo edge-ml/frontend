@@ -1,7 +1,7 @@
 export const generatePlotBands = (
   labels,
   selectedLabelId,
-  mouseDownHandler,
+  onClickPlotLine,
 ) => {
   
   if (labels === undefined) return [];
@@ -30,32 +30,31 @@ export const generatePlotBands = (
         isPlotline: false,
         isSelected: selectedLabelId === label['_id'],
       },
-      events: {
-        mousedown: (e) =>
-          mouseDownHandler(e, 'band_' + label['_id'], label['_id']),
-      },
+      // events: {
+      //   mousedown: (e) =>
+      //     (e, 'band_' + label['_id'], label['_id']),
+      // },
     };
   });
 };
 
-export const generatePlotLines = (labels, selectedLabelId) => {
+export const generatePlotLines = (labels, selectedLabelId, onClickPlotLine)  => {
   if (!labels) return [];
   var results = [];
   labels.forEach((label) => {
     results.push(
-      generatePlotLine(label, selectedLabelId === label['_id'], true),
+      generatePlotLine(label, selectedLabelId === label['_id'], true, onClickPlotLine),
     );
     results.push(
-      generatePlotLine(label, selectedLabelId === label['_id'], false),
+      generatePlotLine(label, selectedLabelId === label['_id'], false, onClickPlotLine),
     );
   });
 
   return results;
 };
 
-const generatePlotLine = (label, selected, isLeft, mouseDownHandler) => {
+const generatePlotLine = (label, selected, isLeft, onClickPlotLine) => {
   var plotLineId = isLeft ? 'pl' + label._id : 'pr' + label._id;
-
   var labelColor = label.color;
   var value = isLeft ? label.start : label.end;
   return {
@@ -72,7 +71,7 @@ const generatePlotLine = (label, selected, isLeft, mouseDownHandler) => {
     isPlotline: true,
     isLeftPlotline: isLeft,
     events: {
-      mousedown: (e) => mouseDownHandler(e, plotLineId, label._id),
+      mousedown: (e) => onClickPlotLine(e, plotLineId, label._id),
     },
   };
 };

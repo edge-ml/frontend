@@ -110,16 +110,16 @@ const LabelingSelectionPanel = () => {
               })}
             </div>
             <DropdownItem divider></DropdownItem>
-            <DropdownItem className="p-1">
+            <div className="w-100 p-2">
               <Button
-                className="w-100"
+                className='w-100'
                 color="primary"
                 outline
                 onClick={onApplyTs}
               >
                 Apply
               </Button>
-            </DropdownItem>
+            </div>
           </DropdownMenu>
         </Dropdown>
       </div>

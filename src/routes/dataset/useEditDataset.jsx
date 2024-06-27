@@ -5,7 +5,6 @@ const useEditDataset = (datasetUtils, labelings) => {
 
     const { dataset, deleteLabel, addLabel } = datasetUtils;
 
-    console.log(datasetUtils)
 
     const getActivateLabeling = () => {
 
@@ -24,8 +23,6 @@ const useEditDataset = (datasetUtils, labelings) => {
     const [activeTimeSeries, setActiveTimeSeries] = useState([]);
     const [activeLabeling, _setActiveLabeling] = useState(getActivateLabeling());
     const [selectedLabelId, setSelectedLabelId] = useState(undefined);
-    const [start, setStart] = useState(undefined);
-    const [end, setEnd] = useState(undefined);
     const [selectedLabelTypeId, _setSelectedLabelTypeId] = useState(undefined);
     const [provisionalLabel, _setProvisionalLabel] = useState(undefined);
 

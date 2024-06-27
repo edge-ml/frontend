@@ -34,15 +34,15 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
 
   
 
-  const { onMouseDown, onMouseMoved, onMouseUp } = useChartEvents(chartRef, selectedDatasetLabeling);
+  const { onMouseDown, onMouseMoved, onMouseUp, onClickPlotLine } = useChartEvents(chartRef, selectedDatasetLabeling);
 
 
   useEffect(() => {
-    document.addEventListener('mousemove', onMouseMoved);
+    // document.addEventListener('mousemove', onMouseMoved);
     document.addEventListener('mouseup', onMouseUp);
 
     return () => {
-      document.removeEventListener('mousemove', onMouseMoved);
+      // document.removeEventListener('mousemove', onMouseMoved);
       document.removeEventListener('mouseup', onMouseUp);
     }
   }, []);
@@ -69,6 +69,8 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
     selectedLabelId,
     refreshData,
     onMouseDown,
+    onClickPlotLine,
+    onMouseMoved
   );
 
   return (

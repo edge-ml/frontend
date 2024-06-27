@@ -3,6 +3,7 @@ import { DatasetContext } from "./DatasetContext";
 
 const useChartEvents = (chart, labeling) => {
   let mouseDown = false;
+  let currentPlotLine = undefined;
 
   const [activePlotLineId, setActivePlotLineId] = useState(null);
   const {
@@ -13,6 +14,12 @@ const useChartEvents = (chart, labeling) => {
     selectedLabelTypeId,
     activeLabeling,
   } = useContext(DatasetContext);
+
+
+  const onClickPlotLine = (e, plotBandId, labelId) => {
+    currentPlotLine = {labelId: labelId, plotBandId: plotBandId};
+    console.log(currentPlotLine)
+  }
 
   const onClickPosition = (position) => {
     
@@ -80,7 +87,14 @@ const useChartEvents = (chart, labeling) => {
   };
 
   const onMouseMoved = (e) => {
-    // const activePlotLine = this.getActivePlotLine();
+
+    // const chartBox = chart.current.container.current.getBoundingClientRect();
+    // var mousePos = e.clientX - chartBBox.left;
+
+
+    console.log(e)
+    // const activePlotLine = getActivePlotLine();
+    // console.log(activePlotLine)
     // if (!activePlotLine) return;
     // e.preventDefault();
     // const chartBBox =
@@ -178,7 +192,6 @@ const useChartEvents = (chart, labeling) => {
   };
 
   const onMouseDown = (e) => {
-    
     mouseDown = true;
     var plotBand = getSelectedPlotBand();
     if (plotBand) {
@@ -213,6 +226,7 @@ const useChartEvents = (chart, labeling) => {
     onMouseDown: onMouseDown,
     onMouseUp: onMouseUp,
     onMouseMoved: onMouseMoved,
+    onClickPlotLine: onClickPlotLine,
     selectedLabelId: selectedLabelId,
   };
 };

@@ -10,9 +10,11 @@ const generateChartState = (
   selectedLabelId,
   refreshData,
   onChartClick,
-  onClickLabel
+  onClickPlotLine,
+  onMouseMove
 ) => {
   const { name, unit, start, end } = ts;
+
 
   let plotBands = [];
   let plotLines = [];
@@ -20,8 +22,8 @@ const generateChartState = (
   const { labelsToShow } = useContext(DatasetContext);
 
 
-  plotBands = generatePlotBands(labelsToShow, selectedLabelId, onClickLabel);
-  plotLines = generatePlotLines(labelsToShow, selectedLabelId, onClickLabel);
+  plotBands = generatePlotBands(labelsToShow, selectedLabelId, onClickPlotLine);
+  plotLines = generatePlotLines(labelsToShow, selectedLabelId, onClickPlotLine);
 
 
 
@@ -39,7 +41,7 @@ const generateChartState = (
         click: (event) => {
           const xValue = event.xAxis[0];
           onChartClick(xValue);
-        },
+        }
       },
     },
     navigator: {
