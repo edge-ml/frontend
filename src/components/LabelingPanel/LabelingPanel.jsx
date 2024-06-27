@@ -74,10 +74,8 @@ const LabelingPanel = ({ }) => {
   const { hideLabels,
     canEdit,
     onAddLabel,
-    from,
-    to,
     onDeleteSelectedLabel,
-    selectedLabelId,
+    selectedLabel,
     activeLabeling,
     selectedLabelTypeId,
     setSelectedLabelTypeId } = useContext(DatasetContext);
@@ -107,9 +105,9 @@ const LabelingPanel = ({ }) => {
           <div></div>
         )}
         <div className="d-flex">
-          <TimeDisplay from={from} to={to}></TimeDisplay>
+          <TimeDisplay from={selectedLabel && selectedLabel.start} to={selectedLabel && selectedLabel.end}></TimeDisplay>
           <Button
-            disabled={selectedLabelId === undefined}
+            disabled={selectedLabel === undefined}
             className="deleteButton m-1"
             outline
             color="danger"

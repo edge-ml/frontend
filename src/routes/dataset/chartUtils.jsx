@@ -1,6 +1,6 @@
 export const generatePlotBands = (
   labels,
-  selectedLabelId,
+  selectedLabel,
   onClickPlotLine,
 ) => {
   
@@ -16,7 +16,7 @@ export const generatePlotBands = (
       to: label.end,
       zIndex: 2,
       className:
-        selectedLabelId === label['_id']
+        selectedLabel && selectedLabel._id === label['_id']
           ? 'plotband-selected'
           : 'plotband-deselected',
       color: label.color,
@@ -28,7 +28,7 @@ export const generatePlotBands = (
           cursor: undefined,
         },
         isPlotline: false,
-        isSelected: selectedLabelId === label['_id'],
+        isSelected: selectedLabel && selectedLabel._id === label['_id'],
       },
       // events: {
       //   mousedown: (e) =>
@@ -38,15 +38,15 @@ export const generatePlotBands = (
   });
 };
 
-export const generatePlotLines = (labels, selectedLabelId, onClickPlotLine)  => {
+export const generatePlotLines = (labels, selectedLabel, onClickPlotLine)  => {
   if (!labels) return [];
   var results = [];
   labels.forEach((label) => {
-    results.push(
-      generatePlotLine(label, selectedLabelId === label['_id'], true, onClickPlotLine),
+    results.push( 
+      generatePlotLine(label, selectedLabel &&  selectedLabel._id === label['_id'], true, onClickPlotLine),
     );
     results.push(
-      generatePlotLine(label, selectedLabelId === label['_id'], false, onClickPlotLine),
+      generatePlotLine(label, selectedLabel && selectedLabel._id === label['_id'], false, onClickPlotLine),
     );
   });
 

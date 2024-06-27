@@ -16,7 +16,8 @@ const ChartSlider = ({ start, end, setStartEnd }) => {
   const generateState = () => {
     return {
       navigator: {
-        maskFill: '#0080ff22',
+        maskFill: 'rgba(72, 187, 120, 0.2)',
+        outlineWidth: 1,
         enabled: true,
         series: {
           color: '#ffffff',

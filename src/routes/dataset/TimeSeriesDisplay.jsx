@@ -15,7 +15,7 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
     dataset,
     activeDatasetLabels,
     activeLabeling,
-    selectedLabelId,
+    selectedLabel,
     setSelectedLabelId,
     provisonalLabel,
     setProvisionalLabelStart,
@@ -66,7 +66,7 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
     timeSeriesData,
     dataset,
     activeLabeling,
-    selectedLabelId,
+    selectedLabel,
     refreshData,
     onMouseDown,
     onClickPlotLine,
@@ -76,7 +76,7 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
   return (
     <div className="m-2">
       <h4 className="fw-bold">{timeSeries.name}</h4>
-      <div style={{ height: '200px' }}>
+      <div style={{ height: '200px' }} onMouseMove={e => onMouseMoved(e, chartRef)} onMouseUp={(e) => onMouseUp(e, chartRef)}>
         <HighchartsReact
           ref={chartRef}
           highcharts={Highcharts}

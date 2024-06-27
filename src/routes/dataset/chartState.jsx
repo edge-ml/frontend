@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { generatePlotBands, generatePlotLines } from "./chartUtils";
 import { DatasetContext } from "./DatasetContext";
 
@@ -15,33 +15,29 @@ const generateChartState = (
 ) => {
   const { name, unit, start, end } = ts;
 
-
   let plotBands = [];
   let plotLines = [];
 
   const { labelsToShow } = useContext(DatasetContext);
 
-
-  plotBands = generatePlotBands(labelsToShow, selectedLabelId, onClickPlotLine);
-  plotLines = generatePlotLines(labelsToShow, selectedLabelId, onClickPlotLine);
-
-
-
-
-
+  plotBands = useMemo(() => generatePlotBands(labelsToShow, selectedLabelId, onClickPlotLine));
+  plotLines = useMemo(() => generatePlotLines(labelsToShow, selectedLabelId, onClickPlotLine));
 
   return {
     chart: {
       zooming: {
         mouseWheel: {
-          enabled: false
-        }
+          enabled: false,
+        },
       },
       events: {
         click: (event) => {
           const xValue = event.xAxis[0];
           onChartClick(xValue);
-        }
+        },
+        mousemove: (event) => {
+          console.log(event);
+        },
       },
     },
     navigator: {
@@ -70,24 +66,24 @@ const generateChartState = (
     title: null,
     series: !Array.isArray(name)
       ? [
-        {
-          showInLegend: false,
-          name: unit === "" ? name : name + " (" + unit + ")",
-          data: ts_data,
-          lineWidth: 1.5,
-          color: "black",
-          enableMouseTracking: false,
-        },
-      ]
+          {
+            showInLegend: false,
+            name: unit === "" ? name : name + " (" + unit + ")",
+            data: ts_data,
+            lineWidth: 1.5,
+            color: "black",
+            enableMouseTracking: false,
+          },
+        ]
       : ts_data.map((dataItem, indexOuter) => {
-        return {
-          name: name[indexOuter] + " (" + unit[indexOuter] + ")",
-          data: ts_data,
-          lineWidth: 1.5,
-          color: "black",
-          enableMouseTracking: false,
-        };
-      }),
+          return {
+            name: name[indexOuter] + " (" + unit[indexOuter] + ")",
+            data: ts_data,
+            lineWidth: 1.5,
+            color: "black",
+            enableMouseTracking: false,
+          };
+        }),
     xAxis: {
       lineWidth: 1,
       tickLength: 10,

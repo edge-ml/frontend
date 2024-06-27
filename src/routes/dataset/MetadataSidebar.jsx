@@ -12,7 +12,7 @@ import { Container } from 'reactstrap';
 
 const MetadataSidebar = ({ }) => {
 
-  const { dataste } = useContext(DatasetContext);
+  const { dataset } = useContext(DatasetContext);
 
   const [isExtended, setExtendend] = useState(false);
 
