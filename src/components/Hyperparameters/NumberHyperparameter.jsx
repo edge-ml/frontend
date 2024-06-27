@@ -6,7 +6,6 @@ import Hyperparameter from './Hyperparameter';
 const NumberHyperparameter = (props) => {
   return (
     <Hyperparameter {...props}>
-      <InputGroupText className="w-100">
         <Input
           style={{ minHeight: '38px' }}
           type="number"
@@ -30,7 +29,6 @@ const NumberHyperparameter = (props) => {
                   : 'border border-danger'
               }`}
         />
-      </InputGroupText>
     </Hyperparameter>
   );
 };

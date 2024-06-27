@@ -25,7 +25,7 @@ const Hyperparameter = (props) => (
         </UncontrolledTooltip>
         <span className="text-truncate">{props.display_name}</span>
       </InputGroupText>
-    <div className="w-50">{props.children}</div>
+   {props.children}
   </InputGroup>
 );
 

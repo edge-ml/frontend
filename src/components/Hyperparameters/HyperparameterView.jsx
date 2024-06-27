@@ -1,3 +1,4 @@
+import React from 'react';
 import { Col, Row, Container } from 'reactstrap';
 import NumberHyperparameter from './NumberHyperparameter';
 import SelectionHyperparameter from './SelectionHyperparameter';

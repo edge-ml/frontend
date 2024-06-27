@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import React from 'react';
 
 export const Table = ({ children, header }) => {
   return (
