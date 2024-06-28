@@ -1,9 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
-// import {
-//   getModels,
-//   deleteModel,
-//   getStepOptions,
-// } from '../../services/ApiServices/MlService';
+import Page from '../../components/Common/Page';
+
+
 import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
 import TrainingWizard from '../../components/TrainingWizard';
 import {
@@ -129,7 +127,7 @@ const ValidationPage = () => {
         ['PRE', 'CORE'].includes(stepOption.type) &&
         !stepOption.platforms.includes('C')
       ) {
-        
+
         return false;
       }
       return true;
@@ -157,217 +155,219 @@ const ValidationPage = () => {
     );
   };
 
-  
+
 
   if (!models) {
     return <Loader loading></Loader>;
   }
 
   return (
-    <Container>
-      <div className="ps-2 pe-2 ps-md-4 pe-md-4 pb-2 mt-3">
-        <Fragment>
-          <div className="w-100 d-flex justify-content-between align-items-center mb-2">
-            <h4 className="fw-bold">MODELS</h4>
+    <Page
+      header={
+        <>
+          <div className="fw-bold h4 justify-self-start">MODELS</div>
+          <div className="justify-f-end">
             <Button outline color='primary' className="btn-neutral" onClick={() => setModalOpen(true)}>
               Train a model
             </Button>
           </div>
-          {models.length === 0 ? (
-            <div
-              style={{ marginTop: '30vh', fontSize: 'large' }}
-              className="d-flex h-100 justify-content-center align-items-center fw-bold"
-            >
-              No models trained yet!
-            </div>
-          ) : (
-            <Table
-              header={
-                <>
-                  <div className="ml-0 me-0 ml-md-2 me-md-3 ">
-                    <Checkbox
-                      isSelected={models.length == selectedModels.length}
-                      onClick={onSelectAll}
-                    ></Checkbox>
-                  </div>
-                  <Button
-                    className="btn-delete"
-                    id="deleteDatasetsButton"
-                    size="sm"
-                    divor="secondary"
-                    onClick={onOpenDeleteModal}
-                  >
-                    <FontAwesomeIcon
-                      className="me-2"
-                      icon={faTrashAlt}
-                    ></FontAwesomeIcon>
-                    Delete
-                  </Button>
-                </>
-              }
-            >
-              {models.map((model, index) => {
-                const metrics =
-                  model.error || model.trainStatus !== 'done'
-                    ? undefined
-                    : model.pipeline.selectedPipeline.steps.filter(
-                        (elm) => elm.type === 'EVAL',
-                      )[0].options.metrics.metrics;
-                return (
-                  <div className="model-table-entry-focus">
-                    <TableEntry index={index}>
-                      <div className="p-2 d-flex">
-                        <div className="d-flex align-items-center ms-2 me-0 ml-md-3 me-md-3">
-                          <Checkbox
-                            isSelected={selectedModels.includes(model._id)}
-                            onClick={() => clickCheckBox(model)}
-                          ></Checkbox>
-                        </div>
-                        <Row
-                          className="w-100 d-flex justify-content-between align-items-center"
-                          onClick={() => onViewModel(model)}
-                        >
-                          <Col className="col-3 ms-2">
-                            <b>{model.name}</b>
-                            <div>{model.pipeline.selectedPipeline.name}</div>
-                          </Col>
-                          <Col className="col-2">
-                            {model.error == '' ? null : (
-                              <>
-                                <div
-                                  className="ms-5 flex-grow-1 d-flex justify-content-center align-items-center"
-                                  style={{ color: 'red' }}
-                                >
-                                  An error occured while training!
-                                  <FontAwesomeIcon
-                                    id={'tooltip' + model._id}
-                                    className="m-2"
-                                    icon={faCircleInfo}
-                                  ></FontAwesomeIcon>
-                                </div>
-                                <UncontrolledTooltip
-                                  target={'tooltip' + model._id}
-                                >
-                                  {model.error}
-                                </UncontrolledTooltip>
-                              </>
-                            )}
-                            {model.trainStatus === 'done' ? (
+        </>
+      }
+    >
+
+      {models.length === 0 ? (
+        <div
+          style={{ marginTop: '30vh', fontSize: 'large' }}
+          className="d-flex h-100 justify-content-center align-items-center fw-bold"
+        >
+          No models trained yet!
+        </div>
+      ) : (
+        <Table
+          header={
+            <>
+              <div className="ml-0 me-0 ml-md-2 me-md-3 ">
+                <Checkbox
+                  isSelected={models.length == selectedModels.length}
+                  onClick={onSelectAll}
+                ></Checkbox>
+              </div>
+              <Button
+                className="btn-delete"
+                id="deleteDatasetsButton"
+                size="sm"
+                divor="secondary"
+                onClick={onOpenDeleteModal}
+              >
+                <FontAwesomeIcon
+                  className="me-2"
+                  icon={faTrashAlt}
+                ></FontAwesomeIcon>
+                Delete
+              </Button>
+            </>
+          }
+        >
+          {models.map((model, index) => {
+            const metrics =
+              model.error || model.trainStatus !== 'done'
+                ? undefined
+                : model.pipeline.selectedPipeline.steps.filter(
+                  (elm) => elm.type === 'EVAL',
+                )[0].options.metrics.metrics;
+            return (
+              <div className="model-table-entry-focus">
+                <TableEntry index={index}>
+                  <div className="p-2 d-flex">
+                    <div className="d-flex align-items-center ms-2 me-0 ml-md-3 me-md-3">
+                      <Checkbox
+                        isSelected={selectedModels.includes(model._id)}
+                        onClick={() => clickCheckBox(model)}
+                      ></Checkbox>
+                    </div>
+                    <Row
+                      className="w-100 d-flex justify-content-between align-items-center"
+                      onClick={() => onViewModel(model)}
+                    >
+                      <Col className="col-3 ms-2">
+                        <b>{model.name}</b>
+                        <div>{model.pipeline.selectedPipeline.name}</div>
+                      </Col>
+                      <Col className="col-2">
+                        {model.error == '' ? null : (
+                          <>
+                            <div
+                              className="ms-5 flex-grow-1 d-flex justify-content-center align-items-center"
+                              style={{ color: 'red' }}
+                            >
+                              An error occured while training!
+                              <FontAwesomeIcon
+                                id={'tooltip' + model._id}
+                                className="m-2"
+                                icon={faCircleInfo}
+                              ></FontAwesomeIcon>
+                            </div>
+                            <UncontrolledTooltip
+                              target={'tooltip' + model._id}
+                            >
+                              {model.error}
+                            </UncontrolledTooltip>
+                          </>
+                        )}
+                        {model.trainStatus === 'done' ? (
+                          <div>
+                            <div>
+                              <b>Acc: </b>
+                              {metric(metrics.accuracy_score)}%
+                            </div>
+                            <div>
+                              <b>F1: </b>
+                              {metric(metrics.f1_score)}%
+                            </div>
+                          </div>
+                        ) : null}
+                      </Col>
+                      <Col className="d-flex col-6 justify-content-end me-3 me-md-4">
+                        {model.trainStatus === 'done' ? (
+                          <div>
+                            <ListButton
+                              icon={faTrashAlt}
+                              onClick={() => onDeleteSingleModel(model)}
+                            >
+                              Delete
+                            </ListButton>
+                            <ListButton
+                              icon={faDownload}
+                              onClick={() => setModelDownload(model)}
+                            >
+                              Download
+                            </ListButton>
+                            <ListButton
+                              icon={faMicrochip}
+                              onClick={() => {
+                                setModelDeploy(model);
+                                setDeployModalOpen(true);
+                              }}
+                              disabled={!checkExportC(model)}
+                            >
+                              Deploy
+                            </ListButton>
+                            <ListButton
+                              icon={faPlay}
+                              // onClick={(e) => {
+                              //   setModelLiveInference(model);
+                              //   setLiveInferenceModalOpen(true);
+                              // }}
+                              onClick={() =>
+                                history.push('models/live/' + model._id)
+                              }
+                            >
+                              View live
+                            </ListButton>
+                            <ListButton
+                              icon={faInfoCircle}
+                              onClick={() => onViewModel(model)}
+                            >
+                              Info
+                            </ListButton>
+                          </div>
+                        ) : (
+                          <div>
+                            {model.error === '' ? (
                               <div>
-                                <div>
-                                  <b>Acc: </b>
-                                  {metric(metrics.accuracy_score)}%
-                                </div>
-                                <div>
-                                  <b>F1: </b>
-                                  {metric(metrics.f1_score)}%
-                                </div>
+                                <Spinner color="primary"></Spinner>
                               </div>
                             ) : null}
-                          </Col>
-                          <Col className="d-flex col-6 justify-content-end me-3 me-md-4">
-                            {model.trainStatus === 'done' ? (
-                              <div>
-                                <ListButton
-                                  icon={faTrashAlt}
-                                  onClick={() => onDeleteSingleModel(model)}
-                                >
-                                  Delete
-                                </ListButton>
-                                <ListButton
-                                  icon={faDownload}
-                                  onClick={() => setModelDownload(model)}
-                                >
-                                  Download
-                                </ListButton>
-                                <ListButton
-                                  icon={faMicrochip}
-                                  onClick={() => {
-                                    setModelDeploy(model);
-                                    setDeployModalOpen(true);
-                                  }}
-                                  disabled={!checkExportC(model)}
-                                >
-                                  Deploy
-                                </ListButton>
-                                <ListButton
-                                  icon={faPlay}
-                                  // onClick={(e) => {
-                                  //   setModelLiveInference(model);
-                                  //   setLiveInferenceModalOpen(true);
-                                  // }}
-                                  onClick={() =>
-                                    history.push('models/live/' + model._id)
-                                  }
-                                >
-                                  View live
-                                </ListButton>
-                                <ListButton
-                                  icon={faInfoCircle}
-                                  onClick={() => onViewModel(model)}
-                                >
-                                  Info
-                                </ListButton>
-                              </div>
-                            ) : (
-                              <div>
-                                {model.error === '' ? (
-                                  <div>
-                                    <Spinner color="primary"></Spinner>
-                                  </div>
-                                ) : null}
-                              </div>
-                            )}
-                          </Col>
-                        </Row>
-                      </div>
-                    </TableEntry>
+                          </div>
+                        )}
+                      </Col>
+                    </Row>
                   </div>
-                );
-              })}
-            </Table>
-          )}
-          {modalOpen ? (
-            <TrainingWizard
-              modalOpen={true}
-              onClose={onWizardClose}
-            ></TrainingWizard>
-          ) : null}
-          <SelectedModelModalView
-            model={modalModel}
-            onClosed={() => setModalModel(false)}
-            onButtonDownload={(model) => {
-              setModelDownload(model);
-            }}
-            onButtonDeploy={(model) => {
-              setModelDeploy(model);
-              setDeployModalOpen(true);
-            }}
-          ></SelectedModelModalView>
-          <DownloadModal
-            model={modelDownload}
-            onClose={() => setModelDownload(undefined)}
-          ></DownloadModal>
-          {deployModalOpen ? (
-            <DeployModal
-              model={modelDeploy}
-              onClose={() => {
-                setModelDeploy(undefined);
-                setDeployModalOpen(false);
-              }}
-            ></DeployModal>
-          ) : null}
-          {liveInferenceModalOpen ? (
-            <LiveInferenceModal
-              model={modelLiveInference}
-              onClose={() => {
-                setModelLiveInference(undefined);
-                setLiveInferenceModalOpen(false);
-              }}
-            ></LiveInferenceModal>
-          ) : null}
-        </Fragment>
-      </div>
+                </TableEntry>
+              </div>
+            );
+          })}
+        </Table>
+      )}
+      {modalOpen ? (
+        <TrainingWizard
+          modalOpen={true}
+          onClose={onWizardClose}
+        ></TrainingWizard>
+      ) : null}
+      <SelectedModelModalView
+        model={modalModel}
+        onClosed={() => setModalModel(false)}
+        onButtonDownload={(model) => {
+          setModelDownload(model);
+        }}
+        onButtonDeploy={(model) => {
+          setModelDeploy(model);
+          setDeployModalOpen(true);
+        }}
+      ></SelectedModelModalView>
+      <DownloadModal
+        model={modelDownload}
+        onClose={() => setModelDownload(undefined)}
+      ></DownloadModal>
+      {deployModalOpen ? (
+        <DeployModal
+          model={modelDeploy}
+          onClose={() => {
+            setModelDeploy(undefined);
+            setDeployModalOpen(false);
+          }}
+        ></DeployModal>
+      ) : null}
+      {liveInferenceModalOpen ? (
+        <LiveInferenceModal
+          model={modelLiveInference}
+          onClose={() => {
+            setModelLiveInference(undefined);
+            setLiveInferenceModalOpen(false);
+          }}
+        ></LiveInferenceModal>
+      ) : null}
       <Modal isOpen={deleteModalOpen} toggle={toggleDeleteModal}>
         <ModalHeader toggle={toggleDeleteModal}>Delete models</ModalHeader>
         <ModalBody>
@@ -399,10 +399,7 @@ const ValidationPage = () => {
           </Button>
         </ModalFooter>
       </Modal>
-      {/* <ConfirmRejectModal
-        headerText={"Delete the following?"}
-      ></ConfirmRejectModal> */}
-    </Container>
+    </Page>
   );
 };
 

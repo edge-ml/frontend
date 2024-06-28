@@ -15,6 +15,7 @@
     "highcharts": "^11.4.3",
     "highcharts-react-official": "^3.2.1",
     "humanize-duration": "^3.28.0",
+    "immer": "^10.1.1",
     "jszip": "^3.9.1",
     "jwt-decode": "^4.0.0",
     "lint-staged": "^15.2.5",

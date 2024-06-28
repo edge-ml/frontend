@@ -66,7 +66,7 @@ const Labelings = () => {
         header={
           <>
             <div className="fw-bold h4 justify-self-start">LABELING SETS</div>
-            <div className="justify-content-end">
+            <div className="justify-f-end">
               <Button
                 outline
                 color="primary"

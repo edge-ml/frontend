@@ -1,27 +1,20 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Button,
-  Row,
-  Col,
-  Table,
   InputGroup,
   InputGroupText,
 } from 'reactstrap';
-
-import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteInput';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
+import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteInput';
 import { getUserNameSuggestions } from '../../services/ApiServices/AuthentificationServices';
 import {
   EdgeMLTable,
   EdgeMLTableEntry,
   EdgeMLTableHeader,
 } from '../../components/Common/EdgeMLTable';
-import { AuthContext } from '../../AuthProvider';
 import useProjectSettings from '../../Hooks/useProjectSettings';
-import useAuth from '../../Hooks/useAuth';
 import useUserStore from '../../Hooks/useUser';
 import useProjectStore from '../../stores/projectStore';
 
@@ -33,42 +26,49 @@ const UserEdit = () => {
   const [userSearchValue, setUserSearchValue] = useState('');
   const [userNames, setUserNames] = useState(currentProject.users);
 
-  const onAddUserName = (e) => {
+  const handleAddUserName = (e) => {
     e.preventDefault();
     setUserNames([...userNames, { userName: e.target.value }]);
     setUserSearchValue('');
   };
 
-  const onChangeUserNameSuggestion = (e) => {
+  const handleUserNameSuggestionChange = (e) => {
     setUserSearchValue(e.target.value);
   };
 
-  const deleteUserName = (userNameToDelete) => {
-    setUserNames(userNames.filter((elm) => elm.userName !== userNameToDelete));
+  const handleDeleteUserName = (userNameToDelete) => {
+    setUserNames(userNames.filter((user) => user.userName !== userNameToDelete));
   };
 
-  const usersValid = (users) => {
-    return users.every((elm) => elm._id !== user._id);
+  const areUsersValid = (users) => {
+    return users.every((user) => user._id !== user._id);
   };
 
-  return currentProject.users ? (
+  if (!currentProject.users) {
+    return null;
+  }
+
+  console.log(userNames);
+
+  return (
     <div>
-      <InputGroup>
+      <InputGroup className="w-100">
         <InputGroupText>Search user</InputGroupText>
         <AutoCompleteInput
           type="text"
           name="User ID"
           value={userSearchValue}
           placeholder="Enter username"
-          onClick={onAddUserName}
-          onChange={onChangeUserNameSuggestion}
+          onClick={handleAddUserName}
+          onChange={handleUserNameSuggestionChange}
           getsuggestions={getUserNameSuggestions}
           filter={[
-            ...currentProject.users.map((elm) => elm.userName),
+            ...currentProject.users.map((user) => user.userName),
             user.userName,
           ]}
         />
       </InputGroup>
+      {userNames.length > 0 ? (
       <EdgeMLTable>
         <EdgeMLTableHeader>Users in the project</EdgeMLTableHeader>
         {userNames.map((user, index) => (
@@ -81,25 +81,25 @@ const UserEdit = () => {
             <Button
               size="sm"
               color="danger"
-              onClick={() => deleteUserName(user.userName)}
+              onClick={() => handleDeleteUserName(user.userName)}
             >
               <FontAwesomeIcon icon={faTrash} />
             </Button>
           </EdgeMLTableEntry>
         ))}
-      </EdgeMLTable>
+      </EdgeMLTable>) : null}
       <div className="pt-3 d-flex justify-content-end">
         <Button
           id="buttonSaveProject"
           color="primary"
           onClick={() => changeUserNames(userNames)}
-          disabled={!usersValid(userNames)}
+          disabled={!areUsersValid(userNames)}
         >
           Save
         </Button>
       </div>
     </div>
-  ) : null;
+  );
 };
 
 export default UserEdit;

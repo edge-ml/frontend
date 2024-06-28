@@ -1,65 +1,42 @@
 import apiConsts from './ApiConstants';
 import ax from 'axios';
+import apiRequest from './request';
 
-const axios = ax.create();
 
-export const setDeviceApiKey = () => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.GET,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.SETDEVICEAPIKEY,
-      ),
-    )
-      .then((data) => resolve(data.data))
-      .catch((err) => reject(err.response));
-  });
-};
+export const setDeviceApiKey = async () => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.API_URI,
+    apiConsts.API_ENDPOINTS.SETDEVICEAPIKEY,
+  );
+  return res;
+}
 
-export const getDeviceApiKey = () => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.GET,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.GETDEVICEAPIKEY,
-      ),
-    )
-      .then((data) => resolve(data.data))
-      .catch((err) => reject(err.response));
-  });
-};
+export const getDeviceApiKey = async () => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.API_URI,
+    apiConsts.API_ENDPOINTS.GETDEVICEAPIKEY,
+  );
+  return res;
+}
 
-export const deleteDeviceApiKey = () => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.GET,
-        apiConsts.API_URI,
-        apiConsts.API_ENDPOINTS.REMOVEDEVICEAPIKEY,
-      ),
-    )
-      .then((data) => resolve(data.data))
-      .catch((err) => reject(err.response));
-  });
-};
+export const deleteDeviceApiKey = async () => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.API_URI,
+    apiConsts.API_ENDPOINTS.REMOVEDEVICEAPIKEY,
+  );
+  return res;
+}
 
-export const switchDeviceApiActive = (activeState) => {
-  // return new Promise((resolve, reject) => {
-  //   axios(
-  //     apiConsts.generateApiRequest(
-  //       apiConsts.HTTP_METHODS.POST,
-  //       apiConsts.API_URI,
-  //       apiConsts.API_ENDPOINTS.SWTICHDEVICEAPIACTIVE,
-  //       { state: activeState }
-  //     )
-  //   )
-  //     .then((msg) => {
-  //       getProjects().then((data) => resolve(data));
-  //     })
-  //     .catch((err) => {
-  //       reject(err.response);
-  //     });
-  // });
-};
+
+export const switchDeviceApiActive = async (activeState) => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.POST,
+    apiConsts.API_URI,
+    apiConsts.API_ENDPOINTS.SWTICHDEVICEAPIACTIVE,
+    { state: activeState },
+  );
+  return res;
+}

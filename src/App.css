@@ -51,9 +51,6 @@ a .octicon-trashcan:hover {
   max-width: 100px;
 }
 
-.btn-edit:hover {
-  color: rgb(72, 187, 120) !important;
-}
 
 .dataset-plotband {
   z-index: 9;
@@ -434,10 +431,6 @@ div.card {
 
 .input-group-prepend > .input-group-text {
   background: #ced4da;
-}
-
-.btn-delete:hover {
-  color: rgb(213, 63, 140);
 }
 
 .btn-neutral {

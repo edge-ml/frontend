@@ -3,12 +3,15 @@ import {
   getDeviceApiKey,
   switchDeviceApiActive,
   setDeviceApiKey as generateApiKeys_API,
+  deleteDeviceApiKey
 } from '../services/ApiServices/DeviceApiService';
 import useProjectAPI from '../services/ApiServices/ProjectService';
 import useProjectStore from '../stores/projectStore';
 
 const useDeviceApi = () => {
   const { currentProject, setCurrentProject, setProjects } = useProjectStore();
+
+  console.log(currentProject)
 
   const projectAPI = useProjectAPI();
 
@@ -46,9 +49,16 @@ const useDeviceApi = () => {
     setWriteKey(keys.writeApiKey);
   };
 
+  const removeApiKeys = async () => {
+    await deleteDeviceApiKey();
+    setReadKey(undefined);
+    setWriteKey(undefined);
+  }
+
   return {
     toggleDevieApi: toggleDevieApi,
     generateApiKeys: generateApiKeys,
+    removeApiKeys: removeApiKeys,
     readKey: readKey,
     writeKey: writeKey,
   };

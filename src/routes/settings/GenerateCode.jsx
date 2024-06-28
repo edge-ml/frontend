@@ -6,28 +6,28 @@ import {
   InputGroupText,
   Input,
   Button,
+  Label
 } from 'reactstrap';
 import useDeviceApi from '../../Hooks/useDeviceAPI';
 import useProjectStore from '../../stores/projectStore';
 
 const GenerateCode = (props) => {
   const { currentProject } = useProjectStore();
-  const { toggleDevieApi, generateApiKeys, readKey, writeKey } = useDeviceApi();
+  const { toggleDevieApi, generateApiKeys, removeApiKeys, readKey, writeKey } = useDeviceApi();
+
+
+  const backendUrl = window.location.host;
 
   return (
     <Container>
       <div style={{ paddingTop: '16px', display: 'flex' }}>
-        <div>Device-API</div>
         {currentProject.users ? (
-          <FormGroup style={{ margin: 0 }}>
+          <FormGroup switch>
+            <Label check>Device API</Label>
             <Input
-              className="ms-2"
-              inline
-              type="switch"
-              id="exampleCustomSwitch"
               checked={currentProject.enableDeviceApi}
               onChange={(e) => toggleDevieApi(e.target.checked)}
-            />
+              type="switch" role="switch" />
           </FormGroup>
         ) : null}
       </div>
@@ -35,7 +35,7 @@ const GenerateCode = (props) => {
         <div>
           <InputGroup>
             <InputGroupText>{'Backend-URL'}</InputGroupText>
-            <Input value={props.backendUrl} readOnly />
+            <Input disabled value={backendUrl} readOnly />
           </InputGroup>
           <InputGroup>
             <InputGroupText>{'Read Key'}</InputGroupText>
@@ -67,8 +67,8 @@ const GenerateCode = (props) => {
               outline
               className="mx-2 my-1"
               color="danger"
-              disabled={!currentProject.enableDeviceApi}
-              onClick={props.onDisableDeviceApi}
+              disabled={!currentProject.enableDeviceApi || !readKey || !writeKey}
+              onClick={removeApiKeys}
             >
               Remove key
             </Button>

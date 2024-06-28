@@ -113,7 +113,7 @@ class AutocompleteInput extends Component {
   render() {
     const inputProps = { ...this.props, getsuggestions: undefined };
     return (
-      <div className="autocomplete-wrapper">
+      <div className="autocomplete-wrapper flex-grow-1">
         <Input
           id="autoCompleteInput"
           {...inputProps}

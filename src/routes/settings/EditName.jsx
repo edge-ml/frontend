@@ -37,10 +37,6 @@ const EditName = () => {
           </Button>
         </div>
       </InputGroup>
-      <InputGroup>
-        <InputGroupText>{'Admin'}</InputGroupText>
-        <Input value={currentProject.admin.userName} readOnly />
-      </InputGroup>
     </Container>
   );
 };

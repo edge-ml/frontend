@@ -271,7 +271,7 @@ const DatasetTableEntry = (props) => {
                   <Button
                     outline
                     color="danger"
-                    className="btn-delete me-2"
+                    className="me-2"
                     onClick={() => props.deleteEntry(dataset._id)}
                   >
                     <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{" "}
@@ -279,7 +279,7 @@ const DatasetTableEntry = (props) => {
                   <Button
                     outline
                     color="primary"
-                    className="btn-edit me-3 me-md-4"
+                    className="me-3 me-md-4"
                     onClick={() => navigate(`Datasets/${dataset._id}`)}
                   >
                     <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>

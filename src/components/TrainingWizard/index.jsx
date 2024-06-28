@@ -285,7 +285,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
             You need datasets and labelings to train models!
           </div>
         ) : null}
-        {pipelines && !selectedPipeline ? (
+        {datasets && labelings && datasets.length == 0 && labelings.length == 0 && pipelines && !selectedPipeline ? (
           <SelectTrainMethod
             pipelines={pipelines}
             onSelectTrainingMethod={onSelectTrainingMethod}
