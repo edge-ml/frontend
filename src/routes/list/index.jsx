@@ -11,6 +11,7 @@ import useDatasets from "../../Hooks/useDatasets";
 import usePaginatedDatasets from "../../Hooks/usePaginatedDatasets";
 import { Pagination } from "reactstrap";
 import PageSelection from "./PageSelection";
+import DeleteModal from "../../components/Common/DeleteModal"
 
 const ListPage = (props) => {
   const [modal, setModal] = useState(false);
@@ -19,6 +20,7 @@ const ListPage = (props) => {
   const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(undefined); //name and display value of filter
   const { registerProjectDownload } = useContext(NotificationContext);
+  const [deleteSelected, setDeleteSelected] = useState([]);
 
   const { labelings } = useLabelings();
   const {
@@ -29,21 +31,14 @@ const ListPage = (props) => {
     totalPages,
     sorting,
     setSorting,
-    updateDataset
+    updateDataset,
+    deleteDatasets
   } = usePaginatedDatasets(1);
 
-  const toggleModal = () => {
-    setModal(!modal);
-  };
 
   const deleteSelectedDatasets = () => {
-    datasetApi.deleteDatasets(selectedDatasets).then(() => {
-      setModal(false);
-      setSelectedDatasets([]);
-      setDatasets(
-        datasets.filter((dataset) => !selectedDatasets.includes(dataset["_id"]))
-      );
-    });
+    deleteDatasets(deleteSelected);
+    setDeleteSelected([]);
   };
 
   const deleteEntry = (datasetId) => {
@@ -110,7 +105,7 @@ const ListPage = (props) => {
       <DatasetTable
         datasets={datasets}
         selectedDatasets={selectedDatasets}
-        openDeleteModal={toggleModal}
+        openDeleteModal={() => setDeleteSelected(selectedDatasets)}
         selectAllEmpty={selectAllEmpty}
         downloadAllDatasets={downloadAllDatasets}
         toggleCheck={toggleCheck}
@@ -134,6 +129,22 @@ const ListPage = (props) => {
           ></PageSelection>
         )}
       </div>
+      <DeleteModal
+        isOpen={deleteSelected.length > 0}
+        onCancel={() => setDeleteSelected([])}
+        onDelete={deleteSelectedDatasets}
+      >
+        {deleteSelected.length > 0 && (
+          <div>
+            <h5>Are you sure to delete:</h5>
+            {deleteSelected.map((datasetId) => (
+              <div key={datasetId}>
+                {datasets.find((dataset) => dataset._id === datasetId).name}
+              </div>
+            ))}
+          </div>
+        )}
+      </DeleteModal>
     </div>
   );
 };

@@ -53,10 +53,14 @@
     ]
   },
   "devDependencies": {
+    "@eslint/js": "^9.5.0",
     "@playwright/test": "^1.44.0",
     "@types/node": "^20.12.12",
     "@vitejs/plugin-react": "^4.3.0",
     "enzyme": "^3.11.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.3",
+    "globals": "^15.6.0",
     "nodemon": "^3.0.3",
     "sass": "^1.77.4",
     "vite": "^5.2.11"

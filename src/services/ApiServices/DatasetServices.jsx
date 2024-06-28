@@ -27,7 +27,7 @@ export const getDatasetsPagination = async (skip, limit, sort) => {
 };
 
 export const updateDataset = async (dataset) => {
-  
+
   const res = apiRequest(
     apiConsts.HTTP_METHODS.PUT,
     apiConsts.DATASET_STORE,
@@ -190,7 +190,7 @@ export default useDatasetAPI;
 // };
 
 export const getDatasetTimeseries = (id, info) => {
-  
+
   const { max_resolution, start, end } = info;
   return new Promise((resolve, reject) => {
     axios(
@@ -198,7 +198,7 @@ export const getDatasetTimeseries = (id, info) => {
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
-          `${id}/ts/${start}/${end}/${max_resolution}`
+        `${id}/ts/${start}/${end}/${max_resolution}`
       )
     )
       .then((data) => resolve(data.data))
@@ -207,9 +207,9 @@ export const getDatasetTimeseries = (id, info) => {
 };
 
 export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
-  
-  
-  
+
+
+
   const { max_resolution, start, end } = info;
   return new Promise((resolve, reject) => {
     axios(
@@ -217,7 +217,7 @@ export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
         apiConsts.HTTP_METHODS.POST,
         apiConsts.DATASET_STORE,
         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
-          `${id}/ts/${start}/${end}/${max_resolution}`,
+        `${id}/ts/${start}/${end}/${max_resolution}`,
         ts_ids
       )
     )
@@ -250,11 +250,11 @@ export const getDatasetMeta = (id) => {
       )
     )
       .then((dataset) => {
-        
+
         resolve(dataset.data);
       })
       .catch((err) => {
-        
+
         reject(err.response);
       });
   });
@@ -281,24 +281,33 @@ export const deleteDatasets = (ids) => {
     const promises = ids.map((elm) => deleteDataset(elm));
     return Promise.all(promises);
   } catch (e) {
-    
+
     return e;
   }
 };
 
-export const deleteDataset = (id) => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.DELETE,
-        apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
-      )
-    )
-      .then(resolve())
-      .catch((err) => reject(err.response));
-  });
-};
+export const deleteDataset = async (datasetId) => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.DELETE,
+    apiConsts.DATASET_STORE,
+    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${datasetId}`
+  );
+  return res;
+}
+
+// export const deleteDataset = (id) => {
+//   return new Promise((resolve, reject) => {
+//     axios(
+//       apiConsts.generateApiRequest(
+//         apiConsts.HTTP_METHODS.DELETE,
+//         apiConsts.DATASET_STORE,
+//         apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
+//       )
+//     )
+//       .then(resolve())
+//       .catch((err) => reject(err.response));
+//   });
+// };
 
 // export const updateDataset = (dataset) => {
 //   return new Promise((resolve, reject) => {
@@ -355,7 +364,7 @@ export const createDatasets = (datasets) => {
         });
       })
       .catch((err) => {
-        
+
         reject(err.response);
       });
   });
@@ -367,8 +376,8 @@ export const appendToDataset = (dataset, data) => {
       apiConsts.HTTP_METHODS.POST,
       apiConsts.DATASET_STORE,
       apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
-        `${dataset["_id"]}` +
-        "/append",
+      `${dataset["_id"]}` +
+      "/append",
       data
     )
   )
@@ -382,7 +391,7 @@ export const getUploadProcessingProgress = (datasetId) => {
       apiConsts.HTTP_METHODS.GET,
       apiConsts.DATASET_STORE,
       apiConsts.DATASET_STORE_ENDPOINTS.GET_PROCESSING_PROGRESS +
-        `?datasetId=${datasetId}`
+      `?datasetId=${datasetId}`
     )
   )
     .then((result) => result.data.progress)
@@ -395,8 +404,8 @@ export const changeDatasetName = (datasetId, newName) => {
       apiConsts.HTTP_METHODS.PUT,
       apiConsts.DATASET_STORE,
       apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
-        datasetId +
-        `/rename?newName=${newName}`
+      datasetId +
+      `/rename?newName=${newName}`
     )
   )
     .then((result) => result.data.message)
@@ -415,8 +424,8 @@ export const updateTimeSeriesConfig = (
       apiConsts.HTTP_METHODS.PUT,
       apiConsts.DATASET_STORE,
       apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
-        datasetId +
-        `/changeUnitConfig?tsId=${tsId}&unit=${unit}&scaling=${scaling}&offset=${offset}`
+      datasetId +
+      `/changeUnitConfig?tsId=${tsId}&unit=${unit}&scaling=${scaling}&offset=${offset}`
     )
   )
     .then((result) => result.data.message)
