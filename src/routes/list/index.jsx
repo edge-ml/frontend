@@ -86,7 +86,7 @@ const ListPage = (props) => {
     registerProjectDownload();
   };
 
-  const toggleCreateNewDatasetModal = () => {};
+  const toggleCreateNewDatasetModal = () => { };
 
   if (!datasets || !labelings) {
     return <Loader loading={true}></Loader>;
@@ -126,11 +126,13 @@ const ListPage = (props) => {
         updateDataset={updateDataset}
       ></DatasetTable>
       <div className="d-flex justify-content-center">
-        <PageSelection
-          currentPage={page}
-          setPage={setPage}
-          totalPages={totalPages}
-        ></PageSelection>
+        {datasets && datasets.length > 0 && (
+          <PageSelection
+            currentPage={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          ></PageSelection>
+        )}
       </div>
     </div>
   );

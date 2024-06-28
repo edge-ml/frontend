@@ -1,18 +1,16 @@
-
 $primary: rgb(72, 187, 120);
+$primary-alpha: rgba(72, 187, 120, 0.4);
 $info: rgb(183, 143, 1);
-
-// .btn-primary {
-//     background-color: $primary;
-//     border-color: $primary;
-//     color: white
-// }
 
 .input {
     border-radius: 0.25rem;
 }
 
 
+.navbar-project-item-active {
+    color: black;
+    background-color: $primary-alpha;
+}
 
 
 @import "../node_modules/bootstrap/scss/bootstrap";
