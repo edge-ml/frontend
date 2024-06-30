@@ -86,7 +86,7 @@ int main() {
               isOpen={languageDropdownOpen}
               toggle={() => setLanguageDropdownOpen(!languageDropdownOpen)}
             >
-              <DropdownToggle caret>{language.toUpperCase()}</DropdownToggle>
+              <DropdownToggle outline color='primary' caret>{language.toUpperCase()}</DropdownToggle>
               <DropdownMenu>
                 <DropdownItem onClick={() => setLanguage('cpp')}>
                   C++
@@ -98,7 +98,7 @@ int main() {
               </DropdownMenu>
             </Dropdown>
           </div>
-          <Button onClick={downloadModel}>Download</Button>
+          <Button outline color='primary' onClick={downloadModel}>Download</Button>
         </div>
         <div className="pt-2"></div>
         <CodeSnippet language={language} code={getCode()}></CodeSnippet>
