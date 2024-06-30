@@ -151,12 +151,7 @@ const DatasetInfo = (props) => {
     <div className="text-left d-inline-block m-2">
       <div className="fw-bold font-size-lg h5 d-inline">
         {dataset.name}
-        <FontAwesomeIcon
-          className="ms-1 cursor-pointer"
-          color="rgb(131, 136, 159)"
-          icon={faPen}
-          onClick={() => setDatasetNameEditOpen(true)}
-        ></FontAwesomeIcon>
+
       </div>
       {!empty ? (
         <Fragment>

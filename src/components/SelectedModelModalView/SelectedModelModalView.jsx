@@ -68,8 +68,8 @@ export const SelectedModelModalView = ({
               </div>
               <Training_config model={model}></Training_config>
             </ModalBody>
-            <ModalFooter className="justify-content-between">
-              <div>
+            <ModalFooter className="justify-content-end">
+              {/* <div>
                 <Button
                   outline
                   color='primary'
@@ -91,7 +91,7 @@ export const SelectedModelModalView = ({
                 >
                   Deploy
                 </Button>
-              </div>
+              </div> */}
               <Button outline onClick={onClosed}>Close</Button>
             </ModalFooter>
           </div>

@@ -20,7 +20,7 @@ const useModels = () => {
   };
 
   useEffect(() => {
-    getStepOptions();
+    refreshStepOptions();
     refreshModels();
   }, []);
 

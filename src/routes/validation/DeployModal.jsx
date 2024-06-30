@@ -327,7 +327,7 @@ const DeployModal = ({ model, onClose }) => {
                 isOpen={deviceDropDownOpen}
                 toggle={toggleDeviceDropDown}
               >
-                <DropdownToggle caret size="lg">
+                <DropdownToggle caret outline color="primary" size="lg">
                   {selectedDevice.name}
                 </DropdownToggle>
                 <DropdownMenu>
@@ -361,7 +361,7 @@ const DeployModal = ({ model, onClose }) => {
                           direction="left"
                           style={{ position: 'relative' }}
                         >
-                          <DropdownToggle caret size="sm">
+                          <DropdownToggle caret outline color='primary' size="sm">
                             {selectedSensors[ts_idx].sensor_id !== undefined
                               ? selectedDevice.sensors[
                                   selectedSensors[ts_idx].sensor_id

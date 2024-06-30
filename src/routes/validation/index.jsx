@@ -117,6 +117,9 @@ const ValidationPage = () => {
   }
 
   const checkExportC = (model) => {
+
+    console.log(stepOptions)
+
     const res = model.pipeline.selectedPipeline.steps.map((step) => {
       if (!stepOptions) {
         return false;
@@ -235,8 +238,12 @@ const ValidationPage = () => {
                       <Col className="col-3 ms-2 font-size-lg h-5">
                         <div>
                           <b className='font-size-lg h5 fw-bold'>{model.name}</b>
-                          <FontAwesomeIcon
-                          className='m-1' icon={faPen}></FontAwesomeIcon>
+                          {/* <FontAwesomeIcon
+                            className="ms-1 cursor-pointer"
+                            color="rgb(131, 136, 159)"
+                            icon={faPen}
+                            onClick={() => setModelNameEditOpen(true)}
+                          ></FontAwesomeIcon> */}
                         </div>
                         <div>{model.pipeline.selectedPipeline.name}</div>
                       </Col>
@@ -309,10 +316,6 @@ const ValidationPage = () => {
                               color="primary"
                               outline
                               icon={faPlay}
-                              // onClick={(e) => {
-                              //   setModelLiveInference(model);
-                              //   setLiveInferenceModalOpen(true);
-                              // }}
                               onClick={() =>
                                 history.push('models/live/' + model._id)
                               }
