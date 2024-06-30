@@ -44,6 +44,7 @@ const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
 };
 
 const SelectTrainMethod = ({ pipelines, onSelectTrainingMethod }) => {
+
   return (
     <Fragment>
       {pipelines.map((elm) => TrainingMethod(elm, onSelectTrainingMethod))}

@@ -5,46 +5,14 @@ import apiRequest from './request';
 
 const axios = ax.create();
 
-const useMLAPI = (project) => {
-  const api = useApiCalls(project);
-
-  const getStepOptions = async () => {
-    const res = await api.request(
-      apiConsts.HTTP_METHODS.GET,
-      apiConsts.ML_URI,
-      apiConsts.ML_ENDPOINTS.TRAIN + '/pipeline/options',
-    );
-    return res;
-  };
-
-  const getModels = async () => {
-    const res = await api.request(
-      apiConsts.HTTP_METHODS.GET,
-      apiConsts.ML_URI,
-      apiConsts.ML_ENDPOINTS.MODELS,
-    );
-    return res;
-  };
-
-  return {
-    getModels: getModels,
-    getStepOptions: getStepOptions,
-  };
-};
-
-export const getStepOptions = () => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.GET,
-        apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAIN + '/pipeline/options',
-      ),
-    )
-      .then((data) => resolve(data.data))
-      .catch((err) => reject(err.response));
-  });
-};
+export const getStepOptions = async () => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.TRAIN + '/pipeline/options',
+  )
+  return res;
+}
 
 export const getModels = async () => {
   const res = await apiRequest(
@@ -55,20 +23,6 @@ export const getModels = async () => {
   return res;
 }
 
-
-// export const getModels = function () {
-//   return new Promise((resolve, reject) => {
-//     axios(
-//       apiConsts.generateApiRequest(
-//         apiConsts.HTTP_METHODS.GET,
-//         apiConsts.ML_URI,
-//         apiConsts.ML_ENDPOINTS.MODELS,
-//       ),
-//     )
-//       .then((data) => resolve(data.data))
-//       .catch((err) => reject(err.response));
-//   });
-// };
 
 export const deleteModel = async (modelId) => {
   const res = await axios(
@@ -81,19 +35,16 @@ export const deleteModel = async (modelId) => {
   return res.data;
 };
 
-export const getTrainconfig = () => {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.GET,
-        apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAIN,
-      ),
-    )
-      .then((data) => resolve(data.data))
-      .catch((err) => reject(err.response));
-  });
-};
+
+export const getTrainConfig = async () => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.TRAIN
+  )
+  return res;
+}
+
 
 export const getTrainedModels = function () {
   return new Promise((resolve, reject) => {
@@ -137,20 +88,30 @@ export const deleteTrained = function (id) {
   });
 };
 
-export const train = function (data) {
-  return new Promise((resolve, reject) => {
-    axios(
-      apiConsts.generateApiRequest(
-        apiConsts.HTTP_METHODS.POST,
-        apiConsts.ML_URI,
-        apiConsts.ML_ENDPOINTS.TRAIN,
-        data,
-      ),
-    )
-      .then(() => resolve()) // TODO: ml should return training id
-      .catch((err) => reject(err.response));
-  });
-};
+export const train = async (data) => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.POST,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.TRAIN,
+    data,
+  );
+  return res;
+}
+
+// export const train = function (data) {
+//   return new Promise((resolve, reject) => {
+//     axios(
+//       apiConsts.generateApiRequest(
+//         apiConsts.HTTP_METHODS.POST,
+//         apiConsts.ML_URI,
+//         apiConsts.ML_ENDPOINTS.TRAIN,
+//         data,
+//       ),
+//     )
+//       .then(() => resolve()) // TODO: ml should return training id
+//       .catch((err) => reject(err.response));
+//   });
+// };
 
 export const getActiveTrainingById = function (trainId) {
   return new Promise((resolve, reject) => {
@@ -210,7 +171,7 @@ export const deployTrained = function (id, data) {
 };
 
 export const getDeployDevices = function (id) {
-  
+
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
@@ -231,7 +192,7 @@ export const deployModel = function (
   selectedDevice,
   additionalSettings,
 ) {
-  
+
   return new Promise((resolve, reject) => {
     const request = apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
@@ -258,7 +219,7 @@ export const downloadFirmware = function (
   selectedDevice,
   additionalSettings,
 ) {
-  
+
   return new Promise((resolve, reject) => {
     const request = apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
@@ -278,4 +239,4 @@ export const downloadFirmware = function (
   });
 };
 
-export default useMLAPI;
+// export default useMLAPI;

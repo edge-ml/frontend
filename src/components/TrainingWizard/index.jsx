@@ -12,8 +12,8 @@ import './index.css';
 import { useEffect, useState, Fragment } from 'react';
 import Wizard_SelectDataset from './Steps/Select_Datasets';
 import { getDatasets } from '../../services/ApiServices/DatasetServices';
-import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
-import { getTrainconfig, train } from '../../services/ApiServices/MlService';
+import { getLabelings } from '../../services/ApiServices/LabelingServices';
+import { getTrainConfig, train } from '../../services/ApiServices/MlService';
 import Select_Name from './Steps/Select_Name';
 import SelectTrainMethod from './selectTrainMethod';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -133,10 +133,10 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setDisabledTimeseriesNames([]);
       setDatasets(newDatasets);
     });
-    subscribeLabelingsAndLabels().then((labelings) =>
+    getLabelings().then((labelings) =>
       setLabelings(labelings.map((ls) => ({ ...ls, disabledLabels: [] }))),
     );
-    getTrainconfig().then((result) => {
+    getTrainConfig().then((result) => {
       setPipelines(result);
       setEvaluation(result.evaluation);
       setClassifiers(result.classifier);
@@ -285,7 +285,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
             You need datasets and labelings to train models!
           </div>
         ) : null}
-        {datasets && labelings && datasets.length == 0 && labelings.length == 0 && pipelines && !selectedPipeline ? (
+        {pipelines && !selectedPipeline ? (
           <SelectTrainMethod
             pipelines={pipelines}
             onSelectTrainingMethod={onSelectTrainingMethod}

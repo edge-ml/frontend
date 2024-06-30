@@ -28,6 +28,7 @@ import {
   faMicrochip,
   faCircleInfo,
   faPlay,
+  faPen,
 } from '@fortawesome/free-solid-svg-icons';
 import DeployModal from './DeployModal';
 import { useNavigate } from 'react-router-dom';
@@ -135,7 +136,8 @@ const ValidationPage = () => {
     return res.every((elm) => elm === true);
   };
 
-  const ListButton = ({ onClick, icon, children, disabled = false }) => {
+  const ListButton = (props) => {
+    const { onClick, icon, children } = props;
     const onClickStop = (e) => {
       onClick(e);
       e.stopPropagation();
@@ -143,7 +145,7 @@ const ValidationPage = () => {
 
     return (
       <Button
-        disabled={disabled}
+        {...props}
         className="btn-edit ms-2 my-2"
         onClick={onClickStop}
       >
@@ -196,7 +198,8 @@ const ValidationPage = () => {
                 className="btn-delete"
                 id="deleteDatasetsButton"
                 size="sm"
-                divor="secondary"
+                outline
+                color='danger'
                 onClick={onOpenDeleteModal}
               >
                 <FontAwesomeIcon
@@ -229,8 +232,12 @@ const ValidationPage = () => {
                       className="w-100 d-flex justify-content-between align-items-center"
                       onClick={() => onViewModel(model)}
                     >
-                      <Col className="col-3 ms-2">
-                        <b>{model.name}</b>
+                      <Col className="col-3 ms-2 font-size-lg h-5">
+                        <div>
+                          <b className='font-size-lg h5 fw-bold'>{model.name}</b>
+                          <FontAwesomeIcon
+                          className='m-1' icon={faPen}></FontAwesomeIcon>
+                        </div>
                         <div>{model.pipeline.selectedPipeline.name}</div>
                       </Col>
                       <Col className="col-2">
@@ -271,18 +278,24 @@ const ValidationPage = () => {
                         {model.trainStatus === 'done' ? (
                           <div>
                             <ListButton
+                              color="danger"
+                              outline
                               icon={faTrashAlt}
                               onClick={() => onDeleteSingleModel(model)}
                             >
                               Delete
                             </ListButton>
                             <ListButton
+                              color="primary"
+                              outline
                               icon={faDownload}
                               onClick={() => setModelDownload(model)}
                             >
                               Download
                             </ListButton>
                             <ListButton
+                              color="primary"
+                              outline
                               icon={faMicrochip}
                               onClick={() => {
                                 setModelDeploy(model);
@@ -293,6 +306,8 @@ const ValidationPage = () => {
                               Deploy
                             </ListButton>
                             <ListButton
+                              color="primary"
+                              outline
                               icon={faPlay}
                               // onClick={(e) => {
                               //   setModelLiveInference(model);
@@ -305,6 +320,8 @@ const ValidationPage = () => {
                               View live
                             </ListButton>
                             <ListButton
+                              color="info"
+                              outline
                               icon={faInfoCircle}
                               onClick={() => onViewModel(model)}
                             >

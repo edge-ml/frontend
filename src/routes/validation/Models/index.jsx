@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   Modal,
   ModalBody,
@@ -9,7 +9,9 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Input,
   UncontrolledDropdown,
+  FormGroup,
   Progress,
   Spinner,
 } from 'reactstrap';
@@ -17,18 +19,29 @@ import {
   getDeployDevices,
   deployModel,
   downloadFirmware,
-} from '../../services/ApiServices/MlService';
+} from '../../../services/ApiServices/MlService';
 
-import './index.css';
-import { HyperparameterView } from '../../components/Hyperparameters/HyperparameterView';
-import DFUManager from '../../components/BLE/DFUModal/DFU';
+// import './index.css';
+import { HyperparameterView } from '../../../../components/Hyperparameters/HyperparameterView';
+import {
+  EdgeMLTable,
+  EdgeMLTableEntry,
+  EdgeMLTableHeader,
+} from '../../../../components/Common/EdgeMLTable';
+import DFUManager from '../../../../components/BLE/DFUModal/DFU';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import DeployFeatures from './Models/DeployFeatures';
 
 const DeployModal = ({ model, onClose }) => {
   const [devices, setDevices] = useState([]);
   const [parameters, setParameters] = useState([]);
+  const [additionalSettings, setAdditionalSettings] = useState({
+    ble: {
+      serviceUUID: '6E400001-B5A3-F393-E0A9-E50E24DCCA9E',
+      characteristicUUID: '3c6e98a5-f027-49aa-8b2e-c7b3f8a9c18c',
+    },
+  });
+  const [useBLE, setUseBLE] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState(undefined);
   const [deviceDropDownOpen, setDeviceDropDownOpen] = useState(false);
   const [selectedSensors, setSelectedSensors] = useState(undefined);
@@ -40,8 +53,6 @@ const DeployModal = ({ model, onClose }) => {
   const [connectedDevice, setConnectedDevice] = useState(undefined);
   const [showSelectAllSensorWarning, setShowSelectAllSensorWarning] =
     useState(false);
-
-  const [deployFeatures, setDeployFeatures] = useState({});
 
   const dfuManager = useMemo(
     () =>
@@ -101,10 +112,6 @@ const DeployModal = ({ model, onClose }) => {
     setFlashProgress(0);
   };
 
-  const onClickSelectDevice = (device) => {
-    setSelectedDevice(device);
-  };
-
   const toggleDeviceDropDown = () => setDeviceDropDownOpen(!deviceDropDownOpen);
 
   const selectSensor = (ts_idx, sensor_idx, component_idx) => {
@@ -136,14 +143,6 @@ const DeployModal = ({ model, onClose }) => {
     }
   };
 
-  const checkAndDownloadFirmware = () => {
-    if (checkAllSensorsSelected()) {
-      onDownloadFirmware();
-    } else {
-      setShowSelectAllSensorWarning(true);
-    }
-  };
-
   const onGoBack = () => {
     setPage(0);
   };
@@ -151,17 +150,15 @@ const DeployModal = ({ model, onClose }) => {
   const onDeploy = async () => {
     setFlashState('modelDownload');
 
-    // const a_settings = {};
-    
-    
-    // a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
+    const a_settings = {};
+    a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
 
     const res = await deployModel(
       model._id,
       selectedSensors,
       parameters,
       selectedDevice,
-      deployFeatures,
+      a_settings,
     );
     /**const buffer = new ArrayBuffer(10000);
     const view = new Uint8Array(buffer);
@@ -180,18 +177,15 @@ const DeployModal = ({ model, onClose }) => {
   };
 
   const onDownloadFirmware = async () => {
-    // const a_settings = {};
-    // a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
-
-    
-    
+    const a_settings = {};
+    a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
 
     const res = await downloadFirmware(
       model._id,
       selectedSensors,
       parameters,
       selectedDevice,
-      deployFeatures,
+      a_settings,
     );
     
     const downloadLink = document.createElement('a');
@@ -317,12 +311,11 @@ const DeployModal = ({ model, onClose }) => {
 
   return (
     <Modal isOpen={model} size="xl">
-      <ModalHeader>Generate firmware: {model.name}</ModalHeader>
+      <ModalHeader>Deploy model: {model.name}</ModalHeader>
       <ModalBody>
         {page === 0 ? (
           <div>
-            <div className="d-flex justify-content-start align-items-center">
-              <h5 className="fw-bold m-0 me-2">1. Select Device: </h5>
+            <div className="d-flex justify-content-center">
               <Dropdown
                 isOpen={deviceDropDownOpen}
                 toggle={toggleDeviceDropDown}
@@ -332,15 +325,13 @@ const DeployModal = ({ model, onClose }) => {
                 </DropdownToggle>
                 <DropdownMenu>
                   {devices.map((device, idx) => (
-                    <DropdownItem onClick={() => onClickSelectDevice(device)}>
+                    <DropdownItem onClick={() => setSelectedDevice(device)}>
                       {device.name}
                     </DropdownItem>
                   ))}
                 </DropdownMenu>
               </Dropdown>
             </div>
-            <hr></hr>
-            <h5 className="fw-bold">2. Configure Device:</h5>
             <div className="d-flex">
               <div className="my-4 ms-2 me-4" style={{ width: '500px' }}>
                 <div className="header-wrapper d-flex justify-content-center align-content-center">
@@ -349,7 +340,7 @@ const DeployModal = ({ model, onClose }) => {
                 <div className="body-wrapper-overflow">
                   {model.timeSeries.map((elm, ts_idx) => (
                     <div
-                      className="datasetCard p-2"
+                      className="datasetCard"
                       style={{
                         background:
                           ts_idx % 2 === 1 ? 'rgb(249, 251, 252)' : '',
@@ -399,14 +390,55 @@ const DeployModal = ({ model, onClose }) => {
                   ))}
                 </div>
               </div>
-              <DeployFeatures
-                onUpdateDeployFeautures={(data) => setDeployFeatures(data)}
-                featureNames={selectedDevice.deploy_features}
-              ></DeployFeatures>
+              <EdgeMLTable className="m-2" style={{ width: '400px' }}>
+                <EdgeMLTableHeader>
+                  <div className="d-flex justify-content-center w-100">
+                    <div>Use BLE</div>
+                    <FormGroup style={{ margin: 0 }}>
+                      <Input
+                        className="ms-2"
+                        inline
+                        onChange={(e) => setUseBLE(!useBLE)}
+                        type="switch"
+                        id="exampleCustomSwitch"
+                        // checked={this.props.project.enableDeviceApi}
+                        // onChange={(e) => this.props.onDeviceApiSwitch(e.target.checked)}
+                      />
+                    </FormGroup>
+                  </div>
+                </EdgeMLTableHeader>
+                <EdgeMLTableEntry>
+                  <div className="d-flex p-2 align-items-center">
+                    <div
+                      className="fw-bold"
+                      style={{ width: '200px' }}
+                    >
+                      Service-UUID
+                    </div>
+                    <Input
+                      disabled={!useBLE}
+                      value={additionalSettings.ble.serviceUUID}
+                    ></Input>
+                  </div>
+                </EdgeMLTableEntry>
+                <EdgeMLTableEntry>
+                  <div className="d-flex p-2 algin-items-center">
+                    <div
+                      className="fw-bold"
+                      style={{ width: '200px' }}
+                    >
+                      Characteristic-UUID
+                    </div>
+                    <Input
+                      disabled={!useBLE}
+                      value={additionalSettings.ble.characteristicUUID}
+                    ></Input>
+                  </div>
+                </EdgeMLTableEntry>
+              </EdgeMLTable>
             </div>
-            <hr></hr>
             <div className="m-2">
-              <h5 className="fw-bold">3. Additional Settings:</h5>
+              <div className="fw-bold fs-medium">Settings</div>
               <HyperparameterView
                 hyperparameters={parameters}
                 isAdvanced={false}
@@ -430,15 +462,8 @@ const DeployModal = ({ model, onClose }) => {
                   : ''}
               </div>
               <div>
-                {/* <Button outline color="primary" onClick={onSwitchPage}>
+                <Button outline color="primary" onClick={onSwitchPage}>
                   Deploy
-                </Button> */}
-                <Button
-                  outline
-                  color="primary"
-                  onClick={checkAndDownloadFirmware}
-                >
-                  Download firmware
                 </Button>
               </div>
             </div>

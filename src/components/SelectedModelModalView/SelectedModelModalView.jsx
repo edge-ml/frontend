@@ -17,6 +17,8 @@ import Loader from '../../modules/loader';
 import './index.css';
 import classNames from 'classnames';
 import LabelBadge from '../Common/LabelBadge';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 export const SelectedModelModalView = ({
   model,
@@ -49,7 +51,8 @@ export const SelectedModelModalView = ({
                   <PerformanceInfo metrics={metrics.metrics}></PerformanceInfo>
                 </div>
                 <div>
-                  <Button className="me-auto" onClick={() => {}} color="danger">
+                  <Button outline className="me-auto" onClick={() => {}} color="danger">
+                    <FontAwesomeIcon className="mx-1" icon={faTrashAlt}></FontAwesomeIcon>
                     Delete
                   </Button>
                 </div>
@@ -68,6 +71,8 @@ export const SelectedModelModalView = ({
             <ModalFooter className="justify-content-between">
               <div>
                 <Button
+                  outline
+                  color='primary'
                   className="me-2"
                   onClick={(e) => {
                     onButtonDownload(model);
@@ -77,6 +82,8 @@ export const SelectedModelModalView = ({
                   Download
                 </Button>
                 <Button
+                  outline
+                  color='primary'
                   onClick={(e) => {
                     onButtonDeploy(model);
                     e.stopPropagation();
@@ -85,7 +92,7 @@ export const SelectedModelModalView = ({
                   Deploy
                 </Button>
               </div>
-              <Button onClick={onClosed}>Close</Button>
+              <Button outline onClick={onClosed}>Close</Button>
             </ModalFooter>
           </div>
         ) : null}
