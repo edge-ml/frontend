@@ -66,7 +66,7 @@ const Pipelinestep = ({
                 isOpen={dropdownOpen}
                 toggle={toggleDropdown}
               >
-                <DropdownToggle caret>
+                <DropdownToggle caret outline color="primary">
                   {selectedPipelineStep.name}
                 </DropdownToggle>
                 <DropdownMenu>

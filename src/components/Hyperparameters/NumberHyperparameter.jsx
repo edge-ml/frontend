@@ -20,7 +20,7 @@ const NumberHyperparameter = (props) => {
               state: e.target.value,
             });
           }}
-          className={`hyperparameter-input-container w-100 text-center 
+          className={`hyperparameter-input-container text-center 
               ${
                 props.value === null ||
                 (props.number_min <= props.value &&

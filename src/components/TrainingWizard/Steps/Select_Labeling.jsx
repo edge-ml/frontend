@@ -29,12 +29,12 @@ const Wizard_SelectLabeling = ({
   };
 
   useEffect(() => {
-    
+
     validateInput();
   }, [selectedLabeling, zeroClass]);
 
   useEffect(() => {
-    
+
     validateInput();
   }, []);
 
@@ -111,9 +111,8 @@ const Wizard_SelectLabeling = ({
                   </LabelBadge>
                 ))}
               </div>
-              <div>{`(${countDatasets(labeling)} ${
-                countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
-              })`}</div>
+              <div>{`(${countDatasets(labeling)} ${countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
+                })`}</div>
             </EdgeMLTableEntry>
           ))}
       </EdgeMLTable>

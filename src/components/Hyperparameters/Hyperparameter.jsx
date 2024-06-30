@@ -9,8 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 const Hyperparameter = (props) => (
-  <InputGroup className="position-relative w-100 d-flex">
-      <InputGroupText className="w-100">
+  <InputGroup className="w-100">
+      <InputGroupText>
         <FontAwesomeIcon
           id={'hyperparameter' + props.parameter_name}
           style={{ color: '#8b8d8f' }}

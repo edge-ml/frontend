@@ -23,12 +23,11 @@ const Checkbox = (props) => {
         disabled={disabled}
         checked={props.isSelected}
       ></input>
-      <span className="checkBoxCheckmark" style={{ width: size, height: size }}>
+      <span className="checkBoxCheckmark" style={{ width: size, height: size}}>
         <FontAwesomeIcon
-          style={{ width: size, height: size }}
+          style={{ width: size, height: size}}
           className="checkBoxIcon"
           icon={faCheck}
-          fixedWidth
         ></FontAwesomeIcon>
       </span>
     </label>

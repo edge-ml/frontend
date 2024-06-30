@@ -340,7 +340,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       <ModalFooter className="d-flex justify-content-between">
         <div>
           {screen !== 0 ? (
-            <Button color="secondary" onClick={onBack}>
+            <Button color="secondary" outline onClick={onBack}>
               Back
             </Button>
           ) : null}
@@ -353,6 +353,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
         <div>
           {selectedPipeline ? (
             <Button
+              outline
               color="primary"
               disabled={!stepValidation}
               onClick={() => {

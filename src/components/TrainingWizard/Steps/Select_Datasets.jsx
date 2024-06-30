@@ -8,6 +8,7 @@ import {
   EdgeMLTableEntry,
   EdgeMLTableHeader,
 } from "../../Common/EdgeMLTable";
+import LabelBadge from "../../Common/LabelBadge";
 
 const Wizard_SelectDataset = ({
   datasets,
@@ -135,10 +136,12 @@ const Wizard_SelectDataset = ({
                       disabled: checkUsable(dataset),
                     })}
                   >
-                    <Checkbox
-                      isSelected={dataset.selected}
-                      onClick={() => toggleSelectDataset(dataset._id)}
-                    ></Checkbox>
+                    <div className="d-flex">
+                      <Checkbox
+                        isSelected={dataset.selected}
+                        onClick={() => toggleSelectDataset(dataset._id)}
+                      ></Checkbox>
+                    </div>
                     <div className="datasetName">{dataset.name}</div>
                   </EdgeMLTableEntry>
                 );
@@ -173,7 +176,7 @@ const Wizard_SelectDataset = ({
                   </div>
                 )}
                 {intersectingTSNames.length !==
-                selectedDatasetTimeseriesNames.length ? (
+                  selectedDatasetTimeseriesNames.length ? (
                   <Fragment>
                     <div className="my-2">
                       Following timeseries were filtered because they are
@@ -214,17 +217,14 @@ const Wizard_SelectDataset = ({
                     .map((label) => (
                       <tr>
                         <th scope="row">
-                          <Badge
+                          <LabelBadge
                             className="badge"
-                            style={{
-                              backgroundColor: label.color,
-                              userSelect: "none",
-                            }}
+                            color={label.color}
                           >
                             {label.name}
-                          </Badge>
+                          </LabelBadge>
                         </th>
-                        <td>{coveredLabels[label._id]?.count ?? 0}</td>
+                        <td className="align-middle">{coveredLabels[label._id]?.count ?? 0}</td>
                         <td>
                           {humanDuration(
                             coveredLabels[label._id]?.duration ?? 0
