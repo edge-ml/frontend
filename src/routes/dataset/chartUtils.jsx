@@ -61,7 +61,7 @@ const generatePlotLine = (label, selected, isLeft, onClickPlotLine) => {
     id: plotLineId,
     labelId: label._id,
     value: value,
-    className: 'plotline-deselected',
+    className: 'plotline',
     zIndex: 3,
     // width: isLabelSelected ? 5 : 2,
     width: 5,
@@ -70,6 +70,7 @@ const generatePlotLine = (label, selected, isLeft, onClickPlotLine) => {
     // isSelected: isLabelSelected,
     isPlotline: true,
     isLeftPlotline: isLeft,
+    cursor: "grab",
     events: {
       mousedown: (e) => onClickPlotLine(e, plotLineId, label._id),
     },

@@ -22,26 +22,11 @@ const Dataset = () => {
 
   const { dataset, addLabel, deleteLabel } = datasetUtils
 
-
-  // const {
-  //   activeTimeSeries,
-  //   setActiveTimeSeries,
-  //   activeLabeling,
-  //   setActiveLabeling,
-  //   selectedLabelId,
-  //   setStartEnd,
-  //   setSelectedLabelId,
-  //   onDeleteSelectedLabel,
-  //   selectedLabelTypeId,
-  //   setSelectedLabelTypeId,
-  //   provisionalLabel,
-  //   setProvisionalLabelEnd,
-  //   setProvisionalLabelStart
-  // } = datasetEdit;
-
   if (!dataset || !labelings) {
     return <Loader loading></Loader>;
   }
+
+  console.log(dataset);
 
   return (
     <div>

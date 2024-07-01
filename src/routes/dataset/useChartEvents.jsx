@@ -3,6 +3,7 @@ import { DatasetContext } from "./DatasetContext";
 
 const useChartEvents = (chart, labeling) => {
   let mouseDown = false;
+  let mouseMoved = false;
   let currentPlotLine = undefined;
 
   const [activePlotLineId, setActivePlotLineId] = useState(null);
@@ -62,30 +63,6 @@ const useChartEvents = (chart, labeling) => {
     setSelectedLabel(label);
   };
 
-  const getActivePlotLine = () => {
-    if (!chart.current || !chart.current.chart || !activePlotLineId) return;
-
-    var plotLinesAndBands = chart.current.chart.xAxis[0].plotLinesAndBands;
-    var plotLine = plotLinesAndBands.find(
-      (item) => item.options.isPlotline && item.options.isActive
-    );
-
-    return plotLine;
-  };
-
-  const getSelectedPlotBand = () => {
-    if (!chart.current || !chart.current.chart) return;
-
-    var plotBands = chart.current.chart.xAxis[0].plotLinesAndBands.filter(
-      (item) => !item.options.isPlotline
-    );
-    var plotBand = plotBands.filter(
-      (item) => item.options.className === "selected"
-    )[0];
-
-    return plotBand;
-  };
-
   const getPlotLineById = (id) => {
     if (!chart.current || !chart.current.chart) return;
 
@@ -120,6 +97,9 @@ const useChartEvents = (chart, labeling) => {
   };
 
   const onMouseMoved = (e, chart) => {
+    if (mouseDown) {
+      mouseMoved = true;
+    }
     // const chartBox = chart.current.container.current.getBoundingClientRect();
     // var mousePos = e.clientX - chartBBox.left;
 
@@ -236,6 +216,8 @@ const useChartEvents = (chart, labeling) => {
   };
 
   const onMouseUp = (e, chart) => {
+    mouseDown = false;
+    mouseMoved = false;
     if (!currentPlotLine) return;
 
     var plotLinesAndBands = chart.current.chart.xAxis[0].plotLinesAndBands;
@@ -257,16 +239,7 @@ const useChartEvents = (chart, labeling) => {
 
   const onMouseDown = (e) => {
     mouseDown = true;
-    // var plotBand = getSelectedPlotBand();
-    // if (plotBand) {
-    //   this.onPlotBandMouseDown(
-    //     e,
-    //     plotBand.options.id,
-    //     plotBand.options.labelId
-    //   );
-    //   return;
-    // }
-
+    if (mouseMoved) return;
     let position = e.value;
 
     // Check if a label has been clicked

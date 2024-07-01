@@ -15,6 +15,12 @@ export const Modal = (props) => {
     if (e.key === "Escape") {
       props.onClose();
     }
+    
+    if (e.key === "Enter" && props.onConfirm) {
+      props.onConfirm();
+    }
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   useEffect(() => {
@@ -28,7 +34,10 @@ export const Modal = (props) => {
     <Modal_ReactStrap onKeyDown={onKeyDown} {...props}>
       {React.Children.map(props.children, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child, { onClose: props.onClose });
+          return React.cloneElement(child, {
+            onClose: props.onClose,
+            onConfirm: props.onConfirm,
+          });
         }
         return child;
       })}

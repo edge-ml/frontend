@@ -10,19 +10,14 @@ import DeleteModal from "../Common/DeleteModal";
 const LabelButtonView = ({
   labeling,
   selectedLabelTypeId,
-  canEdit,
   setSelectedLabelTypeId,
 }) => {
-
-  
-
   return (
     <div>
       {labeling &&
         labeling.labels.map((label, index) => (
           <Button
             className="m-1 labelingButton"
-            disabled={selectedLabelTypeId === undefined}
             style={{
               backgroundColor:
                 label._id === selectedLabelTypeId ? label.color : "white",
@@ -72,7 +67,6 @@ const LabelingPanel = ({ }) => {
 
 
   const { hideLabels,
-    canEdit,
     onAddLabel,
     onDeleteSelectedLabel,
     selectedLabel,
@@ -98,7 +92,6 @@ const LabelingPanel = ({ }) => {
               labeling={activeLabeling}
               selectedLabelTypeId={selectedLabelTypeId}
               setSelectedLabelTypeId={setSelectedLabelTypeId}
-              canEdit={canEdit}
             ></LabelButtonView>
           </div>
         ) : (

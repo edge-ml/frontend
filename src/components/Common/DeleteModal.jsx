@@ -1,10 +1,11 @@
 import React from 'react';
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Button } from 'reactstrap';
+import {Modal, ModalHeader, ModalBody, ModalFooter} from '../Common/Modal';
 
 
 const DeleteModal = ({ isOpen, children, onCancel, onDelete }) => {
     return (
-        <Modal isOpen={isOpen}>
+        <Modal isOpen={isOpen} onClose={onCancel} onConfirm={onDelete}>
             <ModalHeader>Are you sure to delete:</ModalHeader>
             <ModalBody>{children}</ModalBody>
             <ModalFooter className='d-flex justify-content-between'>

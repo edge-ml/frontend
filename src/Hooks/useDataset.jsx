@@ -1,5 +1,8 @@
-import { useEffect, useState } from 'react';
-import { updateDataset as updateDataset_api, getDataset as getDataset_api } from '../services/ApiServices/DatasetServices';
+import { useEffect, useState } from "react";
+import {
+  updateDataset as updateDataset_api,
+  getDataset as getDataset_api,
+} from "../services/ApiServices/DatasetServices";
 
 const useDataset = (dataset_id) => {
   const [dataset, setDataset] = useState(undefined);
@@ -11,35 +14,42 @@ const useDataset = (dataset_id) => {
 
   const updateDataset = async (newDataset) => {
     console.log(newDataset);
-    await updateDataset_api(newDataset);
+    try {
+      await updateDataset_api(newDataset);
+    } catch (e) {
+      console.log(e);
+    }
     await refreshDataset();
-  }
-
+  };
 
   const addLabel = async (labelingId, newLabel) => {
     const newDataset = { ...dataset };
-  
-    const labeling = newDataset.labelings.find(labeling => labeling.labelingId === labelingId);
-  
+
+    const labeling = newDataset.labelings.find(
+      (labeling) => labeling.labelingId === labelingId
+    );
+
     if (labeling) {
       labeling.labels = [...labeling.labels, newLabel];
     } else {
       const newLabeling = {
         labelingId: labelingId,
-        labels: [newLabel]
+        labels: [newLabel],
       };
       newDataset.labelings = [...newDataset.labelings, newLabeling];
     }
-  
+
     await updateDataset_api(newDataset);
     await refreshDataset();
-  }
+  };
 
   const updateLabel = async (labelingId, label) => {
     const newDataset = { ...dataset };
-    const labeling = newDataset.labelings.find(labeling => labeling.labelingId === labelingId);
+    const labeling = newDataset.labelings.find(
+      (labeling) => labeling.labelingId === labelingId
+    );
     if (labeling) {
-      labeling.labels = labeling.labels.map(elm => {
+      labeling.labels = labeling.labels.map((elm) => {
         if (elm._id === label._id) {
           return label;
         }
@@ -48,21 +58,21 @@ const useDataset = (dataset_id) => {
     }
     await updateDataset_api(newDataset);
     await refreshDataset();
-  }
-  
+  };
 
   const deleteLabel = async (labelId) => {
     if (labelId) {
-      const newDataset = {...dataset};
-      newDataset.labelings = newDataset.labelings.map(labeling => {
-        labeling.labels = labeling.labels.filter(label => label._id !== labelId);
+      const newDataset = { ...dataset };
+      newDataset.labelings = newDataset.labelings.map((labeling) => {
+        labeling.labels = labeling.labels.filter(
+          (label) => label._id !== labelId
+        );
         return labeling;
       });
       await updateDataset_api(newDataset);
       await refreshDataset();
     }
-  }
-
+  };
 
   useEffect(() => {
     refreshDataset();
@@ -73,7 +83,7 @@ const useDataset = (dataset_id) => {
     addLabel: addLabel,
     deleteLabel: deleteLabel,
     updateLabel: updateLabel,
-    updateDataset: updateDataset
+    updateDataset: updateDataset,
   };
 };
 
