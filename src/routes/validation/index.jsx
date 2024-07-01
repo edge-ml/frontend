@@ -118,7 +118,6 @@ const ValidationPage = () => {
 
   const checkExportC = (model) => {
 
-    console.log(stepOptions)
 
     const res = model.pipeline.selectedPipeline.steps.map((step) => {
       if (!stepOptions) {

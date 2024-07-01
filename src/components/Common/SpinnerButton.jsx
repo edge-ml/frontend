@@ -2,35 +2,39 @@ import React from 'react';
 import { Button, Spinner } from 'reactstrap';
 import PropTypes from 'prop-types';
 
-function SpinnerButton(props) {
+function SpinnerButton({
+  children,
+  loading = false,
+  loadingtext = 'Loading...',
+  spinnercolor = 'white',
+  ...props
+}) {
   return (
     <Button {...props}>
-      {props.loading ? (
+      {loading ? (
         <div>
-          {props.loadingtext}
+          {loadingtext}
           <Spinner
             style={{
               width: '1rem',
               height: '1rem',
               marginLeft: '4px',
             }}
-            color={props.spinnercolor}
+            color={spinnercolor}
           />
         </div>
       ) : (
-        props.children
+        children
       )}
     </Button>
   );
 }
 
-SpinnerButton.defaultProps = {
-  loading: false,
-  loadingtext: 'Loading...',
-  spinnercolor: 'white',
-};
 SpinnerButton.propTypes = {
   children: PropTypes.element.isRequired,
+  loading: PropTypes.bool,
+  loadingtext: PropTypes.string,
+  spinnercolor: PropTypes.string,
 };
 
 export default SpinnerButton;

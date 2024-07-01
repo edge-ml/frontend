@@ -2,15 +2,23 @@ import React from 'react';
 import { Table, Input, InputGroup, InputGroupText, Badge } from 'reactstrap';
 import Checkbox from '../Common/Checkbox';
 
-function BlePanelSensorList(props) {
-  if (!props.sensors || props.sensors === []) {
+function BlePanelSensorList({
+  sensors = {},
+  selectedSensors = new Set(),
+  disabled = false,
+  onToggleSensor,
+  onChangeSampleRate,
+  maxSampleRate,
+}) {
+  if (!sensors || Object.keys(sensors).length === 0) {
     return null;
   }
 
-  var sampleRateSum = 0;
-  props.selectedSensors.forEach((elm) => {
-    sampleRateSum += props.sensors[elm].sampleRate;
+  let sampleRateSum = 0;
+  selectedSensors.forEach((elm) => {
+    sampleRateSum += sensors[elm].sampleRate;
   });
+
   return (
     <div className="m-2">
       <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
@@ -27,17 +35,16 @@ function BlePanelSensorList(props) {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(props.sensors).map((sensorKey, index) => {
-              const sensorData = props.sensors[sensorKey];
+            {Object.keys(sensors).map((sensorKey) => {
+              const sensorData = sensors[sensorKey];
               return (
                 <tr key={sensorKey}>
                   <td>
-                    {' '}
                     <Checkbox
-                      disabled={props.disabled}
-                      isSelected={props.selectedSensors.has(sensorKey)}
+                      disabled={disabled}
+                      isSelected={selectedSensors.has(sensorKey)}
                       className="datasets-check"
-                      onClick={(e) => props.onToggleSensor(sensorKey)}
+                      onClick={() => onToggleSensor(sensorKey)}
                     ></Checkbox>
                   </td>
                   <td>{sensorData.name}</td>
@@ -48,50 +55,42 @@ function BlePanelSensorList(props) {
                     >
                       <Input
                         value={sensorData.sampleRate}
-                        disabled={props.disabled}
+                        disabled={disabled}
                         onChange={(e) =>
-                          props.onChangeSampleRate(sensorKey, e.target.value)
+                          onChangeSampleRate(sensorKey, e.target.value)
                         }
                         type="number"
                         min={0}
                         max={50}
-                      ></Input>{' '}
+                      ></Input>
                       <InputGroupText>Hz</InputGroupText>
                     </InputGroup>
                   </td>
                   <td>
-                    {/* {sensorData.parseScheme.map((elm) => elm.name).join('; ')} */}
-                    {sensorData.parseScheme.map((elm) => {
-                      return (
-                        <Badge color="primary">
-                          {elm.name + (elm.unit ? ' (' + elm.unit + ')' : '')}
-                        </Badge>
-                      );
-                    })}
+                    {sensorData.parseScheme.map((elm) => (
+                      <Badge color="primary" key={elm.name}>
+                        {elm.name + (elm.unit ? ` (${elm.unit})` : '')}
+                      </Badge>
+                    ))}
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </Table>
-        {sampleRateSum > props.maxSampleRate ? (
+        {sampleRateSum > maxSampleRate && (
           <div className="p-2">
             <small className="text-danger">
               <strong>Warning: </strong>Collecting data from multiple sensors
               with high sampling rate can cause delays / errors during
               recording. It is recommended to keep the sum of sample rates below{' '}
-              {props.maxSampleRate} Hz. Your are currently at {sampleRateSum}{' '}
-              Hz.
+              {maxSampleRate} Hz. You are currently at {sampleRateSum} Hz.
             </small>
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );
 }
-
-BlePanelSensorList.defaultProps = {
-  disabled: false,
-};
 
 export default BlePanelSensorList;

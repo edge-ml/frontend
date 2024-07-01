@@ -13,9 +13,5 @@ const ConfirmRejectModal = ({ headerText, onConfrim, onReject, children }) => {
   );
 };
 
-// ConfirmRejectModal.defaultProps = {
-//     headerText: "Delete the following entities?",
-//     children: []
-// }
 
 export default ConfirmRejectModal;

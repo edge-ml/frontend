@@ -6,44 +6,56 @@ import classNames from 'classnames';
 import Checkbox from '../Common/Checkbox';
 import './BleActivated.css';
 
-function BlePanelRecorderSettings(props) {
+function BlePanelRecorderSettings({
+  recorderState = 'ready',
+  disabled = false,
+  sampleRate,
+  sensorsSelected,
+  onClickRecordButton,
+  onDatasetNameChanged,
+  datasetName,
+  onGlobalSampleRateChanged,
+  onToggleStream,
+  onToggleSampleRate,
+  fullSampleRate,
+}) {
   const [samplingRateError, setSamplingRateError] = useState(false);
   const [sensorNotSelectedError, setSensorNotSelectedError] = useState(false);
   const [buttonErrorAnimate, setButtonErrorAnimate] = useState(false);
 
-  const onClickRecordButton = (e) => {
-    const tmpSamplingRateError = props.sampleRate <= 0 || props.sampleRate > 50;
+  const handleClickRecordButton = (e) => {
+    const tmpSamplingRateError = sampleRate <= 0 || sampleRate > 50;
 
     setSamplingRateError(tmpSamplingRateError);
-    setSensorNotSelectedError(!props.sensorsSelected);
+    setSensorNotSelectedError(!sensorsSelected);
 
-    if (tmpSamplingRateError || !props.sensorsSelected) {
+    if (tmpSamplingRateError || !sensorsSelected) {
       setButtonErrorAnimate(true);
       return;
     }
-    props.onClickRecordButton(e);
+    onClickRecordButton(e);
   };
 
-  const buttonColor = ['ready', 'startup'].includes(props.recorderState)
+  const buttonColor = ['ready', 'startup'].includes(recorderState)
     ? 'primary'
     : 'danger';
 
-  const buttonLoading = ['startup', 'finalizing'].includes(props.recorderState);
+  const buttonLoading = ['startup', 'finalizing'].includes(recorderState);
   const buttonText =
-    props.recorderState === 'ready' ? 'Start recording' : 'Stop recording';
+    recorderState === 'ready' ? 'Start recording' : 'Stop recording';
   const buttonLoadingText =
-    props.recorderState === 'startup'
+    recorderState === 'startup'
       ? 'Starting recording'
       : 'Stopping recording';
 
-  const onDatasetNameChanged = (e) => {
-    props.onDatasetNameChanged(e);
+  const handleDatasetNameChanged = (e) => {
+    onDatasetNameChanged(e);
   };
 
   return (
     <div
       className="m-2"
-      style={props.disabled ? { opacity: '0.4', pointerEvents: 'none' } : null}
+      style={disabled ? { opacity: '0.4', pointerEvents: 'none' } : null}
     >
       <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
         <h4>3. Record dataset</h4>
@@ -56,9 +68,9 @@ function BlePanelRecorderSettings(props) {
           <Input
             id="bleDatasetName"
             placeholder={'dataset name'}
-            onChange={onDatasetNameChanged}
-            value={props.datasetName}
-            disabled={props.recorderState !== 'ready'}
+            onChange={handleDatasetNameChanged}
+            value={datasetName}
+            disabled={recorderState !== 'ready'}
           />
         </InputGroup>
         {/* TODO reenable this when sample rate issues have been resolved
@@ -73,9 +85,9 @@ function BlePanelRecorderSettings(props) {
             min={1}
             max={50}
             placeholder={'SampleRate'}
-            onChange={props.onGlobalSampleRateChanged}
-            value={props.sampleRate}
-            disabled={props.recorderState !== 'ready'}
+            onChange={onGlobalSampleRateChanged}
+            value={sampleRate}
+            disabled={recorderState !== 'ready'}
           />
           <FormFeedback
             className={classNames({ invalidFeedBack: samplingRateError })}
@@ -103,7 +115,7 @@ function BlePanelRecorderSettings(props) {
             }
             color={buttonColor}
             spinnercolor={buttonColor}
-            onClick={onClickRecordButton}
+            onClick={handleClickRecordButton}
             loading={buttonLoading}
             loadingtext={buttonLoadingText}
             disabled={buttonLoading}
@@ -126,7 +138,7 @@ function BlePanelRecorderSettings(props) {
             <div>
               <div className="d-flex flex-row">
                 <Checkbox
-                  onClick={props.onToggleStream}
+                  onClick={onToggleStream}
                   className="stream-check"
                   id="stream-check"
                 />
@@ -134,7 +146,7 @@ function BlePanelRecorderSettings(props) {
               </div>
               <div className="d-flex flex-row mt-2">
                 <Checkbox
-                  onClick={props.onToggleSampleRate}
+                  onClick={onToggleSampleRate}
                   className="sampleRate-check"
                   id="sampleRate-check"
                 />
@@ -145,7 +157,7 @@ function BlePanelRecorderSettings(props) {
             </div>
           </small>
         </div>
-        {props.fullSampleRate ? (
+        {fullSampleRate ? (
           <small className="text-danger">
             <strong>Warning: </strong>
             Showing sensor data at full sample rate can affect performance.
@@ -156,15 +168,21 @@ function BlePanelRecorderSettings(props) {
   );
 }
 
-BlePanelRecorderSettings.defaultProps = {
-  disabled: false,
-};
-
 BlePanelRecorderSettings.propTypes = {
   recorderState: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.oneOf(['ready', 'startup', 'recording', 'finalizing']),
   ]),
+  disabled: PropTypes.bool,
+  sampleRate: PropTypes.number,
+  sensorsSelected: PropTypes.bool,
+  onClickRecordButton: PropTypes.func.isRequired,
+  onDatasetNameChanged: PropTypes.func.isRequired,
+  datasetName: PropTypes.string.isRequired,
+  onGlobalSampleRateChanged: PropTypes.func,
+  onToggleStream: PropTypes.func,
+  onToggleSampleRate: PropTypes.func,
+  fullSampleRate: PropTypes.bool,
 };
 
 export default BlePanelRecorderSettings;
