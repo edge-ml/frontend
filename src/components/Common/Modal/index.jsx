@@ -1,50 +1,60 @@
-import { faCross, faXmark } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import React from "react"
+import { faCross, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useEffect } from "react";
 import {
-    Modal as Modal_ReactStrap,
-    ModalHeader as ModalHeader_Reactstrap,
-    ModalBody as ModalBody_Reactstrap,
-    ModalFooter as ModalFooter_Reactstrap
-} from "reactstrap"
+  Modal as Modal_ReactStrap,
+  ModalHeader as ModalHeader_Reactstrap,
+  ModalBody as ModalBody_Reactstrap,
+  ModalFooter as ModalFooter_Reactstrap,
+} from "reactstrap";
 
-import {Button} from "reactstrap"
-
+import { Button } from "reactstrap";
 
 export const Modal = (props) => {
-    return (
-        <Modal_ReactStrap {...props}>
-            {props.children}
-        </Modal_ReactStrap>
-    )
-}
+  const onKeyDown = (e) => {
+    if (e.key === "Escape") {
+      props.onClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
+  return (
+    <Modal_ReactStrap onKeyDown={onKeyDown} {...props}>
+      {React.Children.map(props.children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child, { onClose: props.onClose });
+        }
+        return child;
+      })}
+    </Modal_ReactStrap>
+  );
+};
 
 export const ModalHeader = (props) => {
-    return (
-        <ModalHeader_Reactstrap {...props} className="modal-header">
-            {props.children}
-            <div className="modal-close-button">
-                <Button outline color="danger">
-                    <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
-                </Button>
-            </div>
-        </ModalHeader_Reactstrap>
-    )
-}
+  return (
+    <ModalHeader_Reactstrap {...props} className="modal-header">
+      {props.children}
+      <div className="modal-close-button">
+        <Button size="sm" close onClick={props.onClose}></Button>
+      </div>
+    </ModalHeader_Reactstrap>
+  );
+};
 
 export const ModalBody = (props) => {
-    return (
-        <ModalBody_Reactstrap {...props}>
-            {props.children}
-        </ModalBody_Reactstrap>
-    )
-}
+  return (
+    <ModalBody_Reactstrap {...props}>{props.children}</ModalBody_Reactstrap>
+  );
+};
 
 export const ModalFooter = (props) => {
-    return (
-        <ModalFooter_Reactstrap {...props}>
-            {props.children}
-        </ModalFooter_Reactstrap>
-    )
-}
-
+  return (
+    <ModalFooter_Reactstrap {...props}>{props.children}</ModalFooter_Reactstrap>
+  );
+};

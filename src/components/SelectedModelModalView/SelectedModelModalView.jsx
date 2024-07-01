@@ -1,15 +1,12 @@
 import React, { Fragment, useState } from 'react';
 
 import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   Table,
   Row,
   Col,
 } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from '../Common/Modal';
 
 import ConfusionMatrixView from '../ConfusionMatrix/ConfusionMatrixView';
 import Loader from '../../modules/loader';
@@ -35,7 +32,7 @@ export const SelectedModelModalView = ({
       )[0].options.metrics
     : null;
   return (
-    <Modal isOpen={model} size="xl" toggle={onClosed} {...props}>
+    <Modal isOpen={model} size="xl" {...props} onClose={onClosed} >
       <Loader loading={!model}>
         {model ? (
           <div>

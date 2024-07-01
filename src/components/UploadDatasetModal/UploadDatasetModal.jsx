@@ -422,7 +422,7 @@ export const UploadDatasetModal = ({
   };
 
   return (
-    <Modal className="modal-xl" data-testid="modal" isOpen={isOpen}>
+    <Modal className="modal-xl" data-testid="modal" isOpen={isOpen} onClose={onCloseModal}>
       <ModalHeader>
         <span>Create new dataset</span>
       </ModalHeader>
@@ -584,6 +584,7 @@ export const UploadDatasetModal = ({
         </div>
         <Button
           color="primary"
+          outline
           disabled={!files.find((f) => f.status === FileStatus.CONFIGURATION)}
           onClick={handleUploadAll}
         >

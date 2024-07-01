@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
 import {
   InputGroupText,
-  Modal,
-  ModalBody,
-  ModalHeader,
   InputGroup,
   Input,
   Button,
-  ModalFooter,
   FormFeedback,
 } from "reactstrap";
+
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
 import { generateRandomColor } from "../../services/ColorService";
 import EditLabelingModalEntry from "./EditLabelModalEntry";
@@ -95,7 +93,7 @@ const EditLabelingModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} onClose={onCancel}>
       <ModalHeader>
         {labeling ? "Edit labeling" : "Create labeling"}
       </ModalHeader>
@@ -116,19 +114,6 @@ const EditLabelingModal = ({
                 />
                 <FormFeedback>Oh no! That name is already taken</FormFeedback>
               </InputGroup>
-              {/* {labeling ? (
-                <Button
-                  id="buttonDeleteLabeling"
-                  color="danger"
-                  className="ms-1"
-                  outline
-                  onClick={(e) => {
-                    this.onDeleteLabeling(this.state.labeling["_id"]);
-                  }}
-                >
-                  <FontAwesomeIcon icon={faTrashAlt} />
-                </Button>
-              ) : null} */}
             </div>
 
             <h6 className="fw-bold mt-2">Labels</h6>
@@ -156,16 +141,7 @@ const EditLabelingModal = ({
           </div>
         </div>
       </ModalBody>
-      <ModalFooter className="d-flex justify-content-between">
-        <Button
-          outline
-          id="buttonClose"
-          color="secondary"
-          className="m-1 mr-auto"
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>
+      <ModalFooter className="d-flex justify-content-end">
         <Button
           outline
           id="buttonSaveLabeling"
