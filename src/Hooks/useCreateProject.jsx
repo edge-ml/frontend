@@ -1,24 +1,19 @@
-import { useContext, useState } from 'react';
-import useProjectAPI from '../services/ApiServices/ProjectService';
-import { AuthContext } from '../AuthProvider';
-import useAuth from './useAuth';
-import useUserStore from './useUser';
+import { useState } from "react";
+import { createProject as createProject_api } from "../services/ApiServices/ProjectService";
+import useUserStore from "./useUser";
 
 const useCreateProject = () => {
   const { user } = useUserStore();
 
-  const [projectName, setProjectName] = useState('');
+  const [projectName, setProjectName] = useState("");
   const [projectUsers, setProjectUsers] = useState([]);
 
-  const projectAPI = useProjectAPI();
-
   const createProject = async () => {
-    const res = await projectAPI.createProject({
+    const res = await createProject_api({
       name: projectName,
       admin: user,
       users: projectUsers,
     });
-    
   };
 
   const addUSer = (user) => {};

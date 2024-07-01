@@ -1,36 +1,37 @@
-import { useContext } from 'react';
-import useProjectAPI from '../services/ApiServices/ProjectService';
-import { switchDeviceApiActive } from '../services/ApiServices/DeviceApiService';
-import useProjectStore from '../stores/projectStore';
+import {
+  getProjects as getProjects_api,
+  updateProject as updateProject_api,
+  deleteProject as deleteProject_api,
+  leaveProject as leaveProject_api,
+} from "../services/ApiServices/ProjectService";
+import useProjectStore from "../stores/projectStore";
 
 const useProjectSettings = () => {
   const { currentProject, setCurrentProject, setProjects } = useProjectStore();
 
-  const projectAPI = useProjectAPI();
-
   const refreshProjects = async () => {
-    const projects = await projectAPI.getProjects();
+    const projects = await getProjects_api();
     setProjects(projects);
   };
 
   const changeProjectName = async (projectName) => {
     const newProject = { ...currentProject, name: projectName };
-    await projectAPI.updateProject(newProject);
+    await updateProject_api(newProject);
     await refreshProjects();
   };
 
   const leaveProject = async () => {
-    await projectAPI.leaveProject(currentProject);
+    await leaveProject_api(currentProject);
     await refreshProjects();
   };
 
   const deleteProject = async () => {
-    await projectAPI.deleteProject(currentProject);
+    await deleteProject_api(currentProject);
     await refreshProjects();
   };
 
   const changeUserNames = async (userNames) => {
-    const projects = await projectAPI.updateProject({
+    const projects = await updateProject_api({
       ...currentProject,
       userNames: userNames,
     });

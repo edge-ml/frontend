@@ -6,11 +6,8 @@ import {
   Container,
   Row,
   Col,
-  Card,
-  CardBody,
-  CardHeader,
 } from 'reactstrap';
-import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
+import { getLabelings } from '../../services/ApiServices/LabelingServices';
 
 import {
   getProjectSensorStreams,
@@ -97,7 +94,7 @@ class ModelPage extends Component {
 
   initComponent() {
     Promise.all([
-      subscribeLabelingsAndLabels(),
+      getLabelings(),
       getProjectSensorStreams(this.props.project),
       getModels(),
       getProjectCustomMetaData(this.props.project),

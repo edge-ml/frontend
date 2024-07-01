@@ -1,33 +1,36 @@
-import { useEffect, useState } from 'react';
-import useLabelingAPI from '../services/ApiServices/LabelingServices';
-import { useContext } from 'react';
-import useProjectStore from '../stores/projectStore';
+import { useEffect, useState } from "react";
+import useProjectStore from "../stores/projectStore";
+import {
+  getLabelings as getLabelings_api,
+  updateLabeling as updateLabeling_api,
+  addLabeling as addLabeling_api,
+  deleteLabeling as deleteLabelings_api,
+} from "../services/ApiServices/LabelingServices";
 
 const useLabelings = () => {
   const { currentProject } = useProjectStore();
-  const labelingAPI = useLabelingAPI(currentProject);
 
   const [labelings, setLabelings] = useState(undefined);
 
   const refreshLabelings = async () => {
-    const data = await labelingAPI.getLabelingsAndLabels();
+    const data = await getLabelings_api();
     setLabelings(data);
   };
 
   const updateLabeling = async (labeling) => {
-    await labelingAPI.updateLabeling(labeling);
+    await updateLabeling_api(labeling);
     refreshLabelings();
-  }
+  };
 
   const addLabeling = async (labeling) => {
-    await labelingAPI.addLabeling(labeling);
+    await addLabeling_api(labeling);
     refreshLabelings();
-  }
+  };
 
   const deleteLabeling = async (labeling_id) => {
-    await labelingAPI.deleteLabeling(labeling_id);
+    await deleteLabelings_api(labeling_id);
     refreshLabelings();
-  }
+  };
 
   useEffect(() => {
     refreshLabelings();

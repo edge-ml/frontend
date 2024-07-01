@@ -14,7 +14,6 @@ import PageSelection from "./PageSelection";
 import DeleteModal from "../../components/Common/DeleteModal"
 
 const ListPage = (props) => {
-  const [modal, setModal] = useState(false);
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [pageSize, setPageSize] = useState(5);
   const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);

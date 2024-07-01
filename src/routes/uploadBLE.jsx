@@ -21,7 +21,7 @@ import { adjectives, names } from './export/nameGeneration';
 import { uniqueNamesGenerator } from 'unique-names-generator';
 import { BleLabelingMenu } from '../components/BLE/BleLabelingMenu';
 
-import { subscribeLabelingsAndLabels } from '../services/ApiServices/LabelingServices';
+import { getLabelings } from '../services/ApiServices/LabelingServices';
 import { get_parse_schema } from '../utils/ble';
 
 class UploadBLE extends Component {
@@ -613,7 +613,7 @@ class UploadBLE extends Component {
   }
 
   async fetchLabelings() {
-    const res = await subscribeLabelingsAndLabels();
+    const res = await getLabelings();
     this.setState({ labelings: res });
   }
 

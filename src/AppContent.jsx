@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Route, useParams } from "react-router-dom";
 
 import ListPage from "./routes/list/index";
@@ -12,8 +12,6 @@ import ModelLivePage from "./routes/ModelLivePage";
 import { Routes, Navigate } from "react-router-dom";
 import NoProjectPage from "./components/NoProjectPage/NoProjectPage";
 import useProjectStore from "./stores/projectStore";
-import useDatasetStore from "./stores/datasetStore";
-import Loader from "./modules/loader";
 
 const ParamsAdapter = ({ children }) => {
   if (!children) {
@@ -29,15 +27,11 @@ const ParamsAdapter = ({ children }) => {
 const AppContent = () => {
   const { currentProject, getProjects, projects } = useProjectStore();
   const projectId = currentProject ? currentProject._id : "default_key";
-  // const { refreshDatasets, datasets } = useDatasetStore();
 
   useEffect(() => {
     getProjects();
   }, []);
 
-  // useEffect(() => {
-  //   refreshDatasets();
-  // }, [currentProject]);
 
   if (!currentProject) {
     return <NoProjectPage></NoProjectPage>;

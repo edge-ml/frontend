@@ -1,6 +1,5 @@
 // Import necessary libraries and components
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button, Row, Col } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -10,14 +9,13 @@ import {
   faMobileAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import useProjectRouter from "../../Hooks/ProjectRouter";
-import useDatasetStore from "../../stores/datasetStore";
 import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
 
 // Component for Data Upload Panel
 const DataUpload = ({refreshDatasets}) => {
   const navigate = useProjectRouter();
 
-  const [csvModalOpen, setCSVModalOpen] = useState(true);
+  const [csvModalOpen, setCSVModalOpen] = useState(false);
 
   const iconSize = "xs";
   const buttonColor = "secondary";

@@ -1,9 +1,8 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import useDataset from '../../Hooks/useDataset';
-import useProjectAPI from '../../services/ApiServices/ProjectService';
 import LabelingSelectionPanel from '../../components/LabelingSelectionPanel/LabelingSelectionPanel';
-import { DatasetContext, DatasetProvider } from './DatasetContext';
+import { DatasetProvider } from './DatasetContext';
 import Loader from '../../modules/loader';
 import { LabelingProvider } from './LabelingContext';
 import useLabelings from '../../Hooks/useLabelings';

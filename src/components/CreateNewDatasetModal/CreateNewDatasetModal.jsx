@@ -29,7 +29,7 @@ import './CreateNewDatasetModal.css';
 
 import {
   addLabeling,
-  subscribeLabelingsAndLabels,
+  getLabelings,
 } from '../../services/ApiServices/LabelingServices';
 import ErrorModal from './ErrorModal';
 import SpinnerButton from '../Common/SpinnerButton';
@@ -242,7 +242,7 @@ class CreateNewDatasetModal extends Component {
           }
         }
         await Promise.all(promises);
-        const labelings = await subscribeLabelingsAndLabels();
+        const labelings = await getLabelings();
         const newDatasets = generateLabeledDataset(
           labelings,
           this.state.labelings,

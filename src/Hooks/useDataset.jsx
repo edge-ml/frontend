@@ -1,17 +1,11 @@
 import { useEffect, useState } from 'react';
-import useDatasetAPI from '../services/ApiServices/DatasetServices';
-import { updateDataset as updateDataset_api } from '../services/ApiServices/DatasetServices';
-import { useContext } from 'react';
-import useProjectAPI from '../services/ApiServices/ProjectService';
+import { updateDataset as updateDataset_api, getDataset as getDataset_api } from '../services/ApiServices/DatasetServices';
 
 const useDataset = (dataset_id) => {
-  const { currentProject } = useProjectAPI();
-  const datasetAPI = useDatasetAPI(currentProject);
-
   const [dataset, setDataset] = useState(undefined);
 
   const refreshDataset = async () => {
-    const dataset = await datasetAPI.getDataset(dataset_id);
+    const dataset = await getDataset_api(dataset_id);
     setDataset(dataset);
   };
 

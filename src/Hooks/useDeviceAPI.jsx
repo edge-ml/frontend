@@ -5,15 +5,12 @@ import {
   setDeviceApiKey as generateApiKeys_API,
   deleteDeviceApiKey
 } from '../services/ApiServices/DeviceApiService';
-import useProjectAPI from '../services/ApiServices/ProjectService';
 import useProjectStore from '../stores/projectStore';
+import { getProjects } from '../services/ApiServices/ProjectService';
 
 const useDeviceApi = () => {
   const { currentProject, setCurrentProject, setProjects } = useProjectStore();
 
-  console.log(currentProject)
-
-  const projectAPI = useProjectAPI();
 
   const [readKey, setReadKey] = useState(undefined);
   const [writeKey, setWriteKey] = useState(undefined);
@@ -34,7 +31,7 @@ const useDeviceApi = () => {
   }, [currentProject]);
 
   const refreshProjects = async () => {
-    const projects = await projectAPI.getProjects();
+    const projects = await getProjects();
     setProjects(projects);
   };
 
