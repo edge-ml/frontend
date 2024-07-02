@@ -109,7 +109,7 @@ const Labeling = (props) => {
       <div>
         {labels.map((label, index) => {
           return (
-            <LabelBadge key={label._id} color={label.color}>
+            <LabelBadge className="mx-1" key={label._id} color={label.color}>
               {label.name !== "" ? label.name : "Untitled"}{" "}
             </LabelBadge>
           );
