@@ -21,7 +21,7 @@ const useEditDataset = (datasetUtils, labelings) => {
     return undefined;
   };
 
-  const [activeTimeSeries, setActiveTimeSeries] = useState([]);
+  const [activeTimeSeries, _setActiveTimeSeries] = useState([]);
   const [activeLabeling, _setActiveLabeling] = useState(getActivateLabeling());
   const [selectedLabel, _setSelectedLabel] = useState(undefined);
   const [selectedLabelTypeId, _setSelectedLabelTypeId] = useState(undefined);
@@ -29,15 +29,17 @@ const useEditDataset = (datasetUtils, labelings) => {
 
   useEffect(() => {
     if (dataset) {
-      setActiveTimeSeries(dataset.timeSeries);
+      _setActiveTimeSeries(dataset.timeSeries);
       const activeLabeling = getActivateLabeling();
       _setActiveLabeling(activeLabeling);
       if (activeLabeling && activeLabeling.labels.length > 0) {
         const activeLabelType = activeLabeling.labels.find(
           (elm) => elm._id === selectedLabelTypeId
         );
+        console.log(activeLabelType);
         if (activeLabelType) {
           _setSelectedLabelTypeId(activeLabelType._id);
+          return;
         }
         _setSelectedLabelTypeId(activeLabeling.labels[0]._id);
       }
@@ -47,7 +49,7 @@ const useEditDataset = (datasetUtils, labelings) => {
   useEffect(() => {
     if (labelings && labelings.length > 0) {
       const activeLabeling = getActivateLabeling();
-      setActiveLabeling(activeLabeling);
+      _setActiveLabeling(activeLabeling);
       if (activeLabeling && activeLabeling.labels.length > 0) {
         const activeLabelType = activeLabeling.labels.find(
           (elm) => elm._id === selectedLabelTypeId
@@ -55,6 +57,7 @@ const useEditDataset = (datasetUtils, labelings) => {
         console.log(activeLabelType);
         if (activeLabelType) {
           _setSelectedLabelTypeId(activeLabelType._id);
+          return;
         }
         _setSelectedLabelTypeId(activeLabeling.labels[0]._id);
       }
@@ -63,7 +66,7 @@ const useEditDataset = (datasetUtils, labelings) => {
 
   const setSelectedLabelTypeId = async (labelTypeId) => {
     _setSelectedLabelTypeId(labelTypeId);
-    setProvisionalLabel(undefined);
+    _setProvisionalLabel(undefined);
     if (selectedLabel) {
       selectedLabel.type = labelTypeId;
       const newDataset = { ...dataset };
@@ -88,24 +91,24 @@ const useEditDataset = (datasetUtils, labelings) => {
     setEnd(end);
   };
 
-  const onDeleteSelectedLabel = () => {
+  const onDeleteSelectedLabel = async () => {
     if (selectedLabel && selectedLabel._id) {
-      deleteLabel(selectedLabel._id);
-      setSelectedLabel(undefined);
+      await deleteLabel(selectedLabel._id);
+      _setSelectedLabel(undefined);
     }
   };
 
   const setActiveLabeling = (labeling) => {
     _setActiveLabeling(labeling);
     if (labeling && labeling.labels.length > 0) {
-      setSelectedLabelTypeId(labeling.labels[0]._id);
+      _setSelectedLabelTypeId(labeling.labels[0]._id);
     }
-    setProvisionalLabel(undefined);
+    _setProvisionalLabel(undefined);
   };
 
   const setSelectedLabel = (label) => {
     _setSelectedLabel(label);
-    setProvisionalLabel(undefined);
+    _setProvisionalLabel(undefined);
     _setSelectedLabelTypeId(label && label.type);
   };
 
@@ -126,7 +129,7 @@ const useEditDataset = (datasetUtils, labelings) => {
     await updateDataset(newDataset);
   };
 
-  const setProvisionalLabel = (label) => {
+  const setProvisionalLabel = async (label) => {
     if (provisionalLabel) {
       // Set label
       if (label) {
@@ -145,7 +148,7 @@ const useEditDataset = (datasetUtils, labelings) => {
             (elm) => elm._id === updatedLabel.type
           ).name,
         };
-        addLabel(activeLabeling._id, labelToAdd);
+        await addLabel(activeLabeling._id, labelToAdd);
       }
       _setProvisionalLabel(undefined);
       return;
@@ -173,7 +176,7 @@ const useEditDataset = (datasetUtils, labelings) => {
 
   return {
     activeTimeSeries,
-    setActiveTimeSeries,
+    setActiveTimeSeries : _setActiveTimeSeries,
     activeLabeling,
     setActiveLabeling,
     selectedLabel,

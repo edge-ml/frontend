@@ -10,25 +10,9 @@ const TimeSeriesSection = ({ }) => {
   const {
     activeTimeSeries,
     setStartEnd,
-    onDeleteSelectedLabel
+    onDeleteSelectedLabel,
+    selectedLabel
   } = useContext(DatasetContext);
-
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-
-  const handleKeys = (e) => {
-    console.log(e.key)
-    if (e.key === "Delete") {
-      setDeleteModalOpen(true);
-    }
-    e.preventDefault();
-  }
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeys);
-    return () => {
-      document.removeEventListener("keydown", handleKeys);
-    };
-  })
 
 
   const globalStart = Math.min(...activeTimeSeries.map((elm) => elm.start));
@@ -45,11 +29,6 @@ const TimeSeriesSection = ({ }) => {
           ></TimeSeriesDisplay>
         ))}
       </div>
-      <DeleteModal
-        isOpen={deleteModalOpen}
-        onCancel={() => setDeleteModalOpen(false)}
-        onDelete={() => { onDeleteSelectedLabel(); setDeleteModalOpen(false) }}
-      >The selected label</DeleteModal>
     </>
   );
 };

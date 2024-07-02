@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "reactstrap";
 import { hexToForegroundColor } from "../../services/ColorService";
 import { useContext } from "react";
@@ -63,24 +63,43 @@ const TimeDisplay = ({ from, to }) => {
   );
 };
 
-const LabelingPanel = ({ }) => {
-
-
-  const { hideLabels,
+const LabelingPanel = ({}) => {
+  const {
+    hideLabels,
     onAddLabel,
     onDeleteSelectedLabel,
     selectedLabel,
     activeLabeling,
     selectedLabelTypeId,
-    setSelectedLabelTypeId } = useContext(DatasetContext);
-
-
-  const handleLabelTypeClicked = (e, id) => {
-    e.preventDefault();
-    onSelectedLabelTypeIdChanged(id);
-  };
+    setSelectedLabelTypeId,
+  } = useContext(DatasetContext);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const handleKeys = (e) => {
+    if (e.key === "Delete" && selectedLabel) {
+      setDeleteModalOpen(true);
+    }
+    if (e.ctrlKey && e.key > 0) {
+      if (e.key-1 > activeLabeling.labels.length) {
+        return;
+      }
+      const newLabelType = activeLabeling.labels[Number(e.key-1)];
+      setSelectedLabelTypeId(newLabelType._id);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeys);
+    return () => {
+      document.removeEventListener("keydown", handleKeys);
+    };
+  });
+
+  const onDelete = async () => {
+    await onDeleteSelectedLabel();
+    setDeleteModalOpen(false);
+  };
 
   return (
     <div>
@@ -98,7 +117,10 @@ const LabelingPanel = ({ }) => {
           <div></div>
         )}
         <div className="d-flex">
-          <TimeDisplay from={selectedLabel && selectedLabel.start} to={selectedLabel && selectedLabel.end}></TimeDisplay>
+          <TimeDisplay
+            from={selectedLabel && selectedLabel.start}
+            to={selectedLabel && selectedLabel.end}
+          ></TimeDisplay>
           <Button
             disabled={selectedLabel === undefined}
             className="deleteButton m-1"
@@ -111,12 +133,22 @@ const LabelingPanel = ({ }) => {
           <DeleteModal
             isOpen={deleteModalOpen}
             onCancel={() => setDeleteModalOpen(false)}
-            onDelete={() => { onDeleteSelectedLabel(); setDeleteModalOpen(false) }}
+            onDelete={() => {
+              onDeleteSelectedLabel();
+              setDeleteModalOpen(false);
+            }}
           >
             <div>SelectedLabel</div>
           </DeleteModal>
         </div>
       </div>
+      <DeleteModal
+        isOpen={deleteModalOpen}
+        onCancel={() => setDeleteModalOpen(false)}
+        onDelete={onDelete}
+      >
+        The selected label
+      </DeleteModal>
     </div>
   );
 };

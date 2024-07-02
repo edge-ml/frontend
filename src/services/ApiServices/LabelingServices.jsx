@@ -16,10 +16,11 @@ export const getLabelings = async () => {
 };
 
 export const updateLabeling = async (labeling) => {
+  console.log(labeling)
   const res = await apiRequest(
     HTTP_METHODS.PUT,
     DATASET_STORE,
-    DATASET_STORE_ENDPOINTS.LABELING + `${labeling.id}`,
+    DATASET_STORE_ENDPOINTS.LABELING + `${labeling._id}`,
     labeling,
   );
   return res;
