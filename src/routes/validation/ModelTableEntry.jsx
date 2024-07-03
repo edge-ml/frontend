@@ -15,6 +15,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import DownloadModal from "./DownloadModal";
+import useProjectRouter from "../../Hooks/ProjectRouter";
 
 const checkExportC = (model, stepOptions) => {
   const res = model.pipeline.selectedPipeline.steps.map((step) => {
@@ -121,6 +122,8 @@ const TrainErrorSection = ({ model, selectedModels, clickCheckBox }) => {
 };
 
 const ButtonList = ({ model, setModalModel, setModelDownload }) => {
+  const navigateTo = useProjectRouter();
+
   return (
     <>
       {!model.error ? (
@@ -137,7 +140,7 @@ const ButtonList = ({ model, setModalModel, setModelDownload }) => {
             color="primary"
             outline
             icon={faPlay}
-            onClick={() => navigate("models/live/" + model._id)}
+            onClick={() => navigateTo("models/live/" + model._id)}
           >
             View live
           </ListButton>

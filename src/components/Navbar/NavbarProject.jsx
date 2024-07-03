@@ -12,6 +12,7 @@ import {
 import "./Navbar.css";
 import useProjectRouter from "../../Hooks/ProjectRouter";
 import { useLocation } from "react-router-dom";
+import classNames from "classnames";
 
 const NavbarProject = ({
   project,
@@ -41,7 +42,7 @@ const NavbarProject = ({
   return (
     <div className="w-100 text-left" key={project._id} id={project._id}>
       <div
-        className="d-flex align-items-center mt-1 pt-2 pb-2 ps-2 navbar-project"
+        className={classNames("d-flex align-items-center mt-1 pt-2 pb-2 ps-2 navbar-project", {"bg-primary": currentProject._id === project._id})}
         onClick={() => onProjectClick(project)}
         style={{
           overflow: "hidden",
@@ -58,7 +59,7 @@ const NavbarProject = ({
           className="me-2 fa-s"
         ></FontAwesomeIcon>
         <div
-          className="navbar-project pe-1"
+          className="navbar-projec pe-1"
           style={{
             overflow: "hidden",
             textOverflow: "ellipsis",

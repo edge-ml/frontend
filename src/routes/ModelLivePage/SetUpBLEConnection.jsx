@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button, Input, InputGroup, InputGroupText } from 'reactstrap';
 import ClassificationDevice from './ClassificationDevice';
 import { useState } from 'react';
@@ -76,7 +77,7 @@ const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
           <h5 className="fw-bold">
             3. Connect your MCU over BLE here:
           </h5>
-          <Button className="btn-neutral" size="lg" onClick={onClickConnect}>
+          <Button outline color="primary" className="btn-neutral" size="lg" onClick={onClickConnect}>
             Connect
           </Button>
         </div>

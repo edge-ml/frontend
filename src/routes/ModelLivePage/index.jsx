@@ -1,19 +1,21 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Toast, ToastBody, ToastHeader } from 'reactstrap';
-import { getModels } from '../../services/ApiServices/MlService';
+import { getModel } from '../../services/ApiServices/MlService';
 import Loader from '../../modules/loader';
 import SetUpBLEConnection from './SetUpBLEConnection';
 import LivePage from './LivePage';
 import LabelBadge from '../../components/Common/LabelBadge';
+import { useParams } from 'react-router-dom';
 
-const ModelLivePage = ({ modelId }) => {
+const ModelLivePage = () => {
   const [model, setModel] = useState(undefined);
   const [bleDevice, setbleDevice] = useState(undefined);
   const [toastVisible, setToastVisible] = useState(false);
 
+  const {model_id} = useParams();
+
   useEffect(() => {
-    getModels().then((models) => {
-      const model = models.find((elm) => elm._id === modelId);
+    getModel(model_id).then((model) => {
       setModel(model);
     });
   }, []);
@@ -31,7 +33,7 @@ const ModelLivePage = ({ modelId }) => {
   };
 
   if (!model) {
-    return <Loader></Loader>;
+    return <Loader loading></Loader>;
   }
   return (
     <>
@@ -58,7 +60,7 @@ const ModelLivePage = ({ modelId }) => {
                 <h5 className="d-flex align-items-center">
                   <b>Labels in the model: </b>
                   {model.labels.map((elm) => (
-                    <LabelBadge color={elm.color}>{elm.name}</LabelBadge>
+                    <LabelBadge className="m-1" color={elm.color}>{elm.name}</LabelBadge>
                   ))}
                 </h5>
               </div>

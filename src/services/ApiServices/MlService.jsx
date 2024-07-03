@@ -20,6 +20,15 @@ export const getModels = async () => {
   return res;
 }
 
+export const getModel = async (modelId) => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.MODELS + `/${modelId}`,
+  )
+  return res;
+}
+
 
 export const deleteModel = async (modelId) => {
   const res = await axios(
