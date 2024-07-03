@@ -1,17 +1,17 @@
-import React, { useEffect } from "react";
-import { Route, useParams } from "react-router-dom";
-
-import ListPage from "./routes/list/index";
-import DatasetPage from "./routes/dataset";
-import LabelingsPage from "./routes/labeling/labelings";
-import ValidationPage from "./routes/validation";
-import UploadBLE from "./routes/uploadBLE";
-import { UploadWebPage } from "./routes/uploadWeb";
-import Settings from "./routes/settings/Settings";
-import ModelLivePage from "./routes/ModelLivePage";
-import { Routes, Navigate } from "react-router-dom";
+import React, { useEffect, lazy, Suspense } from "react";
+import { Route, useParams, Routes, Navigate } from "react-router-dom";
 import NoProjectPage from "./components/NoProjectPage/NoProjectPage";
 import useProjectStore from "./stores/projectStore";
+
+// Dynamic imports
+const ListPage = lazy(() => import("./routes/list/index"));
+const DatasetPage = lazy(() => import("./routes/dataset"));
+const LabelingsPage = lazy(() => import("./routes/labeling/labelings"));
+const ValidationPage = lazy(() => import("./routes/validation"));
+const UploadBLE = lazy(() => import("./routes/uploadBLE"));
+const UploadWebPage = lazy(() => import("./routes/uploadWeb"));
+const Settings = lazy(() => import("./routes/settings/Settings"));
+const ModelLivePage = lazy(() => import("./routes/ModelLivePage"));
 
 const ParamsAdapter = ({ children }) => {
   if (!children) {
@@ -25,7 +25,7 @@ const ParamsAdapter = ({ children }) => {
 };
 
 const AppContent = () => {
-  const { currentProject, getProjects, projects } = useProjectStore();
+  const { currentProject, getProjects } = useProjectStore();
   const projectId = currentProject ? currentProject._id : "default_key";
 
   useEffect(() => {
@@ -33,81 +33,62 @@ const AppContent = () => {
   }, []);
 
   if (!currentProject) {
-    return <NoProjectPage></NoProjectPage>;
+    return <NoProjectPage />;
   }
 
   return (
-    <Routes>
-      <Route path="/:userName/:projectId/">
-        {/*  Datasets-List */}
+    <Suspense fallback={<div>Loading...</div>}>
+      <Routes>
+        <Route path="/:userName/:projectId/">
+          {/* Datasets-List */}
+          <Route path="Datasets" element={<ListPage key={projectId} />} />
+          <Route path="Datasets/view" element={<ListPage key={projectId} />} />
+          <Route path="view" element={<ListPage key={projectId} />} />
+          {/* Dataset */}
+          <Route
+            path="Datasets/:datasetId"
+            element={
+              <ParamsAdapter>
+                <DatasetPage key={projectId} />
+              </ParamsAdapter>
+            }
+          />
+          {/* Labelings */}
+          <Route path="labelings" element={<LabelingsPage key={projectId} />} />
+          {/* Models */}
+          <Route path="Models" element={<ValidationPage key={projectId} />} />
+          {/* Models-Live-Page */}
+          <Route
+            path="Models/live/:model_id"
+            element={
+              <ParamsAdapter>
+                <ModelLivePage key={projectId}></ModelLivePage>
+              </ParamsAdapter>
+            }
+          />
+          {/* Settings */}
+          <Route path="Settings" element={<Settings key={projectId} />} />
+          <Route
+            path="Settings/getCode"
+            element={<Settings key={projectId} />}
+          />
+          {/* BLE-Recording */}
+          <Route path="BLE" element={<UploadBLE key={projectId} />} />
+          {/* Upload-Web */}
+          <Route path="uploadWeb" element={<UploadWebPage key={projectId} />} />
+          {/* Default to the datasets-page */}
+          <Route path="" element={<Navigate to="Datasets" />} />
+        </Route>
         <Route
-          path="Datasets"
-          element={<ListPage key={projectId}></ListPage>}
-        ></Route>
-        <Route
-          path="Datasets/view"
-          element={<ListPage key={projectId}></ListPage>}
-        ></Route>
-        <Route
-          path="view"
-          element={<ListPage key={projectId}></ListPage>}
-        ></Route>
-        {/* Dataset */}
-        {/* <Route path="Datasets/:id" element={<DatasetPage></DatasetPage>} key={projectId}></Route> */}
-        <Route
-          path="Datasets/:datasetId"
+          path="*"
           element={
-            <ParamsAdapter>
-              <DatasetPage key={projectId}></DatasetPage>
-            </ParamsAdapter>
+            <Navigate
+              to={`${currentProject.admin.userName}/${currentProject.name}/Datasets`}
+            />
           }
-        ></Route>
-        {/* Labelings */}
-        <Route
-          path="labelings"
-          element={<LabelingsPage key={projectId}></LabelingsPage>}
-        ></Route>
-        {/* Models */}
-        <Route
-          path="Models"
-          element={<ValidationPage key={projectId}></ValidationPage>}
-        ></Route>
-        {/* Models-Live-Page */}
-        <Route
-          path="Models/live/:model_id"
-          element={<ModelLivePage key={projectId}></ModelLivePage>}
-        ></Route>
-        {/* Settings */}
-        <Route
-          path="Settings"
-          element={<Settings key={projectId}></Settings>}
-        ></Route>
-        <Route
-          path="Settings/getCode"
-          element={<Settings key={projectId}></Settings>}
-        ></Route>
-        {/* BLE-Recording */}
-        <Route
-          path="BLE"
-          element={<UploadBLE key={projectId}></UploadBLE>}
-        ></Route>
-        {/* Upload-Web */}
-        <Route
-          path="uploadWeb"
-          element={<UploadWebPage key={projectId}></UploadWebPage>}
-        ></Route>
-        {/* Default to the datasets-page */}
-        <Route path="" element={<Navigate to="Datasets"></Navigate>}></Route>
-      </Route>
-      <Route
-        path="*"
-        element={
-          <Navigate
-            to={`${currentProject.admin.userName}/${currentProject.name}/Datasets`}
-          ></Navigate>
-        }
-      ></Route>
-    </Routes>
+        />
+      </Routes>
+    </Suspense>
   );
 };
 

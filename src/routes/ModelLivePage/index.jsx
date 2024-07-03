@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Container, Toast, ToastBody, ToastHeader } from "reactstrap";
+import { Toast, ToastBody, ToastHeader } from "reactstrap";
 import { getModel } from "../../services/ApiServices/MlService";
 import Loader from "../../modules/loader";
 import SetUpBLEConnection from "./SetUpBLEConnection";
 import LivePage from "./LivePage";
 import LabelBadge from "../../components/Common/LabelBadge";
-import { useParams } from "react-router-dom";
 
-const ModelLivePage = () => {
+const ModelLivePage = ({ model_id }) => {
   const [model, setModel] = useState(undefined);
   const [bleDevice, setbleDevice] = useState(undefined);
   const [toastVisible, setToastVisible] = useState(false);
-
-  const { model_id } = useParams();
 
   useEffect(() => {
     getModel(model_id).then((model) => {
@@ -60,7 +57,7 @@ const ModelLivePage = () => {
                 <h5 className="d-flex align-items-center">
                   <b>Labels in the model: </b>
                   {model.labels.map((elm) => (
-                    <LabelBadge className="m-1" color={elm.color}>
+                    <LabelBadge key={elm._id} className="m-1" color={elm.color}>
                       {elm.name}
                     </LabelBadge>
                   ))}
