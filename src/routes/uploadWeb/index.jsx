@@ -1,14 +1,15 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { SensorList } from '../../components/SensorList/SensorList';
-import { UploadWebView } from './UploadWebView';
+import React, { useState, useRef, useMemo, useEffect } from "react";
+import { SensorList } from "../../components/SensorList/SensorList";
+import { UploadWebView } from "./UploadWebView";
 
-import { SUPPORTED_SENSORS } from '../../services/WebSensorServices';
-import { RecorderSettings } from './RecorderSettings';
-import { throttle, debounce } from '../../services/helpers';
+import { SUPPORTED_SENSORS } from "../../services/WebSensorServices";
+import { RecorderSettings } from "./RecorderSettings";
+import { throttle, debounce } from "../../services/helpers";
 // import { RecordingController } from './RecordingController';
-import { SensorGraphs } from './SensorGraphs';
-import { usePersistedState } from '../../services/ReactHooksService';
-import { FloatingActionButtons } from './FloatingActionButtons';
+import { SensorGraphs } from "./SensorGraphs";
+import { usePersistedState } from "../../services/ReactHooksService";
+import { FloatingActionButtons } from "./FloatingActionButtons";
+import Loader from "../../modules/loader";
 
 const mergeSingle = (replacer) => (key, value) => {
   replacer((prev) => ({ ...prev, [key]: value }));
@@ -31,18 +32,18 @@ export const UploadWebPage = () => {
 
   const [selectedSensors, setSelectedSensors] = usePersistedState(
     {},
-    'routes:uploadWeb:index.selectedSensors',
+    "routes:uploadWeb:index.selectedSensors"
   );
   const [sensorRates, setSensorRates] = usePersistedState(
     sensors.reduce((acc, { name }) => {
       acc[name] = 50;
       return acc;
     }, {}),
-    'routes:uploadWeb:index.sensorRates',
+    "routes:uploadWeb:index.sensorRates"
   );
   const [dataPreview, _setDataPreview] = usePersistedState(
     true,
-    'routes:uploadWeb:index.dataPreview',
+    "routes:uploadWeb:index.dataPreview"
   );
   const dataPreviewRef = useRef(dataPreview);
   const setDataPreview = (up) => {
@@ -50,8 +51,8 @@ export const UploadWebPage = () => {
     _setDataPreview(up);
   };
 
-  const [recorderState, setRecorderState] = useState('ready'); // ready, starting, recording, stopping
-  const [datasetName, setDatasetName] = useState('');
+  const [recorderState, setRecorderState] = useState("ready"); // ready, starting, recording, stopping
+  const [datasetName, setDatasetName] = useState("");
 
   const controllerRef = useRef(null);
   useEffect(
@@ -60,7 +61,7 @@ export const UploadWebPage = () => {
         controllerRef.current.abort();
       }
     },
-    [],
+    []
   );
 
   const [visibleStore, setVisibleStore] = useState({}); // { sensorA: { sensorAX: [{ datapoint: 5, timestamp: 1234 }, ], }, }
@@ -80,7 +81,7 @@ export const UploadWebPage = () => {
       obj[SENSOR_COMPONENT_TO_SENSOR_NAME[component]][component] =
         timeserie.slice(
           -sensorRates[SENSOR_COMPONENT_TO_SENSOR_NAME[component]] *
-            GRAPH_MAX_SECONDS,
+            GRAPH_MAX_SECONDS
         );
     }
     setVisibleStore(obj);
@@ -92,8 +93,8 @@ export const UploadWebPage = () => {
 
   const handleRecordButton = async () => {
     switch (recorderState) {
-      case 'ready':
-        setRecorderState('starting');
+      case "ready":
+        setRecorderState("starting");
         if (controllerRef.current) {
           await controllerRef.current.stop();
         }
@@ -101,11 +102,11 @@ export const UploadWebPage = () => {
           .filter(([k, v]) => v)
           .map(([k, v]) => k);
         const mySensors = sensors.filter(({ name }) =>
-          selectedNames.includes(name),
+          selectedNames.includes(name)
         );
 
         for (const Class of Array.from(
-          new Set(mySensors.map((x) => x.constructor)),
+          new Set(mySensors.map((x) => x.constructor))
         )) {
           if (Class.trigger) {
             await Class.trigger();
@@ -118,24 +119,32 @@ export const UploadWebPage = () => {
         controllerRef.current = new RecordingController(
           mySensors,
           sensorRates,
-          datasetName,
+          datasetName
         );
-        controllerRef.current.on('received-data', (controller) => {
+        controllerRef.current.on("received-data", (controller) => {
           syncUI(controller); // throttled
         });
-        controllerRef.current.on('error', onError);
+        controllerRef.current.on("error", onError);
 
         await controllerRef.current.start();
-        setRecorderState('recording');
+        setRecorderState("recording");
         break;
-      case 'recording':
-        setRecorderState('stopping');
+      case "recording":
+        setRecorderState("stopping");
         await controllerRef.current.stop();
-        setRecorderState('ready');
+        setRecorderState("ready");
         break;
       default:
     }
   };
+
+  if (sensors.length === 0) {
+    return (
+      <div className="h-100 d-flex justify-content-center align-items-center">
+        <h4>Your device does not support any Web-Sensors</h4>
+      </div>
+    );
+  }
 
   return (
     <UploadWebView

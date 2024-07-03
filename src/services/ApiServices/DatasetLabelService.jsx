@@ -6,7 +6,7 @@ import apiRequest from "./request";
 const axios = ax.create();
 const axiosNoToken = ax.create();
 
-export const createDatasetLabel = async (datasetId, labeling) => {
+export const createDatasetLabel = async (datasetId, labelingId, label) => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.POST,
     apiConsts.DATASET_STORE,

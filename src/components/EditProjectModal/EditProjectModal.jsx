@@ -1,9 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   InputGroup,
   InputGroupText,
@@ -11,81 +7,109 @@ import {
   Table,
   Col,
   Row,
-} from 'reactstrap';
+  FormFeedback,
+} from "reactstrap";
 
-import useCreateProject from '../../Hooks/useCreateProject';
-import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteInput';
-import { getUserNameSuggestions } from '../../services/ApiServices/AuthentificationServices';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
-import './EditProjectModal.css';
-import useUserStore from '../../Hooks/useUser';
+import useCreateProject from "../../Hooks/useCreateProject";
+import AutoCompleteInput from "../../components/AutoCompleteInput/AutocompleteInput";
+import { getUserNameSuggestions } from "../../services/ApiServices/AuthentificationServices";
+
+import "./EditProjectModal.css";
+import useUserStore from "../../Hooks/useUser";
+import {
+  EdgeMLTable,
+  EdgeMLTableEntry,
+  EdgeMLTableHeader,
+} from "../Common/EdgeMLTable";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import useProjectStore from "../../stores/projectStore";
 
 const EditProjectModal = ({ isOpen, onClose }) => {
-  const [userSearchValue, setUserSearchValue] = useState('');
-  const { user } = useUserStore();
+  const [userSearchValue, setUserSearchValue] = useState("");
+  const projects = useProjectStore((state) => state.projects);
 
   const { project, setProjectName, createProject, addUser, removeUser } =
     useCreateProject();
 
-  
+  console.log(project.users);
+
   return (
     <Modal id="editProjectModal" isOpen={isOpen}>
       <ModalHeader>Create new Project</ModalHeader>
       <ModalBody>
         <InputGroup>
-            <InputGroupText>{'Name'}</InputGroupText>
+          <InputGroupText>{"Name"}</InputGroupText>
           <Input
             id="inputProjectName"
-            placeholder={'Project-name'}
+            placeholder={"Project-name"}
             value={project.name}
             onChange={(e) => setProjectName(e.target.value)}
           />
+          <FormFeedback>
+            
+          </FormFeedback>
         </InputGroup>
         <InputGroup>
-            <InputGroupText>{'Admin'}</InputGroupText>
+          <InputGroupText>{"Admin"}</InputGroupText>
           <Input
             disabled
             id="inputProjectAdmin"
-            placeholder={'Project-admin'}
-            value={project.admin.name + ' (' + project.admin.mail + ')'}
+            placeholder={"Project-admin"}
+            value={project.admin.name + " (" + project.admin.mail + ")"}
           />
         </InputGroup>
-        <h5 style={{ paddingTop: '16px' }}>Users</h5>
-        <Row className="user-search-heading">
-          <Col className="col-3">Search users: </Col>
-          <Col>
-            <AutoCompleteInput
-              type="text"
-              name="User ID"
-              value={userSearchValue}
-              placeholder="Enter username"
-              onClick={addUser}
-              onChange={(e) => setUserSearchValue(e.target.value)}
-              getsuggestions={getUserNameSuggestions}
-              filter={[
-                ...project.users.map((elm) => elm.userName),
-                project.admin.name,
-              ]}
-            ></AutoCompleteInput>
-          </Col>
-        </Row>
-        <Table striped>
-          <thead>
-            <tr className="table-record">
-              <th className="table-record-left">#</th>
-              <th className="table-record-center">UserName</th>
-              <th className="table-record-right">Delete</th>
-            </tr>
-          </thead>
-          {/* <tbody>
-                        {this.state.project.users.map((elm, index) =>
-                            this.generateTableEntry(elm.userName, index),
-                        )}
-                    </tbody> */}
-        </Table>
+        <h5 style={{ paddingTop: "16px" }}>Users</h5>
+        <EdgeMLTable>
+          <EdgeMLTableHeader>
+            <InputGroup>
+              <InputGroupText>Search user</InputGroupText>
+              <AutoCompleteInput
+                type="text"
+                name="User ID"
+                value={userSearchValue}
+                placeholder="Enter username"
+                onClick={(e) => {
+                  addUser(e);
+                  setUserSearchValue("");
+                }}
+                onChange={(e) => setUserSearchValue(e.target.value)}
+                getsuggestions={getUserNameSuggestions}
+                filter={[
+                  ...project.users.map((elm) => elm.userName),
+                  project.admin.name,
+                ]}
+              ></AutoCompleteInput>
+            </InputGroup>
+          </EdgeMLTableHeader>
+          {project.users.map((elm) => {
+            return (
+              <EdgeMLTableEntry>
+                <div className="d-flex justify-content-between m-2 align-items-center">
+                  <div>
+                    <b>{elm.userName}</b>
+                  </div>
+                  <div>
+                    <Button outline color="danger" onClick={() => removeUser(elm.userName)}>
+                      <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
+                    </Button>
+                  </div>
+                </div>
+              </EdgeMLTableEntry>
+            );
+          })}
+          {project.users.length === 0 && (
+            <div className="m-2 d-flex justify-content-center">
+              No users added yet
+            </div>
+          )}
+        </EdgeMLTable>
       </ModalBody>
-      <ModalFooter style={{ justifyContent: 'space-between' }}>
+      <ModalFooter className="justify-content-end">
         <Button
+          outline
           id="btnSaveProject"
           color="primary"
           className="m-1"
@@ -95,16 +119,7 @@ const EditProjectModal = ({ isOpen, onClose }) => {
           }}
         >
           Save
-        </Button>{' '}
-        {/* <div className="error-text"> {this.state.error}</div> */}
-        <Button
-          id="btnSaveProjectCancel"
-          color="secondary"
-          className="m-1"
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
+        </Button>{" "}
       </ModalFooter>
     </Modal>
   );

@@ -20,9 +20,13 @@ const useCreateProject = () => {
     getProjects();
   };
 
-  const addUSer = (user) => {};
+  const addUSer = (e) => {
+    setProjectUsers([...projectUsers, {"userName": e.target.value}]);
+  };
 
-  const removeUser = (user) => {};
+  const removeUser = (userName) => {
+    setProjectUsers(projectUsers.filter((user) => user.userName !== userName));
+  };
 
   return {
     createProject: createProject,
