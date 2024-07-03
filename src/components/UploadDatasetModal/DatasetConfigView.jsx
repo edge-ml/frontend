@@ -1,12 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import {
-  Table,
-  InputGroup,
-  InputGroupText,
-  Input,
-  Button,
-} from 'reactstrap';
+import { Table, InputGroup, InputGroupText, Input, Button } from "reactstrap";
 
 export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
   const onDeleteLabeling = (labelingToDeleteOriginalName) => {
@@ -15,7 +9,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
       labelings: fileConfig.labelings.map((l) =>
         l.originalName !== labelingToDeleteOriginalName
           ? l
-          : { ...l, removed: true },
+          : { ...l, removed: true }
       ),
     });
   };
@@ -45,21 +39,19 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
 
   return (
     <div className="mb-2 mt-2">
-      {' '}
+      {" "}
       <Table>
-        {' '}
+        {" "}
         <thead>
           <tr>
-            <th colSpan="2" style={{ padding: '0 12px 0 0' }}>
+            <th colSpan="2" style={{ padding: "0 12px 0 0" }}>
               <InputGroup size="md">
                 <InputGroupText>
-                  <InputGroupText>
-                    <b>Dataset-name</b>
-                  </InputGroupText>
+                  <b>Dataset-name</b>
                 </InputGroupText>
                 <Input
                   className="fw-bold"
-                  id={'datasetName' + String(0)}
+                  id={"datasetName" + String(0)}
                   type="text"
                   placeholder="Name"
                   value={fileConfig.name}
@@ -72,7 +64,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                 />
               </InputGroup>
             </th>
-            <th colSpan="4" style={{ textAlign: 'end', paddingRight: '0px' }}>
+            <th colSpan="4" style={{ textAlign: "end", paddingRight: "0px" }}>
               <div className="d-flex justify-content-end">
                 <Button
                   id="confirmButton"
@@ -95,7 +87,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
         {fileConfig.error ? (
           <tbody>
             <tr>
-              <td colSpan="3" style={{ color: 'red' }}>
+              <td colSpan="3" style={{ color: "red" }}>
                 Error: {fileConfig.error}
               </td>
             </tr>
@@ -110,13 +102,11 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     style={{
                       paddingTop: 0,
                       paddingBottom: 0,
-                      width: '40%',
+                      width: "40%",
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupText>
-                        <InputGroupText>Name</InputGroupText>
-                      </InputGroupText>
+                      <InputGroupText>Name</InputGroupText>
                       <Input
                         data-testid="nameInput"
                         type="text"
@@ -143,13 +133,11 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     style={{
                       paddingTop: 0,
                       paddingBottom: 0,
-                      width: '15%',
+                      width: "15%",
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupText>
-                        <InputGroupText>Unit</InputGroupText>
-                      </InputGroupText>
+                      <InputGroupText>Unit</InputGroupText>
                       <Input
                         data-testid="unitInput"
                         type="text"
@@ -177,13 +165,11 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     style={{
                       paddingTop: 0,
                       paddingBottom: 0,
-                      width: '15%',
+                      width: "15%",
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupText>
-                        <InputGroupText>Scale</InputGroupText>
-                      </InputGroupText>
+                      <InputGroupText>Scale</InputGroupText>
                       <Input
                         data-testid="scaleInput"
                         type="text"
@@ -192,7 +178,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                         value={timeSeries.scale}
                         onChange={(e) => {
                           if (
-                            e.target.value !== '' &&
+                            e.target.value !== "" &&
                             !isNumeric(e.target.value)
                           )
                             return;
@@ -203,7 +189,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                                 return {
                                   ...ts,
                                   scale:
-                                    e.target.value === '' ? 1 : e.target.value,
+                                    e.target.value === "" ? 1 : e.target.value,
                                 };
                               }
                               return ts;
@@ -217,13 +203,11 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     style={{
                       paddingTop: 0,
                       paddingBottom: 0,
-                      width: '15%',
+                      width: "15%",
                     }}
                   >
                     <InputGroup size="sm">
-                      <InputGroupText>
-                        <InputGroupText>Offset</InputGroupText>
-                      </InputGroupText>
+                      <InputGroupText>Offset</InputGroupText>
                       <Input
                         data-testid="offsetInput"
                         type="text"
@@ -232,7 +216,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                         value={timeSeries.offset}
                         onChange={(e) => {
                           if (
-                            e.target.value !== '' &&
+                            e.target.value !== "" &&
                             !isNumeric(e.target.value)
                           )
                             return;
@@ -243,7 +227,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                                 return {
                                   ...ts,
                                   offset:
-                                    e.target.value === '' ? 0 : e.target.value,
+                                    e.target.value === "" ? 0 : e.target.value,
                                 };
                               }
                               return ts;
@@ -253,7 +237,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                       />
                     </InputGroup>
                   </td>
-                  <td style={{ textAlign: 'right' }}>
+                  <td style={{ textAlign: "right" }}>
                     <Button
                       id="setAllButton"
                       color="primary"
@@ -265,7 +249,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                       Set all
                     </Button>
                   </td>
-                  <td style={{ textAlign: 'right' }}>
+                  <td style={{ textAlign: "right" }}>
                     <Button
                       id="deleteButton"
                       color="danger"
@@ -275,7 +259,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                         changeConfig(fileId, {
                           ...fileConfig,
                           timeSeries: fileConfig.timeSeries.map((ts) =>
-                            ts !== timeSeries ? ts : { ...ts, removed: true },
+                            ts !== timeSeries ? ts : { ...ts, removed: true }
                           ),
                         })
                       }
@@ -289,15 +273,15 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
           </tbody>
         )}
       </Table>
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         {fileConfig.labelings.map((labeling, labelingIndex) => {
           if (labeling.removed) return null;
           return (
             <div>
               <div
-                id={'labelName' + labelingIndex}
+                id={"labelName" + labelingIndex}
                 className="mx-2"
-                style={{ display: 'inline' }}
+                style={{ display: "inline" }}
               >
                 {labeling.name}
               </div>

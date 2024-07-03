@@ -306,9 +306,7 @@ class CreateNewDatasetModal extends Component {
                           <th colSpan="2" style={{ padding: '0 12px 0 0' }}>
                             <InputGroup size="md">
                               <InputGroupText>
-                                <InputGroupText>
                                   <b>Dataset-name</b>
-                                </InputGroupText>
                               </InputGroupText>
                               <Input
                                 className="fw-bold"

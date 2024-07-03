@@ -41,8 +41,8 @@ const ListPage = (props) => {
   };
 
   const deleteEntry = (datasetId) => {
-    setSelectedDatasets([datasetId]);
-    toggleModal();
+    console.log(datasetId)
+    setDeleteSelected([datasetId]);
   };
 
   const selectAllEmpty = () => {
@@ -86,14 +86,6 @@ const ListPage = (props) => {
     return <Loader loading={true}></Loader>;
   }
 
-  const applyFilter = (currentFilter, currentFilterParams) => {
-    setSelectedFilter(currentFilter);
-    setSelectedFilterParams(currentFilterParams);
-    selectedFilterRef.current = currentFilter;
-    selectedFilterParamsRef.current = currentFilterParams;
-    setCurrentPage(0);
-    fetchDatasetets(0, pageSize, sorting, currentFilter, currentFilterParams);
-  };
 
   return (
     <div id="dataList" className="d-flex flex-column h-100">
