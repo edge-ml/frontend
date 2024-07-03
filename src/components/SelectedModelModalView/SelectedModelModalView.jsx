@@ -1,21 +1,16 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState } from "react";
 
-import {
-  Button,
-  Table,
-  Row,
-  Col,
-} from 'reactstrap';
-import { Modal, ModalHeader, ModalBody, ModalFooter } from '../Common/Modal';
+import { Button, Table, Row, Col } from "reactstrap";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
-import ConfusionMatrixView from '../ConfusionMatrix/ConfusionMatrixView';
-import Loader from '../../modules/loader';
+import ConfusionMatrixView from "../ConfusionMatrix/ConfusionMatrixView";
+import Loader from "../../modules/loader";
 
-import './index.css';
-import classNames from 'classnames';
-import LabelBadge from '../Common/LabelBadge';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import "./index.css";
+import classNames from "classnames";
+import LabelBadge from "../Common/LabelBadge";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 export const SelectedModelModalView = ({
   model,
@@ -28,45 +23,61 @@ export const SelectedModelModalView = ({
 }) => {
   const metrics = model
     ? model.pipeline.selectedPipeline.steps.filter(
-        (elm) => elm.type === 'EVAL',
+        (elm) => elm.type === "EVAL"
       )[0].options.metrics
     : null;
   return (
-    <Modal isOpen={model} size="xl" {...props} onClose={onClosed} >
-      <Loader loading={!model}>
+    <Modal
+      isOpen={model}
+      size="xl"
+      {...props}
+      onClose={() => onClosed()}
+    >
+      <ModalHeader>Model: {model && model.name}</ModalHeader>
+      <ModalBody>
         {model ? (
-          <div>
-            <ModalHeader>Model: {model.name}</ModalHeader>
-            <ModalBody>
-              <div className="d-flex justify-content-between w-100">
-                <div className="d-flex justify-content-start">
-                  <General_info
-                    model={model}
-                    onButtonDeploy={onButtonDeploy}
-                    onButtonDownload={onButtonDownload}
-                  ></General_info>
-                  <PerformanceInfo metrics={metrics.metrics}></PerformanceInfo>
-                </div>
-                <div>
-                  <Button outline className="me-auto" onClick={() => {}} color="danger">
-                    <FontAwesomeIcon className="mx-1" icon={faTrashAlt}></FontAwesomeIcon>
-                    Delete
-                  </Button>
-                </div>
+          <>
+            <div className="d-flex justify-content-between w-100">
+              <div className="d-flex justify-content-start">
+                <General_info
+                  model={model}
+                  onButtonDeploy={onButtonDeploy}
+                  onButtonDownload={onButtonDownload}
+                ></General_info>
+                <PerformanceInfo metrics={metrics.metrics}></PerformanceInfo>
               </div>
-              <div className="my-5 d-flex justify-content-start align-items-center">
-                <Classification_report
-                  report={metrics.classification_report}
-                ></Classification_report>
-                <ConfusionMatrixView
-                  matrix={JSON.parse(metrics.confusion_matrix)}
-                  labels={model.labels.map((elm) => elm.name)}
-                ></ConfusionMatrixView>
+              <div>
+                <Button
+                  outline
+                  className="me-auto"
+                  onClick={() => {}}
+                  color="danger"
+                >
+                  <FontAwesomeIcon
+                    className="mx-1"
+                    icon={faTrashAlt}
+                  ></FontAwesomeIcon>
+                  Delete
+                </Button>
               </div>
-              <Training_config model={model}></Training_config>
-            </ModalBody>
-            <ModalFooter className="justify-content-end">
-              {/* <div>
+            </div>
+            <div className="my-5 d-flex justify-content-start align-items-center">
+              <Classification_report
+                report={metrics.classification_report}
+              ></Classification_report>
+              <ConfusionMatrixView
+                matrix={JSON.parse(metrics.confusion_matrix)}
+                labels={model.labels.map((elm) => elm.name)}
+              ></ConfusionMatrixView>
+            </div>
+            <Training_config model={model}></Training_config>
+          </>
+        ) : (
+          <Loader loading></Loader>
+        )}
+      </ModalBody>
+      <ModalFooter className="justify-content-end">
+        {/* <div>
                 <Button
                   outline
                   color='primary'
@@ -89,11 +100,10 @@ export const SelectedModelModalView = ({
                   Deploy
                 </Button>
               </div> */}
-              <Button outline onClick={onClosed}>Close</Button>
-            </ModalFooter>
-          </div>
-        ) : null}
-      </Loader>
+        <Button outline onClick={onClosed}>
+          Close
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 };
@@ -173,14 +183,14 @@ const Classification_report = ({ report }) => {
 
 const Training_config = ({ model }) => {
   const [selectedStep, setSelectedStep] = useState(
-    model.pipeline.selectedPipeline.steps[0],
+    model.pipeline.selectedPipeline.steps[0]
   );
 
   const Render_Step = (step) => {
     return (
       <div className="training_step_container">
         <div
-          className={classNames('training_step', {
+          className={classNames("training_step", {
             training_step_selected: step.name === selectedStep.name,
           })}
           onClick={() => onClickStep(step)}
@@ -207,7 +217,7 @@ const Training_config = ({ model }) => {
       </h5>
       <div className="d-flex justify-content-start">
         {model.pipeline.selectedPipeline.steps
-          .filter((elm) => elm.type === 'PRE' || elm.type === 'CORE')
+          .filter((elm) => elm.type === "PRE" || elm.type === "CORE")
           .map((elm) => Render_Step(elm, onClickStep))}
       </div>
 
@@ -237,7 +247,7 @@ const Training_config = ({ model }) => {
 
 const metric = (metric) => {
   const val = Math.round(metric * 100 * 100) / 100;
-  return isNaN(val) ? '' : val;
+  return isNaN(val) ? "" : val;
 };
 
 const PerformanceInfo = ({ metrics }) => {
@@ -246,7 +256,7 @@ const PerformanceInfo = ({ metrics }) => {
       <h5>
         <b>Metrics</b>
       </h5>
-      <Table borderless size="sm" striped style={{ width: '150px' }}>
+      <Table borderless size="sm" striped style={{ width: "150px" }}>
         <tbody>
           <tr>
             <td>

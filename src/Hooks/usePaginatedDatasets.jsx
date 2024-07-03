@@ -12,7 +12,7 @@ const usePaginatedDatasets = (initialPage) => {
   const [tableLenth, setTableLength] = useState(20);
   const [sorting, setSortingInternal] = useState("alphaAsc");
 
-  const refreshDatasets = async (page, tableLenth, sorting) => {
+  const _refreshDatasets = async (page, tableLenth, sorting) => {
     const datasets = await getDatasetsPagination(
       (page - 1) * tableLenth,
       tableLenth * page,
@@ -23,7 +23,7 @@ const usePaginatedDatasets = (initialPage) => {
   };
 
   useEffect(() => {
-    refreshDatasets(page, tableLenth, sorting);
+    _refreshDatasets(page, tableLenth, sorting);
   }, [page]);
 
   const setPage = (page) => {
@@ -34,17 +34,21 @@ const usePaginatedDatasets = (initialPage) => {
   const setSorting = async (sorting) => {
     setSortingInternal(sorting);
     setPage(1);
-    await refreshDatasets(1, tableLenth, sorting);
+    await _refreshDatasets(1, tableLenth, sorting);
   };
 
   const updateDataset = async (dataset) => {
     await updateDataset_api(dataset);
-    await refreshDatasets(page, tableLenth, sorting);
+    await _refreshDatasets(page, tableLenth, sorting);
   }
 
   const deleteDatasets = async (datasets) => {
     await Promise.all(datasets.map(elm => deleteDatasets_api(elm)));
-    await refreshDatasets(1, tableLenth, sorting);
+    await _refreshDatasets(1, tableLenth, sorting);
+  }
+
+  const refreshDatasets = () => {
+    _refreshDatasets(1, tableLenth, sorting);
   }
 
   return {

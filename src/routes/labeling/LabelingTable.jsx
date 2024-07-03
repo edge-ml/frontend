@@ -50,7 +50,7 @@ const LabelingTable = ({
         </div>
       </EdgeMLTableHeader>
       {labelings.map((labeling, index) => (
-        <EdgeMLTableEntry>
+        <EdgeMLTableEntry key={labeling._id}>
           <LabelingTableEntry
             key={"labeling" + index}
             labeling={labeling}

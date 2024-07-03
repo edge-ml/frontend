@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { createProject as createProject_api } from "../services/ApiServices/ProjectService";
 import useUserStore from "./useUser";
+import useProjectStore from "../stores/projectStore";
+
 
 const useCreateProject = () => {
   const { user } = useUserStore();
+  const getProjects = useProjectStore((state) => state.getProjects);
 
   const [projectName, setProjectName] = useState("");
   const [projectUsers, setProjectUsers] = useState([]);
@@ -14,6 +17,7 @@ const useCreateProject = () => {
       admin: user,
       users: projectUsers,
     });
+    getProjects();
   };
 
   const addUSer = (user) => {};

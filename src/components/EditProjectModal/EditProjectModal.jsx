@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   ModalHeader,
@@ -18,8 +18,6 @@ import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteIn
 import { getUserNameSuggestions } from '../../services/ApiServices/AuthentificationServices';
 
 import './EditProjectModal.css';
-import { AuthContext } from '../../AuthProvider';
-import useAuth from '../../Hooks/useAuth';
 import useUserStore from '../../Hooks/useUser';
 
 const EditProjectModal = ({ isOpen, onClose }) => {

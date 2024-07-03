@@ -1,4 +1,4 @@
-import { faCross, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import {
@@ -6,21 +6,20 @@ import {
   ModalHeader as ModalHeader_Reactstrap,
   ModalBody as ModalBody_Reactstrap,
   ModalFooter as ModalFooter_Reactstrap,
+  Button,
 } from "reactstrap";
-
-import { Button } from "reactstrap";
 
 export const Modal = (props) => {
   const onKeyDown = (e) => {
     if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
       props.onClose();
-    }
-    
-    if (e.key === "Enter" && props.onConfirm) {
+    } else if (e.key === "Enter" && props.onConfirm) {
+      e.preventDefault();
+      e.stopPropagation();
       props.onConfirm();
     }
-    e.preventDefault();
-    e.stopPropagation();
   };
 
   useEffect(() => {
@@ -31,15 +30,12 @@ export const Modal = (props) => {
   }, []);
 
   return (
-    <Modal_ReactStrap onKeyDown={onKeyDown} {...props}>
+    <Modal_ReactStrap {...props}>
       {React.Children.map(props.children, (child) => {
-        if (React.isValidElement(child)) {
-          return React.cloneElement(child, {
-            onClose: props.onClose,
-            onConfirm: props.onConfirm,
-          });
-        }
-        return child;
+        return React.cloneElement(child, {
+          onClose: props.onClose,
+          onConfirm: props.onConfirm,
+        });
       })}
     </Modal_ReactStrap>
   );

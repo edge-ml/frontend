@@ -12,6 +12,7 @@ import NavbarProject from './NavbarProject';
 import EditProjectModal from '../EditProjectModal/EditProjectModal';
 import useProjectStore from '../../stores/projectStore';
 import Loader from '../../modules/loader';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
@@ -19,6 +20,8 @@ const Navbar = () => {
 
   const { activeNotifications } = useContext(NotificationContext);
   const { projects, currentProject, setCurrentProject } = useProjectStore();
+
+  const navigate = useNavigate();
 
   const onProjectEditModal = () => {
     setProjectModalOpen(true);
@@ -30,6 +33,7 @@ const Navbar = () => {
 
   const onProjectClick = (project) => {
     setCurrentProject(project);
+    navigate(currentProject.admin.userName, currentProject.name, 'datasets')
   }
 
   if (!projects) {
