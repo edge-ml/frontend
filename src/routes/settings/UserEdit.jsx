@@ -5,7 +5,7 @@ import {
   InputGroupText,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteInput';
 import { getUserNameSuggestions } from '../../services/ApiServices/AuthentificationServices';
@@ -79,17 +79,19 @@ const UserEdit = () => {
             <div>{index + 1}</div>
             <div>{user.userName}</div>
             <Button
+              outline
               size="sm"
               color="danger"
               onClick={() => handleDeleteUserName(user.userName)}
             >
-              <FontAwesomeIcon icon={faTrash} />
+              <FontAwesomeIcon icon={faTrashAlt} />
             </Button>
           </EdgeMLTableEntry>
         ))}
       </EdgeMLTable>) : null}
       <div className="pt-3 d-flex justify-content-end">
         <Button
+          outline
           id="buttonSaveProject"
           color="primary"
           onClick={() => changeUserNames(userNames)}

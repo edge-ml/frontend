@@ -56,7 +56,7 @@ function ErrorModal(props) {
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={props.onClose}>OK</Button>
+          <Button outline onClick={props.onClose}>OK</Button>
         </ModalFooter>
       </Modal>
     </div>

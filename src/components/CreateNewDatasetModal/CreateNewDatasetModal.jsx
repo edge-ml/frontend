@@ -498,6 +498,7 @@ class CreateNewDatasetModal extends Component {
           </ModalBody>
           <ModalFooter>
             <Button
+              outline
               id="cancelButton"
               color="secondary"
               className="m-1 me-auto"

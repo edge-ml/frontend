@@ -1,4 +1,4 @@
-import React, { useState, useContext, Fragment } from 'react';
+import React, { useState, useContext, Fragment } from "react";
 import {
   Button,
   UncontrolledDropdown,
@@ -6,33 +6,38 @@ import {
   DropdownMenu,
   DropdownItem,
   Dropdown,
-} from 'reactstrap';
-import './LabelingSelectionPanel.css';
+} from "reactstrap";
+import "./LabelingSelectionPanel.css";
 
-import HelpModal from './HelpModal';
+import HelpModal from "./HelpModal";
 
-import NotificationContext from '../NotificationHandler/NotificationProvider';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faQuestion } from '@fortawesome/free-solid-svg-icons';
+import NotificationContext from "../NotificationHandler/NotificationProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDownload, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
-import Checkbox from '../Common/Checkbox';
-import useProjectRouter from '../../Hooks/ProjectRouter';
-import { LabelingContext } from '../../routes/dataset/LabelingContext';
-import { DatasetContext } from '../../routes/dataset/DatasetContext';
+import Checkbox from "../Common/Checkbox";
+import useProjectRouter from "../../Hooks/ProjectRouter";
+import { LabelingContext } from "../../routes/dataset/LabelingContext";
+import { DatasetContext } from "../../routes/dataset/DatasetContext";
 
-const hideLabelsSymbol = 'hide labels' + Math.floor(Math.random() * 1000);
+const hideLabelsSymbol = "hide labels" + Math.floor(Math.random() * 1000);
 
 const LabelingSelectionPanel = () => {
-
-
-  const { activeTimeSeries, setActiveTimeSeries, dataset, labelings, activeLabeling, setActiveLabeling } = useContext(DatasetContext);
+  const {
+    activeTimeSeries,
+    setActiveTimeSeries,
+    dataset,
+    labelings,
+    activeLabeling,
+    setActiveLabeling,
+  } = useContext(DatasetContext);
 
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isTSDropdownOpen, setIsTSDropdownOpen] = useState(false);
   const { registerDatasetDownload } = useContext(NotificationContext);
 
   const [selectedTs, setSelectedTs] = useState(
-    activeTimeSeries.map((elm) => elm._id),
+    activeTimeSeries.map((elm) => elm._id)
   );
 
   const navigate = useProjectRouter();
@@ -48,8 +53,8 @@ const LabelingSelectionPanel = () => {
   const onApplyTs = () => {
     setActiveTimeSeries(
       selectedTs.map((select_id) =>
-        dataset.timeSeries.find((elm) => elm._id === select_id),
-      ),
+        dataset.timeSeries.find((elm) => elm._id === select_id)
+      )
     );
   };
 
@@ -67,7 +72,6 @@ const LabelingSelectionPanel = () => {
   };
 
   const TimeSeriesSelection = () => {
-
     return (
       <div>
         <Dropdown
@@ -78,13 +82,13 @@ const LabelingSelectionPanel = () => {
           <DropdownToggle
             caret
             outline
-            color='secondary'
+            color="secondary"
             onClick={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
           >
-            Selected Timeseries:{' '}
+            Selected Timeseries:{" "}
             <div className="d-inline font-weight-normal">
-              {activeTimeSeries.length + '/' + dataset.timeSeries.length}
-            </div>{' '}
+              {activeTimeSeries.length + "/" + dataset.timeSeries.length}
+            </div>{" "}
           </DropdownToggle>
           <DropdownMenu>
             <div className="scrollable-dropdown">
@@ -112,10 +116,13 @@ const LabelingSelectionPanel = () => {
             <DropdownItem divider></DropdownItem>
             <div className="w-100 p-2">
               <Button
-                className='w-100'
+                className="w-100"
                 color="primary"
                 outline
-                onClick={onApplyTs}
+                onClick={(e) => {
+                  onApplyTs(e);
+                  setIsTSDropdownOpen(false);
+                }}
               >
                 Apply
               </Button>
@@ -135,22 +142,25 @@ const LabelingSelectionPanel = () => {
           <div className="d-flex">
             <TimeSeriesSelection></TimeSeriesSelection>
             <UncontrolledDropdown>
-              <DropdownToggle caret outline color='secondary'>
-                {activeLabeling ? 'Select Labeling: ' : 'Selected Labeling: '}
+              <DropdownToggle caret outline color="secondary">
+                {activeLabeling ? "Select Labeling: " : "Selected Labeling: "}
                 <div className="d-inline font-weight-normal">
-                  {name || 'None'}
+                  {name || "None"}
                 </div>
               </DropdownToggle>
               <DropdownMenu className="scrollable-dropdown">
                 {labelings.map((elm) => (
-                  <DropdownItem key={elm._id} onClick={() => setActiveLabeling(elm)}>
+                  <DropdownItem
+                    key={elm._id}
+                    onClick={() => setActiveLabeling(elm)}
+                  >
                     {elm.name}
                   </DropdownItem>
                 ))}
                 <DropdownItem divider></DropdownItem>
                 <DropdownItem
                   className="fw-bold"
-                  onClick={() => navigate('labelings/new')}
+                  onClick={() => navigate("labelings/new")}
                 >
                   + Add Labeling Set
                 </DropdownItem>
@@ -170,7 +180,12 @@ const LabelingSelectionPanel = () => {
           </div>
         </div>
         <div className="d-flex align-items-center">
-          <Button outline id="btn-secondary" className="m-1" onClick={downloadDataSet}>
+          <Button
+            outline
+            id="btn-secondary"
+            className="m-1"
+            onClick={downloadDataSet}
+          >
             <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon>
           </Button>
           <Button
