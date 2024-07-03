@@ -37,7 +37,7 @@ const EditProjectModal = ({ isOpen, onClose }) => {
   console.log(project.users);
 
   return (
-    <Modal id="editProjectModal" isOpen={isOpen}>
+    <Modal id="editProjectModal" isOpen={isOpen} onClose={onClose}>
       <ModalHeader>Create new Project</ModalHeader>
       <ModalBody>
         <InputGroup>

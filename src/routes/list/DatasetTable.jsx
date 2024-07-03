@@ -9,6 +9,7 @@ import { Button, Container } from "reactstrap";
 import Checkbox from "../../components/Common/Checkbox";
 import DatasetTableEntry from "./DatasetTableEntry";
 import DatasetSorting from "./DatasetSorting";
+import { Empty } from "../export/components/Empty";
 
 const DatasetTable = ({
   datasets,
@@ -134,12 +135,7 @@ const DatasetTable = ({
             </div>
           </div>
         ) : (
-          <Container
-            className="d-flex flex-column justify-content-center align-items-center"
-            style={{ height: "50vh" }}
-          >
-            <div className="text-center">No datasets available yet.</div>
-          </Container>
+          <Empty>No datasets available yet</Empty>
         )}
       </Fragment>
     </div>

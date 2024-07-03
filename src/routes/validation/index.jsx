@@ -4,6 +4,7 @@ import Loader from "../../modules/loader";
 import Page from "../../components/Common/Page";
 import { Button } from "reactstrap";
 import ModelTable from "./ModelTable";
+import { Empty } from "../export/components/Empty";
 
 const ModelPage = () => {
   const { models } = useModels();
@@ -11,17 +12,6 @@ const ModelPage = () => {
   if (!models) {
     return <Loader loading></Loader>;
   }
-
-  const NoModelsSection = () => {
-    return (
-      <div
-        style={{ marginTop: "30vh", fontSize: "large" }}
-        className="d-flex h-100 justify-content-center align-items-center fw-bold"
-      >
-        No models trained yet!
-      </div>
-    );
-  };
 
   return (
     <Page
@@ -41,7 +31,7 @@ const ModelPage = () => {
         </>
       }
     >
-      {models.length === 0 && <NoModelsSection />}
+      {models.length === 0 && <Empty>No models trained yet</Empty>}
       {models.length > 0 && (
         <ModelTable
           models={models}

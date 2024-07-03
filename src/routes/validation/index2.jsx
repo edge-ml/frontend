@@ -34,6 +34,7 @@ import DeployModal from './DeployModal';
 import { useNavigate } from 'react-router-dom';
 import useModels from '../../Hooks/useModels';
 import Loader from '../../modules/loader';
+import { Empty } from '../export/components/Empty';
 
 const ValidationPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -180,12 +181,7 @@ const ValidationPage = () => {
     >
 
       {models.length === 0 ? (
-        <div
-          style={{ marginTop: '30vh', fontSize: 'large' }}
-          className="d-flex h-100 justify-content-center align-items-center fw-bold"
-        >
-          No models trained yet!
-        </div>
+        <Empty>No models trained yet.</Empty>
       ) : (
         <Table
           header={

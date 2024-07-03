@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
-  const [projectModalOpen, setProjectModalOpen] = useState(true);
+  const [projectModalOpen, setProjectModalOpen] = useState(false);
 
   const { activeNotifications } = useContext(NotificationContext);
   const { projects, currentProject, setCurrentProject } = useProjectStore();
