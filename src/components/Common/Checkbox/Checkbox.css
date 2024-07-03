@@ -28,7 +28,7 @@
 }
 
 .checkBoxContainer input:checked ~ .checkBoxCheckmark {
-  background-color: rgb(131, 136, 159);
+  background-color: rgb(72, 187, 120);
   border: 0px;
 }
 

@@ -1,18 +1,13 @@
-import {
-  Alert,
-  Input,
-  InputGroup,
-  InputGroupText,
-} from 'reactstrap';
-import React from 'react';
-import { mobileAndTabletCheck } from '../../services/helpers';
+import { Alert, Input, InputGroup, InputGroupText } from "reactstrap";
+import React from "react";
+import { mobileAndTabletCheck } from "../../services/helpers";
 import {
   StartStopButton,
   any,
   starting,
   recording,
   stopping,
-} from './StartStopButton';
+} from "./StartStopButton";
 
 const disabledForm = any(starting, recording, stopping);
 
@@ -26,9 +21,7 @@ export const RecorderSettings = ({
 }) => (
   <React.Fragment>
     <InputGroup>
-      <InputGroupText>
-        <InputGroupText>Dataset name</InputGroupText>
-      </InputGroupText>
+      <InputGroupText>Dataset name</InputGroupText>
       <Input
         id="datasetName"
         placeholder="dataset name"
@@ -49,7 +42,7 @@ export const RecorderSettings = ({
       <small className="ms-3">
         <b>
           <i>Note:</i>
-        </b>{' '}
+        </b>{" "}
         Not running on a mobile browser. You may want to visit this page on your
         phone or tablet.
       </small>
@@ -59,7 +52,7 @@ export const RecorderSettings = ({
         <hr />
         <h5>Warnings and Errors</h5>
         {Object.entries(errors).map(([comp, { error, isWarning }]) => (
-          <Alert color={isWarning ? 'warning' : 'danger'}>
+          <Alert color={isWarning ? "warning" : "danger"}>
             <strong>{comp}</strong>: {error}
           </Alert>
         ))}

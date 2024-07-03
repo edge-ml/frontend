@@ -62,9 +62,7 @@ function BlePanelRecorderSettings({
       </div>
       <div className="body-wrapper p-3">
         <InputGroup>
-          <InputGroupText>
             <InputGroupText>{'Dataset name'}</InputGroupText>
-          </InputGroupText>
           <Input
             id="bleDatasetName"
             placeholder={'dataset name'}

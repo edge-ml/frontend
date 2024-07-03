@@ -39,7 +39,7 @@ function BlePanelSensorList({
               const sensorData = sensors[sensorKey];
               return (
                 <tr key={sensorKey}>
-                  <td>
+                  <td className='align-middle'>
                     <Checkbox
                       disabled={disabled}
                       isSelected={selectedSensors.has(sensorKey)}
@@ -47,8 +47,8 @@ function BlePanelSensorList({
                       onClick={() => onToggleSensor(sensorKey)}
                     ></Checkbox>
                   </td>
-                  <td>{sensorData.name}</td>
-                  <td>
+                  <td className='align-middle'>{sensorData.name}</td>
+                  <td className='align-middle'>
                     <InputGroup
                       style={{ margin: 0, minWidth: '90px' }}
                       size="sm"
@@ -66,7 +66,7 @@ function BlePanelSensorList({
                       <InputGroupText>Hz</InputGroupText>
                     </InputGroup>
                   </td>
-                  <td>
+                  <td className='align-middle'>
                     {sensorData.parseScheme.map((elm) => (
                       <Badge color="primary" key={elm.name}>
                         {elm.name + (elm.unit ? ` (${elm.unit})` : '')}

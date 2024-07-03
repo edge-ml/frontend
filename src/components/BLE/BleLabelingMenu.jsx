@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -8,7 +8,9 @@ import {
   DropdownItem,
   DropdownToggle,
   Badge,
-} from 'reactstrap';
+  Label,
+} from "reactstrap";
+import LabelBadge from "../Common/LabelBadge";
 
 export const BleLabelingMenu = ({
   labelings,
@@ -30,7 +32,9 @@ export const BleLabelingMenu = ({
           toggle={toggleDropdown}
           className="position-relative p-0"
         >
-          <DropdownToggle caret>Labelings</DropdownToggle>
+          <DropdownToggle outline color="primary" caret>
+            Labelings
+          </DropdownToggle>
           <DropdownMenu>
             {/* <DropdownItem header>Labelings</DropdownItem> */}
             {labelings.map((labeling) => (
@@ -53,14 +57,7 @@ export const BleLabelingMenu = ({
                 key={label._id}
                 className="d-flex flex-column align-items-center me-1"
               >
-                <Badge
-                  style={{
-                    backgroundColor: label.color,
-                    cursor: 'default',
-                  }}
-                >
-                  {label.name}
-                </Badge>
+                <LabelBadge color={label.color}> {label.name}</LabelBadge>
                 <span>{shortcutKeys[labelIdx]}</span>
               </div>
             ))}
