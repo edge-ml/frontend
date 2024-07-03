@@ -14,14 +14,14 @@ const RangeSlider = () => {
   };
 
   return (
-    <div class="range">
-      <div class="range-slider">
-        <span class="range-selected"></span>
+    <div className="range">
+      <div className="range-slider">
+        <span className="range-selected"></span>
       </div>
-      <div class="range-input">
+      <div className="range-input">
         <input
           type="range"
-          class="min"
+          className="min"
           min="0"
           max="1000"
           value={valueLeft}
@@ -30,7 +30,7 @@ const RangeSlider = () => {
         ></input>
         <input
           type="range"
-          class="max"
+          className="max"
           min="0"
           max="1000"
           value={valueRight}

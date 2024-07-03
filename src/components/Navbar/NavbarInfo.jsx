@@ -38,12 +38,12 @@ const NavbarInfo = () => {
         </div>
         <div className="my-1 d-flex justify-content-between">
           <div>
-            <a href="https://www.teco.edu" target="_blank">
+            <a href="https://www.teco.edu" target="_blank" rel="noreferrer">
               <TECOLogo style={{ width: "50px" }}></TECOLogo>
             </a>
           </div>
           <div>
-            <a href="https://www.kit.edu" target="_blank">
+            <a href="https://www.kit.edu" target="_blank" rel="noreferrer">
               <KITLogo style={{ width: "50px" }}></KITLogo>
             </a>
           </div>

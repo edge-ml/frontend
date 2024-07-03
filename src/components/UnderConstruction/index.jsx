@@ -5,7 +5,7 @@ import "./index.css";
 
 const UnderConstruction = () => {
   return (
-    <div class="wrapper">
+    <div className="wrapper">
       <FontAwesomeIcon
         icon={faToolbox}
         className="icon"

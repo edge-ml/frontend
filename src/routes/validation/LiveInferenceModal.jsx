@@ -436,7 +436,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
           </div>
           <div>
             <b>Model Instance:</b>{" "}
-            {!!modelInstance ? "Loaded." : "In progress..."}
+            {modelInstance ? "Loaded." : "In progress..."}
           </div>
           <div>
             <b>Sensor Matching:</b>

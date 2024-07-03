@@ -34,7 +34,7 @@ class BleNotActivated extends Component {
                 Learn{" "}
                 <a
                   target="_blank"
-                  href="https://support.google.com/chrome/answer/10612145?hl=en"
+                  href="https://support.google.com/chrome/answer/10612145?hl=en" rel="noreferrer"
                 >
                   here
                 </a>{" "}

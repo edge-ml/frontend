@@ -82,7 +82,7 @@ class LegalNotice extends Component {
             <br></br>
             You can prevent Google Analytics from recognizing you on return
             visits to this site by disabling cookies on your browser.{" "}
-            <a href="https://tools.google.com/dlpage/gaoptout" target="_blank">
+            <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noreferrer">
               https://tools.google.com/dlpage/gaoptout
             </a>
           </div>
@@ -123,7 +123,7 @@ class LegalNotice extends Component {
           </div>
           <br></br>
           <i>Source: </i>
-          <a href="http://www.translate-24h.de" target="_blank">
+          <a href="http://www.translate-24h.de" target="_blank" rel="noreferrer">
             translate-24h
           </a>{" "}
           <br></br>

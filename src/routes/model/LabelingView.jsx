@@ -37,7 +37,7 @@ export const LabelingView = ({
                         ></input>
                         <label
                           className="mb-0 ms-1 me-1"
-                          for={x._id}
+                          htmlFor={x._id}
                           onClick={(y) => changeSelectedLabeling(x._id)}
                         >
                           {x.name}

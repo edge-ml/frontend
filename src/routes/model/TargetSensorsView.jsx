@@ -36,7 +36,7 @@ export const TargetSensorsView = ({
                   sensorStreams.every((x) => selectedSensorStreams.includes(x))
                 }
               ></input>
-              <label className="mb-0 ms-1 font-italic" for="select-all">
+              <label className="mb-0 ms-1 font-italic" htmlFor="select-all">
                 Select All
               </label>
             </fieldset>
@@ -54,7 +54,7 @@ export const TargetSensorsView = ({
                         }}
                         checked={selectedSensorStreams.includes(x)}
                       ></input>
-                      <label className="mb-0 ms-1" for={x}>
+                      <label className="mb-0 ms-1" htmlFor={x}>
                         {x}
                       </label>
                     </div>

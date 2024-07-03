@@ -63,7 +63,7 @@ export const WizardFooter = ({
               setClickedOnce(true);
             }
 
-            if (!!invalidResult) {
+            if (invalidResult) {
               return;
             }
 
