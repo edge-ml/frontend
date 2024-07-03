@@ -1,5 +1,5 @@
-import React from 'react';
-import Select from 'react-select';
+import React from "react";
+import Select from "react-select";
 import {
   Badge,
   InputGroup,
@@ -7,13 +7,13 @@ import {
   Card,
   CardBody,
   CardHeader,
-} from 'reactstrap';
+} from "reactstrap";
 
-import { withLoader } from '../../modules/loader';
+import { withLoader } from "../../modules/loader";
 
 export const validationSelectOptions = {
-  none: { value: 'none', label: 'None' },
-  LOSO: { value: 'LOSO', label: 'Leave One Subject Out' },
+  none: { value: "none", label: "None" },
+  LOSO: { value: "LOSO", label: "Leave One Subject Out" },
 };
 
 const ValidationMethodsViewRaw = ({
@@ -26,16 +26,14 @@ const ValidationMethodsViewRaw = ({
   validationMethodOptions,
   onValidationMethodOptionsChange = () => {},
 }) => {
-  
-
   return (
     <div className="w-100 text-left">
       <h6>Train Test Split</h6>
       <div className="d-flex flex-row align-items-baseline justify-content-between w-100">
         <span>Split: </span>
-        <InputGroup style={{ width: '200px' }}>
+        <InputGroup style={{ width: "200px" }}>
           <Input
-            type={'text'}
+            type={"text"}
             value={testSplit}
             onChange={onTestSplitChange}
           ></Input>
@@ -44,7 +42,7 @@ const ValidationMethodsViewRaw = ({
       <h6>Validation</h6>
       <div className="d-flex flex-row align-items-baseline justify-content-between">
         <span>Method: </span>
-        <span style={{ minWidth: '200px' }}>
+        <span style={{ minWidth: "200px" }}>
           <Select
             value={validationSelectOptions[currentValidationMethod]}
             onChange={(x) => onValidationMethodChange(x.value)}
@@ -82,7 +80,7 @@ const LOSO = ({
       </p>
       <div className="d-flex flex-row align-items-center justify-content-between">
         <h6>"leave one out" variable: </h6>
-        <span style={{ minWidth: '200px' }}>
+        <span style={{ minWidth: "200px" }}>
           <Select
             value={{ value: selectedMetaDataKey, label: selectedMetaDataKey }}
             onChange={(x) =>
@@ -100,15 +98,15 @@ const LOSO = ({
         {Object.entries(customMetaData.metaDataKeyFrequency).map(
           ([key, freq]) => (
             <Badge pill className="me-1">{`${key} (${freq})`}</Badge>
-          ),
+          )
         )}
       </div>
       <br />
       <small>
         <strong>
           <em>Note:</em>
-        </strong>{' '}
-        Datasets without the selected metadata present will <strong>not</strong>{' '}
+        </strong>{" "}
+        Datasets without the selected metadata present will <strong>not</strong>{" "}
         be ignored, but instead collectively included in the validation as
         another group.
       </small>
@@ -128,9 +126,9 @@ const withCard = (name, Wrapped) => (props) => (
 );
 
 export const ValidationMethodsView = withCard(
-  'Validation and Test',
+  "Validation and Test",
   withLoader(
     (pred) => pred.customMetaData && pred.validationMethods,
-    ValidationMethodsViewRaw,
-  ),
+    ValidationMethodsViewRaw
+  )
 );

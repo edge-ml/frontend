@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Modal,
   ModalHeader,
@@ -12,27 +12,27 @@ import {
   Table,
   Col,
   Row,
-} from 'reactstrap';
+} from "reactstrap";
 
 import {
   updateProject,
   createProject,
-} from './../../services/ApiServices/ProjectService';
+} from "./../../services/ApiServices/ProjectService";
 
-import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteInput';
-import { getUserNameSuggestions } from '../../services/ApiServices/AuthentificationServices';
+import AutoCompleteInput from "../../components/AutoCompleteInput/AutocompleteInput";
+import { getUserNameSuggestions } from "../../services/ApiServices/AuthentificationServices";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
-import './EditProjectModal.css';
+import "./EditProjectModal.css";
 
 class EditProjectModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
       error: undefined,
-      userSearchValue: '',
+      userSearchValue: "",
       originalProject: undefined,
       project: undefined,
       originalUsers: [],
@@ -68,7 +68,7 @@ class EditProjectModal extends Component {
     project.users.push({ userName: e.target.value });
     this.setState({
       project: project,
-      userSearchValue: '',
+      userSearchValue: "",
     });
   }
 
@@ -86,15 +86,13 @@ class EditProjectModal extends Component {
       createProject(this.state.project)
         .then((data) => {
           const projectIndex = data.findIndex(
-            (elm) => elm.name === this.state.project.name,
+            (elm) => elm.name === this.state.project.name
           );
-          
-          
+
           this.props.projectChanged(data, projectIndex);
           this.setState({ error: undefined });
         })
         .catch((err) => {
-          
           this.setState({
             error: err,
           });
@@ -104,14 +102,12 @@ class EditProjectModal extends Component {
         .then((data) => {
           this.props.projectChanged(data);
         })
-        .catch((err) => {
-          
-        });
+        .catch((err) => {});
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const newProject = { name: '', users: [] };
+    const newProject = { name: "", users: [] };
     this.setState({
       project: newProject,
     });
@@ -135,7 +131,7 @@ class EditProjectModal extends Component {
       },
       () => {
         this.props.onClose();
-      },
+      }
     );
   }
 
@@ -171,41 +167,41 @@ class EditProjectModal extends Component {
       <Modal id="editProjectModal" isOpen={this.props.isOpen}>
         <ModalHeader>
           {this.props.isNewProject
-            ? 'Create new Project'
-            : 'Edit Project: ' + this.state.originalProject.name}
+            ? "Create new Project"
+            : "Edit Project: " + this.state.originalProject.name}
         </ModalHeader>
         <ModalBody>
           <InputGroup>
             <InputGroupText>
-              <InputGroupText>{'Name'}</InputGroupText>
+              <InputGroupText>{"Name"}</InputGroupText>
             </InputGroupText>
             <Input
               id="inputProjectName"
-              placeholder={'Project-name'}
+              placeholder={"Project-name"}
               value={this.state.project.name}
               onChange={(e) => this.onNameChanged(e.target.value)}
             />
           </InputGroup>
           <InputGroup>
             <InputGroupText>
-              <InputGroupText>{'Admin'}</InputGroupText>
+              <InputGroupText>{"Admin"}</InputGroupText>
             </InputGroupText>
             <Input
               readOnly
               id="inputProjectAdmin"
-              placeholder={'Project-admin'}
+              placeholder={"Project-admin"}
               value={this.props.userName}
             />
           </InputGroup>
           {this.props.isNewProject ? null : (
             <InputGroup>
               <InputGroupText>
-                <InputGroupText>{'Admin'}</InputGroupText>
+                <InputGroupText>{"Admin"}</InputGroupText>
               </InputGroupText>
               <Input value={this.state.project.admin.userName} readOnly />
             </InputGroup>
           )}
-          <h5 style={{ paddingTop: '16px' }}>Users</h5>
+          <h5 style={{ paddingTop: "16px" }}>Users</h5>
 
           <Row className="user-search-heading">
             <Col className="col-3">Search users: </Col>
@@ -235,12 +231,12 @@ class EditProjectModal extends Component {
             </thead>
             <tbody>
               {this.state.project.users.map((elm, index) =>
-                this.generateTableEntry(elm.userName, index),
+                this.generateTableEntry(elm.userName, index)
               )}
             </tbody>
           </Table>
         </ModalBody>
-        <ModalFooter style={{ justifyContent: 'space-between' }}>
+        <ModalFooter style={{ justifyContent: "space-between" }}>
           <Button
             id="btnSaveProject"
             color="primary"
@@ -248,7 +244,7 @@ class EditProjectModal extends Component {
             onClick={this.onSave}
           >
             Save
-          </Button>{' '}
+          </Button>{" "}
           <div className="error-text"> {this.state.error}</div>
           <Button
             id="btnSaveProjectCancel"

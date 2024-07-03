@@ -25,7 +25,7 @@ const DatasetTable = ({
   labelings,
   labels,
   deleteEntry,
-  updateDataset
+  updateDataset,
 }) => {
   const [areAllSelected, setAllSelected] = useState(false);
   return (

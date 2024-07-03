@@ -1,9 +1,9 @@
-import React from 'react';
-import EdgeMLBrandLogo from '../EdgeMLBrandLogo/EdgeMLBrandLogo';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import EdgeMLBrandLogo from "../EdgeMLBrandLogo/EdgeMLBrandLogo";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-import './MobileHeader.css';
+import "./MobileHeader.css";
 
 const MobileHeader = ({
   onMenuButton = () => {},
@@ -15,12 +15,12 @@ const MobileHeader = ({
       <EdgeMLBrandLogo
         href={
           projectAvailable
-            ? '/' +
+            ? "/" +
               projectAvailable.admin.userName +
-              '/' +
+              "/" +
               projectAvailable.name +
-              '/' +
-              'datasets'
+              "/" +
+              "datasets"
             : null
         }
       />

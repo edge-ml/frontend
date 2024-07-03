@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Button,
   Modal,
@@ -9,10 +9,10 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-} from 'reactstrap';
-import LabelingSetsFilter from './filters/LabelingSetsFilter';
-import EmptyDatasetFilter from './filters/EmptyDatasetsFilter';
-import TextSearchFilter from './filters/TextSearchFilter';
+} from "reactstrap";
+import LabelingSetsFilter from "./filters/LabelingSetsFilter";
+import EmptyDatasetFilter from "./filters/EmptyDatasetsFilter";
+import TextSearchFilter from "./filters/TextSearchFilter";
 
 const FilterSelectionModal = ({
   filterModalOpen,
@@ -26,13 +26,13 @@ const FilterSelectionModal = ({
   removeFilter,
 }) => {
   const filtersDef = [
-    { displayName: 'Empty Datasets', value: 'filterEmptyDatasets' },
-    { displayName: 'Text Search', value: 'filterByName' },
-    { displayName: 'Labeling Sets', value: 'labelings' },
+    { displayName: "Empty Datasets", value: "filterEmptyDatasets" },
+    { displayName: "Text Search", value: "filterByName" },
+    { displayName: "Labeling Sets", value: "labelings" },
   ];
 
   const [currentFilter, setCurrentFilter] = useState(
-    selectedFilter === undefined ? filtersDef[0] : selectedFilter,
+    selectedFilter === undefined ? filtersDef[0] : selectedFilter
   );
   const [currenFilterParams, setCurrentFilterParams] =
     useState(selectedFilterParams);
@@ -40,7 +40,7 @@ const FilterSelectionModal = ({
 
   const renderFilter = () => {
     switch (currentFilter.value) {
-      case 'filterByName':
+      case "filterByName":
         return (
           <TextSearchFilter
             selectedFilter={selectedFilter}
@@ -51,10 +51,10 @@ const FilterSelectionModal = ({
           />
         );
         break;
-      case 'filterEmptyDatasets':
+      case "filterEmptyDatasets":
         return <EmptyDatasetFilter />;
         break;
-      case 'labelings':
+      case "labelings":
         return (
           <LabelingSetsFilter
             selectedFilter={selectedFilter}
@@ -120,10 +120,10 @@ const FilterSelectionModal = ({
         <ModalFooter>
           <Button color="primary" outline onClick={_removeFilter}>
             Remove filter
-          </Button>{' '}
+          </Button>{" "}
           <Button color="primary" outline onClick={applyAndClose}>
             Apply
-          </Button>{' '}
+          </Button>{" "}
           <Button
             color="danger"
             outline

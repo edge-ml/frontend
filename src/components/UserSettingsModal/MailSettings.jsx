@@ -1,13 +1,8 @@
-import React, { Component } from 'react';
-import {
-  Button,
-  Input,
-  InputGroup,
-  InputGroupText,
-} from 'reactstrap';
+import React, { Component } from "react";
+import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
 
-import { validateEmail } from './../../services/helpers';
-import { changeUserMail } from './../../services/ApiServices/AuthentificationServices';
+import { validateEmail } from "./../../services/helpers";
+import { changeUserMail } from "./../../services/ApiServices/AuthentificationServices";
 
 class MailSettings extends Component {
   constructor(props) {
@@ -39,11 +34,11 @@ class MailSettings extends Component {
     if (!this.state.newEmail && !this.state.confirmationEmail) return;
     if (this.state.newEmail !== this.state.confirmationEmail) {
       this.setState({
-        emailError: 'E-mails do not match',
+        emailError: "E-mails do not match",
       });
     } else if (!validateEmail(this.state.newEmail)) {
       this.setState({
-        emailError: 'Not a valid e-mail format',
+        emailError: "Not a valid e-mail format",
       });
     } else {
       changeUserMail(this.state.newEmail)
@@ -96,9 +91,9 @@ class MailSettings extends Component {
           <div
             id="emailError"
             style={{
-              display: 'inline',
-              color: 'red',
-              marginLeft: '16px',
+              display: "inline",
+              color: "red",
+              marginLeft: "16px",
             }}
           >
             {this.state.emailError}

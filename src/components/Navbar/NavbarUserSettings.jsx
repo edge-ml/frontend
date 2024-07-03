@@ -1,13 +1,13 @@
-import React, { useContext, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import React, { useContext, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
-import './Navbar.css';
-import { PopoverBody, Button, Popover } from 'reactstrap';
-import { AuthContext } from '../../AuthProvider';
-import UserSettingsModal from '../UserSettingsModal/UserSettingsModal';
-import useAuth from '../../Hooks/useAuth';
-import useUserStore from '../../Hooks/useUser';
+import "./Navbar.css";
+import { PopoverBody, Button, Popover } from "reactstrap";
+import { AuthContext } from "../../AuthProvider";
+import UserSettingsModal from "../UserSettingsModal/UserSettingsModal";
+import useAuth from "../../Hooks/useAuth";
+import useUserStore from "../../Hooks/useUser";
 
 const NavbarUserSettings = () => {
   const [userPopoverOpen, setUserPopoverOpen] = useState(false);
@@ -63,18 +63,18 @@ const NavbarUserSettings = () => {
         </Popover>
         <div
           style={{
-            backgroundColor: 'lightgray',
-            border: '0px solid darkgray',
-            width: '26px',
-            height: '26px',
-            borderRadius: '13px',
-            overflow: 'hidden',
+            backgroundColor: "lightgray",
+            border: "0px solid darkgray",
+            width: "26px",
+            height: "26px",
+            borderRadius: "13px",
+            overflow: "hidden",
           }}
           className="me-2 d-flex justify-content-center align-items-center"
         >
           <FontAwesomeIcon
             icon={faUser}
-            style={{ fontSize: 'x-large', color: 'white' }}
+            style={{ fontSize: "x-large", color: "white" }}
             className="mt-2"
           />
         </div>

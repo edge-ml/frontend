@@ -24,11 +24,13 @@ const Labelings = () => {
   }
 
   const removeLabeling = (labelings) => {
-    labelings.forEach(labeling => {
+    labelings.forEach((labeling) => {
       deleteLabeling(labeling._id);
     });
 
-    const remainingLabelings = selectedLabelings.filter(labeling => !labelings.map(elm => elm._id).includes(labeling._id));
+    const remainingLabelings = selectedLabelings.filter(
+      (labeling) => !labelings.map((elm) => elm._id).includes(labeling._id)
+    );
     setSelectedLabelings(remainingLabelings);
   };
 
@@ -50,15 +52,12 @@ const Labelings = () => {
   const allSelected = labelingIdSet === selectedLabelingSet;
 
   const selectAll = () => {
-    
     if (allSelected) {
       setSelectedLabelings([]);
     } else {
       setSelectedLabelings(labelings.map((elm) => elm._id));
     }
   };
-
-  
 
   return (
     <Loader loading={!labelings}>
@@ -98,7 +97,7 @@ const Labelings = () => {
         onCancel={() => setEditModalOpen(false)}
         onSave={(labeling) => {
           addLabeling(labeling);
-          
+
           setEditModalOpen(false);
         }}
         isOpen={editModalOpen}

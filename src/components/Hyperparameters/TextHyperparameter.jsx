@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
-import Select from 'react-select';
-import makeAnimated from 'react-select/animated';
-import { Input } from 'reactstrap';
+import React, { Component } from "react";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
+import { Input } from "reactstrap";
 
-import Hyperparameter from './Hyperparameter';
+import Hyperparameter from "./Hyperparameter";
 
 const TextHyperparameter = (props) => {
-  
   return (
     <Hyperparameter {...props}>
       <Input

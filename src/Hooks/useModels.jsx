@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   getModels,
   getStepOptions,
   deleteModel as deleteModel_API,
-} from '../services/ApiServices/MlService';
+} from "../services/ApiServices/MlService";
 
 const useModels = () => {
   const [models, setModels] = useState(undefined);

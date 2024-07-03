@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { deleteUser } from '../../services/ApiServices/AuthentificationServices';
+import { deleteUser } from "../../services/ApiServices/AuthentificationServices";
 
 class UserSettingsProvider extends Component {
   constructor(props) {

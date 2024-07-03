@@ -1,7 +1,7 @@
-import React from 'react';
-import { ModalHeader, Modal } from 'reactstrap';
+import React from "react";
+import { ModalHeader, Modal } from "reactstrap";
 
-import SelectLabeling from './SelectLabeling';
+import SelectLabeling from "./SelectLabeling";
 
 const TrainWizzard = () => {
   return (

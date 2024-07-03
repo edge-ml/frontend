@@ -32,7 +32,6 @@ const Pipelinestep = ({
   };
 
   const onSelectStepOption = (option) => {
-    
     setPipelineStep(option);
   };
 
@@ -45,7 +44,6 @@ const Pipelinestep = ({
     setPipelineStep(tmpSelectedPipelineStep);
   };
 
-  
   return (
     <div className="p-2">
       <div className="d-flex justify-content-between">

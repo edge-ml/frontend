@@ -11,7 +11,7 @@ import useDatasets from "../../Hooks/useDatasets";
 import usePaginatedDatasets from "../../Hooks/usePaginatedDatasets";
 import { Pagination } from "reactstrap";
 import PageSelection from "./PageSelection";
-import DeleteModal from "../../components/Common/DeleteModal"
+import DeleteModal from "../../components/Common/DeleteModal";
 
 const ListPage = (props) => {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
@@ -31,9 +31,8 @@ const ListPage = (props) => {
     sorting,
     setSorting,
     updateDataset,
-    deleteDatasets
+    deleteDatasets,
   } = usePaginatedDatasets(1);
-
 
   const deleteSelectedDatasets = () => {
     deleteDatasets(deleteSelected);
@@ -41,7 +40,7 @@ const ListPage = (props) => {
   };
 
   const deleteEntry = (datasetId) => {
-    console.log(datasetId)
+    console.log(datasetId);
     setDeleteSelected([datasetId]);
   };
 
@@ -80,12 +79,11 @@ const ListPage = (props) => {
     registerProjectDownload();
   };
 
-  const toggleCreateNewDatasetModal = () => { };
+  const toggleCreateNewDatasetModal = () => {};
 
   if (!datasets || !labelings) {
     return <Loader loading={true}></Loader>;
   }
-
 
   return (
     <div id="dataList" className="d-flex flex-column h-100">

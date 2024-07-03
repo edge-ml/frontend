@@ -1,6 +1,6 @@
-import React from 'react';
-import SpinnerButton from '../Common/SpinnerButton';
-import { Button } from 'reactstrap';
+import React from "react";
+import SpinnerButton from "../Common/SpinnerButton";
+import { Button } from "reactstrap";
 
 const getInfoText = (props) => {
   if (!props.connectedBLEDevice) {
@@ -13,7 +13,7 @@ const getInfoText = (props) => {
         {renderDeviceInfo(props)}
         {props.outdatedVersionInstalled && props.hasDFUFunction && (
           <div>
-            {' '}
+            {" "}
             The edge-ml firmware version is outdated. You can update it to the
             latest version by clicking on the button.
           </div>
@@ -51,7 +51,7 @@ const renderDeviceName = (props) => {
   }
   return (
     <div>
-      Connected device:{' '}
+      Connected device:{" "}
       <b>
         {props.connectedDeviceData
           ? props.connectedDeviceData.name
@@ -65,11 +65,11 @@ const renderDeviceName = (props) => {
 const renderDeviceInfo = (props) => {
   return (
     <div>
-      Installed version:{' '}
+      Installed version:{" "}
       <strong>{props.connectedDeviceData.installedFWVersion}</strong>
       <br />
       {props.basicEdgeMLArduinoFirmware &&
-        'Latest version:' + <strong>{props.latestEdgeMLVersion}</strong>}
+        "Latest version:" + <strong>{props.latestEdgeMLVersion}</strong>}
     </div>
   );
 };
@@ -109,34 +109,34 @@ function BlePanelConnectDevice(props) {
         <div className="panelDivider" />
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            flexDirection: 'row',
+            display: "flex",
+            justifyContent: "space-between",
+            flexDirection: "row",
           }}
         >
           {getInfoText(props)}
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              marginRight: '2',
-              padding: '4',
+              display: "flex",
+              flexDirection: "row",
+              marginRight: "2",
+              padding: "4",
             }}
           >
             <div className="me-2">{getButtonView(props)}</div>
             <SpinnerButton
               outline
               loadingtext={
-                props.connectedBLEDevice ? 'Disconnecting...' : 'Connecting...'
+                props.connectedBLEDevice ? "Disconnecting..." : "Connecting..."
               }
-              color={props.connectedBLEDevice ? 'danger' : 'primary'}
-              spinnercolor={props.connectedBLEDevice ? 'danger' : 'primary'}
+              color={props.connectedBLEDevice ? "danger" : "primary"}
+              spinnercolor={props.connectedBLEDevice ? "danger" : "primary"}
               loading={props.bleConnectionChanging}
               onClick={props.toggleBLEDeviceConnection}
             >
               {props.connectedBLEDevice
-                ? 'Disconnect device'
-                : 'Connect device'}
+                ? "Disconnect device"
+                : "Connect device"}
             </SpinnerButton>
           </div>
         </div>

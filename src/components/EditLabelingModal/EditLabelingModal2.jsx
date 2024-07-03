@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Modal,
   ModalHeader,
@@ -9,19 +9,19 @@ import {
   InputGroupText,
   Input,
   FormFeedback,
-} from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+} from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import {
   isValidColor,
   hexToForegroundColor,
   generateRandomColor,
-} from '../../services/ColorService';
-import ConfirmationDialogueModal from '../ConfirmationDilaogueModal/ConfirmationDialogueModal';
-import EmptyLabelingSetFeedBack from './EmptyLabelingSetFeedBack';
+} from "../../services/ColorService";
+import ConfirmationDialogueModal from "../ConfirmationDilaogueModal/ConfirmationDialogueModal";
+import EmptyLabelingSetFeedBack from "./EmptyLabelingSetFeedBack";
 
-import './EditLabelingModal.css';
+import "./EditLabelingModal.css";
 
 class EditLabelingModal extends Component {
   constructor(props) {
@@ -38,7 +38,7 @@ class EditLabelingModal extends Component {
       allowSaving: false,
       showConfirmationDialogueLabeling: false,
       showConfirmationDialogueLabels: false,
-      confirmString: '',
+      confirmString: "",
       conflictingDatasetIdsForLabelingDeletion: [],
     };
 
@@ -66,17 +66,17 @@ class EditLabelingModal extends Component {
   }
 
   componentDidMount() {
-    document.addEventListener('keydown', this.onKeyPressed, false);
+    document.addEventListener("keydown", this.onKeyPressed, false);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.onKeyPressed, false);
+    document.removeEventListener("keydown", this.onKeyPressed, false);
   }
 
   labelNameInvalid(label, labelIdx) {
     return this.state.labeling.labels.some(
       (elm, idx) =>
-        elm.name === label.name && idx !== labelIdx && label.name !== '',
+        elm.name === label.name && idx !== labelIdx && label.name !== ""
     );
   }
 
@@ -90,16 +90,16 @@ class EditLabelingModal extends Component {
       !this.state.showConfirmationDialogueLabels
     ) {
       switch (e.key) {
-        case 'Escape':
+        case "Escape":
           this.props.onCloseModal();
           break;
-        case 'Enter':
+        case "Enter":
           if (!this.saveDisabled()) {
             this.onClickingSave();
           }
           break;
-        case 'Delete':
-          this.onDeleteLabeling(this.state.labeling['_id']);
+        case "Delete":
+          this.onDeleteLabeling(this.state.labeling["_id"]);
       }
     }
   }
@@ -108,7 +108,7 @@ class EditLabelingModal extends Component {
     let count = 1;
     const conflictDatasets = Object.keys(conflictingLabels).map((key) => {
       const labelItems = conflictingLabels[key].labels.map((label) => {
-        return <div key={label._id}>{' ' + label.name}</div>;
+        return <div key={label._id}>{" " + label.name}</div>;
       });
       return (
         <div key={key}>
@@ -123,7 +123,7 @@ class EditLabelingModal extends Component {
       <div>
         <div>
           {
-            'You are about to delete the labels that are used in the following dataset(s):'
+            "You are about to delete the labels that are used in the following dataset(s):"
           }
         </div>
         {conflictDatasets}
@@ -146,10 +146,10 @@ class EditLabelingModal extends Component {
         dset.labelings.forEach((l) => {
           //check if dataset contains label from state.deletedLabels
           //delLabel contains an unique identifier corresponding to the type in the dataset label
-          const found = l.labels.find((e) => e.type === delLabel['_id']);
+          const found = l.labels.find((e) => e.type === delLabel["_id"]);
           if (found) {
             const label = this.state.deletedLabels.find(
-              (elm) => elm._id === found.type,
+              (elm) => elm._id === found.type
             );
             labels.push(label);
             labelConflict = true;
@@ -187,8 +187,8 @@ class EditLabelingModal extends Component {
   onConfirmDeletionLabeling() {
     //label conflict and user chose to delete labels. Deletes them in the backend too.
     this.props.onDeleteLabeling(
-      this.state.labeling['_id'],
-      this.state.conflictingDatasetIdsForLabelingDeletion,
+      this.state.labeling["_id"],
+      this.state.conflictingDatasetIdsForLabelingDeletion
     );
   }
 
@@ -197,7 +197,7 @@ class EditLabelingModal extends Component {
     this.setState({
       labeling: this.cloneLabeling(this.props.labeling),
       deletedLabels: [],
-      confirmString: '',
+      confirmString: "",
       showConfirmationDialogueLabels: false,
     });
   }
@@ -231,7 +231,7 @@ class EditLabelingModal extends Component {
 
   onAddLabel() {
     let newLabel = {
-      name: '',
+      name: "",
       color: generateRandomColor(),
       isNewLabel: true,
     };
@@ -248,7 +248,7 @@ class EditLabelingModal extends Component {
     let conflictingDatasetIds = [];
     let labeling = this.state.labeling;
     this.state.datasets.forEach((dset) => {
-      if (dset.labelings.some((l) => l.labelingId === labeling['_id'])) {
+      if (dset.labelings.some((l) => l.labelingId === labeling["_id"])) {
         labelConflict = true;
         conflictingDatasetNames.push(dset.name);
         conflictingDatasetIds.push(dset._id);
@@ -256,7 +256,7 @@ class EditLabelingModal extends Component {
     });
 
     const confirmString = this.props.getConfirmStringLabelingSet(
-      conflictingDatasetNames,
+      conflictingDatasetNames
     );
     if (labelConflict) {
       //label conflict and user chose to delete labels. Deletes them in the backend too.
@@ -270,7 +270,7 @@ class EditLabelingModal extends Component {
       this.setState({
         showConfirmationDialogueLabeling: true,
         conflictingDatasetIdsForLabelingDeletion: [],
-        confirmString: 'Are you sure to delete this labeling set?',
+        confirmString: "Are you sure to delete this labeling set?",
       });
     }
   }
@@ -279,8 +279,6 @@ class EditLabelingModal extends Component {
     const labeling = this.state.labeling;
     const deletedLabel = this.state.labeling.labels[index];
     labeling.labels.splice(index, 1);
-    
-    
 
     this.setState((prevState) => ({
       labeling: labeling,
@@ -310,8 +308,8 @@ class EditLabelingModal extends Component {
     return (
       this.state.labeling.labels &&
       this.state.labeling &&
-      this.state.labeling.labels.every((elm) => elm.name !== '') &&
-      this.state.labeling.name !== '' &&
+      this.state.labeling.labels.every((elm) => elm.name !== "") &&
+      this.state.labeling.name !== "" &&
       this.state.labeling.labels.length !== 0
     );
   }
@@ -322,7 +320,7 @@ class EditLabelingModal extends Component {
       this.props.labelings.some(
         (elm) =>
           elm.name === this.state.labeling.name &&
-          elm._id != this.state.labeling._id,
+          elm._id != this.state.labeling._id
       )
     );
   }
@@ -346,9 +344,9 @@ class EditLabelingModal extends Component {
     return (
       <Modal isOpen={this.state.isOpen}>
         <ModalHeader>
-          {this.state.labeling && this.state.labeling['_id']
-            ? 'Edit Labeling Set'
-            : 'Add Labeling Set'}
+          {this.state.labeling && this.state.labeling["_id"]
+            ? "Edit Labeling Set"
+            : "Add Labeling Set"}
         </ModalHeader>
         <ModalBody className="edit-labeling-body">
           <div className="d-flex flex-row align-items-center">
@@ -363,7 +361,7 @@ class EditLabelingModal extends Component {
                 value={
                   this.state.labeling && this.state.labeling.name
                     ? this.state.labeling.name
-                    : ''
+                    : ""
                 }
                 onChange={(e) => this.onLabelingNameChanged(e.target.value)}
               />
@@ -371,7 +369,7 @@ class EditLabelingModal extends Component {
                 id="labelingNameFeedback"
                 style={
                   this.labelingNameInValid()
-                    ? { display: 'flex', justifyContent: 'right' }
+                    ? { display: "flex", justifyContent: "right" }
                     : null
                 }
               >
@@ -387,7 +385,7 @@ class EditLabelingModal extends Component {
                     className="m-0"
                     outline
                     onClick={(e) => {
-                      this.onDeleteLabeling(this.state.labeling['_id']);
+                      this.onDeleteLabeling(this.state.labeling["_id"]);
                     }}
                   >
                     <FontAwesomeIcon icon={faTrashAlt} />
@@ -399,27 +397,27 @@ class EditLabelingModal extends Component {
           <hr />
           {this.state.labeling.labels
             ? this.state.labeling.labels.map((label, index) => (
-                <InputGroup key={'label' + index}>
+                <InputGroup key={"label" + index}>
                   <InputGroupText>
                     <InputGroupText>Label</InputGroupText>
                   </InputGroupText>
                   <Input
                     invalid={this.labelNameInvalid(label, index)}
-                    id={'labelName' + index}
+                    id={"labelName" + index}
                     placeholder="Name"
                     value={label.name}
                     onChange={(e) =>
                       this.onLabelNameChanged(index, e.target.value)
                     }
                   />
-                    <InputGroupText>Color</InputGroupText>
+                  <InputGroupText>Color</InputGroupText>
                   <Input
-                    id={'labelColor' + index}
+                    id={"labelColor" + index}
                     placeholder="Color"
                     className={
                       isValidColor(label.color)
-                        ? 'input-group-append is-valid'
-                        : 'input-group-append clear is-invalid'
+                        ? "input-group-append is-valid"
+                        : "input-group-append clear is-invalid"
                     }
                     style={{
                       backgroundColor: isValidColor(label.color)
@@ -434,7 +432,7 @@ class EditLabelingModal extends Component {
                   />
                   <InputGroupText>
                     <Button
-                      id={'buttonDeleteLabel' + index}
+                      id={"buttonDeleteLabel" + index}
                       className="m-0 deleteBtnRadius"
                       color="danger"
                       outline
@@ -447,8 +445,8 @@ class EditLabelingModal extends Component {
                   </InputGroupText>
                   <FormFeedback id="labelFeedback">
                     {!isValidColor(label.color)
-                      ? 'Invalid color'
-                      : 'Duplicate names are not allowed'}
+                      ? "Invalid color"
+                      : "Duplicate names are not allowed"}
                   </FormFeedback>
                 </InputGroup>
               ))
@@ -498,7 +496,7 @@ class EditLabelingModal extends Component {
         onCancel={this.onCancelDeletionLabeling}
         onConfirm={this.onConfirmDeletionLabeling}
         confirmString={this.state.confirmString}
-        title={'Confirm Labeling Set Deletion'}
+        title={"Confirm Labeling Set Deletion"}
         isOpen={this.props.isOpen}
       />
     );
@@ -510,7 +508,7 @@ class EditLabelingModal extends Component {
         onCancel={this.onCancelDeletionLabels}
         onConfirm={this.onConfirmDeletionLabels}
         confirmString={this.state.confirmString}
-        title={'Confirm Label Deletion'}
+        title={"Confirm Label Deletion"}
         isOpen={this.props.isOpen}
       />
     );

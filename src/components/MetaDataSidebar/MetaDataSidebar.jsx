@@ -1,12 +1,12 @@
-import React from 'react';
-import './MetaDataSidebar.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import TSSelectionPanel from '../TSSelectionPanel';
-import MetadataPanel from '../MetadataPanel/MetadataPanel';
-import CustomMetadataPanel from '../MetadataPanel/CustomMetadataPanel';
+import React from "react";
+import "./MetaDataSidebar.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import TSSelectionPanel from "../TSSelectionPanel";
+import MetadataPanel from "../MetadataPanel/MetadataPanel";
+import CustomMetadataPanel from "../MetadataPanel/CustomMetadataPanel";
 
-import './MetaDataSidebar.css';
+import "./MetaDataSidebar.css";
 
 export const MetaDataSidebar = ({
   metaDataExtended,
@@ -21,7 +21,7 @@ export const MetaDataSidebar = ({
   return (
     <div
       className={
-        metaDataExtended ? 'dataset-side-panel open' : 'dataset-side-panel'
+        metaDataExtended ? "dataset-side-panel open" : "dataset-side-panel"
       }
     >
       <div

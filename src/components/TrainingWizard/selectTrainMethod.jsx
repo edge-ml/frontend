@@ -1,25 +1,25 @@
-import React from 'react';
+import React from "react";
 import {
   faGear,
   faGears,
   faSliders,
   faUserGear,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Fragment } from 'react';
-import { Button } from 'reactstrap';
-import PlatformList from '../Common/PlatformList';
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Fragment } from "react";
+import { Button } from "reactstrap";
+import PlatformList from "../Common/PlatformList";
 
 const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
   let platforms = new Set(
     pipeline.steps
-      .filter((elm) => ['PRE', 'EVAL'].includes(elm.type))[0]
+      .filter((elm) => ["PRE", "EVAL"].includes(elm.type))[0]
       .options.map((elm) => elm.platforms)
-      .flat(),
+      .flat()
   );
 
   pipeline.steps.forEach((step) => {
-    if (step.type === 'PRE' || step.type === 'CORE') {
+    if (step.type === "PRE" || step.type === "CORE") {
       const plf = new Set(step.options.map((elm) => elm.platforms).flat());
       platforms = new Set([...platforms].filter((elm) => plf.has(elm)));
     }
@@ -44,7 +44,6 @@ const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
 };
 
 const SelectTrainMethod = ({ pipelines, onSelectTrainingMethod }) => {
-
   return (
     <Fragment>
       {pipelines.map((elm) => TrainingMethod(elm, onSelectTrainingMethod))}

@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Button } from 'reactstrap';
-import logoSvg from '../../logo.svg';
+import { useState, useEffect } from "react";
+import { Button } from "reactstrap";
+import logoSvg from "../../logo.svg";
 
 const DataLossPage = ({ children }) => {
   const [accepted, setAccepted] = useState(false);
 
   useEffect(() => {
-    const lastAcceptanceDate = localStorage.getItem('lastAcceptanceDate');
+    const lastAcceptanceDate = localStorage.getItem("lastAcceptanceDate");
     if (lastAcceptanceDate) {
       const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
       const currentDate = new Date();
@@ -18,7 +18,7 @@ const DataLossPage = ({ children }) => {
   }, []);
 
   const acceptDataLoss = () => {
-    localStorage.setItem('lastAcceptanceDate', new Date().toISOString());
+    localStorage.setItem("lastAcceptanceDate", new Date().toISOString());
     setAccepted(true);
   };
 
@@ -31,16 +31,16 @@ const DataLossPage = ({ children }) => {
       {children}
       <div
         className="d-flex justify-content-center align-items-center vh-100 vw-100 flex-column fw-bold position-absolute fixed-top left-0 z-index-10000"
-        style={{ backgroundColor: 'rgba(255,255,255,0.9)' }}
+        style={{ backgroundColor: "rgba(255,255,255,0.9)" }}
       >
         <div className="d-flex align-items-center m-5">
           <img
-            style={{ marginRight: '8px', width: '100px' }}
+            style={{ marginRight: "8px", width: "100px" }}
             src={logoSvg}
             alt="Logo"
           />
           <b>
-            <div style={{ color: 'black', fontSize: '40px' }}>edge-ml</div>
+            <div style={{ color: "black", fontSize: "40px" }}>edge-ml</div>
           </b>
         </div>
         <h2 className="m-2 text-center">This is an edge-ml beta deployment.</h2>

@@ -1,17 +1,17 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import useDataset from '../../Hooks/useDataset';
-import LabelingSelectionPanel from '../../components/LabelingSelectionPanel/LabelingSelectionPanel';
-import { DatasetProvider } from './DatasetContext';
-import Loader from '../../modules/loader';
-import { LabelingProvider } from './LabelingContext';
-import useLabelings from '../../Hooks/useLabelings';
-import LabelingPanel from '../../components/LabelingPanel/LabelingPanel';
-import MetadataSidebar from './MetadataSidebar';
-import TimeSeriesSection from './TimeSeriesSection';
+import React from "react";
+import { useParams } from "react-router-dom";
+import useDataset from "../../Hooks/useDataset";
+import LabelingSelectionPanel from "../../components/LabelingSelectionPanel/LabelingSelectionPanel";
+import { DatasetProvider } from "./DatasetContext";
+import Loader from "../../modules/loader";
+import { LabelingProvider } from "./LabelingContext";
+import useLabelings from "../../Hooks/useLabelings";
+import LabelingPanel from "../../components/LabelingPanel/LabelingPanel";
+import MetadataSidebar from "./MetadataSidebar";
+import TimeSeriesSection from "./TimeSeriesSection";
 
-import './index.css';
-import useEditDataset from './useEditDataset';
+import "./index.css";
+import useEditDataset from "./useEditDataset";
 
 const Dataset = () => {
   const { datasetId } = useParams();
@@ -19,9 +19,7 @@ const Dataset = () => {
   const { labelings } = useLabelings();
   const datasetEdit = useEditDataset(datasetUtils, labelings);
 
-
-  const { dataset, addLabel, deleteLabel } = datasetUtils
-
+  const { dataset, addLabel, deleteLabel } = datasetUtils;
 
   if (!dataset || !labelings) {
     return <Loader loading></Loader>;
@@ -31,10 +29,17 @@ const Dataset = () => {
 
   return (
     <div>
-      <DatasetProvider dataset={dataset} labelings={labelings} datasetEdit={datasetEdit}>
+      <DatasetProvider
+        dataset={dataset}
+        labelings={labelings}
+        datasetEdit={datasetEdit}
+      >
         <LabelingProvider labelings={labelings}>
           <div className="d-flex w-100 h-100">
-            <div className="d-flex flex-column justify-content-between flex-grow-1" style={{ height: "100vh" }}>
+            <div
+              className="d-flex flex-column justify-content-between flex-grow-1"
+              style={{ height: "100vh" }}
+            >
               <LabelingSelectionPanel></LabelingSelectionPanel>
               <TimeSeriesSection></TimeSeriesSection>
               <LabelingPanel></LabelingPanel>

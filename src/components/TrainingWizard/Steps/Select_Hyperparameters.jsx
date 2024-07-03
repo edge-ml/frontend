@@ -1,6 +1,6 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState, Fragment } from 'react';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState, Fragment } from "react";
 import {
   Dropdown,
   DropdownItem,
@@ -8,10 +8,10 @@ import {
   DropdownToggle,
   Collapse,
   ModalBody,
-} from 'reactstrap';
-import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
+} from "reactstrap";
+import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
-import { HyperparameterView } from '../../Hyperparameters/HyperparameterView';
+import { HyperparameterView } from "../../Hyperparameters/HyperparameterView";
 
 const Wizard_Hyperparameters = ({
   classifier,
@@ -32,7 +32,7 @@ const Wizard_Hyperparameters = ({
   const handleHyperparameterChange = ({ parameter_name, value }) => {
     const newClassifier = [...classifier];
     const idx = newClassifier[classififier_index].parameters.findIndex(
-      (elm) => elm.parameter_name === parameter_name,
+      (elm) => elm.parameter_name === parameter_name
     );
     newClassifier[classififier_index].parameters[idx].value = value;
     setClassifier(newClassifier);
@@ -44,10 +44,10 @@ const Wizard_Hyperparameters = ({
   }
 
   const advancedCnt = classifier[classififier_index].parameters.filter(
-    (p) => p.is_advanced,
+    (p) => p.is_advanced
   ).length;
   const basicCnt = classifier[classififier_index].parameters.filter(
-    (p) => !p.is_advanced,
+    (p) => !p.is_advanced
   ).length;
 
   return (
@@ -72,9 +72,7 @@ const Wizard_Hyperparameters = ({
       </Dropdown>
       <div>
         <div className="w-100 align-items-center mb-2">
-          <div className="fw-bold h5 justify-self-start">
-            Hyperparameters
-          </div>
+          <div className="fw-bold h5 justify-self-start">Hyperparameters</div>
         </div>
         {basicCnt > 0 ? (
           <HyperparameterView
@@ -86,8 +84,8 @@ const Wizard_Hyperparameters = ({
         ) : (
           <div className="mb-3">
             {advancedCnt > 0
-              ? 'No basic hyperparameters. You can find advanced hyperparameters in the following section.'
-              : 'No hyperparameters'}
+              ? "No basic hyperparameters. You can find advanced hyperparameters in the following section."
+              : "No hyperparameters"}
           </div>
         )}
         {advancedCnt > 0 ? (
@@ -133,7 +131,7 @@ const Wizard_Hyperparameters = ({
 
 Wizard_Hyperparameters.validate = ({ selectedClassifier }) => {
   if (!selectedClassifier) {
-    return 'You need to select a classifier';
+    return "You need to select a classifier";
   }
 };
 

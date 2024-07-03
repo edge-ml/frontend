@@ -1,12 +1,12 @@
-import React from 'react';
-import { Card } from 'reactstrap';
+import React from "react";
+import { Card } from "reactstrap";
 
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import './Snackbar.css';
+import "./Snackbar.css";
 
-function Snackbar({ text = '', closeSnackbar = () => {} }) {
+function Snackbar({ text = "", closeSnackbar = () => {} }) {
   return (
     <Card
       className="snackbar"

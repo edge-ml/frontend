@@ -14,7 +14,12 @@ import {
 } from "../../services/ColorService";
 import ColorPicker from "../ColorPicker";
 
-const EditLabelingModalEntry = ({ label, onChangeLabel, onDelete, invalid }) => {
+const EditLabelingModalEntry = ({
+  label,
+  onChangeLabel,
+  onDelete,
+  invalid,
+}) => {
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
 
   const onChangeColor = (color) => {

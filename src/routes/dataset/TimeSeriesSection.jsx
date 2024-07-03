@@ -5,22 +5,24 @@ import TimeSeriesDisplay from "./TimeSeriesDisplay";
 import ChartSlider from "./ChartSlider";
 import DeleteModal from "../../components/Common/DeleteModal";
 
-const TimeSeriesSection = ({ }) => {
-
+const TimeSeriesSection = ({}) => {
   const {
     activeTimeSeries,
     setStartEnd,
     onDeleteSelectedLabel,
-    selectedLabel
+    selectedLabel,
   } = useContext(DatasetContext);
-
 
   const globalStart = Math.min(...activeTimeSeries.map((elm) => elm.start));
   const globalEnd = Math.max(...activeTimeSeries.map((elm) => elm.end));
 
   return (
     <>
-      <ChartSlider start={globalStart} end={globalEnd} setStartEnd={setStartEnd}></ChartSlider>
+      <ChartSlider
+        start={globalStart}
+        end={globalEnd}
+        setStartEnd={setStartEnd}
+      ></ChartSlider>
       <div className="flex-grow-1 overflow-auto">
         {activeTimeSeries.map((elm, index) => (
           <TimeSeriesDisplay

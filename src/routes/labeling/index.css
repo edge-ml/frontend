@@ -31,9 +31,9 @@
 
 .btn-addLabeling {
   position: fixed;
-  bottom: '1rem';
-  right: '1rem';
-  border-radius: '50%';
+  bottom: "1rem";
+  right: "1rem";
+  border-radius: "50%";
 }
 
 .text-break {

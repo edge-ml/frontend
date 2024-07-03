@@ -28,24 +28,24 @@ const PERMAPIASK =
         return navigator.permissions
           .query({ name: permname })
           .then((result) => {
-            if (result.state === 'denied') {
+            if (result.state === "denied") {
               throw new Error(`Permission "${permname}" is denied.`);
             }
           });
-      }),
+      })
     );
 
 const XYZMAP = ({ name }, { x, y, z }) => ({
-  [name + 'X']: x,
-  [name + 'Y']: y,
-  [name + 'Z']: z,
+  [name + "X"]: x,
+  [name + "Y"]: y,
+  [name + "Z"]: z,
 });
 
 const QUATMAP = ({ name }, { quaternion: [c1, c2, c3, c4] }) => ({
-  [name + '1']: c1,
-  [name + '2']: c2,
-  [name + '3']: c3,
-  [name + '4']: c4,
+  [name + "1"]: c1,
+  [name + "2"]: c2,
+  [name + "3"]: c3,
+  [name + "4"]: c4,
 });
 
 // export const SENSORS =

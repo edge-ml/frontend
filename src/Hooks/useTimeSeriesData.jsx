@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import useProjectStore from '../stores/projectStore';
-import { getTimeSeriesDataPartial } from '../services/ApiServices/TimeSeriesService';
+import { useEffect, useState } from "react";
+import useProjectStore from "../stores/projectStore";
+import { getTimeSeriesDataPartial } from "../services/ApiServices/TimeSeriesService";
 
 const useTimeSeriesData = (dataset_id, timeSeries_id) => {
   const { currentProject } = useProjectStore();
@@ -13,7 +13,7 @@ const useTimeSeriesData = (dataset_id, timeSeries_id) => {
       timeSeries_id,
       start,
       end,
-      window.innerWidth,
+      window.innerWidth
     );
     return res;
   };

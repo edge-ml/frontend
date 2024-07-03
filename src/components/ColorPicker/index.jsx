@@ -5,19 +5,19 @@ import { Button, Input } from "reactstrap";
 import "./index.css";
 
 const ColorPicker = (props) => {
-  const [color, setColor] = useState({ "hex": props.color });
+  const [color, setColor] = useState({ hex: props.color });
 
   const handleKeyDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
-  }
+  };
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  })
+  });
 
   const onChangeComplete = (color, event) => {
     setColor(color);
@@ -27,19 +27,22 @@ const ColorPicker = (props) => {
     props.onSave(color.hex);
     e.preventDefault();
     e.stopPropagation();
-  }
-
+  };
 
   if (!props.isOpen) {
     return null;
   }
 
-  
-
   return (
-    <div className="wrapper bg-white d-flex justiy-content-end flex-column"
-      onClick={(e) => { e.stopPropagation }}
-      onDragStart={e => { e.stopPropagation() }}>
+    <div
+      className="wrapper bg-white d-flex justiy-content-end flex-column"
+      onClick={(e) => {
+        e.stopPropagation;
+      }}
+      onDragStart={(e) => {
+        e.stopPropagation();
+      }}
+    >
       <SketchPicker
         className="sketch-picker"
         {...props}

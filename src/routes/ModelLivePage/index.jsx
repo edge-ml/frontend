@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Toast, ToastBody, ToastHeader } from 'reactstrap';
-import { getModel } from '../../services/ApiServices/MlService';
-import Loader from '../../modules/loader';
-import SetUpBLEConnection from './SetUpBLEConnection';
-import LivePage from './LivePage';
-import LabelBadge from '../../components/Common/LabelBadge';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Container, Toast, ToastBody, ToastHeader } from "reactstrap";
+import { getModel } from "../../services/ApiServices/MlService";
+import Loader from "../../modules/loader";
+import SetUpBLEConnection from "./SetUpBLEConnection";
+import LivePage from "./LivePage";
+import LabelBadge from "../../components/Common/LabelBadge";
+import { useParams } from "react-router-dom";
 
 const ModelLivePage = () => {
   const [model, setModel] = useState(undefined);
   const [bleDevice, setbleDevice] = useState(undefined);
   const [toastVisible, setToastVisible] = useState(false);
 
-  const {model_id} = useParams();
+  const { model_id } = useParams();
 
   useEffect(() => {
     getModel(model_id).then((model) => {
@@ -47,10 +47,10 @@ const ModelLivePage = () => {
       ) : null}
       <div
         className="d-flex flex-column overflow-hidden"
-        style={{ height: '100vh' }}
+        style={{ height: "100vh" }}
       >
         <div className="ps-2 pe-2 ps-md-4 pe-md-4 pb-2 pt-3">
-          <h4 className="fw-bold">{'LIVE MODEL'}</h4>
+          <h4 className="fw-bold">{"LIVE MODEL"}</h4>
           <div className="d-flex justify-content-left m-2">
             <div className="font-large mt-5">
               <h5>
@@ -60,7 +60,9 @@ const ModelLivePage = () => {
                 <h5 className="d-flex align-items-center">
                   <b>Labels in the model: </b>
                   {model.labels.map((elm) => (
-                    <LabelBadge className="m-1" color={elm.color}>{elm.name}</LabelBadge>
+                    <LabelBadge className="m-1" color={elm.color}>
+                      {elm.name}
+                    </LabelBadge>
                   ))}
                 </h5>
               </div>

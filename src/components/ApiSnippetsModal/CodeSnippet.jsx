@@ -1,62 +1,62 @@
-import React, { useEffect } from 'react';
-import Prism from 'prismjs';
-import 'prismjs/themes/prism-tomorrow.css';
-import 'prismjs/components/prism-java';
-import 'prismjs/components/prism-c';
-import 'prismjs/components/prism-cpp';
-import 'prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard';
-import { Button } from 'reactstrap';
-import CodeView from './CodeView';
+import React, { useEffect } from "react";
+import Prism from "prismjs";
+import "prismjs/themes/prism-tomorrow.css";
+import "prismjs/components/prism-java";
+import "prismjs/components/prism-c";
+import "prismjs/components/prism-cpp";
+import "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard";
+import { Button } from "reactstrap";
+import CodeView from "./CodeView";
 
-import { codeJava, codeArduino, codeNode, codeJs } from './Code';
+import { codeJava, codeArduino, codeNode, codeJs } from "./Code";
 
 const generateCode = (
   platform,
   backendUrl,
   datasetName,
   deviceApiKey,
-  useServerTime,
+  useServerTime
 ) => {
-  const javaTime = useServerTime ? '' : '1618760114000L, ';
-  const nodeTime = useServerTime ? '' : 'time = 1618760114000, ';
-  datasetName = datasetName ? datasetName : 'DATASET_NAME';
+  const javaTime = useServerTime ? "" : "1618760114000L, ";
+  const nodeTime = useServerTime ? "" : "time = 1618760114000, ";
+  datasetName = datasetName ? datasetName : "DATASET_NAME";
   var language;
   var code;
 
   // eslint-disable-next-line default-case
   switch (platform) {
-    case 'Java':
-      language = 'java';
+    case "Java":
+      language = "java";
       code = codeJava(
         backendUrl,
         deviceApiKey,
         datasetName,
         useServerTime,
-        javaTime,
+        javaTime
       );
       break;
-    case 'Node.js':
-      language = 'javascript';
+    case "Node.js":
+      language = "javascript";
       code = codeNode(
         backendUrl,
         deviceApiKey,
         datasetName,
         useServerTime,
-        nodeTime,
+        nodeTime
       );
       break;
-    case 'Arduino':
-      language = 'cpp';
+    case "Arduino":
+      language = "cpp";
       code = codeArduino(backendUrl, deviceApiKey, datasetName);
       break;
-    case 'Javascript':
-      language = 'javascript';
+    case "Javascript":
+      language = "javascript";
       code = codeJs(
         backendUrl,
         deviceApiKey,
         datasetName,
         useServerTime,
-        nodeTime,
+        nodeTime
       );
       break;
   }
@@ -70,7 +70,7 @@ const CodeSnippet = (props) => {
     props.backendUrl,
     props.datasetName,
     props.deviceApiKey,
-    props.useServertime,
+    props.useServertime
   );
 
   setTimeout(Prism.highlightAll, 10);

@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { Card, Button } from 'reactstrap';
-import './VideoPanel.css';
+import React, { Component } from "react";
+import { Card, Button } from "reactstrap";
+import "./VideoPanel.css";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExpandArrowsAlt,
   faCompressArrowsAlt,
   faExternalLinkAlt,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
 class VideoPanel extends Component {
   constructor(props) {
@@ -70,14 +70,14 @@ class VideoPanel extends Component {
     ) {
       if (this.state.browser.isSafari) {
         this.videoReference.current.webkitSetPresentationMode(
-          'picture-in-picture',
+          "picture-in-picture"
         );
       } else if (this.state.browser.isChrome) {
         this.videoReference.current.requestPictureInPicture();
       }
     } else if (this.videoReference) {
       if (this.state.browser.isSafari) {
-        this.videoReference.current.webkitSetPresentationMode('inline');
+        this.videoReference.current.webkitSetPresentationMode("inline");
       } else if (this.state.browser.isChrome) {
         document.exitPictureInPicture();
       }
@@ -85,13 +85,13 @@ class VideoPanel extends Component {
   }
 
   componentDidMount() {
-    this.videoReference.current.addEventListener('loadedmetadata', this.seek);
+    this.videoReference.current.addEventListener("loadedmetadata", this.seek);
   }
 
   componentWillUnmount() {
     this.videoReference.current.removeEventListener(
-      'loadedmetadata',
-      this.seek,
+      "loadedmetadata",
+      this.seek
     );
   }
 
@@ -102,32 +102,32 @@ class VideoPanel extends Component {
     });
 
     this.videoReference.current.addEventListener(
-      'leavepictureinpicture',
+      "leavepictureinpicture",
       () => {
-        alert('test');
+        alert("test");
         this.setState({
           pip: {
             isEnabled: false,
           },
         });
-      },
+      }
     );
   };
 
   render() {
     return (
-      <Card className={'VideoPanel'} style={{ overflow: 'hidden' }}>
+      <Card className={"VideoPanel"} style={{ overflow: "hidden" }}>
         <Button
           style={{
-            position: 'absolute',
-            right: '0px',
-            top: '0px',
+            position: "absolute",
+            right: "0px",
+            top: "0px",
             zIndex: 1,
             visibility: !(
               this.state.browser.isChrome || this.state.browser.isSafari
             )
-              ? 'hidden'
-              : 'visible',
+              ? "hidden"
+              : "visible",
           }}
           onClick={this.onTogglePictureInPicture}
         >
@@ -141,24 +141,24 @@ class VideoPanel extends Component {
         </Button>
         <div
           style={{
-            background: this.state.pip.isEnabled ? 'lightgray' : 'black',
-            position: 'absolute',
-            top: '0px',
-            right: '0px',
-            bottom: '0px',
-            left: '0px',
+            background: this.state.pip.isEnabled ? "lightgray" : "black",
+            position: "absolute",
+            top: "0px",
+            right: "0px",
+            bottom: "0px",
+            left: "0px",
             zIndex: -1,
-            color: 'black',
-            textAlign: 'center',
+            color: "black",
+            textAlign: "center",
           }}
         >
           <div
             style={{
-              position: 'absolute',
-              top: '44%',
-              textAlign: 'center',
-              width: '100%',
-              color: this.state.pip.isEnabled ? 'black' : 'white',
+              position: "absolute",
+              top: "44%",
+              textAlign: "center",
+              width: "100%",
+              color: this.state.pip.isEnabled ? "black" : "white",
             }}
           >
             {!this.state.pip.isEnabled ? (
@@ -177,14 +177,14 @@ class VideoPanel extends Component {
         </div>
         <video
           style={{
-            display: 'block',
+            display: "block",
             lineHeight: 0,
             visibility:
               this.state.isScrubbingOutsideVideo ||
               this.videoReference === undefined ||
               this.state.pip.isEnabled
-                ? 'hidden'
-                : 'visible',
+                ? "hidden"
+                : "visible",
           }}
           width="100%"
           height="auto"

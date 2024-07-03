@@ -1,11 +1,11 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
-import './Checkbox.css';
+import "./Checkbox.css";
 
 const Checkbox = (props) => {
-  const size = props.size || '20px';
+  const size = props.size || "20px";
   const disabled = props.disabled || false;
   var onClick = props.onClick;
   if (!props.onClick) {
@@ -23,9 +23,9 @@ const Checkbox = (props) => {
         disabled={disabled}
         checked={props.isSelected}
       ></input>
-      <span className="checkBoxCheckmark" style={{ width: size, height: size}}>
+      <span className="checkBoxCheckmark" style={{ width: size, height: size }}>
         <FontAwesomeIcon
-          style={{ width: size, height: size}}
+          style={{ width: size, height: size }}
           className="checkBoxIcon"
           icon={faCheck}
         ></FontAwesomeIcon>

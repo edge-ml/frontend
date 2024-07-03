@@ -2,12 +2,12 @@ const extractheader = async (file) => {
   const CHUNK_SIZE = 128;
   const decoder = new TextDecoder();
   let offset = 0;
-  let results = '';
+  let results = "";
   const fr = new FileReader();
 
   fr.onload = () => {
     results += decoder.decode(fr.result, { stream: true });
-    const lines = results.split('\n');
+    const lines = results.split("\n");
     if (lines.length > 1) {
       resolve(lines[0]);
     }
@@ -17,7 +17,7 @@ const extractheader = async (file) => {
   };
 
   fr.onerror = () => {
-    throw Error('Could not parse header');
+    throw Error("Could not parse header");
   };
 
   const seek = () => {

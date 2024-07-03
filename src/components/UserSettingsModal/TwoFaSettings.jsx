@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { Row, Col, Input, Button } from 'reactstrap';
+import React, { Component } from "react";
+import { Row, Col, Input, Button } from "reactstrap";
 import {
   init2FA,
   verify2FA,
   reset2FA,
-} from './../../services/ApiServices/AuthentificationServices';
+} from "./../../services/ApiServices/AuthentificationServices";
 
 class TwoFaSettings extends Component {
   constructor(props) {
@@ -39,7 +39,7 @@ class TwoFaSettings extends Component {
   }
 
   on2FADisable() {
-    var doDelete = window.confirm('Do you want to really diable 2FA?');
+    var doDelete = window.confirm("Do you want to really diable 2FA?");
     if (doDelete) {
       reset2FA()
         .then(() => {
@@ -57,15 +57,15 @@ class TwoFaSettings extends Component {
             <Col>
               <img width="100%" alt="2FA QR Code" src={this.state.qrCode} />
             </Col>
-            <Col style={{ marginTop: '15px' }}>
+            <Col style={{ marginTop: "15px" }}>
               Scan the qr-code with a supported app then enter the token from
               the app in order to activate two-factor authentication
               <Input
                 autoFocus
                 id="inputTwoFAToken"
-                className={'mt-1'}
+                className={"mt-1"}
                 placeholder="Token"
-                style={{ textAlign: 'center' }}
+                style={{ textAlign: "center" }}
                 onChange={this.onTokenChanged}
                 ref={(input) => {
                   this.tokenInput = input;
@@ -74,7 +74,7 @@ class TwoFaSettings extends Component {
             </Col>
           </Row>
         ) : (
-          <div style={{ marginTop: '8px' }}>
+          <div style={{ marginTop: "8px" }}>
             <Row>
               <Col>
                 <h5 className="text-center">2FA is activated</h5>

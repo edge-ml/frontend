@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Badge } from 'reactstrap';
-import './TagsPanel.css';
+import React, { Component } from "react";
+import { Card, CardBody, CardHeader, Badge } from "reactstrap";
+import "./TagsPanel.css";
 
 class TagsPanel extends Component {
   constructor(props) {
@@ -18,13 +18,13 @@ class TagsPanel extends Component {
 
   parseTime = (timestamp) => {
     let date = new Date(timestamp);
-    let hour = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+    let hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
     let minute =
-      date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+      date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
     let second =
-      date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+      date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
 
-    return hour + ':' + minute + ':' + second;
+    return hour + ":" + minute + ":" + second;
   };
 
   render() {

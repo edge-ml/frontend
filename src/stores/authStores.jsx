@@ -1,11 +1,11 @@
-import create from 'zustand';
-import { jwtDecode } from 'jwt-decode';
-import { setToken, clearToken } from './services/LocalStorageService';
-import { loginUser } from './services/ApiServices/AuthentificationServices';
+import create from "zustand";
+import { jwtDecode } from "jwt-decode";
+import { setToken, clearToken } from "./services/LocalStorageService";
+import { loginUser } from "./services/ApiServices/AuthentificationServices";
 import {
   getAccessToken,
   getRefreshToken,
-} from './services/LocalStorageService';
+} from "./services/LocalStorageService";
 
 const useAuthStore = create((set) => ({
   user: undefined,
@@ -21,7 +21,9 @@ const useAuthStore = create((set) => ({
     const userData = await loginUser(email, password);
     const decoded = jwtDecode(userData.access_token);
     setToken(userData.access_token, userData.refresh_token);
-    set({ user: { email: decoded.email, name: decoded.userName, _id: decoded.id } });
+    set({
+      user: { email: decoded.email, name: decoded.userName, _id: decoded.id },
+    });
   },
 
   checkLoginStatus: () => {
@@ -30,7 +32,13 @@ const useAuthStore = create((set) => ({
     if (accessToken) {
       const decoded = jwtDecode(accessToken);
       if (decoded.exp * 1000 >= Date.now()) {
-        set({ user: { email: decoded.email, name: decoded.userName, _id: decoded.id } });
+        set({
+          user: {
+            email: decoded.email,
+            name: decoded.userName,
+            _id: decoded.id,
+          },
+        });
       }
     }
   },

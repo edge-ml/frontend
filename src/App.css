@@ -1,13 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap");
 
-@import url('../src/Styles/Modal.css');
+@import url("../src/Styles/Modal.css");
 
 html {
   font-size: 90%;
 }
 
 * {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .login {
@@ -50,7 +50,6 @@ a .octicon-trashcan:hover {
   float: right;
   max-width: 100px;
 }
-
 
 .dataset-plotband {
   z-index: 9;

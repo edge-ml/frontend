@@ -1,11 +1,11 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLightbulb } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 
-import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
-import './Navbar.css';
-import { KITLogo, TECOLogo } from '../Common/logos';
+import "./Navbar.css";
+import { KITLogo, TECOLogo } from "../Common/logos";
 
 const NavbarInfo = () => {
   return (
@@ -13,7 +13,7 @@ const NavbarInfo = () => {
       <div
         className="pt-3 pb-3 navbar-project-item w-100 text-center"
         onClick={() =>
-          window.open('https://github.com/edge-ml/edge-ml/issues', '_blank')
+          window.open("https://github.com/edge-ml/edge-ml/issues", "_blank")
         }
       >
         <small>
@@ -24,7 +24,7 @@ const NavbarInfo = () => {
       <div
         className="pt-3 pb-3 navbar-project-item w-100 text-center"
         onClick={() =>
-          window.open('https://github.com/edge-ml/edge-ml/wiki', '_blank')
+          window.open("https://github.com/edge-ml/edge-ml/wiki", "_blank")
         }
       >
         <small>
@@ -39,12 +39,12 @@ const NavbarInfo = () => {
         <div className="my-1 d-flex justify-content-between">
           <div>
             <a href="https://www.teco.edu" target="_blank">
-              <TECOLogo style={{ width: '50px' }}></TECOLogo>
+              <TECOLogo style={{ width: "50px" }}></TECOLogo>
             </a>
           </div>
           <div>
             <a href="https://www.kit.edu" target="_blank">
-              <KITLogo style={{ width: '50px' }}></KITLogo>
+              <KITLogo style={{ width: "50px" }}></KITLogo>
             </a>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Row,
   Col,
@@ -7,10 +7,10 @@ import {
   InputGroup,
   InputGroupText,
   InputGroupText,
-} from 'reactstrap';
-import Select from 'react-select';
-import { platforms } from './platforms';
-import { Line } from './components/Line';
+} from "reactstrap";
+import Select from "react-select";
+import { platforms } from "./platforms";
+import { Line } from "./components/Line";
 
 export const ExportDetailView = ({
   model, // { name: string } // later platforms
@@ -57,7 +57,7 @@ export const ExportDetailView = ({
             </Line>
             <Line>
               <div className="float-right d-flex">
-                <span style={{ minWidth: '200px' }}>
+                <span style={{ minWidth: "200px" }}>
                   <Select
                     value={nPlatform}
                     onChange={(x) => onPlatform(x.value)}

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Col, Row } from 'reactstrap';
+import React, { Component } from "react";
+import { Col, Row } from "reactstrap";
 
 class ErrorPage extends Component {
   constructor(props) {
@@ -9,9 +9,9 @@ class ErrorPage extends Component {
 
   render() {
     return (
-      <Col style={{ textAlign: 'center', paddingTop: '100px' }}>
+      <Col style={{ textAlign: "center", paddingTop: "100px" }}>
         <Row className="justify-content-md-center">
-          <h1 style={{ fontSize: '70px' }}>{this.props.match.params.error}</h1>
+          <h1 style={{ fontSize: "70px" }}>{this.props.match.params.error}</h1>
         </Row>
         {this.props.match.params.errorText ? (
           <Row className="justify-content-md-center">
@@ -20,7 +20,7 @@ class ErrorPage extends Component {
         ) : null}
         <Row
           className="justify-content-md-center"
-          style={{ textAlign: 'center', paddingTop: '30px' }}
+          style={{ textAlign: "center", paddingTop: "30px" }}
         >
           <h5>
             The page you are looking for doesn't exist or an other error
@@ -29,11 +29,11 @@ class ErrorPage extends Component {
         </Row>
         <Row
           className="justify-content-md-center"
-          style={{ textAlign: 'center', paddingTop: '30px' }}
+          style={{ textAlign: "center", paddingTop: "30px" }}
         >
-          If you want to try again click{' '}
-          <a href="/" style={{ whiteSpace: 'pre-wrap' }}>
-            {' '}
+          If you want to try again click{" "}
+          <a href="/" style={{ whiteSpace: "pre-wrap" }}>
+            {" "}
             here
           </a>
           .

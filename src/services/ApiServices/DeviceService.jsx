@@ -10,4 +10,3 @@ export const getDeviceByNameAndGeneration = async (name, generation) => {
   );
   return res;
 };
-

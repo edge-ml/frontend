@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Progress,
-  Alert,
-  ButtonGroup,
-} from "reactstrap";
+import { Button, Progress, Alert, ButtonGroup } from "reactstrap";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "../Common/Modal";
 import DragDrop from "../Common/DragDrop";
 
@@ -263,11 +258,11 @@ export const UploadDatasetModal = ({
           prevFiles.map((f) =>
             f.id === fileIds[i]
               ? {
-                ...f,
-                error: "Invalid format, parsing failed",
-                status: FileStatus.ERROR,
-                progress: 100,
-              }
+                  ...f,
+                  error: "Invalid format, parsing failed",
+                  status: FileStatus.ERROR,
+                  progress: 100,
+                }
               : f
           )
         );
@@ -295,17 +290,16 @@ export const UploadDatasetModal = ({
         prevFiles.map((f) =>
           f.id === file.id
             ? {
-              ...f,
-              datasetId: result.data.datasetId,
-              status: FileStatus.PROCESSING,
-              processingStep: "Started processing",
-            }
+                ...f,
+                datasetId: result.data.datasetId,
+                status: FileStatus.PROCESSING,
+                processingStep: "Started processing",
+              }
             : f
         )
       );
       onDatasetComplete();
     } catch (err) {
-
       const message = err?.response?.data?.detail || err.message;
       setFiles((prevFiles) =>
         prevFiles.map((f) => (f.id === file.id ? { ...f, error: message } : f))
@@ -348,10 +342,10 @@ export const UploadDatasetModal = ({
             prevFiles.map((f) =>
               f.id === file.id
                 ? {
-                  ...f,
-                  processingStep: step,
-                  processedTimeseries: [currentTimeseries, totalTimeseries],
-                }
+                    ...f,
+                    processingStep: step,
+                    processedTimeseries: [currentTimeseries, totalTimeseries],
+                  }
                 : f
             )
           );
@@ -372,9 +366,9 @@ export const UploadDatasetModal = ({
     consecutiveNoUpdateCount === null
       ? null
       : Math.min(
-        MAXIMUM_POLLING_INTERVAL,
-        1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100
-      )
+          MAXIMUM_POLLING_INTERVAL,
+          1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100
+        )
   );
 
   const handleUploadAll = async () => {
@@ -422,7 +416,12 @@ export const UploadDatasetModal = ({
   };
 
   return (
-    <Modal className="modal-xl" data-testid="modal" isOpen={isOpen} onClose={onCloseModal}>
+    <Modal
+      className="modal-xl"
+      data-testid="modal"
+      isOpen={isOpen}
+      onClose={onCloseModal}
+    >
       <ModalHeader>
         <span>Create new dataset</span>
       </ModalHeader>
@@ -444,7 +443,7 @@ export const UploadDatasetModal = ({
           </div>
         </Alert>
         <DragDrop
-          onClick={() => { }}
+          onClick={() => {}}
           style={{ height: "100px" }}
           className="my-2"
           onFileInput={onFileInput}
@@ -470,19 +469,20 @@ export const UploadDatasetModal = ({
                       f.status === FileStatus.COMPLETE
                         ? "success"
                         : f.status === FileStatus.ERROR ||
-                          f.status === FileStatus.CANCELLED
+                            f.status === FileStatus.CANCELLED
                           ? "danger"
                           : "primary"
                     }
                   >
                     {f.status === FileStatus.ERROR
                       ? `Error: ${f.error}`
-                      : `${f.status} ${f.status === FileStatus.PROCESSING
-                        ? f.processedTimeseries[0]
-                          ? `: ${f.processingStep} - Timeseries Processed: ${f.processedTimeseries[0]}/${f.processedTimeseries[1]} `
-                          : `: ${f.processingStep} `
-                        : ""
-                      } ${f.progress.toFixed(2)}%`}
+                      : `${f.status} ${
+                          f.status === FileStatus.PROCESSING
+                            ? f.processedTimeseries[0]
+                              ? `: ${f.processingStep} - Timeseries Processed: ${f.processedTimeseries[0]}/${f.processedTimeseries[1]} `
+                              : `: ${f.processingStep} `
+                            : ""
+                        } ${f.progress.toFixed(2)}%`}
                   </Progress>
                   <div className="d-flex align-items-center">
                     {f.status === FileStatus.COMPLETE && (

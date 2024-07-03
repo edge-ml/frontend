@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { ListGroup, ListGroupItem, Badge } from 'reactstrap';
-import Checkbox from '../../../components/Common/Checkbox';
+import React, { useState, useEffect } from "react";
+import { ListGroup, ListGroupItem, Badge } from "reactstrap";
+import Checkbox from "../../../components/Common/Checkbox";
 
 const LabelingSetsFilter = ({
   selectedFilter,
@@ -13,7 +13,7 @@ const LabelingSetsFilter = ({
   const [targetLabelIds, setTargetLabelIds] = useState([]);
 
   useEffect(() => {
-    if (selectedFilter && selectedFilter.value === 'labelings') {
+    if (selectedFilter && selectedFilter.value === "labelings") {
       setTargetLabelIds(selectedFilterParams.target_label_ids);
       setTargetLabelingIds(selectedFilterParams.target_labeling_ids);
     } else {
@@ -51,14 +51,14 @@ const LabelingSetsFilter = ({
     if (isSelectedLabeling(labelingSet._id)) {
       const labelingIdToRemove = labelingSet._id;
       setTargetLabelingIds(
-        targetLabelingIds.filter((id) => id !== labelingIdToRemove),
+        targetLabelingIds.filter((id) => id !== labelingIdToRemove)
       );
       const labelIdsToRemove = [];
       labelingSet.labels.map((label) => {
         labelIdsToRemove.push(label._id);
       });
       setTargetLabelIds(
-        targetLabelIds.filter((id) => !labelIdsToRemove.includes(id)),
+        targetLabelIds.filter((id) => !labelIdsToRemove.includes(id))
       );
     } else {
       setTargetLabelingIds([...targetLabelingIds, labelingSet._id]);
@@ -67,7 +67,7 @@ const LabelingSetsFilter = ({
         labelIdsToAdd.push(label._id);
       });
       const labelIdsToAddFiltered = labelIdsToAdd.filter(
-        (id) => !targetLabelIds.includes(id),
+        (id) => !targetLabelIds.includes(id)
       );
       setTargetLabelIds([...targetLabelIds, ...labelIdsToAddFiltered]);
     }
@@ -89,7 +89,7 @@ const LabelingSetsFilter = ({
         <div className="d-flex flex-row me-2 badgeSize pb-2">
           {labels.map((label, index) => {
             return (
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <Checkbox
                   isSelected={isSelectedLabel(label._id)}
                   className="d-inline-block"
@@ -98,13 +98,13 @@ const LabelingSetsFilter = ({
                 <Badge
                   key={label._id}
                   className={
-                    label.name === ''
-                      ? 'font-italic font-weight-normal badgeSize mx-1 border border-dark'
-                      : 'badgeSize mx-1 my-1 border border-dark'
+                    label.name === ""
+                      ? "font-italic font-weight-normal badgeSize mx-1 border border-dark"
+                      : "badgeSize mx-1 my-1 border border-dark"
                   }
                   style={{ backgroundColor: label.color }}
                 >
-                  {label.name !== '' ? label.name : 'Untitled'}{' '}
+                  {label.name !== "" ? label.name : "Untitled"}{" "}
                 </Badge>
               </div>
             );
@@ -118,11 +118,11 @@ const LabelingSetsFilter = ({
     <div>
       <div className="mb-4">
         {
-          'Select the labelings and/or labels of the datasets you want to display:\n'
+          "Select the labelings and/or labels of the datasets you want to display:\n"
         }
       </div>
       <div>
-        <ListGroup style={{ maxHeight: '600px', overflowY: 'auto' }}>
+        <ListGroup style={{ maxHeight: "600px", overflowY: "auto" }}>
           {labelings.map((labeling, index) => (
             <ListGroupItem key={index}>
               <div className="d-flex flex-row">

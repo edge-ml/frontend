@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
-import { Row, Col, Container } from 'reactstrap';
+import { Row, Col, Container } from "reactstrap";
 
-import Loader from '../../modules/loader';
+import Loader from "../../modules/loader";
 
-import NumberHyperparameter from '../../components/Hyperparameters/NumberHyperparameter';
-import SelectionHyperparameter from '../../components/Hyperparameters/SelectionHyperparameter';
+import NumberHyperparameter from "../../components/Hyperparameters/NumberHyperparameter";
+import SelectionHyperparameter from "../../components/Hyperparameters/SelectionHyperparameter";
 
 export const HyperparameterView = ({
   model,
@@ -21,37 +21,37 @@ export const HyperparameterView = ({
             Object.keys(model.hyperparameters)
               .filter((h) => model.hyperparameters[h].is_advanced == isAdvanced)
               .map((h) => {
-                if (model.hyperparameters[h].parameter_type === 'number') {
+                if (model.hyperparameters[h].parameter_type === "number") {
                   return (
                     <Col className="col-md-4 col-12 ps-0">
                       <NumberHyperparameter
                         {...model.hyperparameters[h]}
-                        id={'input_' + model.hyperparameters[h].parameter_name}
+                        id={"input_" + model.hyperparameters[h].parameter_name}
                         handleChange={handleHyperparameterChange}
                         value={
                           hyperparameters.find(
                             (e) =>
                               e.parameter_name ===
-                              model.hyperparameters[h].parameter_name,
+                              model.hyperparameters[h].parameter_name
                           ).state
                         }
                       />
                     </Col>
                   );
                 } else if (
-                  model.hyperparameters[h].parameter_type === 'selection'
+                  model.hyperparameters[h].parameter_type === "selection"
                 ) {
                   return (
                     <Col className="col-md-4 col-12 ps-0">
                       <SelectionHyperparameter
                         {...model.hyperparameters[h]}
-                        id={'input_' + model.hyperparameters[h].parameter_name}
+                        id={"input_" + model.hyperparameters[h].parameter_name}
                         handleChange={handleHyperparameterChange}
                         value={
                           hyperparameters.find(
                             (e) =>
                               e.parameter_name ===
-                              model.hyperparameters[h].parameter_name,
+                              model.hyperparameters[h].parameter_name
                           ).state
                         }
                       />

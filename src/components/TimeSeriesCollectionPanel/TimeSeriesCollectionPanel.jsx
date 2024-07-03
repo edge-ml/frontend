@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import './TimeSeriesCollectionPanel.css';
-import TimeSeriesPanel from '../TimeSeriesPanel/TimeSeriesPanel';
-import Highcharts from 'highcharts/highstock';
-import RangeSlider from '../RangeSlider/RangeSlider';
-import { updateTimeSeriesConfig } from '../../services/ApiServices/DatasetServices';
-import { Alert } from 'reactstrap';
+import "./TimeSeriesCollectionPanel.css";
+import TimeSeriesPanel from "../TimeSeriesPanel/TimeSeriesPanel";
+import Highcharts from "highcharts/highstock";
+import RangeSlider from "../RangeSlider/RangeSlider";
+import { updateTimeSeriesConfig } from "../../services/ApiServices/DatasetServices";
+import { Alert } from "reactstrap";
 
 class TimeSeriesCollectionPanel extends Component {
   constructor(props) {
@@ -50,8 +50,8 @@ class TimeSeriesCollectionPanel extends Component {
 
     Highcharts.addEvent(
       Highcharts.Axis,
-      'afterDrawCrosshair',
-      this.onCrosshairDrawn,
+      "afterDrawCrosshair",
+      this.onCrosshairDrawn
     );
 
     // keep a copy of the last window acquired via afterSetExtremes
@@ -88,7 +88,7 @@ class TimeSeriesCollectionPanel extends Component {
     ) {
       const xAxisValue = Highcharts.charts[0].xAxis[0].toValue(
         crosshairEvent.e.pageX - Highcharts.charts[0].plotBox.x / 2,
-        false,
+        false
       );
 
       if (!isNaN(xAxisValue)) {
@@ -107,7 +107,7 @@ class TimeSeriesCollectionPanel extends Component {
   getIndexData = () => {
     const N = 5000;
     const activeSeries = this.state.activeSeries.map((elm, key) =>
-      this.state.timeSeries.find((ts) => ts._id === elm),
+      this.state.timeSeries.find((ts) => ts._id === elm)
     );
     const start = Math.min(...activeSeries.map((elm) => elm.start));
     const end = Math.max(...activeSeries.map((elm) => elm.end));
@@ -121,7 +121,7 @@ class TimeSeriesCollectionPanel extends Component {
       timeSeries: prevState.timeSeries.map((ts) =>
         ts._id !== timeSeriesId
           ? ts
-          : { ...ts, isUnitMenuOpen: !ts.isUnitMenuOpen },
+          : { ...ts, isUnitMenuOpen: !ts.isUnitMenuOpen }
       ),
     }));
   };
@@ -129,7 +129,7 @@ class TimeSeriesCollectionPanel extends Component {
   handleUnitChange = (timeSeriesId) => (unit) => {
     this.setState((prevState) => ({
       timeSeries: prevState.timeSeries.map((ts) =>
-        ts._id !== timeSeriesId ? ts : { ...ts, unit: unit },
+        ts._id !== timeSeriesId ? ts : { ...ts, unit: unit }
       ),
     }));
   };
@@ -137,7 +137,7 @@ class TimeSeriesCollectionPanel extends Component {
   handleScaleChange = (timeSeriesId) => (scale) => {
     this.setState((prevState) => ({
       timeSeries: prevState.timeSeries.map((ts) =>
-        ts._id !== timeSeriesId ? ts : { ...ts, scale: parseFloat(scale) },
+        ts._id !== timeSeriesId ? ts : { ...ts, scale: parseFloat(scale) }
       ),
     }));
   };
@@ -145,7 +145,7 @@ class TimeSeriesCollectionPanel extends Component {
   handleOffsetChange = (timeSeriesId) => (offset) => {
     this.setState((prevState) => ({
       timeSeries: prevState.timeSeries.map((ts) =>
-        ts._id !== timeSeriesId ? ts : { ...ts, offset: parseFloat(offset) },
+        ts._id !== timeSeriesId ? ts : { ...ts, offset: parseFloat(offset) }
       ),
     }));
   };
@@ -157,14 +157,14 @@ class TimeSeriesCollectionPanel extends Component {
       timeseries_id,
       unit,
       scale,
-      offset,
+      offset
     );
     // this.props.udateTimeSeries(timeseries_id)
     const data = await this.onTimeSeriesWindow(
       key,
       this.state.start,
       this.state.end,
-      this.state.res,
+      this.state.res
     );
     const tmpSeries = [...this.state.previewTimeSeriesData];
     tmpSeries[key] = data;
@@ -178,11 +178,11 @@ class TimeSeriesCollectionPanel extends Component {
       <>
         <div
           style={{
-            position: 'fixed',
-            top: '20px',
-            left: '11.8%',
+            position: "fixed",
+            top: "20px",
+            left: "11.8%",
             zIndex: 5000,
-            width: '87%',
+            width: "87%",
           }}
         >
           <Alert
@@ -202,7 +202,7 @@ class TimeSeriesCollectionPanel extends Component {
         </div>
         <div
           className="d-flex flex-column justify-content-start flex-fill"
-          style={{ overflowY: 'auto' }}
+          style={{ overflowY: "auto" }}
         >
           {this.state.activeSeries.length ? (
             <div>
@@ -232,7 +232,7 @@ class TimeSeriesCollectionPanel extends Component {
               Select some time-series on the panel on the top
             </div>
           )}
-          <div className="flex-fill" style={{ overflowY: 'auto' }}>
+          <div className="flex-fill" style={{ overflowY: "auto" }}>
             {this.state.timeSeries.length === 0 ? (
               <TimeSeriesPanel
                 handleConfigSave={this.handleConfigSave}
@@ -242,8 +242,8 @@ class TimeSeriesCollectionPanel extends Component {
                 offset={0}
                 data={[]}
                 samplingRate={1}
-                name={''}
-                unit={''}
+                name={""}
+                unit={""}
                 labeling={this.state.labeling}
                 labelTypes={this.state.labelTypes}
                 onLabelClicked={this.state.onLabelClicked}
@@ -266,7 +266,7 @@ class TimeSeriesCollectionPanel extends Component {
             ) : null}
             {this.state.activeSeries.map((elm, key) => {
               const timeSeries = this.state.timeSeries.find(
-                (ts) => ts._id === elm,
+                (ts) => ts._id === elm
               );
               return (
                 <TimeSeriesPanel
@@ -276,7 +276,7 @@ class TimeSeriesCollectionPanel extends Component {
                       unit,
                       scale,
                       offset,
-                      key,
+                      key
                     )
                   }
                   key={key}

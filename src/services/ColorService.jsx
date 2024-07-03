@@ -1,6 +1,6 @@
 export const generateRandomColor = () => {
-  var letters = '0123456789ABCDEF';
-  var color = '#';
+  var letters = "0123456789ABCDEF";
+  var color = "#";
   for (var i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)];
   }
@@ -20,12 +20,12 @@ export const hexToRgb = (hex) => {
 
 export const hexToForegroundColor = (hex) => {
   let color = hexToRgb(hex);
-  if (!color) return '#000000';
+  if (!color) return "#000000";
 
   if (color.r * 0.299 + color.g * 0.587 + color.b * 0.114 > 186) {
-    return '#000000';
+    return "#000000";
   } else {
-    return '#ffffff';
+    return "#ffffff";
   }
 };
 

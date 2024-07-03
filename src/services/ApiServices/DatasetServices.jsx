@@ -74,8 +74,7 @@ export const getDataset = async (id) => {
     apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
   );
   return res;
-
-}
+};
 
 export const deleteDatasets = (ids) => {
   try {
@@ -135,7 +134,13 @@ export const getUploadProcessingProgress = async (datasetId) => {
   return res;
 };
 
-export const updateTimeSeriesConfig = async (datasetId, tsId, unit, scaling, offset) => {
+export const updateTimeSeriesConfig = async (
+  datasetId,
+  tsId,
+  unit,
+  scaling,
+  offset
+) => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.PUT,
     apiConsts.DATASET_STORE,

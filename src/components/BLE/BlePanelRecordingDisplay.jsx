@@ -1,8 +1,8 @@
-import './BleActivated.css';
+import "./BleActivated.css";
 
-import React, { Component } from 'react';
-import Highcharts from 'highcharts/highstock';
-import BlePanelSensorstreamGraph from './BlePanelSensorstreamGraph';
+import React, { Component } from "react";
+import Highcharts from "highcharts/highstock";
+import BlePanelSensorstreamGraph from "./BlePanelSensorstreamGraph";
 
 class BlePanelRecordingDisplay extends Component {
   constructor(props) {
@@ -17,8 +17,8 @@ class BlePanelRecordingDisplay extends Component {
       this.allOptions.push(
         this.getOptions(
           this.props.deviceSensors[key].parseScheme.map((elm) => elm.name),
-          this.props.deviceSensors[key].name,
-        ),
+          this.props.deviceSensors[key].name
+        )
       );
     }
   }
@@ -27,7 +27,7 @@ class BlePanelRecordingDisplay extends Component {
     const recordingStartTime = this.recordingStartTime;
     return {
       chart: {
-        type: 'spline',
+        type: "spline",
         animation: false, // don't animate in old IE
         marginRight: 10,
         useSVG: true,
@@ -42,21 +42,21 @@ class BlePanelRecordingDisplay extends Component {
       xAxis: {
         min: this.recordingStartTime, // current time
         max: this.recordingStartTime + 30000, // current time + 30s
-        type: 'datetime',
+        type: "datetime",
         tickPixelInterval: 100,
         labels: {
           enabled: true,
           rotation: 20,
-          overflow: 'allow',
+          overflow: "allow",
           formatter: function () {
             // calculate the time since the recording started in seconds
             const seconds = Math.round(
-              (this.value - recordingStartTime) / 1000,
+              (this.value - recordingStartTime) / 1000
             );
             if (seconds < 0) {
-              return '';
+              return "";
             }
-            return seconds + 's';
+            return seconds + "s";
           },
         },
       },

@@ -1,5 +1,5 @@
-import React from 'react';
-import { validationSelectOptions } from '../../routes/model/ValidationMethodsView';
+import React from "react";
+import { validationSelectOptions } from "../../routes/model/ValidationMethodsView";
 
 const meanMedian = (arr) => {
   const sum = arr.reduce((sum, val) => (sum += val));
@@ -35,14 +35,14 @@ export const CrossValidationTable = (props) => {
               <table>
                 <tbody>
                   <tr>
-                    <td style={{ padding: '0.15rem .75rem' }}>mean: </td>
-                    <td style={{ padding: '0.15rem .75rem' }}>
+                    <td style={{ padding: "0.15rem .75rem" }}>mean: </td>
+                    <td style={{ padding: "0.15rem .75rem" }}>
                       {meanMedian(v)[0].toFixed(8)}
                     </td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '0.15rem .75rem' }}>median: </td>
-                    <td style={{ padding: '0.15rem .75rem' }}>
+                    <td style={{ padding: "0.15rem .75rem" }}>median: </td>
+                    <td style={{ padding: "0.15rem .75rem" }}>
                       {meanMedian(v)[1].toFixed(8)}
                     </td>
                   </tr>

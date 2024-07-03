@@ -1,6 +1,6 @@
-import React from 'react';
-import { Alert } from 'reactstrap';
-import './EditLabelingModal.css';
+import React from "react";
+import { Alert } from "reactstrap";
+import "./EditLabelingModal.css";
 
 const EmptyLabelingSetFeedBack = (props) => {
   if (!props.isLabelingSetEmpty) {
@@ -8,7 +8,7 @@ const EmptyLabelingSetFeedBack = (props) => {
   } else {
     return (
       <Alert color="danger">
-        {'A labeling set must contain at least one label.'}
+        {"A labeling set must contain at least one label."}
       </Alert>
     );
   }

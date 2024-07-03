@@ -1,5 +1,5 @@
-import React from 'react';
-import { useState, Fragment } from 'react';
+import React from "react";
+import { useState, Fragment } from "react";
 import {
   Row,
   Col,
@@ -8,9 +8,9 @@ import {
   DropdownItem,
   Dropdown,
   DropdownToggle,
-} from 'reactstrap';
-import NumberHyperparameter from '../../Hyperparameters/NumberHyperparameter';
-import SelectionHyperparameter from '../../Hyperparameters/SelectionHyperparameter';
+} from "reactstrap";
+import NumberHyperparameter from "../../Hyperparameters/NumberHyperparameter";
+import SelectionHyperparameter from "../../Hyperparameters/SelectionHyperparameter";
 
 const SelectEvaluation = ({
   evaluation,
@@ -18,8 +18,6 @@ const SelectEvaluation = ({
   setSelectedEval,
   footer,
 }) => {
-  
-
   const [dropDownOpen, setDropDownOpen] = useState(false);
   const [selectedEvaluation, setSelectedEvaluation] = useState(0);
 
@@ -33,14 +31,13 @@ const SelectEvaluation = ({
   const handleHyperparameterChange = ({ parameter_name, state }) => {
     const newEval = [...evaluation];
     const idx = newEval[selectedEvaluation].parameters.findIndex(
-      (elm) => elm.parameter_name == parameter_name,
+      (elm) => elm.parameter_name == parameter_name
     );
     newEval[selectedEvaluation].parameters[idx].value = state;
     onEvaluationChanged(newEval);
     setSelectedEval(newEval[selectedEvaluation]);
   };
 
-  
   if (evaluation.length === 0) {
     return;
   }
@@ -82,23 +79,23 @@ export const HyperparameterView = ({
       <Row>
         {hyperparameters.length > 0 &&
           hyperparameters.map((h) => {
-            if (h.parameter_type === 'number') {
+            if (h.parameter_type === "number") {
               return (
                 <Col className="col-md-6 col-12 ps-0">
                   <NumberHyperparameter
                     {...h}
-                    id={'input_' + h.parameter_name}
+                    id={"input_" + h.parameter_name}
                     handleChange={handleHyperparameterChange}
                     value={h.value}
                   />
                 </Col>
               );
-            } else if (h.parameter_type === 'selection') {
+            } else if (h.parameter_type === "selection") {
               return (
                 <Col className="col-md-6 col-12 ps-0">
                   <SelectionHyperparameter
                     {...h}
-                    id={'input_' + h.parameter_name}
+                    id={"input_" + h.parameter_name}
                     handleChange={handleHyperparameterChange}
                     value={h.value}
                   />

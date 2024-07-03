@@ -1,5 +1,5 @@
-import { Fragment } from 'react';
-import React from 'react';
+import { Fragment } from "react";
+import React from "react";
 
 export const Table = ({ children, header }) => {
   return (
@@ -10,9 +10,9 @@ export const Table = ({ children, header }) => {
       <div
         className="w-100 position-relative"
         style={{
-          border: '2px solid rgb(230, 230, 234)',
-          borderRadius: '0px 0px 10px 10px',
-          overflow: 'hidden',
+          border: "2px solid rgb(230, 230, 234)",
+          borderRadius: "0px 0px 10px 10px",
+          overflow: "hidden",
         }}
       >
         {children}
@@ -27,8 +27,8 @@ export const TableEntry = ({ index, children }) => {
       <div
         className="datasetCard"
         style={{
-          background: index % 2 === 1 ? 'rgb(249, 251, 252)' : '',
-          cursor: 'pointer',
+          background: index % 2 === 1 ? "rgb(249, 251, 252)" : "",
+          cursor: "pointer",
         }}
       >
         {children}

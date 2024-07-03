@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -9,16 +9,16 @@ import {
   CardBody,
   Col,
   Form,
-} from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+} from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUser,
   faShield,
   faTriangleExclamation,
-} from '@fortawesome/free-solid-svg-icons';
-import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
-import useAuth from '../Hooks/useAuth';
-import useUserStore from '../Hooks/useUser';
+} from "@fortawesome/free-solid-svg-icons";
+import EdgeMLBrandLogo from "../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
+import useAuth from "../Hooks/useAuth";
+import useUserStore from "../Hooks/useUser";
 
 const LoginPage = ({ children }) => {
   const { login } = useAuth();
@@ -34,7 +34,7 @@ const LoginPage = ({ children }) => {
   }, [error]);
 
   const onKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       submit();
     }
   };
@@ -43,7 +43,6 @@ const LoginPage = ({ children }) => {
     try {
       await login(email, password);
     } catch {
-      
       setError(true);
     }
   };
@@ -65,9 +64,9 @@ const LoginPage = ({ children }) => {
           <CardBody>
             <Form>
               <InputGroup>
-                  <InputGroupText style={{ background: '#ced4da' }}>
-                    <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
-                  </InputGroupText>
+                <InputGroupText style={{ background: "#ced4da" }}>
+                  <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
+                </InputGroupText>
 
                 <Input
                   type="email"
@@ -79,9 +78,9 @@ const LoginPage = ({ children }) => {
                 />
               </InputGroup>
               <InputGroup>
-                  <InputGroupText style={{ background: '#ced4da' }}>
-                    <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
-                  </InputGroupText>
+                <InputGroupText style={{ background: "#ced4da" }}>
+                  <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
+                </InputGroupText>
                 <Input
                   type="password"
                   name="password"
@@ -103,7 +102,7 @@ const LoginPage = ({ children }) => {
               </Button>
             </Form>
             {error ? (
-              <div className="mt-3" style={{ color: 'red' }}>
+              <div className="mt-3" style={{ color: "red" }}>
                 <FontAwesomeIcon icon={faTriangleExclamation}></FontAwesomeIcon>
                 Wrong credentials!
               </div>

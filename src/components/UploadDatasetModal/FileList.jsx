@@ -1,7 +1,7 @@
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { file } from 'jszip';
-import { Button } from 'reactstrap';
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { file } from "jszip";
+import { Button } from "reactstrap";
 
 const FileList = ({ file }) => {
   return (

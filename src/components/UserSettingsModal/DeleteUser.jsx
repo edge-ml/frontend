@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState } from "react";
 import {
   Button,
   Input,
@@ -8,13 +8,13 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from 'reactstrap';
+} from "reactstrap";
 
 class DeleteUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      confirmationMail: '',
+      confirmationMail: "",
       confirmationModalOpen: false,
     };
     this.eMailChanged = this.eMailChanged.bind(this);

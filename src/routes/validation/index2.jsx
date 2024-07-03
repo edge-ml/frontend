@@ -1,9 +1,8 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import Page from '../../components/Common/Page';
+import React, { Fragment, useEffect, useState } from "react";
+import Page from "../../components/Common/Page";
 
-
-import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
-import TrainingWizard from '../../components/TrainingWizard';
+import { SelectedModelModalView } from "../../components/SelectedModelModalView/SelectedModelModalView";
+import TrainingWizard from "../../components/TrainingWizard";
 import {
   Button,
   Container,
@@ -15,12 +14,12 @@ import {
   UncontrolledTooltip,
   Row,
   Col,
-} from 'reactstrap';
-import DownloadModal from './DownloadModal';
-import LiveInferenceModal from './LiveInferenceModal';
-import { Table, TableEntry } from '../../components/Common/Table';
-import Checkbox from '../../components/Common/Checkbox';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+} from "reactstrap";
+import DownloadModal from "./DownloadModal";
+import LiveInferenceModal from "./LiveInferenceModal";
+import { Table, TableEntry } from "../../components/Common/Table";
+import Checkbox from "../../components/Common/Checkbox";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTrashAlt,
   faDownload,
@@ -29,12 +28,12 @@ import {
   faCircleInfo,
   faPlay,
   faPen,
-} from '@fortawesome/free-solid-svg-icons';
-import DeployModal from './DeployModal';
-import { useNavigate } from 'react-router-dom';
-import useModels from '../../Hooks/useModels';
-import Loader from '../../modules/loader';
-import { Empty } from '../export/components/Empty';
+} from "@fortawesome/free-solid-svg-icons";
+import DeployModal from "./DeployModal";
+import { useNavigate } from "react-router-dom";
+import useModels from "../../Hooks/useModels";
+import Loader from "../../modules/loader";
+import { Empty } from "../export/components/Empty";
 
 const ValidationPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
@@ -57,7 +56,7 @@ const ValidationPage = () => {
   const metric = (metric) => Math.round(metric * 100 * 100) / 100;
 
   const onViewModel = (model) => {
-    if (model.error === '' || model.error === undefined) {
+    if (model.error === "" || model.error === undefined) {
       setModalModel(model);
     }
   };
@@ -109,7 +108,7 @@ const ValidationPage = () => {
 
   if (error) {
     return (
-      <Container style={{ height: '100vh' }}>
+      <Container style={{ height: "100vh" }}>
         <div className="h-100 d-flex justify-content-center align-items-center">
           <h2 className="fw-bold">Cannot connect to the backend</h2>
         </div>
@@ -118,20 +117,17 @@ const ValidationPage = () => {
   }
 
   const checkExportC = (model) => {
-
-
     const res = model.pipeline.selectedPipeline.steps.map((step) => {
       if (!stepOptions) {
         return false;
       }
       const stepOption = stepOptions.find(
-        (elm) => elm.name === step.options.name,
+        (elm) => elm.name === step.options.name
       );
       if (
-        ['PRE', 'CORE'].includes(stepOption.type) &&
-        !stepOption.platforms.includes('C')
+        ["PRE", "CORE"].includes(stepOption.type) &&
+        !stepOption.platforms.includes("C")
       ) {
-
         return false;
       }
       return true;
@@ -147,11 +143,7 @@ const ValidationPage = () => {
     };
 
     return (
-      <Button
-        {...props}
-        className="btn-edit ms-2 my-2"
-        onClick={onClickStop}
-      >
+      <Button {...props} className="btn-edit ms-2 my-2" onClick={onClickStop}>
         <FontAwesomeIcon icon={icon}></FontAwesomeIcon>
         <div>
           <small>{children}</small>
@@ -159,8 +151,6 @@ const ValidationPage = () => {
       </Button>
     );
   };
-
-
 
   if (!models) {
     return <Loader loading></Loader>;
@@ -172,14 +162,18 @@ const ValidationPage = () => {
         <>
           <div className="fw-bold h4 justify-self-start">MODELS</div>
           <div className="justify-f-end">
-            <Button outline color='primary' className="btn-neutral" onClick={() => setModalOpen(true)}>
+            <Button
+              outline
+              color="primary"
+              className="btn-neutral"
+              onClick={() => setModalOpen(true)}
+            >
               Train a model
             </Button>
           </div>
         </>
       }
     >
-
       {models.length === 0 ? (
         <Empty>No models trained yet.</Empty>
       ) : (
@@ -197,7 +191,7 @@ const ValidationPage = () => {
                 id="deleteDatasetsButton"
                 size="sm"
                 outline
-                color='danger'
+                color="danger"
                 onClick={onOpenDeleteModal}
               >
                 <FontAwesomeIcon
@@ -211,11 +205,11 @@ const ValidationPage = () => {
         >
           {models.map((model, index) => {
             const metrics =
-              model.error || model.trainStatus !== 'done'
+              model.error || model.trainStatus !== "done"
                 ? undefined
                 : model.pipeline.selectedPipeline.steps.filter(
-                  (elm) => elm.type === 'EVAL',
-                )[0].options.metrics.metrics;
+                    (elm) => elm.type === "EVAL"
+                  )[0].options.metrics.metrics;
             return (
               <div className="model-table-entry-focus">
                 <TableEntry index={index}>
@@ -232,7 +226,9 @@ const ValidationPage = () => {
                     >
                       <Col className="col-3 ms-2 font-size-lg h-5">
                         <div>
-                          <b className='font-size-lg h5 fw-bold'>{model.name}</b>
+                          <b className="font-size-lg h5 fw-bold">
+                            {model.name}
+                          </b>
                           {/* <FontAwesomeIcon
                             className="ms-1 cursor-pointer"
                             color="rgb(131, 136, 159)"
@@ -242,9 +238,9 @@ const ValidationPage = () => {
                         </div>
                         <div>{model.pipeline.selectedPipeline.name}</div>
                       </Col>
-                      
+
                       <Col className="d-flex col-6 justify-content-end me-3 me-md-4">
-                        {model.trainStatus === 'done' ? (
+                        {model.trainStatus === "done" ? (
                           <div>
                             <ListButton
                               color="danger"
@@ -279,7 +275,7 @@ const ValidationPage = () => {
                               outline
                               icon={faPlay}
                               onClick={() =>
-                                history.push('models/live/' + model._id)
+                                history.push("models/live/" + model._id)
                               }
                             >
                               View live
@@ -295,7 +291,7 @@ const ValidationPage = () => {
                           </div>
                         ) : (
                           <div>
-                            {model.error === '' ? (
+                            {model.error === "" ? (
                               <div>
                                 <Spinner color="primary"></Spinner>
                               </div>
@@ -375,7 +371,7 @@ const ValidationPage = () => {
             onClick={onDeleteSelectedModels}
           >
             Yes
-          </Button>{' '}
+          </Button>{" "}
           <Button outline color="secondary" onClick={toggleDeleteModal}>
             No
           </Button>

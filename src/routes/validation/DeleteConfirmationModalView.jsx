@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
 export const DeleteConfirmationModalView = ({
   modelsToDelete,
@@ -33,7 +33,7 @@ export const DeleteConfirmationModalView = ({
           }}
         >
           Yes
-        </Button>{' '}
+        </Button>{" "}
         <Button outline color="secondary" onClick={onClosed}>
           No
         </Button>

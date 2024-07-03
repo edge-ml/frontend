@@ -1,5 +1,5 @@
-import React from 'react';
-import { Card, CardBody, CardHeader, Col, Container, Row } from 'reactstrap';
+import React from "react";
+import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
 
 export const UploadWebView = ({ sensorList, datasetSettings, graph, fabs }) => {
   return (
@@ -42,7 +42,7 @@ export const UploadWebView = ({ sensorList, datasetSettings, graph, fabs }) => {
         </Row>
       ) : null}
       <div className="pb-3" />
-      <div className="position-fixed" style={{ bottom: '24px', right: '24px' }}>
+      <div className="position-fixed" style={{ bottom: "24px", right: "24px" }}>
         {fabs}
       </div>
     </Container>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Modal,
   ModalFooter,
@@ -9,17 +9,17 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-} from 'reactstrap';
-import CodeView from '../../components/ApiSnippetsModal/CodeView';
+} from "reactstrap";
+import CodeView from "../../components/ApiSnippetsModal/CodeView";
 import {
   downloadDeploymentModel,
   downloadModalLink,
-} from '../../services/ApiServices/MLDeploymentService';
-import { downloadBlob } from '../../services/helpers';
-import { getProject } from '../../services/LocalStorageService';
+} from "../../services/ApiServices/MLDeploymentService";
+import { downloadBlob } from "../../services/helpers";
+import { getProject } from "../../services/LocalStorageService";
 
 const DownloadModal = ({ model, onClose }) => {
-  const [language, setLanguage] = useState('cpp');
+  const [language, setLanguage] = useState("cpp");
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false); // State for language dropdown
 
   if (!model) {
@@ -27,39 +27,38 @@ const DownloadModal = ({ model, onClose }) => {
   }
 
   const downloadModel = async () => {
-    if (language === 'python') {
-      
-      downloadModalLink(getProject(), model._id, 'python');
+    if (language === "python") {
+      downloadModalLink(getProject(), model._id, "python");
       return;
     }
 
-    const blob = await downloadDeploymentModel(model._id, 'C');
-    downloadBlob(blob, `${model.name}_${'language'}.zip`);
+    const blob = await downloadDeploymentModel(model._id, "C");
+    downloadBlob(blob, `${model.name}_${"language"}.zip`);
   };
 
   const getCode = () => {
     switch (language) {
-      case 'cpp':
+      case "cpp":
         return `#include "model.hpp"
 #include <iostream>
 
 int main() {
   cout << "SamplingRate: " << get_sampling_rate() << endl;
-  add_datapoint(${model.timeSeries.map((elm) => 'val_' + elm).join(', ')});
+  add_datapoint(${model.timeSeries.map((elm) => "val_" + elm).join(", ")});
   int res = predict();
   cout << "Result: " << res << " <==> " << class_to_label(res) << endl;
   return 0;
 }`;
       // Add cases for other languages here
       default:
-        return ''; // Handle unsupported languages
+        return ""; // Handle unsupported languages
     }
   };
 
   const CodeSnippet = ({ language, code }) => {
     const genCode = getCode();
 
-    if (code === '') {
+    if (code === "") {
       return (
         <div className="d-flex w-100 justify-content-center align-items-center mh-25 fw-bold">
           No sample code available
@@ -86,19 +85,23 @@ int main() {
               isOpen={languageDropdownOpen}
               toggle={() => setLanguageDropdownOpen(!languageDropdownOpen)}
             >
-              <DropdownToggle outline color='primary' caret>{language.toUpperCase()}</DropdownToggle>
+              <DropdownToggle outline color="primary" caret>
+                {language.toUpperCase()}
+              </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem onClick={() => setLanguage('cpp')}>
+                <DropdownItem onClick={() => setLanguage("cpp")}>
                   C++
                 </DropdownItem>
-                <DropdownItem onClick={() => setLanguage('python')}>
+                <DropdownItem onClick={() => setLanguage("python")}>
                   Python
                 </DropdownItem>
                 {/* Add more language options as DropdownItems */}
               </DropdownMenu>
             </Dropdown>
           </div>
-          <Button outline color='primary' onClick={downloadModel}>Download</Button>
+          <Button outline color="primary" onClick={downloadModel}>
+            Download
+          </Button>
         </div>
         <div className="pt-2"></div>
         <CodeSnippet language={language} code={getCode()}></CodeSnippet>

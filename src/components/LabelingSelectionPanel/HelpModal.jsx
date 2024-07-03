@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
-import { Button } from 'reactstrap';
-import { Modal, ModalHeader, ModalBody, ModalFooter } from '../Common/Modal';
+import React, { useEffect } from "react";
+import { Button } from "reactstrap";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
 const HelpModal = ({ isOpen, onCloseModal }) => {
-
-
   return (
     <Modal isOpen={isOpen} onClose={onCloseModal}>
-      <ModalHeader>{'Help'}</ModalHeader>
+      <ModalHeader>{"Help"}</ModalHeader>
       <ModalBody>
         <div className="py-2">
           <h6>Shortcuts</h6>
@@ -32,7 +30,7 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
         <h6>Upload CSV</h6>
         <a href="/example_file.csv" download="example_file.csv">
           Click here
-        </a>{' '}
+        </a>{" "}
         to download an example CSV file.
       </ModalBody>
       <ModalFooter>

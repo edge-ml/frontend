@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
-import {
-  Button,
-} from 'reactstrap';
-import MetaDataEditModal from './MetaDataEditModal';
-import './MetadataPanel.css';
+import React, { Component } from "react";
+import { Button } from "reactstrap";
+import MetaDataEditModal from "./MetaDataEditModal";
+import "./MetadataPanel.css";
 
 class CustomMetadataPanel extends Component {
   constructor(props) {
@@ -18,7 +16,6 @@ class CustomMetadataPanel extends Component {
   }
 
   onCancelEdit() {
-    
     this.setState({
       editModalOpen: false,
     });
@@ -31,14 +28,13 @@ class CustomMetadataPanel extends Component {
   }
 
   onSave(newMetaData) {
-    
     const metaDataAsObj = {};
     newMetaData
-      .filter((elm) => elm.key !== '')
+      .filter((elm) => elm.key !== "")
       .forEach((elm) => {
         metaDataAsObj[elm.key] = elm.data;
       });
-    
+
     this.props.onUpdateMetaData({ metaData: metaDataAsObj });
     this.setState({
       editModalOpen: false,
@@ -62,7 +58,7 @@ class CustomMetadataPanel extends Component {
         <div className="sidepanel-heading mt-5">
           <h4>Custom Metadata</h4>
         </div>
-        <div style={{ overflowY: 'auto' }}>
+        <div style={{ overflowY: "auto" }}>
           {Object.keys(this.props.metaData).length ? (
             this.additionalMetaData()
           ) : (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Button,
   Modal,
@@ -8,7 +8,7 @@ import {
   Input,
   Label,
   FormGroup,
-} from 'reactstrap';
+} from "reactstrap";
 
 const FilterSelectionModal = ({
   toggleFilterSelectionModal,
@@ -20,10 +20,10 @@ const FilterSelectionModal = ({
   const [currentFilter, setCurrentFilter] = useState(selectedFilter);
   const [filterParam, setFilterParam] = useState(null);
   const filters = [
-    { displayName: 'Remove Filter', value: 'clearFilter' },
-    { displayName: 'Text Search', value: 'filterByName' },
-    { displayName: 'Empty Datasets', value: 'filterEmptyDatasets' },
-    { displayName: 'Labeling Sets', value: 'filterByLabelingSets' },
+    { displayName: "Remove Filter", value: "clearFilter" },
+    { displayName: "Text Search", value: "filterByName" },
+    { displayName: "Empty Datasets", value: "filterEmptyDatasets" },
+    { displayName: "Labeling Sets", value: "filterByLabelingSets" },
   ];
 
   const handleFilterClick = (event) => {
@@ -39,13 +39,13 @@ const FilterSelectionModal = ({
 
   const renderFilter = () => {
     switch (currentFilter) {
-      case 'filterByName':
+      case "filterByName":
         return null;
         break;
-      case 'filterEmptyDatasets':
+      case "filterEmptyDatasets":
         return renderEmptyDatasetsFilter();
         break;
-      case 'filterByLabelingSets':
+      case "filterByLabelingSets":
         return null;
         break;
       default:
@@ -77,7 +77,7 @@ const FilterSelectionModal = ({
                       value={filter.value}
                       checked={currentFilter === filter.value}
                       onChange={handleFilterClick}
-                    />{' '}
+                    />{" "}
                     {filter.displayName}
                   </Label>
                 </div>
@@ -89,7 +89,7 @@ const FilterSelectionModal = ({
         <ModalFooter>
           <Button color="primary" outline onClick={applyAndClose}>
             Apply
-          </Button>{' '}
+          </Button>{" "}
           <Button color="danger" outline onClick={toggleFilterSelectionModal}>
             Cancel
           </Button>

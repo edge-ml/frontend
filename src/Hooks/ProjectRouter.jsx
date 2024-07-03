@@ -1,6 +1,6 @@
-import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import useProjectStore from '../stores/projectStore';
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import useProjectStore from "../stores/projectStore";
 
 const useProjectRouter = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const useProjectRouter = () => {
       const route = `/${admin.userName}/${name}/${path}`;
       navigate(route);
     } else {
-      console.warn('Project context or properties are missing');
+      console.warn("Project context or properties are missing");
     }
   };
 

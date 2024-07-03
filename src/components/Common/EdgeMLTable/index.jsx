@@ -1,13 +1,12 @@
-import React, { Fragment } from 'react';
+import React, { Fragment } from "react";
 
 const EdgeMLTable = ({ children, className, style }) => {
   const header = React.Children.toArray(children).find(
-    (child) => child.type === EdgeMLTableHeader,
+    (child) => child.type === EdgeMLTableHeader
   );
   const body = React.Children.toArray(children)
     .filter((elm) => elm.type !== EdgeMLTableHeader)
     .map((child, index) => {
-      
       return React.cloneElement(child, { index: index });
     });
 
@@ -19,9 +18,9 @@ const EdgeMLTable = ({ children, className, style }) => {
       <div
         className="w-100 position-relative"
         style={{
-          border: '2px solid rgb(230, 230, 234)',
-          borderRadius: '0px 0px 10px 10px',
-          overflow: 'hidden',
+          border: "2px solid rgb(230, 230, 234)",
+          borderRadius: "0px 0px 10px 10px",
+          overflow: "hidden",
         }}
       >
         {body}
@@ -38,9 +37,9 @@ const EdgeMLTableEntry = ({ children, index, className }) => {
   return (
     <Fragment>
       <div
-        className={'datasetCard ' + className}
+        className={"datasetCard " + className}
         style={{
-          background: index % 2 === 1 ? 'rgb(249, 251, 252)' : '',
+          background: index % 2 === 1 ? "rgb(249, 251, 252)" : "",
         }}
       >
         {children}

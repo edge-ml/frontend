@@ -1,7 +1,7 @@
-import React from 'react';
-import { Form, Badge, FormGroup, Card, CardBody, CardHeader } from 'reactstrap';
+import React from "react";
+import { Form, Badge, FormGroup, Card, CardBody, CardHeader } from "reactstrap";
 
-import Loader from '../../modules/loader';
+import Loader from "../../modules/loader";
 
 export const LabelingView = ({
   labelings,
@@ -31,7 +31,7 @@ export const LabelingView = ({
                         <input
                           id={x._id}
                           type="radio"
-                          style={{ marginTop: '0.1em' }}
+                          style={{ marginTop: "0.1em" }}
                           onClick={(y) => changeSelectedLabeling(x._id)}
                           checked={selectedLabeling === x._id}
                         ></input>
@@ -46,7 +46,7 @@ export const LabelingView = ({
                       <div className="d-flex flex-wrap flex-row align-items-center align-content-start mt-0">
                         {x.labels.map((labelId) => {
                           const label = labels.find(
-                            (label) => label._id === labelId,
+                            (label) => label._id === labelId
                           );
                           return (
                             <Badge
@@ -78,16 +78,16 @@ export const LabelingView = ({
                                 }
                                 disabled={selectedLabeling !== x._id}
                                 style={{
-                                  backgroundColor: 'rgba(0,0,0,0)',
-                                  border: 'none',
-                                  color: 'white',
-                                  outline: 'none',
-                                  verticalAlign: 'baseline',
-                                  display: 'inline-block',
+                                  backgroundColor: "rgba(0,0,0,0)",
+                                  border: "none",
+                                  color: "white",
+                                  outline: "none",
+                                  verticalAlign: "baseline",
+                                  display: "inline-block",
                                   fontWeight: 700,
                                   padding: 0,
-                                  height: '12px',
-                                  width: '37px',
+                                  height: "12px",
+                                  width: "37px",
                                 }}
                               />
                             </FormGroup>
@@ -108,13 +108,13 @@ export const LabelingView = ({
                     </div>
                   );
                 })
-              : 'There are no labelings defined'}
+              : "There are no labelings defined"}
           </fieldset>
         </Loader>
         <small className="mt-3 text-left">
           <b>
             <i>Note:</i>
-          </b>{' '}
+          </b>{" "}
           Model will classify based on target labeling.
           <br />
           Check "Other" to mark unlabeled data and use it in training.

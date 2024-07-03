@@ -1,8 +1,8 @@
-import React from 'react';
-import { useContext, useRef } from 'react';
-import HighchartsReact from 'highcharts-react-official';
-import Highcharts from 'highcharts/highstock';
-import { DatasetContext } from './DatasetContext';
+import React from "react";
+import { useContext, useRef } from "react";
+import HighchartsReact from "highcharts-react-official";
+import Highcharts from "highcharts/highstock";
+import { DatasetContext } from "./DatasetContext";
 
 const ChartSlider = ({ start, end, setStartEnd }) => {
   const chartRef = useRef();
@@ -16,11 +16,11 @@ const ChartSlider = ({ start, end, setStartEnd }) => {
   const generateState = () => {
     return {
       navigator: {
-        maskFill: 'rgba(72, 187, 120, 0.2)',
+        maskFill: "rgba(72, 187, 120, 0.2)",
         outlineWidth: 1,
         enabled: true,
         series: {
-          color: '#ffffff',
+          color: "#ffffff",
           lineWidth: 0,
         },
         xAxis: {
@@ -58,7 +58,7 @@ const ChartSlider = ({ start, end, setStartEnd }) => {
         labels: {
           enabled: false,
         },
-        type: 'datetime',
+        type: "datetime",
         ordinal: false,
         crosshair: false,
         min: start,
@@ -79,7 +79,7 @@ const ChartSlider = ({ start, end, setStartEnd }) => {
                   e.max,
                   e.target.width,
                   false,
-                  false,
+                  false
                 );
               }
             });
@@ -91,7 +91,7 @@ const ChartSlider = ({ start, end, setStartEnd }) => {
         gridLineWidth: 0,
         labels: {
           enabled: false,
-          align: 'left',
+          align: "left",
           x: 0,
           y: -2,
         },
@@ -101,9 +101,9 @@ const ChartSlider = ({ start, end, setStartEnd }) => {
         opposite: false,
       },
       legend: {
-        align: 'left',
-        verticalAlign: 'center',
-        layout: 'vertical',
+        align: "left",
+        verticalAlign: "center",
+        layout: "vertical",
         x: 45,
         y: 0,
         enabled: false,
@@ -116,20 +116,20 @@ const ChartSlider = ({ start, end, setStartEnd }) => {
       },
       scrollbar: {
         height: 0,
-        buttonArrowColor: '#fff',
+        buttonArrowColor: "#fff",
       },
     };
   };
 
   return (
-    <div style={{ height: '80px' }}>
+    <div style={{ height: "80px" }}>
       <HighchartsReact
         ref={chartRef}
         highcharts={Highcharts}
         options={generateState()}
         onetoOne={true}
-        constructorType={'stockChart'}
-        containerProps={{ style: { height: '100%' } }}
+        constructorType={"stockChart"}
+        containerProps={{ style: { height: "100%" } }}
       ></HighchartsReact>
     </div>
   );

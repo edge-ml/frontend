@@ -1,17 +1,15 @@
-import { useState } from 'react';
-import './RangeSlider.css';
+import { useState } from "react";
+import "./RangeSlider.css";
 
 const RangeSlider = () => {
   const [valueRight, onsetValueRight] = useState(0);
   const [valueLeft, onsetValueLeft] = useState(1000);
 
   const setValueLeft = (e) => {
-    
     onsetValueLeft(e.target.value);
   };
 
   const setValueRight = (e) => {
-    
     onsetValueRight(e.target.value);
   };
 

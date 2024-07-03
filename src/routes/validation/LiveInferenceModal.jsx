@@ -1,11 +1,11 @@
 /* global Module */
 
-import { Modal, ModalFooter, ModalBody, ModalHeader, Button } from 'reactstrap';
-import { SUPPORTED_SENSORS } from '../../services/WebSensorServices';
-import { SensorList } from '../../components/SensorList/SensorList';
-import { usePersistedState } from '../../services/ReactHooksService';
-import { downloadDeploymentModel } from '../../services/ApiServices/MLDeploymentService';
-import { downloadBlob } from '../../services/helpers';
+import { Modal, ModalFooter, ModalBody, ModalHeader, Button } from "reactstrap";
+import { SUPPORTED_SENSORS } from "../../services/WebSensorServices";
+import { SensorList } from "../../components/SensorList/SensorList";
+import { usePersistedState } from "../../services/ReactHooksService";
+import { downloadDeploymentModel } from "../../services/ApiServices/MLDeploymentService";
+import { downloadBlob } from "../../services/helpers";
 import {
   Badge,
   UncontrolledDropdown,
@@ -16,12 +16,12 @@ import {
   Col,
   Table,
   Alert,
-} from 'reactstrap';
-import { useState, memo, useEffect } from 'react';
-import { faCross, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { objMap } from '../../services/helpers';
-import Checkbox from '../../components/Common/Checkbox';
+} from "reactstrap";
+import { useState, memo, useEffect } from "react";
+import { faCross, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { objMap } from "../../services/helpers";
+import Checkbox from "../../components/Common/Checkbox";
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -34,13 +34,13 @@ const mergeSingle = (replacer) => (key, value) => {
 const Th = (props) => (
   <th
     {...props}
-    className={'border-top-0 ' + (props.className ? props.className : '')}
+    className={"border-top-0 " + (props.className ? props.className : "")}
   />
 );
 const Td = (props) => (
   <td
     {...props}
-    className={'border-top-0 ' + (props.className ? props.className : '')}
+    className={"border-top-0 " + (props.className ? props.className : "")}
   />
 );
 
@@ -56,12 +56,12 @@ const TimeSeriesSelectingSensorComponent = ({
     (ts) =>
       matches[ts] &&
       matches[ts].component === component &&
-      matches[ts].sensor.name === sensor.name,
+      matches[ts].sensor.name === sensor.name
   );
   const remainingTimeseries = timeseries.filter((ts) => !matches[ts]);
 
   const badgeClass = `m-1 badge badge-${
-    componentTimeseries ? 'primary' : 'secondary'
+    componentTimeseries ? "primary" : "secondary"
   }`;
   const badgeText = componentTimeseries
     ? `${shortComponent} → (${componentTimeseries})`
@@ -72,14 +72,14 @@ const TimeSeriesSelectingSensorComponent = ({
   return (
     <UncontrolledDropdown
       direction="left"
-      style={{ position: 'relative', padding: 0, display: 'inline-block' }}
+      style={{ position: "relative", padding: 0, display: "inline-block" }}
       disabled={isDisabled}
     >
       <DropdownToggle
         caret={!isDisabled}
         size="sm"
         className={badgeClass}
-        tag={'span'}
+        tag={"span"}
       >
         {badgeText}
       </DropdownToggle>
@@ -108,14 +108,14 @@ const ScreenOne = memo(
 
     const [selectedSensors, setSelectedSensors] = usePersistedState(
       {},
-      'routes:validation:LiveInferenceModal.selectedSensors',
+      "routes:validation:LiveInferenceModal.selectedSensors"
     );
     const [sensorRates, setSensorRates] = usePersistedState(
       SUPPORTED_SENSORS.reduce((acc, { name }) => {
         acc[name] = 50;
         return acc;
       }, {}),
-      'routes:validation:LiveInferenceModal.sensorRates',
+      "routes:validation:LiveInferenceModal.sensorRates"
     );
 
     // tsName -> { sensor, component, shortComponent }
@@ -135,23 +135,23 @@ const ScreenOne = memo(
     };
 
     const legalMatches = objMap(tsMatches, (obj) =>
-      obj && selectedSensors[obj.sensor.name] ? obj : null,
+      obj && selectedSensors[obj.sensor.name] ? obj : null
     );
 
     const legal = model.timeSeries.reduce(
       (acc, tsName) => !!(acc && legalMatches[tsName]),
-      true,
+      true
     );
 
     const onDownloadWASM = async () => {
-      const filename = `${model.name}_${'WASM'}.${
-        downloadSingleFile ? 'js' : 'zip'
+      const filename = `${model.name}_${"WASM"}.${
+        downloadSingleFile ? "js" : "zip"
       }`;
       const blob = await downloadDeploymentModel(
         model._id,
-        'WASM',
+        "WASM",
         true,
-        downloadSingleFile,
+        downloadSingleFile
       );
       downloadBlob(blob, filename);
     };
@@ -231,7 +231,7 @@ const ScreenOne = memo(
                         <>
                           <Td
                             colspan="3"
-                            style={{ width: '100%', textAlign: 'center' }}
+                            style={{ width: "100%", textAlign: "center" }}
                           >
                             Unset
                           </Td>
@@ -283,7 +283,7 @@ const ScreenOne = memo(
       </ModalBody>
     );
   },
-  (props, nextprops) => props.model === nextprops.model,
+  (props, nextprops) => props.model === nextprops.model
 );
 
 const ScreenTwo = ({ model, legalMatches }) => {
@@ -299,7 +299,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
     let script = null;
 
     const f = async () => {
-      const blob = await downloadDeploymentModel(model._id, 'WASM', true, true);
+      const blob = await downloadDeploymentModel(model._id, "WASM", true, true);
 
       blobURL = URL.createObjectURL(blob);
       // // This conflicts with webpack/cra (https://github.com/webpack/webpack/issues/6680)
@@ -307,25 +307,23 @@ const ScreenTwo = ({ model, legalMatches }) => {
       // // but I could not get it working with webpack either, so script tag it is.
 
       // import(blobURL).then((Module) => {
-      //   
+      //
       // })
 
-      if (typeof Module !== 'undefined') {
+      if (typeof Module !== "undefined") {
         // eslint-disable-next-line no-global-assign
         Module = undefined;
       }
 
-      script = document.createElement('script');
+      script = document.createElement("script");
       script.src = blobURL;
       document.body.appendChild(script);
 
-      while (typeof Module === 'undefined') {
+      while (typeof Module === "undefined") {
         await delay(100);
       }
 
-      
       const instance = await Module();
-      
 
       setWASMBlobLoaded(true);
       setModelInstance(instance);
@@ -372,25 +370,23 @@ const ScreenTwo = ({ model, legalMatches }) => {
     const onSensorError =
       (sensor, isWarning = false) =>
       (error) => {
-        
         setSensorErrors((prev) => ({
           ...prev,
           [sensor.name]: { error, isWarning },
         }));
       };
 
-    
     setSensorConfigs(sensorConfigs);
 
     const f = async () => {
       for (const config of sensorConfigs) {
         const sensor = config.sensor;
-        
+
         sensor.removeAllListeners();
 
-        sensor.on('warn', onSensorError(sensor, true));
-        sensor.on('error', onSensorError(sensor));
-        sensor.on('data', onSensorData(config));
+        sensor.on("warn", onSensorError(sensor, true));
+        sensor.on("error", onSensorError(sensor));
+        sensor.on("data", onSensorData(config));
         await sensor.listen({
           ...(sensor.properties.fixedFrequency
             ? {}
@@ -430,19 +426,17 @@ const ScreenTwo = ({ model, legalMatches }) => {
     return null;
   }
 
-  
-
   return (
     <ModalBody>
       <Row>
         <Col>
           <div>
-            <b>WASM Blob:</b>{' '}
-            {wasmBlobLoaded ? 'Downloaded.' : 'In progress...'}
+            <b>WASM Blob:</b>{" "}
+            {wasmBlobLoaded ? "Downloaded." : "In progress..."}
           </div>
           <div>
-            <b>Model Instance:</b>{' '}
-            {!!modelInstance ? 'Loaded.' : 'In progress...'}
+            <b>Model Instance:</b>{" "}
+            {!!modelInstance ? "Loaded." : "In progress..."}
           </div>
           <div>
             <b>Sensor Matching:</b>
@@ -473,7 +467,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
                     {matches
                       .map(({ match }) => (
                         <li>
-                          {match.shortComponent} →{' '}
+                          {match.shortComponent} →{" "}
                           <b>
                             {sensorData[sensor.name]?.data[match.component]}
                           </b>
@@ -487,14 +481,14 @@ const ScreenTwo = ({ model, legalMatches }) => {
           </div>
           {clfRes !== null ? (
             <div>
-              <b>Classification:</b>{' '}
+              <b>Classification:</b>{" "}
               <Badge>
                 {modelInstance.class_to_label(clfRes)} ({clfRes})
               </Badge>
             </div>
           ) : null}
           {Object.entries(sensorErrors).map(([comp, { error, isWarning }]) => (
-            <Alert color={isWarning ? 'warning' : 'danger'}>
+            <Alert color={isWarning ? "warning" : "danger"}>
               <strong>{comp}</strong>: {error}
             </Alert>
           ))}
@@ -532,7 +526,7 @@ const LiveInferenceModal = ({ model, onClose: onCloseOrig }) => {
   const onClassify = (legalMatches) => {
     const legal = model.timeSeries.reduce(
       (acc, tsName) => !!(acc && legalMatches[tsName]),
-      true,
+      true
     );
 
     if (!legal) {
@@ -540,7 +534,7 @@ const LiveInferenceModal = ({ model, onClose: onCloseOrig }) => {
     }
 
     // classify
-    
+
     setLegalMatches(legalMatches);
     setPage(2);
   };

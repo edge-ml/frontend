@@ -1,35 +1,31 @@
-import React, { useState } from 'react';
-import {
-  Button,
-  InputGroup,
-  InputGroupText,
-} from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from "react";
+import { Button, InputGroup, InputGroupText } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
-import AutoCompleteInput from '../../components/AutoCompleteInput/AutocompleteInput';
-import { getUserNameSuggestions } from '../../services/ApiServices/AuthentificationServices';
+import AutoCompleteInput from "../../components/AutoCompleteInput/AutocompleteInput";
+import { getUserNameSuggestions } from "../../services/ApiServices/AuthentificationServices";
 import {
   EdgeMLTable,
   EdgeMLTableEntry,
   EdgeMLTableHeader,
-} from '../../components/Common/EdgeMLTable';
-import useProjectSettings from '../../Hooks/useProjectSettings';
-import useUserStore from '../../Hooks/useUser';
-import useProjectStore from '../../stores/projectStore';
+} from "../../components/Common/EdgeMLTable";
+import useProjectSettings from "../../Hooks/useProjectSettings";
+import useUserStore from "../../Hooks/useUser";
+import useProjectStore from "../../stores/projectStore";
 
 const UserEdit = () => {
   const { currentProject } = useProjectStore();
   const { changeUserNames } = useProjectSettings();
   const { user } = useUserStore();
 
-  const [userSearchValue, setUserSearchValue] = useState('');
+  const [userSearchValue, setUserSearchValue] = useState("");
   const [userNames, setUserNames] = useState(currentProject.users);
 
   const handleAddUserName = (e) => {
     e.preventDefault();
     setUserNames([...userNames, { userName: e.target.value }]);
-    setUserSearchValue('');
+    setUserSearchValue("");
   };
 
   const handleUserNameSuggestionChange = (e) => {
@@ -37,7 +33,9 @@ const UserEdit = () => {
   };
 
   const handleDeleteUserName = (userNameToDelete) => {
-    setUserNames(userNames.filter((user) => user.userName !== userNameToDelete));
+    setUserNames(
+      userNames.filter((user) => user.userName !== userNameToDelete)
+    );
   };
 
   const areUsersValid = (users) => {
@@ -69,26 +67,27 @@ const UserEdit = () => {
         />
       </InputGroup>
       {userNames.length > 0 ? (
-      <EdgeMLTable>
-        <EdgeMLTableHeader>Users in the project</EdgeMLTableHeader>
-        {userNames.map((user, index) => (
-          <EdgeMLTableEntry
-            key={index}
-            className="d-flex justify-content-between p-2 align-items-center"
-          >
-            <div>{index + 1}</div>
-            <div>{user.userName}</div>
-            <Button
-              outline
-              size="sm"
-              color="danger"
-              onClick={() => handleDeleteUserName(user.userName)}
+        <EdgeMLTable>
+          <EdgeMLTableHeader>Users in the project</EdgeMLTableHeader>
+          {userNames.map((user, index) => (
+            <EdgeMLTableEntry
+              key={index}
+              className="d-flex justify-content-between p-2 align-items-center"
             >
-              <FontAwesomeIcon icon={faTrashAlt} />
-            </Button>
-          </EdgeMLTableEntry>
-        ))}
-      </EdgeMLTable>) : null}
+              <div>{index + 1}</div>
+              <div>{user.userName}</div>
+              <Button
+                outline
+                size="sm"
+                color="danger"
+                onClick={() => handleDeleteUserName(user.userName)}
+              >
+                <FontAwesomeIcon icon={faTrashAlt} />
+              </Button>
+            </EdgeMLTableEntry>
+          ))}
+        </EdgeMLTable>
+      ) : null}
       <div className="pt-3 d-flex justify-content-end">
         <Button
           outline

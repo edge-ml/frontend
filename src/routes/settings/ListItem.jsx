@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Card, CardTitle, CardBody, CardSubtitle } from 'reactstrap';
+import React, { Component } from "react";
+import { Card, CardTitle, CardBody, CardSubtitle } from "reactstrap";
 
 class ListItem extends Component {
   constructor(props) {

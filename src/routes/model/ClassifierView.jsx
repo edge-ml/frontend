@@ -1,5 +1,5 @@
-import React from 'react';
-import Select from 'react-select';
+import React from "react";
+import Select from "react-select";
 
 import {
   Button,
@@ -10,13 +10,13 @@ import {
   Card,
   CardBody,
   CardHeader,
-} from 'reactstrap';
+} from "reactstrap";
 
-import { faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AdvancedHyperparameters } from './AdvancedHyperparameters';
+import { faCheck, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AdvancedHyperparameters } from "./AdvancedHyperparameters";
 
-import { HyperparameterView } from './HyperparameterView';
+import { HyperparameterView } from "./HyperparameterView";
 
 export const ClassifierView = ({
   models,
@@ -47,10 +47,10 @@ export const ClassifierView = ({
         ></Select>
       </CardHeader>
       <CardBody className="h-100 d-flex flex-column align-items-start flex-column justify-content-between">
-        <InputGroup style={{ maxWidth: '350px' }}>
+        <InputGroup style={{ maxWidth: "350px" }}>
           <InputGroupText>Model Name</InputGroupText>
           <Input
-            type={'text'}
+            type={"text"}
             value={modelName}
             onChange={changeModelName}
             invalid={!modelName}

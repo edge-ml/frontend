@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment } from "react";
 import {
   ModalBody,
   Button,
@@ -7,8 +7,8 @@ import {
   DropdownToggle,
   DropdownItem,
   DropdownMenu,
-} from 'reactstrap';
-import { HyperparameterView } from '../../Hyperparameters/HyperparameterView';
+} from "reactstrap";
+import { HyperparameterView } from "../../Hyperparameters/HyperparameterView";
 const Select_Windowing = ({
   onBack,
   onNext,
@@ -26,7 +26,7 @@ const Select_Windowing = ({
 
   const onParameterChanged = ({ parameter_name, state }) => {
     const idx = windowers[window_index].parameters.findIndex(
-      (elm) => elm.parameter_name === parameter_name,
+      (elm) => elm.parameter_name === parameter_name
     );
     windowers[window_index].parameters[idx].value = state;
     setWindower([...windowers]);
@@ -67,7 +67,7 @@ const Select_Windowing = ({
 
 Select_Windowing.validate = ({ selectedWindowing }) => {
   if (!selectedWindowing) {
-    return 'You need to select a windowing';
+    return "You need to select a windowing";
   }
 };
 

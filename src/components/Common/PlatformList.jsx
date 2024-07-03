@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
 const svgComponents = {
-  JS: React.lazy(() => import('./JS.svg')),
-  CPP: React.lazy(() => import('./CPP.svg'))
+  JS: React.lazy(() => import("./JS.svg")),
+  CPP: React.lazy(() => import("./CPP.svg")),
 };
 
 const PlatformList = ({ platforms, size, color }) => {
@@ -14,12 +14,14 @@ const PlatformList = ({ platforms, size, color }) => {
 
   return (
     <div className="child-gap">
-      {Array.from(platformsSet).map(platform => {
+      {Array.from(platformsSet).map((platform) => {
         const SvgComponent = svgComponents[platform];
         return (
           SvgComponent && (
             <React.Suspense fallback={<div>Loading...</div>} key={platform}>
-              <SvgComponent style={{ height: size, width: size, fill: color }} />
+              <SvgComponent
+                style={{ height: size, width: size, fill: color }}
+              />
             </React.Suspense>
           )
         );

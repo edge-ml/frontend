@@ -1,11 +1,11 @@
-import React, { useState, useCallback, useContext } from 'react';
-import { Button } from 'reactstrap';
-import ConfirmationDialogueModal from '../../components/ConfirmationDilaogueModal/ConfirmationDialogueModal';
-import { AuthContext } from '../../AuthProvider';
-import useProjectSettings from '../../Hooks/useProjectSettings';
-import useAuth from '../../Hooks/useAuth';
-import useUserStore from '../../Hooks/useUser';
-import useProjectStore from '../../stores/projectStore';
+import React, { useState, useCallback, useContext } from "react";
+import { Button } from "reactstrap";
+import ConfirmationDialogueModal from "../../components/ConfirmationDilaogueModal/ConfirmationDialogueModal";
+import { AuthContext } from "../../AuthProvider";
+import useProjectSettings from "../../Hooks/useProjectSettings";
+import useAuth from "../../Hooks/useAuth";
+import useUserStore from "../../Hooks/useUser";
+import useProjectStore from "../../stores/projectStore";
 
 const DeleteProject = (props) => {
   const { currentProject } = useProjectStore();
@@ -48,11 +48,11 @@ const DeleteProject = (props) => {
       {modalOpen ? (
         <ConfirmationDialogueModal
           isOpen={modalOpen}
-          title={isAdmin ? 'Delete Project' : 'Leave Project'}
+          title={isAdmin ? "Delete Project" : "Leave Project"}
           confirmString={
             isAdmin
-              ? 'Do you want to delete this project?'
-              : 'Do you want to leave this project? If you change your mind, you will have to ask the project admin to add you again.'
+              ? "Do you want to delete this project?"
+              : "Do you want to leave this project? If you change your mind, you will have to ask the project admin to add you again."
           }
           onConfirm={onConfirmDelte}
           onCancel={onCloseModal}

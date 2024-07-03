@@ -1,11 +1,4 @@
-import {
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Button,
-} from 'reactstrap';
-
+import { Modal, ModalBody, ModalFooter, ModalHeader, Button } from "reactstrap";
 
 const SensorAvailabilityModal = ({ isOpen, onClose }) => {
   const onGoBack = () => {};

@@ -227,11 +227,10 @@ const useChartEvents = (chart, labeling) => {
         item.options.labelId === currentPlotLine.labelId
     )[0];
 
-
     const start = plotBand.options.from;
     const end = plotBand.options.to;
-    console.log(plotBand)
-    console.log(start, end)
+    console.log(plotBand);
+    console.log(start, end);
     updateLabelStartEnd(currentPlotLine.labelId, start, end);
 
     currentPlotLine = undefined;

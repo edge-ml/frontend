@@ -149,10 +149,7 @@ const DatasetInfo = (props) => {
     .every((elm) => elm === 0 || elm === null);
   return (
     <div className="text-left d-inline-block m-2">
-      <div className="fw-bold font-size-lg h5 d-inline">
-        {dataset.name}
-
-      </div>
+      <div className="fw-bold font-size-lg h5 d-inline">{dataset.name}</div>
       {!empty ? (
         <Fragment>
           <div style={{ color: "rgb(131, 136, 159)" }}>
@@ -238,14 +235,17 @@ const DatasetTableEntry = (props) => {
             <Checkbox
               isSelected={props.isSelected}
               className="d-inline-block"
-              // onClick={(e) => 
+              // onClick={(e) =>
               onClick={(e) => props.toggleCheck(e, dataset["_id"])}
             ></Checkbox>
           </div>
           <div className="w-100">
             <Row>
               <Col className="text-left align-self-center col-lg-4 col-xl-3">
-                <DatasetInfo dataset={dataset} updateDataset={updateDataset}></DatasetInfo>
+                <DatasetInfo
+                  dataset={dataset}
+                  updateDataset={updateDataset}
+                ></DatasetInfo>
               </Col>
               <Col className="d-none d-lg-block">
                 <div className="d-flex h-100 flex-column justify-content-center">

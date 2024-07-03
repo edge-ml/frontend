@@ -91,5 +91,4 @@
 //   detection = () => this.name in window;
 // }
 
-
 // export default WebSensorApiSensor;

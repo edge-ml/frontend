@@ -82,10 +82,13 @@ const LabelingTableEntry = ({
           setLabelingModalOpen(false);
         }}
       ></EditLabelingModal>
-      <DeleteConfirmationModal 
-      isOpen={deleteModalOpen}
-      onConfirm={() => {deleteLabelings([labeling]); setDeleteModalOpen(false)}}
-      onCancel={() => setDeleteModalOpen(false)}
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onConfirm={() => {
+          deleteLabelings([labeling]);
+          setDeleteModalOpen(false);
+        }}
+        onCancel={() => setDeleteModalOpen(false)}
       >
         <div>
           <div>Are you sure you want to delete this labeling:</div>
@@ -99,7 +102,6 @@ const LabelingTableEntry = ({
 export default LabelingTableEntry;
 
 const Labeling = (props) => {
-  
   const labels = props.labeling.labels;
 
   if (labels.length === 0) {

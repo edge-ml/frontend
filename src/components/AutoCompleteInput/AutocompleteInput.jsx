@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { Input } from 'reactstrap';
-import { betterModulo } from '../../services/helpers';
+import React, { Component } from "react";
+import { Input } from "reactstrap";
+import { betterModulo } from "../../services/helpers";
 
-import './AutocompleteInput.css';
+import "./AutocompleteInput.css";
 
 class AutocompleteInput extends Component {
   constructor(props) {
@@ -20,10 +20,10 @@ class AutocompleteInput extends Component {
   }
 
   onInputChange(e) {
-    if (e.target.value === '') {
+    if (e.target.value === "") {
       this.closeMenu();
     }
-    if (this.props.getsuggestions && e.target.value !== '') {
+    if (this.props.getsuggestions && e.target.value !== "") {
       this.props
         .getsuggestions(e.target.value)
         .then((data) => {
@@ -36,9 +36,7 @@ class AutocompleteInput extends Component {
           });
           this.openMenu();
         })
-        .catch((err) => {
-          
-        });
+        .catch((err) => {});
     }
 
     if (this.props.onChange) {
@@ -48,15 +46,15 @@ class AutocompleteInput extends Component {
 
   openMenu() {
     this.setState({ menuOpen: true }, () => {
-      document.addEventListener('click', this.closeMenu);
-      document.addEventListener('keydown', this.onKeyDown);
+      document.addEventListener("click", this.closeMenu);
+      document.addEventListener("keydown", this.onKeyDown);
     });
   }
 
   closeMenu() {
     this.setState({ menuOpen: false }, () => {
-      document.removeEventListener('click', this.closeMenu);
-      document.removeEventListener('keydown', this.onKeyDown);
+      document.removeEventListener("click", this.closeMenu);
+      document.removeEventListener("keydown", this.onKeyDown);
     });
   }
 
@@ -70,19 +68,19 @@ class AutocompleteInput extends Component {
     var selectedIndex = 0;
     if (this.state.suggestions.length !== 0) {
       switch (e.key) {
-        case 'ArrowDown':
+        case "ArrowDown":
           selectedIndex = betterModulo(
             this.state.selectedIndex + 1,
-            this.state.suggestions.length,
+            this.state.suggestions.length
           );
           break;
-        case 'ArrowUp':
+        case "ArrowUp":
           selectedIndex = betterModulo(
             this.state.selectedIndex - 1,
-            this.state.suggestions.length,
+            this.state.suggestions.length
           );
           break;
-        case 'Enter':
+        case "Enter":
           const newEvent = e;
           newEvent.target.value =
             this.state.suggestions[this.state.selectedIndex];
@@ -93,7 +91,7 @@ class AutocompleteInput extends Component {
           break;
       }
     }
-    if (e.key === 'Escape') {
+    if (e.key === "Escape") {
       this.closeMenu();
       return;
     }
@@ -132,8 +130,8 @@ class AutocompleteInput extends Component {
                   onClick={(e) => this.onItemClick(e, index)}
                   className={
                     index === this.state.selectedIndex
-                      ? 'autocomplete-button select'
-                      : 'autocomplete-button'
+                      ? "autocomplete-button select"
+                      : "autocomplete-button"
                   }
                 >
                   {item}

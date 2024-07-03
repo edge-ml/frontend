@@ -1,6 +1,6 @@
-import React from 'react';
-import { Table, Input, InputGroup, InputGroupText, Badge } from 'reactstrap';
-import Checkbox from '../Common/Checkbox';
+import React from "react";
+import { Table, Input, InputGroup, InputGroupText, Badge } from "reactstrap";
+import Checkbox from "../Common/Checkbox";
 
 function BlePanelSensorList({
   sensors = {},
@@ -39,7 +39,7 @@ function BlePanelSensorList({
               const sensorData = sensors[sensorKey];
               return (
                 <tr key={sensorKey}>
-                  <td className='align-middle'>
+                  <td className="align-middle">
                     <Checkbox
                       disabled={disabled}
                       isSelected={selectedSensors.has(sensorKey)}
@@ -47,10 +47,10 @@ function BlePanelSensorList({
                       onClick={() => onToggleSensor(sensorKey)}
                     ></Checkbox>
                   </td>
-                  <td className='align-middle'>{sensorData.name}</td>
-                  <td className='align-middle'>
+                  <td className="align-middle">{sensorData.name}</td>
+                  <td className="align-middle">
                     <InputGroup
-                      style={{ margin: 0, minWidth: '90px' }}
+                      style={{ margin: 0, minWidth: "90px" }}
                       size="sm"
                     >
                       <Input
@@ -66,10 +66,10 @@ function BlePanelSensorList({
                       <InputGroupText>Hz</InputGroupText>
                     </InputGroup>
                   </td>
-                  <td className='align-middle'>
+                  <td className="align-middle">
                     {sensorData.parseScheme.map((elm) => (
                       <Badge color="primary" key={elm.name}>
-                        {elm.name + (elm.unit ? ` (${elm.unit})` : '')}
+                        {elm.name + (elm.unit ? ` (${elm.unit})` : "")}
                       </Badge>
                     ))}
                   </td>
@@ -83,7 +83,7 @@ function BlePanelSensorList({
             <small className="text-danger">
               <strong>Warning: </strong>Collecting data from multiple sensors
               with high sampling rate can cause delays / errors during
-              recording. It is recommended to keep the sum of sample rates below{' '}
+              recording. It is recommended to keep the sum of sample rates below{" "}
               {maxSampleRate} Hz. You are currently at {sampleRateSum} Hz.
             </small>
           </div>

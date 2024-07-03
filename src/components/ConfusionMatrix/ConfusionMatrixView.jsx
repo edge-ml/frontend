@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export const ConfusionMatrixView = ({ matrix, labels }) => {
   var cm = matrix;
@@ -9,8 +9,8 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
   const getAdditionalStyles = (col) => {
     const scale = (parseFloat(col) / parseFloat(maxValue)) * 70;
     return {
-      backgroundColor: 'hsl(202, 100%,' + (100 - scale) + '%)',
-      color: scale > 50 ? 'white' : 'black',
+      backgroundColor: "hsl(202, 100%," + (100 - scale) + "%)",
+      color: scale > 50 ? "white" : "black",
     };
   };
 
@@ -24,11 +24,11 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
               style={{
                 paddingRight: 0,
                 paddingLeft: 0,
-                textAlign: 'center',
-                borderBottom: '1px solid black',
-                fontWeight: 'bold',
-                transform: 'translateY(-50%) rotate(-75deg)',
-                maxWidth: '50px',
+                textAlign: "center",
+                borderBottom: "1px solid black",
+                fontWeight: "bold",
+                transform: "translateY(-50%) rotate(-75deg)",
+                maxWidth: "50px",
               }}
             >
               {label}
@@ -40,10 +40,10 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
             <td
               className="pe-2"
               style={{
-                textAlign: 'end',
-                borderRight: '1px solid black',
-                paddingBottom: '2px',
-                fontWeight: 'bold',
+                textAlign: "end",
+                borderRight: "1px solid black",
+                paddingBottom: "2px",
+                fontWeight: "bold",
               }}
             >
               {labels[rowIdx]}
@@ -52,19 +52,19 @@ export const ConfusionMatrixView = ({ matrix, labels }) => {
               <td
                 style={{
                   padding: 0,
-                  height: '50px',
-                  width: '50px',
-                  borderRight: colIdx == cmLen - 1 ? '1px solid black' : null,
-                  borderBottom: rowIdx == cmLen - 1 ? '1px solid black' : null,
+                  height: "50px",
+                  width: "50px",
+                  borderRight: colIdx == cmLen - 1 ? "1px solid black" : null,
+                  borderBottom: rowIdx == cmLen - 1 ? "1px solid black" : null,
                   ...getAdditionalStyles(col),
                 }}
               >
                 <div
                   style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    height: 'inherit',
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "inherit",
                   }}
                 >
                   {col}

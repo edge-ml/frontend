@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-import { Card, CardBody, CardHeader } from 'reactstrap';
+import { Card, CardBody, CardHeader } from "reactstrap";
 
-import Loader from '../../modules/loader';
+import Loader from "../../modules/loader";
 
 export const TargetSensorsView = ({
   sensorStreams,
@@ -26,8 +26,8 @@ export const TargetSensorsView = ({
                   changeAllSelectedSensorStreams(
                     !sensorStreams ||
                       !sensorStreams.every((x) =>
-                        selectedSensorStreams.includes(x),
-                      ),
+                        selectedSensorStreams.includes(x)
+                      )
                   );
                 }}
                 checked={
@@ -60,14 +60,14 @@ export const TargetSensorsView = ({
                     </div>
                   );
                 })
-              : 'There are no sensor streams defined'}
+              : "There are no sensor streams defined"}
           </fieldset>
         </Loader>
         <div className="mt-3 text-left">
           <small>
             <b>
               <i>Note:</i>
-            </b>{' '}
+            </b>{" "}
             Datasets that do not have all selected sensor streams or the target
             labeling will be dropped.
           </small>

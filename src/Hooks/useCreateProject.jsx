@@ -3,7 +3,6 @@ import { createProject as createProject_api } from "../services/ApiServices/Proj
 import useUserStore from "./useUser";
 import useProjectStore from "../stores/projectStore";
 
-
 const useCreateProject = () => {
   const { user } = useUserStore();
   const getProjects = useProjectStore((state) => state.getProjects);
@@ -21,7 +20,7 @@ const useCreateProject = () => {
   };
 
   const addUSer = (e) => {
-    setProjectUsers([...projectUsers, {"userName": e.target.value}]);
+    setProjectUsers([...projectUsers, { userName: e.target.value }]);
   };
 
   const removeUser = (userName) => {

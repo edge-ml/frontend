@@ -48,9 +48,7 @@ const EditProjectModal = ({ isOpen, onClose }) => {
             value={project.name}
             onChange={(e) => setProjectName(e.target.value)}
           />
-          <FormFeedback>
-            
-          </FormFeedback>
+          <FormFeedback></FormFeedback>
         </InputGroup>
         <InputGroup>
           <InputGroupText>{"Admin"}</InputGroupText>
@@ -92,7 +90,11 @@ const EditProjectModal = ({ isOpen, onClose }) => {
                     <b>{elm.userName}</b>
                   </div>
                   <div>
-                    <Button outline color="danger" onClick={() => removeUser(elm.userName)}>
+                    <Button
+                      outline
+                      color="danger"
+                      onClick={() => removeUser(elm.userName)}
+                    >
                       <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
                     </Button>
                   </div>

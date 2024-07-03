@@ -1,13 +1,13 @@
-const DFU_SERVICE_UUID = '34c2e3b8-34aa-11eb-adc1-0242ac120002';
-const DFU_INTERNALL_CHARACTERISTIC = '34c2e3b9-34aa-11eb-adc1-0242ac120002';
-const DFU_EXTERNAL_CHRARACTERISTIC = '34c2e3ba-34aa-11eb-adc1-0242ac120002';
+const DFU_SERVICE_UUID = "34c2e3b8-34aa-11eb-adc1-0242ac120002";
+const DFU_INTERNALL_CHARACTERISTIC = "34c2e3b9-34aa-11eb-adc1-0242ac120002";
+const DFU_EXTERNAL_CHRARACTERISTIC = "34c2e3ba-34aa-11eb-adc1-0242ac120002";
 
 class DFUManager {
   constructor(
     setFlashState,
     setFlashError,
     setFlashProgress,
-    setConnectedDevice,
+    setConnectedDevice
   ) {
     this.setFlashState = setFlashState;
     this.setFlashError = setFlashError;
@@ -40,9 +40,8 @@ class DFUManager {
     if (connectedDevice.gatt && connectedDevice.gatt.disconnect) {
       try {
         await connectedDevice.gatt.disconnect();
-        
       } catch (error) {
-        console.error('Error occurred during disconnection:', error);
+        console.error("Error occurred during disconnection:", error);
       }
     }
 
@@ -56,10 +55,10 @@ class DFUManager {
       const server = await connectedDevice.gatt.connect();
       const service = await server.getPrimaryService(DFU_SERVICE_UUID);
       this.dfuCharacteristic = await service.getCharacteristic(
-        DFU_INTERNALL_CHARACTERISTIC,
+        DFU_INTERNALL_CHARACTERISTIC
       );
-      
-      this.setFlashState('connected');
+
+      this.setFlashState("connected");
     } catch (err) {
       this.setFlashError(err);
     }
@@ -73,10 +72,10 @@ class DFUManager {
     const server = await device.gatt.connect();
     const service = await server.getPrimaryService(DFU_SERVICE_UUID);
     this.dfuCharacteristic = await service.getCharacteristic(
-      DFU_INTERNALL_CHARACTERISTIC,
+      DFU_INTERNALL_CHARACTERISTIC
     );
-    
-    this.setFlashState('connected');
+
+    this.setFlashState("connected");
     this.setConnectedDevice(device);
   }
 
@@ -84,24 +83,17 @@ class DFUManager {
     this.arrayFW = new Uint8Array(firmware);
     this.fwLen = this.arrayFW.length;
 
-    
     if (this.debug === true) {
-      
     }
     this.crc8();
-    
 
     this.iterations = Math.floor(this.fwLen / this.dataLen);
     this.spareBytes = this.fwLen % this.dataLen;
     this.iterations++;
     if (this.debug === true) {
-      
-      
     }
     if (this.spareBytes === 0) {
       if (this.debug === true) {
-        
-        
       }
       this.onlyCRCleft = true;
     }
@@ -117,16 +109,15 @@ class DFUManager {
   }
 
   flashFirmware = (firmware) => {
-    this.setFlashState('uploading');
+    this.setFlashState("uploading");
     this.init(firmware);
     this.update(this.updateIndex);
-    this.setFlashState('finished');
+    this.setFlashState("finished");
   };
 
   update = (index) => {
     //clearTimeout(dfuTimeout);
     if (this.debug === true) {
-      
     }
 
     var filePtr = this.dataLen * index;
@@ -135,8 +126,6 @@ class DFUManager {
       this.bytesArray[0] = 1;
       var bytesleft = this.spareBytes + 1; //add CRC to the count
       if (this.debug === true) {
-        
-        
       }
       var spare = new Uint8Array([
         bytesleft & 0x00ff,
@@ -147,7 +136,7 @@ class DFUManager {
       if (!this.onlyCRCleft) {
         this.bytesArray.set(
           this.arrayFW.slice(filePtr, filePtr + this.spareBytes),
-          3,
+          3
         );
       }
 
@@ -157,8 +146,6 @@ class DFUManager {
       ]);
 
       if (this.debug === true) {
-        
-        
       }
 
       //write CRC after the spare bytes
@@ -166,7 +153,7 @@ class DFUManager {
 
       //Fill with 0s the remaining buffer
       var lastBytes = new Uint8Array(this.dataLen - this.spareBytes - 1).fill(
-        0,
+        0
       );
       this.bytesArray.set(lastBytes, 3 + this.spareBytes + 1);
     } else {
@@ -176,11 +163,10 @@ class DFUManager {
       this.bytesArray.set(index_byte, 1);
       this.bytesArray.set(
         this.arrayFW.slice(filePtr, filePtr + this.dataLen),
-        3,
+        3
       );
     }
-    
-    
+
     this.dfuCharacteristic
       .writeValue(this.bytesArray)
       .then((_) => {
@@ -189,14 +175,12 @@ class DFUManager {
 
         this.increaseIndex();
         if (this.debug === true) {
-          
         }
       })
       .catch((e) => {
-        
         this.resetState(
           true,
-          'An error occured while sending package to BLE device',
+          "An error occured while sending package to BLE device"
         );
       });
   };
@@ -206,13 +190,12 @@ class DFUManager {
       this.updateIndex++;
       this.update(this.updateIndex);
     } else {
-      
-      this.setFlashState('finished');
+      this.setFlashState("finished");
       return;
     }
   }
 
-  resetState(hasError, msg = '') {
+  resetState(hasError, msg = "") {
     this.arrayFW = null;
     this.fwLen = null;
     this.bytesArray = new Uint8Array(235);

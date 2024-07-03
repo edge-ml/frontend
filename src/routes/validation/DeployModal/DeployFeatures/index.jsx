@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import BLEDeploy from './BLEDeploy';
+import React, { useEffect, useState } from "react";
+import BLEDeploy from "./BLEDeploy";
 
 const DeployFeatures = ({ featureNames, onUpdateDeployFeautures }) => {
   const [additionalFeatures, setAdditionalFeatures] = useState({});
@@ -16,7 +16,7 @@ const DeployFeatures = ({ featureNames, onUpdateDeployFeautures }) => {
     BLE_DEPLOY: (
       <BLEDeploy
         onUpdateState={(stateUpdate) =>
-          onUpdateState('BLE_DEPLOY', stateUpdate)
+          onUpdateState("BLE_DEPLOY", stateUpdate)
         }
       ></BLEDeploy>
     ),

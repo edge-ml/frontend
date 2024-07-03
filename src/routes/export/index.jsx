@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import Loader from '../../modules/loader';
-import { ExportView } from './ExportView';
-import { ExportDetailView } from './ExportDetailView';
-import { useAsyncMemo, useBoolean } from '../../services/ReactHooksService';
-import { SelectedModelModalView } from '../../components/SelectedModelModalView/SelectedModelModalView';
-import { subscribeLabelingsAndLabels } from '../../services/ApiServices/LabelingServices';
+import React, { useState, useEffect } from "react";
+import { useLocation, useHistory } from "react-router-dom";
+import Loader from "../../modules/loader";
+import { ExportView } from "./ExportView";
+import { ExportDetailView } from "./ExportDetailView";
+import { useAsyncMemo, useBoolean } from "../../services/ReactHooksService";
+import { SelectedModelModalView } from "../../components/SelectedModelModalView/SelectedModelModalView";
+import { subscribeLabelingsAndLabels } from "../../services/ApiServices/LabelingServices";
 
 import {
   getTrainedModels,
   getTrained,
   getModels,
-} from '../../services/ApiServices/MlService';
+} from "../../services/ApiServices/MlService";
 import {
   getPlatformCode,
   downloadDeploymentModel,
-} from '../../services/ApiServices/MLDeploymentService';
+} from "../../services/ApiServices/MLDeploymentService";
 // import { ChangeNameModalView } from './ChangeNameModalView';
-import { Empty } from './components/Empty';
-import { downloadBlob } from '../../services/helpers';
-import { platforms } from './platforms';
-import useMLModels from '../../Hooks/useMLModels';
+import { Empty } from "./components/Empty";
+import { downloadBlob } from "../../services/helpers";
+import { platforms } from "./platforms";
+import useMLModels from "../../Hooks/useMLModels";
 
 const { models } = useMLModels();
 
@@ -28,14 +28,14 @@ const createBasename = (platform, selectedModel) =>
   `${selectedModel.name}_${platform}`;
 const createName = (platform, selectedModel) =>
   `${createBasename(platform, selectedModel)}.${
-    platforms.find((x) => x.value === platform).extension || 'bin'
+    platforms.find((x) => x.value === platform).extension || "bin"
   }`;
 
 const ExportPage = () => {
   const location = useLocation();
   const history = useHistory();
   const [selectedModelId, setSelectedModelId] = useState(
-    location.state ? location.state.id : null,
+    location.state ? location.state.id : null
   );
 
   const [platform, setPlatform] = useState(null);
@@ -54,7 +54,7 @@ const ExportPage = () => {
       return labels;
     },
     [selectedModelId],
-    [],
+    []
   );
 
   const platformContents = useAsyncMemo(
@@ -62,22 +62,22 @@ const ExportPage = () => {
       if (!selectedModelId || !platform) return platformContents;
       return (await getPlatformCode(selectedModelId, platform))
         .replace(
-          '___DOWNLOADED_MODEL_BASENAME___',
-          createBasename(platform, selectedModel),
+          "___DOWNLOADED_MODEL_BASENAME___",
+          createBasename(platform, selectedModel)
         )
         .replace(
-          '___DOWNLOADED_MODEL_NAME___',
-          createName(platform, selectedModel),
+          "___DOWNLOADED_MODEL_NAME___",
+          createName(platform, selectedModel)
         );
     },
     [selectedModelId, platform, selectedModel && selectedModel.name],
-    '',
+    ""
   );
 
   useEffect(() => {
     if (!selectedModel) return;
     setPlatform(
-      selectedModel.platforms.length > 0 ? selectedModel.platforms[0] : null,
+      selectedModel.platforms.length > 0 ? selectedModel.platforms[0] : null
     );
   }, [selectedModel]);
 

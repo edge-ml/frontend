@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import classNames from 'classnames';
+import React, { Component } from "react";
+import classNames from "classnames";
 
-import './CustomDropDownMenu.css';
+import "./CustomDropDownMenu.css";
 
 class CustomDropDownMenu extends Component {
   constructor() {
@@ -19,7 +19,7 @@ class CustomDropDownMenu extends Component {
   showMenu(event) {
     event.preventDefault();
     this.setState({ showMenu: true }, () => {
-      document.addEventListener('click', this.closeMenu);
+      document.addEventListener("click", this.closeMenu);
     });
   }
 
@@ -31,7 +31,7 @@ class CustomDropDownMenu extends Component {
       !this.dropdownMenu.contains(event.target)
     ) {
       this.setState({ showMenu: false }, () => {
-        document.removeEventListener('click', this.closeMenu);
+        document.removeEventListener("click", this.closeMenu);
       });
     }
   }
@@ -43,16 +43,16 @@ class CustomDropDownMenu extends Component {
         showMenu: !this.state.showMenu,
       },
       () => {
-        document.removeEventListener('click', this.closeMenu);
-      },
+        document.removeEventListener("click", this.closeMenu);
+      }
     );
   }
 
   render() {
     return (
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: "relative" }}>
         <div
-          style={{ display: 'inline-block', cursor: 'pointer' }}
+          style={{ display: "inline-block", cursor: "pointer" }}
           onClick={this.showMenu}
         >
           {this.props.content}
@@ -60,12 +60,12 @@ class CustomDropDownMenu extends Component {
 
         {this.state.showMenu && this.props.children ? (
           <div
-            style={{ position: 'absolute', zIndex: 100 }}
+            style={{ position: "absolute", zIndex: 100 }}
             className={classNames(
-              'menu',
-              'dropDown',
-              { 'dropDown-right': this.props.right },
-              { 'dropDown-left': this.props.left },
+              "menu",
+              "dropDown",
+              { "dropDown-right": this.props.right },
+              { "dropDown-left": this.props.left }
             )}
             ref={(element) => {
               this.dropdownMenu = element;
@@ -73,10 +73,10 @@ class CustomDropDownMenu extends Component {
           >
             {this.props.children.map((item, index) => (
               <div
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
                 onClick={this.onItemClick}
                 key={index}
-                className={classNames('customDropDownItem', {
+                className={classNames("customDropDownItem", {
                   noHover: this.props.noHover,
                 })}
               >

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from "react";
 export const useSelect = (list, initialIndex = 0) => {
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
 
@@ -6,7 +6,7 @@ export const useSelect = (list, initialIndex = 0) => {
     (item) => {
       setSelectedIndex(list.indexOf(item));
     },
-    [list],
+    [list]
   );
 
   return {
@@ -54,7 +54,7 @@ export function useBoolean(defaultValue) {
 export function useMediaQuery(query) {
   const getMatches = (query) => {
     // Prevents SSR issues
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       return window.matchMedia(query).matches;
     }
     return false;
@@ -76,14 +76,14 @@ export function useMediaQuery(query) {
     if (matchMedia.addListener) {
       matchMedia.addListener(handleChange);
     } else {
-      matchMedia.addEventListener('change', handleChange);
+      matchMedia.addEventListener("change", handleChange);
     }
 
     return () => {
       if (matchMedia.removeListener) {
         matchMedia.removeListener(handleChange);
       } else {
-        matchMedia.removeEventListener('change', handleChange);
+        matchMedia.removeEventListener("change", handleChange);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,7 +93,7 @@ export function useMediaQuery(query) {
 }
 
 export const useBootstrapMDBreakpoint = () =>
-  useMediaQuery('(min-width: 768px)');
+  useMediaQuery("(min-width: 768px)");
 
 // https://levelup.gitconnected.com/react-localstorage-persisting-state-with-a-custom-hook-98f9a88ae7a9
 export const usePersistedState = (defaultValue, localStorageKey) => {

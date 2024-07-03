@@ -1,25 +1,25 @@
-import React from 'react';
-import { Row, Button } from 'reactstrap';
-import Highcharts from 'highcharts/highstock';
-import HighchartsReact from 'highcharts-react-official';
+import React from "react";
+import { Row, Button } from "reactstrap";
+import Highcharts from "highcharts/highstock";
+import HighchartsReact from "highcharts-react-official";
 
 export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
   <div>
     <div className="d-flex justify-content-between align-items-center">
-      <span>Data preview is {dataPreview ? 'enabled' : 'paused'}.</span>
+      <span>Data preview is {dataPreview ? "enabled" : "paused"}.</span>
       <Button
         outline
-        color={dataPreview ? 'secondary' : 'primary'}
+        color={dataPreview ? "secondary" : "primary"}
         onClick={() => setDataPreview(!dataPreview)}
       >
-        {dataPreview ? 'Pause' : 'Resume'}
+        {dataPreview ? "Pause" : "Resume"}
       </Button>
     </div>
     {Object.entries(sensorStore).map(([sensor, value]) => (
       <Row className="mt-3">
         <HighchartsReact
           highcharts={Highcharts}
-          containerProps={{ style: { width: 'calc(95%)', margin: 'auto' } }}
+          containerProps={{ style: { width: "calc(95%)", margin: "auto" } }}
           options={{
             chart: {
               animation: Highcharts.svg, // don't animate in old IE
@@ -44,7 +44,7 @@ export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
                 enabled: false,
                 crosshair: false,
                 rotation: 20,
-                overflow: 'allow',
+                overflow: "allow",
               },
             },
             yAxis: {

@@ -1,12 +1,7 @@
-import React, { Component } from 'react';
-import {
-  Button,
-  Input,
-  InputGroup,
-  InputGroupText,
-} from 'reactstrap';
+import React, { Component } from "react";
+import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
 
-import { changeUserPassword } from './../../services/ApiServices/AuthentificationServices';
+import { changeUserPassword } from "./../../services/ApiServices/AuthentificationServices";
 
 class PasswordSettings extends Component {
   constructor(props) {
@@ -55,7 +50,7 @@ class PasswordSettings extends Component {
     }
     if (this.state.newPassword !== this.state.newConfirmationPassword) {
       this.setState({
-        passwordError: 'Passwords do not match',
+        passwordError: "Passwords do not match",
       });
       return;
     }
@@ -124,9 +119,9 @@ class PasswordSettings extends Component {
           <div
             id="passwordError"
             style={{
-              display: 'inline',
-              color: 'red',
-              marginLeft: '16px',
+              display: "inline",
+              color: "red",
+              marginLeft: "16px",
             }}
           >
             {this.state.passwordError}

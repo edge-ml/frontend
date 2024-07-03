@@ -1,5 +1,5 @@
-import { isNumber } from './helpers';
-import { generateRandomColor } from './ColorService';
+import { isNumber } from "./helpers";
+import { generateRandomColor } from "./ColorService";
 
 export const processCSV = (files) => {
   return new Promise((resolve, reject) => {
@@ -11,12 +11,12 @@ export const processCSV = (files) => {
       reader.onload = () => {
         var res = reader.result;
         var allTextLines = res.split(/\r\n|\n/);
-        if (allTextLines[allTextLines.length - 1] === '') {
+        if (allTextLines[allTextLines.length - 1] === "") {
           allTextLines.pop();
         }
         var lines = [];
         for (var i = 0; i < allTextLines.length; i++) {
-          var data = allTextLines[i].replace(/\s/g, '').split(',');
+          var data = allTextLines[i].replace(/\s/g, "").split(",");
           lines.push(data);
         }
         timeData.push(lines);
@@ -58,9 +58,9 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
   const labelings = {};
   const labelHeaderMap = [];
 
-  const header = ['time'];
+  const header = ["time"];
   dataset.timeSeries.forEach((t) => {
-    header.push('sensor_' + t.name + '[' + t.unit + ']');
+    header.push("sensor_" + t.name + "[" + t.unit + "]");
   });
 
   const labelsUsed =
@@ -68,12 +68,12 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
   if (labelsUsed) {
     dataset.labelings.forEach((l) => {
       const labelingName = props_labelings.find(
-        (elm) => elm._id === l.labelingId,
+        (elm) => elm._id === l.labelingId
       ).name;
       labelings[l.labelingId] = [];
       l.labels.forEach((label) => {
         const labelName = props_labels.find((elm) => elm._id === label.type)[
-          'name'
+          "name"
         ];
         labelings[l.labelingId].push({
           labelingName: labelingName,
@@ -91,7 +91,7 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
           labelingName: labels[0].labelingName,
           labelName: elm,
         });
-        header.push('label_' + labels[0].labelingName + '_' + elm);
+        header.push("label_" + labels[0].labelingName + "_" + elm);
       });
     }
   }
@@ -112,7 +112,7 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
         tPtr[index]++;
         return elm.datapoint;
       }
-      return '';
+      return "";
     });
     return {
       timeStamp: minTimeStamp,
@@ -130,11 +130,11 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
             l.start <= timestamp &&
             timestamp <= l.end
           ) {
-            return 'x';
+            return "x";
           }
         }
       }
-      return '';
+      return "";
     });
   };
 
@@ -148,27 +148,27 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
     i = i + 1;
   }
 
-  return csv.map((elm) => elm.join(',')).join('\n');
+  return csv.map((elm) => elm.join(",")).join("\n");
 };
 
 function extractTimeSeries(timeData, i) {
   const timeSeries = {
-    name: timeData[0][i].replace('sensor_', '').split('[')[0],
+    name: timeData[0][i].replace("sensor_", "").split("[")[0],
     unit: /\[(.*)\]/.test(timeData[0][i])
       ? timeData[0][i].match(/\[(.*)\]/).pop()
-      : '',
+      : "",
     end: parseInt(timeData[timeData.length - 1][0], 10),
     start: parseInt(timeData[1][0], 10),
     data: [],
   };
   for (var j = 1; j < timeData.length; j++) {
-    if (timeData[j][0] === '') {
+    if (timeData[j][0] === "") {
       throw { error: `Timestamp missing in row ${j + 1}` };
     }
     if (!isNumber(timeData[j][0])) {
       throw { error: `Timestamp is not a number in row ${j + 1}` };
     }
-    if (timeData[j][i] === '') {
+    if (timeData[j][i] === "") {
       continue;
     }
     if (!isNumber(timeData[j][i])) {
@@ -187,8 +187,8 @@ function extractTimeSeries(timeData, i) {
 function extractLabel(timeData, i) {
   const labelNames = [];
 
-  const labelingName = timeData[0][i].split('_')[1];
-  const labelName = timeData[0][i].split('_')[2];
+  const labelingName = timeData[0][i].split("_")[1];
+  const labelName = timeData[0][i].split("_")[2];
 
   const labeling = {
     name: labelingName,
@@ -208,9 +208,9 @@ function extractLabel(timeData, i) {
   };
 
   for (var j = 1; j < timeData.length; j++) {
-    if (timeData[j][i] !== '') {
+    if (timeData[j][i] !== "") {
       var start = timeData[j][0];
-      while (j < timeData.length && '' !== timeData[j][i]) {
+      while (j < timeData.length && "" !== timeData[j][i]) {
         j++;
       }
       datasetLabel.labels.push({
@@ -230,12 +230,12 @@ function processCSVColumn(timeData) {
     const labelings = [];
     const numDatasets = timeData[0].length - 1;
     if (numDatasets === 0) {
-      throw { error: 'No data in csv file' };
+      throw { error: "No data in csv file" };
     }
     for (var i = 1; i <= numDatasets; i++) {
       const csvLength = timeData[0].length;
       const csvLenghError = timeData.findIndex(
-        (elm) => elm.length !== csvLength,
+        (elm) => elm.length !== csvLength
       );
       if (csvLenghError > 0) {
         throw {
@@ -245,19 +245,19 @@ function processCSVColumn(timeData) {
         };
       }
       if (timeData.length < 2) {
-        throw { error: 'No data in csv file' };
+        throw { error: "No data in csv file" };
       }
-      if (timeData[0][i].startsWith('sensor_')) {
+      if (timeData[0][i].startsWith("sensor_")) {
         timeSeries.push(extractTimeSeries(timeData, i));
-      } else if (timeData[0][i].startsWith('label_')) {
+      } else if (timeData[0][i].startsWith("label_")) {
         labelings.push(extractLabel(timeData, i));
       } else {
-        throw { error: 'Wrong format' };
+        throw { error: "Wrong format" };
       }
     }
 
     const uniquelabelingNames = new Set(
-      labelings.map((elm) => elm.labeling.name),
+      labelings.map((elm) => elm.labeling.name)
     );
     const resultingLabelings = [];
     uniquelabelingNames.forEach((labelingName) => {
@@ -270,7 +270,7 @@ function processCSVColumn(timeData) {
         ...labelings
           .filter((elm) => elm.labeling.name === labelingName)
           .map((data) => data.labels)
-          .flat(1),
+          .flat(1)
       );
       labelingToAppend.datasetLabel.labels = labelings
         .filter((elm) => elm.labeling.name === labelingName)
@@ -293,14 +293,14 @@ function processCSVColumn(timeData) {
 export const generateLabeledDataset = (
   labelings,
   currentLabeling,
-  datasets,
+  datasets
 ) => {
   for (var i = 0; i < currentLabeling.length; i++) {
     for (var j = 0; j < currentLabeling[i].length; j++) {
       const datasetLabels = currentLabeling[i][j].datasetLabel.labels;
       const labelName = currentLabeling[i][j].datasetLabel.name;
       currentLabeling[i][j].datasetLabel.labelingId = labelings.find(
-        (elm) => elm.name === labelName,
+        (elm) => elm.name === labelName
       )._id;
       for (var h = 0; h < datasetLabels.length; h++) {
         const labelName = currentLabeling[i][j].datasetLabel.labels[h].name;
@@ -341,7 +341,7 @@ export function checkHeaders(timeData) {
   for (var i = 0; i < timeData.length; i++) {
     const currentErrors = [];
     const header = timeData[i][0];
-    if (header[0] !== 'time') {
+    if (header[0] !== "time") {
       currentErrors.push({ error: "Header must start with 'time'" });
       errors.push(currentErrors);
       continue;

@@ -35,7 +35,7 @@ const Wizard_SelectDataset = ({
   // }, [datasets])
 
   // useEffect(() => {
-  //   
+  //
   //   validateInput();
   // },[])
 
@@ -176,7 +176,7 @@ const Wizard_SelectDataset = ({
                   </div>
                 )}
                 {intersectingTSNames.length !==
-                  selectedDatasetTimeseriesNames.length ? (
+                selectedDatasetTimeseriesNames.length ? (
                   <Fragment>
                     <div className="my-2">
                       Following timeseries were filtered because they are
@@ -217,14 +217,13 @@ const Wizard_SelectDataset = ({
                     .map((label) => (
                       <tr>
                         <th scope="row">
-                          <LabelBadge
-                            className="badge"
-                            color={label.color}
-                          >
+                          <LabelBadge className="badge" color={label.color}>
                             {label.name}
                           </LabelBadge>
                         </th>
-                        <td className="align-middle">{coveredLabels[label._id]?.count ?? 0}</td>
+                        <td className="align-middle">
+                          {coveredLabels[label._id]?.count ?? 0}
+                        </td>
                         <td>
                           {humanDuration(
                             coveredLabels[label._id]?.duration ?? 0

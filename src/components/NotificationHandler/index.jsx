@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Badge,
   Button,
@@ -9,22 +9,22 @@ import {
   Spinner,
   Col,
   Row,
-} from 'reactstrap';
-import NotificationContext from '../NotificationHandler/NotificationProvider';
-import { useContext, useEffect } from 'react';
-import { datasetDownloadfromId } from '../../services/DatasetService';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+} from "reactstrap";
+import NotificationContext from "../NotificationHandler/NotificationProvider";
+import { useContext, useEffect } from "react";
+import { datasetDownloadfromId } from "../../services/DatasetService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDownload,
   faTrash,
   faTrashAlt,
   faXmark,
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 import {
   EdgeMLTable,
   EdgeMLTableEntry,
   EdgeMLTableHeader,
-} from '../Common/EdgeMLTable';
+} from "../Common/EdgeMLTable";
 
 const NotificationHandler = ({ onClose, isOpen }) => {
   const { activeNotifications, removeNotification } =
@@ -88,14 +88,14 @@ const NotificationHandler = ({ onClose, isOpen }) => {
           <EdgeMLTableHeader>Downloads</EdgeMLTableHeader>
           {activeNotifications.map((elm, idx) => {
             return (
-              <EdgeMLTableEntry key={'notification' + idx}>
+              <EdgeMLTableEntry key={"notification" + idx}>
                 <div className="m-2 d-flex justify-content-between algin-items-center">
                   <div>
                     <b>{elm.datasetName ? elm.datasetName : elm.projectName}</b>
                     <div>
                       {elm.datasetName
-                        ? '(Dataset in project ' + elm.projectName + ')'
-                        : '(Project)'}
+                        ? "(Dataset in project " + elm.projectName + ")"
+                        : "(Project)"}
                     </div>
                   </div>
                   <div className="text-center d-flex align-items-center m-2">
@@ -107,7 +107,6 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                       </div>
                     ) : (
                       <div>
-
                         {elm.error ? null : (
                           <Button
                             onClick={() =>

@@ -14,23 +14,14 @@ import useProjectRouter from "../../Hooks/ProjectRouter";
 import { useLocation } from "react-router-dom";
 import classNames from "classnames";
 
-const NavbarProject = ({
-  project,
-  currentProject,
-  onProjectClick,
-}) => {
+const NavbarProject = ({ project, currentProject, onProjectClick }) => {
   const location = useLocation();
   const navigate = useProjectRouter();
 
   const getNavBarItemClasses = (location_data) => {
     const project = currentProject;
     const matchName =
-      "/" +
-      project.admin.userName +
-      "/" +
-      project.name +
-      "/" +
-      location_data
+      "/" + project.admin.userName + "/" + project.name + "/" + location_data;
     const pathName = location.pathname.toLowerCase();
     const isSelected = pathName.startsWith(matchName.toLowerCase());
     return (
@@ -42,7 +33,10 @@ const NavbarProject = ({
   return (
     <div className="w-100 text-left" key={project._id} id={project._id}>
       <div
-        className={classNames("d-flex align-items-center mt-1 pt-2 pb-2 ps-2 navbar-project", {"bg-primary": currentProject._id === project._id})}
+        className={classNames(
+          "d-flex align-items-center mt-1 pt-2 pb-2 ps-2 navbar-project",
+          { "bg-primary": currentProject._id === project._id }
+        )}
         onClick={() => onProjectClick(project)}
         style={{
           overflow: "hidden",

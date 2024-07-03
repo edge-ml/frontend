@@ -1,5 +1,12 @@
-import React, {useState} from "react";
-import { Input, Modal, ModalBody, ModalFooter, ModalHeader, Button } from "reactstrap";
+import React, { useState } from "react";
+import {
+  Input,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Button,
+} from "reactstrap";
 
 const EditModal = ({
   isOpen,

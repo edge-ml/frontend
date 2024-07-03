@@ -81,10 +81,10 @@ const LabelingPanel = ({}) => {
       setDeleteModalOpen(true);
     }
     if (e.ctrlKey && e.key > 0) {
-      if (e.key-1 > activeLabeling.labels.length) {
+      if (e.key - 1 > activeLabeling.labels.length) {
         return;
       }
-      const newLabelType = activeLabeling.labels[Number(e.key-1)];
+      const newLabelType = activeLabeling.labels[Number(e.key - 1)];
       setSelectedLabelTypeId(newLabelType._id);
     }
   };

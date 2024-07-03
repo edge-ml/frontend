@@ -5,22 +5,20 @@ import useLabelings from "../../Hooks/useLabelings";
 const DatasetContext = createContext();
 
 const DatasetProvider = ({ children, dataset, labelings, datasetEdit }) => {
-
-
   // const setActiveLabeling = (labeling) => {
   //   _setActiveLabeling(labeling);
   // };
 
   // const generateDatasetLabels = () => {
   //   if (!labelings) return [];
-  //   
+  //
   //   const datasetLabeling = {
   //     ...dataset.labelings.find((elm) => elm.labelingId === activeLabeling._id),
   //   };
   //   if (!datasetLabeling) {
   //     return { labels: [] };
   //   }
-  //   
+  //
   //   const usedLabels = provisionalLabeling
   //     ? [...datasetLabeling.labels, provisionalLabeling]
   //     : datasetLabeling.labels;
@@ -39,11 +37,12 @@ const DatasetProvider = ({ children, dataset, labelings, datasetEdit }) => {
   //   _setStartEnd({ start: start, end: end });
   // };
 
-
   return (
     <DatasetContext.Provider
       value={{
-        dataset, labelings, ...datasetEdit
+        dataset,
+        labelings,
+        ...datasetEdit,
       }}
     >
       {children}

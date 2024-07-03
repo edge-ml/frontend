@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Input, Button } from 'reactstrap';
-import Checkbox from '../../../components/Common/Checkbox';
+import React, { useState, useEffect } from "react";
+import { Input, Button } from "reactstrap";
+import Checkbox from "../../../components/Common/Checkbox";
 const TextSearchFilter = ({
   selectedFilter,
   selectedFilterParams,
@@ -8,13 +8,13 @@ const TextSearchFilter = ({
   currentFilterParams,
   setCurrentFilterParams,
 }) => {
-  const [userInput, setUserInput] = useState('');
+  const [userInput, setUserInput] = useState("");
 
   useEffect(() => {
-    if (selectedFilter && selectedFilter.value === 'filterByName') {
+    if (selectedFilter && selectedFilter.value === "filterByName") {
       setUserInput(selectedFilterParams);
     } else {
-      setCurrentFilterParams('');
+      setCurrentFilterParams("");
     }
     return () => {};
   }, []);
@@ -26,7 +26,7 @@ const TextSearchFilter = ({
 
   return (
     <div>
-      <div className="mb-4">{'Search for datasets via name:\n'}</div>
+      <div className="mb-4">{"Search for datasets via name:\n"}</div>
       <div>
         <Input
           type="text"

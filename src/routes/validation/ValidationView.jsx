@@ -1,5 +1,5 @@
-import React from 'react';
-import { Card, CardHeader, CardBody, Container } from 'reactstrap';
+import React from "react";
+import { Card, CardHeader, CardBody, Container } from "reactstrap";
 
 export const ValidationView = ({ ongoing, trained }) => {
   return (

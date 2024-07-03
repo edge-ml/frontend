@@ -27,12 +27,7 @@ export const SelectedModelModalView = ({
       )[0].options.metrics
     : null;
   return (
-    <Modal
-      isOpen={model}
-      size="xl"
-      {...props}
-      onClose={() => onClosed()}
-    >
+    <Modal isOpen={model} size="xl" {...props} onClose={() => onClosed()}>
       <ModalHeader>Model: {model && model.name}</ModalHeader>
       <ModalBody>
         {model ? (

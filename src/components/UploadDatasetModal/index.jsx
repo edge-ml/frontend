@@ -1,18 +1,17 @@
-import { Modal, ModalBody, ModalHeader } from 'reactstrap';
-import DragDrop from '../Common/DragDrop';
-import FileList from './FileList';
-import { useState } from 'react';
+import { Modal, ModalBody, ModalHeader } from "reactstrap";
+import DragDrop from "../Common/DragDrop";
+import FileList from "./FileList";
+import { useState } from "react";
 import {
   EdgeMLTable,
   EdgeMLTableEntry,
   EdgeMLTableHeader,
-} from '../Common/EdgeMLTable';
+} from "../Common/EdgeMLTable";
 
 const UploadDatasetModal = ({ isOpen, onCloseModal, onDatasetComplete }) => {
   const [files, setFiles] = useState([]);
 
   const onFileInput = (fileList) => {
-    
     setFiles([...fileList]);
   };
 
@@ -21,7 +20,7 @@ const UploadDatasetModal = ({ isOpen, onCloseModal, onDatasetComplete }) => {
       <ModalHeader>Upload</ModalHeader>
       <ModalBody>
         <DragDrop
-          style={{ height: '100px' }}
+          style={{ height: "100px" }}
           className="my-2"
           onFileInput={onFileInput}
         />

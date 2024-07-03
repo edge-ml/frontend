@@ -18,15 +18,16 @@
   font-weight: bold;
 }
 
-.badgeInactive, .badgeDisabled {
+.badgeInactive,
+.badgeDisabled {
   background-color: #e2e8f0;
   color: black;
   font-weight: normal;
 }
 
 .badgeDisabled {
-  pointer-events: none; 
-  opacity: 0.6; 
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 .scrollView {

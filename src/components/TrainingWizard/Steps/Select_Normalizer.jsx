@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment } from "react";
 import {
   ModalBody,
   Button,
@@ -7,7 +7,7 @@ import {
   DropdownToggle,
   DropdownItem,
   DropdownMenu,
-} from 'reactstrap';
+} from "reactstrap";
 
 const Select_Normalizer = ({
   onBack,

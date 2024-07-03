@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Container,
   Button,
@@ -6,12 +6,12 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from 'reactstrap';
-import EditName from './EditName';
-import DeleteProject from './DeleteProject';
-import GenerateCode from './GenerateCode';
-import UserEdit from './UserEdit';
-import { Children, useState } from 'react';
+} from "reactstrap";
+import EditName from "./EditName";
+import DeleteProject from "./DeleteProject";
+import GenerateCode from "./GenerateCode";
+import UserEdit from "./UserEdit";
+import { Children, useState } from "react";
 
 // const SettingItem = ({ name, description, children }) => {
 //   const [modalOpen, setModalOpen] = useState();
@@ -52,7 +52,7 @@ const SettingItem = ({ name, description, children }) => {
   return (
     <div className="p-2 my-2">
       <div className="header-wrapper d-flex flex-column align-content-center">
-        <h5 className='fw-bold'>{name}</h5>
+        <h5 className="fw-bold">{name}</h5>
         <div>{description}</div>
       </div>
       <div className="body-wrapper p-3">{children}</div>
@@ -63,7 +63,7 @@ const SettingItem = ({ name, description, children }) => {
 const Settings = () => {
   return (
     <Container className="my-5">
-      <h4 className="fw-bold">{'PROJECT SETTINGS'}</h4>
+      <h4 className="fw-bold">{"PROJECT SETTINGS"}</h4>
       <SettingItem
         name="Edit Project Name"
         description="Edit the name of this project"

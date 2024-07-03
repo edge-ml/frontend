@@ -32,11 +32,7 @@ const ModelPage = () => {
       }
     >
       {models.length === 0 && <Empty>No models trained yet</Empty>}
-      {models.length > 0 && (
-        <ModelTable
-          models={models}
-        ></ModelTable>
-      )}
+      {models.length > 0 && <ModelTable models={models}></ModelTable>}
     </Page>
   );
 };

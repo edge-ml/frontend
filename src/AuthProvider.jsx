@@ -1,11 +1,11 @@
-import { createContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { setToken, clearToken } from './services/LocalStorageService';
-import { loginUser } from './services/ApiServices/AuthentificationServices';
+import { createContext, useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
+import { setToken, clearToken } from "./services/LocalStorageService";
+import { loginUser } from "./services/ApiServices/AuthentificationServices";
 import {
   getAccessToken,
   getRefreshToken,
-} from './services/LocalStorageService';
+} from "./services/LocalStorageService";
 
 const AuthContext = createContext();
 

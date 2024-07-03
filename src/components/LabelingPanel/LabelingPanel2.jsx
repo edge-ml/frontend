@@ -43,7 +43,7 @@ class LabelingPanel extends Component {
 
   handleLabelTypeClicked(e, id) {
     e.preventDefault();
-    
+
     this.state.onSelectedLabelTypeIdChanged(id);
   }
 

@@ -1,8 +1,8 @@
-import apiConsts from './ApiConstants';
-import ax from 'axios';
-import apiRequest from './request';
-import useProjectStore from '../../stores/projectStore';
-import localStorageService from './../LocalStorageService';
+import apiConsts from "./ApiConstants";
+import ax from "axios";
+import apiRequest from "./request";
+import useProjectStore from "../../stores/projectStore";
+import localStorageService from "./../LocalStorageService";
 
 const axios = ax.create();
 
@@ -11,7 +11,7 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
   const { currentProject } = useProjectStore.getState();
 
   const cancellationHandler = () => {
-    source.cancel('Operation cancelled by the user');
+    source.cancel("Operation cancelled by the user");
   };
 
   const axiosInput = {
@@ -21,7 +21,7 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
       apiConsts.DATASET_STORE_ENDPOINTS.CREATE_DATASET,
       formData,
       {},
-      'multipart/form-data',
+      "multipart/form-data"
     ),
     onUploadProgress: (progressEvent) => {
       const progress = (progressEvent.loaded / progressEvent.total) * 100;
@@ -31,9 +31,8 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
     headers: {
       project: currentProject._id,
       Authorization: localStorageService.getAccessToken(),
-    }
+    },
   };
-  
 
   const req = axios(axiosInput);
 

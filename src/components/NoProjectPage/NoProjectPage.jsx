@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Container } from 'reactstrap';
+import React, { Component } from "react";
+import { Container } from "reactstrap";
 
 class NoProjectPage extends Component {
   constructor(props) {
@@ -14,10 +14,10 @@ class NoProjectPage extends Component {
             this.props.text
           ) : (
             <div id="noProjectPageStandardText">
-              Open or{' '}
+              Open or{" "}
               <a onClick={this.props.onCreateProject} href="">
                 create
-              </a>{' '}
+              </a>{" "}
               a project to get started!
             </div>
           )}

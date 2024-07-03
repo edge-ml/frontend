@@ -1,28 +1,28 @@
-import React, { Component } from 'react';
-import { Col, Row } from 'reactstrap';
+import React, { Component } from "react";
+import { Col, Row } from "reactstrap";
 
-import BleNotActivated from '../components/BLE/BleNotActivated';
-import BlePanelSensorList from '../components/BLE/BlePanelSensorList';
-import BlePanelRecorderSettings from '../components/BLE/BlePanelRecorderSettings';
-import BlePanelConnectDevice from '../components/BLE/BlePanelConnectDevice';
+import BleNotActivated from "../components/BLE/BleNotActivated";
+import BlePanelSensorList from "../components/BLE/BlePanelSensorList";
+import BlePanelRecorderSettings from "../components/BLE/BlePanelRecorderSettings";
+import BlePanelConnectDevice from "../components/BLE/BlePanelConnectDevice";
 
-import { getDeviceByNameAndGeneration } from '../services/ApiServices/DeviceService';
+import { getDeviceByNameAndGeneration } from "../services/ApiServices/DeviceService";
 
-import { prepareSensorBleObject } from '../services/bleService';
+import { prepareSensorBleObject } from "../services/bleService";
 
-import BleDeviceProcessor from '../components/BLE/BleDeviceProcessor';
-import BlePanelRecordingDisplay from '../components/BLE/BlePanelRecordingDisplay';
+import BleDeviceProcessor from "../components/BLE/BleDeviceProcessor";
+import BlePanelRecordingDisplay from "../components/BLE/BlePanelRecordingDisplay";
 
-import '../components/BLE/BleActivated.css';
-import { getLatestEdgeMLVersionNumber } from '../services/ApiServices/ArduinoFirmwareServices';
-import DFUModal from '../components/BLE/DFUModal/DFUModal';
+import "../components/BLE/BleActivated.css";
+import { getLatestEdgeMLVersionNumber } from "../services/ApiServices/ArduinoFirmwareServices";
+import DFUModal from "../components/BLE/DFUModal/DFUModal";
 
-import { adjectives, names } from './export/nameGeneration';
-import { uniqueNamesGenerator } from 'unique-names-generator';
-import { BleLabelingMenu } from '../components/BLE/BleLabelingMenu';
+import { adjectives, names } from "./export/nameGeneration";
+import { uniqueNamesGenerator } from "unique-names-generator";
+import { BleLabelingMenu } from "../components/BLE/BleLabelingMenu";
 
-import { getLabelings } from '../services/ApiServices/LabelingServices';
-import { get_parse_schema } from '../utils/ble';
+import { getLabelings } from "../services/ApiServices/LabelingServices";
+import { get_parse_schema } from "../utils/ble";
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -32,8 +32,8 @@ class UploadBLE extends Component {
       connectedBLEDevice: undefined,
       bleStatus: navigator.bluetooth,
       latency: 0,
-      datasetName: '',
-      recorderState: 'ready', // ready, startup, recording, finalizing
+      datasetName: "",
+      recorderState: "ready", // ready, startup, recording, finalizing
       deviceSensors: undefined,
       connectedDeviceData: undefined,
       selectedSensors: new Set(),
@@ -101,29 +101,29 @@ class UploadBLE extends Component {
     this.sensorKeys = [];
 
     // Global vars to manage ble connnection
-    this.dfuServiceUuid = '34c2e3b8-34aa-11eb-adc1-0242ac120002';
+    this.dfuServiceUuid = "34c2e3b8-34aa-11eb-adc1-0242ac120002";
 
     this.sensorConfigCharacteristic = null;
     this.sensorDataCharacteristic = null;
-    this.sensorServiceUuid = '34c2e3bb-34aa-11eb-adc1-0242ac120002';
-    this.parseInfoServiceUuid = 'caa25cb7-7e1b-44f2-adc9-e8c06c9ced43';
+    this.sensorServiceUuid = "34c2e3bb-34aa-11eb-adc1-0242ac120002";
+    this.parseInfoServiceUuid = "caa25cb7-7e1b-44f2-adc9-e8c06c9ced43";
     this.sensorConfigCharacteristicUuid =
-      '34c2e3bd-34aa-11eb-adc1-0242ac120002';
-    this.sensorDataCharacteristicUuid = '34c2e3bc-34aa-11eb-adc1-0242ac120002';
-    this.deviceInfoServiceUuid = '45622510-6468-465a-b141-0b9b0f96b468';
-    this.deviceIdentifierUuid = '45622511-6468-465a-b141-0b9b0f96b468';
-    this.deviceGenerationUuid = '45622512-6468-465a-b141-0b9b0f96b468';
-    this.deviceParseSchemaUuid = 'caa25cb8-7e1b-44f2-adc9-e8c06c9ced43';
+      "34c2e3bd-34aa-11eb-adc1-0242ac120002";
+    this.sensorDataCharacteristicUuid = "34c2e3bc-34aa-11eb-adc1-0242ac120002";
+    this.deviceInfoServiceUuid = "45622510-6468-465a-b141-0b9b0f96b468";
+    this.deviceIdentifierUuid = "45622511-6468-465a-b141-0b9b0f96b468";
+    this.deviceGenerationUuid = "45622512-6468-465a-b141-0b9b0f96b468";
+    this.deviceParseSchemaUuid = "caa25cb8-7e1b-44f2-adc9-e8c06c9ced43";
 
-    this.shortcutKeys = '1234567890abcdefghijklmnopqrstuvwxyz';
+    this.shortcutKeys = "1234567890abcdefghijklmnopqrstuvwxyz";
     this.bleDeviceProcessor = undefined;
-    this.textEncoder = new TextDecoder('utf-8');
+    this.textEncoder = new TextDecoder("utf-8");
   }
 
   onChangeSampleRate(bleKey, sampleRate) {
     const tmpDeviceSensors = this.state.deviceSensors;
     tmpDeviceSensors[bleKey].sampleRate = parseInt(sampleRate);
-    
+
     this.setState({
       deviceSensors: tmpDeviceSensors,
     });
@@ -147,8 +147,8 @@ class UploadBLE extends Component {
       connectedBLEDevice: undefined,
       bleStatus: navigator.bluetooth,
       latency: 0,
-      datasetName: '',
-      recorderState: 'ready',
+      datasetName: "",
+      recorderState: "ready",
       deviceSensors: undefined,
       connectedDeviceData: undefined,
       selectedSensors: new Set(),
@@ -207,31 +207,31 @@ class UploadBLE extends Component {
   async onClickRecordButton() {
     // ready, startup, recording, finalizing
     switch (this.state.recorderState) {
-      case 'ready':
-        if (this.state.datasetName === '') {
+      case "ready":
+        if (this.state.datasetName === "") {
           await this.setDatasetName(
             uniqueNamesGenerator({
               dictionaries: [adjectives, names],
               length: 2,
-            }),
+            })
           );
         }
-        this.setState({ recorderState: 'startup' });
+        this.setState({ recorderState: "startup" });
         await this.bleDeviceProcessor.startRecording(
           this.state.selectedSensors,
           this.state.latency,
-          this.state.datasetName,
+          this.state.datasetName
         );
-        this.setState({ recorderState: 'recording' });
+        this.setState({ recorderState: "recording" });
         break;
-      case 'recording':
+      case "recording":
         // End label if active
         if (
           this.state.currentLabel.id !== undefined &&
           this.state.currentLabel.end === undefined
         ) {
           const timestamp = Date.now();
-          
+
           const currentLabelingData =
             this.labelingData.current[this.labelingData.current.length - 1];
           currentLabelingData.end = timestamp;
@@ -245,10 +245,10 @@ class UploadBLE extends Component {
           }));
         }
 
-        this.setState({ recorderState: 'finalizing' });
+        this.setState({ recorderState: "finalizing" });
         await this.bleDeviceProcessor.stopRecording();
-        this.setState({ recorderState: 'ready' });
-        this.setState({ datasetName: '' });
+        this.setState({ recorderState: "ready" });
+        this.setState({ datasetName: "" });
         this.resetLabelingState();
         break;
     }
@@ -256,7 +256,7 @@ class UploadBLE extends Component {
 
   async onDisconnection(event) {
     // TODO: Handle emergency dataset upload here
-    if (this.state.recorderState === 'recording') {
+    if (this.state.recorderState === "recording") {
       await this.bleDeviceProcessor.stopRecording();
     }
     if (
@@ -272,7 +272,6 @@ class UploadBLE extends Component {
   onConnection() {
     this.currentData = new Array(Object.keys(this.state.deviceSensors).length);
     this.sensorKeys = Object.keys(this.state.deviceSensors);
-    
   }
 
   async getDeviceInfo() {
@@ -305,22 +304,21 @@ class UploadBLE extends Component {
     const gattServer = await bleDevice.gatt.connect();
     await this.delay(200);
     const primaryService = await gattServer.getPrimaryService(
-      this.sensorServiceUuid,
+      this.sensorServiceUuid
     );
     const deviceInfoService = await gattServer.getPrimaryService(
-      this.deviceInfoServiceUuid,
+      this.deviceInfoServiceUuid
     );
 
     var sensorSchema = undefined;
     // Get parsing Schema
     const deviceParseSchemaService = await gattServer.getPrimaryService(
-      this.parseInfoServiceUuid,
+      this.parseInfoServiceUuid
     );
     if (deviceParseSchemaService) {
-      
       const parsingSchemaCharacterisitc =
         await deviceParseSchemaService.getCharacteristic(
-          this.deviceParseSchemaUuid,
+          this.deviceParseSchemaUuid
         );
       const parsingSchemaBuffer = await parsingSchemaCharacterisitc.readValue();
       sensorSchema = get_parse_schema(parsingSchemaBuffer);
@@ -338,14 +336,13 @@ class UploadBLE extends Component {
       await deviceGenerationCharacteristic.readValue();
     const deviceName = this.textEncoder.decode(deviceIdentifierArrayBuffer);
     const deviceGeneration = this.textEncoder.decode(
-      deviceGenerationArrayBuffer,
+      deviceGenerationArrayBuffer
     );
     // Check if we have the information from the sensor-parse-characteristic directly from the device
     if (!sensorSchema) {
-      
       const deviceInfo = await getDeviceByNameAndGeneration(
         deviceName,
-        deviceGeneration,
+        deviceGeneration
       );
       sensorSchema = deviceInfo.sensors;
     }
@@ -365,10 +362,10 @@ class UploadBLE extends Component {
     const [bleDevice, primaryService] = data;
     // Get necessary Characteristics from Service
     this.sensorConfigCharacteristic = await primaryService.getCharacteristic(
-      this.sensorConfigCharacteristicUuid,
+      this.sensorConfigCharacteristicUuid
     );
     this.sensorDataCharacteristic = await primaryService.getCharacteristic(
-      this.sensorDataCharacteristicUuid,
+      this.sensorDataCharacteristicUuid
     );
     this.bleDeviceProcessor = new BleDeviceProcessor(
       bleDevice,
@@ -376,7 +373,7 @@ class UploadBLE extends Component {
       this.state.deviceSensors,
       this.sensorConfigCharacteristic,
       this.sensorDataCharacteristic,
-      this,
+      this
     );
     this.setState({
       connectedBLEDevice: bleDevice,
@@ -386,11 +383,10 @@ class UploadBLE extends Component {
   connectToDevice = async (bleDevice, retryCount = 0) => {
     try {
       const server = await bleDevice.gatt.connect();
-      
+
       return server;
     } catch (error) {
       if (retryCount < 3) {
-        
         setTimeout(() => this.connectToDevice(bleDevice, retryCount + 1), 4000);
       } else {
         throw error;
@@ -399,7 +395,7 @@ class UploadBLE extends Component {
   };
 
   async checkServicesAndGetLatestFWVersion(bleDevice) {
-    bleDevice.addEventListener('gattserverdisconnected', this.onDisconnection);
+    bleDevice.addEventListener("gattserverdisconnected", this.onDisconnection);
     let promisedSetState = (newState) =>
       new Promise((resolve) => this.setState(newState, resolve));
     //get latest edge-ml fw version
@@ -449,14 +445,12 @@ class UploadBLE extends Component {
           this.setState({ connectedBLEDevice: bleDevice });
         }
       })
-      .catch((err) => {
-        
-      });
+      .catch((err) => {});
   }
 
   setCurrentData(sensorData) {
-    this.currentData[this.sensorKeys.indexOf(sensorData['sensor'].toString())] =
-      [sensorData['time'], sensorData['data']];
+    this.currentData[this.sensorKeys.indexOf(sensorData["sensor"].toString())] =
+      [sensorData["time"], sensorData["data"]];
   }
 
   async toggleBLEDeviceConnection() {
@@ -491,7 +485,6 @@ class UploadBLE extends Component {
     // initial state, currentLabel.id is only undefined when no label recording have ever took place
     // during the current sensor data collection
     if (this.state.currentLabel.id === undefined) {
-      
       this.labelingData.current = [
         {
           start: timestamp,
@@ -516,7 +509,6 @@ class UploadBLE extends Component {
       this.state.currentLabel.id === keyPressedLabel._id &&
       this.state.currentLabel.end === undefined
     ) {
-      
       const currentLabelingData =
         this.labelingData.current[this.labelingData.current.length - 1];
       currentLabelingData.end = timestamp;
@@ -529,7 +521,6 @@ class UploadBLE extends Component {
 
     // the current label is stopped by the user previously and now a new one is requested
     else if (this.state.currentLabel.end !== undefined) {
-      
       this.labelingData.current.push({
         start: timestamp,
         labelType: keyPressedLabel._id,
@@ -555,7 +546,6 @@ class UploadBLE extends Component {
       this.state.currentLabel.end === undefined &&
       this.state.currentLabel.id !== keyPressedLabel._id
     ) {
-      
       const currentLabelingData =
         this.labelingData.current[this.labelingData.current.length - 1];
       currentLabelingData.end = timestamp - 1; // -1 to avoid overlap between previous and new label
@@ -599,7 +589,7 @@ class UploadBLE extends Component {
   }
 
   handleKeyDown(e) {
-    if (this.state.recorderState !== 'recording') {
+    if (this.state.recorderState !== "recording") {
       return;
     }
     const labelIdx = this.shortcutKeys.indexOf(e.key);
@@ -625,7 +615,7 @@ class UploadBLE extends Component {
   }
 
   componentDidUpdate() {
-    if (this.state.recorderState === 'recording') {
+    if (this.state.recorderState === "recording") {
       this.componentRef.current.focus();
     }
   }
@@ -635,15 +625,13 @@ class UploadBLE extends Component {
       return <BleNotActivated></BleNotActivated>;
     }
 
-    
-
     return (
       <div
         className="bleActivatedContainer"
         ref={this.componentRef}
         onKeyDown={this.handleKeyDown}
         tabIndex="0"
-        style={{ outline: 'none' }}
+        style={{ outline: "none" }}
       >
         <div className="mb-2">
           <BlePanelConnectDevice
@@ -687,7 +675,7 @@ class UploadBLE extends Component {
                     onChangeSampleRate={this.onChangeSampleRate}
                     sensors={this.state.deviceSensors}
                     onToggleSensor={this.onToggleSensor}
-                    disabled={this.state.recorderState !== 'ready'}
+                    disabled={this.state.recorderState !== "ready"}
                   ></BlePanelSensorList>
                 </div>
               </Col>
@@ -715,7 +703,7 @@ class UploadBLE extends Component {
             </Row>
             <Row>
               <Col xs={12}>
-                {this.state.recorderState === 'recording' &&
+                {this.state.recorderState === "recording" &&
                 this.state.stream ? (
                   <BlePanelRecordingDisplay
                     deviceSensors={this.state.deviceSensors}

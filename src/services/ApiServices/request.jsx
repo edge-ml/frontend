@@ -1,7 +1,7 @@
-import ax from 'axios';
-import localStorageService from './../LocalStorageService';
-import { HTTP_METHODS, API_URI, API_ENDPOINTS } from './ApiConstants';
-import useProjectStore from '../../stores/projectStore';
+import ax from "axios";
+import localStorageService from "./../LocalStorageService";
+import { HTTP_METHODS, API_URI, API_ENDPOINTS } from "./ApiConstants";
+import useProjectStore from "../../stores/projectStore";
 
 const axios = ax.create();
 
@@ -11,7 +11,7 @@ const apiRequest = async (
   endpoint = API_ENDPOINTS.DEFAULT,
   body = {},
   params = {},
-  contentType = 'application/json'
+  contentType = "application/json"
 ) => {
   // Get the current project from the store
   const { currentProject } = useProjectStore.getState();
@@ -22,7 +22,7 @@ const apiRequest = async (
     data: body,
     params: params,
     headers: {
-      'Content-Type': contentType,
+      "Content-Type": contentType,
       ...(currentProject && { project: currentProject._id }), // Add project ID to headers if it exists
       Authorization: localStorageService.getAccessToken(),
     },

@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { Button } from 'reactstrap';
+import React, { Component } from "react";
+import { Button } from "reactstrap";
 
-import { validateEmail } from './../../services/helpers';
-import { changeUserMail } from './../../services/ApiServices/AuthentificationServices';
+import { validateEmail } from "./../../services/helpers";
+import { changeUserMail } from "./../../services/ApiServices/AuthentificationServices";
 
 class Logout extends Component {
   constructor(props) {

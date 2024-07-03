@@ -1,12 +1,7 @@
-import React, { Component } from 'react';
-import {
-  Button,
-  Input,
-  InputGroup,
-  InputGroupText,
-} from 'reactstrap';
+import React, { Component } from "react";
+import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
 
-import { changeUserName } from '../../services/ApiServices/AuthentificationServices';
+import { changeUserName } from "../../services/ApiServices/AuthentificationServices";
 
 class UserNameSettings extends Component {
   constructor(props) {
@@ -40,7 +35,7 @@ class UserNameSettings extends Component {
     if (!this.state.userName && !this.state.userNameConfirm) return;
     if (this.state.userName !== this.state.userNameConfirm) {
       this.setState({
-        userNameError: 'E-mails do not match',
+        userNameError: "E-mails do not match",
       });
     } else {
       changeUserName(this.state.userName)
@@ -93,9 +88,9 @@ class UserNameSettings extends Component {
           <div
             id="userNameError"
             style={{
-              display: 'inline',
-              color: 'red',
-              marginLeft: '16px',
+              display: "inline",
+              color: "red",
+              marginLeft: "16px",
             }}
           >
             {this.state.userNameError}

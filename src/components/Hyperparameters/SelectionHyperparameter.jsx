@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
-import Select from 'react-select';
-import makeAnimated from 'react-select/animated';
+import React, { Component } from "react";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
 
-import Hyperparameter from './Hyperparameter';
+import Hyperparameter from "./Hyperparameter";
 
 const SelectionHyperparameter = (props) => {
-  
   return (
     <Hyperparameter {...props}>
       <Select
@@ -26,8 +25,8 @@ const SelectionHyperparameter = (props) => {
         isSearchable={false}
         className={
           props.multi_select
-            ? 'hyperparameter-input-container-multi'
-            : 'hyperparameter-input-container'
+            ? "hyperparameter-input-container-multi"
+            : "hyperparameter-input-container"
         }
         classNamePrefix="hyperparameter-input"
       />

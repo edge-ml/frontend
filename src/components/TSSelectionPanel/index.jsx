@@ -1,6 +1,6 @@
-import React from 'react';
-import { Badge } from 'reactstrap';
-import './index.css';
+import React from "react";
+import { Badge } from "reactstrap";
+import "./index.css";
 
 const TSSelectionPanel = (props) => {
   const { timeSeries, activeSeries, onClickSelectSeries, processedUntil } =
@@ -20,8 +20,8 @@ const TSSelectionPanel = (props) => {
               key={`ts-badge-${idx}`}
               className={
                 activeSeries.includes(ts._id)
-                  ? 'badgeActive badge'
-                  : 'badgeInactive badge'
+                  ? "badgeActive badge"
+                  : "badgeInactive badge"
               }
             >
               {ts.name}

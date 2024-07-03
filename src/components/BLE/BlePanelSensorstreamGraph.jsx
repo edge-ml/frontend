@@ -1,8 +1,8 @@
-import './BleActivated.css';
+import "./BleActivated.css";
 
-import React, { Component } from 'react';
-import Highcharts from 'highcharts/highstock';
-import HighchartsReact from 'highcharts-react-official';
+import React, { Component } from "react";
+import Highcharts from "highcharts/highstock";
+import HighchartsReact from "highcharts-react-official";
 
 class BlePanelSensorstreamGraph extends Component {
   constructor(props) {
@@ -21,7 +21,7 @@ class BlePanelSensorstreamGraph extends Component {
       // show sensor stream at higher sample rate to improve performance (default)
       this.interval_length = 100;
       this.datastream_length = Math.floor(
-        this.streaming_seconds * (1000 / this.interval_length),
+        this.streaming_seconds * (1000 / this.interval_length)
       );
     }
 
@@ -66,7 +66,7 @@ class BlePanelSensorstreamGraph extends Component {
       var extremes = chart.xAxis[0].getExtremes();
       chart.xAxis[0].setExtremes(
         extremes.min + this.interval_length,
-        extremes.max + this.interval_length,
+        extremes.max + this.interval_length
       );
     }
 
@@ -93,7 +93,7 @@ class BlePanelSensorstreamGraph extends Component {
           from: this.props.prevLabel.start - visualOffset,
           to: this.props.prevLabel.end - visualOffset,
           color: this.props.prevLabel.color,
-          className: 'labelingArea',
+          className: "labelingArea",
           id: `labelingArea-${this.props.prevLabel.plotId}`,
         });
         xAxis.addPlotLine({
@@ -126,7 +126,7 @@ class BlePanelSensorstreamGraph extends Component {
           this.props.currentLabel.end -
           (this.state.offsetApplied ? offsetAmount : 0),
         color: this.props.currentLabel.color,
-        className: 'labelingArea',
+        className: "labelingArea",
         id: `labelingArea-${this.props.currentLabel.plotId}`,
       });
       xAxis.addPlotLine({
@@ -152,7 +152,7 @@ class BlePanelSensorstreamGraph extends Component {
         from: this.props.currentLabel.start - visualOffset,
         to: this.props.lastData[this.props.index][0] - 0.5 * visualOffset,
         color: this.props.currentLabel.color,
-        className: 'labelingArea',
+        className: "labelingArea",
         id: `labelingArea-${this.state.startPlotId}`,
       });
     }
@@ -171,7 +171,7 @@ class BlePanelSensorstreamGraph extends Component {
           (this.state.offsetApplied ? offsetAmount : 0),
         to: 4000000000000, // pseudo infinity
         color: this.props.currentLabel.color,
-        className: 'labelingArea',
+        className: "labelingArea",
         id: `labelingArea-${this.state.startPlotId}`,
       });
       this.setState({ shiftHandledForPlotId: this.state.startPlotId });

@@ -37,7 +37,7 @@
 }
 
 .checkBoxContainer:after {
-  content: '';
+  content: "";
   position: absolute;
   display: none;
 }

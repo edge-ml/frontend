@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Card,
   InputGroup,
@@ -13,8 +13,8 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-} from 'reactstrap';
-import './MetadataPanel.css';
+} from "reactstrap";
+import "./MetadataPanel.css";
 
 class MetaDataEditModal extends Component {
   constructor(props) {
@@ -95,7 +95,7 @@ class MetaDataEditModal extends Component {
           <InputGroupText>
             <Input
               style={{
-                background: 'lightGrey',
+                background: "lightGrey",
                 borderBottomRightRadius: 0,
                 borderTopRightRadius: 0,
               }}
@@ -110,14 +110,14 @@ class MetaDataEditModal extends Component {
             // style={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
             value={elm.data}
             onChange={(e) => this.onEditValue(e, idx)}
-            invalid={this.checkError(elm) || elm.data == ''}
+            invalid={this.checkError(elm) || elm.data == ""}
             placeholder="data"
           ></Input>
           <InputGroupText>
             <Button
               style={{
-                borderBottomRightRadius: '0.25rem',
-                borderTopRightRadius: '0.25rem',
+                borderBottomRightRadius: "0.25rem",
+                borderTopRightRadius: "0.25rem",
               }}
               color="danger"
               onClick={(e) => this.onDeleteMetaData(idx)}
@@ -128,8 +128,8 @@ class MetaDataEditModal extends Component {
 
           <FormFeedback>
             {this.checkError(elm)
-              ? 'Keys with the same name are not allowed.'
-              : 'Each key needs some data'}
+              ? "Keys with the same name are not allowed."
+              : "Each key needs some data"}
           </FormFeedback>
         </InputGroup>
       </div>
@@ -146,7 +146,7 @@ class MetaDataEditModal extends Component {
             + Add
           </Button>
         </ModalBody>
-        <ModalFooter style={{ justifyContent: 'space-between' }}>
+        <ModalFooter style={{ justifyContent: "space-between" }}>
           <Button color="secondary" onClick={this.onClose}>
             Cancel
           </Button>

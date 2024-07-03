@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment } from "react";
 
-import './AppView.css';
+import "./AppView.css";
 
 const AppView = ({
   navbar,
@@ -15,7 +15,7 @@ const AppView = ({
         {mobileHeader}
       </div>
       <div
-        className={`d-flex w-100` + (mobileNavbarShown ? ' navbar-shown' : '')}
+        className={`d-flex w-100` + (mobileNavbarShown ? " navbar-shown" : "")}
       >
         <div className="mobile-exclude" style={{ minWidth: 160 }} />
         <div

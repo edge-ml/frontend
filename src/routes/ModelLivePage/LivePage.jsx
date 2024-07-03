@@ -1,21 +1,17 @@
-import { useState } from 'react';
-import LabelBadge from '../../components/Common/LabelBadge';
-import { hexToForegroundColor } from '../../services/ColorService';
+import { useState } from "react";
+import LabelBadge from "../../components/Common/LabelBadge";
+import { hexToForegroundColor } from "../../services/ColorService";
 
 const LivePage = ({ bleDevice, model }) => {
   const [predictedLabel, setPredictedLabel] = useState(undefined);
 
-  
-
   const labels = model.labels;
 
   bleDevice.notify((idx) => {
-    
-
     if (idx >= 0 && idx < labels.length) {
       setPredictedLabel(labels[idx]);
     } else {
-      setPredictedLabel({ name: 'Invalid label', color: '#3d3d3d' });
+      setPredictedLabel({ name: "Invalid label", color: "#3d3d3d" });
     }
   });
 
@@ -37,9 +33,9 @@ const LivePage = ({ bleDevice, model }) => {
           className="flex-grow h-100 m-2 d-flex justify-content-center align-items-center"
           style={{
             backgroundColor: predictedLabel.color,
-            fontWeight: 'bold',
+            fontWeight: "bold",
             color: hexToForegroundColor(predictedLabel.color),
-            fontSize: '5rem',
+            fontSize: "5rem",
           }}
         >
           {predictedLabel.name}

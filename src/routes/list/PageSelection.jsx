@@ -17,7 +17,7 @@ const PageSelection = ({ currentPage, setPage, totalPages }) => {
       <PaginationItem>
         <PaginationLink>{currentPage + "/" + totalPages}</PaginationLink>
       </PaginationItem>
-      <PaginationItem onClick={()=> setPage(currentPage + 1)}>
+      <PaginationItem onClick={() => setPage(currentPage + 1)}>
         <PaginationLink href="#" next />
       </PaginationItem>
       <PaginationItem onClick={() => setPage(Number.MAX_SAFE_INTEGER)}>

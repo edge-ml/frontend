@@ -20,8 +20,12 @@ const generateChartState = (
 
   const { labelsToShow } = useContext(DatasetContext);
 
-  plotBands = useMemo(() => generatePlotBands(labelsToShow, selectedLabelId, onClickPlotLine));
-  plotLines = useMemo(() => generatePlotLines(labelsToShow, selectedLabelId, onClickPlotLine));
+  plotBands = useMemo(() =>
+    generatePlotBands(labelsToShow, selectedLabelId, onClickPlotLine)
+  );
+  plotLines = useMemo(() =>
+    generatePlotLines(labelsToShow, selectedLabelId, onClickPlotLine)
+  );
 
   // plotBands = generatePlotBands(labelsToShow, selectedLabelId, onClickPlotLine);
   // plotLines = generatePlotLines(labelsToShow, selectedLabelId, onClickPlotLine);

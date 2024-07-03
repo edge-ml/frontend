@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from "react";
 import {
   ModalHeader,
   Button,
@@ -7,9 +7,9 @@ import {
   Modal,
   ModalBody,
   ModalFooter,
-} from 'reactstrap';
-import { getArduinoFirmware } from '../../../services/ApiServices/ArduinoFirmwareServices';
-import DFUManager from './DFU';
+} from "reactstrap";
+import { getArduinoFirmware } from "../../../services/ApiServices/ArduinoFirmwareServices";
+import DFUManager from "./DFU";
 
 const DFUModal = ({
   onDisconnection,
@@ -20,7 +20,7 @@ const DFUModal = ({
   showDFUModal,
   toggleDFUModal,
 }) => {
-  const [flashState, setFlashState] = useState('start'); //start, connected, downloadingFW, uploading, finished
+  const [flashState, setFlashState] = useState("start"); //start, connected, downloadingFW, uploading, finished
   const [flashError, setFlashError] = useState(undefined);
   const [flashProgress, setFlashProgress] = useState(0);
   const [connectedDevice, setConnectedDevice] = useState(connectedBLEDevice);
@@ -31,17 +31,17 @@ const DFUModal = ({
         setFlashState,
         setFlashError,
         setFlashProgress,
-        setConnectedDevice,
+        setConnectedDevice
       ),
-    [],
+    []
   );
 
   useEffect(() => {
     dfuManager.connectGATTdfu(connectedDevice);
-    document.addEventListener('keydown', onKeyPressed, false);
+    document.addEventListener("keydown", onKeyPressed, false);
     return () => {
-      document.removeEventListener('keydown', onKeyPressed, false);
-      setFlashState('start');
+      document.removeEventListener("keydown", onKeyPressed, false);
+      setFlashState("start");
       setFlashProgress(0);
       setConnectedDevice(undefined);
     };
@@ -49,20 +49,19 @@ const DFUModal = ({
 
   useEffect(() => {
     if (flashError) {
-      
       onDisconnection();
     }
   }, [flashError]);
 
   const onKeyPressed = (e) => {
     switch (e.key) {
-      case 'Escape':
-        if (flashState !== 'downloadingFW' && flashState !== 'uploading') {
+      case "Escape":
+        if (flashState !== "downloadingFW" && flashState !== "uploading") {
           toggleDFUModal();
         }
         break;
-      case 'Enter':
-        if (flashState === 'start') {
+      case "Enter":
+        if (flashState === "start") {
           downLoadAndInstallFW();
         }
         break;
@@ -78,20 +77,20 @@ const DFUModal = ({
   };
 
   const downloadFirmware = async () => {
-    setFlashState('downloadingFW');
-    let downloadName = '';
+    setFlashState("downloadingFW");
+    let downloadName = "";
     switch (connectedDeviceData ? connectedDeviceData.name : undefined) {
-      case 'NICLA':
-        downloadName = 'nicla';
+      case "NICLA":
+        downloadName = "nicla";
         break;
-      case 'NANO':
-        downloadName = 'nano';
+      case "NANO":
+        downloadName = "nano";
         break;
-      case 'Seeed XIAO':
-        downloadName = 'xiao';
+      case "Seeed XIAO":
+        downloadName = "xiao";
         break;
       default:
-        downloadName = 'nicla';
+        downloadName = "nicla";
         break;
     }
     return getArduinoFirmware(downloadName);
@@ -99,14 +98,14 @@ const DFUModal = ({
 
   const renderProgressInfo = () => {
     switch (flashState) {
-      case 'start':
-        return 'Update has not started yet';
-      case 'downloadingFW':
-        return 'Downloading firmware...';
-      case 'uploading':
-        return 'Flashing firmware over BLE...';
-      case 'finished':
-        return 'The firmware update is completed';
+      case "start":
+        return "Update has not started yet";
+      case "downloadingFW":
+        return "Downloading firmware...";
+      case "uploading":
+        return "Flashing firmware over BLE...";
+      case "finished":
+        return "The firmware update is completed";
     }
   };
 
@@ -117,7 +116,7 @@ const DFUModal = ({
       return (
         <div className="align-items-center">
           <div>
-            Connected BLE device:{' '}
+            Connected BLE device:{" "}
             {
               <strong>
                 {connectedDeviceData
@@ -131,15 +130,15 @@ const DFUModal = ({
           </div>
           <div>
             {isEdgeMLInstalled
-              ? 'This device already has edge-ml installed, but an update is possible. Please do not close this window, while the firmware is flashing.'
-              : 'This device does not have edge-ml installed. Flash now to install the firmware. Please do not close this window, while the firmware is flashing.'}
+              ? "This device already has edge-ml installed, but an update is possible. Please do not close this window, while the firmware is flashing."
+              : "This device does not have edge-ml installed. Flash now to install the firmware. Please do not close this window, while the firmware is flashing."}
           </div>
           <div className="panelDivider"></div>
           <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
             <div>
@@ -149,7 +148,7 @@ const DFUModal = ({
             <Button
               outline
               color="primary"
-              disabled={flashState !== 'connected'}
+              disabled={flashState !== "connected"}
               onClick={downLoadAndInstallFW}
             >
               Update firmware
@@ -159,15 +158,15 @@ const DFUModal = ({
 
           <div className="mt-3">
             <Progress
-              color={flashState === 'uploadFinished' ? 'primary' : 'success'}
+              color={flashState === "uploadFinished" ? "primary" : "success"}
               value={flashProgress}
             />
           </div>
           <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             {renderProgressInfo()}
@@ -193,7 +192,7 @@ const DFUModal = ({
             color="danger"
             onClick={toggleDFUModal}
             disabled={
-              flashState === 'downloadingFW' || flashState === 'uploading'
+              flashState === "downloadingFW" || flashState === "uploading"
             }
           >
             Cancel

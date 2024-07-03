@@ -176,7 +176,7 @@ const useEditDataset = (datasetUtils, labelings) => {
 
   return {
     activeTimeSeries,
-    setActiveTimeSeries : _setActiveTimeSeries,
+    setActiveTimeSeries: _setActiveTimeSeries,
     activeLabeling,
     setActiveLabeling,
     selectedLabel,

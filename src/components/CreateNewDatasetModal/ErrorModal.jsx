@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Input,
   InputGroup,
@@ -10,7 +10,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-} from 'reactstrap';
+} from "reactstrap";
 
 function ErrorModal(props) {
   const errors = props.errors
@@ -24,17 +24,17 @@ function ErrorModal(props) {
       <div
         key={elm.fileName}
         style={{
-          marginBottom: '4px',
-          paddingBottom: '12px',
-          borderBottom: '1px solid gray',
+          marginBottom: "4px",
+          paddingBottom: "12px",
+          borderBottom: "1px solid gray",
         }}
       >
-        <div style={{ fontSize: 'larger', fontWeight: 'bold' }}>
+        <div style={{ fontSize: "larger", fontWeight: "bold" }}>
           {elm.fileName}
         </div>
         {elm.errors.map((error, index) => (
-          <div key={elm.fileName + index} style={{ marginLeft: '8px' }}>
-            {index + ': ' + error.error}
+          <div key={elm.fileName + index} style={{ marginLeft: "8px" }}>
+            {index + ": " + error.error}
           </div>
         ))}
       </div>
@@ -48,15 +48,17 @@ function ErrorModal(props) {
         <ModalBody>
           <div>{errors.map((elm) => renderFileError(elm))}</div>
           <div className="mt-2">
-            {' '}
+            {" "}
             <a href="/example_file.csv" download="example_file.csv">
               Click here
-            </a>{' '}
+            </a>{" "}
             to download an example CSV file.
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button outline onClick={props.onClose}>OK</Button>
+          <Button outline onClick={props.onClose}>
+            OK
+          </Button>
         </ModalFooter>
       </Modal>
     </div>

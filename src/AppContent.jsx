@@ -32,7 +32,6 @@ const AppContent = () => {
     getProjects();
   }, []);
 
-
   if (!currentProject) {
     return <NoProjectPage></NoProjectPage>;
   }

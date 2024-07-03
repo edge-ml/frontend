@@ -1,9 +1,9 @@
-import Loader from '../../modules/loader';
-import logoSvg from '../../logo.svg';
+import Loader from "../../modules/loader";
+import logoSvg from "../../logo.svg";
 import {
   DATASET_STORE,
   DATASET_STORE_ENDPOINTS,
-} from '../../services/ApiServices/ApiConstants';
+} from "../../services/ApiServices/ApiConstants";
 
 const DownloadDataset = (props) => {
   const id = props.match.params.id;
@@ -13,11 +13,11 @@ const DownloadDataset = (props) => {
     <div className="vh-100">
       <div className="d-flex flex-column align-items-center h-75">
         <div className="d-flex justify-content-center align-items-center">
-          <img style={{ width: '256px' }} src={logoSvg} />
+          <img style={{ width: "256px" }} src={logoSvg} />
           <b>
             <div
               className="ps-4"
-              style={{ color: 'black', fontSize: 'xxx-large' }}
+              style={{ color: "black", fontSize: "xxx-large" }}
             >
               edge-ml
             </div>

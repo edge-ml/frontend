@@ -1,10 +1,10 @@
-import React from 'react';
-import { Collapse, CardBody, Card, CardHeader } from 'reactstrap';
+import React from "react";
+import { Collapse, CardBody, Card, CardHeader } from "reactstrap";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown, faCaretRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
-import { HyperparameterView } from './HyperparameterView';
+import { HyperparameterView } from "./HyperparameterView";
 
 export const AdvancedHyperparameters = ({
   showAdvanced,
@@ -18,8 +18,8 @@ export const AdvancedHyperparameters = ({
       <Card className="shadow-none">
         <CardHeader
           className={
-            'align-items-start text-left ' +
-            (showAdvanced ? '' : 'border-bottom-0')
+            "align-items-start text-left " +
+            (showAdvanced ? "" : "border-bottom-0")
           }
           onClick={toggleShowAdvanced}
         >

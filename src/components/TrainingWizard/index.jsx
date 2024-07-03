@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Modal,
   ModalHeader,
@@ -6,20 +6,20 @@ import {
   ModalBody,
   Button,
   Alert,
-} from 'reactstrap';
-import Wizard_SelectLabeling from './Steps/Select_Labeling';
-import './index.css';
-import { useEffect, useState, Fragment } from 'react';
-import Wizard_SelectDataset from './Steps/Select_Datasets';
-import { getDatasets } from '../../services/ApiServices/DatasetServices';
-import { getLabelings } from '../../services/ApiServices/LabelingServices';
-import { getTrainConfig, train } from '../../services/ApiServices/MlService';
-import Select_Name from './Steps/Select_Name';
-import SelectTrainMethod from './selectTrainMethod';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import { intersect, toggleElement } from '../../services/helpers';
-import Pipelinestep from './Pipelinestep';
+} from "reactstrap";
+import Wizard_SelectLabeling from "./Steps/Select_Labeling";
+import "./index.css";
+import { useEffect, useState, Fragment } from "react";
+import Wizard_SelectDataset from "./Steps/Select_Datasets";
+import { getDatasets } from "../../services/ApiServices/DatasetServices";
+import { getLabelings } from "../../services/ApiServices/LabelingServices";
+import { getTrainConfig, train } from "../../services/ApiServices/MlService";
+import Select_Name from "./Steps/Select_Name";
+import SelectTrainMethod from "./selectTrainMethod";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { intersect, toggleElement } from "../../services/helpers";
+import Pipelinestep from "./Pipelinestep";
 
 export const WizardFooter = ({
   invalidResult = false,
@@ -46,10 +46,10 @@ export const WizardFooter = ({
       <Alert
         color="warning"
         style={{
-          visibility: !!invalidResult && clickedOnce ? 'visible' : 'hidden',
+          visibility: !!invalidResult && clickedOnce ? "visible" : "hidden",
         }}
       >
-        {invalidResult || 'No problems'}
+        {invalidResult || "No problems"}
       </Alert>
       <div>
         <span className="me-3">
@@ -74,7 +74,7 @@ export const WizardFooter = ({
             }
           }}
         >
-          {step + 1 === maxSteps ? 'Train' : 'Next'}
+          {step + 1 === maxSteps ? "Train" : "Next"}
         </Button>
       </div>
     </ModalFooter>
@@ -98,7 +98,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   const [disabledTimeseriesNames, setDisabledTimeseriesNames] = useState([]);
   const [labeling, setLableing] = useState();
   const [zeroClass, toggleZeroClass] = useState(false);
-  const [modelName, setModelName] = useState('');
+  const [modelName, setModelName] = useState("");
   const [selectedClassifier, setSelectedClassifier] = useState(undefined);
   const [selectedEval, setSelectedEval] = useState(undefined);
   const [selectednormalizer, setSelectednormalizer] = useState(undefined);
@@ -134,7 +134,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
       setDatasets(newDatasets);
     });
     getLabelings().then((labelings) =>
-      setLabelings(labelings.map((ls) => ({ ...ls, disabledLabels: [] }))),
+      setLabelings(labelings.map((ls) => ({ ...ls, disabledLabels: [] })))
     );
     getTrainConfig().then((result) => {
       setPipelines(result);
@@ -148,7 +148,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
 
   const toggleDisableTimeseries = (timeseries_id) => {
     setDisabledTimeseriesNames(
-      toggleElement(disabledTimeseriesNames, timeseries_id),
+      toggleElement(disabledTimeseriesNames, timeseries_id)
     );
   };
 
@@ -179,7 +179,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     const intersectingTSNames = intersect(
       ...datasets
         .filter((e) => e.selected)
-        .map((e) => e.timeSeries.map((t) => t.name)),
+        .map((e) => e.timeSeries.map((t) => t.name))
     );
 
     const data = {
@@ -192,7 +192,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
               .filter(
                 (ts) =>
                   intersectingTSNames.includes(ts.name) &&
-                  !disabledTimeseriesNames.includes(ts.name),
+                  !disabledTimeseriesNames.includes(ts.name)
               )
               .map((ts) => ts._id),
           };
@@ -259,28 +259,28 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
     <Modal isOpen={true} size="xl">
       <ModalHeader>
         <div>
-          {'Train a model' +
-            (selectedPipeline ? ': ' + selectedPipeline.name : '')}
+          {"Train a model" +
+            (selectedPipeline ? ": " + selectedPipeline.name : "")}
         </div>
         <div
           style={{
-            position: 'absolute',
-            top: '0',
-            right: '8px',
-            cursor: 'pointer',
+            position: "absolute",
+            top: "0",
+            right: "8px",
+            cursor: "pointer",
           }}
           onClick={onClose}
         >
           <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
         </div>
       </ModalHeader>
-      <ModalBody style={{ minHeight: '50vh' }}>
+      <ModalBody style={{ minHeight: "50vh" }}>
         {datasets &&
         labelings &&
         (datasets.length === 0 || labelings.length === 0) ? (
           <div
             className="d-flex justify-content-center align-items-center fw-bold"
-            style={{ height: '30vh' }}
+            style={{ height: "30vh" }}
           >
             You need datasets and labelings to train models!
           </div>
@@ -364,7 +364,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
                 }
               }}
             >
-              {screen + 1 === maxSteps ? 'Train' : 'Next'}
+              {screen + 1 === maxSteps ? "Train" : "Next"}
             </Button>
           ) : null}
         </div>

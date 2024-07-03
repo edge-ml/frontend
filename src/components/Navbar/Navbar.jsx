@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faDownload } from '@fortawesome/free-solid-svg-icons';
+import React, { useState, useEffect, useContext } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faDownload } from "@fortawesome/free-solid-svg-icons";
 
-import './Navbar.css';
-import EdgeMLBrandLogo from '../EdgeMLBrandLogo/EdgeMLBrandLogo';
-import NotificationHandler from '../NotificationHandler';
-import NotificationContext from '../NotificationHandler/NotificationProvider';
-import NavbarUserSettings from './NavbarUserSettings';
-import NavbarInfo from './NavbarInfo';
-import NavbarProject from './NavbarProject';
-import EditProjectModal from '../EditProjectModal/EditProjectModal';
-import useProjectStore from '../../stores/projectStore';
-import Loader from '../../modules/loader';
-import { useNavigate } from 'react-router-dom';
+import "./Navbar.css";
+import EdgeMLBrandLogo from "../EdgeMLBrandLogo/EdgeMLBrandLogo";
+import NotificationHandler from "../NotificationHandler";
+import NotificationContext from "../NotificationHandler/NotificationProvider";
+import NavbarUserSettings from "./NavbarUserSettings";
+import NavbarInfo from "./NavbarInfo";
+import NavbarProject from "./NavbarProject";
+import EditProjectModal from "../EditProjectModal/EditProjectModal";
+import useProjectStore from "../../stores/projectStore";
+import Loader from "../../modules/loader";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
@@ -33,11 +33,11 @@ const Navbar = () => {
 
   const onProjectClick = (project) => {
     setCurrentProject(project);
-    navigate(currentProject.admin.userName, currentProject.name, 'datasets')
-  }
+    navigate(currentProject.admin.userName, currentProject.name, "datasets");
+  };
 
   if (!projects) {
-    return <Loader isLoading></Loader>
+    return <Loader isLoading></Loader>;
   }
 
   return (
@@ -52,12 +52,12 @@ const Navbar = () => {
         <EdgeMLBrandLogo
           href={
             currentProject
-              ? '/' +
-              currentProject.admin.userName +
-              '/' +
-              currentProject.name +
-              '/' +
-              'datasets'
+              ? "/" +
+                currentProject.admin.userName +
+                "/" +
+                currentProject.name +
+                "/" +
+                "datasets"
               : null
           }
         />
@@ -68,7 +68,7 @@ const Navbar = () => {
                 currentProject={currentProject}
                 projects={projects}
                 project={project}
-                key={'navbarItem' + project._id}
+                key={"navbarItem" + project._id}
                 onProjectClick={onProjectClick}
               ></NavbarProject>
             );
@@ -80,11 +80,11 @@ const Navbar = () => {
           id="btn-add-project"
           className="w-100 mt-3 pt-2 pb-2 navbar-project text-center"
           style={{
-            backgroundColor: '#eee',
-            border: '0px solid transparent',
-            color: '#666',
-            fontSize: '0.9rem',
-            cursor: 'pointer',
+            backgroundColor: "#eee",
+            border: "0px solid transparent",
+            color: "#666",
+            fontSize: "0.9rem",
+            cursor: "pointer",
           }}
         >
           <FontAwesomeIcon
@@ -105,20 +105,21 @@ const Navbar = () => {
           >
             <small>
               <FontAwesomeIcon icon={faDownload} className="me-2" />
-              {`${activeNotifications.length} ${activeNotifications.length > 1
-                ? 'Notifications'
-                : 'Notification'
-                }`}
+              {`${activeNotifications.length} ${
+                activeNotifications.length > 1
+                  ? "Notifications"
+                  : "Notification"
+              }`}
             </small>
           </div>
         ) : null}
         <NavbarInfo></NavbarInfo>
         <div
           style={{
-            height: '1px',
-            backgroundColor: 'darkgray',
-            opacity: '0.3',
-            width: '95%',
+            height: "1px",
+            backgroundColor: "darkgray",
+            opacity: "0.3",
+            width: "95%",
           }}
         ></div>
         <NavbarUserSettings></NavbarUserSettings>

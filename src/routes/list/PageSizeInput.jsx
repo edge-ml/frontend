@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { Form, FormGroup, FormText, Input, Col, Row } from 'reactstrap';
+import React, { useState } from "react";
+import { Form, FormGroup, FormText, Input, Col, Row } from "reactstrap";
 
 const PageSizeInput = ({ pageSize, setPageSize }) => {
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [value, setValue] = useState(pageSize);
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       const inputValue = e.target.value;
       //only numeric
-      const numericValue = inputValue.replace(/[^0-9]/g, '');
+      const numericValue = inputValue.replace(/[^0-9]/g, "");
       setValue(numericValue);
       if (numericValue.length < 1 || numericValue < 5) {
-        setError('Please choose a size >= 5.');
+        setError("Please choose a size >= 5.");
       } else {
         setPageSize(numericValue);
-        setError('');
+        setError("");
       }
       setPageSize(numericValue);
     }

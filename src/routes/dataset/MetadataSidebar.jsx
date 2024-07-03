@@ -1,17 +1,16 @@
-import React from 'react';
-import { useContext, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from "react";
+import { useContext, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
   faChevronRight,
-} from '@fortawesome/free-solid-svg-icons';
-import { Fragment } from 'react';
-import MetadataContainer from '../../components/MetadataPanel/MetadataContainer';
-import { DatasetContext } from './DatasetContext';
-import { Container } from 'reactstrap';
+} from "@fortawesome/free-solid-svg-icons";
+import { Fragment } from "react";
+import MetadataContainer from "../../components/MetadataPanel/MetadataContainer";
+import { DatasetContext } from "./DatasetContext";
+import { Container } from "reactstrap";
 
-const MetadataSidebar = ({ }) => {
-
+const MetadataSidebar = ({}) => {
   const { dataset } = useContext(DatasetContext);
 
   const [isExtended, setExtendend] = useState(false);
@@ -54,9 +53,9 @@ const MetadataSidebar = ({ }) => {
                 end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
                 user={dataset.userId}
                 name={dataset.name}
-                handleDatasetNameChange={() => { }}
+                handleDatasetNameChange={() => {}}
                 metaData={dataset.metaData}
-                onUpdateMetaData={() => { }}
+                onUpdateMetaData={() => {}}
               ></MetadataContainer>
             </div>
           </div>

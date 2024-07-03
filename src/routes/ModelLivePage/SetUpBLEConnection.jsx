@@ -1,12 +1,12 @@
-import React from 'react';
-import { Button, Input, InputGroup, InputGroupText } from 'reactstrap';
-import ClassificationDevice from './ClassificationDevice';
-import { useState } from 'react';
+import React from "react";
+import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
+import ClassificationDevice from "./ClassificationDevice";
+import { useState } from "react";
 
 const CLASSIFICATION_SERVICE_UUID_DEFAULT =
-  '6E400001-B5A3-F393-E0A9-E50E24DCCA9E'.toLowerCase();
+  "6E400001-B5A3-F393-E0A9-E50E24DCCA9E".toLowerCase();
 const CLASSIFICATION_CHARACTERISTICS_UUID_DEFAULT =
-  '3c6e98a5-f027-49aa-8b2e-c7b3f8a9c18c'.toLowerCase();
+  "3c6e98a5-f027-49aa-8b2e-c7b3f8a9c18c".toLowerCase();
 
 const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
   const [classification_service_uuid, set_classification_service_uuid] =
@@ -22,27 +22,26 @@ const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
 
   const onClickConnect = async () => {
     try {
-      
       const options = {
         filters: [{ services: [classification_service_uuid] }],
       };
       const device = await navigator.bluetooth.requestDevice(options);
       const server = await device.gatt.connect();
       const service = await server.getPrimaryService(
-        classification_service_uuid,
+        classification_service_uuid
       );
       const characteristic = await service.getCharacteristic(
-        classification_characteristics_uuid,
+        classification_characteristics_uuid
       );
       const classificationDevice = new ClassificationDevice(
         device,
-        characteristic,
+        characteristic
       );
 
-      device.addEventListener('gattserverdisconnected', handleDisconnect);
+      device.addEventListener("gattserverdisconnected", handleDisconnect);
       setBLEDevice(classificationDevice);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
@@ -74,10 +73,14 @@ const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
           2. Make sure your MCU is equipped with the model <b>{model.name}</b>
         </h5>
         <div className="m-5 d-flex flex-column align-items-center">
-          <h5 className="fw-bold">
-            3. Connect your MCU over BLE here:
-          </h5>
-          <Button outline color="primary" className="btn-neutral" size="lg" onClick={onClickConnect}>
+          <h5 className="fw-bold">3. Connect your MCU over BLE here:</h5>
+          <Button
+            outline
+            color="primary"
+            className="btn-neutral"
+            size="lg"
+            onClick={onClickConnect}
+          >
             Connect
           </Button>
         </div>

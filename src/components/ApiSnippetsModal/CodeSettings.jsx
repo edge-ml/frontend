@@ -1,5 +1,5 @@
-import React from 'react';
-import { Input, FormGroup, Label, Row, Col } from 'reactstrap';
+import React from "react";
+import { Input, FormGroup, Label, Row, Col } from "reactstrap";
 
 const CodeSettings = (props) => {
   return (
@@ -11,13 +11,13 @@ const CodeSettings = (props) => {
           </Label>
         </Col>
         <Col>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
             <FormGroup className="me-2" id="platformCheck" check>
               <Label check>
                 <Input
                   value="Java"
                   type="radio"
-                  checked={props.platform === 'Java'}
+                  checked={props.platform === "Java"}
                   onChange={props.onPlatformChange}
                 />
                 Java
@@ -28,7 +28,7 @@ const CodeSettings = (props) => {
                 <Input
                   type="radio"
                   value="Node.js"
-                  checked={props.platform === 'Node.js'}
+                  checked={props.platform === "Node.js"}
                   onChange={props.onPlatformChange}
                 />
                 Node.js
@@ -39,7 +39,7 @@ const CodeSettings = (props) => {
                 <Input
                   type="radio"
                   value="Javascript"
-                  checked={props.platform === 'Javascript'}
+                  checked={props.platform === "Javascript"}
                   onChange={props.onPlatformChange}
                 />
                 Javascript
@@ -50,7 +50,7 @@ const CodeSettings = (props) => {
                 <Input
                   type="radio"
                   value="Arduino"
-                  checked={props.platform === 'Arduino'}
+                  checked={props.platform === "Arduino"}
                   onChange={props.onPlatformChange}
                 />
                 Arduino
@@ -65,7 +65,7 @@ const CodeSettings = (props) => {
           </Label>
         </Col>
         <Col>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
             <FormGroup className="me-2" id="serverTimeCheck" check>
               <Label check>
                 <Input

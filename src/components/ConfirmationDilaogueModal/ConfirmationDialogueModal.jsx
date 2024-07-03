@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
-import './ConfirmationDialogueModal.css';
+import React, { Component } from "react";
+import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from "reactstrap";
+import "./ConfirmationDialogueModal.css";
 
 class ConfirmationDialogueModal extends Component {
   constructor(props) {
@@ -12,20 +12,20 @@ class ConfirmationDialogueModal extends Component {
   }
 
   componentDidMount() {
-    document.addEventListener('keydown', this.onKeyPressed, false);
+    document.addEventListener("keydown", this.onKeyPressed, false);
   }
 
   //important that this is called when modal is not shown! Modal has to be rendered conditionally.
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.onKeyPressed, false);
+    document.removeEventListener("keydown", this.onKeyPressed, false);
   }
 
   onKeyPressed(e) {
     switch (e.key) {
-      case 'Escape':
+      case "Escape":
         this.props.onCancel();
         break;
-      case 'Enter':
+      case "Enter":
         this.props.onConfirm();
         break;
     }
@@ -40,7 +40,7 @@ class ConfirmationDialogueModal extends Component {
         >
           <ModalHeader>{this.props.title}</ModalHeader>
           <ModalBody className="modal-scrollableBody">
-            <div style={{ whiteSpace: 'pre-wrap' }}>
+            <div style={{ whiteSpace: "pre-wrap" }}>
               {this.props.confirmString}
             </div>
           </ModalBody>

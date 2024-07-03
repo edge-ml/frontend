@@ -1,15 +1,15 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState } from "react";
 import {
   InputGroup,
   InputGroupText,
   Input,
   Container,
   Button,
-} from 'reactstrap';
+} from "reactstrap";
 
-import './Settings.css';
-import useProjectSettings from '../../Hooks/useProjectSettings';
-import useProjectStore from '../../stores/projectStore';
+import "./Settings.css";
+import useProjectSettings from "../../Hooks/useProjectSettings";
+import useProjectStore from "../../stores/projectStore";
 
 const EditName = () => {
   const { currentProject } = useProjectStore();
@@ -19,11 +19,11 @@ const EditName = () => {
   return (
     <Container>
       <InputGroup>
-        <InputGroupText>{'Name'}</InputGroupText>
+        <InputGroupText>{"Name"}</InputGroupText>
         <Input
           id="projectName"
           readOnly={false}
-          placeholder={'Name'}
+          placeholder={"Name"}
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
         />

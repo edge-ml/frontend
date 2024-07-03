@@ -14,8 +14,8 @@ class ClassificationDevice {
     };
 
     this._classificationCharacteristics.addEventListener(
-      'characteristicvaluechanged',
-      convert,
+      "characteristicvaluechanged",
+      convert
     );
   }
 

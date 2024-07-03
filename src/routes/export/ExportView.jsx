@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Row,
   Col,
@@ -8,9 +8,9 @@ import {
   CardHeader,
   CardBody,
   Container,
-} from 'reactstrap';
+} from "reactstrap";
 
-import { Empty } from './components/Empty';
+import { Empty } from "./components/Empty";
 
 export const ExportView = ({
   models, // {id: string, name: string, creation_date: number}[]
@@ -23,7 +23,7 @@ export const ExportView = ({
     <Container>
       <Row>
         <Col xs={12} lg={4} className="pt-3">
-          <Card className="text-left" style={{ maxHeight: '80vh' }}>
+          <Card className="text-left" style={{ maxHeight: "80vh" }}>
             <CardHeader>
               <h4>Models</h4>
             </CardHeader>

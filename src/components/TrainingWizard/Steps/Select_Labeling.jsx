@@ -1,16 +1,16 @@
-import React from 'react';
-import { Badge } from 'reactstrap';
-import '../index.css';
-import Checkbox from '../../../components/Common/Checkbox';
-import classNames from 'classnames';
+import React from "react";
+import { Badge } from "reactstrap";
+import "../index.css";
+import Checkbox from "../../../components/Common/Checkbox";
+import classNames from "classnames";
 import {
   EdgeMLTable,
   EdgeMLTableHeader,
   EdgeMLTableEntry,
-} from '../../Common/EdgeMLTable';
-import { toggleElement } from '../../../services/helpers';
-import { useEffect } from 'react';
-import LabelBadge from '../../Common/LabelBadge';
+} from "../../Common/EdgeMLTable";
+import { toggleElement } from "../../../services/helpers";
+import { useEffect } from "react";
+import LabelBadge from "../../Common/LabelBadge";
 
 const Wizard_SelectLabeling = ({
   labelings,
@@ -29,12 +29,10 @@ const Wizard_SelectLabeling = ({
   };
 
   useEffect(() => {
-
     validateInput();
   }, [selectedLabeling, zeroClass]);
 
   useEffect(() => {
-
     validateInput();
   }, []);
 
@@ -64,7 +62,7 @@ const Wizard_SelectLabeling = ({
           .filter((elm) => countDatasets(elm))
           .map((labeling) => (
             <EdgeMLTableEntry
-              className={classNames('labelingRow', {
+              className={classNames("labelingRow", {
                 disabled: countDatasets(labeling) === 0,
               })}
             >
@@ -88,31 +86,32 @@ const Wizard_SelectLabeling = ({
                         ...selectedLabeling,
                         disabledLabels: toggleElement(
                           selectedLabeling.disabledLabels,
-                          label._id,
+                          label._id
                         ),
                       })
                     }
                     style={{
                       ...(selectedLabeling?.disabledLabels.includes(label._id)
-                        ? { textDecoration: 'line-through' }
+                        ? { textDecoration: "line-through" }
                         : { backgroundColor: label.color }),
-                      userSelect: 'none',
+                      userSelect: "none",
                     }}
                     // {...(selectedLabeling?.disabledLabels.includes(label._id)
                     //   ? { color: 'light' }
                     //   : {})}
                     color={
                       selectedLabeling?.disabledLabels.includes(label._id)
-                        ? 'light'
-                        : ''
+                        ? "light"
+                        : ""
                     }
                   >
                     {label.name}
                   </LabelBadge>
                 ))}
               </div>
-              <div>{`(${countDatasets(labeling)} ${countDatasets(labeling) === 1 ? 'dataset' : 'datasets'
-                })`}</div>
+              <div>{`(${countDatasets(labeling)} ${
+                countDatasets(labeling) === 1 ? "dataset" : "datasets"
+              })`}</div>
             </EdgeMLTableEntry>
           ))}
       </EdgeMLTable>
@@ -126,13 +125,13 @@ Wizard_SelectLabeling.validate = ({
   zeroClass,
 }) => {
   if (!selectedLabeling) {
-    return 'You need to select a labeling';
+    return "You need to select a labeling";
   }
 
   const labeling = labelings.find((l) => l._id === selectedLabeling._id);
 
   if (!labeling) {
-    return 'Selected labeling is erronous, an internal error has occured';
+    return "Selected labeling is erronous, an internal error has occured";
   }
 
   const remainingLabelsCount =
@@ -142,11 +141,11 @@ Wizard_SelectLabeling.validate = ({
       : 0);
 
   if (remainingLabelsCount === 0) {
-    return 'At least one label must remain enabled in the selected labeling';
+    return "At least one label must remain enabled in the selected labeling";
   }
 
   if (remainingLabelsCount === 1 && !zeroClass) {
-    return 'At least two labels must remain enabled if zero class is disabled';
+    return "At least two labels must remain enabled if zero class is disabled";
   }
 };
 

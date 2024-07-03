@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 class LegalNotice extends Component {
   constructor(props) {
@@ -12,32 +12,32 @@ class LegalNotice extends Component {
       <div
         className="kaggleContainer"
         style={{
-          position: 'relative',
-          background: 'white',
+          position: "relative",
+          background: "white",
           paddingTop: 100,
           paddingLeft: 20,
           paddingRight: 20,
-          width: '100%',
-          height: '100%',
+          width: "100%",
+          height: "100%",
           left: 0,
-          overflowX: 'none',
-          overflowY: 'scroll',
-          color: 'Black',
+          overflowX: "none",
+          overflowY: "scroll",
+          color: "Black",
           zIndex: 2,
         }}
       >
         <div
           style={{
-            width: '100%',
-            position: 'fixed',
+            width: "100%",
+            position: "fixed",
             zIndex: 1,
             top: 0,
             left: 0,
             height: 80,
-            backgroundColor: 'white',
+            backgroundColor: "white",
           }}
-        ></div>{' '}
-        <h1 style={{ color: 'rgb(8,93,126)' }}>Legal Notice</h1>{' '}
+        ></div>{" "}
+        <h1 style={{ color: "rgb(8,93,126)" }}>Legal Notice</h1>{" "}
         <p>
           Information in accordance with Section 5 TMG
           <br></br>Südendstraße 8B<br></br>76137 Karlsruhe<br></br>
@@ -45,10 +45,10 @@ class LegalNotice extends Component {
             <b>Contact Information</b>
           </h3>
           <b>Telephone:</b> 0721 60909333<br></br>
-          <b>E-Mail:</b>{' '}
+          <b>E-Mail:</b>{" "}
           <a href="mailto:hello@discovid.ai">hello@discovid.ai</a>
           <br></br>
-          <b>Internet address:</b>{' '}
+          <b>Internet address:</b>{" "}
           <a href="discovid.ai" target="_blank">
             discovid.ai
           </a>
@@ -71,17 +71,17 @@ class LegalNotice extends Component {
             site, the cookie cannot be used by anyone but Google. Google’s
             ability to use and share information collected by Google Analytics
             about your visits to our site is restricted by the Google Analytics
-            Terms of Use.{' '}
+            Terms of Use.{" "}
             <a
               href=" https://marketingplatform.google.com/about/analytics/terms/us/"
               target="_blank"
             >
-              {' '}
+              {" "}
               https://marketingplatform.google.com/about/analytics/terms/us/
             </a>
             <br></br>
             You can prevent Google Analytics from recognizing you on return
-            visits to this site by disabling cookies on your browser.{' '}
+            visits to this site by disabling cookies on your browser.{" "}
             <a href="https://tools.google.com/dlpage/gaoptout" target="_blank">
               https://tools.google.com/dlpage/gaoptout
             </a>
@@ -125,7 +125,7 @@ class LegalNotice extends Component {
           <i>Source: </i>
           <a href="http://www.translate-24h.de" target="_blank">
             translate-24h
-          </a>{' '}
+          </a>{" "}
           <br></br>
         </p>
       </div>

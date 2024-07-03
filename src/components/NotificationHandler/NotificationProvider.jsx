@@ -1,10 +1,10 @@
-import React, { createContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useState, useEffect, useRef } from "react";
 import {
   datasetDownloadStatus,
   cancelDownload,
   registerDatasetDownload as reg_dataset_download,
   registerProjectDownload as reg_project_download,
-} from '../../services/DatasetService';
+} from "../../services/DatasetService";
 
 const NotificationContext = createContext();
 
@@ -15,7 +15,7 @@ export const NotificationProvider = ({ children }) => {
 
   const registerProjectDownload = async () => {
     const res = await reg_project_download();
-    
+
     setActiveNotifications((prevState) => [...prevState, res]);
     setHasNewNotifications(true);
     startUpdates();
@@ -23,7 +23,7 @@ export const NotificationProvider = ({ children }) => {
 
   const registerDatasetDownload = async (datasetId) => {
     const res = await reg_dataset_download(datasetId);
-    
+
     setActiveNotifications((prevState) => [...prevState, res]);
     setHasNewNotifications(true);
     startUpdates();
@@ -31,7 +31,7 @@ export const NotificationProvider = ({ children }) => {
 
   const removeNotification = (id) => {
     const newNotifications = activeNotifications.filter(
-      (elm) => elm.downloadId !== id,
+      (elm) => elm.downloadId !== id
     );
     cancelDownload(id);
     setActiveNotifications(newNotifications);
@@ -53,7 +53,6 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const startUpdates = () => {
-    
     if (updateHandle.current === null) {
       const handle = setInterval(updateNotifications, 2000);
       updateHandle.current = handle;
@@ -61,7 +60,6 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const stopUpdates = () => {
-    
     clearInterval(updateHandle.current);
     updateHandle.current = null;
   };

@@ -93,13 +93,14 @@ class DragDrop extends Component {
               height: "inherit",
               fontSize: "larger",
               fontWeight: "bold",
-              justifyContent: "center",
               width: "100%",
             }}
           >
             <div className="mt-2">
               Drag 'n drop some files here, or{" "}
-              <span className="text-primary" onClick={this.onClick}><u>click here</u> </span>
+              <span className="text-primary" onClick={this.onClick}>
+                <u>click here</u>{" "}
+              </span>
               to select files
             </div>
           </div>

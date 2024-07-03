@@ -1,6 +1,6 @@
-import React from 'react';
-import MetadataPanel from './MetadataPanel';
-import CustomMetadataPanel from './CustomMetadataPanel';
+import React from "react";
+import MetadataPanel from "./MetadataPanel";
+import CustomMetadataPanel from "./CustomMetadataPanel";
 
 const MetadataContainer = ({
   start,
@@ -14,7 +14,7 @@ const MetadataContainer = ({
   return (
     <div
       className="d-flex flex-column p-2"
-      style={{ height: '100vh', width: '100%' }}
+      style={{ height: "100vh", width: "100%" }}
     >
       <MetadataPanel
         start={start}

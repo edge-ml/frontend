@@ -12,7 +12,7 @@ import useProjectRouter from "../../Hooks/ProjectRouter";
 import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
 
 // Component for Data Upload Panel
-const DataUpload = ({refreshDatasets}) => {
+const DataUpload = ({ refreshDatasets }) => {
   const navigate = useProjectRouter();
 
   const [csvModalOpen, setCSVModalOpen] = useState(false);

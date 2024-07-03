@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Input, InputGroup, InputGroupText } from 'reactstrap';
-import SpinnerButton from '../Common/SpinnerButton';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import Checkbox from '../Common/Checkbox';
-import './BleActivated.css';
+import React, { useState } from "react";
+import { Input, InputGroup, InputGroupText } from "reactstrap";
+import SpinnerButton from "../Common/SpinnerButton";
+import PropTypes from "prop-types";
+import classNames from "classnames";
+import Checkbox from "../Common/Checkbox";
+import "./BleActivated.css";
 
 function BlePanelRecorderSettings({
-  recorderState = 'ready',
+  recorderState = "ready",
   disabled = false,
   sampleRate,
   sensorsSelected,
@@ -36,17 +36,15 @@ function BlePanelRecorderSettings({
     onClickRecordButton(e);
   };
 
-  const buttonColor = ['ready', 'startup'].includes(recorderState)
-    ? 'primary'
-    : 'danger';
+  const buttonColor = ["ready", "startup"].includes(recorderState)
+    ? "primary"
+    : "danger";
 
-  const buttonLoading = ['startup', 'finalizing'].includes(recorderState);
+  const buttonLoading = ["startup", "finalizing"].includes(recorderState);
   const buttonText =
-    recorderState === 'ready' ? 'Start recording' : 'Stop recording';
+    recorderState === "ready" ? "Start recording" : "Stop recording";
   const buttonLoadingText =
-    recorderState === 'startup'
-      ? 'Starting recording'
-      : 'Stopping recording';
+    recorderState === "startup" ? "Starting recording" : "Stopping recording";
 
   const handleDatasetNameChanged = (e) => {
     onDatasetNameChanged(e);
@@ -55,20 +53,20 @@ function BlePanelRecorderSettings({
   return (
     <div
       className="m-2"
-      style={disabled ? { opacity: '0.4', pointerEvents: 'none' } : null}
+      style={disabled ? { opacity: "0.4", pointerEvents: "none" } : null}
     >
       <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
         <h4>3. Record dataset</h4>
       </div>
       <div className="body-wrapper p-3">
         <InputGroup>
-            <InputGroupText>{'Dataset name'}</InputGroupText>
+          <InputGroupText>{"Dataset name"}</InputGroupText>
           <Input
             id="bleDatasetName"
-            placeholder={'dataset name'}
+            placeholder={"dataset name"}
             onChange={handleDatasetNameChanged}
             value={datasetName}
-            disabled={recorderState !== 'ready'}
+            disabled={recorderState !== "ready"}
           />
         </InputGroup>
         {/* TODO reenable this when sample rate issues have been resolved
@@ -96,9 +94,9 @@ function BlePanelRecorderSettings({
         <hr />
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
           <SpinnerButton
@@ -107,7 +105,7 @@ function BlePanelRecorderSettings({
             style={
               buttonErrorAnimate
                 ? {
-                    animation: 'hzejgT 0.3s ease 0s 1 normal none running',
+                    animation: "hzejgT 0.3s ease 0s 1 normal none running",
                   }
                 : null
             }
@@ -126,8 +124,8 @@ function BlePanelRecorderSettings({
           <div
             style={
               sensorNotSelectedError
-                ? { color: 'red', fontSize: 'smaller' }
-                : { display: 'none' }
+                ? { color: "red", fontSize: "smaller" }
+                : { display: "none" }
             }
           >
             Sensors need to be selected
@@ -169,7 +167,7 @@ function BlePanelRecorderSettings({
 BlePanelRecorderSettings.propTypes = {
   recorderState: PropTypes.oneOfType([
     PropTypes.string,
-    PropTypes.oneOf(['ready', 'startup', 'recording', 'finalizing']),
+    PropTypes.oneOf(["ready", "startup", "recording", "finalizing"]),
   ]),
   disabled: PropTypes.bool,
   sampleRate: PropTypes.number,

@@ -1,12 +1,12 @@
-import React from 'react';
-import { Button, Spinner } from 'reactstrap';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Button, Spinner } from "reactstrap";
+import PropTypes from "prop-types";
 
 function SpinnerButton({
   children,
   loading = false,
-  loadingtext = 'Loading...',
-  spinnercolor = 'white',
+  loadingtext = "Loading...",
+  spinnercolor = "white",
   ...props
 }) {
   return (
@@ -16,9 +16,9 @@ function SpinnerButton({
           {loadingtext}
           <Spinner
             style={{
-              width: '1rem',
-              height: '1rem',
-              marginLeft: '4px',
+              width: "1rem",
+              height: "1rem",
+              marginLeft: "4px",
             }}
             color={spinnercolor}
           />

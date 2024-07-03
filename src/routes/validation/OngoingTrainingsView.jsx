@@ -1,6 +1,6 @@
-import React from 'react';
-import { Table } from 'reactstrap';
-import { TrainingStateCounter } from './TrainingStateCounter';
+import React from "react";
+import { Table } from "reactstrap";
+import { TrainingStateCounter } from "./TrainingStateCounter";
 
 export const OngoingTrainingsView = ({ trainings }) => (
   <div>

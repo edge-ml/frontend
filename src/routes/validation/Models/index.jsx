@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from "react";
 import {
   Modal,
   ModalBody,
@@ -14,31 +14,31 @@ import {
   FormGroup,
   Progress,
   Spinner,
-} from 'reactstrap';
+} from "reactstrap";
 import {
   getDeployDevices,
   deployModel,
   downloadFirmware,
-} from '../../../services/ApiServices/MlService';
+} from "../../../services/ApiServices/MlService";
 
 // import './index.css';
-import { HyperparameterView } from '../../../../components/Hyperparameters/HyperparameterView';
+import { HyperparameterView } from "../../../../components/Hyperparameters/HyperparameterView";
 import {
   EdgeMLTable,
   EdgeMLTableEntry,
   EdgeMLTableHeader,
-} from '../../../../components/Common/EdgeMLTable';
-import DFUManager from '../../../../components/BLE/DFUModal/DFU';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+} from "../../../../components/Common/EdgeMLTable";
+import DFUManager from "../../../../components/BLE/DFUModal/DFU";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 const DeployModal = ({ model, onClose }) => {
   const [devices, setDevices] = useState([]);
   const [parameters, setParameters] = useState([]);
   const [additionalSettings, setAdditionalSettings] = useState({
     ble: {
-      serviceUUID: '6E400001-B5A3-F393-E0A9-E50E24DCCA9E',
-      characteristicUUID: '3c6e98a5-f027-49aa-8b2e-c7b3f8a9c18c',
+      serviceUUID: "6E400001-B5A3-F393-E0A9-E50E24DCCA9E",
+      characteristicUUID: "3c6e98a5-f027-49aa-8b2e-c7b3f8a9c18c",
     },
   });
   const [useBLE, setUseBLE] = useState(false);
@@ -47,7 +47,7 @@ const DeployModal = ({ model, onClose }) => {
   const [selectedSensors, setSelectedSensors] = useState(undefined);
   const [compiledModel, setComiledModel] = useState(undefined);
   const [page, setPage] = useState(0);
-  const [flashState, setFlashState] = useState('start'); //start, connected, modelDownload, uploading, finished
+  const [flashState, setFlashState] = useState("start"); //start, connected, modelDownload, uploading, finished
   const [flashError, setFlashError] = useState(undefined);
   const [flashProgress, setFlashProgress] = useState(0);
   const [connectedDevice, setConnectedDevice] = useState(undefined);
@@ -60,9 +60,9 @@ const DeployModal = ({ model, onClose }) => {
         setFlashState,
         setFlashError,
         setFlashProgress,
-        setConnectedDevice,
+        setConnectedDevice
       ),
-    [],
+    []
   );
 
   useEffect(() => {
@@ -108,7 +108,7 @@ const DeployModal = ({ model, onClose }) => {
 
   const resetFlashState = () => {
     setConnectedDevice(undefined);
-    setFlashState('start');
+    setFlashState("start");
     setFlashProgress(0);
   };
 
@@ -119,7 +119,7 @@ const DeployModal = ({ model, onClose }) => {
       sensor_id: sensor_idx,
       component_id: component_idx,
     };
-    
+
     setSelectedSensors([...selectedSensors]);
     if (checkAllSensorsSelected()) {
       setShowSelectAllSensorWarning(false);
@@ -129,8 +129,8 @@ const DeployModal = ({ model, onClose }) => {
   const checkAllSensorsSelected = () => {
     return selectedSensors.every((sensor) => {
       return (
-        sensor['sensor_id'] !== undefined ||
-        sensor['component_id'] !== undefined
+        sensor["sensor_id"] !== undefined ||
+        sensor["component_id"] !== undefined
       );
     });
   };
@@ -148,23 +148,23 @@ const DeployModal = ({ model, onClose }) => {
   };
 
   const onDeploy = async () => {
-    setFlashState('modelDownload');
+    setFlashState("modelDownload");
 
     const a_settings = {};
-    a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
+    a_settings["ble"] = useBLE ? additionalSettings["ble"] : undefined;
 
     const res = await deployModel(
       model._id,
       selectedSensors,
       parameters,
       selectedDevice,
-      a_settings,
+      a_settings
     );
     /**const buffer = new ArrayBuffer(10000);
     const view = new Uint8Array(buffer);
 
     view.fill(0); // Fill the ArrayBuffer with zeroes */
-    
+
     setComiledModel(res);
   };
 
@@ -178,17 +178,17 @@ const DeployModal = ({ model, onClose }) => {
 
   const onDownloadFirmware = async () => {
     const a_settings = {};
-    a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
+    a_settings["ble"] = useBLE ? additionalSettings["ble"] : undefined;
 
     const res = await downloadFirmware(
       model._id,
       selectedSensors,
       parameters,
       selectedDevice,
-      a_settings,
+      a_settings
     );
-    
-    const downloadLink = document.createElement('a');
+
+    const downloadLink = document.createElement("a");
     const blob = new Blob([res]);
     const objectUrl = URL.createObjectURL(blob);
     downloadLink.href = objectUrl;
@@ -198,23 +198,20 @@ const DeployModal = ({ model, onClose }) => {
   };
 
   const handleHyperparameterChange = ({ parameter_name, state }) => {
-    
     const idx = parameters.findIndex(
-      (elm) => elm.parameter_name === parameter_name,
+      (elm) => elm.parameter_name === parameter_name
     );
     parameters[idx].value = state;
     setParameters([...parameters]);
   };
-  
+
   if (!model || !selectedDevice || !selectedSensors || !parameters) {
     return null;
   }
 
   const inProgress = () => {
-    return flashState === 'modelDownload' || flashState === 'uploading';
+    return flashState === "modelDownload" || flashState === "uploading";
   };
-
-  
 
   const renderDeployPart = () => {
     return (
@@ -222,11 +219,11 @@ const DeployModal = ({ model, onClose }) => {
         {selectedDevice.ota_update ? (
           <>
             <div>
-              {'Connected device: '}
+              {"Connected device: "}
               {connectedDevice ? (
                 <b>{connectedDevice.name}</b>
               ) : (
-                'No device connected'
+                "No device connected"
               )}
             </div>
             <div className="d-flex flex-row">
@@ -239,7 +236,7 @@ const DeployModal = ({ model, onClose }) => {
             </div>
           </>
         ) : (
-          'Device does not support OTA updates. Download the Arduino firmware instead.'
+          "Device does not support OTA updates. Download the Arduino firmware instead."
         )}
         <div>
           {selectedDevice.ota_update ? (
@@ -248,10 +245,10 @@ const DeployModal = ({ model, onClose }) => {
                 outline
                 disabled={inProgress()}
                 className="m-2"
-                color={connectedDevice ? 'danger' : 'primary'}
+                color={connectedDevice ? "danger" : "primary"}
                 onClick={connectedDevice ? disconnectBLE : connectBLE}
               >
-                {connectedDevice ? 'Disconnect device' : 'Connect device'}
+                {connectedDevice ? "Disconnect device" : "Connect device"}
               </Button>
               <Button
                 color="primary"
@@ -283,7 +280,7 @@ const DeployModal = ({ model, onClose }) => {
         {selectedDevice.ota_update ? (
           <div className="mt-3">
             <Progress
-              color={flashState === 'uploadFinished' ? 'primary' : 'success'}
+              color={flashState === "uploadFinished" ? "primary" : "success"}
               value={flashProgress}
             />
           </div>
@@ -294,18 +291,18 @@ const DeployModal = ({ model, onClose }) => {
 
   const renderProgressInfo = () => {
     switch (flashState) {
-      case 'start':
-        return 'Connect device for flashing';
-      case 'connected':
-        return 'Device is connected. Press Flash firmware to begin flashing process.';
-      case 'modelDownload':
-        return 'Compiling and downloading model...';
-      case 'uploading':
-        return 'Flashing model onto device...';
-      case 'finished':
-        return 'Firmware successfully flashed onto device';
+      case "start":
+        return "Connect device for flashing";
+      case "connected":
+        return "Device is connected. Press Flash firmware to begin flashing process.";
+      case "modelDownload":
+        return "Compiling and downloading model...";
+      case "uploading":
+        return "Flashing model onto device...";
+      case "finished":
+        return "Firmware successfully flashed onto device";
       default:
-        return 'error';
+        return "error";
     }
   };
 
@@ -333,7 +330,7 @@ const DeployModal = ({ model, onClose }) => {
               </Dropdown>
             </div>
             <div className="d-flex">
-              <div className="my-4 ms-2 me-4" style={{ width: '500px' }}>
+              <div className="my-4 ms-2 me-4" style={{ width: "500px" }}>
                 <div className="header-wrapper d-flex justify-content-center align-content-center">
                   <b>Configure TimeSeries</b>
                 </div>
@@ -343,27 +340,27 @@ const DeployModal = ({ model, onClose }) => {
                       className="datasetCard"
                       style={{
                         background:
-                          ts_idx % 2 === 1 ? 'rgb(249, 251, 252)' : '',
+                          ts_idx % 2 === 1 ? "rgb(249, 251, 252)" : "",
                       }}
                     >
                       <div className="d-flex align-items-center justify-content-between">
                         <strong className="ps-2">{elm}</strong>
                         <UncontrolledDropdown
                           direction="left"
-                          style={{ position: 'relative' }}
+                          style={{ position: "relative" }}
                         >
                           <DropdownToggle caret size="sm">
                             {selectedSensors[ts_idx].sensor_id !== undefined
                               ? selectedDevice.sensors[
                                   selectedSensors[ts_idx].sensor_id
                                 ].name +
-                                '_' +
+                                "_" +
                                 selectedDevice.sensors[
                                   selectedSensors[ts_idx].sensor_id
                                 ].components[
                                   selectedSensors[ts_idx].component_id
                                 ].name
-                              : 'Unset'}
+                              : "Unset"}
                           </DropdownToggle>
                           <DropdownMenu>
                             {selectedDevice.sensors.map((sensor, sensor_idx) =>
@@ -374,14 +371,14 @@ const DeployModal = ({ model, onClose }) => {
                                       selectSensor(
                                         ts_idx,
                                         sensor_idx,
-                                        component_idx,
+                                        component_idx
                                       )
                                     }
                                   >
-                                    {sensor.name + '_' + component.name}
+                                    {sensor.name + "_" + component.name}
                                   </DropdownItem>
-                                ),
-                              ),
+                                )
+                              )
                             )}
                           </DropdownMenu>
                         </UncontrolledDropdown>
@@ -390,7 +387,7 @@ const DeployModal = ({ model, onClose }) => {
                   ))}
                 </div>
               </div>
-              <EdgeMLTable className="m-2" style={{ width: '400px' }}>
+              <EdgeMLTable className="m-2" style={{ width: "400px" }}>
                 <EdgeMLTableHeader>
                   <div className="d-flex justify-content-center w-100">
                     <div>Use BLE</div>
@@ -409,10 +406,7 @@ const DeployModal = ({ model, onClose }) => {
                 </EdgeMLTableHeader>
                 <EdgeMLTableEntry>
                   <div className="d-flex p-2 align-items-center">
-                    <div
-                      className="fw-bold"
-                      style={{ width: '200px' }}
-                    >
+                    <div className="fw-bold" style={{ width: "200px" }}>
                       Service-UUID
                     </div>
                     <Input
@@ -423,10 +417,7 @@ const DeployModal = ({ model, onClose }) => {
                 </EdgeMLTableEntry>
                 <EdgeMLTableEntry>
                   <div className="d-flex p-2 algin-items-center">
-                    <div
-                      className="fw-bold"
-                      style={{ width: '200px' }}
-                    >
+                    <div className="fw-bold" style={{ width: "200px" }}>
                       Characteristic-UUID
                     </div>
                     <Input
@@ -458,8 +449,8 @@ const DeployModal = ({ model, onClose }) => {
             <div className="w-100 d-flex flex-row">
               <div className="text-danger flex-grow-1">
                 {showSelectAllSensorWarning
-                  ? 'Please configure all time series under configure time series before deploying.'
-                  : ''}
+                  ? "Please configure all time series under configure time series before deploying."
+                  : ""}
               </div>
               <div>
                 <Button outline color="primary" onClick={onSwitchPage}>

@@ -17,7 +17,11 @@ export const createDatasetLabel = async (datasetId, labelingId, label) => {
   return res;
 };
 
-export const changeDatasetLabel = async (datasetId, labelingId, changedLabel) => {
+export const changeDatasetLabel = async (
+  datasetId,
+  labelingId,
+  changedLabel
+) => {
   changedLabel.start = Math.ceil(changedLabel.start);
   changedLabel.end = Math.floor(changedLabel.end);
   const res = await apiRequest(
@@ -30,7 +34,7 @@ export const changeDatasetLabel = async (datasetId, labelingId, changedLabel) =>
   return res;
 };
 
-export const deleteDatasetLabel = async(datasetId, labelingId, labelId) => {
+export const deleteDatasetLabel = async (datasetId, labelingId, labelId) => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.DELETE,
     apiConsts.DATASET_STORE,

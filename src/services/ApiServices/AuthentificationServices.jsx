@@ -78,8 +78,7 @@ export const changeUserMail = async (newUserMail) => {
     apiConsts.HTTP_METHODS.PUT,
     apiConsts.AUTH_URI,
     apiConsts.AUTH_ENDPOINTS.CHANGE_MAIL,
-    { email
-    : newUserMail }
+    { email: newUserMail }
   );
   return res;
 };
@@ -102,7 +101,7 @@ export const changeUserPassword = async (currentPassword, newPassword) => {
     { password: currentPassword, newPassword: newPassword }
   );
   return res;
-}
+};
 
 export const getUserIds = async (userNames) => {
   const res = await apiRequest(
@@ -112,7 +111,7 @@ export const getUserIds = async (userNames) => {
     userNames
   );
   return res;
-}
+};
 
 export const getUserNameSuggestions = async (userName) => {
   const res = await apiRequest(
@@ -122,4 +121,4 @@ export const getUserNameSuggestions = async (userName) => {
     { userName: userName }
   );
   return res;
-}
+};

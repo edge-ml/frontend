@@ -1,7 +1,7 @@
 export const codeArduino = (
   backendUrl,
   deviceApiKey,
-  datasetName,
+  datasetName
 ) => `#include <EdgeML.h>
   
 // WiFi credentials
@@ -60,7 +60,7 @@ export const codeNode = (
   deviceApiKey,
   datasetName,
   useServerTime,
-  nodeTime,
+  nodeTime
 ) => `const datasetCollector = require("edge-ml").datasetCollector;
 
 // Generate collector function
@@ -96,7 +96,7 @@ export const codeJs = (
   deviceApiKey,
   datasetName,
   useServerTime,
-  nodeTime,
+  nodeTime
 ) =>
   `<script src="https://unpkg.com/edge-ml"></script>
   
@@ -136,7 +136,7 @@ export const codeJava = (
   deviceApiKey,
   datasetName,
   useServerTime,
-  javaTime,
+  javaTime
 ) => `Recorder recorder = new Recorder("${backendUrl}", "${deviceApiKey}");
 try {
   IncrementalRecorder incRecorder = recorder.getIncrementalDataset("${datasetName}", ${useServerTime}); // true to use deviceTime

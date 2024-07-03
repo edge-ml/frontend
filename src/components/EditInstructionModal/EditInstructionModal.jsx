@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Modal,
   ModalHeader,
@@ -13,9 +13,9 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-} from 'reactstrap';
+} from "reactstrap";
 
-import './EditInstructionModal.css';
+import "./EditInstructionModal.css";
 
 class EditInstructionModal extends Component {
   constructor(props) {
@@ -54,7 +54,7 @@ class EditInstructionModal extends Component {
   onDeleteInstruction = (instructionToDelete) => {
     let experiment = Object.assign({}, this.state.experiment);
     experiment.instructions = experiment.instructions.filter(
-      (instruction) => instruction !== instructionToDelete,
+      (instruction) => instruction !== instructionToDelete
     );
 
     this.setState({ experiment });
@@ -122,7 +122,7 @@ class EditInstructionModal extends Component {
   render() {
     let labelings = this.state.labelings.map((labeling) => {
       let labels = this.state.labelTypes.filter((label) =>
-        labeling.labels.includes(label['_id']),
+        labeling.labels.includes(label["_id"])
       );
       return Object.assign({}, labeling, { labels });
     });
@@ -130,9 +130,9 @@ class EditInstructionModal extends Component {
     return (
       <Modal isOpen={this.state.isOpen}>
         <ModalHeader>
-          {this.state.experiment && this.state.experiment['_id']
-            ? this.state.experiment['_id']
-            : 'New Experiment'}
+          {this.state.experiment && this.state.experiment["_id"]
+            ? this.state.experiment["_id"]
+            : "New Experiment"}
         </ModalHeader>
         <ModalBody>
           <InputGroup>
@@ -143,7 +143,7 @@ class EditInstructionModal extends Component {
               value={
                 this.state.experiment && this.state.experiment.name
                   ? this.state.experiment.name
-                  : ''
+                  : ""
               }
               onChange={(e) => this.onExperimentNameChanged(e.target.value)}
             />
@@ -152,14 +152,14 @@ class EditInstructionModal extends Component {
           {this.state.experiment && this.state.experiment.instructions
             ? this.state.experiment.instructions.map(
                 (instruction, index, array) => (
-                  <InputGroup key={'instruction' + index}>
+                  <InputGroup key={"instruction" + index}>
                     <InputGroupText className="me-2">
                       <div className="arrow-container">
                         <div
                           className={
                             index === 0 || array.length === 1
-                              ? 'arrow arrow-disabled'
-                              : 'arrow'
+                              ? "arrow arrow-disabled"
+                              : "arrow"
                           }
                           onClick={() => this.onLabelUp(index)}
                         >
@@ -168,8 +168,8 @@ class EditInstructionModal extends Component {
                         <div
                           className={
                             index === array.length - 1 || array.length === 1
-                              ? 'arrow arrow-disabled'
-                              : 'arrow'
+                              ? "arrow arrow-disabled"
+                              : "arrow"
                           }
                           onClick={() => this.onLabelDown(index)}
                         >
@@ -183,25 +183,25 @@ class EditInstructionModal extends Component {
                         {instruction.labelingId
                           ? labelings.filter(
                               (labeling) =>
-                                labeling['_id'] === instruction.labelingId,
+                                labeling["_id"] === instruction.labelingId
                             )[0].name
                           : instruction.labelType
                             ? labelings.filter((labeling) =>
                                 labeling.labels.some(
                                   (label) =>
-                                    label['_id'] === instruction.labelType,
-                                ),
+                                    label["_id"] === instruction.labelType
+                                )
                               )[0].name
-                            : 'Choose a labeling'}
+                            : "Choose a labeling"}
                       </DropdownToggle>
                       <DropdownMenu>
                         {labelings.map((labeling) => (
                           <DropdownItem
-                            key={labeling['_id']}
+                            key={labeling["_id"]}
                             onClick={(e) =>
                               this.onSelectedLabelingChanged(
                                 index,
-                                labeling['_id'],
+                                labeling["_id"]
                               )
                             }
                           >
@@ -215,9 +215,9 @@ class EditInstructionModal extends Component {
                       <DropdownToggle caret>
                         {instruction.labelType
                           ? this.state.labelTypes.filter(
-                              (type) => type['_id'] === instruction.labelType,
+                              (type) => type["_id"] === instruction.labelType
                             )[0].name
-                          : 'Choose a label'}
+                          : "Choose a label"}
                       </DropdownToggle>
                       <DropdownMenu>
                         {instruction.labelType ? (
@@ -225,16 +225,16 @@ class EditInstructionModal extends Component {
                             .filter((labeling) =>
                               labeling.labels.some(
                                 (label) =>
-                                  label['_id'] === instruction.labelType,
-                              ),
+                                  label["_id"] === instruction.labelType
+                              )
                             )[0]
                             .labels.map((type) => (
                               <DropdownItem
-                                key={type['_id']}
+                                key={type["_id"]}
                                 onClick={(e) =>
                                   this.onSelectedLabelChanged(
                                     index,
-                                    type['_id'],
+                                    type["_id"]
                                   )
                                 }
                               >
@@ -245,15 +245,15 @@ class EditInstructionModal extends Component {
                           labelings
                             .filter(
                               (labeling) =>
-                                labeling['_id'] === instruction.labelingId,
+                                labeling["_id"] === instruction.labelingId
                             )[0]
                             .labels.map((type) => (
                               <DropdownItem
-                                key={type['_id']}
+                                key={type["_id"]}
                                 onClick={(e) =>
                                   this.onSelectedLabelChanged(
                                     index,
-                                    type['_id'],
+                                    type["_id"]
                                   )
                                 }
                               >
@@ -294,7 +294,7 @@ class EditInstructionModal extends Component {
                       </Button>
                     </InputGroupText>
                   </InputGroup>
-                ),
+                )
               )
             : null}
           <Button
@@ -315,8 +315,8 @@ class EditInstructionModal extends Component {
                 className="m-0"
                 outline
                 onClick={(e) => {
-                  if (window.confirm('Delete this experiment?')) {
-                    this.state.onDeleteExperiment(this.state.experiment['_id']);
+                  if (window.confirm("Delete this experiment?")) {
+                    this.state.onDeleteExperiment(this.state.experiment["_id"]);
                   }
                 }}
               >
@@ -335,7 +335,7 @@ class EditInstructionModal extends Component {
             }}
           >
             Save
-          </Button>{' '}
+          </Button>{" "}
           <Button
             color="secondary"
             className="m-1"

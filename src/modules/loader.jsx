@@ -1,8 +1,8 @@
-import React from 'react';
-import { Spinner } from 'reactstrap';
-import EdgeMLBrandLogo from '../components/EdgeMLBrandLogo/EdgeMLBrandLogo';
+import React from "react";
+import { Spinner } from "reactstrap";
+import EdgeMLBrandLogo from "../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
 
-import './loader.css';
+import "./loader.css";
 
 const Loader = (props) => {
   if (props.loading) {

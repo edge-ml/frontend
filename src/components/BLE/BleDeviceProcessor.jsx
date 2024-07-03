@@ -4,15 +4,15 @@ import {
   parseData,
   getBaseDataset,
   parseTimeSeriesData,
-} from '../../services/bleService';
+} from "../../services/bleService";
 
 import {
   createDataset,
   appendToDataset,
   getDatasets,
-} from '../../services/ApiServices/DatasetServices';
+} from "../../services/ApiServices/DatasetServices";
 
-import { createDatasetLabel } from '../../services/ApiServices/DatasetLabelService';
+import { createDatasetLabel } from "../../services/ApiServices/DatasetLabelService";
 
 class BleDeviceProcessor {
   constructor(
@@ -21,7 +21,7 @@ class BleDeviceProcessor {
     sensors,
     sensorConfigCharacteristic,
     sensorDataCharacteristic,
-    uploadBLE,
+    uploadBLE
   ) {
     this.device = device;
     this.deviceInfo = deviceInfo;
@@ -65,7 +65,7 @@ class BleDeviceProcessor {
         await this.configureSingleSensor(
           bleKey,
           this.sensors[bleKey].sampleRate,
-          latency,
+          latency
         );
         this.recordedData = [];
         this.recordingSensors = sensorsToRecord;
@@ -77,9 +77,12 @@ class BleDeviceProcessor {
 
   async startRecording(selectedSensors, latency, datasetName) {
     var oldDatasets = (await getDatasets()).map((elm) => elm._id);
-    const baseDataset = getBaseDataset([...selectedSensors].map((elm) => this.sensors[elm]), datasetName);
-    this.newDataset = await createDataset(baseDataset)
-    console.log(this.newDataset)
+    const baseDataset = getBaseDataset(
+      [...selectedSensors].map((elm) => this.sensors[elm]),
+      datasetName
+    );
+    this.newDataset = await createDataset(baseDataset);
+    console.log(this.newDataset);
     // this.newDataset = (
     //   await createDataset(
     //     getBaseDataset(
@@ -119,11 +122,11 @@ class BleDeviceProcessor {
     };
     this.sensorDataCharacteristic.startNotifications();
     this.sensorDataCharacteristic.addEventListener(
-      'characteristicvaluechanged',
+      "characteristicvaluechanged",
       (event) => {
         let currentValue = recordData(event.target.value);
         this.uploadBLE.setCurrentData(currentValue);
-      },
+      }
     );
   }
 
@@ -132,7 +135,7 @@ class BleDeviceProcessor {
       this.newDataset,
       this.recordedData,
       this.recordingSensors,
-      this.sensors,
+      this.sensors
     );
     this.addToUploadCounter(recordedData);
     await appendToDataset(this.newDataset, recordedData);
@@ -156,14 +159,13 @@ class BleDeviceProcessor {
       this.newDataset,
       this.recordedData,
       this.recordingSensors,
-      this.sensors,
+      this.sensors
     );
     this.addToUploadCounter(recordedData);
     await appendToDataset(this.newDataset, recordedData);
 
     // Upload labels
     for (const label of this.labels) {
-      
       await createDatasetLabel(this.newDataset._id, label.labelingId, label);
     }
 

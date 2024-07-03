@@ -1,23 +1,22 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from "react";
 import {
   getDeviceApiKey,
   switchDeviceApiActive,
   setDeviceApiKey as generateApiKeys_API,
-  deleteDeviceApiKey
-} from '../services/ApiServices/DeviceApiService';
-import useProjectStore from '../stores/projectStore';
-import { getProjects } from '../services/ApiServices/ProjectService';
+  deleteDeviceApiKey,
+} from "../services/ApiServices/DeviceApiService";
+import useProjectStore from "../stores/projectStore";
+import { getProjects } from "../services/ApiServices/ProjectService";
 
 const useDeviceApi = () => {
   const { currentProject, setCurrentProject, setProjects } = useProjectStore();
-
 
   const [readKey, setReadKey] = useState(undefined);
   const [writeKey, setWriteKey] = useState(undefined);
 
   const updateKeys = async () => {
     const keys = await getDeviceApiKey();
-    
+
     setReadKey(keys.readApiKey);
     setWriteKey(keys.writeApiKey);
   };
@@ -50,7 +49,7 @@ const useDeviceApi = () => {
     await deleteDeviceApiKey();
     setReadKey(undefined);
     setWriteKey(undefined);
-  }
+  };
 
   return {
     toggleDevieApi: toggleDevieApi,

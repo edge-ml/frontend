@@ -25,12 +25,13 @@ const EditLabelingModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      setLabeling(currentLabeling ? { ...currentLabeling } : { name: "", labels: [] });
+      setLabeling(
+        currentLabeling ? { ...currentLabeling } : { name: "", labels: [] }
+      );
     } else {
       setLabeling({ name: "", labels: [] });
     }
   }, [isOpen, currentLabeling]);
-
 
   const onAddLabel = () => {
     const newLabeling = { ...labeling };

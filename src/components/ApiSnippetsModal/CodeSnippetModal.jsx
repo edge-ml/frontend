@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   Modal,
   ModalHeader,
@@ -13,15 +13,15 @@ import {
   Label,
   Row,
   Col,
-} from 'reactstrap';
-import CodeSnippet from './CodeSnippet';
-import CodeSettings from './CodeSettings';
+} from "reactstrap";
+import CodeSnippet from "./CodeSnippet";
+import CodeSettings from "./CodeSettings";
 
 class CodeSnippetModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      platform: 'Java',
+      platform: "Java",
       datasetName: undefined,
       servertime: false,
     };
@@ -33,7 +33,7 @@ class CodeSnippetModal extends Component {
 
   onCancel() {
     this.setState({
-      platform: 'Java',
+      platform: "Java",
       datasetName: undefined,
       servertime: false,
     });
@@ -41,7 +41,7 @@ class CodeSnippetModal extends Component {
   }
 
   onServerTimeChange(e) {
-    const val = e.target.value === 'Yes' ? true : false;
+    const val = e.target.value === "Yes" ? true : false;
     this.setState({
       servertime: val,
     });
@@ -66,11 +66,11 @@ class CodeSnippetModal extends Component {
         <ModalBody>
           <InputGroup>
             <InputGroupText>
-              <InputGroupText>{'Dataset-name'}</InputGroupText>
+              <InputGroupText>{"Dataset-name"}</InputGroupText>
             </InputGroupText>
             <Input
               id="inputProjectName"
-              placeholder={'Dataset-name'}
+              placeholder={"Dataset-name"}
               value={this.state.datasetName}
               onChange={this.onDatasetNameChanged}
             />
