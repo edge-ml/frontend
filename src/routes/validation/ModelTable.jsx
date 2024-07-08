@@ -11,7 +11,7 @@ import {
 } from "../../components/Common/EdgeMLTable";
 import ModelTableEntry from "./ModelTableEntry";
 
-const ModelTable = ({ models, stepOptions, onDeleteModels }) => {
+const ModelTable = ({ models, stepOptions, onDeleteModels, updateModel }) => {
   const [selectedModels, setSelectedModels] = useState([]);
 
   const onSelectAll = () => {
@@ -62,6 +62,7 @@ const ModelTable = ({ models, stepOptions, onDeleteModels }) => {
               clickCheckBox={clickCheckBox}
               onDeleteModels={onDeleteModels}
               stepOptions={stepOptions}
+              updateModel={updateModel}
             ></ModelTableEntry>
           </EdgeMLTableEntry>
         );

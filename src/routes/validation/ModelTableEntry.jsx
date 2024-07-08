@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import Checkbox from "../../components/Common/Checkbox";
 import { Row, Col, UncontrolledTooltip } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faPen } from "@fortawesome/free-solid-svg-icons";
 import DownloadModal from "./DownloadModal";
 import { SelectedModelModalView } from "../../components/SelectedModelModalView/SelectedModelModalView";
 import DeleteModal from "../../components/Common/DeleteModal";
 import ButtonList from "./ButtonList";
 import DeployModal from "./DeployModal";
+import EditModal from "../../components/EditModal";
 
-const ModelCheckBoxInfo = ({ selectedModels, model, clickCheckBox }) => (
+const ModelCheckBoxInfo = ({ selectedModels, model, clickCheckBox, onClickEditName }) => (
   <Col>
     <div className="d-flex align-items-center h-100">
       <Checkbox
@@ -17,7 +18,10 @@ const ModelCheckBoxInfo = ({ selectedModels, model, clickCheckBox }) => (
         onClick={() => clickCheckBox(model._id)}
       ></Checkbox>
       <div className="ms-2">
-        <b className="font-size-lg h5 fw-bold">{model.name}</b>
+        <div>
+          <b className="font-size-lg h5 fw-bold me-1">{model.name}</b>
+          <FontAwesomeIcon className="cursor-pointer" icon={faPen} onClick={onClickEditName}></FontAwesomeIcon>
+        </div>
         <div>{model.pipeline.selectedPipeline.name}</div>
       </div>
     </div>
@@ -33,14 +37,19 @@ const TrainErrorSection = ({
   onDeleteModels,
   stepOptions,
   setDeployModalOpen,
+  onClickEditName
 }) => (
   <Row className="p-2">
     <ModelCheckBoxInfo
       selectedModels={selectedModels}
       model={model}
       clickCheckBox={clickCheckBox}
+      onClickEditName={onClickEditName}
     ></ModelCheckBoxInfo>
-    <Col className="ms-5 flex-grow-1 d-flex justify-content-start align-items-center" style={{color: "red"}}>
+    <Col
+      className="ms-5 flex-grow-1 d-flex justify-content-start align-items-center"
+      style={{ color: "red" }}
+    >
       {model.error ? (
         <>
           An error occurred while training!
@@ -87,9 +96,11 @@ const ModelTableEntry = ({
   stepOptions,
   clickCheckBox,
   onDeleteModels,
+  updateModel
 }) => {
   const [modalModel, setModalModel] = useState(null);
   const [modelDownload, setModelDownload] = useState(null);
+  const [datasetNameEditOpen, setDatasetNameEditOpen] = useState(false);
   const [deployModalOpen, setDeployModalOpen] = useState(null);
   const metric = (metric) => Math.round(metric * 100 * 100) / 100;
 
@@ -110,6 +121,7 @@ const ModelTableEntry = ({
           setModelDownload={setModelDownload}
           onDeleteModels={onDeleteModels}
           stepOptions={stepOptions}
+          onClickEditName={() => setDatasetNameEditOpen(true)}
         ></TrainErrorSection>
       </>
     );
@@ -121,6 +133,7 @@ const ModelTableEntry = ({
         selectedModels={selectedModels}
         model={model}
         clickCheckBox={clickCheckBox}
+        onClickEditName={() => setDatasetNameEditOpen(true)}
       ></ModelCheckBoxInfo>
       <Col className="d-flex flex-column justify-content-center">
         <div>
@@ -157,6 +170,17 @@ const ModelTableEntry = ({
         model={model}
         onClose={() => setDeployModalOpen(null)}
       ></DeployModal>
+      <EditModal
+        isOpen={datasetNameEditOpen}
+        headerText="Edit Name"
+        value={""}
+        placeholder="Enter new model name"
+        onSave={(text) => {
+          updateModel({ ...model, name: text });
+          setDatasetNameEditOpen(false);
+        }}
+        onCancel={() => setDatasetNameEditOpen(false)}
+      ></EditModal>
     </Row>
   );
 };

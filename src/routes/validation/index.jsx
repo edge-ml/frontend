@@ -9,7 +9,7 @@ import DeleteModal from "../../components/Common/DeleteModal";
 import TrainingWizard from "../../components/TrainingWizard";
 
 const ModelPage = () => {
-  const { models, stepOptions, deleteModels } = useModels();
+  const { models, stepOptions, deleteModels, updateModel } = useModels();
   const [modelsToDelete, setModelsToDelete] = useState([]);
   const [trainWizardOpen, setTrainWizardOpen] = useState(false);
 
@@ -20,6 +20,8 @@ const ModelPage = () => {
   const onDeleteModels = (models) => {
     setModelsToDelete(models);
   };
+
+  console.log(models)
 
   return (
     <Page
@@ -45,6 +47,7 @@ const ModelPage = () => {
           models={models}
           stepOptions={stepOptions}
           onDeleteModels={onDeleteModels}
+          updateModel={updateModel}
         ></ModelTable>
       )}
       <DeleteModal

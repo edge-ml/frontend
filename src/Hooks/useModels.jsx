@@ -3,6 +3,7 @@ import {
   getModels,
   getStepOptions,
   deleteModel as deleteModel_API,
+  updateModel as updateModel_API,
 } from "../services/ApiServices/MlService";
 
 const useModels = () => {
@@ -12,7 +13,10 @@ const useModels = () => {
   const refreshModels = async () => {
     const newModels = await getModels();
     setModels((currentModels) => {
-      if (!currentModels || JSON.stringify(currentModels) !== JSON.stringify(newModels)) {
+      if (
+        !currentModels ||
+        JSON.stringify(currentModels) !== JSON.stringify(newModels)
+      ) {
         console.log("Refreshing models");
         return newModels;
       } else {
@@ -47,10 +51,16 @@ const useModels = () => {
     refreshModels(); // Refresh after deletion
   };
 
+  const updateModel = async (model) => {
+    await updateModel_API(model);
+    refreshModels();
+  };
+
   return {
     models: models,
     stepOptions: stepOptions,
     deleteModels: deleteModels,
+    updateModel: updateModel,
   };
 };
 

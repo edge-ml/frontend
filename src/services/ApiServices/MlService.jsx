@@ -29,6 +29,16 @@ export const getModel = async (modelId) => {
   return res;
 };
 
+export const updateModel = async (model) => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.PUT,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.MODELS + `/${model._id}`,
+    model
+  );
+  return res;
+};
+
 export const deleteModel = async (modelId) => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.DELETE,
@@ -36,9 +46,7 @@ export const deleteModel = async (modelId) => {
     apiConsts.ML_ENDPOINTS.MODELS + `/${modelId}`
   );
   return res;
-
-}
-
+};
 
 export const getTrainConfig = async () => {
   const res = await apiRequest(
