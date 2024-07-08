@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import {
-  Modal,
-  ModalFooter,
-  ModalBody,
-  ModalHeader,
   Button,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import {
+  Modal,
+  ModalFooter,
+  ModalBody,
+  ModalHeader,
+} from "../../components/Common/Modal";
 import CodeView from "../../components/ApiSnippetsModal/CodeView";
 import {
   downloadDeploymentModel,
@@ -104,10 +106,11 @@ int main() {
           </Button>
         </div>
         <div className="pt-2"></div>
+        <hr></hr>
         <CodeSnippet language={language} code={getCode()}></CodeSnippet>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={onClose}>Close</Button>
+        <Button outline onClick={onClose}>Close</Button>
       </ModalFooter>
     </Modal>
   );
