@@ -1,28 +1,31 @@
 import React from "react";
+import JS from "./JS.svg";
+import CPP from "./CPP.svg";
+import C from "./C.svg";
 
 const svgComponents = {
-  JS: React.lazy(() => import("./JS.svg")),
-  CPP: React.lazy(() => import("./CPP.svg")),
+  JS: JS,
+  CPP: CPP,
+  C: C,
 };
 
 const PlatformList = ({ platforms, size, color }) => {
   const platformsSet = new Set(platforms);
-
+  console.log(platformsSet);
   if (platformsSet.size === 0) {
     return <div className="d-inline">No Platforms</div>;
   }
 
   return (
-    <div className="child-gap">
+    <div className="child-gap d-inline">
       {Array.from(platformsSet).map((platform) => {
-        const SvgComponent = svgComponents[platform];
+        const logo = svgComponents[platform];
         return (
-          SvgComponent && (
-            <React.Suspense fallback={<div>Loading...</div>} key={platform}>
-              <SvgComponent
-                style={{ height: size, width: size, fill: color }}
-              />
-            </React.Suspense>
+          logo && (
+            <img
+              src={logo}
+              style={{ height: size, width: size, fill: color }}
+            ></img>
           )
         );
       })}

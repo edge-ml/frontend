@@ -9,6 +9,8 @@ import {
   Button,
 } from "reactstrap";
 
+import "./index.css";
+
 export const Modal = (props) => {
   const onKeyDown = (e) => {
     if (e.key === "Escape") {

@@ -36,7 +36,7 @@ const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
           <div>{pipeline.description}</div>
         </div>
         <div className="d-flex align-items-center">
-          <PlatformList size="2x" platforms={platforms}></PlatformList>
+          <PlatformList size="3rem" platforms={platforms}></PlatformList>
         </div>
       </div>
     </div>

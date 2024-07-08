@@ -30,15 +30,15 @@ export const getModel = async (modelId) => {
 };
 
 export const deleteModel = async (modelId) => {
-  const res = await axios(
-    apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.DELETE,
-      apiConsts.ML_URI,
-      apiConsts.ML_ENDPOINTS.MODELS + `/${modelId}`
-    )
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.DELETE,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.MODELS + `/${modelId}`
   );
-  return res.data;
-};
+  return res;
+
+}
+
 
 export const getTrainConfig = async () => {
   const res = await apiRequest(

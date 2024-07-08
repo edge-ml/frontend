@@ -3,9 +3,9 @@ import { ModalHeader, Modal } from "reactstrap";
 
 import SelectLabeling from "./SelectLabeling";
 
-const TrainWizzard = () => {
+const TrainWizzard = ({isOpen}) => {
   return (
-    <Modal isOpen="true" size="xl">
+    <Modal isOpen={isOpen} size="xl">
       <ModalHeader>Train</ModalHeader>
       <SelectLabeling></SelectLabeling>
     </Modal>

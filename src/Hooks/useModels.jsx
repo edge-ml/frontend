@@ -10,13 +10,20 @@ const useModels = () => {
   const [stepOptions, setStepOptions] = useState(undefined);
 
   const refreshModels = async () => {
-    const models = await getModels();
-    setModels(models);
+    const newModels = await getModels();
+    setModels((currentModels) => {
+      if (!currentModels || JSON.stringify(currentModels) !== JSON.stringify(newModels)) {
+        console.log("Refreshing models");
+        return newModels;
+      } else {
+        return currentModels;
+      }
+    });
   };
 
   const refreshStepOptions = async () => {
-    const stepOptions = await getStepOptions();
-    setStepOptions(stepOptions);
+    const stepOpts = await getStepOptions();
+    setStepOptions(stepOpts);
   };
 
   useEffect(() => {
@@ -34,13 +41,16 @@ const useModels = () => {
     };
   }, []);
 
-  const deleteModel = (model_id) => {
-    deleteModel_API(model_id);
+  const deleteModels = async (modelsToDelete) => {
+    const promises = modelsToDelete.map((model) => deleteModel_API(model._id));
+    await Promise.all(promises);
+    refreshModels(); // Refresh after deletion
   };
 
   return {
     models: models,
     stepOptions: stepOptions,
+    deleteModels: deleteModels,
   };
 };
 

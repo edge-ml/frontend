@@ -123,9 +123,6 @@ const Wizard_SelectDataset = ({
                 ></Checkbox>
                 <div className="ms-2 align-self-center">Select all</div>
               </div>
-              <h4>
-                <b>Datasets</b>
-              </h4>
             </EdgeMLTableHeader>
             {datasets
               .filter((elm) => !checkUsable(elm))
@@ -136,7 +133,7 @@ const Wizard_SelectDataset = ({
                       disabled: checkUsable(dataset),
                     })}
                   >
-                    <div className="d-flex">
+                    <div className="d-flex me-2">
                       <Checkbox
                         isSelected={dataset.selected}
                         onClick={() => toggleSelectDataset(dataset._id)}

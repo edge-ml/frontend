@@ -81,7 +81,7 @@ export const WizardFooter = ({
   );
 };
 
-const TrainingWizard = ({ modalOpen, onClose }) => {
+const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   // Data obtained from the server
 
   const [pipelines, setPipelines] = useState(undefined);
@@ -256,7 +256,7 @@ const TrainingWizard = ({ modalOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={true} size="xl">
+    <Modal isOpen={isOpen} size="xl">
       <ModalHeader>
         <div>
           {"Train a model" +

@@ -76,7 +76,7 @@ const Pipelinestep = ({
                 </DropdownMenu>
               </Dropdown>
             </div>
-          </div>
+          </div>f
           <div className="my-2">
             <b>Description: </b>
             {selectedPipelineStep.description}
@@ -86,7 +86,7 @@ const Pipelinestep = ({
               <b>Platforms: </b>
               <PlatformList
                 platforms={selectedPipelineStep.platforms}
-                size="1x"
+                size="2rem"
                 color="black"
               ></PlatformList>
             </div>

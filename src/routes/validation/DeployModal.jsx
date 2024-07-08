@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import DeployFeatures from "./Models/DeployFeatures";
 
-const DeployModal = ({ model, onClose }) => {
+const DeployModal = ({isOpen, model, onClose }) => {
   const [devices, setDevices] = useState([]);
   const [parameters, setParameters] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState(undefined);
@@ -309,7 +309,7 @@ const DeployModal = ({ model, onClose }) => {
   };
 
   return (
-    <Modal isOpen={model} size="xl">
+    <Modal isOpen={isOpen} size="xl">
       <ModalHeader>Generate firmware: {model.name}</ModalHeader>
       <ModalBody>
         {page === 0 ? (

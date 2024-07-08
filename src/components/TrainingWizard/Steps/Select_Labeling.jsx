@@ -67,6 +67,7 @@ const Wizard_SelectLabeling = ({
               })}
             >
               <Checkbox
+                className="me-2"
                 onClick={() => setLabeling({ ...labeling, disabledLabels: [] })}
                 isSelected={
                   selectedLabeling

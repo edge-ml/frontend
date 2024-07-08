@@ -5,13 +5,21 @@ import Page from "../../components/Common/Page";
 import { Button } from "reactstrap";
 import ModelTable from "./ModelTable";
 import { Empty } from "../export/components/Empty";
+import DeleteModal from "../../components/Common/DeleteModal";
+import TrainingWizard from "../../components/TrainingWizard";
 
 const ModelPage = () => {
-  const { models } = useModels();
+  const { models, stepOptions, deleteModels } = useModels();
+  const [modelsToDelete, setModelsToDelete] = useState([]);
+  const [trainWizardOpen, setTrainWizardOpen] = useState(false);
 
   if (!models) {
     return <Loader loading></Loader>;
   }
+
+  const onDeleteModels = (models) => {
+    setModelsToDelete(models);
+  };
 
   return (
     <Page
@@ -23,7 +31,7 @@ const ModelPage = () => {
               outline
               color="primary"
               className="btn-neutral"
-              onClick={() => setModalOpen(true)}
+              onClick={() => setTrainWizardOpen(true)}
             >
               Train a model
             </Button>
@@ -32,7 +40,31 @@ const ModelPage = () => {
       }
     >
       {models.length === 0 && <Empty>No models trained yet</Empty>}
-      {models.length > 0 && <ModelTable models={models}></ModelTable>}
+      {models.length > 0 && (
+        <ModelTable
+          models={models}
+          stepOptions={stepOptions}
+          onDeleteModels={onDeleteModels}
+        ></ModelTable>
+      )}
+      <DeleteModal
+        isOpen={!!modelsToDelete.length}
+        onCancel={() => setModelsToDelete([])}
+        onDelete={() => {
+          deleteModels(modelsToDelete);
+          setModelsToDelete([]);
+        }}
+      >
+        {modelsToDelete.map((model) => (
+          <div key={model._id}>
+            <b>{model.name}</b>
+          </div>
+        ))}
+      </DeleteModal>
+      <TrainingWizard
+        isOpen={trainWizardOpen}
+        onClose={() => setTrainWizardOpen(false)}
+      ></TrainingWizard>
     </Page>
   );
 };

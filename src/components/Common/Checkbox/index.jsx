@@ -14,7 +14,7 @@ const Checkbox = (props) => {
   return (
     <label
       style={{ width: size, height: size, fontSize: size }}
-      className="checkBoxContainer"
+      className={"checkBoxContainer " + props.className}
     >
       <input
         onClick={(e) => onClick(e)}
