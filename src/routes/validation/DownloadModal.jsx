@@ -77,7 +77,7 @@ int main() {
   };
 
   return (
-    <Modal isOpen={model} size="xl">
+    <Modal isOpen={model} size="xl" onClose={onClose}>
       <ModalHeader>Download: {model.name}</ModalHeader>
       <ModalBody>
         <div className="d-flex align-items-center justify-content-between">

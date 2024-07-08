@@ -32,7 +32,7 @@ const TrainErrorSection = ({
   setModelDownload,
   onDeleteModels,
   stepOptions,
-  setDeployModalOpen
+  setDeployModalOpen,
 }) => (
   <Row className="p-2">
     <ModelCheckBoxInfo
@@ -40,20 +40,15 @@ const TrainErrorSection = ({
       model={model}
       clickCheckBox={clickCheckBox}
     ></ModelCheckBoxInfo>
-    <Col>
+    <Col className="ms-5 flex-grow-1 d-flex justify-content-start align-items-center" style={{color: "red"}}>
       {model.error ? (
         <>
-          <div
-            className="ms-5 flex-grow-1 d-flex justify-content-center align-items-center"
-            style={{ color: "red" }}
-          >
-            An error occurred while training!
-            <FontAwesomeIcon
-              id={"tooltip" + model._id}
-              className="m-2"
-              icon={faCircleInfo}
-            ></FontAwesomeIcon>
-          </div>
+          An error occurred while training!
+          <FontAwesomeIcon
+            id={"tooltip" + model._id}
+            className="m-2"
+            icon={faCircleInfo}
+          ></FontAwesomeIcon>
           <UncontrolledTooltip target={"tooltip" + model._id}>
             {model.error}
           </UncontrolledTooltip>
@@ -161,8 +156,7 @@ const ModelTableEntry = ({
         isOpen={deployModalOpen}
         model={model}
         onClose={() => setDeployModalOpen(null)}
-      >
-      </DeployModal>
+      ></DeployModal>
     </Row>
   );
 };
