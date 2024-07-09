@@ -103,6 +103,9 @@ export function humanFileSize(bytes, si = false, dp = 1) {
 }
 
 export const downloadBlob = (blob, filename) => {
+  if (!(blob instanceof Blob)) {
+    throw new TypeError("Expected argument to be a Blob.");
+  }
   const href = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = href;

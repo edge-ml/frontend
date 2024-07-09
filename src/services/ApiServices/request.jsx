@@ -11,7 +11,8 @@ const apiRequest = async (
   endpoint = API_ENDPOINTS.DEFAULT,
   body = {},
   params = {},
-  contentType = "application/json"
+  contentType = "application/json",
+  responseType = "json"
 ) => {
   // Get the current project from the store
   const { currentProject } = useProjectStore.getState();
@@ -26,6 +27,7 @@ const apiRequest = async (
       ...(currentProject && { project: currentProject._id }), // Add project ID to headers if it exists
       Authorization: localStorageService.getAccessToken(),
     },
+    responseType: responseType,
   };
 
   const res = await axios(requestConfig);

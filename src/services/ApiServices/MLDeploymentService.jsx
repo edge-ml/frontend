@@ -14,6 +14,7 @@ export const downloadDeploymentModel = async (
     apiConsts.ML_ENDPOINTS.DEPLOY + "/" + modelId + "/download/" + format,
     null,
     { compile_wasm: compileWasm, wasm_single_file: wasmSingleFile },
+    "blob",
     "blob"
   );
   return res;
