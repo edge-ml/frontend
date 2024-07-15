@@ -96,11 +96,6 @@ const LabelingPanel = ({}) => {
     };
   });
 
-  const onDelete = async () => {
-    await onDeleteSelectedLabel();
-    setDeleteModalOpen(false);
-  };
-
   return (
     <div>
       <div className="labelingPanelBorder"></div>
@@ -145,9 +140,11 @@ const LabelingPanel = ({}) => {
       <DeleteModal
         isOpen={deleteModalOpen}
         onCancel={() => setDeleteModalOpen(false)}
-        onDelete={onDelete}
-      >
-        The selected label
+        onDelete={() => {
+          onDeleteSelectedLabel();
+          setDeleteModalOpen(false);
+        }}
+      >        The selected label
       </DeleteModal>
     </div>
   );
