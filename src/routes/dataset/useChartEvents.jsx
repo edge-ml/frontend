@@ -6,7 +6,6 @@ const useChartEvents = (chart, labeling) => {
   let mouseMoved = false;
   let currentPlotLine = undefined;
 
-  const [activePlotLineId, setActivePlotLineId] = useState(null);
   const {
     selectedLabel,
     setSelectedLabel,
@@ -142,76 +141,6 @@ const useChartEvents = (chart, labeling) => {
       from: plotLine.options.isLeftPlotline ? draggedPosition : fixedPosition,
       to: plotLine.options.isLeftPlotline ? fixedPosition : draggedPosition,
     });
-
-    // const chartBox = chart.current.container.current.getBoundingClientRect();
-    // var posX = e.clientX - chartBox.left;
-    // var posY = e.clientY;
-    // const chartBBox = chart.current.container.current.getBoundingClientRect();
-    // // console.log(posY, chartBox.top, chartBox.bottom)
-
-    // // if (posY > chartBox.top || posY < chartBox.bottom) {
-    // //   return;
-    // // }
-
-    // console.log(plotLine)
-    // // chart.current.chart.xAxis[0].removePlotBand(plotLine.id);
-    // const box_offset = -plotLine.svgElem.getBBox().x;
-    // var mousePos = e.clientX - chartBBox.left;
-    // let offset = mousePos - box_offset - 1;
-    // // console.log(offset)
-    // plotLine.svgElem.translate(mousePos, 0);
-
-    // let fixedPosition = activePlotLine.options.isLeftPlotline
-    //   ? activePlotbandOptions.to
-    //   : activePlotbandOptions.from;
-    // let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-    //   Math.max(leftBound, Math.min(mousePos, rightBound))
-    // );
-
-    // const activePlotLine = getActivePlotLine();
-    // console.log(activePlotLine)
-    // if (!activePlotLine) return;
-    // e.preventDefault();
-    // const chartBBox =
-    //     this.chart.current.container.current.getBoundingClientRect();
-    // const [leftBound, rightBound] = this.calcBounds(e);
-    // const box_offset = -activePlotLine.svgElem.getBBox().x;
-    // var mousePos = e.clientX - chartBBox.left;
-    // mousePos = mousePos > 10 ? mousePos : 10;
-    // mousePos = e.clientX > chartBBox.right ? chartBBox.right : mousePos;
-    // // Current mouse position, takes neighbours into account
-    // const dragPosition = Math.min(
-    //     Math.max(mousePos, leftBound + 1),
-    //     rightBound - 1
-    // );
-    // let offset = dragPosition + box_offset - 1;
-    // const activePlotband = this.getActivePlotBand();
-    // const activePlotbandOptions = activePlotband.options;
-    // activePlotLine.svgElem.translate(offset, 0);
-    // const start_plot = chartBBox.left;
-    // let fixedPosition = activePlotLine.options.isLeftPlotline
-    //     ? activePlotbandOptions.to
-    //     : activePlotbandOptions.from;
-    // let draggedPosition = this.chart.current.chart.xAxis[0].toValue(
-    //     Math.max(leftBound, Math.min(mousePos, rightBound))
-    // );
-    // draggedPosition = Math.max(0, draggedPosition);
-    // this.chart.current.chart.xAxis[0].removePlotBand(activePlotbandOptions.id);
-    // this.chart.current.chart.xAxis[0].addPlotBand({
-    //     from: activePlotLine.options.isLeftPlotline
-    //         ? draggedPosition
-    //         : fixedPosition,
-    //     to: activePlotLine.options.isLeftPlotline
-    //         ? fixedPosition
-    //         : draggedPosition,
-    //     color: activePlotbandOptions.color,
-    //     className: activePlotbandOptions.className,
-    //     id: activePlotbandOptions.id,
-    //     labelId: activePlotbandOptions.labelId,
-    //     label: activePlotbandOptions.label,
-    //     zIndex: activePlotbandOptions.zIndex,
-    //     isSelected: activePlotbandOptions.isSelected,
-    // });
   };
 
   const onMouseUp = (e, chart) => {
@@ -228,8 +157,6 @@ const useChartEvents = (chart, labeling) => {
 
     const start = plotBand.options.from;
     const end = plotBand.options.to;
-    console.log(plotBand);
-    console.log(start, end);
     updateLabelStartEnd(currentPlotLine.labelId, start, end);
 
     currentPlotLine = undefined;

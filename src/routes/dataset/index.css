@@ -8,5 +8,5 @@
 
 .plotline {
   /* opacity: 0.7; */
-  cursor: pointer;
+  cursor: col-resize;
 }
