@@ -56,9 +56,7 @@ class MailSettings extends Component {
       <div>
         <h4 className="fw-bold">Change Mail</h4>
         <InputGroup>
-          <InputGroupText>
-            <InputGroupText>E-Mail</InputGroupText>
-          </InputGroupText>
+          <InputGroupText>E-Mail</InputGroupText>
           <Input
             id="inputNewMail"
             placeholder="New e-mail"
@@ -66,27 +64,25 @@ class MailSettings extends Component {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupText>
-            <InputGroupText>E-Mail</InputGroupText>
-          </InputGroupText>
+          <InputGroupText>E-Mail</InputGroupText>
           <Input
             id="inputNewMailConfirm"
             placeholder="Retype new e-mail"
             onChange={this.onConfirmationEmailChange}
           />
         </InputGroup>
-        <Button
-          id="buttonSaveNewMail"
-          disabled={
-            !this.state.newEmail ||
-            this.state.newEmail !== this.state.confirmationEmail
-          }
-          color="primary"
-          className="m-1 me-auto"
-          onClick={this.onEmailChangeSubmit}
-        >
-          Save new e-mail
-        </Button>
+          <Button
+            outline
+            id="buttonSaveNewMail"
+            disabled={
+              !this.state.newEmail ||
+              this.state.newEmail !== this.state.confirmationEmail
+            }
+            color="primary"
+            onClick={this.onEmailChangeSubmit}
+          >
+            Save new e-mail
+          </Button>
         {this.state.emailError ? (
           <div
             id="emailError"

@@ -1,14 +1,14 @@
 import React from "react";
-import { Modal, ModalHeader, ModalFooter, ModalBody, Button } from "reactstrap";
+import { Modal, ModalHeader, ModalFooter, ModalBody } from "../Common/Modal";
 import MailSettings from "./MailSettings";
 import PasswordSettings from "./PasswordSettings";
 import UserNameSettings from "./UserNameSettings";
 import DeleteUser from "./DeleteUser";
 import UserSettingsProvider from "./UserSettingsProvider";
 
-const UserSettingsModal = (props) => {
+const UserSettingsModal = ({isOpen, onClose}) => {
   return (
-    <Modal size="lg" isOpen={props.isOpen} className="modal-dialog-scrollable">
+    <Modal size="lg" isOpen={isOpen} onClose={onClose} className="modal-dialog-scrollable">
       <ModalHeader style={{ borderBottom: "None" }}>User Settings</ModalHeader>
       <ModalBody style={{ maxHeight: "calc(100vh)", overflowY: "auto" }}>
         <MailSettings id="mailSettings" />
@@ -17,19 +17,11 @@ const UserSettingsModal = (props) => {
         <hr />
         <UserNameSettings id="userNameSettings" />
         <hr />
-        <UserSettingsProvider onLogout={props.onLogout}>
-          <DeleteUser userMail={props.userMail} />
+        <UserSettingsProvider>
+          <DeleteUser />
         </UserSettingsProvider>
       </ModalBody>
       <ModalFooter>
-        <Button
-          id="buttonCloseSettings"
-          color="secondary"
-          className="m-1"
-          onClick={props.onClose}
-        >
-          Close
-        </Button>
       </ModalFooter>
     </Modal>
   );

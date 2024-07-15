@@ -53,9 +53,7 @@ class UserNameSettings extends Component {
       <div>
         <h4 className="fw-bold">Change UserName</h4>
         <InputGroup>
-          <InputGroupText>
             <InputGroupText>Username</InputGroupText>
-          </InputGroupText>
           <Input
             id="inputUserName"
             placeholder="New username"
@@ -63,9 +61,7 @@ class UserNameSettings extends Component {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupText>
             <InputGroupText>Username</InputGroupText>
-          </InputGroupText>
           <Input
             id="inputUserNameConfirm"
             placeholder="Retype new username"
@@ -73,6 +69,7 @@ class UserNameSettings extends Component {
           />
         </InputGroup>
         <Button
+          outline
           disabled={
             !this.state.userName ||
             this.state.userName !== this.state.userNameConfirm

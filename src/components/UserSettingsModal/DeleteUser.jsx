@@ -50,9 +50,7 @@ class DeleteUser extends Component {
           <div>All projects where you are admin will be deleted</div>
         </div>
         <InputGroup>
-          <InputGroupText>
-            <InputGroupText>E-Mail</InputGroupText>
-          </InputGroupText>
+          <InputGroupText>E-Mail</InputGroupText>
           <Input
             type="text"
             id="E-Mail"
@@ -61,6 +59,7 @@ class DeleteUser extends Component {
           />
         </InputGroup>
         <Button
+          outline
           id="buttonDeleteUser"
           color="danger"
           className="m-1 me-auto"

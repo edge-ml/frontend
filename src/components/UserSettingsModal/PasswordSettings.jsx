@@ -68,9 +68,7 @@ class PasswordSettings extends Component {
       <div>
         <h4 className="fw-bold">Change password</h4>
         <InputGroup>
-          <InputGroupText>
-            <InputGroupText>Password</InputGroupText>
-          </InputGroupText>
+          <InputGroupText>Password</InputGroupText>
           <Input
             id="inputNewPassword"
             type="password"
@@ -79,9 +77,7 @@ class PasswordSettings extends Component {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupText>
-            <InputGroupText>Password</InputGroupText>
-          </InputGroupText>
+          <InputGroupText>Password</InputGroupText>
           <Input
             id="inputNewPasswordConfirm"
             type="password"
@@ -90,9 +86,7 @@ class PasswordSettings extends Component {
           />
         </InputGroup>
         <InputGroup>
-          <InputGroupText>
-            <InputGroupText>Password</InputGroupText>
-          </InputGroupText>
+          <InputGroupText>Password</InputGroupText>
           <Input
             id="inputCurrentPassword"
             type="password"
@@ -100,21 +94,22 @@ class PasswordSettings extends Component {
             onChange={this.onCurrentPasswordChanged}
           />
         </InputGroup>
-        <Button
-          id="buttonSaveNewPassword"
-          color="primary"
-          className="m-1 me-auto"
-          disabled={
-            !(
-              this.state.currentPassword &&
-              this.state.newConfirmationPassword &&
-              this.state.newPassword
-            )
-          }
-          onClick={this.onPasswordChangeSubmit}
-        >
-          Save new password
-        </Button>
+          <Button
+            outline
+            id="buttonSaveNewPassword"
+            color="primary"
+            className="m-1 me-auto"
+            disabled={
+              !(
+                this.state.currentPassword &&
+                this.state.newConfirmationPassword &&
+                this.state.newPassword
+              )
+            }
+            onClick={this.onPasswordChangeSubmit}
+          >
+            Save new password
+          </Button>
         {this.state.passwordError ? (
           <div
             id="passwordError"
