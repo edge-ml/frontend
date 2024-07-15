@@ -99,10 +99,9 @@ const useChartEvents = (chart, labeling) => {
   const onMouseMoved = (e, chart) => {
     if (mouseDown) {
       mouseMoved = true;
-    }
-    // const chartBox = chart.current.container.current.getBoundingClientRect();
-    // var mousePos = e.clientX - chartBBox.left;
 
+      setProvisionalLabel(undefined);
+    }
     // console.log(e)
     if (!currentPlotLine) return;
 
@@ -236,10 +235,26 @@ const useChartEvents = (chart, labeling) => {
     currentPlotLine = undefined;
   };
 
+  const getSelectedPlotBand = (chart) => {
+    if (!chart.current || !chart.current.chart) return;
+
+    var plotBands = chart.current.chart.xAxis[0].plotLinesAndBands;
+    var plotBand = plotBands.filter(
+      (item) =>
+        !item.options.isPlotline && item.options.labelId === selectedLabel._id
+    )[0];
+    return plotBand;
+  };
+
   const onMouseDown = (e) => {
     mouseDown = true;
     if (mouseMoved) return;
     let position = e.value;
+
+    var plotBand = getSelectedPlotBand(chart.current.chart);
+    if (plotBand) {
+      return;
+    }
 
     // Check if a label has been clicked
     if (labeling && labeling.labels) {
