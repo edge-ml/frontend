@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Input, InputGroup, InputGroupText } from "reactstrap";
 import SpinnerButton from "../Common/SpinnerButton";
-import PropTypes from "prop-types";
 import classNames from "classnames";
 import Checkbox from "../Common/Checkbox";
 import "./BleActivated.css";
@@ -14,7 +13,6 @@ function BlePanelRecorderSettings({
   onClickRecordButton,
   onDatasetNameChanged,
   datasetName,
-  onGlobalSampleRateChanged,
   onToggleStream,
   onToggleSampleRate,
   fullSampleRate,
@@ -163,22 +161,5 @@ function BlePanelRecorderSettings({
     </div>
   );
 }
-
-BlePanelRecorderSettings.propTypes = {
-  recorderState: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.oneOf(["ready", "startup", "recording", "finalizing"]),
-  ]),
-  disabled: PropTypes.bool,
-  sampleRate: PropTypes.number,
-  sensorsSelected: PropTypes.bool,
-  onClickRecordButton: PropTypes.func.isRequired,
-  onDatasetNameChanged: PropTypes.func.isRequired,
-  datasetName: PropTypes.string.isRequired,
-  onGlobalSampleRateChanged: PropTypes.func,
-  onToggleStream: PropTypes.func,
-  onToggleSampleRate: PropTypes.func,
-  fullSampleRate: PropTypes.bool,
-};
 
 export default BlePanelRecorderSettings;

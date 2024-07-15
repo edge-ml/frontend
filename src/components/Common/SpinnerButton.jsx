@@ -1,6 +1,5 @@
 import React from "react";
 import { Button, Spinner } from "reactstrap";
-import PropTypes from "prop-types";
 
 function SpinnerButton({
   children,
@@ -29,12 +28,5 @@ function SpinnerButton({
     </Button>
   );
 }
-
-SpinnerButton.propTypes = {
-  children: PropTypes.element.isRequired,
-  loading: PropTypes.bool,
-  loadingtext: PropTypes.string,
-  spinnercolor: PropTypes.string,
-};
 
 export default SpinnerButton;
