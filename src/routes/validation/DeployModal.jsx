@@ -325,7 +325,7 @@ const DeployModal = ({isOpen, model, onClose }) => {
                 </DropdownToggle>
                 <DropdownMenu>
                   {devices.map((device, idx) => (
-                    <DropdownItem onClick={() => onClickSelectDevice(device)}>
+                    <DropdownItem key={"devicekey" + idx} onClick={() => onClickSelectDevice(device)}>
                       {device.name}
                     </DropdownItem>
                   ))}
@@ -342,6 +342,7 @@ const DeployModal = ({isOpen, model, onClose }) => {
                 <div className="body-wrapper-overflow">
                   {model.timeSeries.map((elm, ts_idx) => (
                     <div
+                      key={"tskey" + ts_idx}
                       className="datasetCard p-2"
                       style={{
                         background:
