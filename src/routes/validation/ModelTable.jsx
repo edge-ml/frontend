@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Table } from "../../components/Common/Table";
 import Checkbox from "../../components/Common/Checkbox";
-import { Button, Row, Col } from "reactstrap";
+import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import DeleteModal from "../../components/Common/DeleteModal";
 import {
   EdgeMLTable,
   EdgeMLTableEntry,
@@ -11,15 +11,16 @@ import {
 } from "../../components/Common/EdgeMLTable";
 import ModelTableEntry from "./ModelTableEntry";
 
-const ModelTable = ({ models, stepOptions, onDeleteModels, updateModel }) => {
+const ModelTable = ({ models, stepOptions, updateModel, deleteModels }) => {
   const [selectedModels, setSelectedModels] = useState([]);
+  const [modelsToDelete, setModelsToDelete] = useState([]);
 
   const onSelectAll = () => {
     const allSelected = models.length === selectedModels.length;
     if (allSelected) {
       setSelectedModels([]);
     } else {
-      setSelectedModels(models.map((model) => model._id));
+      setSelectedModels(models);
     }
   };
 
@@ -31,26 +32,39 @@ const ModelTable = ({ models, stepOptions, onDeleteModels, updateModel }) => {
     }
   };
 
+  const onDeleteModels = (models) => {
+    setModelsToDelete(models);
+  }
+
   return (
     <EdgeMLTable>
       <EdgeMLTableHeader>
-        <div className="ml-0 me-0 ml-md-2 me-md-3 ">
+        <div className="ml-0 me-0 ml-md-2 me-md-3 d-flex align-items-center">
           <Checkbox
             isSelected={models.length == selectedModels.length}
             onClick={onSelectAll}
           ></Checkbox>
+          <Button
+            className="btn-delete ms-2"
+            id="deleteDatasetsButton"
+            size="sm"
+            outline
+            color="danger"
+            onClick={() => {
+              onDeleteModels(
+                selectedModels.map((elm) =>
+                  models.find((model) => model._id === elm._id)
+                )
+              );
+            }}
+          >
+            <FontAwesomeIcon
+              className="me-2"
+              icon={faTrashAlt}
+            ></FontAwesomeIcon>
+            Delete
+          </Button>
         </div>
-        <Button
-          className="btn-delete"
-          id="deleteDatasetsButton"
-          size="sm"
-          outline
-          color="danger"
-          // onClick={onOpenDeleteModal}
-        >
-          <FontAwesomeIcon className="me-2" icon={faTrashAlt}></FontAwesomeIcon>
-          Delete
-        </Button>
       </EdgeMLTableHeader>
       {models.map((model, index) => {
         return (
@@ -67,6 +81,20 @@ const ModelTable = ({ models, stepOptions, onDeleteModels, updateModel }) => {
           </EdgeMLTableEntry>
         );
       })}
+      <DeleteModal
+        isOpen={!!modelsToDelete.length}
+        onCancel={() => setModelsToDelete([])}
+        onDelete={() => {
+          deleteModels(modelsToDelete);
+          setModelsToDelete([]);
+        }}
+      >
+        {modelsToDelete.map((model) => (
+          <div key={model._id}>
+            <b>{model.name}</b>
+          </div>
+        ))}
+      </DeleteModal>
     </EdgeMLTable>
   );
 };

@@ -10,18 +10,11 @@ import TrainingWizard from "../../components/TrainingWizard";
 
 const ModelPage = () => {
   const { models, stepOptions, deleteModels, updateModel } = useModels();
-  const [modelsToDelete, setModelsToDelete] = useState([]);
   const [trainWizardOpen, setTrainWizardOpen] = useState(false);
 
   if (!models) {
     return <Loader loading></Loader>;
   }
-
-  const onDeleteModels = (models) => {
-    setModelsToDelete(models);
-  };
-
-  console.log(models)
 
   return (
     <Page
@@ -46,24 +39,10 @@ const ModelPage = () => {
         <ModelTable
           models={models}
           stepOptions={stepOptions}
-          onDeleteModels={onDeleteModels}
           updateModel={updateModel}
+          deleteModels={deleteModels}
         ></ModelTable>
       )}
-      <DeleteModal
-        isOpen={!!modelsToDelete.length}
-        onCancel={() => setModelsToDelete([])}
-        onDelete={() => {
-          deleteModels(modelsToDelete);
-          setModelsToDelete([]);
-        }}
-      >
-        {modelsToDelete.map((model) => (
-          <div key={model._id}>
-            <b>{model.name}</b>
-          </div>
-        ))}
-      </DeleteModal>
       <TrainingWizard
         isOpen={trainWizardOpen}
         onClose={() => setTrainWizardOpen(false)}

@@ -14,8 +14,8 @@ const ModelCheckBoxInfo = ({ selectedModels, model, clickCheckBox, onClickEditNa
   <Col>
     <div className="d-flex align-items-center h-100">
       <Checkbox
-        isSelected={selectedModels.includes(model._id)}
-        onClick={() => clickCheckBox(model._id)}
+        isSelected={selectedModels.map(model => model._id).includes(model._id)}
+        onClick={() => clickCheckBox(model)}
       ></Checkbox>
       <div className="ms-2">
         <div>
