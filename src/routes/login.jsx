@@ -11,6 +11,7 @@ import {
   Form,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import {
   faUser,
   faShield,
@@ -21,7 +22,7 @@ import useAuth from "../Hooks/useAuth";
 import useUserStore from "../Hooks/useUser";
 
 const LoginPage = ({ children }) => {
-  const { login } = useAuth();
+  const { login, loginOAuth } = useAuth();
   const user = useUserStore((state) => state.user);
   const [email, setEmail] = useState(undefined);
   const [password, setPassword] = useState(undefined);
@@ -47,6 +48,15 @@ const LoginPage = ({ children }) => {
     }
   };
 
+  const onOAuth = async (provider) => {
+    try {
+      const res = await loginOAuth(provider);
+    } catch {
+      setError(true);
+    }
+  };
+
+  console.log(user)
   if (user) {
     return children;
   }
@@ -92,13 +102,27 @@ const LoginPage = ({ children }) => {
               </InputGroup>
               <Button
                 id="login-button"
+                outline
                 onClick={submit}
                 // disabled={this.state.buttonDisabled}
                 color="primary"
                 block
-                className="btn-success"
               >
                 Login
+              </Button>
+              <hr></hr>
+              <Button
+                color="primary"
+                outline
+                className="p-1 my-2 w-100 d-flex justify-content-center align-items-center"
+                onClick={() => onOAuth("github")}
+              >
+                <FontAwesomeIcon
+                  className="m-1 me-2"
+                  size="2x"
+                  icon={faGithub}
+                ></FontAwesomeIcon>
+                <div>Login with Github</div>
               </Button>
             </Form>
             {error ? (
@@ -115,13 +139,7 @@ const LoginPage = ({ children }) => {
             />
             Have no account?
             <a href="/register">
-              <Button
-                color="secondary"
-                style={{
-                  marginTop: 10,
-                }}
-                block
-              >
+              <Button className="mt-2" outline color="secondary" block>
                 Register
               </Button>
             </a>

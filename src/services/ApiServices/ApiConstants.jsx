@@ -53,6 +53,8 @@ export const AUTH_ENDPOINTS = {
   ID: "id",
   CHANGE_USERNAME: "changeUserName",
   USERNAME: "userName",
+  OAUTH: "login/oauth",
+  USER: "user",
 };
 
 export const API_ENDPOINTS = {

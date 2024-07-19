@@ -28,6 +28,7 @@ const apiRequest = async (
       Authorization: localStorageService.getAccessToken(),
     },
     responseType: responseType,
+    withCredentials: true,
   };
 
   const res = await axios(requestConfig);
