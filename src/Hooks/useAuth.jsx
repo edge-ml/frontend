@@ -28,7 +28,7 @@ const useAuth = () => {
 
   const login = async (email, password) => {
     const success = await loginUser(email, password);
-    const user = getUser_api();
+    const user = await getUser_api();
     setUser(user);
 
   };
