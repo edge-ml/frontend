@@ -17,9 +17,11 @@ import {
   faShield,
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
-import EdgeMLBrandLogo from "../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
-import useAuth from "../Hooks/useAuth";
-import useUserStore from "../Hooks/useUser";
+import EdgeMLBrandLogo from "../../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
+import useAuth from "../../Hooks/useAuth";
+import useUserStore from "../../Hooks/useUser";
+
+import "./index.css"
 
 const LoginPage = ({ children }) => {
   const { login, loginOAuth } = useAuth();
@@ -73,6 +75,7 @@ const LoginPage = ({ children }) => {
           </CardHeader>
           <CardBody>
             <Form>
+              <div>Login with credentials</div>
               <InputGroup>
                 <InputGroupText style={{ background: "#ced4da" }}>
                   <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
@@ -108,13 +111,13 @@ const LoginPage = ({ children }) => {
                 color="primary"
                 block
               >
-                Login
+                <b>Login</b>
               </Button>
               <hr></hr>
+              <div>Login with a provider</div>
               <Button
-                color="primary"
-                outline
-                className="p-1 my-2 w-100 d-flex justify-content-center align-items-center"
+
+                className="p-1 my-2 w-100 d-flex justify-content-center align-items-center btnGithub"
                 onClick={() => onOAuth("github")}
               >
                 <FontAwesomeIcon
@@ -122,7 +125,7 @@ const LoginPage = ({ children }) => {
                   size="2x"
                   icon={faGithub}
                 ></FontAwesomeIcon>
-                <div>Login with Github</div>
+                <div>Login with <b>Github</b></div>
               </Button>
             </Form>
             {error ? (
@@ -131,16 +134,11 @@ const LoginPage = ({ children }) => {
                 Wrong credentials!
               </div>
             ) : null}
-            <hr
-              style={{
-                marginTop: 25,
-                marginBottom: 25,
-              }}
-            />
-            Have no account?
+            <hr />
+            <div>Have no account?</div>
             <a href="/register">
               <Button className="mt-2" outline color="secondary" block>
-                Register
+                <b>Register</b>
               </Button>
             </a>
           </CardBody>
