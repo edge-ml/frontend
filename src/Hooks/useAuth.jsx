@@ -8,7 +8,8 @@ import {
 import {
   loginUser,
   loginOAuth as loingOAuth_api,
-  getUser as getUser_api
+  getUser as getUser_api,
+  logout as logout_api
 } from "../services/ApiServices/AuthentificationServices";
 import useUserStore from "./useUser";
 import { getCookie } from "../utils";
@@ -21,15 +22,15 @@ const useAuth = () => {
   }, []);
 
   const logout = () => {
-    clearToken();
+    logout_api();
     setUser(undefined);
   };
 
   const login = async (email, password) => {
-    const userData = await loginUser(email, password);
-    const decoded = jwtDecode(userData.access_token);
-    setToken(userData.access_token, userData.refresh_token);
-    setUser({ mail: decoded.email, name: decoded.userName, _id: decoded.id });
+    const success = await loginUser(email, password);
+    const user = getUser_api();
+    setUser(user);
+
   };
 
   const loginOAuth = async (provider) => {
@@ -39,9 +40,9 @@ const useAuth = () => {
 
   const checkLoginStatus = async () => {
     const user = await getUser_api();
-    console.log(user)
     setUser(user);
   }
+
 
   // const checkLoginStatus = () => {
   //   const accessToken = getAccessToken() || getCookie("jwt");

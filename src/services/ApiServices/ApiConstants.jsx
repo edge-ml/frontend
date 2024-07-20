@@ -55,6 +55,7 @@ export const AUTH_ENDPOINTS = {
   USERNAME: "userName",
   OAUTH: "login/oauth",
   USER: "user",
+  LOGOUT: "logout"
 };
 
 export const API_ENDPOINTS = {

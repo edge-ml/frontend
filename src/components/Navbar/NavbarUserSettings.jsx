@@ -24,6 +24,7 @@ const NavbarUserSettings = () => {
     setUserSettingsModalOpen(!userSettingsModalOpen);
   };
 
+  console.log(user)
   return (
     <>
       <div
@@ -78,7 +79,7 @@ const NavbarUserSettings = () => {
             className="mt-2"
           />
         </div>
-        {user.name}
+        {user.userName}
       </div>
       <UserSettingsModal
         isOpen={userSettingsModalOpen}

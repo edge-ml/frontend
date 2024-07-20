@@ -18,6 +18,16 @@ export const loginUser = async (userMail, password) => {
   return res;
 };
 
+
+export const logout = async () => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.AUTH_URI,
+    apiConsts.AUTH_ENDPOINTS.LOGOUT
+  )
+  return res;
+}
+
 export const getUser = async () => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.GET,
