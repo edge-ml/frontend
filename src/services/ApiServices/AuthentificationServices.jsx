@@ -18,6 +18,17 @@ export const loginUser = async (userMail, password) => {
   return res;
 };
 
+export const getUserNames = async (userIds) => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.POST,
+    apiConsts.AUTH_URI,
+    apiConsts.AUTH_ENDPOINTS.USERNAME,
+    userIds
+  );
+  return res;
+};
+
+
 
 export const logout = async () => {
   const res = await apiRequest(

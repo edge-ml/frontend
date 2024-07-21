@@ -10,6 +10,7 @@ const useProjectRouter = () => {
     // Ensure the context and required properties are available
     if (currentProject && currentProject.admin && currentProject.name) {
       const { admin, name } = currentProject;
+      console.log(admin, name);
       const route = `/${admin.userName}/${name}/${path}`;
       navigate(route);
     } else {
