@@ -1,6 +1,4 @@
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
   Modal as Modal_ReactStrap,
   ModalHeader as ModalHeader_Reactstrap,
@@ -12,7 +10,10 @@ import {
 import "./index.css";
 
 export const Modal = (props) => {
-  const onKeyDown = (e) => {
+  const modalRef = useRef();
+
+  const handleKeyDown = useCallback((e) => {
+    if (!props.isOpen) return;
     if (e.key === "Escape") {
       e.preventDefault();
       e.stopPropagation();
@@ -22,17 +23,36 @@ export const Modal = (props) => {
       e.stopPropagation();
       props.onConfirm();
     }
-  };
+  });
 
   useEffect(() => {
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
+  });
+
+  // const onKeyDown = (e) => {
+  //   if (e.key === "Escape") {
+  //     e.preventDefault();
+  //     e.stopPropagation();
+  //     props.onClose();
+  //   } else if (e.key === "Enter" && props.onConfirm) {
+  //     e.preventDefault();
+  //     e.stopPropagation();
+  //     props.onConfirm();
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   document.addEventListener("keydown", onKeyDown);
+  //   return () => {
+  //     document.removeEventListener("keydown", onKeyDown);
+  //   };
+  // }, []);
 
   return (
-    <Modal_ReactStrap {...props}>
+    <Modal_ReactStrap {...props} ref={modalRef}>
       {React.Children.map(props.children, (child) => {
         return React.cloneElement(child, {
           onClose: props.onClose,

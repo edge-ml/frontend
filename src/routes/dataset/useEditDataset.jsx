@@ -148,7 +148,9 @@ const useEditDataset = (datasetUtils, labelings) => {
             (elm) => elm._id === updatedLabel.type
           ).name,
         };
-        await addLabel(activeLabeling._id, labelToAdd);
+        const newlabel = await addLabel(activeLabeling._id, labelToAdd);
+        console.log(newlabel);
+        _setSelectedLabel(newlabel);
       }
       _setProvisionalLabel(undefined);
       return;
