@@ -32,6 +32,7 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
       project: currentProject._id,
       Authorization: localStorageService.getAccessToken(),
     },
+    withCredentials: true,
   };
 
   const req = axios(axiosInput);

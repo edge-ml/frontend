@@ -42,6 +42,7 @@ const EditLabelingModal = ({
   const onLabelChange = (index, label) => {
     const newLabeling = { ...labeling };
     newLabeling.labels[index] = label;
+    console.log(newLabeling);
     setLabeling(newLabeling);
   };
 
@@ -120,7 +121,7 @@ const EditLabelingModal = ({
             <h6 className="fw-bold mt-2">Labels</h6>
             {labeling.labels.map((label, index) => (
               <EditLabelingModalEntry
-                key={index}
+                key={"label_" + index}
                 invalid={isDuplicateLabelName(index) && label.name !== ""}
                 label={label}
                 onChangeLabel={(label) => onLabelChange(index, label)}

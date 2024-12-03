@@ -10,7 +10,6 @@ import {
 import "./index.css";
 
 export const Modal = (props) => {
-  const modalRef = useRef();
 
   const handleKeyDown = useCallback((e) => {
     if (!props.isOpen) return;
@@ -32,27 +31,9 @@ export const Modal = (props) => {
     };
   });
 
-  // const onKeyDown = (e) => {
-  //   if (e.key === "Escape") {
-  //     e.preventDefault();
-  //     e.stopPropagation();
-  //     props.onClose();
-  //   } else if (e.key === "Enter" && props.onConfirm) {
-  //     e.preventDefault();
-  //     e.stopPropagation();
-  //     props.onConfirm();
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   document.addEventListener("keydown", onKeyDown);
-  //   return () => {
-  //     document.removeEventListener("keydown", onKeyDown);
-  //   };
-  // }, []);
 
   return (
-    <Modal_ReactStrap {...props} ref={modalRef}>
+    <Modal_ReactStrap {...props}>
       {React.Children.map(props.children, (child) => {
         return React.cloneElement(child, {
           onClose: props.onClose,

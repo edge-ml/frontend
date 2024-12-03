@@ -13,6 +13,7 @@ import {
   isValidColor,
 } from "../../services/ColorService";
 import ColorPicker from "../ColorPicker";
+import { SketchPicker } from "react-color";
 
 const EditLabelingModalEntry = ({
   label,
@@ -28,6 +29,7 @@ const EditLabelingModalEntry = ({
   };
 
   const onChangeName = (e) => {
+    console.log(e);
     onChangeLabel({ ...label, name: e.target.value });
   };
 

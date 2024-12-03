@@ -7,18 +7,6 @@ import "./index.css";
 const ColorPicker = (props) => {
   const [color, setColor] = useState({ hex: props.color });
 
-  const handleKeyDown = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  });
-
   const onChangeComplete = (color, event) => {
     setColor(color);
   };

@@ -24,7 +24,6 @@ const NavbarUserSettings = () => {
     setUserSettingsModalOpen(!userSettingsModalOpen);
   };
 
-  console.log(user)
   return (
     <>
       <div
