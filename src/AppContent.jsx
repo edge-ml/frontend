@@ -33,7 +33,7 @@ const AppContent = () => {
   }, []);
 
   if (!currentProject) {
-    return <NoProjectPage />;
+    return <NoProjectPage/>;
   }
 
   return (

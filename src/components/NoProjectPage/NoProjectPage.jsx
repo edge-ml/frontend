@@ -8,17 +8,13 @@ class NoProjectPage extends Component {
   }
   render() {
     return (
-      <Container className="d-flex align-items-center justify-content-center py-5">
+      <Container className="d-flex align-items-center justify-content-center h-75 py-5">
         <h2>
           {this.props.text ? (
             this.props.text
           ) : (
             <div id="noProjectPageStandardText">
-              Open or{" "}
-              <a onClick={this.props.onCreateProject} href="">
-                create
-              </a>{" "}
-              a project to get started!
+              Open or create a project on the left to get started!
             </div>
           )}
         </h2>
