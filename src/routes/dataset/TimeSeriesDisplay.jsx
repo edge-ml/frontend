@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { useContext, useRef } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import useTimeSeriesData from "../../Hooks/useTimeSeriesData";
 import { DatasetContext } from "./DatasetContext";
 import HighchartsReact from "highcharts-react-official";
@@ -22,6 +21,7 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
   } = useContext(DatasetContext);
 
   const chartRef = useRef();
+  const mouseDownRef = useRef(false); // Use a ref to track mouseDown state
 
   let selectedDatasetLabeling = undefined;
   if (dataset && dataset.labelings && activeLabeling) {
@@ -34,14 +34,28 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
     useChartEvents(chartRef, selectedDatasetLabeling);
 
   useEffect(() => {
-    // document.addEventListener('mousemove', onMouseMoved);
-    document.addEventListener("mouseup", onMouseUp);
+    const mouseUpHandler = () => {
+      console.log("mouse up");
+      if (mouseDownRef.current) {
+        mouseDownRef.current = false;
+        refreshData();
+      }
+      onMouseUp();
+    };
+
+    const mouseDownHandler = () => {
+      console.log("mouse down");
+      mouseDownRef.current = true;
+    };
+
+    document.addEventListener("mouseup", mouseUpHandler);
+    document.addEventListener("mousedown", mouseDownHandler);
 
     return () => {
-      // document.removeEventListener('mousemove', onMouseMoved);
-      document.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("mouseup", mouseUpHandler);
+      document.removeEventListener("mousedown", mouseDownHandler);
     };
-  }, []);
+  }, [onMouseUp]);
 
   const { timeSeriesData, getTimeSeriesPatial } = useTimeSeriesData(
     dataset._id,
@@ -49,6 +63,8 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
   );
 
   const refreshData = async (start, end) => {
+    console.log(mouseDownRef.current); // Access ref value
+    if (mouseDownRef.current) return;
     const res = await getTimeSeriesPatial(Math.floor(start), Math.ceil(end));
     const chart = chartRef.current.chart;
     chart.series[0].setData(res, false, false);
