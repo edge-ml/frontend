@@ -5,20 +5,26 @@ import makeAnimated from 'react-select/animated';
 import Hyperparameter from './Hyperparameter';
 
 const SelectionHyperparameter = (props) => {
-  console.log(props.value);
   return (
     <Hyperparameter {...props}>
       <Select
+        styles={{
+          control: (provided) => ({
+            ...provided,
+            textAlign: 'center',
+          }),
+        }}
         options={props.options.map((e) => {
           return { value: e, label: e };
         })}
+        menuPosition="fixed"
         isMulti={props.multi_select}
         value={props.value}
         defaultValue={props.value}
         onChange={(e) => {
           props.handleChange({
             parameter_name: props.parameter_name,
-            state: e,
+            state: e.value,
           });
         }}
         components={makeAnimated()}

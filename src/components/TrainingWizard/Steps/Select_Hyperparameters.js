@@ -28,12 +28,12 @@ const Wizard_Hyperparameters = ({
 
   const [classififier_index, set_classifier_index] = useState(0);
 
-  const handleHyperparameterChange = ({ parameter_name, value }) => {
+  const handleHyperparameterChange = ({ parameter_name, state }) => {
     const newClassifier = [...classifier];
     const idx = newClassifier[classififier_index].parameters.findIndex(
       (elm) => elm.parameter_name === parameter_name
     );
-    newClassifier[classififier_index].parameters[idx].value = value;
+    newClassifier[classififier_index].parameters[idx].value = state;
     setClassifier(newClassifier);
     setSelectedClassifier(newClassifier[classififier_index]);
   };

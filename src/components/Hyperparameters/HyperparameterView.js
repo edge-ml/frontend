@@ -33,7 +33,7 @@ export const HyperparameterView = ({
                       {...h}
                       id={'input_' + h.parameter_name}
                       handleChange={handleHyperparameterChange}
-                      value={h.value}
+                      value={{ value: h.value, label: h.value }}
                     />
                   </Col>
                 );
