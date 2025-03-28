@@ -8,6 +8,7 @@ const useTimeSeriesData = (dataset_id, timeSeries_id) => {
   const [timeSeriesPartial, setTimeSeriesPartial] = useState(undefined);
 
   const getTimeSeriesPatial = async (start, end) => {
+    console.log("getTimeSeriesPatial", start, end);
     const res = await getTimeSeriesDataPartial(
       dataset_id,
       timeSeries_id,
@@ -19,6 +20,7 @@ const useTimeSeriesData = (dataset_id, timeSeries_id) => {
   };
 
   const updateTimeSeries = async (start, end) => {
+    console.log("UdpateTimeSeries", start, end);
     const res = await getTimeSeriesPatial(start, end);
     setTimeSeriesPartial(res);
   };

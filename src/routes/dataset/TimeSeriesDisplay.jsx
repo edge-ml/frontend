@@ -23,6 +23,9 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
   const chartRef = useRef();
   const mouseDownRef = useRef(false); // Use a ref to track mouseDown state
 
+  var minView = 0;
+  var maxView = 0;
+
   let selectedDatasetLabeling = undefined;
   if (dataset && dataset.labelings && activeLabeling) {
     selectedDatasetLabeling = dataset.labelings.find(
@@ -62,14 +65,20 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
     timeSeries._id
   );
 
-  const refreshData = async (start, end) => {
+  const refreshData = async () => {
     console.log(mouseDownRef.current); // Access ref value
-    if (mouseDownRef.current) return;
-    const res = await getTimeSeriesPatial(Math.floor(start), Math.ceil(end));
+    if (mouseDownRef.current) return; 
+    const res = await getTimeSeriesPatial(Math.floor(minView), Math.ceil(maxView));
     const chart = chartRef.current.chart;
     chart.series[0].setData(res, false, false);
     chart.redraw(true);
   };
+
+  const setExtremes = (min, max) => {
+    minView = min;
+    maxView = max;
+  }
+
 
   const chartOptions = generateChartState(
     timeSeries,
@@ -80,7 +89,8 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
     refreshData,
     onMouseDown,
     onClickPlotLine,
-    onMouseMoved
+    onMouseMoved,
+    setExtremes
   );
 
   return (

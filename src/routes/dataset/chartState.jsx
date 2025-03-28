@@ -11,7 +11,8 @@ const generateChartState = (
   refreshData,
   onChartClick,
   onClickPlotLine,
-  onMouseMove
+  onMouseMove,
+  setExtremes
 ) => {
   const { name, unit, start, end } = ts;
 
@@ -106,7 +107,8 @@ const generateChartState = (
       max: end,
       events: {
         afterSetExtremes: (e) => {
-          refreshData(e.min, e.max);
+          console.log("Set extremes")
+          setExtremes(e.min, e.max);
         },
       },
       lineColor: "#000000",

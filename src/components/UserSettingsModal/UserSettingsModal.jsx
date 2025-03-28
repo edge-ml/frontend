@@ -9,7 +9,6 @@ import useUserStore from "../../Hooks/useUser";
 
 const UserSettingsModal = ({ isOpen, onClose }) => {
   const user = useUserStore((state) => state.user);
-  console.log(user);
   return (
     <Modal
       size="lg"
