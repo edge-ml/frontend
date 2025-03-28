@@ -58,7 +58,6 @@ const LoginPage = ({ children }) => {
     }
   };
 
-  console.log(user)
   if (user) {
     return children;
   }

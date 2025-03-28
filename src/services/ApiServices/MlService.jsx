@@ -1,6 +1,6 @@
 import apiConsts from "./ApiConstants";
-import ax from "axios";
 import apiRequest from "./request";
+import axios from "axios";
 
 export const getStepOptions = async () => {
   const res = await apiRequest(

@@ -4,7 +4,7 @@ import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts/highstock";
 import { DatasetContext } from "./DatasetContext";
 
-const ChartSlider = ({ start, end, setStartEnd }) => {
+const ChartSlider = ({ start, end }) => {
   const chartRef = useRef();
 
   const data = [];
@@ -63,13 +63,6 @@ const ChartSlider = ({ start, end, setStartEnd }) => {
         crosshair: false,
         min: start,
         max: end,
-        // events: {
-        //   afterSetExtremes: (e) => {
-        //     const min = e.min;
-        //     const max = e.max;
-        //     // setStartEnd(min, max);
-        //   },
-        // },
         events: {
           afterSetExtremes: (e) => {
             Highcharts.charts.forEach((elm) => {

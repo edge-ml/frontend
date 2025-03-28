@@ -36,7 +36,6 @@ const useEditDataset = (datasetUtils, labelings) => {
         const activeLabelType = activeLabeling.labels.find(
           (elm) => elm._id === selectedLabelTypeId
         );
-        console.log(activeLabelType);
         if (activeLabelType) {
           _setSelectedLabelTypeId(activeLabelType._id);
           return;
@@ -47,6 +46,42 @@ const useEditDataset = (datasetUtils, labelings) => {
   }, [dataset]);
 
   useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (
+        event.ctrlKey &&
+        event.key >= "0" &&
+        event.key <= "9" &&
+        event.key <= activeLabeling.labels.length
+      ) {
+        const index = parseInt(event.key, 10);
+        setSelectedLabelTypeId(activeLabeling.labels[index - 1]._id);
+        return;
+      }
+
+      switch (event.key) {
+        case "Delete":
+        case "Backspace":
+          if (selectedLabel) {
+            event.preventDefault();
+            onDeleteSelectedLabel();
+          }
+          break;
+        case "Escape":
+          if (selectedLabel) {
+            event.preventDefault();
+            _setSelectedLabel(undefined);
+          }
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedLabel, provisionalLabel]);
+
+  useEffect(() => {
     if (labelings && labelings.length > 0) {
       const activeLabeling = getActivateLabeling();
       _setActiveLabeling(activeLabeling);
@@ -54,7 +89,6 @@ const useEditDataset = (datasetUtils, labelings) => {
         const activeLabelType = activeLabeling.labels.find(
           (elm) => elm._id === selectedLabelTypeId
         );
-        console.log(activeLabelType);
         if (activeLabelType) {
           _setSelectedLabelTypeId(activeLabelType._id);
           return;
@@ -84,11 +118,6 @@ const useEditDataset = (datasetUtils, labelings) => {
       newDataset.labelings = labeling;
       await updateDataset(newDataset);
     }
-  };
-
-  const setStartEnd = (start, end) => {
-    setStart(start);
-    setEnd(end);
   };
 
   const onDeleteSelectedLabel = async () => {
@@ -149,7 +178,6 @@ const useEditDataset = (datasetUtils, labelings) => {
           ).name,
         };
         const newlabel = await addLabel(activeLabeling._id, labelToAdd);
-        console.log(newlabel);
         _setSelectedLabel(newlabel);
       }
       _setProvisionalLabel(undefined);
@@ -183,7 +211,6 @@ const useEditDataset = (datasetUtils, labelings) => {
     setActiveLabeling,
     selectedLabel,
     setSelectedLabel,
-    setStartEnd,
     onDeleteSelectedLabel,
     selectedLabelTypeId,
     setSelectedLabelTypeId,

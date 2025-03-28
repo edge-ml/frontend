@@ -45,9 +45,7 @@ const UserEdit = () => {
   if (!currentProject.users) {
     return null;
   }
-
-  console.log(userNames);
-
+  
   return (
     <div>
       <InputGroup className="w-100">

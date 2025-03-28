@@ -7,6 +7,7 @@ import generateChartState from "./chartState";
 import useChartEvents from "./useChartEvents";
 
 import "./index.css";
+import { use } from "react";
 
 const TimeSeriesDisplay = ({ timeSeries }) => {
   const {
@@ -34,6 +35,7 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
 
   const { onMouseDown, onMouseMoved, onMouseUp, onClickPlotLine } =
     useChartEvents(chartRef, selectedDatasetLabeling);
+
 
   useEffect(() => {
     const mouseUpHandler = () => {

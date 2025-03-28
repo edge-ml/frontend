@@ -107,7 +107,6 @@ const generateChartState = (
       max: end,
       events: {
         afterSetExtremes: (e) => {
-          console.log("Set extremes")
           setExtremes(e.min, e.max);
         },
       },

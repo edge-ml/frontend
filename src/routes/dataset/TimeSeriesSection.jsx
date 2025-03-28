@@ -8,7 +8,6 @@ import DeleteModal from "../../components/Common/DeleteModal";
 const TimeSeriesSection = ({}) => {
   const {
     activeTimeSeries,
-    setStartEnd,
     onDeleteSelectedLabel,
     selectedLabel,
   } = useContext(DatasetContext);
@@ -21,7 +20,6 @@ const TimeSeriesSection = ({}) => {
       <ChartSlider
         start={globalStart}
         end={globalEnd}
-        setStartEnd={setStartEnd}
       ></ChartSlider>
       <div className="flex-grow-1 overflow-auto">
         {activeTimeSeries.map((elm, index) => (
