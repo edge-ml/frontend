@@ -21,13 +21,12 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
   } = useContext(DatasetContext);
 
   const chartRef = useRef();
-  const mouseDownRef = useRef(false); // Use a ref to track mouseDown state
-
-  var minView = 0;
-  var maxView = 0;
+  const mouseDownRef = useRef(false);
+  const minViewRef = useRef(0);
+  const maxViewRef = useRef(0);
 
   let selectedDatasetLabeling = undefined;
-  if (dataset && dataset.labelings && activeLabeling) {
+  if (dataset?.labelings && activeLabeling) {
     selectedDatasetLabeling = dataset.labelings.find(
       (elm) => elm.labelingId === activeLabeling._id
     );
@@ -66,19 +65,21 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
   );
 
   const refreshData = async () => {
-    console.log(mouseDownRef.current); // Access ref value
-    if (mouseDownRef.current) return; 
-    const res = await getTimeSeriesPatial(Math.floor(minView), Math.ceil(maxView));
+    console.log(mouseDownRef.current);
+    if (mouseDownRef.current) return;
+    const res = await getTimeSeriesPatial(
+      Math.floor(minViewRef.current),
+      Math.ceil(maxViewRef.current)
+    );
     const chart = chartRef.current.chart;
     chart.series[0].setData(res, false, false);
     chart.redraw(true);
   };
 
   const setExtremes = (min, max) => {
-    minView = min;
-    maxView = max;
-  }
-
+    minViewRef.current = min;
+    maxViewRef.current = max;
+  };
 
   const chartOptions = generateChartState(
     timeSeries,
@@ -108,7 +109,7 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
           onetoOne={true}
           constructorType={"stockChart"}
           containerProps={{ style: { height: "100%" } }}
-        ></HighchartsReact>
+        />
       </div>
     </div>
   );
