@@ -1,13 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap");
 
-@import url('../src/Styles/Modal.css');
+@import url("../src/Styles/Modal.css");
 
 html {
   font-size: 90%;
 }
 
 * {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .login {
@@ -49,10 +49,6 @@ a .octicon-trashcan:hover {
 .btn-edit {
   float: right;
   max-width: 100px;
-}
-
-.btn-edit:hover {
-  color: rgb(72, 187, 120) !important;
 }
 
 .dataset-plotband {
@@ -436,10 +432,6 @@ div.card {
   background: #ced4da;
 }
 
-.btn-delete:hover {
-  color: rgb(213, 63, 140);
-}
-
 .btn-neutral {
   background-color: white;
   border-color: rgb(230, 230, 234);
@@ -499,4 +491,16 @@ div.card {
 
 .child-gap > * {
   margin: 2px;
+}
+
+.bg-login {
+  background: linear-gradient(
+    0deg,
+    rgba(11, 12, 89, 1) 0%,
+    rgba(7, 55, 99, 1) 100%
+  );
+}
+
+.z-10000 {
+  z-index: 10000;
 }

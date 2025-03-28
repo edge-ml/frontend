@@ -36,7 +36,7 @@
   padding: 8px;
 }
 
-.labelingRow * {
+.labelingRow > {
   display: inline;
   padding: 4px;
 }
@@ -54,7 +54,7 @@
   padding: 8px;
 }
 
-.datasetRow * {
+.datasetRow > {
   display: inline;
   padding: 4px;
 }

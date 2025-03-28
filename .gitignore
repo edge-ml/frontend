@@ -24,3 +24,9 @@ yarn.lock
 
 .vscode
 .idea
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+/dist/*
