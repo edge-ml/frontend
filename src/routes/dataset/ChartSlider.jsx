@@ -122,14 +122,14 @@ const ChartSlider = ({ start, end, setStartEnd }) => {
   };
 
   return (
-    <div style={{ height: "80px" }}>
+    <div>
       <HighchartsReact
         ref={chartRef}
         highcharts={Highcharts}
         options={generateState()}
         onetoOne={true}
         constructorType={"stockChart"}
-        containerProps={{ style: { height: "100%" } }}
+        containerProps={{ style: { height: "80px" } }}
       ></HighchartsReact>
     </div>
   );
