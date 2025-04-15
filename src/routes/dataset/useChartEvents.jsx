@@ -17,6 +17,8 @@ const useChartEvents = (chart, labeling) => {
   } = useContext(DatasetContext);
 
   const onClickPlotLine = (e, plotBandId, labelId) => {
+    // Stop the event from bubbling up to the chart container
+    e.stopPropagation();
     currentPlotLine = { labelId: labelId, plotBandId: plotBandId };
     console.log(currentPlotLine);
   };
@@ -196,6 +198,8 @@ const useChartEvents = (chart, labeling) => {
     }
 
     onClickPosition(position);
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   return {
