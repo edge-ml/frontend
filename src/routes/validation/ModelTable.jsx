@@ -75,7 +75,6 @@ const ModelTable = ({ models, stepOptions, updateModel, deleteModels }) => {
               selectedModels={selectedModels}
               clickCheckBox={clickCheckBox}
               onDeleteModels={onDeleteModels}
-              stepOptions={stepOptions}
               updateModel={updateModel}
             ></ModelTableEntry>
           </EdgeMLTableEntry>

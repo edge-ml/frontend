@@ -54,7 +54,7 @@ const ButtonList = ({
 
   return (
     <>
-      {!model.error && (
+      {model.trainStatus === "done" && !model.error && (
         <>
           <ListButton
             color="info"
