@@ -96,9 +96,9 @@ int main() {
                 <DropdownItem onClick={() => setLanguage("cpp")}>
                   C++
                 </DropdownItem>
-                <DropdownItem onClick={() => setLanguage("python")}>
+                {/* <DropdownItem onClick={() => setLanguage("python")}>
                   Python
-                </DropdownItem>
+                </DropdownItem> */}
                 {/* Add more language options as DropdownItems */}
               </DropdownMenu>
             </Dropdown>
