@@ -37,7 +37,7 @@ const DownloadModal = ({ model, onClose }) => {
     console.log("Downloading model")
     const blob = await downloadDeploymentModel(model._id, "C");
     console.log(blob)
-    downloadBlob(blob, `${model.name}_${"language"}.zip`);
+    downloadBlob(blob, `${model.name}_${language}.zip`);
   };
 
   const getCode = () => {
