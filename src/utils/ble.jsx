@@ -1,4 +1,4 @@
-const readCharArray = (dataView, startByte, numBytes) => {
+export function readCharArray(dataView, startByte, numBytes) {
   const charArray = [];
   for (let i = startByte; i < startByte + numBytes; i++) {
     const byte = dataView.getUint8(i);
@@ -8,7 +8,7 @@ const readCharArray = (dataView, startByte, numBytes) => {
   return charArray.join("");
 };
 
-const convert_type = (val) => {
+export function convert_type (val) {
   const type_map = {
     0: "int8", // PARSE_TYPE_INT8
     1: "uint8",

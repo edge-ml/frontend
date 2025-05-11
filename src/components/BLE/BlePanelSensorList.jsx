@@ -1,22 +1,38 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { Table, Input, InputGroup, InputGroupText, Badge } from "reactstrap";
 import Checkbox from "../Common/Checkbox";
 
 function BlePanelSensorList({
-  sensors = {},
+  bleDeviceHandler = undefined,
   selectedSensors = new Set(),
   disabled = false,
   onToggleSensor,
   onChangeSampleRate,
   maxSampleRate,
 }) {
-  if (!sensors || Object.keys(sensors).length === 0) {
-    return null;
+  const [sensorConfig, setSensorConfig] = React.useState(null);
+
+  useEffect(() => {
+    bleDeviceHandler
+      .getSensorConfig()
+      .then((config) => {
+        setSensorConfig(config);
+      })
+      .catch((error) => {
+        console.error("Error fetching sensor config:", error);
+      });
+  }, [bleDeviceHandler]);
+
+  console.log("BlePanelSensorList", sensorConfig);
+  
+  if (!sensorConfig) {
+    return <div>Loading...</div>;
   }
+
 
   let sampleRateSum = 0;
   selectedSensors.forEach((elm) => {
-    sampleRateSum += sensors[elm].sampleRate;
+    sampleRateSum += sensorConfig[elm].sampleRate;
   });
 
   return (
@@ -35,8 +51,8 @@ function BlePanelSensorList({
             </tr>
           </thead>
           <tbody>
-            {Object.keys(sensors).map((sensorKey) => {
-              const sensorData = sensors[sensorKey];
+            {Object.keys(sensorConfig).map((sensorKey) => {
+              const sensorData = sensorConfig[sensorKey];
               return (
                 <tr key={sensorKey}>
                   <td className="align-middle">

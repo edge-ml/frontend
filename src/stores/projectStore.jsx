@@ -38,6 +38,13 @@ const useProjectStore = create(
     getProjects: async function () {
       var projects = await getProjects_API();
 
+      console.log("Raw projects response:", projects);
+
+      if (!Array.isArray(projects)) {
+        console.error("Expected projects to be an array but got:", projects);
+        projects = [];
+      }
+
       projects = await Promise.all(projects.map(async prj => {
         const users = await getUserNames([prj.admin, ...prj.users]);
         prj.admin = users[0]

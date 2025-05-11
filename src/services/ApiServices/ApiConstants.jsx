@@ -2,6 +2,8 @@ import localStorageService from "./../LocalStorageService";
 
 const currentHost = window.location.host.split(":")[0];
 
+console.log("Current host:", currentHost);
+
 export const AUTH_URI =
   process.env.NODE_ENV === "production"
     ? "/auth/"
