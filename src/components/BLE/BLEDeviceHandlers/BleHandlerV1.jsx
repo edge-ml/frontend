@@ -30,6 +30,7 @@ class BLEDeviceHandlerV1 extends BLEHandler {
         BLEDeviceHandlerV1.sensorServiceUuid,
         BLEDeviceHandlerV1.sensorConfigCharacteristicUuid
       );
+      this.sensorConfig = await this.getSensorConfig();
     }
 
     static getServiceUUIDs () {

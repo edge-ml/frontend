@@ -1,38 +1,24 @@
-import React, {useState, useEffect} from "react";
+import React from "react";
 import { Table, Input, InputGroup, InputGroupText, Badge } from "reactstrap";
 import Checkbox from "../Common/Checkbox";
 
-function BlePanelSensorList({
-  bleDeviceHandler = undefined,
-  selectedSensors = new Set(),
-  disabled = false,
-  onToggleSensor,
-  onChangeSampleRate,
-  maxSampleRate,
-}) {
-  const [sensorConfig, setSensorConfig] = React.useState(null);
+function BlePanelSensorList({ bleRecorder, bleDeviceHandler }) {
+  const sensorConfig = bleDeviceHandler.sensorConfig;
 
-  useEffect(() => {
-    bleDeviceHandler
-      .getSensorConfig()
-      .then((config) => {
-        setSensorConfig(config);
-      })
-      .catch((error) => {
-        console.error("Error fetching sensor config:", error);
-      });
-  }, [bleDeviceHandler]);
+  const {selectedSensors, onToggleSensor, onChangeSampleRate, sensorSampleRates} = bleRecorder;
+
+  const maxSampleRate = 50;
 
   console.log("BlePanelSensorList", sensorConfig);
-  
+
   if (!sensorConfig) {
     return <div>Loading...</div>;
   }
 
-
   let sampleRateSum = 0;
   selectedSensors.forEach((elm) => {
-    sampleRateSum += sensorConfig[elm].sampleRate;
+    const rate = sensorSampleRates[elm] !== undefined ? sensorSampleRates[elm] : sensorConfig[elm].sampleRate;
+    sampleRateSum += rate;
   });
 
   return (
@@ -53,11 +39,11 @@ function BlePanelSensorList({
           <tbody>
             {Object.keys(sensorConfig).map((sensorKey) => {
               const sensorData = sensorConfig[sensorKey];
+              const currentSampleRate = sensorSampleRates[sensorKey] !== undefined ? sensorSampleRates[sensorKey] : sensorData.sampleRate;
               return (
                 <tr key={sensorKey}>
                   <td className="align-middle">
                     <Checkbox
-                      disabled={disabled}
                       isSelected={selectedSensors.has(sensorKey)}
                       className="datasets-check"
                       onClick={() => onToggleSensor(sensorKey)}
@@ -70,8 +56,7 @@ function BlePanelSensorList({
                       size="sm"
                     >
                       <Input
-                        value={sensorData.sampleRate}
-                        disabled={disabled}
+                        value={currentSampleRate}
                         onChange={(e) =>
                           onChangeSampleRate(sensorKey, e.target.value)
                         }

@@ -20,13 +20,15 @@ const UploadBLE = () => {
 
   const { connectedDevice, toggleBLEConnection, getOptionalServices } =
     useBLEDevice();
-  const {
-    datasetName,
-    setDatasetName,
-    selectedSensors,
-    recorderState,
-    onClickRecordButton,
-  } = useBLERecorder(connectedDevice);
+  // const {
+  //   datasetName,
+  //   setDatasetName,
+  //   selectedSensors,
+  //   recorderState,
+  //   onClickRecordButton,
+  // } = useBLERecorder(connectedDevice);
+
+  const bleRecorder = useBLERecorder(connectedDevice);
 
   // const {
   //   bleConnectionChanging,
@@ -94,16 +96,14 @@ const UploadBLE = () => {
           <Col>
             {console.log("connectedBLEDevice", connectedDevice)}
             <BlePanelSensorList
+              bleRecorder={bleRecorder}
               bleDeviceHandler={connectedDevice}
             ></BlePanelSensorList>
           </Col>
           <Col>
             <BlePanelRecorderSettings
-              onDatasetNameChanged={setDatasetName}
-              datasetName={datasetName}
-              onClickRecordButton={onClickRecordButton}
-              recorderState={recorderState}
-              selectedSensors={selectedSensors}
+              bleRecorder={bleRecorder}
+              bleDeviceHandler={connectedDevice}
             ></BlePanelRecorderSettings>
           </Col>
         </Row>
