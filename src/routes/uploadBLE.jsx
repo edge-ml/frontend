@@ -18,7 +18,15 @@ const UploadBLE = () => {
   const [sensorKeys] = useState([]);
   const shortcutKeys = "1234567890abcdefghijklmnopqrstuvwxyz";
 
-  const { connectedDevice, toggleBLEConnection, getOptionalServices} = useBLEDevice();
+  const { connectedDevice, toggleBLEConnection, getOptionalServices } =
+    useBLEDevice();
+  const {
+    datasetName,
+    setDatasetName,
+    selectedSensors,
+    recorderState,
+    onClickRecordButton,
+  } = useBLERecorder(connectedDevice);
 
   // const {
   //   bleConnectionChanging,
@@ -89,10 +97,18 @@ const UploadBLE = () => {
               bleDeviceHandler={connectedDevice}
             ></BlePanelSensorList>
           </Col>
+          <Col>
+            <BlePanelRecorderSettings
+              onDatasetNameChanged={setDatasetName}
+              datasetName={datasetName}
+              onClickRecordButton={onClickRecordButton}
+              recorderState={recorderState}
+              selectedSensors={selectedSensors}
+            ></BlePanelRecorderSettings>
+          </Col>
         </Row>
       )}
 
-      DFUModal removed
       {/* {deviceSensors && connectedBLEDevice && isEdgeMLInstalled ? (
         <>
           <Row>

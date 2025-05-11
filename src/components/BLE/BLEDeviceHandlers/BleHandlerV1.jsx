@@ -5,9 +5,10 @@ import { readCharArray, convert_type } from "../../../utils/ble";
 import { floatToBytes, intToBytes } from "../../../services/bleService";
 
 class BLEDeviceHandlerV1 extends BLEHandler {
-    constructor(device) {
+    constructor(device, data_callback) {
         super();
         this.device = device;
+        this.data_callback = data_callback;
     }
 
     static sensorServiceUuid = "34c2e3bb-34aa-11eb-adc1-0242ac120002";
@@ -19,6 +20,17 @@ class BLEDeviceHandlerV1 extends BLEHandler {
     static deviceGenerationUuid = "45622512-6468-465a-b141-0b9b0f96b468";
     static deviceParseSchemaUuid = "caa25cb8-7e1b-44f2-adc9-e8c06c9ced43";
 
+
+    async setUp() {
+      this.sensorDataCharacteristic = await this._getChracteristic(
+        BLEDeviceHandlerV1.sensorServiceUuid,
+        BLEDeviceHandlerV1.sensorDataCharacteristicUuid
+      );
+      this.sensorConfigCharacteristic = await this._getChracteristic(
+        BLEDeviceHandlerV1.sensorServiceUuid,
+        BLEDeviceHandlerV1.sensorConfigCharacteristicUuid
+      );
+    }
 
     static getServiceUUIDs () {
         return [
@@ -98,8 +110,9 @@ class BLEDeviceHandlerV1 extends BLEHandler {
       return sensorSchema;
     }
 
+    async steamSensorData() {
 
-
+    }
 
 }
 

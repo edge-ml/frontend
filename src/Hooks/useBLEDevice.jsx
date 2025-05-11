@@ -18,7 +18,9 @@ const useBLEDevice = () => {
     for (const handler of handlers) {
       if (await handler.checkDevice(device)) {
         console.log("Device handler found:", handler);
-        return new handler(device);
+        const bleHandler = new handler(device);
+        await bleHandler.setUp();
+        return bleHandler;
       }
     }
     return null;
