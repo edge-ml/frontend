@@ -60,7 +60,7 @@ const useBLERecorder = (bleDeviceHandler) => {
   const [currentData, setCurrentData] = useState([]);
   const [sensorKeys, setSensorKeys] = useState([]);
 
-  const labelingData = useRef([]);
+  const [labelingData, setLabelingData] = useState([]);
   const shortcutKeys = "1234567890abcdefghijklmnopqrstuvwxyz";
 
   const newDataset = useRef(null);
@@ -238,9 +238,15 @@ const useBLERecorder = (bleDeviceHandler) => {
         if (currentLabel.id !== undefined && currentLabel.end === undefined) {
           const timestamp = Date.now();
 
-          const currentLabelingData =
-            labelingData.current[labelingData.current.length - 1];
-          currentLabelingData.end = timestamp;
+          const currentLabelingData = labelingData[labelingData.length - 1];
+          if (currentLabelingData) {
+            const updatedLabelingData = [...labelingData];
+            updatedLabelingData[updatedLabelingData.length - 1] = {
+              ...currentLabelingData,
+              end: timestamp,
+            };
+            setLabelingData(updatedLabelingData);
+          }
           const newCurrentLabel = {
             ...currentLabel,
             end: timestamp,
@@ -291,43 +297,72 @@ const useBLERecorder = (bleDeviceHandler) => {
   const toggleLabelingActive = (labelIdx) => {
     const timestamp = Date.now();
     const keyPressedLabel = selectedLabeling.labels[labelIdx];
-  
-    setCurrentLabel((prevLabel) => {
-      if (prevLabel.id === undefined) {
-        // Start a new label
-        return {
+
+    setLabelingData((prev) => {
+      if (prev.length > 0) {
+        const lastLabel = prev[prev.length - 1];
+        if (lastLabel.end === undefined) {
+          // End the last active label
+          return [
+            ...prev.slice(0, prev.length - 1),
+            {
+              ...lastLabel,
+              end: timestamp,
+            },
+          ];
+        }
+      }
+      // Start a new label
+      return [
+        ...prev,
+        {
           start: timestamp,
           end: undefined,
           color: keyPressedLabel.color,
           labelingId: selectedLabeling._id,
           type: keyPressedLabel._id,
           id: keyPressedLabel._id,
-          plotId: 0,
-        };
-      }
-  
-      if (
-        prevLabel.id === keyPressedLabel._id &&
-        prevLabel.end === undefined
-      ) {
-        // End the current label
-        const endedLabel = {
-          ...prevLabel,
-          end: timestamp,
-        };
-        console.log("Labeling end", endedLabel);
-        labelingData.current.push(endedLabel); // <-- you might want to save it
-        return {
-          start: undefined,
-          end: undefined,
-          color: undefined,
-          id: undefined,
-          plotId: 0,
-        };
-      }
-  
-      return prevLabel;
+          plotId: prev.length,
+        },
+      ];
     });
+
+    // setCurrentLabel((prevLabel) => {
+    //   console.log("Current label", prevLabel);
+    //   if (prevLabel.id === undefined) {
+    //     // Start a new label
+    //     return {
+    //       start: timestamp,
+    //       end: undefined,
+    //       color: keyPressedLabel.color,
+    //       labelingId: selectedLabeling._id,
+    //       type: keyPressedLabel._id,
+    //       id: keyPressedLabel._id,
+    //       plotId: 0,
+    //     };
+    //   }
+    //   return prevLabel;
+    // });
+
+    // setCurrentLabel((prevLabel) => {
+    //   if (prevLabel.id === keyPressedLabel._id && prevLabel.end === undefined) {
+    //     // End the current label
+    //     const endedLabel = {
+    //       ...prevLabel,
+    //       end: timestamp,
+    //     };
+    //     console.log("Labeling end", endedLabel);
+    //     setLabelingData((prev) => [...prev, endedLabel]); // <-- you might want to save it
+    //     return {
+    //       start: undefined,
+    //       end: undefined,
+    //       color: undefined,
+    //       id: undefined,
+    //       plotId: 0,
+    //     };
+    //   }
+    //   return prevLabel;
+    // });
   };
 
   const toggleLabelingActive2 = (labelIdx) => {
@@ -335,13 +370,13 @@ const useBLERecorder = (bleDeviceHandler) => {
     const keyPressedLabel = selectedLabeling.labels[labelIdx];
 
     if (currentLabel.id === undefined) {
-      labelingData.current = [
+      setLabelingData([
         {
           start: timestamp,
           labelType: keyPressedLabel._id,
           labelingId: selectedLabeling._id,
         },
-      ];
+      ]);
       setCurrentLabel({
         start: undefined,
         end: undefined,
@@ -355,17 +390,26 @@ const useBLERecorder = (bleDeviceHandler) => {
       currentLabel.id === keyPressedLabel._id &&
       currentLabel.end === undefined
     ) {
-      const currentLabelingData =
-        labelingData.current[labelingData.current.length - 1];
-      currentLabelingData.end = timestamp;
+      const currentLabelingData = labelingData[labelingData.length - 1];
+      if (currentLabelingData) {
+        const updatedLabelingData = [...labelingData];
+        updatedLabelingData[updatedLabelingData.length - 1] = {
+          ...currentLabelingData,
+          end: timestamp,
+        };
+        setLabelingData(updatedLabelingData);
+      }
       const newCurrentLabel = { ...currentLabel, end: timestamp };
       setCurrentLabel(newCurrentLabel);
     } else if (currentLabel.end !== undefined) {
-      labelingData.current.push({
-        start: timestamp,
-        labelType: keyPressedLabel._id,
-        labelingId: selectedLabeling._id,
-      });
+      setLabelingData((prev) => [
+        ...prev,
+        {
+          start: timestamp,
+          labelType: keyPressedLabel._id,
+          labelingId: selectedLabeling._id,
+        },
+      ]);
       setCurrentLabel((prev) => ({
         start: timestamp,
         end: undefined,
@@ -379,14 +423,23 @@ const useBLERecorder = (bleDeviceHandler) => {
       currentLabel.end === undefined &&
       currentLabel.id !== keyPressedLabel._id
     ) {
-      const currentLabelingData =
-        labelingData.current[labelingData.current.length - 1];
-      currentLabelingData.end = timestamp - 1;
-      labelingData.current.push({
-        start: timestamp,
-        labelType: keyPressedLabel._id,
-        labelingId: selectedLabeling._id,
-      });
+      const currentLabelingData = labelingData[labelingData.length - 1];
+      if (currentLabelingData) {
+        const updatedLabelingData = [...labelingData];
+        updatedLabelingData[updatedLabelingData.length - 1] = {
+          ...currentLabelingData,
+          end: timestamp - 1,
+        };
+        setLabelingData(updatedLabelingData);
+      }
+      setLabelingData((prev) => [
+        ...prev,
+        {
+          start: timestamp,
+          labelType: keyPressedLabel._id,
+          labelingId: selectedLabeling._id,
+        },
+      ]);
       setCurrentLabel((prev) => ({
         start: timestamp,
         end: undefined,
@@ -398,7 +451,7 @@ const useBLERecorder = (bleDeviceHandler) => {
   };
 
   const resetLabelingState = () => {
-    labelingData.current = [];
+    setLabelingData([]);
     setCurrentLabel({
       start: undefined,
       end: undefined,
@@ -468,6 +521,7 @@ const useBLERecorder = (bleDeviceHandler) => {
     prevLabel,
     currentData,
     sensorKeys,
+    labelingData,
     onDatasetNameChanged,
     onToggleSensor,
     onToggleStream,

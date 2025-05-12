@@ -45,6 +45,9 @@ class BlePanelSensorstreamGraph extends Component {
   }
 
   updateLiveData() {
+
+    console.log(this.props.labelingData.length);
+
     var chart = Highcharts.charts[this.highcharts_index];
     const xAxis = chart.xAxis[0];
     const latestData = this.props.currentData;
@@ -60,112 +63,147 @@ class BlePanelSensorstreamGraph extends Component {
       }
     }
 
-    const offsetAmount = 4 * this.interval_length;
-    const visualOffset = shiftSeries ? 0 : offsetAmount;
 
-    // start a new label
-    if (
-      (this.state.startPlotId === undefined ||
-        this.state.startPlotId !== this.props.currentLabel.plotId) &&
-      this.props.currentLabel.id
-    ) {
-      xAxis.addPlotLine({
-        value: this.props.currentLabel.start - visualOffset,
-        color: this.props.currentLabel.color,
-        width: 5,
-        id: `labelingStart-${this.props.currentLabel.plotId}`,
-      });
+    // Render the plotbands
+    for (const label of this.props.labelingData) {
+      const plotLineExists = (id) =>
+        (xAxis.plotLines || []).some((pl) => pl.id === id);
+      const plotBandExists = (id) =>
+        (xAxis.plotBands || []).some((pb) => pb.id === id);
 
-      // handle the case when the user starts recording a new label before stopping the previous one
-      if (this.props.prevLabel.id && this.state.endPlotId === undefined) {
-        xAxis.removePlotBand(`labelingArea-${this.props.prevLabel.plotId}`);
-        xAxis.addPlotBand({
-          from: this.props.prevLabel.start - visualOffset,
-          to: this.props.prevLabel.end - visualOffset,
-          color: this.props.prevLabel.color,
-          className: "labelingArea",
-          id: `labelingArea-${this.props.prevLabel.plotId}`,
-        });
+      if (!plotLineExists(`labelingStart-${label.plotId}`)) {
         xAxis.addPlotLine({
-          value: this.props.prevLabel.end - visualOffset,
-          color: this.props.prevLabel.color,
+          value: label.start,
+          color: label.color,
           width: 5,
-          id: `labelingEnd-${this.props.prevLabel.plotId}`,
+          id: `labelingStart-${label.plotId}`,
         });
       }
-      this.setState({
-        startPlotId: this.props.currentLabel.plotId,
-        endPlotId: undefined,
-        offsetApplied: !shiftSeries,
-        labelActive: true,
-      });
+      if (!plotBandExists(`labelingArea-${label.plotId}`)) {
+        xAxis.addPlotBand({
+          from: label.start,
+          to: label.end,
+          color: label.color,
+          className: "labelingArea",
+          id: `labelingArea-${label.plotId}`,
+        });
+      }
+      if (!plotLineExists(`labelingEnd-${label.plotId}`)) {
+        xAxis.addPlotLine({
+          value: label.end,
+          color: label.color,
+          width: 5,
+          id: `labelingEnd-${label.plotId}`,
+        });
+      }
     }
-    // stop the label
-    else if (
-      this.state.endPlotId === undefined &&
-      this.state.labelActive &&
-      this.props.currentLabel.end !== undefined
-    ) {
-      this.setState({ endPlotId: this.props.currentLabel.plotId });
-      xAxis.removePlotBand(`labelingArea-${this.props.currentLabel.plotId}`);
-      xAxis.addPlotBand({
-        from:
-          this.props.currentLabel.start -
-          (this.state.offsetApplied ? offsetAmount : 0),
-        to:
-          this.props.currentLabel.end -
-          (this.state.offsetApplied ? offsetAmount : 0),
-        color: this.props.currentLabel.color,
-        className: "labelingArea",
-        id: `labelingArea-${this.props.currentLabel.plotId}`,
-      });
-      xAxis.addPlotLine({
-        value:
-          this.props.currentLabel.end -
-          (this.state.offsetApplied ? offsetAmount : 0),
-        color: this.props.currentLabel.color,
-        width: 5,
-        id: `labelingEnd-${this.props.currentLabel.plotId}`,
-      });
-      this.setState({
-        labelActive: false,
-      });
-    }
-    // if the graph is not shifting, gradually move the end of the plotband to right each time a new point is rendered
-    else if (
-      !shiftSeries &&
-      this.state.startPlotId !== undefined &&
-      this.state.endPlotId === undefined
-    ) {
-      xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`);
-      xAxis.addPlotBand({
-        from: this.props.currentLabel.start - visualOffset,
-        to: this.props.currentData[0] - 0.5 * visualOffset,
-        color: this.props.currentLabel.color,
-        className: "labelingArea",
-        id: `labelingArea-${this.state.startPlotId}`,
-      });
-    }
-    // if the graph is shifting, set the end of the plotband to infinity once
-    // end of the graph is not visible during recording the label while shifting the graph
-    // so we can optimize the number of rendering to just one this way
-    else if (
-      shiftSeries &&
-      this.state.labelActive &&
-      this.state.shiftHandledForPlotId !== this.state.startPlotId
-    ) {
-      xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`);
-      xAxis.addPlotBand({
-        from:
-          this.props.currentLabel.start -
-          (this.state.offsetApplied ? offsetAmount : 0),
-        to: 4000000000000, // pseudo infinity
-        color: this.props.currentLabel.color,
-        className: "labelingArea",
-        id: `labelingArea-${this.state.startPlotId}`,
-      });
-      this.setState({ shiftHandledForPlotId: this.state.startPlotId });
-    }
+
+    // const offsetAmount = 4 * this.interval_length;
+    // const visualOffset = shiftSeries ? 0 : offsetAmount;
+
+    // // start a new label
+    // if (
+    //   (this.state.startPlotId === undefined ||
+    //     this.state.startPlotId !== this.props.currentLabel.plotId) &&
+    //   this.props.currentLabel.id
+    // ) {
+    //   xAxis.addPlotLine({
+    //     value: this.props.currentLabel.start - visualOffset,
+    //     color: this.props.currentLabel.color,
+    //     width: 5,
+    //     id: `labelingStart-${this.props.currentLabel.plotId}`,
+    //   });
+
+    //   // handle the case when the user starts recording a new label before stopping the previous one
+    //   if (this.props.prevLabel.id && this.state.endPlotId === undefined) {
+    //     xAxis.removePlotBand(`labelingArea-${this.props.prevLabel.plotId}`);
+    //     xAxis.addPlotBand({
+    //       from: this.props.prevLabel.start - visualOffset,
+    //       to: this.props.prevLabel.end - visualOffset,
+    //       color: this.props.prevLabel.color,
+    //       className: "labelingArea",
+    //       id: `labelingArea-${this.props.prevLabel.plotId}`,
+    //     });
+    //     xAxis.addPlotLine({
+    //       value: this.props.prevLabel.end - visualOffset,
+    //       color: this.props.prevLabel.color,
+    //       width: 5,
+    //       id: `labelingEnd-${this.props.prevLabel.plotId}`,
+    //     });
+    //   }
+    //   this.setState({
+    //     startPlotId: this.props.currentLabel.plotId,
+    //     endPlotId: undefined,
+    //     offsetApplied: !shiftSeries,
+    //     labelActive: true,
+    //   });
+    // }
+    // // stop the label
+    // else if (
+    //   this.state.endPlotId === undefined &&
+    //   this.state.labelActive &&
+    //   this.props.currentLabel.end !== undefined
+    // ) {
+    //   this.setState({ endPlotId: this.props.currentLabel.plotId });
+    //   xAxis.removePlotBand(`labelingArea-${this.props.currentLabel.plotId}`);
+    //   xAxis.addPlotBand({
+    //     from:
+    //       this.props.currentLabel.start -
+    //       (this.state.offsetApplied ? offsetAmount : 0),
+    //     to:
+    //       this.props.currentLabel.end -
+    //       (this.state.offsetApplied ? offsetAmount : 0),
+    //     color: this.props.currentLabel.color,
+    //     className: "labelingArea",
+    //     id: `labelingArea-${this.props.currentLabel.plotId}`,
+    //   });
+    //   xAxis.addPlotLine({
+    //     value:
+    //       this.props.currentLabel.end -
+    //       (this.state.offsetApplied ? offsetAmount : 0),
+    //     color: this.props.currentLabel.color,
+    //     width: 5,
+    //     id: `labelingEnd-${this.props.currentLabel.plotId}`,
+    //   });
+    //   this.setState({
+    //     labelActive: false,
+    //   });
+    // }
+    // // if the graph is not shifting, gradually move the end of the plotband to right each time a new point is rendered
+    // else if (
+    //   !shiftSeries &&
+    //   this.state.startPlotId !== undefined &&
+    //   this.state.endPlotId === undefined
+    // ) {
+    //   xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`);
+    //   xAxis.addPlotBand({
+    //     from: this.props.currentLabel.start - visualOffset,
+    //     to: this.props.currentData[0] - 0.5 * visualOffset,
+    //     color: this.props.currentLabel.color,
+    //     className: "labelingArea",
+    //     id: `labelingArea-${this.state.startPlotId}`,
+    //   });
+    // }
+    // // if the graph is shifting, set the end of the plotband to infinity once
+    // // end of the graph is not visible during recording the label while shifting the graph
+    // // so we can optimize the number of rendering to just one this way
+    // else if (
+    //   shiftSeries &&
+    //   this.state.labelActive &&
+    //   this.state.shiftHandledForPlotId !== this.state.startPlotId
+    // ) {
+    //   xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`);
+    //   xAxis.addPlotBand({
+    //     from:
+    //       this.props.currentLabel.start -
+    //       (this.state.offsetApplied ? offsetAmount : 0),
+    //     to: 4000000000000, // pseudo infinity
+    //     color: this.props.currentLabel.color,
+    //     className: "labelingArea",
+    //     id: `labelingArea-${this.state.startPlotId}`,
+    //   });
+    //   this.setState({ shiftHandledForPlotId: this.state.startPlotId });
+    // }
   }
 
   handleStartLiveUpdate(e) {

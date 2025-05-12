@@ -111,7 +111,7 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
     return all_series;
   }
 
-  console.log("currentLabel", currentLabel);
+  console.log("labelingData", bleRecorder.labelingData);
 
   return (
     <div className="m-2">
@@ -133,6 +133,7 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
                   currentData={currentData[sensorKey]}
                   currentLabel={currentLabel}
                   prevLabel={prevLabel}
+                  labelingData={bleRecorder.labelingData}
                 />
               </li>
             );
