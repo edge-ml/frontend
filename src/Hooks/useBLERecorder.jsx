@@ -293,32 +293,6 @@ const useBLERecorder = (bleDeviceHandler) => {
     const keyPressedLabel = selectedLabeling.labels[labelIdx];
 
     if (currentLabel.id === undefined) {
-      // Create a new label
-      setCurrentLabel({
-        start: timestamp,
-        end: undefined,
-        color: keyPressedLabel.color,
-        labelingId: selectedLabeling._id,
-        type: keyPressedLabel._id,
-        id: keyPressedLabel._id,
-        plotId: 0,
-      });
-    } else if (
-      currentLabel.id === keyPressedLabel._id &&
-      currentLabel.end === undefined
-    ) {
-      setCurrentLabel((prev) => ({
-        ...prev,
-        end: timestamp - 1,
-      }));
-    }
-  };
-
-  const toggleLabelingActive2 = (labelIdx) => {
-    const timestamp = Date.now();
-    const keyPressedLabel = selectedLabeling.labels[labelIdx];
-
-    if (currentLabel.id === undefined) {
       labelingData.current = [
         {
           start: timestamp,

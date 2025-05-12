@@ -70,6 +70,8 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
         text: name,
       },
       xAxis: {
+        min: recordingStartTime, // current time
+        max: recordingStartTime + 10000, // current time + 30s
         type: "datetime",
         tickPixelInterval: 100,
         labels: {
