@@ -8,7 +8,7 @@ import BlePanelSensorstreamGraph from "./BlePanelSensorstreamGraph";
 const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
   const recordingStartTimeRef = useRef(Date.now());
 
-  const { selectedSensors, currentLabel, prevLabel } = bleRecorder;
+  const { selectedSensors, currentLabel, prevLabel, currentData } = bleRecorder;
   const { sensorConfig } = bleDeviceHandler;
 
   const allOptions = useMemo(() => {
@@ -24,6 +24,31 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
     }
     return optionsArray;
   }, [sensorConfig]);
+
+  // Transform currentData into lastData format expected by BlePanelSensorstreamGraph
+  // lastData is an array where each element corresponds to a sensor index and contains [timestamp, [values]]
+  // const lastData = useMemo(() => {
+  //   if (!currentData || Object.keys(currentData).length === 0) {
+  //     return [];
+  //   }
+
+  //   console.log("currentData", currentData);
+
+  //   const sensorKeysArray = Object.keys(sensorConfig);
+
+  //   const lastDataArray = sensorKeysArray.map((sensorKey) => {
+  //     const sensorDataPoints = currentData[sensorKey];
+  //     if (sensorDataPoints && sensorDataPoints.length > 0) {
+  //       const latest = sensorDataPoints[sensorDataPoints.length - 1];
+  //       return [latest[0], latest[1]];
+  //     } else {
+  //       const components = sensorConfig[sensorKey].parseScheme.map((elm) => elm.name);
+  //       return [Date.now(), components.map(() => 0)];
+  //     }
+  //   });
+
+  //   return lastDataArray;
+  // }, [currentData, sensorConfig]);
 
   function getOptions(components, name, recordingStartTime) {
     return {
@@ -41,8 +66,6 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
         text: name,
       },
       xAxis: {
-        min: recordingStartTime, // current time
-        max: recordingStartTime + 30000, // current time + 30s
         type: "datetime",
         tickPixelInterval: 100,
         labels: {
@@ -70,12 +93,12 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
     };
   }
 
-  function generateStartData(components, recordingStartTime) {
+  function generateStartData(components) {
     const all_series = [];
     for (let j = -components.length; j < 0; j += 1) {
       all_series.push({
         name: components[j + components.length],
-        data: [{ x: recordingStartTime, y: 0 }],
+        data: [],
         marker: {
           enabled: false,
         },
@@ -100,8 +123,7 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
                   }
                   fullSampleRate={false}
                   // sampleRate={props.sensorConfig[sensorKey].sampleRate}
-                  // lastData={props.lastData}
-                  index={Object.keys(sensorConfig).indexOf(sensorKey.toString())}
+                  currentData={currentData[sensorKey]}
                   currentLabel={currentLabel}
                   prevLabel={prevLabel}
                 />

@@ -145,6 +145,24 @@ const useBLERecorder = (bleDeviceHandler) => {
       time: timestamp,
       data: parsedData,
     });
+
+    // Update currentData state for live display
+    // setCurrentData((prev) => {
+    //   // Remove old data older than 30 seconds
+    //   const cutoff = timestamp - 30000;
+    //   const filtered = prev.filter((d) => d.time >= cutoff);
+    //   return [...filtered, { sensor, time: timestamp, data: parsedData }];
+    // });
+
+    setCurrentData((prev) => {
+      // Remove old data older than 30 seconds
+      // const cutoff = timestamp - 30000;
+      const newData = {...prev};
+      newData[sensor].push([timestamp, parsedData]);
+      return newData;
+    })
+
+
     if (
       recordedData.current.length > 1000 ||
       timestamp - recordedData.current[0].time > 300000
@@ -215,6 +233,14 @@ const useBLERecorder = (bleDeviceHandler) => {
           [...selectedSensors].map((elm) => bleDeviceHandler.sensorConfig[elm]),
           datasetName
         );
+        setCurrentData(() => {
+          const newCurrentData = {};
+          for (const sensor of selectedSensors) {
+            newCurrentData[sensor] = [];
+          }
+          console.log("newCurrentData", newCurrentData);
+          return newCurrentData;
+        })
         newDataset.current = await createDataset(baseDataset);
         await prepareRecording(selectedSensors, 0);
         setRecorderState("recording");

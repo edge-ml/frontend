@@ -45,22 +45,16 @@ class BlePanelSensorstreamGraph extends Component {
   }
 
   updateLiveData() {
+    console.log("currentData", this.props.currentData);
     var chart = Highcharts.charts[this.highcharts_index];
     const xAxis = chart.xAxis[0];
-    var shift = false;
+    const latestData = this.props.currentData[this.props.currentData.length - 1];
+    const timeStamp = latestData[0];
     for (var i = chart.series.length - 1; i > -1; i--) {
       var series = chart.series[i];
-      var timestamp;
-      var value;
-      if (Array.isArray(this.props.lastData[this.props.index])) {
-        timestamp = this.props.lastData[this.props.index][0];
-        value = this.props.lastData[this.props.index][1][i];
-      } else {
-        timestamp = Date.now();
-        value = 0;
-      }
       var shiftSeries = series.data.length >= this.datastream_length;
-      series.addPoint([timestamp, value], true, shiftSeries); // adds new data point and deletes oldest one if max datastream length is reached
+      console.log("Add datapoint", [timeStamp, latestData[1][i]])
+      series.addPoint([timeStamp, latestData[1][i]], true, shiftSeries); // adds new data point and deletes oldest one if max datastream length is reached
     }
     if (shiftSeries) {
       var extremes = chart.xAxis[0].getExtremes();
@@ -150,7 +144,7 @@ class BlePanelSensorstreamGraph extends Component {
       xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`);
       xAxis.addPlotBand({
         from: this.props.currentLabel.start - visualOffset,
-        to: this.props.lastData[this.props.index][0] - 0.5 * visualOffset,
+        to: this.props.currentData[0] - 0.5 * visualOffset,
         color: this.props.currentLabel.color,
         className: "labelingArea",
         id: `labelingArea-${this.state.startPlotId}`,
