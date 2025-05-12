@@ -47,7 +47,7 @@ class BlePanelSensorstreamGraph extends Component {
   updateLiveData() {
     var chart = Highcharts.charts[this.highcharts_index];
     const xAxis = chart.xAxis[0];
-    const latestData = this.props.currentData[this.props.currentData.length - 1];
+    const latestData = this.props.currentData;
     const timeStamp = latestData[0];
     const shiftSeries = timeStamp - (this.props.recordingStartTime + 10000) > 0;
     console.log("Shiftseries", shiftSeries, timeStamp, this.props.recordingStartTime);

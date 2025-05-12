@@ -164,10 +164,8 @@ const useBLERecorder = (bleDeviceHandler) => {
     // });
 
     setCurrentData((prev) => {
-      // Remove old data older than 30 seconds
-      // const cutoff = timestamp - 30000;
       const newData = {...prev};
-      newData[sensor].push([timestamp + recordingStart - firstDevicetimeStamp.current, parsedData]);
+      newData[sensor] = [timestamp + recordingStart - firstDevicetimeStamp.current, parsedData];
       return newData;
     })
 
