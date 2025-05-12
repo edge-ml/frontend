@@ -291,6 +291,48 @@ const useBLERecorder = (bleDeviceHandler) => {
   const toggleLabelingActive = (labelIdx) => {
     const timestamp = Date.now();
     const keyPressedLabel = selectedLabeling.labels[labelIdx];
+  
+    setCurrentLabel((prevLabel) => {
+      if (prevLabel.id === undefined) {
+        // Start a new label
+        return {
+          start: timestamp,
+          end: undefined,
+          color: keyPressedLabel.color,
+          labelingId: selectedLabeling._id,
+          type: keyPressedLabel._id,
+          id: keyPressedLabel._id,
+          plotId: 0,
+        };
+      }
+  
+      if (
+        prevLabel.id === keyPressedLabel._id &&
+        prevLabel.end === undefined
+      ) {
+        // End the current label
+        const endedLabel = {
+          ...prevLabel,
+          end: timestamp,
+        };
+        console.log("Labeling end", endedLabel);
+        labelingData.current.push(endedLabel); // <-- you might want to save it
+        return {
+          start: undefined,
+          end: undefined,
+          color: undefined,
+          id: undefined,
+          plotId: 0,
+        };
+      }
+  
+      return prevLabel;
+    });
+  };
+
+  const toggleLabelingActive2 = (labelIdx) => {
+    const timestamp = Date.now();
+    const keyPressedLabel = selectedLabeling.labels[labelIdx];
 
     if (currentLabel.id === undefined) {
       labelingData.current = [
@@ -301,12 +343,12 @@ const useBLERecorder = (bleDeviceHandler) => {
         },
       ];
       setCurrentLabel({
-        start: timestamp,
+        start: undefined,
         end: undefined,
-        color: keyPressedLabel.color,
-        labelingId: selectedLabeling._id,
-        type: keyPressedLabel._id,
-        id: keyPressedLabel._id,
+        color: undefined,
+        labelingId: undefined,
+        type: undefined,
+        id: undefined,
         plotId: 0,
       });
     } else if (
@@ -383,7 +425,6 @@ const useBLERecorder = (bleDeviceHandler) => {
       return;
     }
     const labelIdx = shortcutKeys.indexOf(e.key);
-    console.log("key_down:", labelIdx, selectedLabeling, selectedLabeling);
     if (
       labelIdx !== -1 &&
       selectedLabeling &&
@@ -432,7 +473,6 @@ const useBLERecorder = (bleDeviceHandler) => {
     onToggleStream,
     onToggleSampleRate,
     toggleLabelingActive,
-    resetLabelingState,
     handleLabelingSelect,
     handleKeyDown,
     // onChangeSampleRate,

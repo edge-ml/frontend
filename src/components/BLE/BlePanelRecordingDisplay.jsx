@@ -111,6 +111,8 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
     return all_series;
   }
 
+  console.log("currentLabel", currentLabel);
+
   return (
     <div className="m-2">
       <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
