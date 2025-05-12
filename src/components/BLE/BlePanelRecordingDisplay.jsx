@@ -1,30 +1,31 @@
 import "./BleActivated.css";
 
-import React, { Component } from "react";
-import Highcharts from "highcharts/highstock";
+import React, { useMemo, useRef } from "react";
 import BlePanelSensorstreamGraph from "./BlePanelSensorstreamGraph";
 
-class BlePanelRecordingDisplay extends Component {
-  constructor(props) {
-    super(props);
 
-    this.generateStartData = this.generateStartData.bind(this);
-    this.allOptions = [];
-    this.recordingStartTime = Date.now();
 
-    //initialize HighCharts options for the different sensors
-    for (const key of Object.keys(this.props.deviceSensors)) {
-      this.allOptions.push(
-        this.getOptions(
-          this.props.deviceSensors[key].parseScheme.map((elm) => elm.name),
-          this.props.deviceSensors[key].name
+const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
+  const recordingStartTimeRef = useRef(Date.now());
+
+  const { selectedSensors, currentLabel, prevLabel } = bleRecorder;
+  const { sensorConfig } = bleDeviceHandler;
+
+  const allOptions = useMemo(() => {
+    const optionsArray = [];
+    for (const key of Object.keys(sensorConfig)) {
+      optionsArray.push(
+        getOptions(
+          sensorConfig[key].parseScheme.map((elm) => elm.name),
+          sensorConfig[key].name,
+          recordingStartTimeRef.current
         )
       );
     }
-  }
+    return optionsArray;
+  }, [sensorConfig]);
 
-  getOptions(components, name) {
-    const recordingStartTime = this.recordingStartTime;
+  function getOptions(components, name, recordingStartTime) {
     return {
       chart: {
         type: "spline",
@@ -35,13 +36,13 @@ class BlePanelRecordingDisplay extends Component {
       boost: {
         useGPUTranslations: true,
       },
-      series: this.generateStartData(components),
+      series: generateStartData(components, recordingStartTime),
       title: {
         text: name,
       },
       xAxis: {
-        min: this.recordingStartTime, // current time
-        max: this.recordingStartTime + 30000, // current time + 30s
+        min: recordingStartTime, // current time
+        max: recordingStartTime + 30000, // current time + 30s
         type: "datetime",
         tickPixelInterval: 100,
         labels: {
@@ -69,15 +70,12 @@ class BlePanelRecordingDisplay extends Component {
     };
   }
 
-  generateStartData(components) {
-    var all_series = [],
-      j;
-    var time = Date.now();
-
+  function generateStartData(components, recordingStartTime) {
+    const all_series = [];
     for (let j = -components.length; j < 0; j += 1) {
       all_series.push({
         name: components[j + components.length],
-        data: [{ x: this.recordingStartTime, y: 0 }],
+        data: [{ x: recordingStartTime, y: 0 }],
         marker: {
           enabled: false,
         },
@@ -86,38 +84,34 @@ class BlePanelRecordingDisplay extends Component {
     return all_series;
   }
 
-  render() {
-    return (
-      <div className="m-2">
-        <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
-          <h4>5. Recording</h4>
-        </div>
-        <div className="body-wrapper">
-          <ul>
-            {Array.from(this.props.selectedSensors).map((sensorKey) => {
-              return (
-                <li key={sensorKey}>
-                  <BlePanelSensorstreamGraph
-                    options={
-                      this.allOptions[
-                        this.props.sensorKeys.indexOf(sensorKey.toString())
-                      ]
-                    }
-                    fullSampleRate={this.props.fullSampleRate}
-                    sampleRate={this.props.deviceSensors[sensorKey].sampleRate}
-                    lastData={this.props.lastData}
-                    index={this.props.sensorKeys.indexOf(sensorKey.toString())}
-                    currentLabel={this.props.currentLabel}
-                    prevLabel={this.props.prevLabel}
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+  return (
+    <div className="m-2">
+      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
+        <h4>5. Recording</h4>
       </div>
-    );
-  }
-}
+      <div className="body-wrapper">
+        <ul>
+          {Array.from(selectedSensors).map((sensorKey) => {
+            return (
+              <li key={sensorKey}>
+                <BlePanelSensorstreamGraph
+                  options={
+                    allOptions[Object.keys(sensorConfig).indexOf(sensorKey.toString())]
+                  }
+                  fullSampleRate={false}
+                  // sampleRate={props.sensorConfig[sensorKey].sampleRate}
+                  // lastData={props.lastData}
+                  index={Object.keys(sensorConfig).indexOf(sensorKey.toString())}
+                  currentLabel={currentLabel}
+                  prevLabel={prevLabel}
+                />
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </div>
+  );
+};
 
 export default BlePanelRecordingDisplay;

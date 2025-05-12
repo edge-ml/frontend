@@ -89,12 +89,12 @@ export const getBaseDataset = (sensors, datasetName) => {
 export const parseTimeSeriesData = (
   dataset,
   recordedData,
-  recordingSensors,
+  selectedSensors,
   sensors
 ) => {
   const timeSeries = [];
   const sensorData = {};
-  [...recordingSensors].forEach((sensorKey) => {
+  selectedSensors.forEach((sensorKey) => {
     sensorData[sensorKey] = recordedData.filter(
       (elm) => elm.sensor.toString() === sensorKey.toString()
     );

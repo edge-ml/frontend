@@ -92,21 +92,40 @@ const UploadBLE = () => {
         />
       </div>
       {connectedDevice && (
-        <Row>
-          <Col>
-            {console.log("connectedBLEDevice", connectedDevice)}
-            <BlePanelSensorList
-              bleRecorder={bleRecorder}
-              bleDeviceHandler={connectedDevice}
-            ></BlePanelSensorList>
-          </Col>
-          <Col>
-            <BlePanelRecorderSettings
-              bleRecorder={bleRecorder}
-              bleDeviceHandler={connectedDevice}
-            ></BlePanelRecorderSettings>
-          </Col>
-        </Row>
+        <>
+          <Row>
+            <Col>
+              {console.log("connectedBLEDevice", connectedDevice)}
+              <BlePanelSensorList
+                bleRecorder={bleRecorder}
+                bleDeviceHandler={connectedDevice}
+              ></BlePanelSensorList>
+            </Col>
+            <Col>
+              <BlePanelRecorderSettings
+                bleRecorder={bleRecorder}
+                bleDeviceHandler={connectedDevice}
+              ></BlePanelRecorderSettings>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              {bleRecorder.recorderState === "recording" && (
+                <BlePanelRecordingDisplay
+                  bleRecorder={bleRecorder}
+                  bleDeviceHandler={connectedDevice}
+                  // deviceSensors={deviceSensors}
+                  // selectedSensors={selectedSensors}
+                  // lastData={currentData}
+                  // sensorKeys={sensorKeys}
+                  // fullSampleRate={fullSampleRate}
+                  // currentLabel={currentLabel}
+                  // prevLabel={prevLabel}
+                />
+              )}
+            </Col>
+          </Row>
+        </>
       )}
 
       {/* {deviceSensors && connectedBLEDevice && isEdgeMLInstalled ? (

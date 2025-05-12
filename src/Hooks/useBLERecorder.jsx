@@ -77,6 +77,7 @@ const useBLERecorder = (bleDeviceHandler) => {
     if (!bleDeviceHandler.device.gatt.connected) {
       return;
     }
+    console.log("Configuring sensor:", sensorId, sampleRate, latency);
     var configPacket = new Uint8Array(9);
     configPacket[0] = sensorId;
     configPacket.set(floatToBytes(sampleRate), 1);
@@ -85,21 +86,20 @@ const useBLERecorder = (bleDeviceHandler) => {
   };
 
   const unSubscribeAllSensors = async () => {
-    for (const bleKey of Object.keys(bleDeviceHandler.sensors)) {
+    for (const bleKey of Object.keys(bleDeviceHandler.sensorConfig)) {
       await configureSingleSensor(bleKey, 0, 0);
     }
   };
 
   const prepareRecording = async (sensorsToRecord, latency) => {
-    for (const bleKey of Object.keys(bleDeviceHandler.sensors)) {
+    for (const bleKey of Object.keys(bleDeviceHandler.sensorConfig)) {
       if (sensorsToRecord.has(bleKey)) {
         await configureSingleSensor(
           bleKey,
-          bleDeviceHandler.sensors[bleKey].sampleRate,
+          bleDeviceHandler.sensorConfig[bleKey].sampleRate,
           latency
         );
         recordedData.current = [];
-        recordingSensors.current = sensorsToRecord;
       } else {
         await configureSingleSensor(bleKey, 0, 0);
       }
@@ -107,12 +107,14 @@ const useBLERecorder = (bleDeviceHandler) => {
   };
 
   const uploadCache = async (data) => {
+    console.log("Uploading data with length:", recordedData.current.length);
     const parsedData = parseTimeSeriesData(
       newDataset.current,
       data,
-      recordingSensors.current,
-      bleDeviceHandler.sensors
+      selectedSensors,
+      bleDeviceHandler.sensorConfig
     );
+    console.log("Parsed Data:", parsedData);
     addToUploadCounter(parsedData);
     await appendToDataset(newDataset.current, parsedData);
   };
@@ -128,13 +130,16 @@ const useBLERecorder = (bleDeviceHandler) => {
     });
   };
 
-  const handleSensorData = (value) => {
+  const handleSensorData = (event) => {
+    console.log("Received Sensor Data");
+    const value = event.target.value;
     var sensor = value.getUint8(0);
     var timestamp = value.getUint32(2, true);
-    if (!recordingSensors.current.has(sensor)) {
-      return;
-    }
-    var parsedData = parseData(bleDeviceHandler.sensors[sensor], value);
+    // if (!recordingSensors.current.has(sensor)) {
+    //   console.log("Sensor not selected for recording:", sensor);
+    //   return;
+    // }
+    var parsedData = parseData(bleDeviceHandler.sensorConfig[sensor], value);
     recordedData.current.push({
       sensor: sensor,
       time: timestamp,
@@ -144,13 +149,16 @@ const useBLERecorder = (bleDeviceHandler) => {
       recordedData.current.length > 1000 ||
       timestamp - recordedData.current[0].time > 300000
     ) {
+      console.log("Uploading data with length:", recordedData.current.length);
       uploadCache(recordedData.current);
       recordedData.current = [];
     }
-    setCurrentData((prev) => [
-      ...prev,
-      { sensor: sensor, time: timestamp, data: parsedData },
-    ]);
+    // const parsedObj = { sensor: sensor, time: timestamp, data: parsedData };
+    // console.log("Parsed Data:", parsedObj);
+    // setCurrentData((prev) => [
+    //   ...prev,
+    //   parsedObj,
+    // ]);
   };
 
   useEffect(() => {
@@ -204,7 +212,7 @@ const useBLERecorder = (bleDeviceHandler) => {
         }
         setRecorderState("startup");
         const baseDataset = getBaseDataset(
-          [...selectedSensors].map((elm) => bleDeviceHandler.sensors[elm]),
+          [...selectedSensors].map((elm) => bleDeviceHandler.sensorConfig[elm]),
           datasetName
         );
         newDataset.current = await createDataset(baseDataset);
@@ -225,6 +233,12 @@ const useBLERecorder = (bleDeviceHandler) => {
           };
           // Add label logic can be implemented here if needed
           setCurrentLabel(newCurrentLabel);
+        }
+
+        if (recordedData.current.length > 0) {
+
+          await uploadCache(recordedData.current);
+          recordedData.current = [];
         }
 
         setRecorderState("finalizing");
