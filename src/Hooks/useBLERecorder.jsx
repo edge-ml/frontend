@@ -22,6 +22,11 @@ const useBLERecorder = (bleDeviceHandler) => {
   const [fullSampleRate, setFullSampleRate] = useState(false);
   const [labelings, setLabelings] = useState([]);
   const [selectedLabeling, setSelectedLabeling] = useState(undefined);
+
+  const [recordingStart, setRecordingStart] = useState(undefined);
+
+  const firstDevicetimeStamp = useRef(undefined);
+
   const [currentLabel, setCurrentLabel] = useState({
     start: undefined,
     end: undefined,
@@ -40,17 +45,17 @@ const useBLERecorder = (bleDeviceHandler) => {
   // Store sensor sample rates separately
   const [sensorSampleRates, setSensorSampleRates] = useState({});
 
-  // Function to change sample rate for a sensor
-  const onChangeSampleRate = (sensorKey, newSampleRate) => {
-    const rate = Number(newSampleRate);
-    if (isNaN(rate) || rate < 0 || rate > 50) {
-      return; // Ignore invalid values
-    }
-    setSensorSampleRates((prev) => ({
-      ...prev,
-      [sensorKey]: rate,
-    }));
-  };
+  // // Function to change sample rate for a sensor
+  // const onChangeSampleRate = (sensorKey, newSampleRate) => {
+  //   const rate = Number(newSampleRate);
+  //   if (isNaN(rate) || rate < 0 || rate > 50) {
+  //     return; // Ignore invalid values
+  //   }
+  //   setSensorSampleRates((prev) => ({
+  //     ...prev,
+  //     [sensorKey]: rate,
+  //   }));
+  // };
 
 
   console.log(selectedSensors);
@@ -135,6 +140,10 @@ const useBLERecorder = (bleDeviceHandler) => {
     const value = event.target.value;
     var sensor = value.getUint8(0);
     var timestamp = value.getUint32(2, true);
+
+    if (firstDevicetimeStamp.current === undefined) {
+      firstDevicetimeStamp.current = timestamp;
+    }
     // if (!recordingSensors.current.has(sensor)) {
     //   console.log("Sensor not selected for recording:", sensor);
     //   return;
@@ -142,7 +151,7 @@ const useBLERecorder = (bleDeviceHandler) => {
     var parsedData = parseData(bleDeviceHandler.sensorConfig[sensor], value);
     recordedData.current.push({
       sensor: sensor,
-      time: timestamp,
+      time: timestamp + recordingStart - firstDevicetimeStamp.current,
       data: parsedData,
     });
 
@@ -158,7 +167,7 @@ const useBLERecorder = (bleDeviceHandler) => {
       // Remove old data older than 30 seconds
       // const cutoff = timestamp - 30000;
       const newData = {...prev};
-      newData[sensor].push([timestamp, parsedData]);
+      newData[sensor].push([timestamp + recordingStart - firstDevicetimeStamp.current, parsedData]);
       return newData;
     })
 
@@ -217,6 +226,7 @@ const useBLERecorder = (bleDeviceHandler) => {
   const onClickRecord = async () => {
     switch (recorderState) {
       case "ready": {
+        firstDevicetimeStamp.current = undefined;
         if (selectedSensors.size === 0) {
           alert("Please select at least one sensor before recording.");
           return;
@@ -241,6 +251,8 @@ const useBLERecorder = (bleDeviceHandler) => {
           console.log("newCurrentData", newCurrentData);
           return newCurrentData;
         })
+        
+        setRecordingStart(Date.now());
         newDataset.current = await createDataset(baseDataset);
         await prepareRecording(selectedSensors, 0);
         setRecorderState("recording");
@@ -427,7 +439,7 @@ const useBLERecorder = (bleDeviceHandler) => {
     resetLabelingState,
     handleLabelingSelect,
     handleKeyDown,
-    onChangeSampleRate,
+    // onChangeSampleRate,
     sensorSampleRates,
   };
 };

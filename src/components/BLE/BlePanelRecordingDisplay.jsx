@@ -51,6 +51,10 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
   // }, [currentData, sensorConfig]);
 
   function getOptions(components, name, recordingStartTime) {
+
+    // Recordingstarttie in milliseconds
+    const recordingStartTimeInMs = recordingStartTime;
+
     return {
       chart: {
         type: "spline",
@@ -73,10 +77,8 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
           rotation: 20,
           overflow: "allow",
           formatter: function () {
-            // calculate the time since the recording started in seconds
-            const seconds = Math.round(
-              (this.value - recordingStartTime) / 1000
-            );
+            // display time in seconds from the first timestamp in the data
+            const seconds = Math.round((this.value - recordingStartTimeInMs) / 1000);
             if (seconds < 0) {
               return "";
             }
@@ -121,6 +123,7 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
                   options={
                     allOptions[Object.keys(sensorConfig).indexOf(sensorKey.toString())]
                   }
+                  recordingStartTime={recordingStartTimeRef.current}
                   fullSampleRate={false}
                   // sampleRate={props.sensorConfig[sensorKey].sampleRate}
                   currentData={currentData[sensorKey]}

@@ -112,7 +112,10 @@ class BLEDeviceHandlerV1 extends BLEHandler {
     }
 
     async steamSensorData() {
+      
+    }
 
+    parseData(data) {
     }
 
 }

@@ -45,23 +45,20 @@ class BlePanelSensorstreamGraph extends Component {
   }
 
   updateLiveData() {
-    console.log("currentData", this.props.currentData);
     var chart = Highcharts.charts[this.highcharts_index];
     const xAxis = chart.xAxis[0];
     const latestData = this.props.currentData[this.props.currentData.length - 1];
     const timeStamp = latestData[0];
+    const shiftSeries = timeStamp - (this.props.recordingStartTime + 10000) > 0;
+    console.log("Shiftseries", shiftSeries, timeStamp, this.props.recordingStartTime);
     for (var i = chart.series.length - 1; i > -1; i--) {
       var series = chart.series[i];
-      var shiftSeries = series.data.length >= this.datastream_length;
-      console.log("Add datapoint", [timeStamp, latestData[1][i]])
       series.addPoint([timeStamp, latestData[1][i]], true, shiftSeries); // adds new data point and deletes oldest one if max datastream length is reached
-    }
-    if (shiftSeries) {
-      var extremes = chart.xAxis[0].getExtremes();
-      chart.xAxis[0].setExtremes(
-        extremes.min + this.interval_length,
-        extremes.max + this.interval_length
-      );
+      if (shiftSeries) {
+        // Instead of shifting by interval_length, set extremes to last 30 seconds window
+        const windowSize = 10000; // 10 seconds in ms
+        chart.xAxis[0].setExtremes(timeStamp - windowSize, timeStamp);
+      }
     }
 
     const offsetAmount = 4 * this.interval_length;
