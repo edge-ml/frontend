@@ -12,12 +12,11 @@ import {
 } from "reactstrap";
 import LabelBadge from "../Common/LabelBadge";
 
-export const BleLabelingMenu = ({
-  labelings,
-  selectedLabeling,
-  handleSelectLabeling,
-  shortcutKeys,
-}) => {
+export const BleLabelingMenu = ({ bleRecorder, bleDeviceHandler }) => {
+
+
+  const { labelings, selectedLabeling, handleLabelingSelect, shortcutKeys } = bleRecorder;
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
@@ -40,7 +39,7 @@ export const BleLabelingMenu = ({
             {labelings.map((labeling) => (
               <DropdownItem
                 key={labeling.name}
-                onClick={(e) => handleSelectLabeling(labeling)}
+                onClick={(e) => handleLabelingSelect(labeling)}
               >
                 {labeling.name}
               </DropdownItem>

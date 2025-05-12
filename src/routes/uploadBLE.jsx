@@ -95,7 +95,6 @@ const UploadBLE = () => {
         <>
           <Row>
             <Col>
-              {console.log("connectedBLEDevice", connectedDevice)}
               <BlePanelSensorList
                 bleRecorder={bleRecorder}
                 bleDeviceHandler={connectedDevice}
@@ -106,6 +105,15 @@ const UploadBLE = () => {
                 bleRecorder={bleRecorder}
                 bleDeviceHandler={connectedDevice}
               ></BlePanelRecorderSettings>
+              <BleLabelingMenu
+                bleRecorder={bleRecorder}
+                bleDeviceHandler={connectedDevice}
+                // labelings={labelings}
+                // selectedLabeling={selectedLabeling}
+                // handleSelectLabeling={handleLabelingSelect}
+                // handleSelectLabel={() => {}}
+                // shortcutKeys={shortcutKeys}
+              />
             </Col>
           </Row>
           <Row>

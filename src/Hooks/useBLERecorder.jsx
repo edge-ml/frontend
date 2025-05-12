@@ -57,9 +57,6 @@ const useBLERecorder = (bleDeviceHandler) => {
   //   }));
   // };
 
-
-  console.log(selectedSensors);
-
   const [currentData, setCurrentData] = useState([]);
   const [sensorKeys, setSensorKeys] = useState([]);
 
@@ -68,7 +65,6 @@ const useBLERecorder = (bleDeviceHandler) => {
 
   const newDataset = useRef(null);
   const recordedData = useRef([]);
-  const recordingSensors = useRef(new Set());
   const uploadCounter = useRef(new Map());
 
   const setDatasetNameAsync = async (name) => {
@@ -112,14 +108,12 @@ const useBLERecorder = (bleDeviceHandler) => {
   };
 
   const uploadCache = async (data) => {
-    console.log("Uploading data with length:", recordedData.current.length);
     const parsedData = parseTimeSeriesData(
       newDataset.current,
       data,
       selectedSensors,
       bleDeviceHandler.sensorConfig
     );
-    console.log("Parsed Data:", parsedData);
     addToUploadCounter(parsedData);
     await appendToDataset(newDataset.current, parsedData);
   };
@@ -136,7 +130,6 @@ const useBLERecorder = (bleDeviceHandler) => {
   };
 
   const handleSensorData = (event) => {
-    console.log("Received Sensor Data");
     const value = event.target.value;
     var sensor = value.getUint8(0);
     var timestamp = value.getUint32(2, true);
@@ -144,10 +137,7 @@ const useBLERecorder = (bleDeviceHandler) => {
     if (firstDevicetimeStamp.current === undefined) {
       firstDevicetimeStamp.current = timestamp;
     }
-    // if (!recordingSensors.current.has(sensor)) {
-    //   console.log("Sensor not selected for recording:", sensor);
-    //   return;
-    // }
+
     var parsedData = parseData(bleDeviceHandler.sensorConfig[sensor], value);
     recordedData.current.push({
       sensor: sensor,
@@ -155,20 +145,14 @@ const useBLERecorder = (bleDeviceHandler) => {
       data: parsedData,
     });
 
-    // Update currentData state for live display
-    // setCurrentData((prev) => {
-    //   // Remove old data older than 30 seconds
-    //   const cutoff = timestamp - 30000;
-    //   const filtered = prev.filter((d) => d.time >= cutoff);
-    //   return [...filtered, { sensor, time: timestamp, data: parsedData }];
-    // });
-
     setCurrentData((prev) => {
-      const newData = {...prev};
-      newData[sensor] = [timestamp + recordingStart - firstDevicetimeStamp.current, parsedData];
+      const newData = { ...prev };
+      newData[sensor] = [
+        timestamp + recordingStart - firstDevicetimeStamp.current,
+        parsedData,
+      ];
       return newData;
-    })
-
+    });
 
     if (
       recordedData.current.length > 1000 ||
@@ -178,12 +162,6 @@ const useBLERecorder = (bleDeviceHandler) => {
       uploadCache(recordedData.current);
       recordedData.current = [];
     }
-    // const parsedObj = { sensor: sensor, time: timestamp, data: parsedData };
-    // console.log("Parsed Data:", parsedObj);
-    // setCurrentData((prev) => [
-    //   ...prev,
-    //   parsedObj,
-    // ]);
   };
 
   useEffect(() => {
@@ -248,8 +226,8 @@ const useBLERecorder = (bleDeviceHandler) => {
           }
           console.log("newCurrentData", newCurrentData);
           return newCurrentData;
-        })
-        
+        });
+
         setRecordingStart(Date.now());
         newDataset.current = await createDataset(baseDataset);
         await prepareRecording(selectedSensors, 0);
@@ -272,7 +250,6 @@ const useBLERecorder = (bleDeviceHandler) => {
         }
 
         if (recordedData.current.length > 0) {
-
           await uploadCache(recordedData.current);
           recordedData.current = [];
         }
@@ -316,6 +293,32 @@ const useBLERecorder = (bleDeviceHandler) => {
     const keyPressedLabel = selectedLabeling.labels[labelIdx];
 
     if (currentLabel.id === undefined) {
+      // Create a new label
+      setCurrentLabel({
+        start: timestamp,
+        end: undefined,
+        color: keyPressedLabel.color,
+        labelingId: selectedLabeling._id,
+        type: keyPressedLabel._id,
+        id: keyPressedLabel._id,
+        plotId: 0,
+      });
+    } else if (
+      currentLabel.id === keyPressedLabel._id &&
+      currentLabel.end === undefined
+    ) {
+      setCurrentLabel((prev) => ({
+        ...prev,
+        end: timestamp - 1,
+      }));
+    }
+  };
+
+  const toggleLabelingActive2 = (labelIdx) => {
+    const timestamp = Date.now();
+    const keyPressedLabel = selectedLabeling.labels[labelIdx];
+
+    if (currentLabel.id === undefined) {
       labelingData.current = [
         {
           start: timestamp,
@@ -332,11 +335,14 @@ const useBLERecorder = (bleDeviceHandler) => {
         id: keyPressedLabel._id,
         plotId: 0,
       });
-    } else if (currentLabel.id === keyPressedLabel._id && currentLabel.end === undefined) {
-      const currentLabelingData = labelingData.current[labelingData.current.length - 1];
+    } else if (
+      currentLabel.id === keyPressedLabel._id &&
+      currentLabel.end === undefined
+    ) {
+      const currentLabelingData =
+        labelingData.current[labelingData.current.length - 1];
       currentLabelingData.end = timestamp;
       const newCurrentLabel = { ...currentLabel, end: timestamp };
-      // Add label logic can be implemented here if needed
       setCurrentLabel(newCurrentLabel);
     } else if (currentLabel.end !== undefined) {
       labelingData.current.push({
@@ -353,8 +359,12 @@ const useBLERecorder = (bleDeviceHandler) => {
         type: keyPressedLabel._id,
         labelingId: selectedLabeling._id,
       }));
-    } else if (currentLabel.end === undefined && currentLabel.id !== keyPressedLabel._id) {
-      const currentLabelingData = labelingData.current[labelingData.current.length - 1];
+    } else if (
+      currentLabel.end === undefined &&
+      currentLabel.id !== keyPressedLabel._id
+    ) {
+      const currentLabelingData =
+        labelingData.current[labelingData.current.length - 1];
       currentLabelingData.end = timestamp - 1;
       labelingData.current.push({
         start: timestamp,
@@ -394,10 +404,12 @@ const useBLERecorder = (bleDeviceHandler) => {
   };
 
   const handleKeyDown = (e) => {
+    console.log("Key pressed:", e.key);
     if (recorderState !== "recording") {
       return;
     }
     const labelIdx = shortcutKeys.indexOf(e.key);
+    console.log("key_down:", labelIdx, selectedLabeling, selectedLabeling);
     if (
       labelIdx !== -1 &&
       selectedLabeling &&
@@ -415,6 +427,18 @@ const useBLERecorder = (bleDeviceHandler) => {
   useEffect(() => {
     fetchLabelings();
   }, []);
+
+  // set handle keysdown event listener
+  useEffect(() => {
+    if (recorderState === "recording") {
+      window.addEventListener("keydown", handleKeyDown);
+    } else {
+      window.removeEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [recorderState]);
 
   return {
     datasetName,
@@ -439,6 +463,7 @@ const useBLERecorder = (bleDeviceHandler) => {
     handleKeyDown,
     // onChangeSampleRate,
     sensorSampleRates,
+    shortcutKeys,
   };
 };
 

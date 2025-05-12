@@ -50,7 +50,6 @@ class BlePanelSensorstreamGraph extends Component {
     const latestData = this.props.currentData;
     const timeStamp = latestData[0];
     const shiftSeries = timeStamp - (this.props.recordingStartTime + 10000) > 0;
-    console.log("Shiftseries", shiftSeries, timeStamp, this.props.recordingStartTime);
     for (var i = chart.series.length - 1; i > -1; i--) {
       var series = chart.series[i];
       series.addPoint([timeStamp, latestData[1][i]], true, shiftSeries); // adds new data point and deletes oldest one if max datastream length is reached
@@ -185,6 +184,7 @@ class BlePanelSensorstreamGraph extends Component {
   }
 
   render() {
+
     return (
       <div className="m-2">
         <HighchartsReact

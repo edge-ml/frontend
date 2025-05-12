@@ -9,8 +9,6 @@ function BlePanelSensorList({ bleRecorder, bleDeviceHandler }) {
 
   const maxSampleRate = 50;
 
-  console.log("BlePanelSensorList", sensorConfig);
-
   if (!sensorConfig) {
     return <div>Loading...</div>;
   }

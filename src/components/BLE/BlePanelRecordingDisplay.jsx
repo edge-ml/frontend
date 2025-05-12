@@ -32,7 +32,7 @@ const BlePanelRecordingDisplay = ({ bleRecorder, bleDeviceHandler }) => {
   //     return [];
   //   }
 
-  //   console.log("currentData", currentData);
+  //    ("currentData", currentData);
 
   //   const sensorKeysArray = Object.keys(sensorConfig);
 
