@@ -54,6 +54,9 @@ export const parseDataV2 = (sensor, dataBuffer) => {
   const timestampHigh = dataView.getUint32(byteIndex, true);
   byteIndex += 4;
   const timestamp = (BigInt(timestampHigh) << 32n) + BigInt(timestampLow);
+  // Convert to milliseconds
+  const timestampInMs = Number(timestamp) / 1000;
+
 
   var schema = sensor.parseScheme;
   const values = [];
@@ -98,8 +101,7 @@ export const parseDataV2 = (sensor, dataBuffer) => {
     }
     values.push(parsedValue);
   }
-  console.log("Parsed values:", values);
-  return values;
+  return [timestampInMs, values];
 };
 
 export const floatToBytes = (value) => {

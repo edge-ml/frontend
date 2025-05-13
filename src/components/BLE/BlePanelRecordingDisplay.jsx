@@ -16,7 +16,7 @@ class BlePanelRecordingDisplay extends Component {
     for (const key of Object.keys(this.props.deviceSensors)) {
       this.allOptions.push(
         this.getOptions(
-          this.props.deviceSensors[key].parseScheme.map((elm) => elm.name),
+          this.props.deviceSensors[key].parseScheme.map((elm, index) => elm.name + "_" + index),
           this.props.deviceSensors[key].name
         )
       );

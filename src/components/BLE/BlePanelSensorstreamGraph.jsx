@@ -52,6 +52,8 @@ class BlePanelSensorstreamGraph extends Component {
       var series = chart.series[i];
       var timestamp;
       var value;
+      console.log("lastData", this.props.lastData);
+      console.log("index", this.props.index);
       if (Array.isArray(this.props.lastData[this.props.index])) {
         timestamp = this.props.lastData[this.props.index][0];
         value = this.props.lastData[this.props.index][1][i];

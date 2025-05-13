@@ -116,16 +116,17 @@ class BleDeviceProcessorV2 {
     var adjustedTime = false;
     const recordData = (value) => {
       var sensor = value.getUint8(0);
-      const timestampLow = value.getUint32(2, true);
-      const timestampHigh = value.getUint32(6, true);
-      let timestamp = (BigInt(timestampHigh) << 32n) + BigInt(timestampLow);
-      timestamp = Number(timestamp);
+
+
+      var [timestamp, parsedData] = parseDataV2(this.sensors[sensor], value);
+
       if (!adjustedTime) {
         adjustedTime = true;
         recordingStart -= timestamp;
       }
-      var parsedData = parseDataV2(this.sensors[sensor], value);
+
       console.log("parsedData", parsedData);
+
       this.recordedData.push({
         sensor: sensor,
         time: timestamp + recordingStart,
