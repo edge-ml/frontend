@@ -1,76 +1,87 @@
 import "./BleActivated.css";
 
-import React, { Component } from "react";
+import React, { useEffect, useRef } from "react";
 import Highcharts from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
 
-class BlePanelSensorstreamGraph extends Component {
-  constructor(props) {
-    super(props);
+function BlePanelSensorstreamGraph(props) {
+  const chartRef = useRef(null);
 
-    this.handleStartLiveUpdate = this.handleStartLiveUpdate.bind(this);
-    this.handleStopLiveUpdate = this.handleStopLiveUpdate.bind(this);
-    this.updateLiveData = this.updateLiveData.bind(this);
-    this.streaming_seconds = 30;
+  // Function to update live data points
+  const updateLiveData = () => {
+    const chart = chartRef.current?.chart;
+    if (!chart) return;
 
-    if (this.props.fullSampleRate) {
-      // show sensor stream at full sample rate
-      this.interval_length = Math.floor(1000 / this.props.sampleRate); // in ms
-      this.datastream_length = this.props.sampleRate * this.streaming_seconds; // how many data points are visible
-    } else {
-      // show sensor stream at higher sample rate to improve performance (default)
-      this.interval_length = 100;
-      this.datastream_length = Math.floor(
-        this.streaming_seconds * (1000 / this.interval_length)
-      );
-    }
-
-    this.state = {
-      liveUpdate: false,
-      startPlotId: undefined,
-      endPlotId: undefined,
-      shiftHandledForPlotId: undefined,
-      offsetApplied: undefined,
-      labelActive: false,
-    };
-  }
-
-  componentDidMount() {
-    this.highcharts_index = Highcharts.charts.length - 1; // newest chart
-    this.handleStartLiveUpdate();
-  }
-
-  componentWillUnmount() {
-    this.handleStopLiveUpdate();
-  }
-
-  updateLiveData() {
-
-    console.log(this.props.labelingData.length);
-
-    var chart = Highcharts.charts[this.highcharts_index];
     const xAxis = chart.xAxis[0];
-    const latestData = this.props.currentData;
+    const latestData = props.currentData;
+    if (!latestData || latestData.length === 0) return;
+    if (!latestData) return;
+
     const timeStamp = latestData[0];
-    const shiftSeries = timeStamp - (this.props.recordingStartTime + 10000) > 0;
-    for (var i = chart.series.length - 1; i > -1; i--) {
-      var series = chart.series[i];
-      series.addPoint([timeStamp, latestData[1][i]], true, shiftSeries); // adds new data point and deletes oldest one if max datastream length is reached
-      if (shiftSeries) {
-        // Instead of shifting by interval_length, set extremes to last 30 seconds window
-        const windowSize = 10000; // 10 seconds in ms
-        chart.xAxis[0].setExtremes(timeStamp - windowSize, timeStamp);
-      }
+    const shiftSeries = timeStamp - (props.recordingStartTime + 10000) > 0;
+
+    for (let i = chart.series.length - 1; i >= 0; i--) {
+      const series = chart.series[i];
+      series.addPoint([timeStamp, latestData[1][i]], true, shiftSeries);
     }
 
+    if (shiftSeries) {
+      const windowSize = 10000; // 10 seconds in ms
+      xAxis.setExtremes(timeStamp - windowSize, timeStamp);
+    }
+  };
 
-    // Render the plotbands
-    for (const label of this.props.labelingData) {
-      const plotLineExists = (id) =>
-        (xAxis.plotLines || []).some((pl) => pl.id === id);
-      const plotBandExists = (id) =>
-        (xAxis.plotBands || []).some((pb) => pb.id === id);
+  // // Effect to handle live update interval
+  // useEffect(() => {
+  //   intervalRef.current = window.setInterval(updateLiveData, interval_length);
+  //   return () => {
+  //     window.clearInterval(intervalRef.current);
+  //   };
+  // }, [interval_length, props.currentData, props.recordingStartTime]);
 
+  useEffect(() => {
+    updateLiveData();
+  }
+  , [props.currentData, props.recordingStartTime]);
+
+  // Effect to update plotlines and plotbands when labelingData changes
+  useEffect(() => {
+    const chart = chartRef.current?.chart;
+    if (!chart) return;
+
+    const xAxis = chart.xAxis[0];
+
+    // Collect current labeling IDs
+    const currentIds = new Set(
+      props.labelingData.flatMap((label) => [
+        `labelingStart-${label.plotId}`,
+        `labelingArea-${label.plotId}`,
+        `labelingEnd-${label.plotId}`,
+      ])
+    );
+
+    // Remove plotLines not in current labelingData
+    (xAxis.plotLines || []).forEach((pl) => {
+      if (!currentIds.has(pl.id)) {
+        xAxis.removePlotLine(pl.id);
+      }
+    });
+
+    // Remove plotBands not in current labelingData
+    (xAxis.plotBands || []).forEach((pb) => {
+      if (!currentIds.has(pb.id)) {
+        xAxis.removePlotBand(pb.id);
+      }
+    });
+
+    // Helper functions to check existence
+    const plotLineExists = (id) =>
+      (xAxis.plotLines || []).some((pl) => pl.id === id);
+    const plotBandExists = (id) =>
+      (xAxis.plotBands || []).some((pb) => pb.id === id);
+
+    // Add missing plotLines and plotBands
+    for (const label of props.labelingData) {
       if (!plotLineExists(`labelingStart-${label.plotId}`)) {
         xAxis.addPlotLine({
           value: label.start,
@@ -97,142 +108,18 @@ class BlePanelSensorstreamGraph extends Component {
         });
       }
     }
+  }, [props.labelingData]);
 
-    // const offsetAmount = 4 * this.interval_length;
-    // const visualOffset = shiftSeries ? 0 : offsetAmount;
-
-    // // start a new label
-    // if (
-    //   (this.state.startPlotId === undefined ||
-    //     this.state.startPlotId !== this.props.currentLabel.plotId) &&
-    //   this.props.currentLabel.id
-    // ) {
-    //   xAxis.addPlotLine({
-    //     value: this.props.currentLabel.start - visualOffset,
-    //     color: this.props.currentLabel.color,
-    //     width: 5,
-    //     id: `labelingStart-${this.props.currentLabel.plotId}`,
-    //   });
-
-    //   // handle the case when the user starts recording a new label before stopping the previous one
-    //   if (this.props.prevLabel.id && this.state.endPlotId === undefined) {
-    //     xAxis.removePlotBand(`labelingArea-${this.props.prevLabel.plotId}`);
-    //     xAxis.addPlotBand({
-    //       from: this.props.prevLabel.start - visualOffset,
-    //       to: this.props.prevLabel.end - visualOffset,
-    //       color: this.props.prevLabel.color,
-    //       className: "labelingArea",
-    //       id: `labelingArea-${this.props.prevLabel.plotId}`,
-    //     });
-    //     xAxis.addPlotLine({
-    //       value: this.props.prevLabel.end - visualOffset,
-    //       color: this.props.prevLabel.color,
-    //       width: 5,
-    //       id: `labelingEnd-${this.props.prevLabel.plotId}`,
-    //     });
-    //   }
-    //   this.setState({
-    //     startPlotId: this.props.currentLabel.plotId,
-    //     endPlotId: undefined,
-    //     offsetApplied: !shiftSeries,
-    //     labelActive: true,
-    //   });
-    // }
-    // // stop the label
-    // else if (
-    //   this.state.endPlotId === undefined &&
-    //   this.state.labelActive &&
-    //   this.props.currentLabel.end !== undefined
-    // ) {
-    //   this.setState({ endPlotId: this.props.currentLabel.plotId });
-    //   xAxis.removePlotBand(`labelingArea-${this.props.currentLabel.plotId}`);
-    //   xAxis.addPlotBand({
-    //     from:
-    //       this.props.currentLabel.start -
-    //       (this.state.offsetApplied ? offsetAmount : 0),
-    //     to:
-    //       this.props.currentLabel.end -
-    //       (this.state.offsetApplied ? offsetAmount : 0),
-    //     color: this.props.currentLabel.color,
-    //     className: "labelingArea",
-    //     id: `labelingArea-${this.props.currentLabel.plotId}`,
-    //   });
-    //   xAxis.addPlotLine({
-    //     value:
-    //       this.props.currentLabel.end -
-    //       (this.state.offsetApplied ? offsetAmount : 0),
-    //     color: this.props.currentLabel.color,
-    //     width: 5,
-    //     id: `labelingEnd-${this.props.currentLabel.plotId}`,
-    //   });
-    //   this.setState({
-    //     labelActive: false,
-    //   });
-    // }
-    // // if the graph is not shifting, gradually move the end of the plotband to right each time a new point is rendered
-    // else if (
-    //   !shiftSeries &&
-    //   this.state.startPlotId !== undefined &&
-    //   this.state.endPlotId === undefined
-    // ) {
-    //   xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`);
-    //   xAxis.addPlotBand({
-    //     from: this.props.currentLabel.start - visualOffset,
-    //     to: this.props.currentData[0] - 0.5 * visualOffset,
-    //     color: this.props.currentLabel.color,
-    //     className: "labelingArea",
-    //     id: `labelingArea-${this.state.startPlotId}`,
-    //   });
-    // }
-    // // if the graph is shifting, set the end of the plotband to infinity once
-    // // end of the graph is not visible during recording the label while shifting the graph
-    // // so we can optimize the number of rendering to just one this way
-    // else if (
-    //   shiftSeries &&
-    //   this.state.labelActive &&
-    //   this.state.shiftHandledForPlotId !== this.state.startPlotId
-    // ) {
-    //   xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`);
-    //   xAxis.addPlotBand({
-    //     from:
-    //       this.props.currentLabel.start -
-    //       (this.state.offsetApplied ? offsetAmount : 0),
-    //     to: 4000000000000, // pseudo infinity
-    //     color: this.props.currentLabel.color,
-    //     className: "labelingArea",
-    //     id: `labelingArea-${this.state.startPlotId}`,
-    //   });
-    //   this.setState({ shiftHandledForPlotId: this.state.startPlotId });
-    // }
-  }
-
-  handleStartLiveUpdate(e) {
-    e && e.preventDefault();
-    this.setState({
-      liveUpdate: window.setInterval(this.updateLiveData, this.interval_length),
-    });
-  }
-
-  handleStopLiveUpdate(e) {
-    e && e.preventDefault();
-    window.clearInterval(this.state.liveUpdate);
-    this.setState({
-      liveUpdate: false,
-    });
-  }
-
-  render() {
-
-    return (
-      <div className="m-2">
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={this.props.options}
-          updateArgs={[true, true, true]}
-        />
-      </div>
-    );
-  }
+  return (
+    <div className="m-2">
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={props.options}
+        updateArgs={[true, true, true]}
+        ref={chartRef}
+      />
+    </div>
+  );
 }
 
 export default BlePanelSensorstreamGraph;

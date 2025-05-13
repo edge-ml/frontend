@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { adjectives, names } from "../routes/export/nameGeneration";
 import { uniqueNamesGenerator } from "unique-names-generator";
 import { getLabelings } from "../services/ApiServices/LabelingServices";
+import { createDatasetLabel } from "../services/ApiServices/DatasetLabelService";
 import {
   floatToBytes,
   intToBytes,
@@ -235,29 +236,32 @@ const useBLERecorder = (bleDeviceHandler) => {
         break;
       }
       case "recording":
-        if (currentLabel.id !== undefined && currentLabel.end === undefined) {
-          const timestamp = Date.now();
-
-          const currentLabelingData = labelingData[labelingData.length - 1];
-          if (currentLabelingData) {
-            const updatedLabelingData = [...labelingData];
-            updatedLabelingData[updatedLabelingData.length - 1] = {
-              ...currentLabelingData,
-              end: timestamp,
-            };
-            setLabelingData(updatedLabelingData);
+        // If last label is not ended, remove it
+        if (labelingData.length > 0) {
+          const lastLabel = labelingData[labelingData.length - 1];
+          if (lastLabel.end === undefined) {
+            setLabelingData((prev) => [
+              ...prev.slice(0, prev.length - 1),
+              {
+                ...lastLabel,
+                end: Date.now(),
+              },
+            ]);
           }
-          const newCurrentLabel = {
-            ...currentLabel,
-            end: timestamp,
-          };
-          // Add label logic can be implemented here if needed
-          setCurrentLabel(newCurrentLabel);
         }
 
         if (recordedData.current.length > 0) {
           await uploadCache(recordedData.current);
           recordedData.current = [];
+        }
+
+        // Upload labels
+        for (const label of labelingData) {
+          await createDatasetLabel(
+            newDataset.current._id,
+            selectedLabeling._id,
+            label
+          );
         }
 
         setRecorderState("finalizing");
@@ -266,6 +270,8 @@ const useBLERecorder = (bleDeviceHandler) => {
         setDatasetName("");
         resetLabelingState();
         setCurrentData([]);
+        setLabelingData([]);
+        setSelectedSensors(new Set());
         break;
       default:
         break;
