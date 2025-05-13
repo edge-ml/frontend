@@ -143,16 +143,30 @@ export const prepareSensorBleObjectV2 = (sensorArray) => {
 
 export const getBaseDataset = (sensors, datasetName) => {
   const timeSeries = [];
-  sensors.forEach((sensor) => {
-    sensor.parseScheme.forEach((scheme) => {
+  Object.keys(sensors).forEach((sensorId) => {
+    const sensor = sensors[sensorId];
+    sensor.parseScheme.forEach((scheme, schema_idx) => {
+      const ts_name = sensor.name + "_" + sensorId + "_" + schema_idx + "_" + scheme.name;
+      console.log("ts_name", ts_name);
       timeSeries.push({
-        name: sensor.name + "_" + scheme.name,
+        name: ts_name,
         unit: scheme.unit,
         start: new Date().getTime() + 10000000,
         end: new Date().getTime(),
         data: [],
       });
     });
+
+    // Assert that all timeSeris have unique names
+    const uniqueNames = new Set();
+    timeSeries.forEach((ts) => {
+      if (uniqueNames.has(ts.name)) {
+        throw new Error(`Duplicate time series name: ${ts.name}`);
+      }
+      uniqueNames.add(ts.name);
+    });
+
+
   });
   return {
     name: datasetName,
@@ -183,7 +197,7 @@ export const parseTimeSeriesData = (
       });
       timeSeries.push({
         _id: dataset.timeSeries.find(
-          (elm) => elm.name === sensor.name + "_" + scheme.name
+          (elm) => elm.name === sensor.name + "_" + key + "_" + idx + "_" + scheme.name
         )._id,
         data: data,
       });

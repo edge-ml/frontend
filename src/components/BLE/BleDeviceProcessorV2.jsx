@@ -54,11 +54,11 @@ class BleDeviceProcessorV2 {
 
   async configureSingleSensor(
     sensorId,
-    sampleRateIndex
+    sampleRateIndex,
+    streamData = true,
   ) {
 
     sampleRateIndex = 1;
-    var streamData = true;
     var storeData = false;
 
     const configPacket = new Uint8Array(3);
@@ -75,22 +75,22 @@ class BleDeviceProcessorV2 {
 
   async unSubscribeAllSensors() {
     for (const bleKey of Object.keys(this.sensors)) {
-      await this.configureSingleSensor(bleKey, 0, 0);
+      await this.configureSingleSensor(bleKey, 0, false);
     }
   }
 
-  async prepareRecording(sensorsToRecord, latency) {
+  async prepareRecording(sensorsToRecord) {
     for (const bleKey of Object.keys(this.sensors)) {
       if (sensorsToRecord.has(bleKey)) {
         await this.configureSingleSensor(
           bleKey,
           this.sensors[bleKey].sampleRate,
-          latency
+          true
         );
         this.recordedData = [];
         this.recordingSensors = sensorsToRecord;
       } else {
-        await this.configureSingleSensor(bleKey, 0, 0);
+        await this.configureSingleSensor(bleKey, 0, false);
       }
     }
   }
@@ -116,12 +116,16 @@ class BleDeviceProcessorV2 {
     var adjustedTime = false;
     const recordData = (value) => {
       var sensor = value.getUint8(0);
-      var timestamp = value.getUint32(2, true);
+      const timestampLow = value.getUint32(2, true);
+      const timestampHigh = value.getUint32(6, true);
+      let timestamp = (BigInt(timestampHigh) << 32n) + BigInt(timestampLow);
+      timestamp = Number(timestamp);
       if (!adjustedTime) {
         adjustedTime = true;
         recordingStart -= timestamp;
       }
       var parsedData = parseDataV2(this.sensors[sensor], value);
+      console.log("parsedData", parsedData);
       this.recordedData.push({
         sensor: sensor,
         time: timestamp + recordingStart,
@@ -174,7 +178,7 @@ class BleDeviceProcessorV2 {
 
   async stopRecording() {
     clearInterval(this.recordInterval);
-    this.unSubscribeAllSensors();
+    await this.unSubscribeAllSensors();
     console.log(this.recordedData);
     const recordedData = parseTimeSeriesData(
       this.newDataset,
