@@ -65,6 +65,23 @@ export const prepareSensorBleObject = (sensorArray) => {
   return result;
 };
 
+export const prepareSensorBleObjectV2 = (sensorArray) => {
+  const result = {};
+  sensorArray.forEach((elm) => {
+    result[elm.sensorId] = {
+      name: elm.sensorName,
+      parseScheme: elm.components.map((component) => {
+        return {
+          "name": component.componentName,
+          "unit": component.unitName,
+          "type": component.type,
+        }
+      })
+    }
+  });
+  return result;
+};
+
 export const getBaseDataset = (sensors, datasetName) => {
   const timeSeries = [];
   sensors.forEach((sensor) => {

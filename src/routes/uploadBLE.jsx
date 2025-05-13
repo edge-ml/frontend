@@ -8,14 +8,16 @@ import BlePanelConnectDevice from "../components/BLE/BlePanelConnectDevice";
 
 import { getDeviceByNameAndGeneration } from "../services/ApiServices/DeviceService";
 
-import { prepareSensorBleObject } from "../services/bleService";
+import { prepareSensorBleObject, prepareSensorBleObjectV2 } from "../services/bleService";
 
 import BleDeviceProcessor from "../components/BLE/BleDeviceProcessor";
+import BleDeviceProcessorV2 from "../components/BLE/BleDeviceProcessorV2";
 import BlePanelRecordingDisplay from "../components/BLE/BlePanelRecordingDisplay";
 
 import "../components/BLE/BleActivated.css";
 import { getLatestEdgeMLVersionNumber } from "../services/ApiServices/ArduinoFirmwareServices";
 import DFUModal from "../components/BLE/DFUModal/DFUModal";
+import SensorParserV2 from "../components/BLE/SensorParserV2";
 
 import { adjectives, names } from "./export/nameGeneration";
 import { uniqueNamesGenerator } from "unique-names-generator";
@@ -46,6 +48,7 @@ class UploadBLE extends Component {
       latestEdgeMLVersion: undefined,
       outdatedVersionInstalled: false,
       labelings: [],
+      deviceSchema: "v1",
       selectedLabeling: undefined,
       currentLabel: {
         start: undefined,
@@ -114,6 +117,29 @@ class UploadBLE extends Component {
     this.deviceIdentifierUuid = "45622511-6468-465a-b141-0b9b0f96b468";
     this.deviceGenerationUuid = "45622512-6468-465a-b141-0b9b0f96b468";
     this.deviceParseSchemaUuid = "caa25cb8-7e1b-44f2-adc9-e8c06c9ced43";
+
+    this.v2_audioPlayerServiceUuid = "5669146e-476d-11ee-be56-0242ac120002";
+    this.v2_sensorServiceUuid = "34c2e3bb-34aa-11eb-adc1-0242ac120002";
+    this.v2_sensorDataCharacteristicUuid = "34c2e3bc-34aa-11eb-adc1-0242ac120002";
+
+
+
+    this.v2_deviceInfoServiceUuid = "45622510-6468-465a-b141-0b9b0f96b468";
+    this.v2_deviceIdentifierCharacteristicUuid =
+      "45622511-6468-465a-b141-0b9b0f96b468";
+    this.v2_deviceFirmwareVersionCharacteristicUuid =
+      "45622512-6468-465a-b141-0b9b0f96b468";
+    this.v2_deviceHardwareVersionCharacteristicUuid =
+      "45622513-6468-465a-b141-0b9b0f96b468";
+    this.v2_sensorConfigurationV2CharacteristicUuid =
+      "34c2e3be-34aa-11eb-adc1-0242ac120002";
+
+    this.v2_parseInfoServiceUuid = "caa25cb7-7e1b-44f2-adc9-e8c06c9ced43";
+    this.v2_schemeCharacteristicUuid = "caa25cb8-7e1b-44f2-adc9-e8c06c9ced43";
+    this.v2_sensorListCharacteristicUuid =
+      "caa25cb9-7e1b-44f2-adc9-e8c06c9ced43";
+    this.v2_requestSensorSchemeCharacteristicUuid =
+      "caa25cba-7e1b-44f2-adc9-e8c06c9ced43";
 
     this.shortcutKeys = "1234567890abcdefghijklmnopqrstuvwxyz";
     this.bleDeviceProcessor = undefined;
@@ -269,9 +295,10 @@ class UploadBLE extends Component {
     this.resetState();
   }
 
-  onConnection() {
-    this.currentData = new Array(Object.keys(this.state.deviceSensors).length);
-    this.sensorKeys = Object.keys(this.state.deviceSensors);
+  onConnection(deviceSensors) {
+    console.log(deviceSensors);
+    this.currentData = new Array(Object.keys(deviceSensors).length);
+    this.sensorKeys = Object.keys(deviceSensors);
   }
 
   async getDeviceInfo() {
@@ -292,6 +319,7 @@ class UploadBLE extends Component {
         this.sensorServiceUuid,
         this.dfuServiceUuid,
         this.parseInfoServiceUuid,
+        this.v2_audioPlayerServiceUuid,
       ],
     };
     const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
@@ -304,89 +332,226 @@ class UploadBLE extends Component {
     });
   }
 
+  async hasCharacteristic(device, serviceUUID, characteristicUUID) {
+    try {
+      const server = await device.gatt.connect();
+      const service = await server.getPrimaryService(serviceUUID);
+      const characteristic =
+        await service.getCharacteristic(characteristicUUID);
+      return true; // Characteristic exists
+    } catch (error) {
+      if (error instanceof DOMException) {
+        // Likely characteristic doesn't exist
+        return false;
+      }
+      throw error; // Unexpected error
+    }
+  }
+
   async connectDevice(bleDevice) {
     await this.delay(200);
     const gattServer = await bleDevice.gatt.connect();
     await this.delay(200);
-    const primaryService = await gattServer.getPrimaryService(
-      this.sensorServiceUuid
-    );
-    const deviceInfoService = await gattServer.getPrimaryService(
-      this.deviceInfoServiceUuid
-    );
+    var deviceSchema = "v1";
 
-    var sensorSchema = undefined;
-    // Get parsing Schema
-    const deviceParseSchemaService = await gattServer.getPrimaryService(
-      this.parseInfoServiceUuid
-    );
-    if (deviceParseSchemaService) {
-      const parsingSchemaCharacterisitc =
-        await deviceParseSchemaService.getCharacteristic(
-          this.deviceParseSchemaUuid
-        );
-      const parsingSchemaBuffer = await parsingSchemaCharacterisitc.readValue();
-      sensorSchema = get_parse_schema(parsingSchemaBuffer);
+    // Device which device this is
+    if (
+      await this.hasCharacteristic(
+        bleDevice,
+        this.v2_sensorServiceUuid,
+        this.v2_sensorConfigurationV2CharacteristicUuid
+      )
+    ) {
+      console.log("OpenEarable v2");
+      deviceSchema = "v2";
+    } else {
+      console.log("Old parsing schema");
+      deviceSchema = "v1";
     }
+    this.setState({ deviceSchema: deviceSchema });
 
-    await this.delay(200);
-    const deviceIdentifierCharacteristic =
-      await deviceInfoService.getCharacteristic(this.deviceIdentifierUuid);
-    const deviceGenerationCharacteristic =
-      await deviceInfoService.getCharacteristic(this.deviceGenerationUuid);
+    var primaryService = undefined;
 
-    const deviceIdentifierArrayBuffer =
-      await deviceIdentifierCharacteristic.readValue();
-    const deviceGenerationArrayBuffer =
-      await deviceGenerationCharacteristic.readValue();
-    const deviceName = this.textEncoder.decode(deviceIdentifierArrayBuffer);
-    const deviceGeneration = this.textEncoder.decode(
-      deviceGenerationArrayBuffer
-    );
-    // Check if we have the information from the sensor-parse-characteristic directly from the device
-    if (!sensorSchema) {
-      const deviceInfo = await getDeviceByNameAndGeneration(
-        deviceName,
-        deviceGeneration
+    var deviceSensors = undefined;
+
+    if (deviceSchema === "v1") {
+      primaryService = await gattServer.getPrimaryService(
+        this.sensorServiceUuid
       );
-      sensorSchema = deviceInfo.sensors;
+      const deviceInfoService = await gattServer.getPrimaryService(
+        this.deviceInfoServiceUuid
+      );
+
+      var sensorSchema = undefined;
+      // Get parsing Schema
+      const deviceParseSchemaService = await gattServer.getPrimaryService(
+        this.parseInfoServiceUuid
+      );
+      if (deviceParseSchemaService) {
+        const parsingSchemaCharacterisitc =
+          await deviceParseSchemaService.getCharacteristic(
+            this.deviceParseSchemaUuid
+          );
+        const parsingSchemaBuffer =
+          await parsingSchemaCharacterisitc.readValue();
+        sensorSchema = get_parse_schema(parsingSchemaBuffer);
+      }
+
+      await this.delay(200);
+      const deviceIdentifierCharacteristic =
+        await deviceInfoService.getCharacteristic(this.deviceIdentifierUuid);
+      const deviceGenerationCharacteristic =
+        await deviceInfoService.getCharacteristic(this.deviceGenerationUuid);
+
+      const deviceIdentifierArrayBuffer =
+        await deviceIdentifierCharacteristic.readValue();
+      const deviceGenerationArrayBuffer =
+        await deviceGenerationCharacteristic.readValue();
+      const deviceName = this.textEncoder.decode(deviceIdentifierArrayBuffer);
+      const deviceGeneration = this.textEncoder.decode(
+        deviceGenerationArrayBuffer
+      );
+      // Check if we have the information from the sensor-parse-characteristic directly from the device
+      if (!sensorSchema) {
+        const deviceInfo = await getDeviceByNameAndGeneration(
+          deviceName,
+          deviceGeneration
+        );
+        sensorSchema = deviceInfo.sensors;
+      }
+
+      deviceSensors = prepareSensorBleObject(sensorSchema);
+
+      console.log("deviceSensors in connectDevice", deviceSensors);
+
+      this.setState({
+        connectedDeviceData: {
+          name: deviceName,
+          installedFWVersion: deviceGeneration,
+        },
+        deviceSensors: deviceSensors,
+        outdatedVersionInstalled:
+          deviceGeneration < this.state.latestEdgeMLVersion,
+      });
+    } else if (deviceSchema === "v2") {
+      console.log("OpenEarable v2");
+
+      primaryService = await gattServer.getPrimaryService(
+        this.v2_sensorServiceUuid
+      );
+
+      // Get device info
+      const deviceInfoService = await gattServer.getPrimaryService(
+        this.v2_deviceInfoServiceUuid
+      );
+      const deviceIdentifierCharacteristic =
+        await deviceInfoService.getCharacteristic(
+          this.v2_deviceIdentifierCharacteristicUuid
+        );
+      const deviceFimwareVersionCharacteristic =
+        await deviceInfoService.getCharacteristic(
+          this.v2_deviceFirmwareVersionCharacteristicUuid
+        );
+
+      const hardwareVersionCharacteristic =
+        await deviceInfoService.getCharacteristic(
+          this.v2_deviceHardwareVersionCharacteristicUuid
+        );
+
+      const deviceIdentifier = this.textEncoder.decode(
+        await deviceIdentifierCharacteristic.readValue()
+      );
+      const deviceGeneration = this.textEncoder.decode(
+        await deviceFimwareVersionCharacteristic.readValue()
+      );
+
+      const hardwareVersion = await this.textEncoder.decode(
+        await hardwareVersionCharacteristic.readValue()
+      );
+
+      console.log("deviceIdentifier", deviceIdentifier);
+      console.log("deviceGeneration", deviceGeneration);
+      console.log("hardwareVersion", hardwareVersion);
+
+      // Get parsing Schema
+      const sensorParser = new SensorParserV2(
+        bleDevice,
+        gattServer
+        // this.v2_parseInfoServiceUuid,
+        // this.v2_sensorListCharacteristicUuid,
+        // this.v2_schemeCharacteristicUuid,
+        // this.v2_requestSensorSchemeCharacteristicUuid
+      );
+      const sensorSchema = await sensorParser.readSensorSchemes();
+      console.log("parsingSchema", sensorSchema);
+
+
+      deviceSensors = prepareSensorBleObjectV2(sensorSchema);
+
+      console.log("deviceSensors in connectDevice", deviceSensors);
+
+      this.setState({
+        connectedDeviceData: {
+          name: "OpenEarable v2",
+          installedFWVersion: deviceGeneration,
+        },
+        deviceSensors: deviceSensors,
+        outdatedVersionInstalled: false,
+      });
     }
-    this.setState({
-      connectedDeviceData: {
-        name: deviceName,
-        installedFWVersion: deviceGeneration,
-      },
-      deviceSensors: prepareSensorBleObject(sensorSchema),
-      outdatedVersionInstalled:
-        deviceGeneration < this.state.latestEdgeMLVersion,
-    });
-    return [bleDevice, primaryService];
+
+    console.log(deviceSensors);
+    return [bleDevice, primaryService, deviceSensors, deviceSchema];
   }
 
   async getSensorCharacteristics(data) {
-    const [bleDevice, primaryService] = data;
-    // Get necessary Characteristics from Service
-    this.sensorConfigCharacteristic = await primaryService.getCharacteristic(
-      this.sensorConfigCharacteristicUuid
-    );
-    this.sensorDataCharacteristic = await primaryService.getCharacteristic(
-      this.sensorDataCharacteristicUuid
-    );
-    this.bleDeviceProcessor = new BleDeviceProcessor(
-      bleDevice,
-      this.state.connectedDeviceData,
-      this.state.deviceSensors,
-      this.sensorConfigCharacteristic,
-      this.sensorDataCharacteristic,
-      this
-    );
+    const [bleDevice, primaryService, deviceSensors, deviceSchema] = data;
+    console.log("getSensorCharacteristics", deviceSensors);
+    console.log("getSensorCharacteristics", deviceSchema);
+    if (deviceSchema === "v1") {
+      // Get necessary Characteristics from Service
+      this.sensorConfigCharacteristic = await primaryService.getCharacteristic(
+        this.sensorConfigCharacteristicUuid
+      );
+      this.sensorDataCharacteristic = await primaryService.getCharacteristic(
+        this.sensorDataCharacteristicUuid
+      );
+      this.bleDeviceProcessor = new BleDeviceProcessor(
+        bleDevice,
+        this.state.connectedDeviceData,
+        this.state.deviceSensors,
+        this.sensorConfigCharacteristic,
+        this.sensorDataCharacteristic,
+        this
+      );
+      console.log("deviceSensors", deviceSensors);
+    } else if (deviceSchema === "v2") {
+      // Get necessary Characteristics from Service
+      this.sensorConfigCharacteristic = await primaryService.getCharacteristic(
+        this.v2_sensorConfigurationV2CharacteristicUuid
+      );
+      this.sensorDataCharacteristic = await primaryService.getCharacteristic(
+        this.v2_sensorDataCharacteristicUuid
+      );
+      this.bleDeviceProcessor = new BleDeviceProcessorV2(
+        bleDevice,
+        this.state.connectedDeviceData,
+        this.state.deviceSensors,
+        this.sensorConfigCharacteristic,
+        this.sensorDataCharacteristic,
+        this
+      );
+    }
+    console.log("getSensorCharacteristics_device", bleDevice);
     this.setState({
       connectedBLEDevice: bleDevice,
     });
+    return deviceSensors;
   }
 
   connectToDevice = async (bleDevice, retryCount = 0) => {
     try {
+      console.log(bleDevice);
       const server = await bleDevice.gatt.connect();
 
       return server;
@@ -400,14 +565,25 @@ class UploadBLE extends Component {
   };
 
   async checkServicesAndGetLatestFWVersion(bleDevice) {
+    // try {
+    //   console.log("bleDevice", bleDevice);
+    //   if (await this.hasService(bleDevice, this.v2_audioPlayerServiceUuid)) {
+    //     console.log("OpenEarable v2");
+    //   } else {
+    //     console.log("Unknown device");
+    //   }
+    // } catch (error) {
+    //   console.error("Error checking services:", error);
+    // }
+
     bleDevice.addEventListener("gattserverdisconnected", this.onDisconnection);
     let promisedSetState = (newState) =>
       new Promise((resolve) => this.setState(newState, resolve));
     //get latest edge-ml fw version
-    try {
-      const latestEdgeMLVersion = await getLatestEdgeMLVersionNumber();
-      this.setState({ latestEdgeMLVersion: latestEdgeMLVersion });
-    } catch {}
+    // try {
+    //   const latestEdgeMLVersion = await getLatestEdgeMLVersionNumber();
+    //   this.setState({ latestEdgeMLVersion: latestEdgeMLVersion });
+    // } catch {}
     //check for available services on device
     let hasDeviceInfo = false;
     let hasDFUFunction = false;
@@ -631,6 +807,11 @@ class UploadBLE extends Component {
     if (!this.state.bleStatus) {
       return <BleNotActivated></BleNotActivated>;
     }
+
+    console.log("UploadBLE render");
+    console.log(this.state.deviceSensors);
+    console.log(this.state.connectedBLEDevice);
+    console.log(this.state.isEdgeMLInstalled);
 
     return (
       <div
