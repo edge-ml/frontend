@@ -43,6 +43,65 @@ export const parseData = (sensor, data) => {
   return values;
 };
 
+export const parseDataV2 = (sensor, dataBuffer) => {
+  let byteIndex = 0;
+  const dataView = new DataView(dataBuffer.buffer || dataBuffer);
+
+  const sensorId = dataView.getUint8(byteIndex);
+  byteIndex += 2; // skip 1 byte sensorId + 1 byte size (as in Flutter)
+  const timestampLow = dataView.getUint32(byteIndex, true);
+  byteIndex += 4;
+  const timestampHigh = dataView.getUint32(byteIndex, true);
+  byteIndex += 4;
+  const timestamp = (BigInt(timestampHigh) << 32n) + BigInt(timestampLow);
+
+  var schema = sensor.parseScheme;
+  const values = [];
+
+  for (const component of schema) {
+    let parsedValue;
+    switch (component.type) {
+      case 0: // int8
+        parsedValue = dataView.getInt8(byteIndex);
+        byteIndex += 1;
+        break;
+      case 1: // uint8
+        parsedValue = dataView.getUint8(byteIndex);
+        byteIndex += 1;
+        break;
+      case 2: // int16
+        parsedValue = dataView.getInt16(byteIndex, true);
+        byteIndex += 2;
+        break;
+      case 3: // uint16
+        parsedValue = dataView.getUint16(byteIndex, true);
+        byteIndex += 2;
+        break;
+      case 4: // int32
+        parsedValue = dataView.getInt32(byteIndex, true);
+        byteIndex += 4;
+        break;
+      case 5: // uint32
+        parsedValue = dataView.getUint32(byteIndex, true);
+        byteIndex += 4;
+        break;
+      case 6: // float
+        parsedValue = dataView.getFloat32(byteIndex, true);
+        byteIndex += 4;
+        break;
+      case 7: // double
+        parsedValue = dataView.getFloat64(byteIndex, true);
+        byteIndex += 8;
+        break;
+      default:
+        throw new Error(`Unknown parse type: ${component.type}`);
+    }
+    values.push(parsedValue);
+  }
+  console.log("Parsed values:", values);
+  return values;
+};
+
 export const floatToBytes = (value) => {
   var tempArray = new Float32Array(1);
   tempArray[0] = value;
@@ -72,12 +131,12 @@ export const prepareSensorBleObjectV2 = (sensorArray) => {
       name: elm.sensorName,
       parseScheme: elm.components.map((component) => {
         return {
-          "name": component.componentName,
-          "unit": component.unitName,
-          "type": component.type,
-        }
-      })
-    }
+          name: component.componentName,
+          unit: component.unitName,
+          type: component.type,
+        };
+      }),
+    };
   });
   return result;
 };

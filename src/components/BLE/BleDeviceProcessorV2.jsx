@@ -1,7 +1,7 @@
 import {
   floatToBytes,
   intToBytes,
-  parseData,
+  parseDataV2,
   getBaseDataset,
   parseTimeSeriesData,
 } from "../../services/bleService";
@@ -39,17 +39,33 @@ class BleDeviceProcessorV2 {
 
     console.log("BleDeviceProcessorV2", this.deviceInfo);
     console.log("BleDeviceProcessorV2", this.sensors);
-
   }
 
-  async configureSingleSensor(sensorId, sampleRate, latency) {
-    if (!this.device.gatt.connected) {
-      return;
-    }
-    var configPacket = new Uint8Array(9);
+  // async configureSingleSensor(sensorId, sampleRate, latency) {
+  //   if (!this.device.gatt.connected) {
+  //     return;
+  //   }
+  //   var configPacket = new Uint8Array(9);
+  //   configPacket[0] = sensorId;
+  //   configPacket.set(floatToBytes(sampleRate), 1);
+  //   configPacket.set(intToBytes(latency), 5);
+  //   await this.sensorConfigCharacteristic.writeValue(configPacket);
+  // }
+
+  async configureSingleSensor(
+    sensorId,
+    sampleRateIndex
+  ) {
+
+    sampleRateIndex = 1;
+    var streamData = true;
+    var storeData = false;
+
+    const configPacket = new Uint8Array(3);
     configPacket[0] = sensorId;
-    configPacket.set(floatToBytes(sampleRate), 1);
-    configPacket.set(intToBytes(latency), 5);
+    configPacket[1] = sampleRateIndex;
+    configPacket[2] = (streamData ? 1 : 0) | ((storeData ? 1 : 0) << 1);
+
     await this.sensorConfigCharacteristic.writeValue(configPacket);
   }
 
@@ -105,7 +121,7 @@ class BleDeviceProcessorV2 {
         adjustedTime = true;
         recordingStart -= timestamp;
       }
-      var parsedData = parseData(this.sensors[sensor], value);
+      var parsedData = parseDataV2(this.sensors[sensor], value);
       this.recordedData.push({
         sensor: sensor,
         time: timestamp + recordingStart,
@@ -159,6 +175,7 @@ class BleDeviceProcessorV2 {
   async stopRecording() {
     clearInterval(this.recordInterval);
     this.unSubscribeAllSensors();
+    console.log(this.recordedData);
     const recordedData = parseTimeSeriesData(
       this.newDataset,
       this.recordedData,
