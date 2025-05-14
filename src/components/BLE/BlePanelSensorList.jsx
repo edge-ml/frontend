@@ -67,8 +67,8 @@ function BlePanelSensorList({
                     </InputGroup>
                   </td>
                   <td className="align-middle">
-                    {sensorData.parseScheme.map((elm) => (
-                      <Badge color="primary" key={elm.name}>
+                    {sensorData.parseScheme.map((elm, index) => (
+                      <Badge color="primary" key={elm.name + index}>
                         {elm.name + (elm.unit ? ` (${elm.unit})` : "")}
                       </Badge>
                     ))}

@@ -56,7 +56,7 @@ const renderDeviceName = (props) => {
         {props.connectedDeviceData
           ? props.connectedDeviceData.name
           : props.connectedBLEDevice.name}
-      </b>
+      </b>{" "}
       ({props.connectedBLEDevice.id})
     </div>
   );

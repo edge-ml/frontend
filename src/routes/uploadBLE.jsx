@@ -506,8 +506,6 @@ class UploadBLE extends Component {
 
   async getSensorCharacteristics(data) {
     const [bleDevice, primaryService, deviceSensors, deviceSchema] = data;
-    console.log("getSensorCharacteristics", deviceSensors);
-    console.log("getSensorCharacteristics", deviceSchema);
     if (deviceSchema === "v1") {
       // Get necessary Characteristics from Service
       this.sensorConfigCharacteristic = await primaryService.getCharacteristic(
@@ -524,7 +522,6 @@ class UploadBLE extends Component {
         this.sensorDataCharacteristic,
         this
       );
-      console.log("deviceSensors", deviceSensors);
     } else if (deviceSchema === "v2") {
       // Get necessary Characteristics from Service
       this.sensorConfigCharacteristic = await primaryService.getCharacteristic(
@@ -542,7 +539,6 @@ class UploadBLE extends Component {
         this
       );
     }
-    console.log("getSensorCharacteristics_device", bleDevice);
     this.setState({
       connectedBLEDevice: bleDevice,
     });
@@ -551,7 +547,6 @@ class UploadBLE extends Component {
 
   connectToDevice = async (bleDevice, retryCount = 0) => {
     try {
-      console.log(bleDevice);
       const server = await bleDevice.gatt.connect();
 
       return server;
