@@ -19,6 +19,8 @@ function BlePanelSensorList({
     sampleRateSum += sensors[elm].sampleRate;
   });
 
+  console.log("SensorData", sensors);
+
   return (
     <div className="m-2">
       <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
@@ -53,6 +55,25 @@ function BlePanelSensorList({
                       style={{ margin: 0, minWidth: "90px" }}
                       size="sm"
                     >
+                      {sensorData.options ? (
+                        <Input
+                          value={sensorData.sampleRate}
+                          disabled={disabled}
+onChange={(e) => {
+  console.log(e.target.value);
+  onChangeSampleRate(
+    sensorKey,
+    parseInt(e.target.value)
+                            )}
+                          }
+                          type="select"
+                        >
+                          {sensorData.options.frequencies.frequencies.map((elm, index) => (
+                            <option key={elm + index} value={index}>
+                              {elm}
+                            </option>
+                          ))}
+                        </Input>):
                       <Input
                         value={sensorData.sampleRate}
                         disabled={disabled}
@@ -62,7 +83,7 @@ function BlePanelSensorList({
                         type="number"
                         min={0}
                         max={50}
-                      ></Input>
+                      ></Input>}
                       <InputGroupText>Hz</InputGroupText>
                     </InputGroup>
                   </td>

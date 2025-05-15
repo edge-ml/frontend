@@ -12,11 +12,12 @@ class BlePanelRecordingDisplay extends Component {
     this.allOptions = [];
     this.recordingStartTime = Date.now();
 
+    console.log(props.deviceSensors);
     //initialize HighCharts options for the different sensors
     for (const key of Object.keys(this.props.deviceSensors)) {
       this.allOptions.push(
         this.getOptions(
-          this.props.deviceSensors[key].parseScheme.map((elm, index) => elm.name + "_" + index),
+          this.props.deviceSensors[key].parseScheme.map((elm, index) => elm.name + " (" + elm.unit + ")"),
           this.props.deviceSensors[key].name
         )
       );

@@ -37,8 +37,7 @@ class BleDeviceProcessorV2 {
     this.uploadCounter = new Map();
     this.labels = [];
 
-    console.log("BleDeviceProcessorV2", this.deviceInfo);
-    console.log("BleDeviceProcessorV2", this.sensors);
+    
   }
 
   // async configureSingleSensor(sensorId, sampleRate, latency) {
@@ -102,7 +101,7 @@ class BleDeviceProcessorV2 {
       datasetName
     );
     this.newDataset = await createDataset(baseDataset);
-    console.log(this.newDataset);
+    
     // this.newDataset = (
     //   await createDataset(
     //     getBaseDataset(
@@ -125,7 +124,7 @@ class BleDeviceProcessorV2 {
         recordingStart -= timestamp;
       }
 
-      console.log("parsedData", parsedData);
+      
 
       this.recordedData.push({
         sensor: sensor,
@@ -180,7 +179,7 @@ class BleDeviceProcessorV2 {
   async stopRecording() {
     clearInterval(this.recordInterval);
     await this.unSubscribeAllSensors();
-    console.log(this.recordedData);
+    
     const recordedData = parseTimeSeriesData(
       this.newDataset,
       this.recordedData,

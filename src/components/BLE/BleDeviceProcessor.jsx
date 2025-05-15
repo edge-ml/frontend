@@ -82,7 +82,7 @@ class BleDeviceProcessor {
       datasetName
     );
     this.newDataset = await createDataset(baseDataset);
-    console.log(this.newDataset);
+    
     // this.newDataset = (
     //   await createDataset(
     //     getBaseDataset(

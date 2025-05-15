@@ -147,11 +147,13 @@ class UploadBLE extends Component {
   }
 
   onChangeSampleRate(bleKey, sampleRate) {
-    const tmpDeviceSensors = this.state.deviceSensors;
-    tmpDeviceSensors[bleKey].sampleRate = parseInt(sampleRate);
-
-    this.setState({
-      deviceSensors: tmpDeviceSensors,
+    this.setState((prevState) => {
+      const newDeviceSensors = { ...prevState.deviceSensors };
+      newDeviceSensors[bleKey] = {
+        ...newDeviceSensors[bleKey],
+        sampleRate: parseInt(sampleRate),
+      };
+      return { deviceSensors: newDeviceSensors };
     });
   }
 
@@ -296,7 +298,6 @@ class UploadBLE extends Component {
   }
 
   onConnection(deviceSensors) {
-    console.log(deviceSensors);
     this.currentData = new Array(Object.keys(deviceSensors).length);
     this.sensorKeys = Object.keys(deviceSensors);
   }
@@ -362,10 +363,8 @@ class UploadBLE extends Component {
         this.v2_sensorConfigurationV2CharacteristicUuid
       )
     ) {
-      console.log("OpenEarable v2");
       deviceSchema = "v2";
     } else {
-      console.log("Old parsing schema");
       deviceSchema = "v1";
     }
     this.setState({ deviceSchema: deviceSchema });
@@ -422,8 +421,6 @@ class UploadBLE extends Component {
 
       deviceSensors = prepareSensorBleObject(sensorSchema);
 
-      console.log("deviceSensors in connectDevice", deviceSensors);
-
       this.setState({
         connectedDeviceData: {
           name: deviceName,
@@ -434,7 +431,6 @@ class UploadBLE extends Component {
           deviceGeneration < this.state.latestEdgeMLVersion,
       });
     } else if (deviceSchema === "v2") {
-      console.log("OpenEarable v2");
 
       primaryService = await gattServer.getPrimaryService(
         this.v2_sensorServiceUuid
@@ -469,10 +465,6 @@ class UploadBLE extends Component {
         await hardwareVersionCharacteristic.readValue()
       );
 
-      console.log("deviceIdentifier", deviceIdentifier);
-      console.log("deviceGeneration", deviceGeneration);
-      console.log("hardwareVersion", hardwareVersion);
-
       // Get parsing Schema
       const sensorParser = new SensorParserV2(
         bleDevice,
@@ -483,12 +475,8 @@ class UploadBLE extends Component {
         // this.v2_requestSensorSchemeCharacteristicUuid
       );
       const sensorSchema = await sensorParser.readSensorSchemes();
-      console.log("parsingSchema", sensorSchema);
-
 
       deviceSensors = prepareSensorBleObjectV2(sensorSchema);
-
-      console.log("deviceSensors in connectDevice", deviceSensors);
 
       this.setState({
         connectedDeviceData: {
@@ -500,7 +488,6 @@ class UploadBLE extends Component {
       });
     }
 
-    console.log(deviceSensors);
     return [bleDevice, primaryService, deviceSensors, deviceSchema];
   }
 
@@ -802,11 +789,6 @@ class UploadBLE extends Component {
     if (!this.state.bleStatus) {
       return <BleNotActivated></BleNotActivated>;
     }
-
-    console.log("UploadBLE render");
-    console.log(this.state.deviceSensors);
-    console.log(this.state.connectedBLEDevice);
-    console.log(this.state.isEdgeMLInstalled);
 
     return (
       <div
