@@ -138,6 +138,8 @@ const AdditionalInfo = (props) => {
 const DatasetInfo = (props) => {
   const { dataset, updateDataset } = props;
 
+  console.log(dataset)
+
   const [datasetNameEditOpen, setDatasetNameEditOpen] = useState(false);
 
   const datasetStart = Math.min(...dataset.timeSeries.map((elm) => elm.start));

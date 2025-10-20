@@ -6,15 +6,15 @@ export const AUTH_URI =
   process.env.NODE_ENV === "production"
     ? "/auth/"
     : window.location.host === "edge-ml.ngrok.io"
-      ? "http://auth.edge-ml.ngrok.io/auth/"
-      : `http://${currentHost}:3002/auth/`;
+      ? "http://auth.edge-ml.ngrok.io/ds/api/v1/"
+      : `http://${currentHost}:8000/api/v1/`;
 
 export const API_URI =
   process.env.NODE_ENV === "production"
     ? "/api/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://backend.edge-ml.ngrok.io/api/"
-      : `http://${currentHost}:3001/api/`;
+      : `http://${currentHost}:8000/api/v1/`;
 export const ML_URI =
   process.env.NODE_ENV === "production"
     ? "/ml/"
@@ -27,7 +27,7 @@ export const DATASET_STORE =
     ? "/ds/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://ds.edge-ml.ngrok.io/ds/"
-      : `http://${currentHost}:3004/ds/`;
+      : `http://${currentHost}:8000/api/v1/`;
 
 export const HTTP_METHODS = {
   GET: "GET",
@@ -38,23 +38,23 @@ export const HTTP_METHODS = {
 
 export const AUTH_ENDPOINTS = {
   DEFAULT: "/",
-  LOGIN: "login",
+  REGISTER: "auth/register",
+  LOGIN: "auth/token",
   REFRESH: "refresh",
   DELETE: "unregister",
-  REGISTER: "register",
   USERS: "USERS",
   INIT2FA: "2fa/init",
   VERIFY2FA: "2fa/verify",
   RESET2FA: "2fa/reset",
   MAIL: "mail",
   CHANGE_MAIL: "changeMail",
-  USERNAMESUGGEST: "userNameSuggest",
+  USERNAMESUGGEST: "auth/user/suggest",
   CHANGE_PASSWORD: "changePassword",
   ID: "id",
   CHANGE_USERNAME: "changeUserName",
   USERNAME: "userName",
   OAUTH: "login/oauth",
-  USER: "user",
+  USER: "auth/user/me",
   LOGOUT: "logout"
 };
 

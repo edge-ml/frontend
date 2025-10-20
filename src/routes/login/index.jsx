@@ -112,20 +112,6 @@ const LoginPage = ({ children }) => {
               >
                 <b>Login</b>
               </Button>
-              <hr></hr>
-              <div>Login with a provider</div>
-              <Button
-
-                className="p-1 my-2 w-100 d-flex justify-content-center align-items-center btnGithub"
-                onClick={() => onOAuth("github")}
-              >
-                <FontAwesomeIcon
-                  className="m-1 me-2"
-                  size="2x"
-                  icon={faGithub}
-                ></FontAwesomeIcon>
-                <div>Login with <b>Github</b></div>
-              </Button>
             </Form>
             {error ? (
               <div className="mt-3" style={{ color: "red" }}>

@@ -81,9 +81,15 @@ const ListPage = (props) => {
 
   const toggleCreateNewDatasetModal = () => {};
 
+  console.log("Rendering List Page");
+  console.log("Datasets:", datasets);
+  console.log("Labelings:", labelings);
+
   if (!datasets || !labelings) {
     return <Loader loading={true}></Loader>;
   }
+
+  console.log(datasets);
 
   return (
     <div id="dataList" className="d-flex flex-column h-100">
