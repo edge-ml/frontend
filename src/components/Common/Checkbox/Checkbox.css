@@ -24,10 +24,11 @@
   border: 2px solid rgb(237, 237, 237);
   border-radius: 0.4rem;
   background: white;
+  overflow: hidden;
 }
 
 .checkBoxContainer input:checked ~ .checkBoxCheckmark {
-  background-color: rgb(131, 136, 159);
+  background-color: rgb(72, 187, 120);
   border: 0px;
 }
 
@@ -36,7 +37,7 @@
 }
 
 .checkBoxContainer:after {
-  content: '';
+  content: "";
   position: absolute;
   display: none;
 }
@@ -44,7 +45,6 @@
 .checkBoxIcon {
   top: 0;
   left: 0;
-  padding: 4px;
   position: absolute;
   width: 20px;
   height: 20px;

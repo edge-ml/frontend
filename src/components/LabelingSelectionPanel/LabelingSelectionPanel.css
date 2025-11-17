@@ -1,8 +1,9 @@
 .LabelingSelectionPanel {
   width: 100%;
   position: sticky;
-  top: 15px;
   z-index: 10;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* mobile (md-breakpoint), account for 50px header with sticky */
@@ -32,4 +33,19 @@
 
 .LabelingSelectionButtonsContainer {
   float: left;
+}
+
+.bottom-line {
+  border-bottom: 1px solid lightgray;
+}
+
+.dropdown > .button {
+  font-size: 1rem;
+}
+
+.scrollable-dropdown {
+  max-height: 50vh;
+  max-width: 50vw;
+  overflow-x: hidden;
+  overflow-y: auto;
 }

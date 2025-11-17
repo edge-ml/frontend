@@ -21,3 +21,7 @@
 ul {
   list-style-type: none;
 }
+
+.labelingArea {
+  opacity: 0.2;
+}

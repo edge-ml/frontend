@@ -1,0 +1,892 @@
+import React, { Component } from "react";
+import { Col, Row } from "reactstrap";
+
+import BleNotActivated from "../components/BLE/BleNotActivated";
+import BlePanelSensorList from "../components/BLE/BlePanelSensorList";
+import BlePanelRecorderSettings from "../components/BLE/BlePanelRecorderSettings";
+import BlePanelConnectDevice from "../components/BLE/BlePanelConnectDevice";
+
+import { getDeviceByNameAndGeneration } from "../services/ApiServices/DeviceService";
+
+import { prepareSensorBleObject, prepareSensorBleObjectV2 } from "../services/bleService";
+
+import BleDeviceProcessor from "../components/BLE/BleDeviceProcessor";
+import BleDeviceProcessorV2 from "../components/BLE/BleDeviceProcessorV2";
+import BlePanelRecordingDisplay from "../components/BLE/BlePanelRecordingDisplay";
+
+import "../components/BLE/BleActivated.css";
+import { getLatestEdgeMLVersionNumber } from "../services/ApiServices/ArduinoFirmwareServices";
+import DFUModal from "../components/BLE/DFUModal/DFUModal";
+import SensorParserV2 from "../components/BLE/SensorParserV2";
+
+import { adjectives, names } from "./export/nameGeneration";
+import { uniqueNamesGenerator } from "unique-names-generator";
+import { BleLabelingMenu } from "../components/BLE/BleLabelingMenu";
+
+import { getLabelings } from "../services/ApiServices/LabelingServices";
+import { get_parse_schema } from "../utils/ble";
+
+class UploadBLE extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      bleConnectionChanging: false,
+      connectedBLEDevice: undefined,
+      bleStatus: navigator.bluetooth,
+      latency: 0,
+      datasetName: "",
+      recorderState: "ready", // ready, startup, recording, finalizing
+      deviceSensors: undefined,
+      connectedDeviceData: undefined,
+      selectedSensors: new Set(),
+      stream: true,
+      fullSampleRate: false,
+      hasDFUFunction: false,
+      isEdgeMLInstalled: false,
+      deviceNotUsable: false,
+      showDFUModal: false,
+      latestEdgeMLVersion: undefined,
+      outdatedVersionInstalled: false,
+      labelings: [],
+      deviceSchema: "v1",
+      selectedLabeling: undefined,
+      currentLabel: {
+        start: undefined,
+        end: undefined,
+        color: undefined,
+        id: undefined,
+        plotId: 0,
+      },
+      prevLabel: {
+        start: undefined,
+        end: undefined,
+        color: undefined,
+        id: undefined,
+        plotId: -1,
+      },
+    };
+
+    this.componentRef = React.createRef();
+    this.labelingData = React.createRef();
+
+    this.toggleBLEDeviceConnection = this.toggleBLEDeviceConnection.bind(this);
+    this.connectDevice = this.connectDevice.bind(this);
+    this.connect = this.connect.bind(this);
+    this.onDisconnection = this.onDisconnection.bind(this);
+    this.getDeviceInfo = this.getDeviceInfo.bind(this);
+    this.getSensorCharacteristics = this.getSensorCharacteristics.bind(this);
+    this.onClickRecordButton = this.onClickRecordButton.bind(this);
+    this.onLatencyChanged = this.onLatencyChanged.bind(this);
+    this.onToggleSensor = this.onToggleSensor.bind(this);
+    this.onGlobalSampleRateChanged = this.onGlobalSampleRateChanged.bind(this);
+    this.onDatasetNameChanged = this.onDatasetNameChanged.bind(this);
+    this.resetState = this.resetState.bind(this);
+    this.onToggleStream = this.onToggleStream.bind(this);
+    this.onToggleSampleRate = this.onToggleSampleRate.bind(this);
+    this.setCurrentData = this.setCurrentData.bind(this);
+    this.onChangeSampleRate = this.onChangeSampleRate.bind(this);
+    this.onConnection = this.onConnection.bind(this);
+    this.connect = this.connect.bind(this);
+    this.checkServicesAndGetLatestFWVersion =
+      this.checkServicesAndGetLatestFWVersion.bind(this);
+    this.toggleDFUModal = this.toggleDFUModal.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.fetchLabelings = this.fetchLabelings.bind(this);
+    this.handleLabelingSelect = this.handleLabelingSelect.bind(this);
+    this.toggleLabelingActive = this.toggleLabelingActive.bind(this);
+    this.resetLabelingState = this.resetLabelingState.bind(this);
+    this.delay = this.delay.bind(this);
+
+    this.recorderMap = undefined;
+    this.recorderDataset = undefined;
+    this.recordInterval = null;
+    this.currentData = [];
+    this.sensorKeys = [];
+
+    // Global vars to manage ble connnection
+    this.dfuServiceUuid = "34c2e3b8-34aa-11eb-adc1-0242ac120002";
+
+    this.sensorConfigCharacteristic = null;
+    this.sensorDataCharacteristic = null;
+    this.sensorServiceUuid = "34c2e3bb-34aa-11eb-adc1-0242ac120002";
+    this.parseInfoServiceUuid = "caa25cb7-7e1b-44f2-adc9-e8c06c9ced43";
+    this.sensorConfigCharacteristicUuid =
+      "34c2e3bd-34aa-11eb-adc1-0242ac120002";
+    this.sensorDataCharacteristicUuid = "34c2e3bc-34aa-11eb-adc1-0242ac120002";
+    this.deviceInfoServiceUuid = "45622510-6468-465a-b141-0b9b0f96b468";
+    this.deviceIdentifierUuid = "45622511-6468-465a-b141-0b9b0f96b468";
+    this.deviceGenerationUuid = "45622512-6468-465a-b141-0b9b0f96b468";
+    this.deviceParseSchemaUuid = "caa25cb8-7e1b-44f2-adc9-e8c06c9ced43";
+
+    this.v2_audioPlayerServiceUuid = "5669146e-476d-11ee-be56-0242ac120002";
+    this.v2_sensorServiceUuid = "34c2e3bb-34aa-11eb-adc1-0242ac120002";
+    this.v2_sensorDataCharacteristicUuid = "34c2e3bc-34aa-11eb-adc1-0242ac120002";
+
+
+
+    this.v2_deviceInfoServiceUuid = "45622510-6468-465a-b141-0b9b0f96b468";
+    this.v2_deviceIdentifierCharacteristicUuid =
+      "45622511-6468-465a-b141-0b9b0f96b468";
+    this.v2_deviceFirmwareVersionCharacteristicUuid =
+      "45622512-6468-465a-b141-0b9b0f96b468";
+    this.v2_deviceHardwareVersionCharacteristicUuid =
+      "45622513-6468-465a-b141-0b9b0f96b468";
+    this.v2_sensorConfigurationV2CharacteristicUuid =
+      "34c2e3be-34aa-11eb-adc1-0242ac120002";
+
+    this.v2_parseInfoServiceUuid = "caa25cb7-7e1b-44f2-adc9-e8c06c9ced43";
+    this.v2_schemeCharacteristicUuid = "caa25cb8-7e1b-44f2-adc9-e8c06c9ced43";
+    this.v2_sensorListCharacteristicUuid =
+      "caa25cb9-7e1b-44f2-adc9-e8c06c9ced43";
+    this.v2_requestSensorSchemeCharacteristicUuid =
+      "caa25cba-7e1b-44f2-adc9-e8c06c9ced43";
+
+    this.shortcutKeys = "1234567890abcdefghijklmnopqrstuvwxyz";
+    this.bleDeviceProcessor = undefined;
+    this.textEncoder = new TextDecoder("utf-8");
+  }
+
+  onChangeSampleRate(bleKey, sampleRate) {
+    this.setState((prevState) => {
+      const newDeviceSensors = { ...prevState.deviceSensors };
+      newDeviceSensors[bleKey] = {
+        ...newDeviceSensors[bleKey],
+        sampleRate: parseInt(sampleRate),
+      };
+      return { deviceSensors: newDeviceSensors };
+    });
+  }
+
+  onDatasetNameChanged(e) {
+    this.setState({
+      datasetName: e.target.value,
+    });
+  }
+
+  onGlobalSampleRateChanged(e) {
+    this.setState({
+      sampleRate: e.target.value,
+    });
+  }
+
+  resetState() {
+    this.setState({
+      bleConnectionChanging: false,
+      connectedBLEDevice: undefined,
+      bleStatus: navigator.bluetooth,
+      latency: 0,
+      datasetName: "",
+      recorderState: "ready",
+      deviceSensors: undefined,
+      connectedDeviceData: undefined,
+      selectedSensors: new Set(),
+      stream: true,
+      hasDFUFunction: false,
+      isEdgeMLInstalled: false,
+      deviceNotUsable: false,
+      showDFUModal: false,
+      latestEdgeMLVersion: undefined,
+      outdatedVersionInstalled: false,
+    });
+  }
+
+  onToggleSensor(sensorBleKey) {
+    const tmpSelectedSensors = this.state.selectedSensors;
+    if (tmpSelectedSensors.has(sensorBleKey)) {
+      tmpSelectedSensors.delete(sensorBleKey);
+    } else {
+      tmpSelectedSensors.add(sensorBleKey);
+    }
+    this.setState({
+      selectedSensors: tmpSelectedSensors,
+    });
+  }
+
+  onToggleStream() {
+    const stream = this.state.stream;
+    this.setState({
+      stream: !stream,
+    });
+  }
+
+  onToggleSampleRate() {
+    const fullSampleRate = this.state.fullSampleRate;
+    this.setState({
+      fullSampleRate: !fullSampleRate,
+    });
+  }
+
+  onLatencyChanged(sensorId, latency) {
+    this.setState((prevState) => {
+      const nextSensorMap = new Map(prevState.sensorMap);
+      const data = nextSensorMap.get(sensorId);
+      data.latency = latency;
+      nextSensorMap.set(sensorId, data);
+      return { sensorMap: nextSensorMap };
+    });
+  }
+
+  async setDatasetName(datasetName) {
+    let promisedSetState = (newState) =>
+      new Promise((resolve) => this.setState(newState, resolve));
+    await promisedSetState({ datasetName: datasetName });
+  }
+
+  async onClickRecordButton() {
+    // ready, startup, recording, finalizing
+    switch (this.state.recorderState) {
+      case "ready":
+        if (this.state.datasetName === "") {
+          await this.setDatasetName(
+            uniqueNamesGenerator({
+              dictionaries: [adjectives, names],
+              length: 2,
+            })
+          );
+        }
+        this.setState({ recorderState: "startup" });
+        await this.bleDeviceProcessor.startRecording(
+          this.state.selectedSensors,
+          this.state.latency,
+          this.state.datasetName
+        );
+        this.setState({ recorderState: "recording" });
+        break;
+      case "recording":
+        // End label if active
+        if (
+          this.state.currentLabel.id !== undefined &&
+          this.state.currentLabel.end === undefined
+        ) {
+          const timestamp = Date.now();
+
+          const currentLabelingData =
+            this.labelingData.current[this.labelingData.current.length - 1];
+          currentLabelingData.end = timestamp;
+          const newCurrentLabel = {
+            ...this.state.currentLabel,
+            end: timestamp,
+          };
+          this.bleDeviceProcessor.addLabel(newCurrentLabel);
+          this.setState((prevState) => ({
+            currentLabel: newCurrentLabel,
+          }));
+        }
+
+        this.setState({ recorderState: "finalizing" });
+        await this.bleDeviceProcessor.stopRecording();
+        this.setState({ recorderState: "ready" });
+        this.setState({ datasetName: "" });
+        this.resetLabelingState();
+        break;
+    }
+  }
+
+  async onDisconnection(event) {
+    // TODO: Handle emergency dataset upload here
+    if (this.state.recorderState === "recording") {
+      await this.bleDeviceProcessor.stopRecording();
+    }
+    if (
+      this.state.connectedBLEDevice &&
+      this.state.connectedBLEDevice.gatt &&
+      this.state.connectedBLEDevice.gatt.disconnect
+    ) {
+      this.state.connectedBLEDevice.gatt.disconnect();
+    }
+    this.resetState();
+  }
+
+  onConnection(deviceSensors) {
+    this.currentData = new Array(Object.keys(deviceSensors).length);
+    this.sensorKeys = Object.keys(deviceSensors);
+  }
+
+  async getDeviceInfo() {
+    let options = {
+      filters: [{ services: [this.deviceInfoServiceUuid] }],
+      optionalServices: [
+        this.deviceInfoServiceUuid,
+        this.sensorServiceUuid,
+        this.dfuServiceUuid,
+        this.parseInfoServiceUuid,
+      ],
+    };
+
+    let newOptions = {
+      acceptAllDevices: true,
+      optionalServices: [
+        this.deviceInfoServiceUuid,
+        this.sensorServiceUuid,
+        this.dfuServiceUuid,
+        this.parseInfoServiceUuid,
+        this.v2_audioPlayerServiceUuid,
+      ],
+    };
+    const bleDevice = await navigator.bluetooth.requestDevice(newOptions);
+    return bleDevice;
+  }
+
+  async delay(milliseconds) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, milliseconds);
+    });
+  }
+
+  async hasCharacteristic(device, serviceUUID, characteristicUUID) {
+    try {
+      const server = await device.gatt.connect();
+      const service = await server.getPrimaryService(serviceUUID);
+      const characteristic =
+        await service.getCharacteristic(characteristicUUID);
+      return true; // Characteristic exists
+    } catch (error) {
+      if (error instanceof DOMException) {
+        // Likely characteristic doesn't exist
+        return false;
+      }
+      throw error; // Unexpected error
+    }
+  }
+
+  async connectDevice(bleDevice) {
+    await this.delay(200);
+    const gattServer = await bleDevice.gatt.connect();
+    await this.delay(200);
+    var deviceSchema = "v1";
+
+    // Device which device this is
+    if (
+      await this.hasCharacteristic(
+        bleDevice,
+        this.v2_sensorServiceUuid,
+        this.v2_sensorConfigurationV2CharacteristicUuid
+      )
+    ) {
+      deviceSchema = "v2";
+    } else {
+      deviceSchema = "v1";
+    }
+    this.setState({ deviceSchema: deviceSchema });
+
+    var primaryService = undefined;
+
+    var deviceSensors = undefined;
+
+    if (deviceSchema === "v1") {
+      primaryService = await gattServer.getPrimaryService(
+        this.sensorServiceUuid
+      );
+      const deviceInfoService = await gattServer.getPrimaryService(
+        this.deviceInfoServiceUuid
+      );
+
+      var sensorSchema = undefined;
+      // Get parsing Schema
+      const deviceParseSchemaService = await gattServer.getPrimaryService(
+        this.parseInfoServiceUuid
+      );
+      if (deviceParseSchemaService) {
+        const parsingSchemaCharacterisitc =
+          await deviceParseSchemaService.getCharacteristic(
+            this.deviceParseSchemaUuid
+          );
+        const parsingSchemaBuffer =
+          await parsingSchemaCharacterisitc.readValue();
+        sensorSchema = get_parse_schema(parsingSchemaBuffer);
+      }
+
+      await this.delay(200);
+      const deviceIdentifierCharacteristic =
+        await deviceInfoService.getCharacteristic(this.deviceIdentifierUuid);
+      const deviceGenerationCharacteristic =
+        await deviceInfoService.getCharacteristic(this.deviceGenerationUuid);
+
+      const deviceIdentifierArrayBuffer =
+        await deviceIdentifierCharacteristic.readValue();
+      const deviceGenerationArrayBuffer =
+        await deviceGenerationCharacteristic.readValue();
+      const deviceName = this.textEncoder.decode(deviceIdentifierArrayBuffer);
+      const deviceGeneration = this.textEncoder.decode(
+        deviceGenerationArrayBuffer
+      );
+      // Check if we have the information from the sensor-parse-characteristic directly from the device
+      if (!sensorSchema) {
+        const deviceInfo = await getDeviceByNameAndGeneration(
+          deviceName,
+          deviceGeneration
+        );
+        sensorSchema = deviceInfo.sensors;
+      }
+
+      deviceSensors = prepareSensorBleObject(sensorSchema);
+
+      this.setState({
+        connectedDeviceData: {
+          name: deviceName,
+          installedFWVersion: deviceGeneration,
+        },
+        deviceSensors: deviceSensors,
+        outdatedVersionInstalled:
+          deviceGeneration < this.state.latestEdgeMLVersion,
+      });
+    } else if (deviceSchema === "v2") {
+
+      primaryService = await gattServer.getPrimaryService(
+        this.v2_sensorServiceUuid
+      );
+
+      // Get device info
+      const deviceInfoService = await gattServer.getPrimaryService(
+        this.v2_deviceInfoServiceUuid
+      );
+      const deviceIdentifierCharacteristic =
+        await deviceInfoService.getCharacteristic(
+          this.v2_deviceIdentifierCharacteristicUuid
+        );
+      const deviceFimwareVersionCharacteristic =
+        await deviceInfoService.getCharacteristic(
+          this.v2_deviceFirmwareVersionCharacteristicUuid
+        );
+
+      const hardwareVersionCharacteristic =
+        await deviceInfoService.getCharacteristic(
+          this.v2_deviceHardwareVersionCharacteristicUuid
+        );
+
+      const deviceIdentifier = this.textEncoder.decode(
+        await deviceIdentifierCharacteristic.readValue()
+      );
+      const deviceGeneration = this.textEncoder.decode(
+        await deviceFimwareVersionCharacteristic.readValue()
+      );
+
+      const hardwareVersion = await this.textEncoder.decode(
+        await hardwareVersionCharacteristic.readValue()
+      );
+
+      // Get parsing Schema
+      const sensorParser = new SensorParserV2(
+        bleDevice,
+        gattServer
+        // this.v2_parseInfoServiceUuid,
+        // this.v2_sensorListCharacteristicUuid,
+        // this.v2_schemeCharacteristicUuid,
+        // this.v2_requestSensorSchemeCharacteristicUuid
+      );
+      const sensorSchema = await sensorParser.readSensorSchemes();
+
+      deviceSensors = prepareSensorBleObjectV2(sensorSchema);
+
+      this.setState({
+        connectedDeviceData: {
+          name: "OpenEarable v2",
+          installedFWVersion: deviceGeneration,
+        },
+        deviceSensors: deviceSensors,
+        outdatedVersionInstalled: false,
+      });
+    }
+
+    return [bleDevice, primaryService, deviceSensors, deviceSchema];
+  }
+
+  async getSensorCharacteristics(data) {
+    const [bleDevice, primaryService, deviceSensors, deviceSchema] = data;
+    if (deviceSchema === "v1") {
+      // Get necessary Characteristics from Service
+      this.sensorConfigCharacteristic = await primaryService.getCharacteristic(
+        this.sensorConfigCharacteristicUuid
+      );
+      this.sensorDataCharacteristic = await primaryService.getCharacteristic(
+        this.sensorDataCharacteristicUuid
+      );
+      this.bleDeviceProcessor = new BleDeviceProcessor(
+        bleDevice,
+        this.state.connectedDeviceData,
+        this.state.deviceSensors,
+        this.sensorConfigCharacteristic,
+        this.sensorDataCharacteristic,
+        this
+      );
+    } else if (deviceSchema === "v2") {
+      // Get necessary Characteristics from Service
+      this.sensorConfigCharacteristic = await primaryService.getCharacteristic(
+        this.v2_sensorConfigurationV2CharacteristicUuid
+      );
+      this.sensorDataCharacteristic = await primaryService.getCharacteristic(
+        this.v2_sensorDataCharacteristicUuid
+      );
+      this.bleDeviceProcessor = new BleDeviceProcessorV2(
+        bleDevice,
+        this.state.connectedDeviceData,
+        this.state.deviceSensors,
+        this.sensorConfigCharacteristic,
+        this.sensorDataCharacteristic,
+        this
+      );
+    }
+    this.setState({
+      connectedBLEDevice: bleDevice,
+    });
+    return deviceSensors;
+  }
+
+  connectToDevice = async (bleDevice, retryCount = 0) => {
+    try {
+      const server = await bleDevice.gatt.connect();
+
+      return server;
+    } catch (error) {
+      if (retryCount < 3) {
+        setTimeout(() => this.connectToDevice(bleDevice, retryCount + 1), 4000);
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  async checkServicesAndGetLatestFWVersion(bleDevice) {
+    // try {
+    //   console.log("bleDevice", bleDevice);
+    //   if (await this.hasService(bleDevice, this.v2_audioPlayerServiceUuid)) {
+    //     console.log("OpenEarable v2");
+    //   } else {
+    //     console.log("Unknown device");
+    //   }
+    // } catch (error) {
+    //   console.error("Error checking services:", error);
+    // }
+
+    bleDevice.addEventListener("gattserverdisconnected", this.onDisconnection);
+    let promisedSetState = (newState) =>
+      new Promise((resolve) => this.setState(newState, resolve));
+    //get latest edge-ml fw version
+    // try {
+    //   const latestEdgeMLVersion = await getLatestEdgeMLVersionNumber();
+    //   this.setState({ latestEdgeMLVersion: latestEdgeMLVersion });
+    // } catch {}
+    //check for available services on device
+    let hasDeviceInfo = false;
+    let hasDFUFunction = false;
+    let hasSensorService = false;
+    const server = await this.connectToDevice(bleDevice, 0);
+    const services = await server.getPrimaryServices();
+    services.forEach((service) => {
+      if (service.uuid === this.deviceInfoServiceUuid) {
+        hasDeviceInfo = true;
+      } else if (service.uuid === this.dfuServiceUuid) {
+        hasDFUFunction = true;
+      } else if (service.uuid === this.sensorServiceUuid) {
+        hasSensorService = true;
+      }
+    });
+
+    if (hasDeviceInfo && hasSensorService && hasDFUFunction) {
+      await promisedSetState({ isEdgeMLInstalled: true, hasDFUFunction: true });
+    } else if (hasDFUFunction) {
+      await promisedSetState({
+        hasDFUFunction: true,
+        isEdgeMLInstalled: false,
+      });
+    } else if (hasDeviceInfo && hasSensorService) {
+      await promisedSetState({ isEdgeMLInstalled: true });
+    } else {
+      await promisedSetState({ deviceNotUsable: true });
+    }
+    return bleDevice;
+  }
+
+  connect() {
+    return this.getDeviceInfo()
+      .then(this.checkServicesAndGetLatestFWVersion)
+      .then((bleDevice) => {
+        if (this.state.isEdgeMLInstalled) {
+          this.connectDevice(bleDevice)
+            .then(this.getSensorCharacteristics)
+            .then(this.onConnection);
+        } else {
+          //handle possibility of flashing firmware or show incompatibility of device
+          this.setState({ connectedBLEDevice: bleDevice });
+        }
+      })
+      .catch((err) => {});
+  }
+
+  setCurrentData(sensorData) {
+    this.currentData[this.sensorKeys.indexOf(sensorData["sensor"].toString())] =
+      [sensorData["time"], sensorData["data"]];
+  }
+
+  async toggleBLEDeviceConnection() {
+    // Case: Connected: Now disconnect
+    if (this.state.connectedBLEDevice) {
+      this.setState({ bleConnectionChanging: true });
+      if (this.state.bleDeviceProcessor !== undefined) {
+        await this.bleDeviceProcessor.unSubscribeAllSensors();
+      }
+      this.onDisconnection();
+      this.setState({ bleConnectionChanging: false });
+    } else {
+      // Case: Not connected, so connect
+      this.setState({ bleConnectionChanging: true });
+      await this.connect();
+      this.setState({ bleConnectionChanging: false });
+    }
+  }
+
+  toggleDFUModal() {
+    this.setState({ showDFUModal: !this.state.showDFUModal });
+  }
+
+  handleLabelingSelect(labeling) {
+    this.setState({ selectedLabeling: labeling });
+  }
+
+  toggleLabelingActive(labelIdx) {
+    const timestamp = Date.now();
+    const keyPressedLabel = this.state.selectedLabeling.labels[labelIdx];
+
+    // initial state, currentLabel.id is only undefined when no label recording have ever took place
+    // during the current sensor data collection
+    if (this.state.currentLabel.id === undefined) {
+      this.labelingData.current = [
+        {
+          start: timestamp,
+          labelType: keyPressedLabel._id,
+          labelingId: this.state.selectedLabeling._id,
+        },
+      ];
+      this.setState({
+        currentLabel: {
+          start: timestamp,
+          end: undefined,
+          color: keyPressedLabel.color,
+          labelingId: this.state.selectedLabeling._id,
+          type: keyPressedLabel._id,
+          id: keyPressedLabel._id,
+          plotId: 0,
+        },
+      });
+    }
+    // stop recording the current label when the user pressed the label key a second time
+    else if (
+      this.state.currentLabel.id === keyPressedLabel._id &&
+      this.state.currentLabel.end === undefined
+    ) {
+      const currentLabelingData =
+        this.labelingData.current[this.labelingData.current.length - 1];
+      currentLabelingData.end = timestamp;
+      const newCurrentLabel = { ...this.state.currentLabel, end: timestamp };
+      this.bleDeviceProcessor.addLabel(newCurrentLabel);
+      this.setState((prevState) => ({
+        currentLabel: newCurrentLabel,
+      }));
+    }
+
+    // the current label is stopped by the user previously and now a new one is requested
+    else if (this.state.currentLabel.end !== undefined) {
+      this.labelingData.current.push({
+        start: timestamp,
+        labelType: keyPressedLabel._id,
+        labelingId: this.state.selectedLabeling._id,
+      });
+      this.setState((prevState) => ({
+        currentLabel: {
+          start: timestamp,
+          end: undefined,
+          color: keyPressedLabel.color,
+          id: keyPressedLabel._id,
+          plotId: prevState.currentLabel.plotId + 1,
+          type: keyPressedLabel._id,
+          labelingId: this.state.selectedLabeling._id,
+        },
+        prevLabel: prevState.currentLabel,
+      }));
+    }
+
+    // if the user starts recording of another label before the user stops recording of the previous label
+    // gracefully stop the previous label recording, start the new one
+    else if (
+      this.state.currentLabel.end === undefined &&
+      this.state.currentLabel.id !== keyPressedLabel._id
+    ) {
+      const currentLabelingData =
+        this.labelingData.current[this.labelingData.current.length - 1];
+      currentLabelingData.end = timestamp - 1; // -1 to avoid overlap between previous and new label
+      this.labelingData.current.push({
+        start: timestamp,
+        labelType: keyPressedLabel._id,
+        labelingId: this.state.selectedLabeling._id,
+      });
+
+      this.setState((prevState) => ({
+        currentLabel: {
+          start: timestamp,
+          end: undefined,
+          color: keyPressedLabel.color,
+          id: keyPressedLabel._id,
+          plotId: prevState.currentLabel.plotId + 1,
+        },
+        prevLabel: { ...prevState.currentLabel, end: timestamp - 120 },
+      }));
+    }
+  }
+
+  resetLabelingState() {
+    this.labelingData.current = [];
+    this.setState({
+      currentLabel: {
+        start: undefined,
+        end: undefined,
+        color: undefined,
+        id: undefined,
+        plotId: 0,
+      },
+      prevLabel: {
+        start: undefined,
+        end: undefined,
+        color: undefined,
+        id: undefined,
+        plotId: -1,
+      },
+    });
+  }
+
+  handleKeyDown(e) {
+    if (this.state.recorderState !== "recording") {
+      return;
+    }
+    const labelIdx = this.shortcutKeys.indexOf(e.key);
+    if (
+      labelIdx != -1 &&
+      this.state.selectedLabeling &&
+      labelIdx < this.state.selectedLabeling.labels.length
+    ) {
+      this.toggleLabelingActive(labelIdx);
+    }
+  }
+
+  async fetchLabelings() {
+    const res = await getLabelings();
+    this.setState({ labelings: res });
+  }
+
+  componentDidMount() {
+    if (this.componentRef.current) {
+      this.componentRef.current.focus();
+    }
+    this.fetchLabelings();
+  }
+
+  componentDidUpdate() {
+    if (this.state.recorderState === "recording") {
+      this.componentRef.current.focus();
+    }
+  }
+
+  render() {
+    if (!this.state.bleStatus) {
+      return <BleNotActivated></BleNotActivated>;
+    }
+
+    return (
+      <div
+        className="bleActivatedContainer"
+        ref={this.componentRef}
+        onKeyDown={this.handleKeyDown}
+        tabIndex="0"
+        style={{ outline: "none" }}
+      >
+        <div className="mb-2">
+          <BlePanelConnectDevice
+            bleConnectionChanging={this.state.bleConnectionChanging}
+            toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
+            connectedBLEDevice={this.state.connectedBLEDevice}
+            hasDFUFunction={this.state.hasDFUFunction}
+            toggleDFUModal={this.toggleDFUModal}
+            deviceNotUsable={this.state.deviceNotUsable}
+            latestEdgeMLVersion={this.state.latestEdgeMLVersion}
+            isEdgeMLInstalled={
+              this.state.connectedDeviceData
+                ? this.state.connectedDeviceData.installedFWVersion
+                : undefined
+            }
+            outdatedVersionInstalled={this.state.outdatedVersionInstalled}
+            connectedDeviceData={this.state.connectedDeviceData}
+          ></BlePanelConnectDevice>
+        </div>
+        {this.state.showDFUModal ? (
+          <DFUModal
+            connectedBLEDevice={this.state.connectedBLEDevice}
+            isEdgeMLInstalled={this.state.isEdgeMLInstalled}
+            connectedDeviceData={this.state.connectedDeviceData}
+            toggleDFUModal={this.toggleDFUModal}
+            showDFUModal={this.state.showDFUModal}
+            latestEdgeMLVersion={this.state.latestEdgeMLVersion}
+            onDisconnection={this.onDisconnection}
+          />
+        ) : null}
+        {this.state.deviceSensors &&
+        this.state.connectedBLEDevice &&
+        this.state.isEdgeMLInstalled ? (
+          <div>
+            <Row>
+              <Col>
+                <div>
+                  <BlePanelSensorList
+                    maxSampleRate={this.state.connectedDeviceData.maxSampleRate}
+                    selectedSensors={this.state.selectedSensors}
+                    onChangeSampleRate={this.onChangeSampleRate}
+                    sensors={this.state.deviceSensors}
+                    onToggleSensor={this.onToggleSensor}
+                    disabled={this.state.recorderState !== "ready"}
+                  ></BlePanelSensorList>
+                </div>
+              </Col>
+              <Col>
+                <BlePanelRecorderSettings
+                  onDatasetNameChanged={this.onDatasetNameChanged}
+                  onGlobalSampleRateChanged={this.onGlobalSampleRateChanged}
+                  datasetName={this.state.datasetName}
+                  sampleRate={this.state.sampleRate}
+                  onClickRecordButton={this.onClickRecordButton}
+                  recorderState={this.state.recorderState}
+                  sensorsSelected={this.state.selectedSensors.size > 0}
+                  onToggleStream={this.onToggleStream}
+                  onToggleSampleRate={this.onToggleSampleRate}
+                  fullSampleRate={this.state.fullSampleRate}
+                />
+                <BleLabelingMenu
+                  labelings={this.state.labelings}
+                  selectedLabeling={this.state.selectedLabeling}
+                  handleSelectLabeling={this.handleLabelingSelect}
+                  handleSelectLabel={this.handleLabelSelect}
+                  shortcutKeys={this.shortcutKeys}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={12}>
+                {this.state.recorderState === "recording" &&
+                this.state.stream ? (
+                  <BlePanelRecordingDisplay
+                    deviceSensors={this.state.deviceSensors}
+                    selectedSensors={this.state.selectedSensors}
+                    lastData={this.currentData}
+                    sensorKeys={this.sensorKeys}
+                    fullSampleRate={this.state.fullSampleRate}
+                    currentLabel={this.state.currentLabel}
+                    prevLabel={this.state.prevLabel}
+                  />
+                ) : null}
+              </Col>
+            </Row>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+}
+
+export default UploadBLE;

@@ -1,6 +1,3 @@
-.EditLabelingModal {
-}
-
 .clear::-ms-clear {
   display: none;
 }
@@ -9,11 +6,11 @@
   font-size: 13px;
 }
 
-.no-border-radius {
-  border-radius: 0 !important;
+.deleteBtnRadius {
+  border-radius: 0px 0.3rem 0.3rem 0px !important;
 }
 
-.alert-danger {
+.edit-labeling-body .alert-danger {
   color: red;
   background-color: transparent;
   border: none;

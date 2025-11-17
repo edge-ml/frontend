@@ -1,6 +1,0 @@
-time,sensor_accX[m/s²],sensor_accY[m/s²],sensor_accZ[m/s²],label_labeling1_label1,label_labeling1_label2
-1628168415000,2,2,2,x,
-1628168416000,4,2,4,x,
-1628168417000,8,3,8,,x
-1628168418000,16,4,16,,x
-1628168419000,16,4,16,,x

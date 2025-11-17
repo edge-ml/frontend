@@ -11,10 +11,6 @@
   transition-duration: 0.3s;
 }
 
-.badgeSize {
-  font-size: 0.8rem;
-}
-
 .badgeLabelings {
   color: black;
   background-color: unset;
@@ -27,7 +23,7 @@
   left: 0px;
   top: -10px;
   padding: 5px 5px;
-  background: white;
+  background: unset;
   text-align: start;
   display: inline;
   color: rgb(131, 136, 159);
@@ -35,9 +31,9 @@
 
 .btn-addLabeling {
   position: fixed;
-  bottom: '1rem';
-  right: '1rem';
-  border-radius: '50%';
+  bottom: "1rem";
+  right: "1rem";
+  border-radius: "50%";
 }
 
 .text-break {

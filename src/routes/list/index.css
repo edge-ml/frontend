@@ -35,10 +35,6 @@
   transform: rotate(90deg);
 }
 
-.badgeSize {
-  font-size: 0.8rem;
-}
-
 .badgeLabelings {
   color: black;
   background-color: unset;
@@ -126,4 +122,20 @@
   border-radius: 10px 10px 0px 0px;
   border-width: 2px 2px 0px 2px;
   padding: 10px;
+}
+
+.fixed-bottom {
+  position: absolute;
+  bottom: 0;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .flex-wrap {
+    flex-direction: column;
+  }
+}
+
+.table-margin {
+  margin-bottom: 80px;
 }
