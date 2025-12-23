@@ -9,7 +9,7 @@ const axios = ax.create();
 export const processCSVBackend = (formData, fileId, handleProgress) => {
   const source = ax.CancelToken.source();
   const { currentProject } = useProjectStore.getState();
-
+  const projectId = currentProject?._id || currentProject?.id || currentProject;
   const cancellationHandler = () => {
     source.cancel("Operation cancelled by the user");
   };
@@ -18,7 +18,7 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
     ...apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
       apiConsts.DATASET_STORE,
-      apiConsts.DATASET_STORE_ENDPOINTS.CREATE_DATASET,
+      `${projectId}/datasets/csv`,
       formData,
       {},
       "multipart/form-data"

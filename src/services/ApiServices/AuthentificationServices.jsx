@@ -6,14 +6,18 @@ const axios = ax.create();
 const axiosNoToken = ax.create();
 
 export const loginUser = async (userMail, password) => {
+  const formBody = new URLSearchParams({
+    username: userMail,
+    password: password,
+  }).toString();
+
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.POST,
     apiConsts.AUTH_URI,
     apiConsts.AUTH_ENDPOINTS.LOGIN,
-    {
-      email: userMail,
-      password: password,
-    }
+    formBody,
+    {},
+    "application/x-www-form-urlencoded"
   );
   return res;
 };

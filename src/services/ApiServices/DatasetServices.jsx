@@ -1,23 +1,30 @@
 import apiConsts from "./ApiConstants";
 import ax from "axios";
 import apiRequest from "./request";
+import useProjectStore from "../../stores/projectStore";
 
 const axios = ax.create();
 
 export const getDatasets = async (project) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?._id || currentProject?.id || currentProject;
+
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.GET,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS
+    // apiConsts.DATASET_STORE_ENDPOINTS.DATASETS
+    `${projectId}/datasets`
   );
   return res;
 };
 
 export const getDatasetsPagination = async (skip, limit, sort) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?._id || currentProject?.id || currentProject;
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.GET,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + "view",
+    `${projectId}/datasets/view`,
     {},
     { skip: skip, limit: limit, sort: sort }
   );

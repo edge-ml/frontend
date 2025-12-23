@@ -2,32 +2,40 @@ import localStorageService from "./../LocalStorageService";
 
 const currentHost = window.location.host.split(":")[0];
 
-export const AUTH_URI =
-  process.env.NODE_ENV === "production"
-    ? "/auth/"
-    : window.location.host === "edge-ml.ngrok.io"
-      ? "http://auth.edge-ml.ngrok.io/auth/"
-      : `http://${currentHost}:3002/auth/`;
+// export const AUTH_URI =
+//   process.env.NODE_ENV === "production"
+//     ? "/auth/"
+//     : window.location.host === "edge-ml.ngrok.io"
+//       ? "http://auth.edge-ml.ngrok.io/auth/"
+//       : `http://${currentHost}:3002/auth/`;
 
-export const API_URI =
-  process.env.NODE_ENV === "production"
-    ? "/api/"
-    : window.location.host === "edge-ml.ngrok.io"
-      ? "http://backend.edge-ml.ngrok.io/api/"
-      : `http://${currentHost}:3001/api/`;
-export const ML_URI =
-  process.env.NODE_ENV === "production"
-    ? "/ml/"
-    : window.location.host === "edge-ml.ngrok.io"
-      ? "http://ml.edge-ml.ngrok.io/ml/"
-      : `http://${currentHost}:3003/ml/`;
+// export const API_URI =
+//   process.env.NODE_ENV === "production"
+//     ? "/api/"
+//     : window.location.host === "edge-ml.ngrok.io"
+//       ? "http://backend.edge-ml.ngrok.io/api/"
+//       : `http://${currentHost}:3001/api/`;
+// export const ML_URI =
+//   process.env.NODE_ENV === "production"
+//     ? "/ml/"
+//     : window.location.host === "edge-ml.ngrok.io"
+//       ? "http://ml.edge-ml.ngrok.io/ml/"
+//       : `http://${currentHost}:3003/ml/`;
 
-export const DATASET_STORE =
-  process.env.NODE_ENV === "production"
-    ? "/ds/"
-    : window.location.host === "edge-ml.ngrok.io"
-      ? "http://ds.edge-ml.ngrok.io/ds/"
-      : `http://${currentHost}:3004/ds/`;
+// export const DATASET_STORE =
+//   process.env.NODE_ENV === "production"
+//     ? "/ds/"
+//     : window.location.host === "edge-ml.ngrok.io"
+//       ? "http://ds.edge-ml.ngrok.io/ds/"
+//       : `http://${currentHost}:3004/ds/`;
+
+
+export const BACKEND_URL = "http://localhost:8000/api/v1/"
+export const AUTH_URI = BACKEND_URL
+export const API_URI = BACKEND_URL
+export const ML_URI = BACKEND_URL
+export const DATASET_STORE = BACKEND_URL
+
 
 export const HTTP_METHODS = {
   GET: "GET",
@@ -38,7 +46,10 @@ export const HTTP_METHODS = {
 
 export const AUTH_ENDPOINTS = {
   DEFAULT: "/",
-  LOGIN: "login",
+  LOGIN: "auth/token",
+  USER: "auth/user/me",
+
+
   REFRESH: "refresh",
   DELETE: "unregister",
   REGISTER: "register",
@@ -54,11 +65,13 @@ export const AUTH_ENDPOINTS = {
   CHANGE_USERNAME: "changeUserName",
   USERNAME: "userName",
   OAUTH: "login/oauth",
-  USER: "user",
   LOGOUT: "logout"
 };
 
 export const API_ENDPOINTS = {
+  PROJECTS: "projects",
+
+
   DATASETS: "datasets",
   DATASETS_CAN_EDIT: "datasets/canedit",
   DEVICE: "devices",
@@ -66,7 +79,7 @@ export const API_ENDPOINTS = {
   DATASET_LABEL_DEFINITIONS: "datasetLabelDefinitions",
   LABEL_TYPES: "labelTypes",
   EXPERIMENTS: "experiments",
-  PROJECTS: "projects",
+
   SETDEVICEAPIKEY: "deviceApi/setkey",
   GETDEVICEAPIKEY: "deviceApi/getkey",
   REMOVEDEVICEAPIKEY: "deviceApi/deletekey",
@@ -86,10 +99,13 @@ export const ML_ENDPOINTS = {
 };
 
 export const DATASET_STORE_ENDPOINTS = {
+  LABELING: "labelings/",
+
+
   DATASETS: "datasets/",
   DATASETS_VIEW: "datasets/view",
   DATASET_LABELINGS: "datasets/labelings/",
-  LABELING: "labelings/",
+
   CSV: "download/",
   CREATE_DATASET: "datasets/create",
   GET_PROCESSING_PROGRESS: "datasets/create/progress",

@@ -38,12 +38,12 @@ const useProjectStore = create(
     getProjects: async function () {
       var projects = await getProjects_API();
 
-      projects = await Promise.all(projects.map(async prj => {
-        const users = await getUserNames([prj.admin, ...prj.users]);
-        prj.admin = users[0]
-        prj.users = users.slice(1)
-        return prj;
-      }));
+      // projects = await Promise.all(projects.map(async prj => {
+      //   const users = await getUserNames([prj.admin, ...prj.users]);
+      //   prj.admin = users[0]
+      //   prj.users = users.slice(1)
+      //   return prj;
+      // }));
       
       console.log(projects)
       set({ projects });
