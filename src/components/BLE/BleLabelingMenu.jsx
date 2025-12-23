@@ -54,7 +54,7 @@ export const BleLabelingMenu = ({
           {selectedLabeling &&
             selectedLabeling.labels.map((label, labelIdx) => (
               <div
-                key={label._id}
+                key={label.id}
                 className="d-flex flex-column align-items-center me-1"
               >
                 <LabelBadge color={label.color}> {label.name}</LabelBadge>

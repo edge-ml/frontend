@@ -14,7 +14,7 @@ const useProjectStore = create(
         // Attempt to find the current project in the new projects list
         const savedProjectId = getProject();
         let newCurrentProject = savedProjectId
-          ? projects.find((project) => project._id === savedProjectId)
+          ? projects.find((project) => project.id === savedProjectId)
           : null;
 
         if (projects.length > 0 && !newCurrentProject) {
@@ -24,7 +24,7 @@ const useProjectStore = create(
         state.currentProject = newCurrentProject;
 
         // Update local storage with the new current project ID
-        setProject(newCurrentProject ? newCurrentProject._id : null);
+        setProject(newCurrentProject ? newCurrentProject.id : null);
       });
     },
 
@@ -32,7 +32,7 @@ const useProjectStore = create(
       set((state) => {
         state.currentProject = project;
       });
-      setProject(project ? project._id : null);
+      setProject(project ? project.id : null);
     },
 
     getProjects: async function () {
@@ -54,12 +54,12 @@ const useProjectStore = create(
         const projectId = getProject();
         if (projectId) {
           currentProject =
-            projects.find((project) => project._id === projectId) ||
+            projects.find((project) => project.id === projectId) ||
             projects[0];
         }
 
         set({ currentProject });
-        setProject(currentProject ? currentProject._id : null);
+        setProject(currentProject ? currentProject.id : null);
       }
     },
   }))

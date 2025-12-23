@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState } from "react";
 import {
   Container,
   FormGroup,
@@ -15,8 +15,24 @@ const GenerateCode = (props) => {
   const { currentProject } = useProjectStore();
   const { toggleDevieApi, generateApiKeys, removeApiKeys, readKey, writeKey } =
     useDeviceApi();
+  const [isToggling, setIsToggling] = useState(false);
 
   const backendUrl = window.location.host;
+  const deviceApiEnabled = !!currentProject.enable_external_api;
+  const handleToggleDeviceApi = async (e) => {
+    e.preventDefault();
+    if (isToggling) {
+      return;
+    }
+
+    const nextState = !currentProject.enable_external_api;
+    setIsToggling(true);
+    try {
+      await toggleDevieApi(nextState);
+    } finally {
+      setIsToggling(false);
+    }
+  };
 
   return (
     <Container>
@@ -25,15 +41,16 @@ const GenerateCode = (props) => {
           <FormGroup switch>
             <Label check>Device API</Label>
             <Input
-              checked={currentProject.enableDeviceApi}
-              onChange={(e) => toggleDevieApi(e.target.checked)}
+              checked={currentProject.enable_external_api}
+              onChange={handleToggleDeviceApi}
+              disabled={isToggling}
               type="switch"
               role="switch"
             />
           </FormGroup>
         ) : null}
       </div>
-      {currentProject.enableDeviceApi || currentProject.users ? (
+      {currentProject.enable_external_api || currentProject.users ? (
         <div>
           <InputGroup>
             <InputGroupText>{"Backend-URL"}</InputGroupText>
@@ -42,15 +59,27 @@ const GenerateCode = (props) => {
           <InputGroup>
             <InputGroupText>{"Read Key"}</InputGroupText>
             <Input
-              value={readKey ? readKey : "Device-API is disabled for your user"}
+              disabled={!deviceApiEnabled}
+              value={
+                readKey
+                  ? readKey
+                  : deviceApiEnabled
+                    ? "No read key available"
+                    : "Device-API is disabled for your user"
+              }
               readOnly
             />
           </InputGroup>
           <InputGroup>
             <InputGroupText>{"Write Key"}</InputGroupText>
             <Input
+              disabled={!deviceApiEnabled}
               value={
-                writeKey ? writeKey : "Device-API is disabled for your user"
+                writeKey
+                  ? writeKey
+                  : deviceApiEnabled
+                    ? "No write key available"
+                    : "Device-API is disabled for your user"
               }
               readOnly
             />
@@ -59,7 +88,7 @@ const GenerateCode = (props) => {
             <Button
               outline
               className="my-1"
-              disabled={!currentProject.enableDeviceApi}
+              disabled={!currentProject.enable_external_api}
               color="primary"
               onClick={generateApiKeys}
             >
@@ -70,7 +99,7 @@ const GenerateCode = (props) => {
               className="mx-2 my-1"
               color="danger"
               disabled={
-                !currentProject.enableDeviceApi || !readKey || !writeKey
+                !currentProject.enable_external_api || !readKey || !writeKey
               }
               onClick={removeApiKeys}
             >

@@ -25,7 +25,7 @@ const Wizard_SelectLabeling = ({
     return datasets
       .map((elm) => elm.labelings.map((l) => l.labelingId))
       .flat()
-      .filter((elm) => elm === labeling._id).length;
+      .filter((elm) => elm === labeling.id).length;
   };
 
   useEffect(() => {
@@ -71,7 +71,7 @@ const Wizard_SelectLabeling = ({
                 onClick={() => setLabeling({ ...labeling, disabledLabels: [] })}
                 isSelected={
                   selectedLabeling
-                    ? selectedLabeling._id === labeling._id
+                    ? selectedLabeling.id === labeling.id
                     : false
                 }
               ></Checkbox>
@@ -82,26 +82,26 @@ const Wizard_SelectLabeling = ({
                     className="badge"
                     onClick={() =>
                       selectedLabeling?.disabledLabels &&
-                      selectedLabeling._id === labeling._id &&
+                      selectedLabeling.id === labeling.id &&
                       setLabeling({
                         ...selectedLabeling,
                         disabledLabels: toggleElement(
                           selectedLabeling.disabledLabels,
-                          label._id
+                          label.id
                         ),
                       })
                     }
                     style={{
-                      ...(selectedLabeling?.disabledLabels.includes(label._id)
+                      ...(selectedLabeling?.disabledLabels.includes(label.id)
                         ? { textDecoration: "line-through" }
                         : { backgroundColor: label.color }),
                       userSelect: "none",
                     }}
-                    // {...(selectedLabeling?.disabledLabels.includes(label._id)
+                    // {...(selectedLabeling?.disabledLabels.includes(label.id)
                     //   ? { color: 'light' }
                     //   : {})}
                     color={
-                      selectedLabeling?.disabledLabels.includes(label._id)
+                      selectedLabeling?.disabledLabels.includes(label.id)
                         ? "light"
                         : ""
                     }
@@ -129,7 +129,7 @@ Wizard_SelectLabeling.validate = ({
     return "You need to select a labeling";
   }
 
-  const labeling = labelings.find((l) => l._id === selectedLabeling._id);
+  const labeling = labelings.find((l) => l.id === selectedLabeling.id);
 
   if (!labeling) {
     return "Selected labeling is erronous, an internal error has occured";

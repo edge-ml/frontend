@@ -64,7 +64,7 @@ const DeployModal = ({isOpen, model, onClose }) => {
 
   useEffect(() => {
     if (!model) return;
-    getDeployDevices(model._id).then((config) => {
+    getDeployDevices(model.id).then((config) => {
       setDevices(config.devices);
       setSelectedDevice(config.devices[0]);
       setParameters(config.parameters);
@@ -156,7 +156,7 @@ const DeployModal = ({isOpen, model, onClose }) => {
     // a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
 
     const res = await deployModel(
-      model._id,
+      model.id,
       selectedSensors,
       parameters,
       selectedDevice,
@@ -183,7 +183,7 @@ const DeployModal = ({isOpen, model, onClose }) => {
     // a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
 
     const res = await downloadFirmware(
-      model._id,
+      model.id,
       selectedSensors,
       parameters,
       selectedDevice,

@@ -24,7 +24,7 @@ const apiRequest = async (
     params: params,
     headers: {
       "Content-Type": contentType,
-      ...(currentProject && { project: currentProject._id }), // Add project ID to headers if it exists
+      ...(currentProject && { project: currentProject.id }), // Add project ID to headers if it exists
       Authorization: localStorageService.getAccessToken(),
     },
     responseType: responseType,

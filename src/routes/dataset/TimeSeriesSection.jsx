@@ -24,7 +24,7 @@ const TimeSeriesSection = ({}) => {
       <div className="flex-grow-1 overflow-auto">
         {activeTimeSeries.map((elm, index) => (
           <TimeSeriesDisplay
-            key={elm._id + index}
+            key={elm.id + index}
             timeSeries={elm}
           ></TimeSeriesDisplay>
         ))}

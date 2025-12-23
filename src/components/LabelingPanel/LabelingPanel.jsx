@@ -20,13 +20,13 @@ const LabelButtonView = ({
             className="m-1 labelingButton"
             style={{
               backgroundColor:
-                label._id === selectedLabelTypeId ? label.color : "white",
+                label.id === selectedLabelTypeId ? label.color : "white",
               color:
-                label._id === selectedLabelTypeId
+                label.id === selectedLabelTypeId
                   ? hexToForegroundColor(label.color)
                   : label.color,
             }}
-            onClick={(e) => setSelectedLabelTypeId(label._id)}
+            onClick={(e) => setSelectedLabelTypeId(label.id)}
             key={index}
           >
             {label.name} {"(" + (index + 1) + ")"}
@@ -85,7 +85,7 @@ const LabelingPanel = ({}) => {
         return;
       }
       const newLabelType = activeLabeling.labels[Number(e.key - 1)];
-      setSelectedLabelTypeId(newLabelType._id);
+      setSelectedLabelTypeId(newLabelType.id);
     }
   };
 

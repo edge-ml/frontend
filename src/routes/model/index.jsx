@@ -103,12 +103,12 @@ class ModelPage extends Component {
         const customMetaData = result[3];
         this.setState({
           selectedLabeling: result[0].labelings[0]
-            ? result[0].labelings[0]._id
+            ? result[0].labelings[0].id
             : '',
           selectedLabelsFor: result[0].labelings.reduce(
             (acc, labeling) => ({
               ...acc,
-              [labeling._id]: labeling.labels.reduce(
+              [labeling.id]: labeling.labels.reduce(
                 (c, label) => ({ ...c, [label]: true }),
                 {},
               ),
@@ -118,11 +118,11 @@ class ModelPage extends Component {
           labelings: result[0].labelings,
           labels: result[0].labels,
           useUnlabelledFor: result[0].labelings.reduce(
-            (acc, labeling) => ({ ...acc, [labeling._id]: false }),
+            (acc, labeling) => ({ ...acc, [labeling.id]: false }),
             {},
           ),
           unlabelledNameFor: result[0].labelings.reduce(
-            (acc, labeling) => ({ ...acc, [labeling._id]: 'Other' }),
+            (acc, labeling) => ({ ...acc, [labeling.id]: 'Other' }),
             {},
           ),
           sensorStreams: result[1] ? result[1] : [],

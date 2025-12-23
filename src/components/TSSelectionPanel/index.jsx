@@ -16,10 +16,10 @@ const TSSelectionPanel = (props) => {
         <div className="tslist">
           {timeSeries.map((ts, idx) => (
             <Badge
-              onClick={() => onClickSelectSeries(ts._id)}
+              onClick={() => onClickSelectSeries(ts.id)}
               key={`ts-badge-${idx}`}
               className={
-                activeSeries.includes(ts._id)
+                activeSeries.includes(ts.id)
                   ? "badgeActive badge"
                   : "badgeInactive badge"
               }

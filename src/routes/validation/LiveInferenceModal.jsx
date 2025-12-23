@@ -148,7 +148,7 @@ const ScreenOne = memo(
         downloadSingleFile ? "js" : "zip"
       }`;
       const blob = await downloadDeploymentModel(
-        model._id,
+        model.id,
         "WASM",
         true,
         downloadSingleFile
@@ -299,7 +299,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
     let script = null;
 
     const f = async () => {
-      const blob = await downloadDeploymentModel(model._id, "WASM", true, true);
+      const blob = await downloadDeploymentModel(model.id, "WASM", true, true);
 
       blobURL = URL.createObjectURL(blob);
       // // This conflicts with webpack/cra (https://github.com/webpack/webpack/issues/6680)

@@ -53,7 +53,7 @@ const ModelTable = ({ models, stepOptions, updateModel, deleteModels }) => {
             onClick={() => {
               onDeleteModels(
                 selectedModels.map((elm) =>
-                  models.find((model) => model._id === elm._id)
+                  models.find((model) => model.id === elm.id)
                 )
               );
             }}
@@ -68,7 +68,7 @@ const ModelTable = ({ models, stepOptions, updateModel, deleteModels }) => {
       </EdgeMLTableHeader>
       {models.map((model, index) => {
         return (
-          <EdgeMLTableEntry key={"model_table_entry" + model._id}>
+          <EdgeMLTableEntry key={"model_table_entry" + model.id}>
             <ModelTableEntry
               model={model}
               stepOptions={stepOptions}
@@ -89,7 +89,7 @@ const ModelTable = ({ models, stepOptions, updateModel, deleteModels }) => {
         }}
       >
         {modelsToDelete.map((model) => (
-          <div key={model._id}>
+          <div key={model.id}>
             <b>{model.name}</b>
           </div>
         ))}

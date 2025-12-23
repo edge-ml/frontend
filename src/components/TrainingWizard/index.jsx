@@ -154,16 +154,16 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
 
   const toggleSelectDataset = (id) => {
     const newDatasets = [...datasets];
-    const idx = datasets.findIndex((elm) => elm._id === id);
+    const idx = datasets.findIndex((elm) => elm.id === id);
     newDatasets[idx].selected = !newDatasets[idx].selected;
     setDatasets([...newDatasets]);
   };
 
   const toggleAllDatasets = (datasets, selected) => {
-    const datasetIds = datasets.map((elm) => elm._id);
+    const datasetIds = datasets.map((elm) => elm.id);
     const newDatasets = [...datasets];
     for (var i = 0; i < newDatasets.length; i++) {
-      if (datasetIds.includes(newDatasets[i]._id)) {
+      if (datasetIds.includes(newDatasets[i].id)) {
         newDatasets[i].selected = selected;
       }
     }
@@ -187,19 +187,19 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
         .filter((elm) => elm.selected)
         .map((elm) => {
           return {
-            _id: elm._id,
+            _id: elm.id,
             timeSeries: elm.timeSeries
               .filter(
                 (ts) =>
                   intersectingTSNames.includes(ts.name) &&
                   !disabledTimeseriesNames.includes(ts.name)
               )
-              .map((ts) => ts._id),
+              .map((ts) => ts.id),
           };
         })
         .filter((elm) => elm.timeSeries.length > 0),
       labeling: {
-        _id: labeling._id,
+        _id: labeling.id,
         useZeroClass: zeroClass,
         disabledLabelIDs: labeling.disabledLabels || [],
       },

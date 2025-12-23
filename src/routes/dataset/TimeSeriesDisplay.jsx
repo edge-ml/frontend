@@ -29,7 +29,7 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
   let selectedDatasetLabeling = undefined;
   if (dataset?.labelings && activeLabeling) {
     selectedDatasetLabeling = dataset.labelings.find(
-      (elm) => elm.labelingId === activeLabeling._id
+      (elm) => elm.labelingId === activeLabeling.id
     );
   }
 
@@ -62,8 +62,8 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
   }, [onMouseUp]);
 
   const { timeSeriesData, getTimeSeriesPatial } = useTimeSeriesData(
-    dataset._id,
-    timeSeries._id
+    dataset.id,
+    timeSeries.id
   );
 
   const refreshData = async () => {

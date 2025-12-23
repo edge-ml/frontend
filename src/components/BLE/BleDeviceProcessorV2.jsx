@@ -95,7 +95,7 @@ class BleDeviceProcessorV2 {
   }
 
   async startRecording(selectedSensors, latency, datasetName) {
-    var oldDatasets = (await getDatasets()).map((elm) => elm._id);
+    var oldDatasets = (await getDatasets()).map((elm) => elm.id);
     const baseDataset = getBaseDataset(
       [...selectedSensors].map((elm) => this.sensors[elm]),
       datasetName
@@ -109,7 +109,7 @@ class BleDeviceProcessorV2 {
     //       datasetName,
     //     ),
     //   )
-    // ).filter((elm) => !oldDatasets.includes(elm._id))[0];
+    // ).filter((elm) => !oldDatasets.includes(elm.id))[0];
     await this.prepareRecording(selectedSensors, latency);
     var recordingStart = new Date().getTime();
     var adjustedTime = false;
@@ -191,7 +191,7 @@ class BleDeviceProcessorV2 {
 
     // Upload labels
     for (const label of this.labels) {
-      await createDatasetLabel(this.newDataset._id, label.labelingId, label);
+      await createDatasetLabel(this.newDataset.id, label.labelingId, label);
     }
 
     this.recordingSensors = [];

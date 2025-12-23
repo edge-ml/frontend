@@ -15,10 +15,20 @@ const useDeviceApi = () => {
   const [writeKey, setWriteKey] = useState(undefined);
 
   const updateKeys = async () => {
-    const keys = await getDeviceApiKey();
+    try {
+      const keys = await getDeviceApiKey();
+      const nextReadKey =
+        keys?.readApiKey ?? keys?.read_api_key ?? keys?.read_key ?? undefined;
+      const nextWriteKey =
+        keys?.writeApiKey ?? keys?.write_api_key ?? keys?.write_key ?? undefined;
 
-    setReadKey(keys.readApiKey);
-    setWriteKey(keys.writeApiKey);
+      setReadKey(nextReadKey);
+      setWriteKey(nextWriteKey);
+    } catch (error) {
+      setReadKey(undefined);
+      setWriteKey(undefined);
+      throw error;
+    }
   };
 
   useEffect(() => {
@@ -41,8 +51,12 @@ const useDeviceApi = () => {
 
   const generateApiKeys = async () => {
     const keys = await generateApiKeys_API();
-    setReadKey(keys.readApiKey);
-    setWriteKey(keys.writeApiKey);
+    const nextReadKey =
+      keys?.readApiKey ?? keys?.read_api_key ?? keys?.read_key ?? undefined;
+    const nextWriteKey =
+      keys?.writeApiKey ?? keys?.write_api_key ?? keys?.write_key ?? undefined;
+    setReadKey(nextReadKey);
+    setWriteKey(nextWriteKey);
   };
 
   const removeApiKeys = async () => {

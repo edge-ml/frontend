@@ -46,7 +46,7 @@ const useModels = () => {
   }, []);
 
   const deleteModels = async (modelsToDelete) => {
-    const promises = modelsToDelete.map((model) => deleteModel_API(model._id));
+    const promises = modelsToDelete.map((model) => deleteModel_API(model.id));
     await Promise.all(promises);
     refreshModels(); // Refresh after deletion
   };

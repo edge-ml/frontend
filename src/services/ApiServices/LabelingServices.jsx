@@ -10,7 +10,7 @@ import useProjectStore from "../../stores/projectStore";
 
 export const getLabelings = async () => {
   const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?._id || currentProject?.id || currentProject;
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
 
   const res = await apiRequest(
     HTTP_METHODS.GET,
@@ -23,7 +23,7 @@ export const getLabelings = async () => {
 export const updateLabeling = async (labeling) => {
   console.log(labeling);
   const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?._id || currentProject?.id || currentProject;
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
   const res = await apiRequest(
     HTTP_METHODS.PUT,
     DATASET_STORE,

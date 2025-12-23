@@ -91,20 +91,20 @@ class LabelingPanel extends Component {
                         }
                         style={{
                           backgroundColor:
-                            label._id === this.state.selectedLabelTypeId
+                            label.id === this.state.selectedLabelTypeId
                               ? label.color
                               : "white",
                           borderColor:
-                            label._id === this.state.selectedLabelTypeId
+                            label.id === this.state.selectedLabelTypeId
                               ? null
                               : label.color,
                           color:
-                            label._id === this.state.selectedLabelTypeId
+                            label.id === this.state.selectedLabelTypeId
                               ? null
                               : label.color,
                         }}
                         onClick={(e) =>
-                          this.handleLabelTypeClicked(e, label._id)
+                          this.handleLabelTypeClicked(e, label.id)
                         }
                         key={index}
                       >

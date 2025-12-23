@@ -49,7 +49,7 @@ const useChartEvents = (chart, labeling) => {
     // Add the label and reset provisional labeling
     const labelToAdd = {
       ...updatedLabel,
-      name: activeLabeling.labels.find((elm) => elm._id === updatedLabel.type)
+      name: activeLabeling.labels.find((elm) => elm.id === updatedLabel.type)
         .name,
     };
 
@@ -57,7 +57,7 @@ const useChartEvents = (chart, labeling) => {
   };
 
   const onClickLabel = (label) => {
-    if (selectedLabel && selectedLabel._id === label._id) {
+    if (selectedLabel && selectedLabel.id === label.id) {
       setSelectedLabel(undefined);
       return;
     }
@@ -170,7 +170,7 @@ const useChartEvents = (chart, labeling) => {
     var plotBands = chart.current.chart.xAxis[0].plotLinesAndBands;
     var plotBand = plotBands.filter(
       (item) =>
-        !item.options.isPlotline && item.options.labelId === selectedLabel._id
+        !item.options.isPlotline && item.options.labelId === selectedLabel.id
     )[0];
     return plotBand;
   };

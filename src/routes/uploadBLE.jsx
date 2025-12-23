@@ -653,8 +653,8 @@ class UploadBLE extends Component {
       this.labelingData.current = [
         {
           start: timestamp,
-          labelType: keyPressedLabel._id,
-          labelingId: this.state.selectedLabeling._id,
+          labelType: keyPressedLabel.id,
+          labelingId: this.state.selectedLabeling.id,
         },
       ];
       this.setState({
@@ -662,16 +662,16 @@ class UploadBLE extends Component {
           start: timestamp,
           end: undefined,
           color: keyPressedLabel.color,
-          labelingId: this.state.selectedLabeling._id,
-          type: keyPressedLabel._id,
-          id: keyPressedLabel._id,
+          labelingId: this.state.selectedLabeling.id,
+          type: keyPressedLabel.id,
+          id: keyPressedLabel.id,
           plotId: 0,
         },
       });
     }
     // stop recording the current label when the user pressed the label key a second time
     else if (
-      this.state.currentLabel.id === keyPressedLabel._id &&
+      this.state.currentLabel.id === keyPressedLabel.id &&
       this.state.currentLabel.end === undefined
     ) {
       const currentLabelingData =
@@ -688,18 +688,18 @@ class UploadBLE extends Component {
     else if (this.state.currentLabel.end !== undefined) {
       this.labelingData.current.push({
         start: timestamp,
-        labelType: keyPressedLabel._id,
-        labelingId: this.state.selectedLabeling._id,
+        labelType: keyPressedLabel.id,
+        labelingId: this.state.selectedLabeling.id,
       });
       this.setState((prevState) => ({
         currentLabel: {
           start: timestamp,
           end: undefined,
           color: keyPressedLabel.color,
-          id: keyPressedLabel._id,
+          id: keyPressedLabel.id,
           plotId: prevState.currentLabel.plotId + 1,
-          type: keyPressedLabel._id,
-          labelingId: this.state.selectedLabeling._id,
+          type: keyPressedLabel.id,
+          labelingId: this.state.selectedLabeling.id,
         },
         prevLabel: prevState.currentLabel,
       }));
@@ -709,15 +709,15 @@ class UploadBLE extends Component {
     // gracefully stop the previous label recording, start the new one
     else if (
       this.state.currentLabel.end === undefined &&
-      this.state.currentLabel.id !== keyPressedLabel._id
+      this.state.currentLabel.id !== keyPressedLabel.id
     ) {
       const currentLabelingData =
         this.labelingData.current[this.labelingData.current.length - 1];
       currentLabelingData.end = timestamp - 1; // -1 to avoid overlap between previous and new label
       this.labelingData.current.push({
         start: timestamp,
-        labelType: keyPressedLabel._id,
-        labelingId: this.state.selectedLabeling._id,
+        labelType: keyPressedLabel.id,
+        labelingId: this.state.selectedLabeling.id,
       });
 
       this.setState((prevState) => ({
@@ -725,7 +725,7 @@ class UploadBLE extends Component {
           start: timestamp,
           end: undefined,
           color: keyPressedLabel.color,
-          id: keyPressedLabel._id,
+          id: keyPressedLabel.id,
           plotId: prevState.currentLabel.plotId + 1,
         },
         prevLabel: { ...prevState.currentLabel, end: timestamp - 120 },

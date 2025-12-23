@@ -25,7 +25,7 @@ const Wizard_SelectDataset = ({
   const checkUsable = (dataset) => {
     return (
       selectedLabeling &&
-      dataset.labelings.filter((elm) => elm.labelingId === selectedLabeling._id)
+      dataset.labelings.filter((elm) => elm.labelingId === selectedLabeling.id)
         .length <= 0
     );
   };
@@ -58,7 +58,7 @@ const Wizard_SelectDataset = ({
   const coveredLabels = datasets
     .filter((elm) => elm.selected)
     .map((e) =>
-      e.labelings.find((ls) => ls.labelingId === selectedLabeling._id)
+      e.labelings.find((ls) => ls.labelingId === selectedLabeling.id)
     )
     .filter((x) => x)
     .map((ls) => ls.labels)
@@ -136,7 +136,7 @@ const Wizard_SelectDataset = ({
                     <div className="d-flex me-2">
                       <Checkbox
                         isSelected={dataset.selected}
-                        onClick={() => toggleSelectDataset(dataset._id)}
+                        onClick={() => toggleSelectDataset(dataset.id)}
                       ></Checkbox>
                     </div>
                     <div className="datasetName">{dataset.name}</div>
@@ -209,7 +209,7 @@ const Wizard_SelectDataset = ({
                 <tbody>
                   {selectedLabeling.labels
                     .filter(
-                      (l) => !selectedLabeling.disabledLabels.includes(l._id)
+                      (l) => !selectedLabeling.disabledLabels.includes(l.id)
                     )
                     .map((label) => (
                       <tr>
@@ -219,11 +219,11 @@ const Wizard_SelectDataset = ({
                           </LabelBadge>
                         </th>
                         <td className="align-middle">
-                          {coveredLabels[label._id]?.count ?? 0}
+                          {coveredLabels[label.id]?.count ?? 0}
                         </td>
                         <td>
                           {humanDuration(
-                            coveredLabels[label._id]?.duration ?? 0
+                            coveredLabels[label.id]?.duration ?? 0
                           )}
                         </td>
                       </tr>
@@ -252,7 +252,7 @@ Wizard_SelectDataset.validate = ({
 
   const coveredLabels = selDS
     .map((e) =>
-      e.labelings.find((ls) => ls.labelingId === selectedLabeling._id)
+      e.labelings.find((ls) => ls.labelingId === selectedLabeling.id)
     )
     .filter((x) => x)
     .map((ls) => ls.labels)

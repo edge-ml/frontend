@@ -16,7 +16,7 @@ const registerDatasetDownload = async (dataset) => {
   const request_params = generateApiRequest(
     HTTP_METHODS.POST,
     DATASET_STORE,
-    DATASET_STORE_ENDPOINTS.CSV + `dataset/${dataset._id}`
+    DATASET_STORE_ENDPOINTS.CSV + `dataset/${dataset.id}`
   );
   const response = await axios(request_params);
   return response.data;
@@ -87,7 +87,7 @@ const downloadAllAsZip = async (datasets, labelings, labels) => {
 
   await Promise.all(
     datasets.map(async (elm, idx) => {
-      const dataset = await getDataset(elm._id);
+      const dataset = await getDataset(elm.id);
       const csv = generateCSV(dataset, labelings, labels);
       const json = JSON.stringify(dataset.metaData);
       const csv_fileName = names[idx] + ".csv";

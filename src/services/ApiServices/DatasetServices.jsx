@@ -7,7 +7,7 @@ const axios = ax.create();
 
 export const getDatasets = async (project) => {
   const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?._id || currentProject?.id || currentProject;
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
 
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.GET,
@@ -20,7 +20,7 @@ export const getDatasets = async (project) => {
 
 export const getDatasetsPagination = async (skip, limit, sort) => {
   const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?._id || currentProject?.id || currentProject;
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.GET,
     apiConsts.DATASET_STORE,
@@ -32,23 +32,28 @@ export const getDatasetsPagination = async (skip, limit, sort) => {
 };
 
 export const updateDataset = async (dataset) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.PUT,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${dataset["_id"]}`,
+    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}${dataset["_id"]}`,
     dataset
   );
   return res;
 };
 
 export const getDatasetTimeseries = (id, info) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
+
   const { max_resolution, start, end } = info;
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.GET,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
+        projectId + "/" + apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
           `${id}/ts/${start}/${end}/${max_resolution}`
       )
     )
@@ -58,13 +63,17 @@ export const getDatasetTimeseries = (id, info) => {
 };
 
 export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
+
+
   const { max_resolution, start, end } = info;
   return new Promise((resolve, reject) => {
     axios(
       apiConsts.generateApiRequest(
         apiConsts.HTTP_METHODS.POST,
         apiConsts.DATASET_STORE,
-        apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
+        projectId + "/" + apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
           `${id}/ts/${start}/${end}/${max_resolution}`,
         ts_ids
       )
@@ -75,10 +84,14 @@ export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
 };
 
 export const getDataset = async (id) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
+
+
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.GET,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
+    projectId + "/" + apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
   );
   return res;
 };
@@ -93,19 +106,23 @@ export const deleteDatasets = (ids) => {
 };
 
 export const deleteDataset = async (datasetId) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.DELETE,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${datasetId}`
+    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}${datasetId}`
   );
   return res;
 };
 
 export const createDataset = async (dataset) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.POST,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS,
+    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}`,
     dataset
   );
   return res;
@@ -120,22 +137,25 @@ export const createDatasets = async (datasets) => {
 };
 
 export const appendToDataset = async (dataset, data) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.POST,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
-      `${dataset["_id"]}` +
-      "/append",
+    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}` +
+      `${dataset["_id"]}/append`,
     data
   );
   return res;
 };
 
 export const getUploadProcessingProgress = async (datasetId) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.GET,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.GET_PROCESSING_PROGRESS +
+    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.GET_PROCESSING_PROGRESS}` +
       `?datasetId=${datasetId}`
   );
   return res;
@@ -148,10 +168,12 @@ export const updateTimeSeriesConfig = async (
   scaling,
   offset
 ) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.PUT,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
+    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}` +
       `${datasetId}/changeUnitConfig?tsId=${tsId}&unit=${unit}&scaling=${scaling}&offset=${offset}`
   );
   return res;

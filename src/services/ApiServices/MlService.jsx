@@ -33,7 +33,7 @@ export const updateModel = async (model) => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.PUT,
     apiConsts.ML_URI,
-    apiConsts.ML_ENDPOINTS.MODELS + `/${model._id}`,
+    apiConsts.ML_ENDPOINTS.MODELS + `/${model.id}`,
     model
   );
   return res;

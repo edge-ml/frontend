@@ -40,31 +40,31 @@ const LabelingSetsFilter = ({
   }, [targetLabelIds]);
 
   const onSelectLabel = (label) => {
-    if (isSelectedLabel(label._id)) {
-      setTargetLabelIds(targetLabelIds.filter((id) => id != label._id));
+    if (isSelectedLabel(label.id)) {
+      setTargetLabelIds(targetLabelIds.filter((id) => id != label.id));
     } else {
-      setTargetLabelIds([...targetLabelIds, label._id]);
+      setTargetLabelIds([...targetLabelIds, label.id]);
     }
   };
 
   const onSelectLabelingSet = (labelingSet) => {
-    if (isSelectedLabeling(labelingSet._id)) {
-      const labelingIdToRemove = labelingSet._id;
+    if (isSelectedLabeling(labelingSet.id)) {
+      const labelingIdToRemove = labelingSet.id;
       setTargetLabelingIds(
         targetLabelingIds.filter((id) => id !== labelingIdToRemove)
       );
       const labelIdsToRemove = [];
       labelingSet.labels.map((label) => {
-        labelIdsToRemove.push(label._id);
+        labelIdsToRemove.push(label.id);
       });
       setTargetLabelIds(
         targetLabelIds.filter((id) => !labelIdsToRemove.includes(id))
       );
     } else {
-      setTargetLabelingIds([...targetLabelingIds, labelingSet._id]);
+      setTargetLabelingIds([...targetLabelingIds, labelingSet.id]);
       const labelIdsToAdd = [];
       labelingSet.labels.map((label) => {
-        labelIdsToAdd.push(label._id);
+        labelIdsToAdd.push(label.id);
       });
       const labelIdsToAddFiltered = labelIdsToAdd.filter(
         (id) => !targetLabelIds.includes(id)
@@ -91,12 +91,12 @@ const LabelingSetsFilter = ({
             return (
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Checkbox
-                  isSelected={isSelectedLabel(label._id)}
+                  isSelected={isSelectedLabel(label.id)}
                   className="d-inline-block"
                   onClick={() => onSelectLabel(label)}
                 />
                 <Badge
-                  key={label._id}
+                  key={label.id}
                   className={
                     label.name === ""
                       ? "font-italic font-weight-normal badgeSize mx-1 border border-dark"
@@ -128,7 +128,7 @@ const LabelingSetsFilter = ({
               <div className="d-flex flex-row">
                 <div className="d-flex align-items-center me-2">
                   <Checkbox
-                    isSelected={isSelectedLabeling(labeling._id)}
+                    isSelected={isSelectedLabeling(labeling.id)}
                     className="d-inline-block"
                     onClick={() => onSelectLabelingSet(labeling)}
                   ></Checkbox>

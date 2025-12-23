@@ -37,7 +37,7 @@ const LabelingSelectionPanel = () => {
   const { registerDatasetDownload } = useContext(NotificationContext);
 
   const [selectedTs, setSelectedTs] = useState(
-    activeTimeSeries.map((elm) => elm._id)
+    activeTimeSeries.map((elm) => elm.id)
   );
 
   const navigate = useProjectRouter();
@@ -53,7 +53,7 @@ const LabelingSelectionPanel = () => {
   const onApplyTs = () => {
     setActiveTimeSeries(
       selectedTs.map((select_id) =>
-        dataset.timeSeries.find((elm) => elm._id === select_id)
+        dataset.timeSeries.find((elm) => elm.id === select_id)
       )
     );
   };
@@ -94,17 +94,17 @@ const LabelingSelectionPanel = () => {
             <div className="scrollable-dropdown">
               {dataset.timeSeries.map((elm) => {
                 return (
-                  <DropdownItem key={elm._id} className="p-0 p-2">
+                  <DropdownItem key={elm.id} className="p-0 p-2">
                     <div
                       onClick={(e) => {
-                        onClickSelectSeries(elm._id);
+                        onClickSelectSeries(elm.id);
                         e.preventDefault();
                         e.stopPropagation();
                       }}
                     >
                       <div className="d-flex align-items-center">
                         <Checkbox
-                          isSelected={selectedTs.includes(elm._id)}
+                          isSelected={selectedTs.includes(elm.id)}
                         ></Checkbox>
                         <div className="ms-2">{elm.name}</div>
                       </div>
@@ -151,7 +151,7 @@ const LabelingSelectionPanel = () => {
               <DropdownMenu className="scrollable-dropdown">
                 {labelings.map((elm) => (
                   <DropdownItem
-                    key={elm._id}
+                    key={elm.id}
                     onClick={() => setActiveLabeling(elm)}
                   >
                     {elm.name}

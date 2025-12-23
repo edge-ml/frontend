@@ -20,7 +20,7 @@ const LabelingTableEntry = ({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   return (
-    <EdgeMLTableEntry key={"labeling" + labeling._id}>
+    <EdgeMLTableEntry key={"labeling" + labeling.id}>
       <div className="d-flex align-items-center p-2 ms-2 me-0 ml-md-3 me-md-3">
         <Checkbox
           isSelected={isSelected}
@@ -111,7 +111,7 @@ const Labeling = (props) => {
       <div>
         {labels.map((label, index) => {
           return (
-            <LabelBadge className="mx-1" key={label._id} color={label.color}>
+            <LabelBadge className="mx-1" key={label.id} color={label.color}>
               {label.name !== "" ? label.name : "Untitled"}{" "}
             </LabelBadge>
           );

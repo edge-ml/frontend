@@ -48,7 +48,7 @@ const Labelings = (props) => {
 
   const labelings = props.dataset.labelings
     .map((elm) =>
-      props.labelings.find((labeling) => labeling._id === elm.labelingId)
+      props.labelings.find((labeling) => labeling.id === elm.labelingId)
     )
     .filter((elm) => elm !== undefined);
 
@@ -70,7 +70,7 @@ const Labelings = (props) => {
                   const labelTypes = props.dataset.labelings[idx].labels.map(
                     (elm) => elm.type
                   );
-                  if (!labelTypes.includes(label._id)) {
+                  if (!labelTypes.includes(label.id)) {
                     return null;
                   }
                   return (
@@ -267,7 +267,7 @@ const DatasetTableEntry = (props) => {
                     outline
                     color="danger"
                     className="me-2"
-                    onClick={() => props.deleteEntry(dataset._id)}
+                    onClick={() => props.deleteEntry(dataset.id)}
                   >
                     <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{" "}
                   </Button>
@@ -275,7 +275,7 @@ const DatasetTableEntry = (props) => {
                     outline
                     color="primary"
                     className="me-3 me-md-4"
-                    onClick={() => navigate(`Datasets/${dataset._id}`)}
+                    onClick={() => navigate(`Datasets/${dataset.id}`)}
                   >
                     <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
                   </Button>

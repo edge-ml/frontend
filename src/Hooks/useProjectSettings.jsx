@@ -26,7 +26,7 @@ const useProjectSettings = () => {
   };
 
   const deleteProject = async () => {
-    await deleteProject_api(currentProject._id);
+    await deleteProject_api(currentProject.id);
     await refreshProjects();
   };
 

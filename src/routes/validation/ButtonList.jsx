@@ -68,7 +68,7 @@ const ButtonList = ({
             color="primary"
             outline
             icon={faPlay}
-            onClick={() => navigateTo("models/live/" + model._id)}
+            onClick={() => navigateTo("models/live/" + model.id)}
           >
             View live
           </ListButton>

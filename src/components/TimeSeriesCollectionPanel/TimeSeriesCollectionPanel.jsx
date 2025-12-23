@@ -107,7 +107,7 @@ class TimeSeriesCollectionPanel extends Component {
   getIndexData = () => {
     const N = 5000;
     const activeSeries = this.state.activeSeries.map((elm, key) =>
-      this.state.timeSeries.find((ts) => ts._id === elm)
+      this.state.timeSeries.find((ts) => ts.id === elm)
     );
     const start = Math.min(...activeSeries.map((elm) => elm.start));
     const end = Math.max(...activeSeries.map((elm) => elm.end));
@@ -119,7 +119,7 @@ class TimeSeriesCollectionPanel extends Component {
   toggleUnitMenu = (timeSeriesId) => () => {
     this.setState((prevState) => ({
       timeSeries: prevState.timeSeries.map((ts) =>
-        ts._id !== timeSeriesId
+        ts.id !== timeSeriesId
           ? ts
           : { ...ts, isUnitMenuOpen: !ts.isUnitMenuOpen }
       ),
@@ -129,7 +129,7 @@ class TimeSeriesCollectionPanel extends Component {
   handleUnitChange = (timeSeriesId) => (unit) => {
     this.setState((prevState) => ({
       timeSeries: prevState.timeSeries.map((ts) =>
-        ts._id !== timeSeriesId ? ts : { ...ts, unit: unit }
+        ts.id !== timeSeriesId ? ts : { ...ts, unit: unit }
       ),
     }));
   };
@@ -137,7 +137,7 @@ class TimeSeriesCollectionPanel extends Component {
   handleScaleChange = (timeSeriesId) => (scale) => {
     this.setState((prevState) => ({
       timeSeries: prevState.timeSeries.map((ts) =>
-        ts._id !== timeSeriesId ? ts : { ...ts, scale: parseFloat(scale) }
+        ts.id !== timeSeriesId ? ts : { ...ts, scale: parseFloat(scale) }
       ),
     }));
   };
@@ -145,7 +145,7 @@ class TimeSeriesCollectionPanel extends Component {
   handleOffsetChange = (timeSeriesId) => (offset) => {
     this.setState((prevState) => ({
       timeSeries: prevState.timeSeries.map((ts) =>
-        ts._id !== timeSeriesId ? ts : { ...ts, offset: parseFloat(offset) }
+        ts.id !== timeSeriesId ? ts : { ...ts, offset: parseFloat(offset) }
       ),
     }));
   };
@@ -266,13 +266,13 @@ class TimeSeriesCollectionPanel extends Component {
             ) : null}
             {this.state.activeSeries.map((elm, key) => {
               const timeSeries = this.state.timeSeries.find(
-                (ts) => ts._id === elm
+                (ts) => ts.id === elm
               );
               return (
                 <TimeSeriesPanel
                   handleConfigSave={(unit, scale, offset) =>
                     this.handleConfigSave(
-                      timeSeries._id,
+                      timeSeries.id,
                       unit,
                       scale,
                       offset,

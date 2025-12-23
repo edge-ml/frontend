@@ -12,7 +12,7 @@ const useApiCalls = (currentProject) => {
     params = {},
     contentType = "application/json"
   ) => {
-    const project = currentProject ? currentProject._id : undefined;
+    const project = currentProject ? currentProject.id : undefined;
     const requestConfig = {
       method: method,
       url: baseUri + endpoint,

@@ -68,11 +68,11 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
   if (labelsUsed) {
     dataset.labelings.forEach((l) => {
       const labelingName = props_labelings.find(
-        (elm) => elm._id === l.labelingId
+        (elm) => elm.id === l.labelingId
       ).name;
       labelings[l.labelingId] = [];
       l.labels.forEach((label) => {
-        const labelName = props_labels.find((elm) => elm._id === label.type)[
+        const labelName = props_labels.find((elm) => elm.id === label.type)[
           "name"
         ];
         labelings[l.labelingId].push({
@@ -301,13 +301,13 @@ export const generateLabeledDataset = (
       const labelName = currentLabeling[i][j].datasetLabel.name;
       currentLabeling[i][j].datasetLabel.labelingId = labelings.find(
         (elm) => elm.name === labelName
-      )._id;
+      ).id;
       for (var h = 0; h < datasetLabels.length; h++) {
         const labelName = currentLabeling[i][j].datasetLabel.labels[h].name;
         const labelId = labelings
           .map((elm) => elm.labels)
           .flat()
-          .find((elm) => labelName === elm.name)._id;
+          .find((elm) => labelName === elm.name).id;
         currentLabeling[i][j].datasetLabel.labels[h].type = labelId;
       }
     }

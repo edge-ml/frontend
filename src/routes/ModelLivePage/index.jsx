@@ -57,7 +57,7 @@ const ModelLivePage = ({ model_id }) => {
                 <h5 className="d-flex align-items-center">
                   <b>Labels in the model: </b>
                   {model.labels.map((elm) => (
-                    <LabelBadge key={elm._id} className="m-1" color={elm.color}>
+                    <LabelBadge key={elm.id} className="m-1" color={elm.color}>
                       {elm.name}
                     </LabelBadge>
                   ))}

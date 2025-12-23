@@ -68,7 +68,7 @@ const EditLabelingModal = ({
     return labelings.some(
       (existingLabeling) =>
         existingLabeling.name === labeling.name &&
-        existingLabeling._id !== labeling._id
+        existingLabeling.id !== labeling.id
     );
   };
 

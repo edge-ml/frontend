@@ -39,7 +39,7 @@
 //     }));
 //     data = data.map((elm) => {
 //       return {
-//         _id: this.newDataset.timeSeries.find((d) => d.name === elm.name)._id,
+//         _id: this.newDataset.timeSeries.find((d) => d.name === elm.name).id,
 //         ...elm,
 //       };
 //     });
@@ -82,7 +82,7 @@
 //     if (this._isRecording) throw new Error('already recording');
 //     this._isRecording = true;
 
-//     const oldDatasets = (await getDatasets()).map((elm) => elm._id);
+//     const oldDatasets = (await getDatasets()).map((elm) => elm.id);
 //     this.newDataset = (
 //       await createDataset({
 //         name: this._datasetName,
@@ -99,7 +99,7 @@
 //           )
 //           .flat(),
 //       })
-//     ).filter((elm) => !oldDatasets.includes(elm._id))[0];
+//     ).filter((elm) => !oldDatasets.includes(elm.id))[0];
 
 //     // reset stores
 //     this._deltaTimeseries = {};

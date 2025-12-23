@@ -9,7 +9,7 @@ const axios = ax.create();
 export const processCSVBackend = (formData, fileId, handleProgress) => {
   const source = ax.CancelToken.source();
   const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?._id || currentProject?.id || currentProject;
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
   const cancellationHandler = () => {
     source.cancel("Operation cancelled by the user");
   };
@@ -29,7 +29,7 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
     },
     cancelToken: source.token,
     headers: {
-      project: currentProject._id,
+      project: currentProject.id,
       Authorization: localStorageService.getAccessToken(),
     },
     withCredentials: true,

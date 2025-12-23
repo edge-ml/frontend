@@ -11,7 +11,7 @@ const DeleteProject = (props) => {
   const { currentProject } = useProjectStore();
   const { user } = useUserStore();
   const { deleteProject, leaveProject } = useProjectSettings();
-  const isAdmin = user._id === currentProject.admin._id;
+  const isAdmin = user.id === currentProject.admin.id;
 
   const [modalOpen, setModalOpen] = useState(false);
 

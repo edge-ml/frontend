@@ -68,7 +68,7 @@ const Navbar = () => {
                 currentProject={currentProject}
                 projects={projects}
                 project={project}
-                key={"navbarItem" + project._id}
+                key={"navbarItem" + project.id}
                 onProjectClick={onProjectClick}
               ></NavbarProject>
             );

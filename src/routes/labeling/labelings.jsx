@@ -25,11 +25,11 @@ const Labelings = () => {
 
   const removeLabeling = (labelings) => {
     labelings.forEach((labeling) => {
-      deleteLabeling(labeling._id);
+      deleteLabeling(labeling.id);
     });
 
     const remainingLabelings = selectedLabelings.filter(
-      (labeling) => !labelings.map((elm) => elm._id).includes(labeling._id)
+      (labeling) => !labelings.map((elm) => elm.id).includes(labeling.id)
     );
     setSelectedLabelings(remainingLabelings);
   };
@@ -41,13 +41,13 @@ const Labelings = () => {
         return [...prevSelectedLabelings, labeling];
       } else {
         return prevSelectedLabelings
-          .map((elm) => elm._id)
-          .filter((id) => id !== labeling._id);
+          .map((elm) => elm.id)
+          .filter((id) => id !== labeling.id);
       }
     });
   };
 
-  const labelingIdSet = new Set(labelings.map((elm) => elm._id)).size;
+  const labelingIdSet = new Set(labelings.map((elm) => elm.id)).size;
   const selectedLabelingSet = new Set(selectedLabelings).size;
   const allSelected = labelingIdSet === selectedLabelingSet;
 
@@ -55,7 +55,7 @@ const Labelings = () => {
     if (allSelected) {
       setSelectedLabelings([]);
     } else {
-      setSelectedLabelings(labelings.map((elm) => elm._id));
+      setSelectedLabelings(labelings.map((elm) => elm.id));
     }
   };
 

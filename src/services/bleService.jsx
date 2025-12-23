@@ -202,7 +202,7 @@ export const parseTimeSeriesData = (
       timeSeries.push({
         _id: dataset.timeSeries.find(
           (elm) => elm.name === sensor.name + "_" + key + "_" + idx + "_" + scheme.name
-        )._id,
+        ).id,
         data: data,
       });
     });

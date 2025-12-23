@@ -108,7 +108,7 @@ class EditLabelingModal extends Component {
     let count = 1;
     const conflictDatasets = Object.keys(conflictingLabels).map((key) => {
       const labelItems = conflictingLabels[key].labels.map((label) => {
-        return <div key={label._id}>{" " + label.name}</div>;
+        return <div key={label.id}>{" " + label.name}</div>;
       });
       return (
         <div key={key}>
@@ -149,7 +149,7 @@ class EditLabelingModal extends Component {
           const found = l.labels.find((e) => e.type === delLabel["_id"]);
           if (found) {
             const label = this.state.deletedLabels.find(
-              (elm) => elm._id === found.type
+              (elm) => elm.id === found.type
             );
             labels.push(label);
             labelConflict = true;
@@ -158,7 +158,7 @@ class EditLabelingModal extends Component {
       });
       //if conflicting labels found, store their name, to ask user for confirmation
       if (labels.length > 0) {
-        conflictingLabels[dset._id] = {
+        conflictingLabels[dset.id] = {
           datasetName: dset.name,
           labels: labels,
         };
@@ -251,7 +251,7 @@ class EditLabelingModal extends Component {
       if (dset.labelings.some((l) => l.labelingId === labeling["_id"])) {
         labelConflict = true;
         conflictingDatasetNames.push(dset.name);
-        conflictingDatasetIds.push(dset._id);
+        conflictingDatasetIds.push(dset.id);
       }
     });
 
@@ -320,7 +320,7 @@ class EditLabelingModal extends Component {
       this.props.labelings.some(
         (elm) =>
           elm.name === this.state.labeling.name &&
-          elm._id != this.state.labeling._id
+          elm.id != this.state.labeling.id
       )
     );
   }

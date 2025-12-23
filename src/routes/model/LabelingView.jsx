@@ -29,16 +29,16 @@ export const LabelingView = ({
                     <div className="d-flex flex-row align-items-center mt-2">
                       <div className="d-flex flex-row align-items-center align-self-baseline">
                         <input
-                          id={x._id}
+                          id={x.id}
                           type="radio"
                           style={{ marginTop: "0.1em" }}
-                          onClick={(y) => changeSelectedLabeling(x._id)}
-                          checked={selectedLabeling === x._id}
+                          onClick={(y) => changeSelectedLabeling(x.id)}
+                          checked={selectedLabeling === x.id}
                         ></input>
                         <label
                           className="mb-0 ms-1 me-1"
-                          htmlFor={x._id}
-                          onClick={(y) => changeSelectedLabeling(x._id)}
+                          htmlFor={x.id}
+                          onClick={(y) => changeSelectedLabeling(x.id)}
                         >
                           {x.name}
                         </label>
@@ -46,7 +46,7 @@ export const LabelingView = ({
                       <div className="d-flex flex-wrap flex-row align-items-center align-content-start mt-0">
                         {x.labels.map((labelId) => {
                           const label = labels.find(
-                            (label) => label._id === labelId
+                            (label) => label.id === labelId
                           );
                           return (
                             <Badge
@@ -57,11 +57,11 @@ export const LabelingView = ({
                               {label.name}
                               <input
                                 type="checkbox"
-                                disabled={selectedLabeling !== x._id}
+                                disabled={selectedLabeling !== x.id}
                                 className="ms-1 float-right"
-                                checked={selectedLabelsFor[x._id][labelId]}
+                                checked={selectedLabelsFor[x.id][labelId]}
                                 onClick={(y) =>
-                                  changeLabelSelection(x._id, labelId)
+                                  changeLabelSelection(x.id, labelId)
                                 }
                               />
                             </Badge>
@@ -72,11 +72,11 @@ export const LabelingView = ({
                             <FormGroup>
                               <input
                                 type="text"
-                                value={unlabelledNameFor[x._id]}
+                                value={unlabelledNameFor[x.id]}
                                 onChange={(e) =>
-                                  changeUnlabelledName(e.target.value, x._id)
+                                  changeUnlabelledName(e.target.value, x.id)
                                 }
-                                disabled={selectedLabeling !== x._id}
+                                disabled={selectedLabeling !== x.id}
                                 style={{
                                   backgroundColor: "rgba(0,0,0,0)",
                                   border: "none",
@@ -94,11 +94,11 @@ export const LabelingView = ({
                             <FormGroup>
                               <input
                                 type="checkbox"
-                                disabled={selectedLabeling !== x._id}
+                                disabled={selectedLabeling !== x.id}
                                 className="float-left"
-                                checked={useUnlabelledFor[x._id]}
+                                checked={useUnlabelledFor[x.id]}
                                 onClick={(e) =>
-                                  changeUnlabelledFor(e.target.checked, x._id)
+                                  changeUnlabelledFor(e.target.checked, x.id)
                                 }
                               />
                             </FormGroup>

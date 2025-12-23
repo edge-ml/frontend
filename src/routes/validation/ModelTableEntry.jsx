@@ -13,7 +13,7 @@ const ModelCheckBoxInfo = ({ selectedModels, model, clickCheckBox, onClickEditNa
   <Col>
     <div className="d-flex align-items-center h-100">
       <Checkbox
-        isSelected={selectedModels.map(model => model._id).includes(model._id)}
+        isSelected={selectedModels.map(model => model.id).includes(model.id)}
         onClick={() => clickCheckBox(model)}
       ></Checkbox>
       <div className="ms-2">
@@ -53,11 +53,11 @@ const TrainErrorSection = ({
         <>
           An error occurred while training!
           <FontAwesomeIcon
-            id={"tooltip" + model._id}
+            id={"tooltip" + model.id}
             className="m-2"
             icon={faCircleInfo}
           ></FontAwesomeIcon>
-          <UncontrolledTooltip target={"tooltip" + model._id}>
+          <UncontrolledTooltip target={"tooltip" + model.id}>
             {model.error}
           </UncontrolledTooltip>
         </>

@@ -12,7 +12,7 @@ const useEditDataset = (datasetUtils, labelings) => {
       dataset.labelings.length > 0
     ) {
       const labelingId = dataset.labelings[0].labelingId;
-      return labelings.find((elm) => elm._id === labelingId);
+      return labelings.find((elm) => elm.id === labelingId);
     }
 
     if (labelings && labelings.length > 0) {
@@ -34,13 +34,13 @@ const useEditDataset = (datasetUtils, labelings) => {
       _setActiveLabeling(activeLabeling);
       if (activeLabeling && activeLabeling.labels.length > 0) {
         const activeLabelType = activeLabeling.labels.find(
-          (elm) => elm._id === selectedLabelTypeId
+          (elm) => elm.id === selectedLabelTypeId
         );
         if (activeLabelType) {
-          _setSelectedLabelTypeId(activeLabelType._id);
+          _setSelectedLabelTypeId(activeLabelType.id);
           return;
         }
-        _setSelectedLabelTypeId(activeLabeling.labels[0]._id);
+        _setSelectedLabelTypeId(activeLabeling.labels[0].id);
       }
     }
   }, [dataset]);
@@ -54,7 +54,7 @@ const useEditDataset = (datasetUtils, labelings) => {
         event.key <= activeLabeling.labels.length
       ) {
         const index = parseInt(event.key, 10);
-        setSelectedLabelTypeId(activeLabeling.labels[index - 1]._id);
+        setSelectedLabelTypeId(activeLabeling.labels[index - 1].id);
         return;
       }
 
@@ -87,13 +87,13 @@ const useEditDataset = (datasetUtils, labelings) => {
       _setActiveLabeling(activeLabeling);
       if (activeLabeling && activeLabeling.labels.length > 0) {
         const activeLabelType = activeLabeling.labels.find(
-          (elm) => elm._id === selectedLabelTypeId
+          (elm) => elm.id === selectedLabelTypeId
         );
         if (activeLabelType) {
-          _setSelectedLabelTypeId(activeLabelType._id);
+          _setSelectedLabelTypeId(activeLabelType.id);
           return;
         }
-        _setSelectedLabelTypeId(activeLabeling.labels[0]._id);
+        _setSelectedLabelTypeId(activeLabeling.labels[0].id);
       }
     }
   }, [labelings]);
@@ -105,9 +105,9 @@ const useEditDataset = (datasetUtils, labelings) => {
       selectedLabel.type = labelTypeId;
       const newDataset = { ...dataset };
       const labeling = newDataset.labelings.map((elm) => {
-        if (elm.labelingId === activeLabeling._id) {
+        if (elm.labelingId === activeLabeling.id) {
           elm.labels = elm.labels.map((label) => {
-            if (label._id === selectedLabel._id) {
+            if (label.id === selectedLabel.id) {
               return { ...label, type: labelTypeId };
             }
             return label;
@@ -121,8 +121,8 @@ const useEditDataset = (datasetUtils, labelings) => {
   };
 
   const onDeleteSelectedLabel = async () => {
-    if (selectedLabel && selectedLabel._id) {
-      await deleteLabel(selectedLabel._id);
+    if (selectedLabel && selectedLabel.id) {
+      await deleteLabel(selectedLabel.id);
       _setSelectedLabel(undefined);
     }
   };
@@ -130,7 +130,7 @@ const useEditDataset = (datasetUtils, labelings) => {
   const setActiveLabeling = (labeling) => {
     _setActiveLabeling(labeling);
     if (labeling && labeling.labels.length > 0) {
-      _setSelectedLabelTypeId(labeling.labels[0]._id);
+      _setSelectedLabelTypeId(labeling.labels[0].id);
     }
     _setProvisionalLabel(undefined);
   };
@@ -144,9 +144,9 @@ const useEditDataset = (datasetUtils, labelings) => {
   const updateLabelStartEnd = async (labelId, start, end) => {
     const newDataset = { ...dataset };
     const labeling = newDataset.labelings.map((elm) => {
-      if (elm.labelingId === activeLabeling._id) {
+      if (elm.labelingId === activeLabeling.id) {
         elm.labels = elm.labels.map((label) => {
-          if (label._id === labelId) {
+          if (label.id === labelId) {
             return { ...label, start: Math.ceil(start), end: Math.floor(end) };
           }
           return label;
@@ -174,10 +174,10 @@ const useEditDataset = (datasetUtils, labelings) => {
         const labelToAdd = {
           ...updatedLabel,
           name: activeLabeling.labels.find(
-            (elm) => elm._id === updatedLabel.type
+            (elm) => elm.id === updatedLabel.type
           ).name,
         };
-        const newlabel = await addLabel(activeLabeling._id, labelToAdd);
+        const newlabel = await addLabel(activeLabeling.id, labelToAdd);
         _setSelectedLabel(newlabel);
       }
       _setProvisionalLabel(undefined);
@@ -190,7 +190,7 @@ const useEditDataset = (datasetUtils, labelings) => {
   let labelsToShow = undefined;
   if (dataset && dataset.labelings && activeLabeling) {
     const datasetLabeling = dataset.labelings.find(
-      (elm) => elm.labelingId === activeLabeling._id
+      (elm) => elm.labelingId === activeLabeling.id
     );
 
     if (datasetLabeling) {
@@ -198,7 +198,7 @@ const useEditDataset = (datasetUtils, labelings) => {
         ? [...datasetLabeling.labels, provisionalLabel]
         : datasetLabeling.labels;
       labelsToShow = labelsToUse.map((elm) => {
-        const label = activeLabeling.labels.find((l) => l._id === elm.type);
+        const label = activeLabeling.labels.find((l) => l.id === elm.type);
         return { ...label, ...elm };
       });
     }

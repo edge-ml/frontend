@@ -50,7 +50,7 @@ const useDataset = (dataset_id) => {
     );
     if (labeling) {
       labeling.labels = labeling.labels.map((elm) => {
-        if (elm._id === label._id) {
+        if (elm.id === label.id) {
           return label;
         }
         return elm;
@@ -65,7 +65,7 @@ const useDataset = (dataset_id) => {
       const newDataset = { ...dataset };
       newDataset.labelings = newDataset.labelings.map((labeling) => {
         labeling.labels = labeling.labels.filter(
-          (label) => label._id !== labelId
+          (label) => label.id !== labelId
         );
         return labeling;
       });

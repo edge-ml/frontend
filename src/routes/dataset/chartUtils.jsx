@@ -9,7 +9,7 @@ export const generatePlotBands = (labels, selectedLabel, onClickPlotLine) => {
       to: label.end,
       zIndex: 2,
       className:
-        selectedLabel && selectedLabel._id === label["_id"]
+        selectedLabel && selectedLabel.id === label["_id"]
           ? "plotband-selected"
           : "plotband-deselected",
       color: label.color,
@@ -21,7 +21,7 @@ export const generatePlotBands = (labels, selectedLabel, onClickPlotLine) => {
           cursor: undefined,
         },
         isPlotline: false,
-        isSelected: selectedLabel && selectedLabel._id === label["_id"],
+        isSelected: selectedLabel && selectedLabel.id === label["_id"],
       },
       // events: {
       //   mousedown: (e) =>
@@ -38,7 +38,7 @@ export const generatePlotLines = (labels, selectedLabel, onClickPlotLine) => {
     results.push(
       generatePlotLine(
         label,
-        selectedLabel && selectedLabel._id === label["_id"],
+        selectedLabel && selectedLabel.id === label["_id"],
         true,
         onClickPlotLine
       )
@@ -46,7 +46,7 @@ export const generatePlotLines = (labels, selectedLabel, onClickPlotLine) => {
     results.push(
       generatePlotLine(
         label,
-        selectedLabel && selectedLabel._id === label["_id"],
+        selectedLabel && selectedLabel.id === label["_id"],
         false,
         onClickPlotLine
       )
@@ -57,12 +57,12 @@ export const generatePlotLines = (labels, selectedLabel, onClickPlotLine) => {
 };
 
 const generatePlotLine = (label, selected, isLeft, onClickPlotLine) => {
-  var plotLineId = isLeft ? "pl" + label._id : "pr" + label._id;
+  var plotLineId = isLeft ? "pl" + label.id : "pr" + label.id;
   var labelColor = label.color;
   var value = isLeft ? label.start : label.end;
   return {
     id: plotLineId,
-    labelId: label._id,
+    labelId: label.id,
     value: value,
     className: "plotline",
     zIndex: 3,
@@ -75,7 +75,7 @@ const generatePlotLine = (label, selected, isLeft, onClickPlotLine) => {
     isLeftPlotline: isLeft,
     cursor: "grab",
     events: {
-      mousedown: (e) => onClickPlotLine(e, plotLineId, label._id),
+      mousedown: (e) => onClickPlotLine(e, plotLineId, label.id),
     },
   };
 };

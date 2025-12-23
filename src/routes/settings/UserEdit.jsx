@@ -39,7 +39,7 @@ const UserEdit = () => {
   };
 
   const areUsersValid = (users) => {
-    return users.every((user) => user._id !== user._id);
+    return users.every((user) => user.id !== user.id);
   };
 
   if (!currentProject.users) {

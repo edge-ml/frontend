@@ -50,14 +50,14 @@ const LabelingTable = ({
         </div>
       </EdgeMLTableHeader>
       {labelings.map((labeling, index) => (
-        <EdgeMLTableEntry key={labeling._id}>
+        <EdgeMLTableEntry key={labeling.id}>
           <LabelingTableEntry
             key={"labeling" + index}
             labeling={labeling}
             labelings={labelings}
             isSelected={selectedLabelings
-              .map((elm) => elm._id)
-              .includes(labeling._id)}
+              .map((elm) => elm.id)
+              .includes(labeling.id)}
             updateLabeling={updateLabeling}
             deleteLabelings={deleteLabelings}
             toggleCheck={toggleCheck}

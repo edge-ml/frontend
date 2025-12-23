@@ -52,12 +52,12 @@ const ListPage = (props) => {
             .map((x) => x.length)
             .every((y) => y === 0 || y === null)
         )
-        .map((elm) => elm._id)
+        .map((elm) => elm.id)
     );
   };
 
   const selectAll = () => {
-    setSelectedDatasets(datasets.map((elm) => elm._id));
+    setSelectedDatasets(datasets.map((elm) => elm.id));
   };
 
   const deselectAll = () => {
@@ -128,7 +128,7 @@ const ListPage = (props) => {
             <h5>Are you sure to delete:</h5>
             {deleteSelected.map((datasetId) => (
               <div key={datasetId}>
-                {datasets.find((dataset) => dataset._id === datasetId).name}
+                {datasets.find((dataset) => dataset.id === datasetId).name}
               </div>
             ))}
           </div>

@@ -31,11 +31,11 @@ const NavbarProject = ({ project, currentProject, onProjectClick }) => {
   };
 
   return (
-    <div className="w-100 text-left" key={project._id} id={project._id}>
+    <div className="w-100 text-left" key={project.id} id={project.id}>
       <div
         className={classNames(
           "d-flex align-items-center mt-1 pt-2 pb-2 ps-2 navbar-project",
-          { "bg-primary": currentProject._id === project._id }
+          { "bg-primary": currentProject.id === project.id }
         )}
         onClick={() => onProjectClick(project)}
         style={{
@@ -49,7 +49,7 @@ const NavbarProject = ({ project, currentProject, onProjectClick }) => {
             float: "left",
             cursor: "pointer",
           }}
-          icon={currentProject._id === project._id ? faCaretDown : faCaretRight}
+          icon={currentProject.id === project.id ? faCaretDown : faCaretRight}
           className="me-2 fa-s"
         ></FontAwesomeIcon>
         <div
@@ -63,7 +63,7 @@ const NavbarProject = ({ project, currentProject, onProjectClick }) => {
           <b>{project.name}</b>
         </div>
       </div>
-      {currentProject._id === project._id ? (
+      {currentProject.id === project.id ? (
         <div>
           {[
             ["Datasets", faDatabase],

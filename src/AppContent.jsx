@@ -26,7 +26,7 @@ const ParamsAdapter = ({ children }) => {
 
 const AppContent = () => {
   const { currentProject, getProjects } = useProjectStore();
-  const projectId = currentProject ? currentProject._id : "default_key";
+  const projectId = currentProject ? currentProject.id : "default_key";
 
   useEffect(() => {
     getProjects();
