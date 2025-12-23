@@ -34,10 +34,11 @@ export const getDatasetsPagination = async (skip, limit, sort) => {
 export const updateDataset = async (dataset) => {
   const { currentProject } = useProjectStore.getState();
   const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const datasetId = dataset?.id || dataset?._id;
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.PUT,
     apiConsts.DATASET_STORE,
-    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}${dataset["_id"]}`,
+    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}${datasetId}`,
     dataset
   );
   return res;

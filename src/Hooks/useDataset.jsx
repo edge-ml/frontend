@@ -3,6 +3,10 @@ import {
   updateDataset as updateDataset_api,
   getDataset as getDataset_api,
 } from "../services/ApiServices/DatasetServices";
+import {
+  createDatasetLabel,
+  deleteDatasetLabel,
+} from "../services/ApiServices/DatasetLabelService";
 
 const useDataset = (dataset_id) => {
   const [dataset, setDataset] = useState(undefined);
@@ -23,24 +27,22 @@ const useDataset = (dataset_id) => {
   };
 
   const addLabel = async (labelingId, newLabel) => {
-    const newDataset = { ...dataset };
-
-    const labeling = newDataset.labelings.find(
-      (labeling) => labeling.labelingId === labelingId
-    );
-
-    if (labeling) {
-      labeling.labels = [...labeling.labels, newLabel];
-    } else {
-      const newLabeling = {
-        labelingId: labelingId,
-        labels: [newLabel],
-      };
-      newDataset.labelings = [...newDataset.labelings, newLabeling];
+    if (!dataset) {
+      return undefined;
     }
 
-    await updateDataset_api(newDataset);
+    const datasetId = dataset.id || dataset._id;
+    if (!datasetId || !labelingId) {
+      return undefined;
+    }
+
+    const createdLabel = await createDatasetLabel(
+      datasetId,
+      labelingId,
+      newLabel
+    );
     await refreshDataset();
+    return createdLabel || newLabel;
   };
 
   const updateLabel = async (labelingId, label) => {
@@ -61,17 +63,22 @@ const useDataset = (dataset_id) => {
   };
 
   const deleteLabel = async (labelId) => {
-    if (labelId) {
-      const newDataset = { ...dataset };
-      newDataset.labelings = newDataset.labelings.map((labeling) => {
-        labeling.labels = labeling.labels.filter(
-          (label) => label.id !== labelId
-        );
-        return labeling;
-      });
-      await updateDataset_api(newDataset);
-      await refreshDataset();
+    if (!labelId || !dataset) {
+      return;
     }
+
+    const datasetId = dataset.id || dataset._id;
+    const labeling = dataset.labelings?.find((labelingEntry) =>
+      labelingEntry.labels?.some((label) => label.id === labelId)
+    );
+    const labelingId = labeling?.labelingId;
+
+    if (!datasetId || !labelingId) {
+      return;
+    }
+
+    await deleteDatasetLabel(datasetId, labelingId, labelId);
+    await refreshDataset();
   };
 
   useEffect(() => {

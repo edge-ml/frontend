@@ -1,21 +1,24 @@
-import exp from "constants";
 import apiConsts from "./ApiConstants";
-import ax from "axios";
 import apiRequest from "./request";
 import useProjectStore from "../../stores/projectStore";
 
-const axios = ax.create();
-const axiosNoToken = ax.create();
+const buildDatasetLabelPayload = (labelingId, label) => ({
+  labeling: labelingId,
+  label: label?.type ?? label?.label ?? label?.id,
+  start: label?.start,
+  end: label?.end,
+  metaData: label?.metaData,
+});
 
 export const createDatasetLabel = async (datasetId, labelingId, label) => {
   const { currentProject } = useProjectStore.getState();
   const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const payload = buildDatasetLabelPayload(labelingId, label);
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.POST,
-    apiConsts.DATASET_STORE,
-    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASET_LABELINGS}` +
-      `${datasetId}/${labelingId}`,
-    label
+    apiConsts.API_URI,
+    `${projectId}/dataset_labels/${datasetId}/labels/`,
+    payload
   );
   return res;
 };
@@ -27,14 +30,17 @@ export const changeDatasetLabel = async (
 ) => {
   const { currentProject } = useProjectStore.getState();
   const projectId = currentProject?.id || currentProject?.id || currentProject;
-  changedLabel.start = Math.ceil(changedLabel.start);
-  changedLabel.end = Math.floor(changedLabel.end);
+  const labelId = changedLabel?.id;
+  const payload = buildDatasetLabelPayload(labelingId, {
+    ...changedLabel,
+    start: Math.ceil(changedLabel.start),
+    end: Math.floor(changedLabel.end),
+  });
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.PUT,
-    apiConsts.DATASET_STORE,
-    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASET_LABELINGS}` +
-      `${datasetId}/${labelingId}/${changedLabel.id}`,
-    changedLabel
+    apiConsts.API_URI,
+    `${projectId}/dataset_labels/${datasetId}/labels/${labelId}/`,
+    payload
   );
   return res;
 };
@@ -44,9 +50,8 @@ export const deleteDatasetLabel = async (datasetId, labelingId, labelId) => {
   const projectId = currentProject?.id || currentProject?.id || currentProject;
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.DELETE,
-    apiConsts.DATASET_STORE,
-    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASET_LABELINGS}` +
-      `${datasetId}/${labelingId}/${labelId}`
+    apiConsts.API_URI,
+    `${projectId}/dataset_labels/${datasetId}/labels/${labelId}/`
   );
   return res;
 };
