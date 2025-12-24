@@ -1,10 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 import "./Navbar.css";
 import { Box, Button, Group, Popover, Stack, Text } from "@mantine/core";
-import { AuthContext } from "../../AuthProvider";
 import UserSettingsModal from "../UserSettingsModal/UserSettingsModal";
 import useAuth from "../../Hooks/useAuth";
 import useUserStore from "../../Hooks/useUser";

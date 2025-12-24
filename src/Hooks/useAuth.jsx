@@ -1,10 +1,4 @@
 import { useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
-import {
-  setToken,
-  clearToken,
-  getAccessToken,
-} from "../services/LocalStorageService";
 import {
   loginUser,
   loginOAuth as loingOAuth_api,
@@ -12,7 +6,6 @@ import {
   logout as logout_api
 } from "../services/ApiServices/AuthentificationServices";
 import useUserStore from "./useUser";
-import { getCookie } from "../utils";
 
 const useAuth = () => {
   const setUser = useUserStore((state) => state.setUser);
