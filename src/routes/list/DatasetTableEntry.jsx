@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEdit,
   faExclamationTriangle,
   faList,
   faPen,
@@ -8,13 +7,18 @@ import {
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
-import React, { Fragment, useContext, useState } from "react";
-import { Badge, Button, Col, Row } from "reactstrap";
+import React, { Fragment, useState } from "react";
+import {
+  ActionIcon,
+  Badge,
+  Box,
+  Checkbox,
+  Group,
+  Text,
+} from "@mantine/core";
 
-import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
 
-import Checkbox from "../../components/Common/Checkbox";
 import { displayTime } from "../../services/helpers";
 import LabelBadge from "../../components/Common/LabelBadge";
 import useProjectRouter from "../../Hooks/ProjectRouter";
@@ -54,40 +58,39 @@ const Labelings = (props) => {
 
   return (
     <div className="mt-1 ms-4 p-lg-0 m-lg-0">
-      <Row className="ps-1 ms-1 p-lg-0 m-lg-0 ">
-        <Col>
-          {labelings.map((labeling, idx) => (
-            <Badge
-              className="me-2 badgeSize badgeLabelings pb-2 mt-2 mb-2"
-              color="unset"
-              key={labeling + idx}
-            >
-              <div className="labelingBadgeWrapper">
-                {labeling.name.toUpperCase()}
-              </div>
-              <div>
-                {labeling.labels.map((label, index) => {
-                  const labelTypes = props.dataset.labelings[idx].labels.map(
-                    (elm) => elm.type
-                  );
-                  if (!labelTypes.includes(label.id)) {
-                    return null;
-                  }
-                  return (
-                    <LabelBadge
-                      key={label + index}
-                      className="badgeSize mx-1"
-                      color={label.color}
-                    >
-                      {label.name}
-                    </LabelBadge>
-                  );
-                })}
-              </div>
-            </Badge>
-          ))}
-        </Col>
-      </Row>
+      <Group className="ps-1 ms-1 p-lg-0 m-lg-0 " gap="sm">
+        {labelings.map((labeling, idx) => (
+          <Badge
+            className="me-2 badgeSize badgeLabelings pb-2 mt-2 mb-2"
+            color="gray"
+            size="md"
+            key={labeling + idx}
+          >
+            <div className="labelingBadgeWrapper">
+              {labeling.name.toUpperCase()}
+            </div>
+            <div>
+              {labeling.labels.map((label, index) => {
+                const labelTypes = props.dataset.labelings[idx].labels.map(
+                  (elm) => elm.type
+                );
+                if (!labelTypes.includes(label.id)) {
+                  return null;
+                }
+                return (
+                  <LabelBadge
+                    key={label + index}
+                    className="badgeSize mx-1"
+                    color={label.color}
+                  >
+                    {label.name}
+                  </LabelBadge>
+                );
+              })}
+            </div>
+          </Badge>
+        ))}
+      </Group>
     </div>
   );
 };
@@ -99,24 +102,22 @@ const Metadata = (props) => {
   const dataset = props.dataset;
   return (
     <div>
-      <Row>
-        <Col className="col-auto pe-0">
-          <div className="mt-2 d-inline fw-bold">Metadata: </div>
-        </Col>
-        <Col>
-          <div className="d-inline">
-            {Object.keys(dataset.metaData).map((key, idx) => {
-              const value = dataset.metaData[key];
-              return (
-                <Badge className="me-2 badgeSize" color="white">
-                  <b>{key}: </b>
-                  {value}
-                </Badge>
-              );
-            })}
-          </div>
-        </Col>
-      </Row>
+      <Group align="center" gap="xs">
+        <Text fw={600} size="md">
+          Metadata:
+        </Text>
+        <Group gap="xs">
+          {Object.keys(dataset.metaData).map((key, idx) => {
+            const value = dataset.metaData[key];
+            return (
+              <Badge key={key + idx} className="me-2 badgeSize" color="gray" size="md">
+                <b>{key}: </b>
+                {value}
+              </Badge>
+            );
+          })}
+        </Group>
+      </Group>
     </div>
   );
 };
@@ -149,32 +150,28 @@ const DatasetInfo = (props) => {
     .every((elm) => elm === 0 || elm === null);
   return (
     <div className="text-left d-inline-block m-2">
-      <div className="fw-bold font-size-lg h5 d-inline">{dataset.name}</div>
+      <Text fw={700} size="xl">
+        {dataset.name}
+      </Text>
       {!empty ? (
         <Fragment>
-          <div style={{ color: "rgb(131, 136, 159)" }}>
-            <small>
-              <b>START </b>
-              {displayTime(datasetStart)}
-            </small>
-          </div>
-          <div style={{ color: "rgb(131, 136, 159)" }}>
-            <small>
-              <b>DURATION </b>
-              {format_time(duration)}
-            </small>
-          </div>
+          <Text size="sm" c="dimmed">
+            <b>START </b>
+            {displayTime(datasetStart)}
+          </Text>
+          <Text size="sm" c="dimmed">
+            <b>DURATION </b>
+            {format_time(duration)}
+          </Text>
         </Fragment>
       ) : (
-        <div className="d-flex align-items-center">
-          <div className="d-inline" style={{ color: "rgb(131, 136, 159)" }}>
-            <FontAwesomeIcon
-              style={{ fontSize: "1rem" }}
-              icon={faExclamationTriangle}
-            ></FontAwesomeIcon>
-          </div>
-          <div className="text-left d-inline ms-1">Dataset is empty</div>
-        </div>
+        <Group align="center" gap="xs">
+          <FontAwesomeIcon
+            style={{ fontSize: "1rem", color: "rgb(131, 136, 159)" }}
+            icon={faExclamationTriangle}
+          ></FontAwesomeIcon>
+          <Text size="md">Dataset is empty</Text>
+        </Group>
       )}
       <EditModal
         isOpen={datasetNameEditOpen}
@@ -205,11 +202,11 @@ const ExpandButton = (props) => {
           collapse_arrow: props.isOpen,
         })}
       >
-        <Button color="secondary">
+        <ActionIcon color="gray" variant="light" size="lg">
           <FontAwesomeIcon
             icon={!props.isOpen ? faList : faTimes}
           ></FontAwesomeIcon>
-        </Button>
+        </ActionIcon>
       </div>
     </div>
   );
@@ -218,72 +215,63 @@ const ExpandButton = (props) => {
 const DatasetTableEntry = (props) => {
   const dataset = props.dataset;
   const updateDataset = props.updateDataset;
-  const history = useNavigate();
   const navigate = useProjectRouter();
 
   const [isOpen, setOpen] = useState(false);
   return (
     <Fragment>
-      <div
+      <Box
         className="datasetCard"
         style={{
           background: props.index % 2 === 1 ? "rgb(249, 251, 252)" : "",
         }}
       >
-        <div className="d-flex">
-          <div className="d-flex align-items-center p-2 ms-2 me-0 ml-md-3 me-md-3">
+        <Group align="stretch" wrap="nowrap">
+          <Box className="d-flex align-items-center p-2 ms-2 me-0 ml-md-3 me-md-3">
             <Checkbox
-              isSelected={props.isSelected}
+              checked={props.isSelected}
               className="d-inline-block"
-              // onClick={(e) =>
-              onClick={(e) => props.toggleCheck(e, dataset["_id"])}
-            ></Checkbox>
-          </div>
-          <div className="w-100">
-            <Row>
-              <Col className="text-left align-self-center col-lg-4 col-xl-3">
-                <DatasetInfo
-                  dataset={dataset}
-                  updateDataset={updateDataset}
-                ></DatasetInfo>
-              </Col>
-              <Col className="d-none d-lg-block">
+              onChange={(e) => props.toggleCheck(e, dataset.id)}
+            />
+          </Box>
+          <Box className="w-100">
+            <Group align="center" wrap="nowrap">
+              <Box className="text-left align-self-center col-lg-4 col-xl-3">
+                <DatasetInfo dataset={dataset} updateDataset={updateDataset} />
+              </Box>
+              <Box className="d-none d-lg-block" style={{ flex: 1 }}>
                 <div className="d-flex h-100 flex-column justify-content-center">
-                  <AdditionalInfo
-                    dataset={dataset}
-                    labelings={props.labelings}
-                  ></AdditionalInfo>
+                  <AdditionalInfo dataset={dataset} labelings={props.labelings} />
                 </div>
-              </Col>
-              <Col className="col-2 ">
-                <div className="d-flex justify-content-end align-items-center h-100">
+              </Box>
+              <Box style={{ flex: 1 }}>
+                <Group justify="flex-end" align="center" className="h-100" wrap="nowrap">
                   <div className="d-block d-lg-none me-2">
-                    <ExpandButton
-                      isOpen={isOpen}
-                      setOpen={setOpen}
-                    ></ExpandButton>
+                    <ExpandButton isOpen={isOpen} setOpen={setOpen} />
                   </div>
-                  <Button
-                    outline
-                    color="danger"
+                  <ActionIcon
+                    size="lg"
+                    variant="outline"
+                    color="red"
                     className="me-2"
                     onClick={() => props.deleteEntry(dataset.id)}
                   >
-                    <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{" "}
-                  </Button>
-                  <Button
-                    outline
-                    color="primary"
+                    <FontAwesomeIcon icon={faTrashAlt} />
+                  </ActionIcon>
+                  <ActionIcon
+                    size="lg"
+                    variant="outline"
+                    color="blue"
                     className="me-3 me-md-4"
                     onClick={() => navigate(`Datasets/${dataset.id}`)}
                   >
-                    <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
-                  </Button>
-                </div>
-              </Col>
-            </Row>
-          </div>
-        </div>
+                    <FontAwesomeIcon icon={faPen} />
+                  </ActionIcon>
+                </Group>
+              </Box>
+            </Group>
+          </Box>
+        </Group>
         <div
           className={classNames("animationDuration d-block d-lg-none", {
             showInfo: !isOpen,
@@ -294,7 +282,7 @@ const DatasetTableEntry = (props) => {
             labelings={props.labelings}
           ></AdditionalInfo>
         </div>
-      </div>
+      </Box>
     </Fragment>
   );
 };

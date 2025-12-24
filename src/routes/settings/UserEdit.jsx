@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Button, InputGroup, InputGroupText } from "reactstrap";
+import { Button, Group, Stack, Text } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import AutoCompleteInput from "../../components/AutoCompleteInput/AutocompleteInput";
 import { getUserNameSuggestions } from "../../services/ApiServices/AuthentificationServices";
@@ -16,16 +16,27 @@ import useProjectStore from "../../stores/projectStore";
 
 const UserEdit = () => {
   const { currentProject } = useProjectStore();
-  const { changeUserNames } = useProjectSettings();
+  const { addProjectUser } = useProjectSettings();
   const { user } = useUserStore();
 
   const [userSearchValue, setUserSearchValue] = useState("");
   const [userNames, setUserNames] = useState(currentProject.users);
 
-  const handleAddUserName = (e) => {
-    e.preventDefault();
-    setUserNames([...userNames, { userName: e.target.value }]);
-    setUserSearchValue("");
+  const handleAddUserName = async (nextUserName) => {
+    if (!nextUserName) {
+      return;
+    }
+    if (userNames.some((existing) => existing.userName === nextUserName)) {
+      setUserSearchValue("");
+      return;
+    }
+    try {
+      await addProjectUser(nextUserName);
+      setUserNames([...userNames, { userName: nextUserName }]);
+      setUserSearchValue("");
+    } catch {
+      setUserSearchValue("");
+    }
   };
 
   const handleUserNameSuggestionChange = (e) => {
@@ -38,65 +49,61 @@ const UserEdit = () => {
     );
   };
 
-  const areUsersValid = (users) => {
-    return users.every((user) => user.id !== user.id);
-  };
-
   if (!currentProject.users) {
     return null;
   }
   
   return (
     <div>
-      <InputGroup className="w-100">
-        <InputGroupText>Search user</InputGroupText>
-        <AutoCompleteInput
-          type="text"
-          name="User ID"
-          value={userSearchValue}
-          placeholder="Enter username"
-          onClick={handleAddUserName}
-          onChange={handleUserNameSuggestionChange}
-          getsuggestions={getUserNameSuggestions}
-          filter={[
-            ...currentProject.users.map((user) => user.userName),
-            user.userName,
-          ]}
-        />
-      </InputGroup>
-      {userNames.length > 0 ? (
-        <EdgeMLTable>
-          <EdgeMLTableHeader>Users in the project</EdgeMLTableHeader>
-          {userNames.map((user, index) => (
-            <EdgeMLTableEntry
-              key={index}
-              className="d-flex justify-content-between p-2 align-items-center"
-            >
-              <div>{index + 1}</div>
-              <div>{user.userName}</div>
-              <Button
-                outline
-                size="sm"
-                color="danger"
-                onClick={() => handleDeleteUserName(user.userName)}
+      <Stack gap="md">
+        <Group align="flex-end" wrap="nowrap" className="w-100">
+          <div style={{ minWidth: 120 }}>
+            <Text fw={600}>Search user</Text>
+          </div>
+          <AutoCompleteInput
+            type="text"
+            name="User ID"
+            value={userSearchValue}
+            placeholder="Enter username"
+            onClick={(e) => handleAddUserName(e.target.value)}
+            onChange={handleUserNameSuggestionChange}
+            getsuggestions={getUserNameSuggestions}
+            filter={[
+              ...currentProject.users.map((user) => user.userName),
+              user.userName,
+            ]}
+          />
+          <Button
+            id="buttonSaveProject"
+            onClick={() => handleAddUserName(userSearchValue)}
+            disabled={!userSearchValue}
+          >
+            Save
+          </Button>
+        </Group>
+        {userNames.length > 0 ? (
+          <EdgeMLTable>
+            <EdgeMLTableHeader>Users in the project</EdgeMLTableHeader>
+            {userNames.map((user, index) => (
+              <EdgeMLTableEntry
+                key={index}
+                className="d-flex justify-content-between p-2 align-items-center"
               >
-                <FontAwesomeIcon icon={faTrashAlt} />
-              </Button>
-            </EdgeMLTableEntry>
-          ))}
-        </EdgeMLTable>
-      ) : null}
-      <div className="pt-3 d-flex justify-content-end">
-        <Button
-          outline
-          id="buttonSaveProject"
-          color="primary"
-          onClick={() => changeUserNames(userNames)}
-          disabled={!areUsersValid(userNames)}
-        >
-          Save
-        </Button>
-      </div>
+                <div>{index + 1}</div>
+                <div>{user.userName}</div>
+                <Button
+                  variant="outline"
+                  size="xs"
+                  color="red"
+                  onClick={() => handleDeleteUserName(user.userName)}
+                >
+                  <FontAwesomeIcon icon={faTrashAlt} />
+                </Button>
+              </EdgeMLTableEntry>
+            ))}
+          </EdgeMLTable>
+        ) : null}
+      </Stack>
     </div>
   );
 };

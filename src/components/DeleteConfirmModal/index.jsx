@@ -1,19 +1,20 @@
 import React from "react";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import { Button, Group, Modal, Stack } from "@mantine/core";
 
 const DeleteConfirmationModal = ({ isOpen, onCancel, onConfirm, children }) => {
   return (
-    <Modal isOpen={isOpen}>
-      <ModalHeader>Confirm Deletion</ModalHeader>
-      <ModalBody>{children}</ModalBody>
-      <ModalFooter>
-        <Button color="danger" onClick={onConfirm}>
-          Delete
-        </Button>
-        <Button color="secondary" onClick={onCancel}>
-          Cancel
-        </Button>
-      </ModalFooter>
+    <Modal opened={isOpen} onClose={onCancel} title="Confirm Deletion">
+      <Stack gap="md">
+        <div>{children}</div>
+        <Group justify="flex-end">
+          <Button color="red" onClick={onConfirm}>
+            Delete
+          </Button>
+          <Button variant="outline" color="gray" onClick={onCancel}>
+            Cancel
+          </Button>
+        </Group>
+      </Stack>
     </Modal>
   );
 };

@@ -167,7 +167,7 @@ export const getUserNameSuggestions = async (userName) => {
     apiConsts.HTTP_METHODS.POST,
     apiConsts.AUTH_URI,
     apiConsts.AUTH_ENDPOINTS.USERNAMESUGGEST,
-    { userName: userName }
+    { username: userName }
   );
   return res;
 };

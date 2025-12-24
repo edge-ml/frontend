@@ -3,6 +3,7 @@ import {
   updateProject as updateProject_api,
   deleteProject as deleteProject_api,
   leaveProject as leaveProject_api,
+  addProjectUser as addProjectUser_api,
 } from "../services/ApiServices/ProjectService";
 import useProjectStore from "../stores/projectStore";
 
@@ -38,9 +39,15 @@ const useProjectSettings = () => {
     setProjects(projects);
   };
 
+  const addProjectUser = async (username) => {
+    await addProjectUser_api(currentProject.id, username);
+    await refreshProjects();
+  };
+
   return {
     changeProjectName: changeProjectName,
     changeUserNames: changeUserNames,
+    addProjectUser: addProjectUser,
     deleteProject: deleteProject,
   };
 };

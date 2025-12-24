@@ -1,15 +1,8 @@
-import React, { useState, useEffect } from "react";
-import {
-  InputGroupText,
-  InputGroup,
-  Input,
-  Button,
-  FormFeedback,
-} from "reactstrap";
+import React, { useEffect } from "react";
+import { Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { useForm } from "@mantine/form";
 
-import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
-
-import { generateRandomColor } from "../../services/ColorService";
+import { generateRandomColor, isValidColor } from "../../services/ColorService";
 import EditLabelingModalEntry from "./EditLabelModalEntry";
 
 const EditLabelingModal = ({
@@ -19,41 +12,55 @@ const EditLabelingModal = ({
   onCancel,
   labelings,
 }) => {
-  const [labeling, setLabeling] = useState(
-    currentLabeling ? currentLabeling : { name: "", labels: [] }
-  );
+  const form = useForm({
+    initialValues: currentLabeling
+      ? { ...currentLabeling }
+      : { name: "", labels: [] },
+    validate: {
+      name: (value) => (value === "" ? "Labeling name is required" : null),
+    },
+  });
 
   useEffect(() => {
     if (isOpen) {
-      setLabeling(
+      form.setValues(
         currentLabeling ? { ...currentLabeling } : { name: "", labels: [] }
       );
     } else {
-      setLabeling({ name: "", labels: [] });
+      form.setValues({ name: "", labels: [] });
     }
   }, [isOpen, currentLabeling]);
 
   const onAddLabel = () => {
-    const newLabeling = { ...labeling };
-    newLabeling.labels.push({ name: "", color: generateRandomColor() });
-    setLabeling(newLabeling);
+    form.setValues({
+      ...form.values,
+      labels: [
+        ...form.values.labels,
+        { name: "", color: generateRandomColor() },
+      ],
+    });
   };
 
   const onLabelChange = (index, label) => {
-    const newLabeling = { ...labeling };
-    newLabeling.labels[index] = label;
-    console.log(newLabeling);
-    setLabeling(newLabeling);
+    const nextLabels = [...form.values.labels];
+    nextLabels[index] = label;
+    form.setValues({
+      ...form.values,
+      labels: nextLabels,
+    });
   };
 
   const onLabelDelete = (index) => {
-    const newLabeling = { ...labeling };
-    newLabeling.labels.splice(index, 1);
-    setLabeling(newLabeling);
+    const nextLabels = [...form.values.labels];
+    nextLabels.splice(index, 1);
+    form.setValues({
+      ...form.values,
+      labels: nextLabels,
+    });
   };
 
   const isDuplicateLabelName = (index) => {
-    const labelNames = labeling.labels.map((label) => label.name);
+    const labelNames = form.values.labels.map((label) => label.name);
     const currentLabelName = labelNames[index];
     const duplicateCount = labelNames.reduce((count, name, idx) => {
       if (name === currentLabelName && idx !== index) {
@@ -67,94 +74,82 @@ const EditLabelingModal = ({
   const isLabelingNameDuplicate = () => {
     return labelings.some(
       (existingLabeling) =>
-        existingLabeling.name === labeling.name &&
-        existingLabeling.id !== labeling.id
+        existingLabeling.name === form.values.name &&
+        existingLabeling.id !== form.values.id
     );
   };
 
   const saveDisabled = () => {
-    if (labeling.name === "") {
+    if (form.values.name === "") {
       return true;
     }
     if (isLabelingNameDuplicate()) {
       return true;
     }
-    for (const label of labeling.labels) {
+    for (const label of form.values.labels) {
       if (label.name === "") {
         return true;
       }
     }
-    for (let i = 0; i < labeling.labels.length; i++) {
+    for (let i = 0; i < form.values.labels.length; i++) {
       if (isDuplicateLabelName(i)) {
         return true;
       }
     }
-    if (labeling.labels.length === 0) {
+    if (form.values.labels.some((label) => !isValidColor(label.color))) {
+      return true;
+    }
+    if (form.values.labels.length === 0) {
       return true;
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onCancel}>
-      <ModalHeader>
-        {labeling ? "Edit labeling" : "Create labeling"}
-      </ModalHeader>
-      <ModalBody>
-        <div className="d-flex flex-column align-items-center">
-          <div className="w-100">
-            <div className="d-flex align-items-center">
-              <InputGroup className="d-flex">
-                <InputGroupText>Labeling Set</InputGroupText>
-                <Input
-                  invalid={isLabelingNameDuplicate() && labeling.name !== ""}
-                  id="labelingName"
-                  placeholder="Name"
-                  value={labeling.name}
-                  onChange={(e) => {
-                    setLabeling({ ...labeling, name: e.target.value });
-                  }}
-                />
-                <FormFeedback>Oh no! That name is already taken</FormFeedback>
-              </InputGroup>
-            </div>
-
-            <h6 className="fw-bold mt-2">Labels</h6>
-            {labeling.labels.map((label, index) => (
-              <EditLabelingModalEntry
-                key={"label_" + index}
-                invalid={isDuplicateLabelName(index) && label.name !== ""}
-                label={label}
-                onChangeLabel={(label) => onLabelChange(index, label)}
-                onDelete={() => onLabelDelete(index)}
-              />
-            ))}
-
-            <hr />
-            <Button
-              id="buttonAddLabel"
-              className="m-0"
-              color="secondary"
-              outline
-              block
-              onClick={onAddLabel}
-            >
-              + Add Label
-            </Button>
-          </div>
-        </div>
-      </ModalBody>
-      <ModalFooter className="d-flex justify-content-end">
+    <Modal
+      opened={isOpen}
+      onClose={onCancel}
+      title={currentLabeling ? "Edit labeling" : "Create labeling"}
+    >
+      <Stack gap="md">
+        <TextInput
+          id="labelingName"
+          label="Labeling Set"
+          placeholder="Name"
+          {...form.getInputProps("name")}
+          error={
+            isLabelingNameDuplicate() && form.values.name !== ""
+              ? "Oh no! That name is already taken"
+              : null
+          }
+        />
+        <Text fw={600}>Labels</Text>
+        {form.values.labels.map((label, index) => (
+          <EditLabelingModalEntry
+            key={"label_" + index}
+            invalid={isDuplicateLabelName(index) && label.name !== ""}
+            label={label}
+            onChangeLabel={(label) => onLabelChange(index, label)}
+            onDelete={() => onLabelDelete(index)}
+          />
+        ))}
         <Button
-          outline
-          id="buttonSaveLabeling"
-          color="primary"
-          className="m-1"
-          onClick={() => onSave(labeling)}
-          disabled={saveDisabled()}
+          id="buttonAddLabel"
+          variant="outline"
+          color="gray"
+          onClick={onAddLabel}
         >
-          Save
+          + Add Label
         </Button>
-      </ModalFooter>
+        <Group justify="flex-end">
+          <Button
+            id="buttonSaveLabeling"
+            onClick={() => onSave(form.values)}
+            disabled={saveDisabled()}
+          >
+            Save
+          </Button>
+        </Group>
+      </Stack>
     </Modal>
   );
 };

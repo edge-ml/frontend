@@ -1,9 +1,7 @@
-import React, { useState, useCallback, useContext } from "react";
-import { Button } from "reactstrap";
+import React, { useState, useCallback } from "react";
+import { Button } from "@mantine/core";
 import ConfirmationDialogueModal from "../../components/ConfirmationDilaogueModal/ConfirmationDialogueModal";
-import { AuthContext } from "../../AuthProvider";
 import useProjectSettings from "../../Hooks/useProjectSettings";
-import useAuth from "../../Hooks/useAuth";
 import useUserStore from "../../Hooks/useUser";
 import useProjectStore from "../../stores/projectStore";
 
@@ -28,19 +26,19 @@ const DeleteProject = (props) => {
     <div className="align-space-between">
       {currentProject.users && isAdmin ? ( // users exists only on admin?
         <Button
-          outline
+          variant="outline"
           id="buttonDeleteProject"
           onClick={() => setModalOpen(true)}
-          color="danger"
+          color="red"
         >
           Delete project
         </Button>
       ) : currentProject.users && !isAdmin ? (
         <Button
-          outline
+          variant="outline"
           id="buttonLeaveProject"
           onClick={() => setModalOpen(true)}
-          color="danger"
+          color="red"
         >
           Leave project
         </Button>

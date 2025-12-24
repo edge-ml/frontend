@@ -1,14 +1,5 @@
 import React, { Component } from "react";
-import {
-  Button,
-  Modal,
-  Card,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Button, Modal, Stack, Text, Title } from "@mantine/core";
 
 class ListItemModal extends Component {
   constructor(props) {
@@ -27,27 +18,28 @@ class ListItemModal extends Component {
     return (
       <div>
         <div className="p-2">
-          <div className="header-wrapper d-flex flex-column align-content-center">
-            <h5>{this.props.value.name}</h5>
-            <div>{this.props.value.description}</div>
-          </div>
-          <div className="body-wrapper p-2">
-            <div className="p-3">
-              <Button outline color="primary" onClick={this.toggleModal}>
+          <Stack gap="xs">
+            <Title order={5}>{this.props.value.name}</Title>
+            <Text c="dimmed">{this.props.value.description}</Text>
+            <div>
+              <Button variant="outline" onClick={this.toggleModal}>
                 Edit
               </Button>
             </div>
-          </div>
+          </Stack>
         </div>
         {this.state.modalOpen && (
-          <Modal isOpen={this.state.modalOpen}>
-            <ModalHeader>{this.props.value.name}</ModalHeader>
-            <ModalBody>{this.props.component}</ModalBody>
-            <ModalFooter>
-              <Button color="danger" onClick={this.toggleModal}>
+          <Modal
+            opened={this.state.modalOpen}
+            onClose={this.toggleModal}
+            title={this.props.value.name}
+          >
+            <Stack gap="md">
+              {this.props.component}
+              <Button color="red" variant="outline" onClick={this.toggleModal}>
                 Cancel
               </Button>
-            </ModalFooter>
+            </Stack>
           </Modal>
         )}
       </div>

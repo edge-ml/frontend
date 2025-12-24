@@ -4,9 +4,8 @@ import {
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { Fragment, useState } from "react";
-import { Button, Container } from "reactstrap";
-import Checkbox from "../../components/Common/Checkbox";
+import React, { Fragment } from "react";
+import { Box, Button, Checkbox, Group, Text } from "@mantine/core";
 import DatasetTableEntry from "./DatasetTableEntry";
 import DatasetSorting from "./DatasetSorting";
 import { Empty } from "../export/components/Empty";
@@ -23,95 +22,78 @@ const DatasetTable = ({
   deselectAll,
   toggleCheck,
   labelings,
-  labels,
   deleteEntry,
   updateDataset,
 }) => {
-  const [areAllSelected, setAllSelected] = useState(false);
+  const allSelected =
+    datasets.length > 0 && selectedDatasets.length === datasets.length;
+  const partiallySelected =
+    selectedDatasets.length > 0 && !allSelected && datasets.length > 0;
   return (
     <div className="ps-2 pe-2 ps-md-4 pe-md-4 pb-2 flex-grow-1">
       <Fragment>
-        <div className="w-100 d-flex justify-content-between">
-          <div className="fw-bold h4">DATASETS</div>
+        <Group justify="space-between">
+          <Text fw={700} size="xl">
+            DATASETS
+          </Text>
           <Button
-            color="secondary"
-            size="sm"
-            outline
+            color="gray"
+            variant="outline"
             disabled={datasets.length === 0}
             onClick={downloadAllDatasets}
           >
             <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon> Download All
           </Button>
-        </div>
+        </Group>
         {datasets.length > 0 ? (
           <div style={{ borderRadius: 10 }}>
-            <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row align-content-baseline">
-              <div className="d-flex flex-row align-items-center p-1">
-                <div className="ml-0 me-0 ml-md-2 me-md-3 ">
-                  <Checkbox
-                    isSelected={areAllSelected}
-                    onClick={(e) => {
-                      setAllSelected(!areAllSelected);
-                      if (areAllSelected) {
-                        deselectAll();
-                      } else {
-                        selectAll();
-                      }
-                    }}
-                  ></Checkbox>
-                </div>
+            <Group
+              className="datasets-header-wrapper mt-3"
+              justify="space-between"
+              align="center"
+            >
+              <Group align="center" gap="sm">
+                <Checkbox
+                  checked={allSelected}
+                  indeterminate={partiallySelected}
+                  onChange={() => {
+                    if (allSelected) {
+                      deselectAll();
+                    } else {
+                      selectAll();
+                    }
+                  }}
+                />
                 <Button
-                  outline
-                  className="ms-3 btn-delete"
+                  className="btn-delete"
                   id="deleteDatasetsButton"
-                  size="sm"
                   disabled={selectedDatasets.length === 0}
-                  color="danger"
+                  color="red"
+                  variant="outline"
                   onClick={openDeleteModal}
                 >
-                  <FontAwesomeIcon
-                    className="me-2"
-                    icon={faTrashAlt}
-                  ></FontAwesomeIcon>
+                  <FontAwesomeIcon className="me-2" icon={faTrashAlt} />
                   Delete
                 </Button>
                 <Button
                   id="selectAllEmptyButton"
-                  size="sm"
-                  outline
-                  color="secondary"
+                  variant="outline"
+                  color="gray"
                   onClick={selectAllEmpty}
-                  /* disabled={props.datasets.every((elm) => elm.end != 0)}*/
                   className="ms-2"
                 >
-                  <FontAwesomeIcon
-                    className="me-2"
-                    icon={faFilter}
-                  ></FontAwesomeIcon>
+                  <FontAwesomeIcon className="me-2" icon={faFilter} />
                   Select Empty Datasets
                 </Button>
-              </div>
-              <div className="d-flex flex-md-row justify-content-end position-relative">
-                <div className="d-flex align-items-center me-2">
-                  <DatasetSorting
-                    selectedSorting={selectedSorting}
-                    setSelectedSorting={setSelectedSorting}
-                  />
-                </div>
-                {/* <div className="d-flex align-items-center">
-                  <Button
-                    outline
-                    active={props.filterSelected}
-                    className="me-3"
-                    size="sm"
-                    onClick={props.toggleFilterSelectionModal}
-                  >
-                    <FontAwesomeIcon icon={faFilter} size="sm" />
-                  </Button>
-                </div> */}
-              </div>
-            </div>
-            <div
+              </Group>
+              <Group justify="flex-end" className="position-relative">
+                <DatasetSorting
+                  selectedSorting={selectedSorting}
+                  setSelectedSorting={setSelectedSorting}
+                />
+              </Group>
+            </Group>
+            <Box
               className="w-100 position-relative"
               style={{
                 border: "2px solid rgb(230, 230, 234)",
@@ -125,14 +107,13 @@ const DatasetTable = ({
                   dataset={dataset}
                   index={index}
                   toggleCheck={toggleCheck}
-                  isSelected={selectedDatasets.includes(dataset["_id"])}
+                  isSelected={selectedDatasets.includes(dataset.id)}
                   labelings={labelings}
-                  labels={labels}
                   deleteEntry={deleteEntry}
                   updateDataset={updateDataset}
                 ></DatasetTableEntry>
               ))}
-            </div>
+            </Box>
           </div>
         ) : (
           <Empty>No datasets available yet</Empty>

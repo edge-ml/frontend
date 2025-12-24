@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Button } from "reactstrap";
-import Checkbox from "../../../components/Common/Checkbox";
+import { TextInput } from "@mantine/core";
 const TextSearchFilter = ({
   selectedFilter,
   selectedFilterParams,
@@ -28,7 +27,7 @@ const TextSearchFilter = ({
     <div>
       <div className="mb-4">{"Search for datasets via name:\n"}</div>
       <div>
-        <Input
+        <TextInput
           type="text"
           placeholder="Search..."
           value={userInput}

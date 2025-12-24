@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, FormGroup, FormText, Input, Col, Row } from "reactstrap";
+import { NumberInput, Text } from "@mantine/core";
 
 const PageSizeInput = ({ pageSize, setPageSize }) => {
   const [error, setError] = useState("");
@@ -21,23 +21,25 @@ const PageSizeInput = ({ pageSize, setPageSize }) => {
     }
   };
 
-  const handleInputChange = (e) => {
-    setValue(e.target.value);
-  };
-
   return (
     <div className="me-2">
-      <FormGroup>
-        <Input
-          type="number"
-          name="page size"
-          value={value}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          placeholder="Enter page size"
-        />
-        {error && <FormText color="danger">{error}</FormText>}
-      </FormGroup>
+      <NumberInput
+        name="page size"
+        value={value}
+        onChange={(nextValue) => {
+          if (typeof nextValue === "number" || nextValue === "") {
+            setValue(nextValue);
+          }
+        }}
+        onKeyDown={handleKeyDown}
+        placeholder="Enter page size"
+        min={1}
+      />
+      {error && (
+        <Text size="xs" c="red" mt={4}>
+          {error}
+        </Text>
+      )}
     </div>
   );
 };

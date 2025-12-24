@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "reactstrap";
-import Checkbox from "../../components/Common/Checkbox";
+import { Button, Checkbox, Group } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -28,16 +27,14 @@ const LabelingTable = ({
   return (
     <EdgeMLTable>
       <EdgeMLTableHeader>
-        <div className="d-flex flex-row align-items-center p-1">
-          <div className="ml-md-2 me-md-3 ">
-            <Checkbox isSelected={allSelected} onClick={selectAll}></Checkbox>
-          </div>
+        <Group className="p-1" align="center">
+          <Checkbox checked={allSelected} onChange={() => selectAll()} />
           <Button
-            outline
             className="ms-3 btn-delete"
             id="deleteDatasetsButton"
-            size="sm"
-            color="danger"
+            size="xs"
+            variant="outline"
+            color="red"
             disabled={selectedLabelings.length === 0}
             onClick={deleteSelectedLabelings}
           >
@@ -47,7 +44,7 @@ const LabelingTable = ({
             ></FontAwesomeIcon>
             Delete
           </Button>
-        </div>
+        </Group>
       </EdgeMLTableHeader>
       {labelings.map((labeling, index) => (
         <EdgeMLTableEntry key={labeling.id}>

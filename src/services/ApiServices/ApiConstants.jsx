@@ -59,7 +59,7 @@ export const AUTH_ENDPOINTS = {
   RESET2FA: "2fa/reset",
   MAIL: "mail",
   CHANGE_MAIL: "changeMail",
-  USERNAMESUGGEST: "userNameSuggest",
+  USERNAMESUGGEST: "auth/user/suggest",
   CHANGE_PASSWORD: "changePassword",
   ID: "id",
   CHANGE_USERNAME: "changeUserName",

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardTitle, CardBody, CardSubtitle } from "reactstrap";
+import { Paper, Stack, Text, Title } from "@mantine/core";
 
 class ListItem extends Component {
   constructor(props) {
@@ -8,14 +8,15 @@ class ListItem extends Component {
   }
 
   render() {
+    const { name, description, children } = this.props;
     return (
-      <div className="p-2 my-2">
-        <div className="header-wrapper d-flex flex-column align-content-center">
-          <h5>{name}</h5>
-          <div>{description}</div>
-        </div>
-        <div className="body-wrapper p-3">{component}</div>
-      </div>
+      <Paper p="lg" radius="md" withBorder>
+        <Stack gap="xs">
+          <Title order={5}>{name}</Title>
+          <Text c="dimmed">{description}</Text>
+          <div>{children}</div>
+        </Stack>
+      </Paper>
     );
   }
 }

@@ -1,18 +1,14 @@
 import React from "react";
-import { Badge } from "reactstrap";
-import {
-  hexToForegroundColor,
-  isValidColor,
-} from "../../services/ColorService";
+import { Badge } from "@mantine/core";
+import { hexToForegroundColor } from "../../services/ColorService";
 
 const LabelBadge = ({ color, children, ...props }) => {
-  // if (!isValidColor(color)) {
-  //     throw new Error('Invalid color provided: ' + color);
-  // }
   return (
     <Badge
-      color={hexToForegroundColor(color)}
-      style={{ backgroundColor: color, fontSize: "1em" }}
+      color="gray"
+      style={{ backgroundColor: color, color: hexToForegroundColor(color) }}
+      size="md"
+      radius="sm"
       {...props}
     >
       {children}

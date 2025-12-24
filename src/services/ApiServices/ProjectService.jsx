@@ -50,3 +50,13 @@ export const updateProject = async (project) => {
   );
   return res;
 };
+
+export const addProjectUser = async (projectId, username) => {
+  const res = await apiRequest(
+    HTTP_METHODS.POST,
+    API_URI,
+    API_ENDPOINTS.PROJECTS + `/${projectId}/users`,
+    { username }
+  );
+  return res;
+};

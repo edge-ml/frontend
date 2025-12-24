@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { Box, Group, Paper } from "@mantine/core";
 
 import "./index.css";
 
@@ -13,12 +14,12 @@ const EdgeMLTable = ({ children, className, style }) => {
     });
 
   return (
-    <div style={{ ...style }} className={className}>
-      <div className="table-header-wrapper d-flex mt-3 flex-md-row flex-column">
+    <Box style={{ ...style }} className={className}>
+      <Group className="table-header-wrapper mt-3" align="center">
         {header}
-      </div>
-      <div className="table-body-wrapper">{body}</div>
-    </div>
+      </Group>
+      <Box className="table-body-wrapper">{body}</Box>
+    </Box>
   );
 };
 
@@ -29,14 +30,16 @@ const EdgeMLTableHeader = ({ children }) => {
 const EdgeMLTableEntry = ({ children, index, className }) => {
   return (
     <Fragment>
-      <div
+      <Paper
         className={"datasetCard " + className}
+        radius={0}
+        withBorder={false}
         style={{
           background: index % 2 === 1 ? "rgb(249, 251, 252)" : "",
         }}
       >
         {children}
-      </div>
+      </Paper>
     </Fragment>
   );
 };

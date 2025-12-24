@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { Container, Button } from "reactstrap";
+import { Button, Group, Text } from "@mantine/core";
 import Loader from "../../modules/loader";
 import EditLabelingModal from "../../components/EditLabelingModal/EditLabelingModal";
 import LabelingTable from "./LabelingTable";
 import useLabelings from "../../Hooks/useLabelings";
 import Page from "../../components/Common/Page";
 import { Empty } from "../export/components/Empty";
-import DeleteConfirmationModal from "../../components/DeleteConfirmModal";
 
 const Labelings = () => {
   const { labelings, updateLabeling, addLabeling, deleteLabeling } =
@@ -63,19 +62,14 @@ const Labelings = () => {
     <Loader loading={!labelings}>
       <Page
         header={
-          <>
-            <div className="fw-bold h4 justify-self-start">LABELING SETS</div>
-            <div className="justify-f-end">
-              <Button
-                outline
-                color="primary"
-                onClick={onModalAddLabeling}
-                className="btn-neutral ml-auto"
-              >
-                Create Labeling Set
-              </Button>
-            </div>
-          </>
+          <Group justify="space-between" align="center">
+            <Text fw={700} size="xl">
+              LABELING SETS
+            </Text>
+            <Button variant="outline" color="blue" onClick={onModalAddLabeling}>
+              Create Labeling Set
+            </Button>
+          </Group>
         }
       >
         {labelings.length === 0 ? (

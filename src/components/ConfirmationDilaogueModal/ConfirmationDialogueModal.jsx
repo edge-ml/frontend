@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from "reactstrap";
+import { Button, Group, Modal, Stack, Text } from "@mantine/core";
 import "./ConfirmationDialogueModal.css";
 
 class ConfirmationDialogueModal extends Component {
@@ -35,35 +35,24 @@ class ConfirmationDialogueModal extends Component {
     return (
       <div>
         <Modal
-          isOpen={this.props.isOpen}
+          opened={this.props.isOpen}
+          onClose={this.props.onCancel}
           className="modal-body-scrollable modal-l"
+          title={this.props.title}
         >
-          <ModalHeader>{this.props.title}</ModalHeader>
-          <ModalBody className="modal-scrollableBody">
-            <div style={{ whiteSpace: "pre-wrap" }}>
+          <Stack gap="md">
+            <Text style={{ whiteSpace: "pre-wrap" }}>
               {this.props.confirmString}
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <div className="d-flex flex-row justify-content-end">
-              <Button
-                outline
-                color="danger"
-                className="m-1"
-                onClick={this.props.onConfirm}
-              >
+            </Text>
+            <Group justify="flex-end">
+              <Button color="red" onClick={this.props.onConfirm}>
                 Confirm
               </Button>
-              <Button
-                outline
-                color="secondary"
-                className="m-1 me-auto"
-                onClick={this.props.onCancel}
-              >
+              <Button variant="outline" color="gray" onClick={this.props.onCancel}>
                 Cancel
               </Button>
-            </div>
-          </ModalFooter>
+            </Group>
+          </Stack>
         </Modal>
       </div>
     );

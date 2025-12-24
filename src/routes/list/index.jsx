@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { Box, Button, Group, Modal, Stack, Text } from "@mantine/core";
 import NotificationContext from "../../components/NotificationHandler/NotificationProvider";
 import Loader from "../../modules/loader";
 
@@ -7,16 +8,11 @@ import "./index.css";
 import useLabelings from "../../Hooks/useLabelings";
 import DatasetTable from "./DatasetTable";
 import DataUpload from "./DataUpload";
-import useDatasets from "../../Hooks/useDatasets";
 import usePaginatedDatasets from "../../Hooks/usePaginatedDatasets";
-import { Pagination } from "reactstrap";
 import PageSelection from "./PageSelection";
-import DeleteModal from "../../components/Common/DeleteModal";
 
-const ListPage = (props) => {
+const ListPage = () => {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
-  const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState(undefined); //name and display value of filter
   const { registerProjectDownload } = useContext(NotificationContext);
   const [deleteSelected, setDeleteSelected] = useState([]);
 
@@ -39,7 +35,6 @@ const ListPage = (props) => {
   };
 
   const deleteEntry = (datasetId) => {
-    console.log(datasetId);
     setDeleteSelected([datasetId]);
   };
 
@@ -78,18 +73,13 @@ const ListPage = (props) => {
     registerProjectDownload();
   };
 
-  const toggleCreateNewDatasetModal = () => {};
-
   if (!datasets || !labelings) {
     return <Loader loading={true}></Loader>;
   }
 
   return (
-    <div id="dataList" className="d-flex flex-column h-100">
-      <DataUpload
-        toggleCreateNewDatasetModal={toggleCreateNewDatasetModal}
-        refreshDatasets={refreshDatasets}
-      ></DataUpload>
+    <Stack id="dataList" className="h-100" gap="md">
+      <DataUpload refreshDatasets={refreshDatasets}></DataUpload>
       <DatasetTable
         datasets={datasets}
         selectedDatasets={selectedDatasets}
@@ -101,39 +91,48 @@ const ListPage = (props) => {
         deleteEntry={deleteEntry}
         selectAll={selectAll}
         deselectAll={deselectAll}
-        sortDropDownIsOpen={sortDropDownIsOpen}
-        setSortDropdownIsOpen={setSortDropdownIsOpen}
         selectedSorting={sorting}
         setSelectedSorting={setSorting}
-        selectedFilter={selectedFilter}
         updateDataset={updateDataset}
       ></DatasetTable>
-      <div className="d-flex justify-content-center">
-        {datasets && datasets.length > 0 && (
+      {datasets && datasets.length > 0 && (
+        <Group justify="center" className="pb-3">
           <PageSelection
             currentPage={page}
             setPage={setPage}
             totalPages={totalPages}
           ></PageSelection>
-        )}
-      </div>
-      <DeleteModal
-        isOpen={deleteSelected.length > 0}
-        onCancel={() => setDeleteSelected([])}
-        onDelete={deleteSelectedDatasets}
+        </Group>
+      )}
+      <Modal
+        opened={deleteSelected.length > 0}
+        onClose={() => setDeleteSelected([])}
+        title="Delete datasets"
       >
-        {deleteSelected.length > 0 && (
-          <div>
-            <h5>Are you sure to delete:</h5>
-            {deleteSelected.map((datasetId) => (
-              <div key={datasetId}>
-                {datasets.find((dataset) => dataset.id === datasetId).name}
-              </div>
-            ))}
-          </div>
-        )}
-      </DeleteModal>
-    </div>
+        <Stack gap="md">
+          {deleteSelected.length > 0 && (
+            <Box>
+              <Text fw={600}>Are you sure to delete:</Text>
+              <Stack gap={4} mt="xs">
+                {deleteSelected.map((datasetId) => (
+                  <Text key={datasetId} size="sm">
+                    {datasets.find((dataset) => dataset.id === datasetId).name}
+                  </Text>
+                ))}
+              </Stack>
+            </Box>
+          )}
+          <Group justify="flex-end">
+            <Button variant="outline" color="gray" onClick={() => setDeleteSelected([])}>
+              Cancel
+            </Button>
+            <Button color="red" onClick={deleteSelectedDatasets}>
+              Delete
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
+    </Stack>
   );
 };
 

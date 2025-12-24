@@ -1,13 +1,6 @@
-import React, { useContext, useState } from "react";
-import {
-  InputGroup,
-  InputGroupText,
-  Input,
-  Container,
-  Button,
-} from "reactstrap";
+import React, { useState } from "react";
+import { Button, Group, TextInput } from "@mantine/core";
 
-import "./Settings.css";
 import useProjectSettings from "../../Hooks/useProjectSettings";
 import useProjectStore from "../../stores/projectStore";
 
@@ -17,27 +10,17 @@ const EditName = () => {
   const [projectName, setProjectName] = useState(currentProject.name);
 
   return (
-    <Container>
-      <InputGroup>
-        <InputGroupText>{"Name"}</InputGroupText>
-        <Input
-          id="projectName"
-          readOnly={false}
-          placeholder={"Name"}
-          value={projectName}
-          onChange={(e) => setProjectName(e.target.value)}
-        />
-        <div className="ms-2">
-          <Button
-            outline
-            color="primary"
-            onClick={() => changeProjectName(projectName)}
-          >
-            Save
-          </Button>
-        </div>
-      </InputGroup>
-    </Container>
+    <Group align="flex-end" wrap="nowrap">
+      <TextInput
+        id="projectName"
+        label="Name"
+        placeholder="Name"
+        value={projectName}
+        onChange={(e) => setProjectName(e.target.value)}
+        style={{ flex: 1 }}
+      />
+      <Button onClick={() => changeProjectName(projectName)}>Save</Button>
+    </Group>
   );
 };
 export default EditName;

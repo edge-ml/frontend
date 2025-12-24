@@ -1,19 +1,8 @@
-import React, { useState } from "react";
-import {
-  InputGroup,
-  InputGroupText,
-  Input,
-  FormFeedback,
-  Button,
-} from "reactstrap";
+import React from "react";
+import { ActionIcon, ColorInput, Group, TextInput } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faL, faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import {
-  hexToForegroundColor,
-  isValidColor,
-} from "../../services/ColorService";
-import ColorPicker from "../ColorPicker";
-import { SketchPicker } from "react-color";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { isValidColor } from "../../services/ColorService";
 
 const EditLabelingModalEntry = ({
   label,
@@ -21,58 +10,48 @@ const EditLabelingModalEntry = ({
   onDelete,
   invalid,
 }) => {
-  const [colorPickerOpen, setColorPickerOpen] = useState(false);
-
-  const onChangeColor = (color) => {
-    onChangeLabel({ ...label, color: color });
-    setColorPickerOpen(false);
-  };
-
   const onChangeName = (e) => {
-    console.log(e);
     onChangeLabel({ ...label, name: e.target.value });
   };
 
+  const nameError =
+    invalid && label.name !== "" ? "Duplicate names are not allowed" : null;
+  const colorError = !isValidColor(label.color) ? "Invalid color" : null;
+
   return (
-    <InputGroup>
-      <InputGroupText>Name</InputGroupText>
-      <Input
-        invalid={invalid}
+    <Group wrap="nowrap" align="flex-start">
+      <TextInput
+        label="Name"
         placeholder="Name"
         value={label.name}
         onChange={onChangeName}
+        error={nameError}
+        style={{ flex: 1 }}
       />
-      <InputGroupText>Color</InputGroupText>
-      <div
-        className="d-flex justify-content-center align-items-center cursor-pointer"
-        style={{ backgroundColor: label.color, width: "100px" }}
-        onClick={() => setColorPickerOpen(true)}
-      >
-        <FontAwesomeIcon
-          color={hexToForegroundColor(label.color)}
-          icon={faPen}
-        ></FontAwesomeIcon>
-        <div className="position-absolute z-10000">
-          <div>
-            <ColorPicker
-              isOpen={colorPickerOpen}
-              className="position-relative"
-              color={label.color}
-              onSave={onChangeColor}
-              disableAlpha
-            ></ColorPicker>
-          </div>
-        </div>
-      </div>
-      <Button className="ms-1" color="danger" outline onClick={onDelete}>
-        <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
-      </Button>
-      <FormFeedback id="labelFeedback">
-        {!isValidColor(label.color)
-          ? "Invalid color"
-          : "Duplicate names are not allowed"}
-      </FormFeedback>
-    </InputGroup>
+      <ColorInput
+        label="Color"
+        placeholder="Color"
+        value={label.color}
+        onChange={(value) => onChangeLabel({ ...label, color: value })}
+        error={colorError}
+        format="hex"
+        swatchesPerRow={7}
+        withPicker
+        inputContainer={(children) => (
+          <Group align="flex-start" wrap="nowrap">
+            {children}
+            <ActionIcon
+              color="red"
+              variant="outline"
+              // style={{ height: 36, width: 36, marginTop: 28 }}
+              onClick={onDelete}
+            >
+              <FontAwesomeIcon icon={faTrashAlt} />
+            </ActionIcon>
+          </Group>
+        )}
+      />
+    </Group>
   );
 };
 

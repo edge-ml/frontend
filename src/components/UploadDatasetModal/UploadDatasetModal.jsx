@@ -504,6 +504,7 @@ export const UploadDatasetModal = ({
                   <Group gap="xs" wrap="nowrap">
                     {f.status === FileStatus.COMPLETE && (
                       <ActionIcon
+                        size="lg"
                         className="modal-icon-button"
                         variant="subtle"
                         color="green"
@@ -534,6 +535,7 @@ export const UploadDatasetModal = ({
                         <ActionIcon
                           variant="subtle"
                           color="red"
+                          size="lg"
                           onClick={() => handleDelete(f.id)}
                           title="Removes item from list"
                         >

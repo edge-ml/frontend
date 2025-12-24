@@ -1,10 +1,9 @@
 import React, { Fragment, useState } from "react";
-import { Row, Col, Button, Badge } from "reactstrap";
+import { ActionIcon, Box, Group, Text } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import Checkbox from "../../components/Common/Checkbox";
+import { Checkbox } from "@mantine/core";
 import LabelBadge from "../../components/Common/LabelBadge";
-import { EdgeMLTableEntry } from "../../components/Common/EdgeMLTable";
 import EditLabelingModal from "../../components/EditLabelingModal/EditLabelingModal";
 import DeleteConfirmationModal from "../../components/DeleteConfirmModal";
 
@@ -20,54 +19,53 @@ const LabelingTableEntry = ({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   return (
-    <EdgeMLTableEntry key={"labeling" + labeling.id}>
-      <div className="d-flex align-items-center p-2 ms-2 me-0 ml-md-3 me-md-3">
+    <Fragment>
+      <Group
+        align="center"
+        wrap="nowrap"
+        className="p-2 ms-2 me-0 ml-md-3 me-md-3"
+      >
         <Checkbox
-          isSelected={isSelected}
-          className="d-inline-block"
-          onClick={(e) => toggleCheck(e, labeling)}
-        ></Checkbox>
-        <div className="w-100">
-          <Row className="p-1">
-            <Col className="text-left align-self-center col-lg-4 col-xl-3">
-              <div className="text-left d-inline-block m-2 text-break">
-                <div
-                  className={
-                    labeling.name !== ""
-                      ? "fw-bold font-size-lg h5 d-inline"
-                      : "font-weight-normal font-italic font-size-lg h5 d-inline"
-                  }
-                >
-                  {labeling.name !== "" ? labeling.name : "Untitled"}
-                </div>
-              </div>
-            </Col>
-            <Col className="d-none d-lg-block align-self-center">
-              <div className="d-flex flex-wrap h-100 justify-content-start">
-                <Labeling labeling={labeling} />
-              </div>
-            </Col>
-            <Col className="d-flex flex-nowrap col-2 p-0 justify-content-end">
-              <Button
-                outline
-                color="danger"
-                className="btn-delete"
-                onClick={() => setDeleteModalOpen(true)}
+          checked={isSelected}
+          onChange={(e) => toggleCheck(e, labeling)}
+        />
+        <Group align="center" wrap="nowrap" style={{ flex: 1 }}>
+          <Box className="text-left align-self-center col-lg-4 col-xl-3">
+            <div className="text-left d-inline-block m-2 text-break">
+              <Text
+                fw={labeling.name !== "" ? 700 : 400}
+                fs={labeling.name !== "" ? "normal" : "italic"}
+                size="xl"
               >
-                <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{" "}
-              </Button>
-              <Button
-                outline
-                color="primary"
-                className="ms-2"
-                onClick={() => setLabelingModalOpen(true)}
-              >
-                <FontAwesomeIcon icon={faPen} />
-              </Button>
-            </Col>
-          </Row>
-        </div>
-      </div>
+                {labeling.name !== "" ? labeling.name : "Untitled"}
+              </Text>
+            </div>
+          </Box>
+          <Box className="d-none d-lg-block align-self-center" style={{ flex: 1 }}>
+            <div className="d-flex flex-wrap h-100 justify-content-start">
+              <Labeling labeling={labeling} />
+            </div>
+          </Box>
+          <Group justify="flex-end" wrap="nowrap" className="col-2 p-0">
+            <ActionIcon
+              size="lg"
+              variant="outline"
+              color="red"
+              onClick={() => setDeleteModalOpen(true)}
+            >
+              <FontAwesomeIcon icon={faTrashAlt} />
+            </ActionIcon>
+            <ActionIcon
+              size="lg"
+              variant="outline"
+              color="blue"
+              onClick={() => setLabelingModalOpen(true)}
+            >
+              <FontAwesomeIcon icon={faPen} />
+            </ActionIcon>
+          </Group>
+        </Group>
+      </Group>
       <EditLabelingModal
         labelings={labelings}
         currentLabeling={labeling}
@@ -95,7 +93,7 @@ const LabelingTableEntry = ({
           <div className="m-2">{labeling.name}</div>
         </div>
       </DeleteConfirmationModal>
-    </EdgeMLTableEntry>
+    </Fragment>
   );
 };
 

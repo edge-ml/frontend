@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ListGroup, ListGroupItem, Badge } from "reactstrap";
-import Checkbox from "../../../components/Common/Checkbox";
+import { Badge, Checkbox, Group, ScrollArea, Stack, Text } from "@mantine/core";
 
 const LabelingSetsFilter = ({
   selectedFilter,
@@ -86,17 +85,15 @@ const LabelingSetsFilter = ({
       return null;
     } else {
       return (
-        <div className="d-flex flex-row me-2 badgeSize pb-2">
+        <Group className="me-2 badgeSize pb-2" gap="xs">
           {labels.map((label, index) => {
             return (
-              <div style={{ display: "flex", alignItems: "center" }}>
+              <Group key={label.id} gap="xs" align="center">
                 <Checkbox
-                  isSelected={isSelectedLabel(label.id)}
-                  className="d-inline-block"
-                  onClick={() => onSelectLabel(label)}
+                  checked={isSelectedLabel(label.id)}
+                  onChange={() => onSelectLabel(label)}
                 />
                 <Badge
-                  key={label.id}
                   className={
                     label.name === ""
                       ? "font-italic font-weight-normal badgeSize mx-1 border border-dark"
@@ -104,12 +101,12 @@ const LabelingSetsFilter = ({
                   }
                   style={{ backgroundColor: label.color }}
                 >
-                  {label.name !== "" ? label.name : "Untitled"}{" "}
+                  {label.name !== "" ? label.name : "Untitled"}
                 </Badge>
-              </div>
+              </Group>
             );
           })}
-        </div>
+        </Group>
       );
     }
   };
@@ -122,25 +119,22 @@ const LabelingSetsFilter = ({
         }
       </div>
       <div>
-        <ListGroup style={{ maxHeight: "600px", overflowY: "auto" }}>
-          {labelings.map((labeling, index) => (
-            <ListGroupItem key={index}>
-              <div className="d-flex flex-row">
-                <div className="d-flex align-items-center me-2">
+        <ScrollArea h={600}>
+          <Stack gap="sm">
+            {labelings.map((labeling, index) => (
+              <Group key={index} align="flex-start" wrap="nowrap">
+                <Group align="center" gap="xs" wrap="nowrap">
                   <Checkbox
-                    isSelected={isSelectedLabeling(labeling.id)}
-                    className="d-inline-block"
-                    onClick={() => onSelectLabelingSet(labeling)}
-                  ></Checkbox>
-                  <div className="ms-2">
-                    <b>{labeling.name}</b>
-                  </div>
-                </div>
+                    checked={isSelectedLabeling(labeling.id)}
+                    onChange={() => onSelectLabelingSet(labeling)}
+                  />
+                  <Text fw={600}>{labeling.name}</Text>
+                </Group>
                 <div>{renderLabels(labeling.labels)}</div>
-              </div>
-            </ListGroupItem>
-          ))}
-        </ListGroup>
+              </Group>
+            ))}
+          </Stack>
+        </ScrollArea>
       </div>
     </div>
   );

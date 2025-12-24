@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  Container,
-  FormGroup,
-  InputGroup,
-  InputGroupText,
-  Input,
-  Button,
-  Label,
-} from "reactstrap";
+import { Button, Group, Stack, Switch, Text, TextInput } from "@mantine/core";
 import useDeviceApi from "../../Hooks/useDeviceAPI";
 import useProjectStore from "../../stores/projectStore";
 
@@ -35,69 +27,52 @@ const GenerateCode = (props) => {
   };
 
   return (
-    <Container>
-      <div style={{ paddingTop: "16px", display: "flex" }}>
-        {currentProject.users ? (
-          <FormGroup switch>
-            <Label check>Device API</Label>
-            <Input
-              checked={currentProject.enable_external_api}
-              onChange={handleToggleDeviceApi}
-              disabled={isToggling}
-              type="switch"
-              role="switch"
-            />
-          </FormGroup>
-        ) : null}
-      </div>
+    <Stack gap="md">
+      {currentProject.users ? (
+        <Switch
+          label="Device API"
+          checked={currentProject.enable_external_api}
+          onChange={handleToggleDeviceApi}
+          disabled={isToggling}
+        />
+      ) : null}
       {currentProject.enable_external_api || currentProject.users ? (
-        <div>
-          <InputGroup>
-            <InputGroupText>{"Backend-URL"}</InputGroupText>
-            <Input disabled value={backendUrl} readOnly />
-          </InputGroup>
-          <InputGroup>
-            <InputGroupText>{"Read Key"}</InputGroupText>
-            <Input
-              disabled={!deviceApiEnabled}
-              value={
-                readKey
-                  ? readKey
-                  : deviceApiEnabled
-                    ? "No read key available"
-                    : "Device-API is disabled for your user"
-              }
-              readOnly
-            />
-          </InputGroup>
-          <InputGroup>
-            <InputGroupText>{"Write Key"}</InputGroupText>
-            <Input
-              disabled={!deviceApiEnabled}
-              value={
-                writeKey
-                  ? writeKey
-                  : deviceApiEnabled
-                    ? "No write key available"
-                    : "Device-API is disabled for your user"
-              }
-              readOnly
-            />
-          </InputGroup>
-          <div>
+        <Stack gap="sm">
+          <TextInput label="Backend-URL" value={backendUrl} readOnly />
+          <TextInput
+            label="Read Key"
+            disabled={!deviceApiEnabled}
+            value={
+              readKey
+                ? readKey
+                : deviceApiEnabled
+                  ? "No read key available"
+                  : "Device-API is disabled for your user"
+            }
+            readOnly
+          />
+          <TextInput
+            label="Write Key"
+            disabled={!deviceApiEnabled}
+            value={
+              writeKey
+                ? writeKey
+                : deviceApiEnabled
+                  ? "No write key available"
+                  : "Device-API is disabled for your user"
+            }
+            readOnly
+          />
+          <Group>
             <Button
-              outline
-              className="my-1"
               disabled={!currentProject.enable_external_api}
-              color="primary"
               onClick={generateApiKeys}
             >
               {props.state ? "Change key" : "Generate key"}
             </Button>
             <Button
-              outline
-              className="mx-2 my-1"
-              color="danger"
+              variant="outline"
+              color="red"
               disabled={
                 !currentProject.enable_external_api || !readKey || !writeKey
               }
@@ -105,12 +80,12 @@ const GenerateCode = (props) => {
             >
               Remove key
             </Button>
-          </div>
-        </div>
+          </Group>
+        </Stack>
       ) : (
-        <h6>Feature disabled by project admin</h6>
+        <Text>Feature disabled by project admin</Text>
       )}
-    </Container>
+    </Stack>
   );
 };
 
