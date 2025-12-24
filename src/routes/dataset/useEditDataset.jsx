@@ -3,7 +3,14 @@ import React, { useState, useEffect } from "react";
 const useEditDataset = (datasetUtils, labelings) => {
   const { dataset, deleteLabel, addLabel, updateLabel } = datasetUtils;
 
-  const getActivateLabeling = () => {
+  const getActivateLabeling = (currentLabeling) => {
+    if (currentLabeling && labelings) {
+      const stillExists = labelings.find((elm) => elm.id === currentLabeling.id);
+      if (stillExists) {
+        return stillExists;
+      }
+    }
+
     if (
       labelings &&
       dataset &&
@@ -29,17 +36,17 @@ const useEditDataset = (datasetUtils, labelings) => {
   useEffect(() => {
     if (dataset) {
       _setActiveTimeSeries(dataset.timeSeries);
-      const activeLabeling = getActivateLabeling();
-      _setActiveLabeling(activeLabeling);
-      if (activeLabeling && activeLabeling.labels.length > 0) {
-        const activeLabelType = activeLabeling.labels.find(
+      const nextActiveLabeling = getActivateLabeling(activeLabeling);
+      _setActiveLabeling(nextActiveLabeling);
+      if (nextActiveLabeling && nextActiveLabeling.labels.length > 0) {
+        const activeLabelType = nextActiveLabeling.labels.find(
           (elm) => elm.id === selectedLabelTypeId
         );
         if (activeLabelType) {
           _setSelectedLabelTypeId(activeLabelType.id);
           return;
         }
-        _setSelectedLabelTypeId(activeLabeling.labels[0].id);
+        _setSelectedLabelTypeId(nextActiveLabeling.labels[0].id);
       }
     }
   }, [dataset]);
@@ -82,17 +89,17 @@ const useEditDataset = (datasetUtils, labelings) => {
 
   useEffect(() => {
     if (labelings && labelings.length > 0) {
-      const activeLabeling = getActivateLabeling();
-      _setActiveLabeling(activeLabeling);
-      if (activeLabeling && activeLabeling.labels.length > 0) {
-        const activeLabelType = activeLabeling.labels.find(
+      const nextActiveLabeling = getActivateLabeling(activeLabeling);
+      _setActiveLabeling(nextActiveLabeling);
+      if (nextActiveLabeling && nextActiveLabeling.labels.length > 0) {
+        const activeLabelType = nextActiveLabeling.labels.find(
           (elm) => elm.id === selectedLabelTypeId
         );
         if (activeLabelType) {
           _setSelectedLabelTypeId(activeLabelType.id);
           return;
         }
-        _setSelectedLabelTypeId(activeLabeling.labels[0].id);
+        _setSelectedLabelTypeId(nextActiveLabeling.labels[0].id);
       }
     }
   }, [labelings]);
@@ -126,7 +133,8 @@ const useEditDataset = (datasetUtils, labelings) => {
   const setSelectedLabel = (label) => {
     _setSelectedLabel(label);
     _setProvisionalLabel(undefined);
-    _setSelectedLabelTypeId(label && label.type);
+    const labelType = label?.type ?? label?.label;
+    _setSelectedLabelTypeId(labelType);
   };
 
   const updateLabelStartEnd = async (labelId, start, end) => {
@@ -165,7 +173,12 @@ const useEditDataset = (datasetUtils, labelings) => {
           ).name,
         };
         const newlabel = await addLabel(activeLabeling.id, labelToAdd);
-        _setSelectedLabel(newlabel);
+        const normalizedLabel = {
+          ...newlabel,
+          type: newlabel?.type ?? newlabel?.label ?? updatedLabel.type,
+        };
+        _setSelectedLabel(normalizedLabel);
+        _setSelectedLabelTypeId(normalizedLabel.type);
       }
       _setProvisionalLabel(undefined);
       return;

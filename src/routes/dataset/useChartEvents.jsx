@@ -232,9 +232,13 @@ const useChartEvents = (chart, labeling) => {
     if (mouseMoved) return;
     let position = e.value;
 
-    var plotBand = getSelectedPlotBand(chart.current.chart);
+    const plotBand = getSelectedPlotBand(chart.current.chart);
     if (plotBand) {
-      return;
+      const from = plotBand.options.from;
+      const to = plotBand.options.to;
+      if (position >= from && position <= to) {
+        return;
+      }
     }
 
     // Check if a label has been clicked
@@ -249,6 +253,9 @@ const useChartEvents = (chart, labeling) => {
       }
     }
 
+    if (selectedLabel) {
+      setSelectedLabel(undefined);
+    }
     onClickPosition(position);
     e.preventDefault();
     e.stopPropagation();
