@@ -1,6 +1,6 @@
 // Import necessary libraries and components
 import React, { useState } from "react";
-import { Button, Row, Col } from "reactstrap";
+import { Box, Button, Group, SimpleGrid, Stack, Text } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCode,
@@ -18,7 +18,6 @@ const DataUpload = ({ refreshDatasets }) => {
   const [csvModalOpen, setCSVModalOpen] = useState(false);
 
   const iconSize = "xs";
-  const buttonColor = "secondary";
   const linkTarget = "_blank";
 
   const dataUploadOptions = [
@@ -31,6 +30,7 @@ const DataUpload = ({ refreshDatasets }) => {
           <a
             href="https://github.com/edge-ml/EdgeML-Arduino"
             target={linkTarget}
+            rel="noreferrer"
           >
             here
           </a>
@@ -49,6 +49,7 @@ const DataUpload = ({ refreshDatasets }) => {
           <a
             href="https://github.com/edge-ml/EdgeML-Arduino"
             target={linkTarget}
+            rel="noreferrer"
           >
             here
           </a>
@@ -75,54 +76,57 @@ const DataUpload = ({ refreshDatasets }) => {
   ];
 
   return (
-    <div
+    <Box
       className="p-4 pt-4 pb-5 mb-4 data-upload-panel"
       style={{
         background: "linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72))",
       }}
     >
-      <div className="mt-2 mb-4" style={{ color: "white", opacity: 0.7 }}>
+      <Text className="mt-2 mb-4" style={{ color: "white", opacity: 0.7 }}>
         <b>DATA UPLOAD</b>
-      </div>
+      </Text>
 
       {/* Render the Data Upload options */}
-      <Row>
+      <SimpleGrid cols={{ base: 1, sm: 2, xl: 4 }} spacing="lg">
         {dataUploadOptions.map((option, index) => (
-          <Col
+          <Group
+            h="100%"
             key={index}
-            className="col-sm-6 col-xl-3 col-12 p-3 d-flex flex-row align-items-start justify-content-start"
-            style={{ color: "white" }}
+            align="stretch"
+            wrap="nowrap"
+            className="p-3"
+            style={{ color: "white"}}
           >
-            <div className="data-upload-icon">
+            <Box className="data-upload-icon">
               <FontAwesomeIcon icon={option.icon} size={iconSize} />
-            </div>
-            <div className="w-100 h-100 d-flex flex-column align-items-start justify-content-between">
-              <div>
-                <small>
-                  <b>{option.title}</b>
-                  <br />
-                  {option.description}
-                </small>
-              </div>
+            </Box>
+            <Stack gap={8} justify="space-between" style={{ flex: 1 }}>
+              <Text size="sm">
+                <b>{option.title}</b>
+                <br />
+                {option.description}
+              </Text>
               <Button
                 id={`buttonUpload${option.title.replace(/ /g, "")}`}
-                className="mt-2 btn-upload align-self-stretch align-self-md-start"
-                color={buttonColor}
+                className="mt-2 btn-upload"
+                color="dark"
+                variant="white"
+                size="xs"
                 onClick={option.buttonAction}
-                style={{ padding: "0px" }}
+                mt="auto"
               >
-                <small>{option.buttonText}</small>
+                <Text size="sm">{option.buttonText}</Text>
               </Button>
-            </div>
-          </Col>
+            </Stack>
+          </Group>
         ))}
-      </Row>
+      </SimpleGrid>
       <UploadDatasetModal
         isOpen={csvModalOpen}
         onCloseModal={() => setCSVModalOpen(false)}
         onDatasetComplete={refreshDatasets}
       />
-    </div>
+    </Box>
   );
 };
 

@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
-  Card,
-  CardHeader,
-  Input,
-  InputGroup,
-  InputGroupText,
+  Box,
   Button,
-  CardBody,
-  Col,
-  Form,
-} from "reactstrap";
+  Container,
+  Divider,
+  Group,
+  Paper,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import {
@@ -26,9 +28,18 @@ import "./index.css"
 const LoginPage = ({ children }) => {
   const { login, loginOAuth } = useAuth();
   const user = useUserStore((state) => state.user);
-  const [email, setEmail] = useState(undefined);
-  const [password, setPassword] = useState(undefined);
   const [error, setError] = useState(false);
+
+  const form = useForm({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    validate: {
+      username: (value) => (value ? null : "Username is required"),
+      password: (value) => (value ? null : "Password is required"),
+    },
+  });
 
   useEffect(() => {
     if (error) {
@@ -36,15 +47,9 @@ const LoginPage = ({ children }) => {
     }
   }, [error]);
 
-  const onKeyDown = (e) => {
-    if (e.key === "Enter") {
-      submit();
-    }
-  };
-
-  const submit = async () => {
+  const submit = async (values) => {
     try {
-      await login(email, password);
+      await login(values.username, values.password);
     } catch {
       setError(true);
     }
@@ -63,87 +68,69 @@ const LoginPage = ({ children }) => {
   }
 
   return (
-    <div
-      onKeyDown={onKeyDown}
-      className="vh-100 d-flex justify-content-center align-items-center bg-login"
-    >
-      <Col xs={11} sm={8} lg={5}>
-        <Card>
-          <CardHeader className="d-flex justify-content-center">
+    <Box className="vh-100 d-flex justify-content-center align-items-center bg-login">
+      <Container size={420} w="100%">
+        <Paper shadow="md" radius="md" p="xl">
+          <Group justify="center" mb="md">
             <EdgeMLBrandLogo></EdgeMLBrandLogo>
-          </CardHeader>
-          <CardBody>
-            <Form>
-              <div>Login with credentials</div>
-              <InputGroup>
-                <InputGroupText style={{ background: "#ced4da" }}>
-                  <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
-                </InputGroupText>
-
-                <Input
-                  type="email"
-                  name="email"
-                  id="email"
-                  placeholder="email or username"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </InputGroup>
-              <InputGroup>
-                <InputGroupText style={{ background: "#ced4da" }}>
-                  <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
-                </InputGroupText>
-                <Input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </InputGroup>
-              <Button
-                id="login-button"
-                outline
-                onClick={submit}
-                // disabled={this.state.buttonDisabled}
-                color="primary"
-                block
-              >
+          </Group>
+          <form onSubmit={form.onSubmit(submit)}>
+            <Stack gap="md">
+              <Text fw={600}>Login with credentials</Text>
+              <TextInput
+                name="username"
+                id="username"
+                placeholder="username"
+                leftSection={<FontAwesomeIcon icon={faUser} />}
+                leftSectionPointerEvents="none"
+                {...form.getInputProps("username")}
+              />
+              <PasswordInput
+                name="password"
+                id="password"
+                placeholder="password"
+                leftSection={<FontAwesomeIcon icon={faShield} />}
+                leftSectionPointerEvents="none"
+                {...form.getInputProps("password")}
+              />
+              <Button id="login-button" variant="outline" type="submit" fullWidth>
                 <b>Login</b>
               </Button>
-              <hr></hr>
-              <div>Login with a provider</div>
+              {/* <Divider />
+              <Text fw={600}>Login with a provider</Text>
               <Button
-
-                className="p-1 my-2 w-100 d-flex justify-content-center align-items-center btnGithub"
+                className="btnGithub"
                 onClick={() => onOAuth("github")}
+                leftSection={<FontAwesomeIcon size="lg" icon={faGithub} />}
+                fullWidth
               >
-                <FontAwesomeIcon
-                  className="m-1 me-2"
-                  size="2x"
-                  icon={faGithub}
-                ></FontAwesomeIcon>
-                <div>Login with <b>Github</b></div>
-              </Button>
-            </Form>
-            {error ? (
-              <div className="mt-3" style={{ color: "red" }}>
-                <FontAwesomeIcon icon={faTriangleExclamation}></FontAwesomeIcon>
+                Login with <b>Github</b>
+              </Button> */}
+            </Stack>
+          </form>
+          {error ? (
+            <Group mt="md" gap="xs" style={{ color: "red" }}>
+              <FontAwesomeIcon icon={faTriangleExclamation}></FontAwesomeIcon>
+              <Text size="sm" c="red">
                 Wrong credentials!
-              </div>
-            ) : null}
-            <hr />
-            <div>Have no account?</div>
-            <a href="/register">
-              <Button className="mt-2" outline color="secondary" block>
-                <b>Register</b>
-              </Button>
-            </a>
-          </CardBody>
-        </Card>
-      </Col>
-    </div>
+              </Text>
+            </Group>
+          ) : null}
+          <Divider my="md" />
+          <Text>Have no account?</Text>
+          <Button
+            className="mt-2"
+            component="a"
+            href="/register"
+            variant="outline"
+            color="gray"
+            fullWidth
+          >
+            <b>Register</b>
+          </Button>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 

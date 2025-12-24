@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import {
-  Col,
-  Row,
-  Input,
-  InputGroup,
-  InputGroupText,
+  Anchor,
+  Box,
   Button,
-  Card,
-  CardBody,
-  CardHeader,
-  FormGroup,
-  Label,
-} from "reactstrap";
-
+  Checkbox,
+  Container,
+  Divider,
+  Group,
+  Paper,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEnvelope,
@@ -21,175 +22,138 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import EdgeMLBrandLogo from "../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
-import { useNavigate } from "react-router-dom";
 import useRegister from "../Hooks/useRegister";
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordRepeat, setPasswordRepeat] = useState("");
-  const [userName, setUserName] = useState("");
-  const [ToS_accepted, setToS_accepted] = useState(false);
   const [error, setError] = useState("");
 
   const register = useRegister();
 
-  const onEMailChanged = (e) => {
-    setEmail(e.target.value);
-  };
+  const form = useForm({
+    initialValues: {
+      email: "",
+      password: "",
+      passwordRepeat: "",
+      username: "",
+      acceptTerms: false,
+    },
+    validate: {
+      email: (value) => (value ? null : "Email is required"),
+      password: (value) => (value ? null : "Password is required"),
+      passwordRepeat: (value, values) =>
+        value
+          ? value === values.password
+            ? null
+            : "Passwords do not match"
+          : "Repeat password is required",
+      username: (value) => (value ? null : "Username is required"),
+      acceptTerms: (value) => (value ? null : "You must accept the terms"),
+    },
+  });
 
-  const onPasswordChanged = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const onPasswordRepeatChanged = (e) => {
-    setPasswordRepeat(e.target.value);
-  };
-
-  const onUserNameChanged = (e) => {
-    setUserName(e.target.value);
-  };
-
-  const onToS_checked = () => {
-    setToS_accepted(!ToS_accepted);
-  };
-
-  const onRegisterClick = async () => {
+  const onRegisterClick = async (values) => {
     try {
-      await register(userName, email, password, passwordRepeat);
+      await register(
+        values.username,
+        values.email,
+        values.password,
+        values.passwordRepeat
+      );
     } catch (e) {
-      setError(e.message);
+      setError(e.message || "Registration failed");
     }
   };
 
   return (
-    <div className="vh-100 d-flex justify-content-center align-items-center bg-login">
-      <Col xs={11} sm={8} lg={5}>
-        <Card>
-          <CardHeader
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+    <Box className="vh-100 d-flex justify-content-center align-items-center bg-login">
+      <Container size={420} w="100%">
+        <Paper shadow="md" radius="md" p="xl">
+          <Group justify="center" mb="md">
             <EdgeMLBrandLogo />
-          </CardHeader>
-          <CardBody>
-            <Row>
-              <Col>
-                <Col>
-                  <InputGroup>
-                    <InputGroupText>
-                      <FontAwesomeIcon icon={faEnvelope} />
-                    </InputGroupText>
-                    <Input
-                      type="email"
-                      name="email"
-                      id="email"
-                      placeholder="email"
-                      onChange={onEMailChanged}
-                    />
-                  </InputGroup>
-                </Col>
-                <Col>
-                  <InputGroup>
-                    <InputGroupText>
-                      <FontAwesomeIcon icon={faShield} />
-                    </InputGroupText>
-                    <Input
-                      type="password"
-                      name="password"
-                      id="password"
-                      placeholder="password"
-                      onChange={onPasswordChanged}
-                    />
-                  </InputGroup>
-                </Col>
-                <Col>
-                  <InputGroup>
-                    <InputGroupText>
-                      <FontAwesomeIcon icon={faShield} />
-                    </InputGroupText>
-                    <Input
-                      type="password"
-                      name="passwordRepeat"
-                      id="passwordRepeat"
-                      placeholder="repeat password"
-                      onChange={onPasswordRepeatChanged}
-                    />
-                  </InputGroup>
-                </Col>
-                <Col>
-                  <InputGroup>
-                    <InputGroupText>
-                      <FontAwesomeIcon icon={faUser} />
-                    </InputGroupText>
-                    <Input
-                      type="text"
-                      name="username"
-                      id="username"
-                      placeholder="username"
-                      onChange={onUserNameChanged}
-                    />
-                  </InputGroup>
-                </Col>
-                <Col style={{ paddingBottom: "10px", textAlign: "left" }}>
-                  <FormGroup check style={{ marginTop: 20, marginBottom: 10 }}>
-                    <Label check>
-                      <Input
-                        type="checkbox"
-                        onChange={onToS_checked}
-                        id="termsCheckbox"
-                      />{" "}
-                      I have read and agree to the{" "}
-                      <a href="/terms_of_service.html" target="_blank">
-                        terms of service
-                      </a>
-                      .
-                    </Label>
-                  </FormGroup>
-                </Col>
-                {error ? (
-                  <Col
-                    className="my-1"
-                    style={{ paddingRight: "15px", paddingLeft: "15px" }}
-                  >
-                    <FontAwesomeIcon
-                      style={{ color: "red" }}
-                      icon={faExclamationTriangle}
-                      className="me-2 fa-xs"
-                      data-tip="Error"
-                      id="errorIcon"
-                    />
-                    <div style={{ color: "red", display: "inline-block" }}>
-                      {error}
-                    </div>
-                  </Col>
-                ) : null}
-                <Col>
-                  <Button
-                    id="registerButton"
-                    color="success"
-                    block
-                    onClick={onRegisterClick}
-                    disabled={!ToS_accepted}
-                    style={{ marginBottom: 10 }}
-                  >
-                    Register
-                  </Button>
-                  <hr />
-                  <div>
-                    <span>Login instead? </span>
-                    <a href="/login">Click here!</a>
-                  </div>
-                </Col>
-              </Col>
-            </Row>
-          </CardBody>
-        </Card>
-      </Col>
-    </div>
+          </Group>
+          <form onSubmit={form.onSubmit(onRegisterClick)}>
+            <Stack gap="md">
+              <TextInput
+                type="email"
+                name="email"
+                id="email"
+                placeholder="email"
+                leftSection={<FontAwesomeIcon icon={faEnvelope} />}
+                leftSectionPointerEvents="none"
+                {...form.getInputProps("email")}
+              />
+              <PasswordInput
+                name="password"
+                id="password"
+                placeholder="password"
+                leftSection={<FontAwesomeIcon icon={faShield} />}
+                leftSectionPointerEvents="none"
+                {...form.getInputProps("password")}
+              />
+              <PasswordInput
+                name="passwordRepeat"
+                id="passwordRepeat"
+                placeholder="repeat password"
+                leftSection={<FontAwesomeIcon icon={faShield} />}
+                leftSectionPointerEvents="none"
+                {...form.getInputProps("passwordRepeat")}
+              />
+              <TextInput
+                name="username"
+                id="username"
+                placeholder="username"
+                leftSection={<FontAwesomeIcon icon={faUser} />}
+                leftSectionPointerEvents="none"
+                {...form.getInputProps("username")}
+              />
+              <Checkbox
+                id="termsCheckbox"
+                label={
+                  <>
+                    I have read and agree to the{" "}
+                    <Anchor
+                      href="/terms_of_service.html"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      terms of service
+                    </Anchor>
+                    .
+                  </>
+                }
+                {...form.getInputProps("acceptTerms", { type: "checkbox" })}
+              />
+              {error ? (
+                <Group gap="xs" style={{ color: "red" }}>
+                  <FontAwesomeIcon
+                    style={{ color: "red" }}
+                    icon={faExclamationTriangle}
+                    className="me-2 fa-xs"
+                    data-tip="Error"
+                    id="errorIcon"
+                  />
+                  <Text size="sm" c="red">
+                    {error}
+                  </Text>
+                </Group>
+              ) : null}
+              <Button
+                id="registerButton"
+                color="green"
+                type="submit"
+                disabled={!form.values.acceptTerms}
+              >
+                Register
+              </Button>
+              <Divider />
+              <Text>
+                Login instead? <Anchor href="/login">Click here!</Anchor>
+              </Text>
+            </Stack>
+          </form>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 

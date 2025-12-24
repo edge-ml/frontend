@@ -44,10 +44,12 @@ export const addLabeling = async (labeling) => {
 };
 
 export const deleteLabeling = async (labelingId, conflictingDatasetIds) => {
+  const { currentProject } = useProjectStore.getState();
+  const projectId = currentProject?.id || currentProject?.id || currentProject;
   const res = await apiRequest(
     HTTP_METHODS.DELETE,
-    DATASET_STORE,
-    DATASET_STORE_ENDPOINTS.LABELING + `${labelingId}`
+    API_URI,
+    `${projectId}/labelings/${labelingId}`
   );
   return res;
 };

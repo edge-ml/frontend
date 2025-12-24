@@ -15,7 +15,6 @@ import DeleteModal from "../../components/Common/DeleteModal";
 
 const ListPage = (props) => {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
-  const [pageSize, setPageSize] = useState(5);
   const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(undefined); //name and display value of filter
   const { registerProjectDownload } = useContext(NotificationContext);
