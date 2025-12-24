@@ -22,6 +22,8 @@ const Navbar = () => {
   const { projects, currentProject, setCurrentProject } = useProjectStore();
 
   const navigate = useNavigate();
+  const getProjectOwnerSlug = (admin) =>
+    admin?.userName || admin?.username || admin?.email || "project";
 
   const onProjectEditModal = () => {
     setProjectModalOpen(true);
@@ -33,7 +35,8 @@ const Navbar = () => {
 
   const onProjectClick = (project) => {
     setCurrentProject(project);
-    navigate(currentProject.admin.userName, currentProject.name, "datasets");
+    const ownerSlug = getProjectOwnerSlug(project.admin);
+    navigate(`/${ownerSlug}/${project.name}/datasets`);
   };
 
   if (!projects) {
@@ -53,7 +56,7 @@ const Navbar = () => {
           href={
             currentProject
               ? "/" +
-                currentProject.admin.userName +
+                getProjectOwnerSlug(currentProject.admin) +
                 "/" +
                 currentProject.name +
                 "/" +

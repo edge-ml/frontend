@@ -1,24 +1,26 @@
 /* global Module */
 
-import { Modal, ModalFooter, ModalBody, ModalHeader, Button } from "reactstrap";
+import {
+  Alert,
+  Badge,
+  Box,
+  Button,
+  Grid,
+  Group,
+  Menu,
+  Modal,
+  Stack,
+  Table,
+  Text,
+  Title,
+} from "@mantine/core";
 import { SUPPORTED_SENSORS } from "../../services/WebSensorServices";
 import { SensorList } from "../../components/SensorList/SensorList";
 import { usePersistedState } from "../../services/ReactHooksService";
 import { downloadDeploymentModel } from "../../services/ApiServices/MLDeploymentService";
 import { downloadBlob } from "../../services/helpers";
-import {
-  Badge,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Row,
-  Col,
-  Table,
-  Alert,
-} from "reactstrap";
 import { useState, memo, useEffect } from "react";
-import { faCross, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { objMap } from "../../services/helpers";
 import Checkbox from "../../components/Common/Checkbox";
@@ -31,18 +33,8 @@ const mergeSingle = (replacer) => (key, value) => {
   replacer((prev) => ({ ...prev, [key]: value }));
 };
 
-const Th = (props) => (
-  <th
-    {...props}
-    className={"border-top-0 " + (props.className ? props.className : "")}
-  />
-);
-const Td = (props) => (
-  <td
-    {...props}
-    className={"border-top-0 " + (props.className ? props.className : "")}
-  />
-);
+const Th = (props) => <Table.Th {...props} style={{ borderTop: 0 }} />;
+const Td = (props) => <Table.Td {...props} style={{ borderTop: 0 }} />;
 
 const TimeSeriesSelectingSensorComponent = ({
   shortComponent,
@@ -60,9 +52,6 @@ const TimeSeriesSelectingSensorComponent = ({
   );
   const remainingTimeseries = timeseries.filter((ts) => !matches[ts]);
 
-  const badgeClass = `m-1 badge badge-${
-    componentTimeseries ? "primary" : "secondary"
-  }`;
   const badgeText = componentTimeseries
     ? `${shortComponent} → (${componentTimeseries})`
     : shortComponent;
@@ -70,22 +59,16 @@ const TimeSeriesSelectingSensorComponent = ({
   const isDisabled = componentTimeseries || remainingTimeseries.length === 0;
 
   return (
-    <UncontrolledDropdown
-      direction="left"
-      style={{ position: "relative", padding: 0, display: "inline-block" }}
-      disabled={isDisabled}
-    >
-      <DropdownToggle
-        caret={!isDisabled}
-        size="sm"
-        className={badgeClass}
-        tag={"span"}
-      >
-        {badgeText}
-      </DropdownToggle>
-      <DropdownMenu>
+    <Menu position="left-start" disabled={isDisabled}>
+      <Menu.Target>
+        <Badge color={componentTimeseries ? "blue" : "gray"} variant="light">
+          {badgeText}
+        </Badge>
+      </Menu.Target>
+      <Menu.Dropdown>
         {remainingTimeseries.map((tsName) => (
-          <DropdownItem
+          <Menu.Item
+            key={tsName}
             onClick={() =>
               onTimeseriesSelect(tsName, {
                 sensorName: sensor.name,
@@ -95,10 +78,10 @@ const TimeSeriesSelectingSensorComponent = ({
             }
           >
             {tsName}
-          </DropdownItem>
+          </Menu.Item>
         ))}
-      </DropdownMenu>
-    </UncontrolledDropdown>
+      </Menu.Dropdown>
+    </Menu>
   );
 };
 
@@ -157,13 +140,13 @@ const ScreenOne = memo(
     };
 
     return (
-      <ModalBody>
-        <Row>
-          <Col>
-            <div className="header-wrapper d-flex justify-content-center align-content-center">
-              <b>Configure Sensor / Timeseries Matching</b>
-            </div>
-            <div className="body-wrapper-overflow">
+      <Box>
+        <Grid>
+          <Grid.Col span={12}>
+            <Group className="header-wrapper" justify="center" align="center">
+              <Text fw={700}>Configure Sensor / Timeseries Matching</Text>
+            </Group>
+            <Box className="body-wrapper-overflow">
               <SensorList
                 sensors={sensors.map((x) => ({
                   ...x,
@@ -187,29 +170,29 @@ const ScreenOne = memo(
                   />
                 )}
               />
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col className="mt-2">
-            <div className="header-wrapper d-flex justify-content-center align-content-center">
-              <b>Model Timeseries</b>
-            </div>
-            <div className="body-wrapper-overflow">
+            </Box>
+          </Grid.Col>
+        </Grid>
+        <Grid mt="sm">
+          <Grid.Col span={8}>
+            <Group className="header-wrapper" justify="center" align="center">
+              <Text fw={700}>Model Timeseries</Text>
+            </Group>
+            <Box className="body-wrapper-overflow">
               <Table>
-                <thead>
-                  <tr>
+                <Table.Thead>
+                  <Table.Tr>
                     <Th>Timeseries</Th>
                     <Th>Sensor</Th>
                     <Th>Component</Th>
                     <Th></Th>
-                  </tr>
-                </thead>
-                <tbody>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
                   {model.timeSeries.map((name) => (
-                    <tr>
+                    <Table.Tr key={name}>
                       <Td>
-                        <b>{name}</b>
+                        <Text fw={700}>{name}</Text>
                       </Td>
                       {legalMatches[name] ? (
                         <>
@@ -220,67 +203,66 @@ const ScreenOne = memo(
                           <Td>
                             <Button
                               color="danger"
-                              className="btn-edit me-3 me-md-4"
+                              variant="outline"
+                              mr="md"
                               onClick={() => setMatch(name, null)}
                             >
-                              <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
+                              <FontAwesomeIcon icon={faTrash} />
                             </Button>
                           </Td>
                         </>
                       ) : (
                         <>
                           <Td
-                            colspan="3"
+                            colSpan="3"
                             style={{ width: "100%", textAlign: "center" }}
                           >
                             Unset
                           </Td>
                         </>
                       )}
-                    </tr>
+                    </Table.Tr>
                   ))}
-                </tbody>
+                </Table.Tbody>
               </Table>
-            </div>
-          </Col>
-          <Col className="mt-2 d-flex flex-column justify-content-end align-items-end">
-            <div className="mb-2 d-flex justify-content-end align-items-center">
-              <div className="d-flex justify-content-center align-items-center me-2">
+            </Box>
+          </Grid.Col>
+          <Grid.Col span={4}>
+            <Stack align="flex-end" justify="flex-end" mt="sm">
+              <Group align="center">
                 <Checkbox
                   isSelected={downloadSingleFile}
                   onClick={(e) => {
                     setDownloadSingleFile(e.target.checked);
                   }}
                 />
-                <span className="ms-1">Single file</span>
-              </div>
+                <Text ml="xs">Single file</Text>
+              </Group>
               <Button
-                outline
-                className=""
+                variant="outline"
                 onClick={() => {
                   onDownloadWASM();
                 }}
               >
                 Download WASM
               </Button>
-            </div>
             <Button
               disabled={!legal}
-              outline
+              variant="outline"
               color="primary"
-              className=""
               onClick={() => onClassify(legalMatches)}
             >
               Live Classification
             </Button>
-          </Col>
-        </Row>
+            </Stack>
+          </Grid.Col>
+        </Grid>
         {/* <Row>
         <Col>
           
         </Col>
       </Row> */}
-      </ModalBody>
+      </Box>
     );
   },
   (props, nextprops) => props.model === nextprops.model
@@ -427,46 +409,50 @@ const ScreenTwo = ({ model, legalMatches }) => {
   }
 
   return (
-    <ModalBody>
-      <Row>
-        <Col>
-          <div>
-            <b>WASM Blob:</b>{" "}
+    <Box>
+      <Grid>
+        <Grid.Col span={6}>
+          <Text>
+            <Text component="span" fw={700}>
+              WASM Blob:
+            </Text>{" "}
             {wasmBlobLoaded ? "Downloaded." : "In progress..."}
-          </div>
-          <div>
-            <b>Model Instance:</b>{" "}
+          </Text>
+          <Text>
+            <Text component="span" fw={700}>
+              Model Instance:
+            </Text>{" "}
             {modelInstance ? "Loaded." : "In progress..."}
-          </div>
-          <div>
-            <b>Sensor Matching:</b>
-            <ul>
+          </Text>
+          <Box>
+            <Text fw={700}>Sensor Matching:</Text>
+            <Box component="ul">
               {sensorConfigs.map(({ sensor, matches }) => (
-                <li>
+                <li key={sensor.name}>
                   {sensor.name}
-                  <ul>
+                  <Box component="ul">
                     {matches.map(({ tsName, match }) => (
-                      <li>
+                      <li key={tsName}>
                         {match.shortComponent} → <b>{tsName}</b>
                       </li>
                     ))}
-                  </ul>
+                  </Box>
                 </li>
               ))}
-            </ul>
-          </div>
-        </Col>
-        <Col>
-          <div>
-            <b>Sensor Data:</b>
-            <ul>
+            </Box>
+          </Box>
+        </Grid.Col>
+        <Grid.Col span={6}>
+          <Box>
+            <Text fw={700}>Sensor Data:</Text>
+            <Box component="ul">
               {sensorConfigs.map(({ sensor, matches }) => (
-                <li>
+                <li key={sensor.name}>
                   {sensor.name}
-                  <ul>
+                  <Box component="ul">
                     {matches
                       .map(({ match }) => (
-                        <li>
+                        <li key={match.shortComponent}>
                           {match.shortComponent} →{" "}
                           <b>
                             {sensorData[sensor.name]?.data[match.component]}
@@ -474,32 +460,37 @@ const ScreenTwo = ({ model, legalMatches }) => {
                         </li>
                       ))
                       .filter((x) => x)}
-                  </ul>
+                  </Box>
                 </li>
               ))}
-            </ul>
-          </div>
+            </Box>
+          </Box>
           {clfRes !== null ? (
-            <div>
-              <b>Classification:</b>{" "}
+            <Text>
+              <Text component="span" fw={700}>
+                Classification:
+              </Text>{" "}
               <Badge>
                 {modelInstance.class_to_label(clfRes)} ({clfRes})
               </Badge>
-            </div>
+            </Text>
           ) : null}
           {Object.entries(sensorErrors).map(([comp, { error, isWarning }]) => (
-            <Alert color={isWarning ? "warning" : "danger"}>
-              <strong>{comp}</strong>: {error}
+            <Alert key={comp} color={isWarning ? "yellow" : "red"}>
+              <Text fw={700} component="span">
+                {comp}
+              </Text>
+              : {error}
             </Alert>
           ))}
-        </Col>
-      </Row>
+        </Grid.Col>
+      </Grid>
       {/* <Row>
         <Col>
           <Button disabled={!legal} outline color="primary" className="float-right" onClick={onClassify}>Classify</Button>
         </Col>
       </Row> */}
-    </ModalBody>
+    </Box>
   );
 };
 
@@ -552,19 +543,19 @@ const LiveInferenceModal = ({ model, onClose: onCloseOrig }) => {
   }
 
   return (
-    <Modal isOpen={model} size="xl">
-      <ModalHeader>Live Inference: {model.name}</ModalHeader>
+    <Modal opened={!!model} onClose={onClose} size="xl">
+      <Title order={4}>Live Inference: {model.name}</Title>
       {renderedScreen}
-      <ModalFooter>
+      <Group justify="flex-end" mt="md">
         {page !== 1 ? (
-          <Button outline color="primary" onClick={onGoBack}>
+          <Button variant="outline" color="blue" onClick={onGoBack}>
             Back
           </Button>
         ) : null}
-        <Button onClick={onClose} outline color="danger">
+        <Button onClick={onClose} variant="outline" color="red">
           Cancel
         </Button>
-      </ModalFooter>
+      </Group>
     </Modal>
   );
 };

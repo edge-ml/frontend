@@ -18,10 +18,14 @@ const NavbarProject = ({ project, currentProject, onProjectClick }) => {
   const location = useLocation();
   const navigate = useProjectRouter();
 
+  const getProjectOwnerSlug = (admin) =>
+    admin?.userName || admin?.username || admin?.email || "project";
+
   const getNavBarItemClasses = (location_data) => {
     const project = currentProject;
+    const ownerSlug = getProjectOwnerSlug(project.admin);
     const matchName =
-      "/" + project.admin.userName + "/" + project.name + "/" + location_data;
+      "/" + ownerSlug + "/" + project.name + "/" + location_data;
     const pathName = location.pathname.toLowerCase();
     const isSelected = pathName.startsWith(matchName.toLowerCase());
     return (

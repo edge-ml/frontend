@@ -1,20 +1,18 @@
 import { useEffect, useState, useMemo } from "react";
 import {
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
+  Box,
   Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Input,
-  UncontrolledDropdown,
-  FormGroup,
+  Divider,
+  Group,
+  Loader,
+  Modal,
   Progress,
-  Spinner,
-} from "reactstrap";
+  Select,
+  Switch,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
 import {
   getDeployDevices,
   deployModel,
@@ -43,7 +41,6 @@ const DeployModal = ({ model, onClose }) => {
   });
   const [useBLE, setUseBLE] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState(undefined);
-  const [deviceDropDownOpen, setDeviceDropDownOpen] = useState(false);
   const [selectedSensors, setSelectedSensors] = useState(undefined);
   const [compiledModel, setComiledModel] = useState(undefined);
   const [page, setPage] = useState(0);
@@ -111,8 +108,6 @@ const DeployModal = ({ model, onClose }) => {
     setFlashState("start");
     setFlashProgress(0);
   };
-
-  const toggleDeviceDropDown = () => setDeviceDropDownOpen(!deviceDropDownOpen);
 
   const selectSensor = (ts_idx, sensor_idx, component_idx) => {
     selectedSensors[ts_idx] = {
@@ -215,36 +210,35 @@ const DeployModal = ({ model, onClose }) => {
 
   const renderDeployPart = () => {
     return (
-      <div>
+      <Box>
         {selectedDevice.ota_update ? (
           <>
-            <div>
-              {"Connected device: "}
+            <Text>
+              Connected device:{" "}
               {connectedDevice ? (
-                <b>{connectedDevice.name}</b>
+                <Text component="span" fw={700}>
+                  {connectedDevice.name}
+                </Text>
               ) : (
                 "No device connected"
               )}
-            </div>
-            <div className="d-flex flex-row">
-              <div>{renderProgressInfo()}</div>
+            </Text>
+            <Group align="center" gap="sm" mt="xs">
+              <Text>{renderProgressInfo()}</Text>
               {inProgress() ? (
-                <div>
-                  <Spinner color="dark" size="sm" />
-                </div>
+                <Loader size="sm" />
               ) : null}
-            </div>
+            </Group>
           </>
         ) : (
           "Device does not support OTA updates. Download the Arduino firmware instead."
         )}
-        <div>
+        <Group mt="sm">
           {selectedDevice.ota_update ? (
             <>
               <Button
-                outline
+                variant="outline"
                 disabled={inProgress()}
-                className="m-2"
                 color={connectedDevice ? "danger" : "primary"}
                 onClick={connectedDevice ? disconnectBLE : connectBLE}
               >
@@ -252,9 +246,8 @@ const DeployModal = ({ model, onClose }) => {
               </Button>
               <Button
                 color="primary"
-                outline
+                variant="outline"
                 disabled={connectedDevice === undefined || inProgress()}
-                className="m-2"
                 onClick={onDeploy}
               >
                 Flash firmware
@@ -263,29 +256,28 @@ const DeployModal = ({ model, onClose }) => {
           ) : null}
           <Button
             color="primary"
-            outline
+            variant="outline"
             disabled={inProgress()}
-            className="m-2"
             onClick={onDownloadFirmware}
           >
             Download firmware
           </Button>
-        </div>
+        </Group>
         {inProgress() ? (
-          <div className="text-danger">
+          <Text c="red" mt="xs">
             Please do not leave this page or disconnect the device, while the
             flashing is in progress.
-          </div>
+          </Text>
         ) : null}
         {selectedDevice.ota_update ? (
-          <div className="mt-3">
+          <Box mt="md">
             <Progress
               color={flashState === "uploadFinished" ? "primary" : "success"}
               value={flashProgress}
             />
-          </div>
+          </Box>
         ) : null}
-      </div>
+      </Box>
     );
   };
 
@@ -306,173 +298,160 @@ const DeployModal = ({ model, onClose }) => {
     }
   };
 
+  const selectedDeviceIndex = devices.findIndex(
+    (device) => device.name === selectedDevice?.name
+  );
+
   return (
-    <Modal isOpen={model} size="xl">
-      <ModalHeader>Deploy model: {model.name}</ModalHeader>
-      <ModalBody>
+    <Modal opened={!!model} onClose={onClose} size="xl">
+      <Title order={4}>Deploy model: {model.name}</Title>
+      <Box mt="sm">
         {page === 0 ? (
-          <div>
-            <div className="d-flex justify-content-center">
-              <Dropdown
-                isOpen={deviceDropDownOpen}
-                toggle={toggleDeviceDropDown}
-              >
-                <DropdownToggle caret size="lg">
-                  {selectedDevice.name}
-                </DropdownToggle>
-                <DropdownMenu>
-                  {devices.map((device, idx) => (
-                    <DropdownItem onClick={() => setSelectedDevice(device)}>
-                      {device.name}
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-            <div className="d-flex">
-              <div className="my-4 ms-2 me-4" style={{ width: "500px" }}>
-                <div className="header-wrapper d-flex justify-content-center align-content-center">
-                  <b>Configure TimeSeries</b>
-                </div>
-                <div className="body-wrapper-overflow">
-                  {model.timeSeries.map((elm, ts_idx) => (
-                    <div
-                      className="datasetCard"
-                      style={{
-                        background:
-                          ts_idx % 2 === 1 ? "rgb(249, 251, 252)" : "",
-                      }}
-                    >
-                      <div className="d-flex align-items-center justify-content-between">
-                        <strong className="ps-2">{elm}</strong>
-                        <UncontrolledDropdown
-                          direction="left"
-                          style={{ position: "relative" }}
-                        >
-                          <DropdownToggle caret size="sm">
-                            {selectedSensors[ts_idx].sensor_id !== undefined
-                              ? selectedDevice.sensors[
-                                  selectedSensors[ts_idx].sensor_id
-                                ].name +
-                                "_" +
-                                selectedDevice.sensors[
-                                  selectedSensors[ts_idx].sensor_id
-                                ].components[
-                                  selectedSensors[ts_idx].component_id
-                                ].name
-                              : "Unset"}
-                          </DropdownToggle>
-                          <DropdownMenu>
-                            {selectedDevice.sensors.map((sensor, sensor_idx) =>
-                              sensor.components.map(
-                                (component, component_idx) => (
-                                  <DropdownItem
-                                    onClick={() =>
-                                      selectSensor(
-                                        ts_idx,
-                                        sensor_idx,
-                                        component_idx
-                                      )
-                                    }
-                                  >
-                                    {sensor.name + "_" + component.name}
-                                  </DropdownItem>
-                                )
-                              )
-                            )}
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <EdgeMLTable className="m-2" style={{ width: "400px" }}>
+          <Box>
+            <Group justify="center">
+              <Select
+                data={devices.map((device, idx) => ({
+                  value: String(idx),
+                  label: device.name,
+                }))}
+                value={
+                  selectedDeviceIndex >= 0 ? String(selectedDeviceIndex) : null
+                }
+                onChange={(value) => {
+                  if (value === null) return;
+                  setSelectedDevice(devices[parseInt(value, 10)]);
+                }}
+                size="lg"
+              />
+            </Group>
+            <Group align="flex-start" mt="sm" wrap="nowrap">
+              <Box style={{ width: "500px" }}>
+                <Group className="header-wrapper" justify="center" align="center">
+                  <Text fw={700}>Configure TimeSeries</Text>
+                </Group>
+                <Box className="body-wrapper-overflow" mt="sm">
+                  {model.timeSeries.map((elm, ts_idx) => {
+                    const currentSelection = selectedSensors[ts_idx];
+                    const currentValue =
+                      currentSelection.sensor_id !== undefined
+                        ? `${currentSelection.sensor_id}:${currentSelection.component_id}`
+                        : null;
+                    const sensorOptions = selectedDevice.sensors.flatMap(
+                      (sensor, sensor_idx) =>
+                        sensor.components.map((component, component_idx) => ({
+                          value: `${sensor_idx}:${component_idx}`,
+                          label: `${sensor.name}_${component.name}`,
+                        }))
+                    );
+                    return (
+                      <Box
+                        key={"tskey" + ts_idx}
+                        className="datasetCard"
+                        p="sm"
+                        style={{
+                          background:
+                            ts_idx % 2 === 1 ? "rgb(249, 251, 252)" : "",
+                        }}
+                      >
+                        <Group justify="space-between" align="center">
+                          <Text fw={700} pl="xs">
+                            {elm}
+                          </Text>
+                          <Select
+                            data={sensorOptions}
+                            value={currentValue}
+                            placeholder="Unset"
+                            onChange={(value) => {
+                              if (!value) return;
+                              const [sensorIdx, componentIdx] = value
+                                .split(":")
+                                .map((v) => parseInt(v, 10));
+                              selectSensor(ts_idx, sensorIdx, componentIdx);
+                            }}
+                            size="sm"
+                          />
+                        </Group>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              </Box>
+              <EdgeMLTable style={{ width: "400px" }}>
                 <EdgeMLTableHeader>
-                  <div className="d-flex justify-content-center w-100">
-                    <div>Use BLE</div>
-                    <FormGroup style={{ margin: 0 }}>
-                      <Input
-                        className="ms-2"
-                        inline
-                        onChange={(e) => setUseBLE(!useBLE)}
-                        type="switch"
-                        id="exampleCustomSwitch"
-                        // checked={this.props.project.enableDeviceApi}
-                        // onChange={(e) => this.props.onDeviceApiSwitch(e.target.checked)}
-                      />
-                    </FormGroup>
-                  </div>
+                  <Group justify="center" align="center">
+                    <Text>Use BLE</Text>
+                    <Switch
+                      ml="sm"
+                      checked={useBLE}
+                      onChange={() => setUseBLE(!useBLE)}
+                    />
+                  </Group>
                 </EdgeMLTableHeader>
                 <EdgeMLTableEntry>
-                  <div className="d-flex p-2 align-items-center">
-                    <div className="fw-bold" style={{ width: "200px" }}>
+                  <Group align="center" p="sm">
+                    <Text fw={700} style={{ width: "200px" }}>
                       Service-UUID
-                    </div>
-                    <Input
+                    </Text>
+                    <TextInput
                       disabled={!useBLE}
                       value={additionalSettings.ble.serviceUUID}
-                    ></Input>
-                  </div>
+                    />
+                  </Group>
                 </EdgeMLTableEntry>
                 <EdgeMLTableEntry>
-                  <div className="d-flex p-2 algin-items-center">
-                    <div className="fw-bold" style={{ width: "200px" }}>
+                  <Group align="center" p="sm">
+                    <Text fw={700} style={{ width: "200px" }}>
                       Characteristic-UUID
-                    </div>
-                    <Input
+                    </Text>
+                    <TextInput
                       disabled={!useBLE}
                       value={additionalSettings.ble.characteristicUUID}
-                    ></Input>
-                  </div>
+                    />
+                  </Group>
                 </EdgeMLTableEntry>
               </EdgeMLTable>
-            </div>
-            <div className="m-2">
-              <div className="fw-bold fs-medium">Settings</div>
+            </Group>
+            <Box m="sm">
+              <Text fw={700}>Settings</Text>
               <HyperparameterView
                 hyperparameters={parameters}
                 isAdvanced={false}
                 handleHyperparameterChange={handleHyperparameterChange}
-              ></HyperparameterView>
-            </div>
+              />
+            </Box>
             {flashError ? (
-              <div className="d-flex flex-row ms-2">
-                <div>
-                  <FontAwesomeIcon icon={faCircleExclamation} color="red" />
-                </div>
-                <div className="text-danger">
+              <Group align="center" ml="sm">
+                <FontAwesomeIcon icon={faCircleExclamation} color="red" />
+                <Text c="red">
                   An error occured while flashing the model onto the device.
-                </div>
-              </div>
+                </Text>
+              </Group>
             ) : null}
-            <div className="w-100 d-flex flex-row">
-              <div className="text-danger flex-grow-1">
+            <Group justify="space-between" align="center" mt="sm">
+              <Text c="red" style={{ flexGrow: 1 }}>
                 {showSelectAllSensorWarning
                   ? "Please configure all time series under configure time series before deploying."
                   : ""}
-              </div>
-              <div>
-                <Button outline color="primary" onClick={onSwitchPage}>
+              </Text>
+              <Button variant="outline" color="blue" onClick={onSwitchPage}>
                   Deploy
                 </Button>
-              </div>
-            </div>
-          </div>
+            </Group>
+          </Box>
         ) : (
-          <div className="w-100 h-100">{renderDeployPart()}</div>
+          <Box>{renderDeployPart()}</Box>
         )}
-      </ModalBody>
-      <ModalFooter>
+      </Box>
+      <Group justify="flex-end" mt="md">
         {page == 1 ? (
-          <Button outline color="primary" onClick={onGoBack}>
+          <Button variant="outline" color="blue" onClick={onGoBack}>
             Back
           </Button>
         ) : null}
-        <Button onClick={onClose} outline color="danger">
+        <Button onClick={onClose} variant="outline" color="red">
           Cancel
         </Button>
-      </ModalFooter>
+      </Group>
     </Modal>
   );
 };

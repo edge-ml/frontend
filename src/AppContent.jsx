@@ -27,6 +27,8 @@ const ParamsAdapter = ({ children }) => {
 const AppContent = () => {
   const { currentProject, getProjects } = useProjectStore();
   const projectId = currentProject ? currentProject.id : "default_key";
+  const getProjectOwnerSlug = (admin) =>
+    admin?.userName || admin?.username || admin?.email || "project";
 
   useEffect(() => {
     getProjects();
@@ -83,7 +85,7 @@ const AppContent = () => {
           path="*"
           element={
             <Navigate
-              to={`${currentProject.admin.userName}/${currentProject.name}/Datasets`}
+              to={`${getProjectOwnerSlug(currentProject.admin)}/${currentProject.name}/Datasets`}
             />
           }
         />

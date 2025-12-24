@@ -1,19 +1,17 @@
 import React, { Component } from "react";
 import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
+  Box,
   Button,
-  InputGroup,
-  InputGroupText,
-  InputGroupText,
-  Input,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+  Divider,
+  Group,
+  Modal,
+  NumberInput,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
 
 import "./EditInstructionModal.css";
 
@@ -128,32 +126,28 @@ class EditInstructionModal extends Component {
     });
 
     return (
-      <Modal isOpen={this.state.isOpen}>
-        <ModalHeader>
+      <Modal opened={this.state.isOpen} onClose={this.state.onCloseModal}>
+        <Title order={4}>
           {this.state.experiment && this.state.experiment["_id"]
             ? this.state.experiment["_id"]
             : "New Experiment"}
-        </ModalHeader>
-        <ModalBody>
-          <InputGroup>
-            <InputGroupText>
-              <InputGroupText>Name</InputGroupText>
-            </InputGroupText>
-            <Input
-              value={
-                this.state.experiment && this.state.experiment.name
-                  ? this.state.experiment.name
-                  : ""
-              }
-              onChange={(e) => this.onExperimentNameChanged(e.target.value)}
-            />
-          </InputGroup>
-          <hr />
+        </Title>
+        <Stack mt="sm">
+          <TextInput
+            label="Name"
+            value={
+              this.state.experiment && this.state.experiment.name
+                ? this.state.experiment.name
+                : ""
+            }
+            onChange={(e) => this.onExperimentNameChanged(e.target.value)}
+          />
+          <Divider />
           {this.state.experiment && this.state.experiment.instructions
             ? this.state.experiment.instructions.map(
                 (instruction, index, array) => (
-                  <InputGroup key={"instruction" + index}>
-                    <InputGroupText className="me-2">
+                  <Group key={"instruction" + index} align="center" wrap="nowrap">
+                    <Box mr="sm">
                       <div className="arrow-container">
                         <div
                           className={
@@ -168,153 +162,117 @@ class EditInstructionModal extends Component {
                         <div
                           className={
                             index === array.length - 1 || array.length === 1
-                              ? "arrow arrow-disabled"
-                              : "arrow"
+                            ? "arrow arrow-disabled"
+                            : "arrow"
                           }
                           onClick={() => this.onLabelDown(index)}
                         >
                           &#x25BC;
                         </div>
                       </div>
-                    </InputGroupText>
+                    </Box>
 
-                    <UncontrolledDropdown className="me-2 instruction-dropdown">
-                      <DropdownToggle caret>
-                        {instruction.labelingId
-                          ? labelings.filter(
-                              (labeling) =>
-                                labeling["_id"] === instruction.labelingId
-                            )[0].name
+                    <Select
+                      className="instruction-dropdown"
+                      placeholder="Choose a labeling"
+                      data={labelings.map((labeling) => ({
+                        value: labeling["_id"],
+                        label: labeling.name,
+                      }))}
+                      value={
+                        instruction.labelingId
+                          ? instruction.labelingId
                           : instruction.labelType
-                            ? labelings.filter((labeling) =>
+                            ? labelings.find((labeling) =>
                                 labeling.labels.some(
                                   (label) =>
                                     label["_id"] === instruction.labelType
                                 )
-                              )[0].name
-                            : "Choose a labeling"}
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        {labelings.map((labeling) => (
-                          <DropdownItem
-                            key={labeling["_id"]}
-                            onClick={(e) =>
-                              this.onSelectedLabelingChanged(
-                                index,
-                                labeling["_id"]
-                              )
-                            }
-                          >
-                            {labeling.name}
-                          </DropdownItem>
-                        ))}
-                      </DropdownMenu>
-                    </UncontrolledDropdown>
-
-                    <UncontrolledDropdown className="me-2 instruction-dropdown">
-                      <DropdownToggle caret>
-                        {instruction.labelType
-                          ? this.state.labelTypes.filter(
-                              (type) => type["_id"] === instruction.labelType
-                            )[0].name
-                          : "Choose a label"}
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        {instruction.labelType ? (
-                          labelings
-                            .filter((labeling) =>
-                              labeling.labels.some(
-                                (label) =>
-                                  label["_id"] === instruction.labelType
-                              )
-                            )[0]
-                            .labels.map((type) => (
-                              <DropdownItem
-                                key={type["_id"]}
-                                onClick={(e) =>
-                                  this.onSelectedLabelChanged(
-                                    index,
-                                    type["_id"]
-                                  )
-                                }
-                              >
-                                {type.name}
-                              </DropdownItem>
-                            ))
-                        ) : instruction.labelingId ? (
-                          labelings
-                            .filter(
-                              (labeling) =>
-                                labeling["_id"] === instruction.labelingId
-                            )[0]
-                            .labels.map((type) => (
-                              <DropdownItem
-                                key={type["_id"]}
-                                onClick={(e) =>
-                                  this.onSelectedLabelChanged(
-                                    index,
-                                    type["_id"]
-                                  )
-                                }
-                              >
-                                {type.name}
-                              </DropdownItem>
-                            ))
-                        ) : (
-                          <DropdownItem disabled>
-                            Choose a labeling first
-                          </DropdownItem>
-                        )}
-                      </DropdownMenu>
-                    </UncontrolledDropdown>
-
-                    <Input
-                      min={0}
-                      type="number"
-                      step="1"
-                      onChange={(e) =>
-                        this.onDurationChanged(index, e.target.value)
+                              )?._id ?? null
+                            : null
                       }
-                      value={instruction.duration}
+                      onChange={(value) =>
+                        this.onSelectedLabelingChanged(index, value)
+                      }
+                      w={220}
                     />
-                    <InputGroupText className="me-2">
-                      <InputGroupText>ms</InputGroupText>
-                    </InputGroupText>
 
-                    <InputGroupText>
-                      <Button
-                        className="m-0"
-                        color="danger"
-                        outline
-                        onClick={(e) => {
-                          this.onDeleteInstruction(instruction);
-                        }}
-                      >
-                        ✕
-                      </Button>
-                    </InputGroupText>
-                  </InputGroup>
+                    <Select
+                      className="instruction-dropdown"
+                      placeholder="Choose a label"
+                      data={
+                        instruction.labelType
+                          ? labelings
+                              .filter((labeling) =>
+                                labeling.labels.some(
+                                  (label) =>
+                                    label["_id"] === instruction.labelType
+                                )
+                              )[0]
+                              .labels.map((type) => ({
+                                value: type["_id"],
+                                label: type.name,
+                              }))
+                          : instruction.labelingId
+                            ? labelings
+                                .filter(
+                                  (labeling) =>
+                                    labeling["_id"] === instruction.labelingId
+                                )[0]
+                                .labels.map((type) => ({
+                                  value: type["_id"],
+                                  label: type.name,
+                                }))
+                            : []
+                      }
+                      value={instruction.labelType ?? null}
+                      onChange={(value) =>
+                        this.onSelectedLabelChanged(index, value)
+                      }
+                      disabled={!instruction.labelType && !instruction.labelingId}
+                      w={220}
+                    />
+
+                    <NumberInput
+                      min={0}
+                      step={1}
+                      value={instruction.duration}
+                      onChange={(value) =>
+                        this.onDurationChanged(index, value)
+                      }
+                      w={120}
+                    />
+                    <Text size="sm">ms</Text>
+                    <Button
+                      color="red"
+                      variant="outline"
+                      onClick={() => {
+                        this.onDeleteInstruction(instruction);
+                      }}
+                    >
+                      ✕
+                    </Button>
+                  </Group>
                 )
               )
             : null}
           <Button
-            className="mt-3"
-            color="secondary"
-            outline
-            block
+            mt="md"
+            color="gray"
+            variant="outline"
+            fullWidth
             onClick={this.onAddInstruction}
           >
             + Add Instruction
           </Button>
           {this.state.experiment && !this.state.isNewExperiment ? (
-            <div>
-              <hr />
+            <Box>
+              <Divider my="sm" />
               <Button
-                color="danger"
-                block
-                className="m-0"
-                outline
-                onClick={(e) => {
+                color="red"
+                fullWidth
+                variant="outline"
+                onClick={() => {
                   if (window.confirm("Delete this experiment?")) {
                     this.state.onDeleteExperiment(this.state.experiment["_id"]);
                   }
@@ -322,28 +280,26 @@ class EditInstructionModal extends Component {
               >
                 Delete Experiment
               </Button>
-            </div>
+            </Box>
           ) : null}
-        </ModalBody>
-        <ModalFooter>
+        </Stack>
+        <Group justify="flex-end" mt="md">
           <Button
-            color="primary"
-            className="m-1 me-auto"
+            color="blue"
             id="onSaveExperiment"
-            onClick={(e) => {
+            onClick={() => {
               this.state.onSave(this.state.experiment);
             }}
           >
             Save
-          </Button>{" "}
+          </Button>
           <Button
-            color="secondary"
-            className="m-1"
+            color="gray"
             onClick={this.state.onCloseModal}
           >
             Cancel
           </Button>
-        </ModalFooter>
+        </Group>
       </Modal>
     );
   }

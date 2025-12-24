@@ -1,4 +1,3 @@
-import { getUserIds } from "../ApiServices/AuthentificationServices";
 import { HTTP_METHODS, API_URI, API_ENDPOINTS } from "./ApiConstants";
 import apiRequest from "./request";
 
@@ -12,15 +11,23 @@ export const getProjects = async () => {
 };
 
 export const createProject = async (project) => {
-  const userData = await getUserIds(project.users.map((elm) => elm.userName));
-  project.users = userData;
   const res = await apiRequest(
     HTTP_METHODS.POST,
     API_URI,
     API_ENDPOINTS.PROJECTS,
-    project
+    { name: project.name }
   );
-  return res;
+  const userNames = (project.users || [])
+    .map((elm) => elm.userName)
+    .filter((name) => name && name !== project.admin?.userName);
+  if (!res?.id || userNames.length === 0) {
+    return res;
+  }
+  let current = res;
+  for (const userName of userNames) {
+    current = await addProjectUser(res.id, userName);
+  }
+  return current;
 };
 
 export const deleteProject = async (projectId) => {

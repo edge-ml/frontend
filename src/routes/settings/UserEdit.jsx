@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Group, Stack, Text } from "@mantine/core";
+import { Badge, Button, Group, Stack, Text } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
@@ -54,6 +54,18 @@ const UserEdit = () => {
   return (
     <div>
       <Stack gap="md">
+        <Group align="center">
+          <Text fw={600}>Project owner:</Text>
+          <Text>
+            {currentProject.admin?.userName}
+            {currentProject.admin?.email
+              ? ` (${currentProject.admin.email})`
+              : ""}
+          </Text>
+          <Badge color="blue" variant="light">
+            Owner
+          </Badge>
+        </Group>
         <Group align="flex-end" wrap="nowrap" className="w-100">
           <div style={{ minWidth: 120 }}>
             <Text fw={600}>Search user</Text>
@@ -88,7 +100,7 @@ const UserEdit = () => {
                 className="d-flex justify-content-between p-2 align-items-center"
               >
                 <div>{index + 1}</div>
-                <div> {user.username}</div>
+                <div> {user.userName || user.username}</div>
                 <div>{user.email ? ` (${user.email})` : ""}</div>
                 <Button
                   variant="outline"

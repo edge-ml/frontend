@@ -58,7 +58,7 @@ const NavbarUserSettings = () => {
                 style={{ fontSize: "x-large", color: "white" }}
               />
             </Group>
-            <Text>{user.userName}</Text>
+            <Text>{user?.userName || user?.username || user?.email || "User"}</Text>
           </Group>
         </Popover.Target>
         <Popover.Dropdown>

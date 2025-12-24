@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Col, Row } from "reactstrap";
+import { Grid } from "@mantine/core";
 
 import BleNotActivated from "../components/BLE/BleNotActivated";
 import BlePanelSensorList from "../components/BLE/BlePanelSensorList";
@@ -831,8 +831,8 @@ class UploadBLE extends Component {
         this.state.connectedBLEDevice &&
         this.state.isEdgeMLInstalled ? (
           <div>
-            <Row>
-              <Col>
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
                 <div>
                   <BlePanelSensorList
                     maxSampleRate={this.state.connectedDeviceData.maxSampleRate}
@@ -843,8 +843,8 @@ class UploadBLE extends Component {
                     disabled={this.state.recorderState !== "ready"}
                   ></BlePanelSensorList>
                 </div>
-              </Col>
-              <Col>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
                 <BlePanelRecorderSettings
                   onDatasetNameChanged={this.onDatasetNameChanged}
                   onGlobalSampleRateChanged={this.onGlobalSampleRateChanged}
@@ -864,10 +864,10 @@ class UploadBLE extends Component {
                   handleSelectLabel={this.handleLabelSelect}
                   shortcutKeys={this.shortcutKeys}
                 />
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={12}>
+              </Grid.Col>
+            </Grid>
+            <Grid>
+              <Grid.Col span={12}>
                 {this.state.recorderState === "recording" &&
                 this.state.stream ? (
                   <BlePanelRecordingDisplay
@@ -880,8 +880,8 @@ class UploadBLE extends Component {
                     prevLabel={this.state.prevLabel}
                   />
                 ) : null}
-              </Col>
-            </Row>
+              </Grid.Col>
+            </Grid>
           </div>
         ) : null}
       </div>
