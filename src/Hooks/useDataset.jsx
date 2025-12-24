@@ -6,10 +6,13 @@ import {
 import {
   createDatasetLabel,
   deleteDatasetLabel,
+  changeDatasetLabel,
 } from "../services/ApiServices/DatasetLabelService";
+import useProjectStore from "../stores/projectStore";
 
 const useDataset = (dataset_id) => {
   const [dataset, setDataset] = useState(undefined);
+  const { currentProject } = useProjectStore();
 
   const refreshDataset = async () => {
     const dataset = await getDataset_api(dataset_id);
@@ -46,19 +49,14 @@ const useDataset = (dataset_id) => {
   };
 
   const updateLabel = async (labelingId, label) => {
-    const newDataset = { ...dataset };
-    const labeling = newDataset.labelings.find(
-      (labeling) => labeling.labelingId === labelingId
-    );
-    if (labeling) {
-      labeling.labels = labeling.labels.map((elm) => {
-        if (elm.id === label.id) {
-          return label;
-        }
-        return elm;
-      });
+    if (!dataset) {
+      return;
     }
-    await updateDataset_api(newDataset);
+    const datasetId = dataset.id || dataset._id;
+    if (!datasetId || !labelingId || !label?.id) {
+      return;
+    }
+    await changeDatasetLabel(datasetId, labelingId, label);
     await refreshDataset();
   };
 
@@ -82,8 +80,11 @@ const useDataset = (dataset_id) => {
   };
 
   useEffect(() => {
+    if (!dataset_id || !currentProject?.id) {
+      return;
+    }
     refreshDataset();
-  }, []);
+  }, [dataset_id, currentProject?.id]);
 
   return {
     dataset: dataset,

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 const useEditDataset = (datasetUtils, labelings) => {
-  const { dataset, deleteLabel, addLabel, updateLabel, updateDataset } =
-    datasetUtils;
+  const { dataset, deleteLabel, addLabel, updateLabel } = datasetUtils;
 
   const getActivateLabeling = () => {
     if (
@@ -102,21 +101,10 @@ const useEditDataset = (datasetUtils, labelings) => {
     _setSelectedLabelTypeId(labelTypeId);
     _setProvisionalLabel(undefined);
     if (selectedLabel) {
-      selectedLabel.type = labelTypeId;
-      const newDataset = { ...dataset };
-      const labeling = newDataset.labelings.map((elm) => {
-        if (elm.labelingId === activeLabeling.id) {
-          elm.labels = elm.labels.map((label) => {
-            if (label.id === selectedLabel.id) {
-              return { ...label, type: labelTypeId };
-            }
-            return label;
-          });
-        }
-        return elm;
+      await updateLabel(activeLabeling.id, {
+        ...selectedLabel,
+        type: labelTypeId,
       });
-      newDataset.labelings = labeling;
-      await updateDataset(newDataset);
     }
   };
 
@@ -142,20 +130,18 @@ const useEditDataset = (datasetUtils, labelings) => {
   };
 
   const updateLabelStartEnd = async (labelId, start, end) => {
-    const newDataset = { ...dataset };
-    const labeling = newDataset.labelings.map((elm) => {
-      if (elm.labelingId === activeLabeling.id) {
-        elm.labels = elm.labels.map((label) => {
-          if (label.id === labelId) {
-            return { ...label, start: Math.ceil(start), end: Math.floor(end) };
-          }
-          return label;
-        });
-      }
-      return elm;
+    const datasetLabeling = dataset?.labelings?.find(
+      (elm) => elm.labelingId === activeLabeling.id
+    );
+    const label = datasetLabeling?.labels?.find((elm) => elm.id === labelId);
+    if (!label) {
+      return;
+    }
+    await updateLabel(activeLabeling.id, {
+      ...label,
+      start: Math.ceil(start),
+      end: Math.floor(end),
     });
-    newDataset.labelings = labeling;
-    await updateDataset(newDataset);
   };
 
   const setProvisionalLabel = async (label) => {
@@ -171,6 +157,7 @@ const useEditDataset = (datasetUtils, labelings) => {
           updatedLabel.start = updatedLabel.end;
           updatedLabel.end = temp;
         }
+        _setProvisionalLabel(updatedLabel);
         const labelToAdd = {
           ...updatedLabel,
           name: activeLabeling.labels.find(
@@ -199,7 +186,8 @@ const useEditDataset = (datasetUtils, labelings) => {
         : datasetLabeling.labels;
       labelsToShow = labelsToUse.map((elm) => {
         const label = activeLabeling.labels.find((l) => l.id === elm.type);
-        return { ...label, ...elm };
+        const labelId = elm.id ?? elm._id ?? "provisional";
+        return { ...label, ...elm, id: labelId };
       });
     }
   }

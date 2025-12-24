@@ -1,15 +1,21 @@
 export const generatePlotBands = (labels, selectedLabel, onClickPlotLine) => {
   if (labels === undefined) return [];
 
-  return labels.map((label) => {
+  return labels
+    .filter((label) => label.start !== undefined && label.end !== undefined)
+    .map((label) => {
+    const labelId = label.id ?? label._id;
+    if (labelId === undefined || labelId === null) {
+      return null;
+    }
     return {
-      id: "band_" + label["_id"],
-      labelId: label["_id"],
+      id: "band_" + labelId,
+      labelId: labelId,
       from: label.start,
       to: label.end,
       zIndex: 2,
       className:
-        selectedLabel && selectedLabel.id === label["_id"]
+        selectedLabel && selectedLabel.id === labelId
           ? "plotband-selected"
           : "plotband-deselected",
       color: label.color,
@@ -21,48 +27,56 @@ export const generatePlotBands = (labels, selectedLabel, onClickPlotLine) => {
           cursor: undefined,
         },
         isPlotline: false,
-        isSelected: selectedLabel && selectedLabel.id === label["_id"],
+        isSelected: selectedLabel && selectedLabel.id === labelId,
       },
       // events: {
       //   mousedown: (e) =>
       //     (e, 'band_' + label['_id'], label['_id']),
       // },
     };
-  });
+  })
+  .filter(Boolean);
 };
 
 export const generatePlotLines = (labels, selectedLabel, onClickPlotLine) => {
   if (!labels) return [];
   var results = [];
   labels.forEach((label) => {
+    const labelId = label.id ?? label._id;
+    if (label.start === undefined || labelId === undefined || labelId === null) {
+      return;
+    }
     results.push(
       generatePlotLine(
         label,
-        selectedLabel && selectedLabel.id === label["_id"],
+        selectedLabel && selectedLabel.id === labelId,
         true,
         onClickPlotLine
       )
     );
-    results.push(
-      generatePlotLine(
-        label,
-        selectedLabel && selectedLabel.id === label["_id"],
-        false,
-        onClickPlotLine
-      )
-    );
+    if (label.end !== undefined) {
+      results.push(
+        generatePlotLine(
+          label,
+          selectedLabel && selectedLabel.id === labelId,
+          false,
+          onClickPlotLine
+        )
+      );
+    }
   });
 
   return results;
 };
 
 const generatePlotLine = (label, selected, isLeft, onClickPlotLine) => {
-  var plotLineId = isLeft ? "pl" + label.id : "pr" + label.id;
+  const labelId = label.id ?? label._id;
+  var plotLineId = isLeft ? "pl" + labelId : "pr" + labelId;
   var labelColor = label.color;
   var value = isLeft ? label.start : label.end;
   return {
     id: plotLineId,
-    labelId: label.id,
+    labelId: labelId,
     value: value,
     className: "plotline",
     zIndex: 3,

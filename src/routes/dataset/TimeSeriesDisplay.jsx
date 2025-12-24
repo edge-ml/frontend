@@ -44,7 +44,7 @@ const TimeSeriesDisplay = ({ timeSeries }) => {
         mouseDownRef.current = false;
         refreshData();
       }
-      onMouseUp();
+      onMouseUp(undefined, chartRef);
     };
 
     const mouseDownHandler = () => {

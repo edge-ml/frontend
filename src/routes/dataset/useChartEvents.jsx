@@ -1,5 +1,6 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { DatasetContext } from "./DatasetContext";
+import Highcharts from "highcharts/highstock";
 
 const useChartEvents = (chart, labeling) => {
   let mouseDown = false;
@@ -29,6 +30,7 @@ const useChartEvents = (chart, labeling) => {
         start: Math.floor(position),
         end: undefined,
         type: selectedLabelTypeId,
+        id: "provisional",
       });
       return;
     }
@@ -73,6 +75,47 @@ const useChartEvents = (chart, labeling) => {
     return plotBand;
   };
 
+  const updatePlotElements = (labelId, from, to) => {
+    Highcharts.charts.forEach((chartInstance) => {
+      if (!chartInstance || !chartInstance.xAxis || !chartInstance.xAxis[0]) {
+        return;
+      }
+      const axis = chartInstance.xAxis[0];
+      const plotItems = axis.plotLinesAndBands || [];
+      const plotBand = plotItems.find(
+        (item) => !item.options.isPlotline && item.options.labelId === labelId
+      );
+      if (plotBand) {
+        const plotBandOptions = plotBand.options;
+        axis.removePlotBand(plotBandOptions.id);
+        axis.addPlotBand({
+          ...plotBandOptions,
+          from: from,
+          to: to,
+        });
+      }
+
+      const leftId = "pl" + labelId;
+      const rightId = "pr" + labelId;
+      const leftPlotLine = plotItems.find(
+        (item) => item.options.isPlotline && item.options.id === leftId
+      );
+      const rightPlotLine = plotItems.find(
+        (item) => item.options.isPlotline && item.options.id === rightId
+      );
+      if (leftPlotLine) {
+        const leftOptions = leftPlotLine.options;
+        axis.removePlotLine(leftOptions.id);
+        axis.addPlotLine({ ...leftOptions, value: from });
+      }
+      if (rightPlotLine) {
+        const rightOptions = rightPlotLine.options;
+        axis.removePlotLine(rightOptions.id);
+        axis.addPlotLine({ ...rightOptions, value: to });
+      }
+    });
+  };
+
   const calcBounds = (e, chart, activePlotLine) => {
     const allPlotLinesAndBands = chart.current.chart.xAxis[0].plotLinesAndBands;
     const activeLabelId = activePlotLine.options.labelId;
@@ -112,14 +155,14 @@ const useChartEvents = (chart, labeling) => {
 
     const [leftBound, rightBound] = calcBounds(e, chart, plotLine);
     const chartBBox = chart.current.container.current.getBoundingClientRect();
-    const box_offset = -plotLine.svgElem.getBBox().x;
     var mousePos = e.clientX - chartBBox.left;
     const dragPosition = Math.min(
       Math.max(mousePos, leftBound + 1),
       rightBound - 1
     );
-    let offset = dragPosition + box_offset - 1;
-    plotLine.svgElem.translate(offset, 0);
+    const draggedPosition = chart.current.chart.xAxis[0].toValue(
+      Math.max(leftBound, Math.min(mousePos, rightBound))
+    );
 
     var plotLinesAndBands = chart.current.chart.xAxis[0].plotLinesAndBands;
     var plotBand = plotLinesAndBands.filter(
@@ -127,28 +170,28 @@ const useChartEvents = (chart, labeling) => {
         !item.options.isPlotline &&
         item.options.labelId === currentPlotLine.labelId
     )[0];
+    if (!plotBand) {
+      currentPlotLine = undefined;
+      return;
+    }
+    if (!plotBand) {
+      return;
+    }
     const activePlotbandOptions = plotBand.options;
 
     let fixedPosition = plotLine.options.isLeftPlotline
       ? activePlotbandOptions.to
       : activePlotbandOptions.from;
 
-    let draggedPosition = chart.current.chart.xAxis[0].toValue(
-      Math.max(leftBound, Math.min(mousePos, rightBound))
-    );
-
-    chart.current.chart.xAxis[0].removePlotBand(activePlotbandOptions.id);
-    chart.current.chart.xAxis[0].addPlotBand({
-      ...activePlotbandOptions,
-      from: plotLine.options.isLeftPlotline ? draggedPosition : fixedPosition,
-      to: plotLine.options.isLeftPlotline ? fixedPosition : draggedPosition,
-    });
+    const from = Math.min(draggedPosition, fixedPosition);
+    const to = Math.max(draggedPosition, fixedPosition);
+    updatePlotElements(currentPlotLine.labelId, from, to);
   };
 
   const onMouseUp = (e, chart) => {
     mouseDown = false;
     mouseMoved = false;
-    if (!currentPlotLine) return;
+    if (!currentPlotLine || !chart) return;
 
     var plotLinesAndBands = chart.current.chart.xAxis[0].plotLinesAndBands;
     var plotBand = plotLinesAndBands.filter(
@@ -165,9 +208,9 @@ const useChartEvents = (chart, labeling) => {
   };
 
   const getSelectedPlotBand = (chart) => {
-    if (!chart.current || !chart.current.chart) return;
+    if (!chart || !chart.xAxis || !chart.xAxis[0] || !selectedLabel) return;
 
-    var plotBands = chart.current.chart.xAxis[0].plotLinesAndBands;
+    var plotBands = chart.xAxis[0].plotLinesAndBands;
     var plotBand = plotBands.filter(
       (item) =>
         !item.options.isPlotline && item.options.labelId === selectedLabel.id
