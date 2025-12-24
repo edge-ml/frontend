@@ -158,3 +158,13 @@ export const updateTimeSeriesConfig = async (
     params: { tsId, unit, scaling, offset },
   });
 };
+
+export const updateDatasetMetadata = async (datasetId, metaData) => {
+  const projectId = getCurrentProjectId();
+  return apiRequest({
+    method: apiConsts.HTTP_METHODS.PUT,
+    baseUri: apiConsts.DATASET_STORE,
+    endpoint: `${projectId}/datasets/${datasetId}/metadata`,
+    body: metaData,
+  });
+};

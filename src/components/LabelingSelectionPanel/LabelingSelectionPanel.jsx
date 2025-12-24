@@ -1,4 +1,4 @@
-import React, { useState, useContext, Fragment } from "react";
+import React, { useState, useContext, Fragment, useEffect, useRef } from "react";
 import {
   Box,
   Button,
@@ -36,7 +36,10 @@ const LabelingSelectionPanel = () => {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isTSDropdownOpen, setIsTSDropdownOpen] = useState(false);
   const { registerDatasetDownload } = useContext(NotificationContext);
+  const tsButtonRef = useRef(null);
+  const [tsDropdownWidth, setTsDropdownWidth] = useState(undefined);
 
+  const initializedRef = useRef(false);
   const [selectedTs, setSelectedTs] = useState(
     activeTimeSeries.map((elm) => elm.id)
   );
@@ -51,12 +54,60 @@ const LabelingSelectionPanel = () => {
     registerDatasetDownload(dataset);
   };
 
+  useEffect(() => {
+    initializedRef.current = false;
+  }, [dataset?.id]);
+
+  useEffect(() => {
+    if (!dataset?.id || !dataset.timeSeries?.length) {
+      return;
+    }
+    if (initializedRef.current) {
+      return;
+    }
+    const storageKey = `edge-ml:dataset:${dataset.id}:timeseries`;
+    const stored = localStorage.getItem(storageKey);
+    let nextSelected = [];
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          nextSelected = parsed;
+        }
+      } catch {}
+    }
+    if (nextSelected.length === 0) {
+      const defaultIds = dataset.timeSeries
+        .slice(0, dataset.timeSeries.length > 5 ? 5 : dataset.timeSeries.length)
+        .map((elm) => elm.id);
+      nextSelected = defaultIds;
+    }
+    const validIds = new Set(dataset.timeSeries.map((elm) => elm.id));
+    const filtered = nextSelected.filter((id) => validIds.has(id));
+    const finalIds =
+      filtered.length > 0
+        ? filtered
+        : dataset.timeSeries.slice(0, 5).map((elm) => elm.id);
+
+    setSelectedTs(finalIds);
+    setActiveTimeSeries(
+      finalIds.map((selectId) =>
+        dataset.timeSeries.find((elm) => elm.id === selectId)
+      )
+    );
+    initializedRef.current = true;
+  }, [dataset?.id, dataset?.timeSeries, setActiveTimeSeries]);
+
   const onApplyTs = () => {
     setActiveTimeSeries(
       selectedTs.map((select_id) =>
         dataset.timeSeries.find((elm) => elm.id === select_id)
       )
     );
+    if (dataset?.id) {
+      const storageKey = `edge-ml:dataset:${dataset.id}:timeseries`;
+      localStorage.setItem(storageKey, JSON.stringify(selectedTs));
+    }
   };
 
   const onClickSelectSeries = (elm_id) => {
@@ -74,21 +125,30 @@ const LabelingSelectionPanel = () => {
 
   const TimeSeriesSelection = () => {
     return (
-      <Menu opened={isTSDropdownOpen} onChange={setIsTSDropdownOpen}>
+      <Menu
+        opened={isTSDropdownOpen}
+        onChange={(opened) => {
+          setIsTSDropdownOpen(opened);
+          if (opened && tsButtonRef.current) {
+            setTsDropdownWidth(tsButtonRef.current.offsetWidth);
+          }
+        }}
+      >
         <Menu.Target>
           <Button
             variant="outline"
             color="gray"
             onClick={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
             mr="sm"
+            ref={tsButtonRef}
           >
-            Selected Timeseries:{" "}
+            Selected Timeseries:{"\u00a0"}
             <Text component="span" fw={400}>
               {activeTimeSeries.length + "/" + dataset.timeSeries.length}
             </Text>
           </Button>
         </Menu.Target>
-        <Menu.Dropdown>
+        <Menu.Dropdown style={tsDropdownWidth ? { width: tsDropdownWidth } : undefined}>
           <ScrollArea h={200}>
             <Box>
               {dataset.timeSeries.map((elm) => {

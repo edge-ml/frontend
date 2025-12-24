@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   updateDataset as updateDataset_api,
   getDataset as getDataset_api,
+  updateDatasetMetadata as updateDatasetMetadata_api,
 } from "../services/ApiServices/DatasetServices";
 import {
   createDatasetLabel,
@@ -48,6 +49,19 @@ const useDataset = (dataset_id) => {
     return createdLabel || newLabel;
   };
 
+  const updateDatasetMetadata = async (metaData) => {
+    if (!dataset) {
+      return;
+    }
+    const datasetId = dataset.id || dataset._id;
+    if (!datasetId) {
+      return;
+    }
+    const payload = metaData?.metaData ? metaData : { metaData };
+    await updateDatasetMetadata_api(datasetId, payload);
+    await refreshDataset();
+  };
+
   const updateLabel = async (labelingId, label) => {
     if (!dataset) {
       return;
@@ -92,6 +106,7 @@ const useDataset = (dataset_id) => {
     deleteLabel: deleteLabel,
     updateLabel: updateLabel,
     updateDataset: updateDataset,
+    updateDatasetMetadata: updateDatasetMetadata,
   };
 };
 

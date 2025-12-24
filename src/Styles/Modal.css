@@ -26,6 +26,8 @@
 .dataset-side-panel {
   /* background: linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72)); */
   border-left: 1px solid lightgray;
+  color: rgb(34, 41, 51);
+  overflow-y: auto;
   padding-right: 8px;
   height: 100vh;
   position: absolute;

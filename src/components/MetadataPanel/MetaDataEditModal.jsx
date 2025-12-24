@@ -112,7 +112,12 @@ class MetaDataEditModal extends Component {
 
   render() {
     return (
-      <Modal size="lg" opened={this.props.isOpen} onClose={this.onClose}>
+      <Modal
+        size="lg"
+        opened={this.props.isOpen}
+        onClose={this.onClose}
+        zIndex={2000}
+      >
         <Title order={4}>Edit custom Metadata</Title>
         <Stack mt="sm">
           {this.renderMetaData()}

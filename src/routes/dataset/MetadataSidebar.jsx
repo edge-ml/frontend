@@ -8,10 +8,10 @@ import {
 import { Fragment } from "react";
 import MetadataContainer from "../../components/MetadataPanel/MetadataContainer";
 import { DatasetContext } from "./DatasetContext";
-import { Box, Container, Group } from "@mantine/core";
+import { Box, Group } from "@mantine/core";
 
 const MetadataSidebar = ({}) => {
-  const { dataset } = useContext(DatasetContext);
+  const { dataset, updateDatasetMetadata } = useContext(DatasetContext);
 
   const [isExtended, setExtendend] = useState(false);
 
@@ -40,18 +40,18 @@ const MetadataSidebar = ({}) => {
           className="sidePanelBackdrop"
           onClick={() => toggleMetaData(false)}
         />
-        <Container>
-          <div className="dataset-side-panel">
-            <Group align="flex-start" gap="sm">
-              <Group
-                onClick={() => toggleMetaData(false)}
-                className="metaDataCollapseButton"
-                justify="center"
-                align="center"
-                style={{ cursor: "pointer" }}
-              >
-                <FontAwesomeIcon icon={faChevronRight} />
-              </Group>
+        <div className="dataset-side-panel">
+          <Group align="flex-start" gap="sm" style={{ width: "100%" }}>
+            <Group
+              onClick={() => toggleMetaData(false)}
+              className="metaDataCollapseButton"
+              justify="center"
+              align="center"
+              style={{ cursor: "pointer" }}
+            >
+              <FontAwesomeIcon icon={faChevronRight} />
+            </Group>
+            <Box style={{ flex: 1, minWidth: 0 }}>
               <MetadataContainer
                 start={Math.min(...dataset.timeSeries.map((elm) => elm.start))}
                 end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
@@ -59,11 +59,11 @@ const MetadataSidebar = ({}) => {
                 name={dataset.name}
                 handleDatasetNameChange={() => {}}
                 metaData={dataset.metaData}
-                onUpdateMetaData={() => {}}
+                onUpdateMetaData={(metaData) => updateDatasetMetadata(metaData)}
               />
-            </Group>
-          </div>
-        </Container>
+            </Box>
+          </Group>
+        </div>
       </Fragment>
     );
   }

@@ -28,7 +28,7 @@ const Dataset = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const { dataset } = datasetUtils;
+  const { dataset, updateDatasetMetadata } = datasetUtils;
 
   if (!dataset || !labelings) {
     return <Loader loading></Loader>;
@@ -39,7 +39,10 @@ const Dataset = () => {
       <DatasetProvider
         dataset={dataset}
         labelings={labelings}
-        datasetEdit={datasetEdit}
+        datasetEdit={{
+          ...datasetEdit,
+          updateDatasetMetadata,
+        }}
       >
         <LabelingProvider labelings={labelings}>
           <div className="d-flex w-100 h-100">
