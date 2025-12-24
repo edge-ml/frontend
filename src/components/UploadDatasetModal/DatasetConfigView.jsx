@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Table, InputGroup, InputGroupText, Input, Button } from "reactstrap";
+import { Button, Group, Table, Text, TextInput } from "@mantine/core";
 
 export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
   const onDeleteLabeling = (labelingToDeleteOriginalName) => {
@@ -39,20 +39,15 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
 
   return (
     <div className="mb-2 mt-2">
-      {" "}
       <Table>
-        {" "}
         <thead>
           <tr>
-            <th colSpan="2" style={{ padding: "0 12px 0 0" }}>
-              <InputGroup size="md">
-                <InputGroupText>
-                  <b>Dataset-name</b>
-                </InputGroupText>
-                <Input
+            <th colSpan="2">
+              <Group gap="sm" align="center">
+                <Text fw={600}>Dataset-name</Text>
+                <TextInput
                   className="fw-bold"
                   id={"datasetName" + String(0)}
-                  type="text"
                   placeholder="Name"
                   value={fileConfig.name}
                   onChange={(e) =>
@@ -62,14 +57,14 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     })
                   }
                 />
-              </InputGroup>
+              </Group>
             </th>
-            <th colSpan="4" style={{ textAlign: "end", paddingRight: "0px" }}>
-              <div className="d-flex justify-content-end">
+            <th colSpan="4">
+              <Group justify="flex-end">
                 <Button
                   id="confirmButton"
-                  color="primary"
-                  size="md"
+                  color="blue"
+                  size="xs"
                   onClick={() => {
                     changeConfig(fileId, {
                       ...fileConfig,
@@ -80,7 +75,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                 >
                   Confirm
                 </Button>
-              </div>
+              </Group>
             </th>
           </tr>
         </thead>
@@ -98,150 +93,105 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
               if (timeSeries.removed) return null;
               return (
                 <tr key={seriesIndex}>
-                  <td
-                    style={{
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      width: "40%",
-                    }}
-                  >
-                    <InputGroup size="sm">
-                      <InputGroupText>Name</InputGroupText>
-                      <Input
-                        data-testid="nameInput"
-                        type="text"
-                        placeholder="Name"
-                        value={timeSeries.name}
-                        onChange={(e) =>
-                          changeConfig(fileId, {
-                            ...fileConfig,
-                            timeSeries: fileConfig.timeSeries.map((ts) => {
-                              if (ts === timeSeries) {
-                                return {
-                                  ...ts,
-                                  name: e.target.value,
-                                };
-                              }
-                              return ts;
-                            }),
-                          })
-                        }
-                      />
-                    </InputGroup>
+                  <td style={{ width: "40%" }}>
+                    <TextInput
+                      data-testid="nameInput"
+                      placeholder="Name"
+                      value={timeSeries.name}
+                      onChange={(e) =>
+                        changeConfig(fileId, {
+                          ...fileConfig,
+                          timeSeries: fileConfig.timeSeries.map((ts) => {
+                            if (ts === timeSeries) {
+                              return {
+                                ...ts,
+                                name: e.target.value,
+                              };
+                            }
+                            return ts;
+                          }),
+                        })
+                      }
+                      size="xs"
+                    />
                   </td>
-                  <td
-                    style={{
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      width: "15%",
-                    }}
-                  >
-                    <InputGroup size="sm">
-                      <InputGroupText>Unit</InputGroupText>
-                      <Input
-                        data-testid="unitInput"
-                        type="text"
-                        placeholder="Unit"
-                        bsSize="sm"
-                        value={timeSeries.unit}
-                        onChange={(e) =>
-                          changeConfig(fileId, {
-                            ...fileConfig,
-                            timeSeries: fileConfig.timeSeries.map((ts) => {
-                              if (ts === timeSeries) {
-                                return {
-                                  ...ts,
-                                  unit: e.target.value,
-                                };
-                              }
-                              return ts;
-                            }),
-                          })
-                        }
-                      />
-                    </InputGroup>
+                  <td style={{ width: "15%" }}>
+                    <TextInput
+                      data-testid="unitInput"
+                      placeholder="Unit"
+                      value={timeSeries.unit}
+                      onChange={(e) =>
+                        changeConfig(fileId, {
+                          ...fileConfig,
+                          timeSeries: fileConfig.timeSeries.map((ts) => {
+                            if (ts === timeSeries) {
+                              return {
+                                ...ts,
+                                unit: e.target.value,
+                              };
+                            }
+                            return ts;
+                          }),
+                        })
+                      }
+                      size="xs"
+                    />
                   </td>
-                  <td
-                    style={{
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      width: "15%",
-                    }}
-                  >
-                    <InputGroup size="sm">
-                      <InputGroupText>Scale</InputGroupText>
-                      <Input
-                        data-testid="scaleInput"
-                        type="text"
-                        bsSize="sm"
-                        placeholder="1"
-                        value={timeSeries.scale}
-                        onChange={(e) => {
-                          if (
-                            e.target.value !== "" &&
-                            !isNumeric(e.target.value)
-                          )
-                            return;
-                          changeConfig(fileId, {
-                            ...fileConfig,
-                            timeSeries: fileConfig.timeSeries.map((ts) => {
-                              if (ts === timeSeries) {
-                                return {
-                                  ...ts,
-                                  scale:
-                                    e.target.value === "" ? 1 : e.target.value,
-                                };
-                              }
-                              return ts;
-                            }),
-                          });
-                        }}
-                      />
-                    </InputGroup>
+                  <td style={{ width: "15%" }}>
+                    <TextInput
+                      data-testid="scaleInput"
+                      placeholder="1"
+                      value={timeSeries.scale}
+                      onChange={(e) => {
+                        if (e.target.value !== "" && !isNumeric(e.target.value))
+                          return;
+                        changeConfig(fileId, {
+                          ...fileConfig,
+                          timeSeries: fileConfig.timeSeries.map((ts) => {
+                            if (ts === timeSeries) {
+                              return {
+                                ...ts,
+                                scale:
+                                  e.target.value === "" ? 1 : e.target.value,
+                              };
+                            }
+                            return ts;
+                          }),
+                        });
+                      }}
+                      size="xs"
+                    />
                   </td>
-                  <td
-                    style={{
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      width: "15%",
-                    }}
-                  >
-                    <InputGroup size="sm">
-                      <InputGroupText>Offset</InputGroupText>
-                      <Input
-                        data-testid="offsetInput"
-                        type="text"
-                        bsSize="sm"
-                        placeholder="0"
-                        value={timeSeries.offset}
-                        onChange={(e) => {
-                          if (
-                            e.target.value !== "" &&
-                            !isNumeric(e.target.value)
-                          )
-                            return;
-                          changeConfig(fileId, {
-                            ...fileConfig,
-                            timeSeries: fileConfig.timeSeries.map((ts) => {
-                              if (ts === timeSeries) {
-                                return {
-                                  ...ts,
-                                  offset:
-                                    e.target.value === "" ? 0 : e.target.value,
-                                };
-                              }
-                              return ts;
-                            }),
-                          });
-                        }}
-                      />
-                    </InputGroup>
+                  <td style={{ width: "15%" }}>
+                    <TextInput
+                      data-testid="offsetInput"
+                      placeholder="0"
+                      value={timeSeries.offset}
+                      onChange={(e) => {
+                        if (e.target.value !== "" && !isNumeric(e.target.value))
+                          return;
+                        changeConfig(fileId, {
+                          ...fileConfig,
+                          timeSeries: fileConfig.timeSeries.map((ts) => {
+                            if (ts === timeSeries) {
+                              return {
+                                ...ts,
+                                offset:
+                                  e.target.value === "" ? 0 : e.target.value,
+                              };
+                            }
+                            return ts;
+                          }),
+                        });
+                      }}
+                      size="xs"
+                    />
                   </td>
                   <td style={{ textAlign: "right" }}>
                     <Button
                       id="setAllButton"
-                      color="primary"
-                      size="sm"
+                      color="blue"
+                      size="xs"
                       onClick={() =>
                         onSetAllUnits(fileConfig.timeSeries[seriesIndex])
                       }
@@ -252,8 +202,8 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                   <td style={{ textAlign: "right" }}>
                     <Button
                       id="deleteButton"
-                      color="danger"
-                      size="sm"
+                      color="red"
+                      size="xs"
                       disabled={fileConfig.timeSeries.length === 1}
                       onClick={() =>
                         changeConfig(fileId, {
@@ -273,30 +223,25 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
           </tbody>
         )}
       </Table>
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <Group justify="center" gap="xs">
         {fileConfig.labelings.map((labeling, labelingIndex) => {
           if (labeling.removed) return null;
           return (
-            <div>
-              <div
-                id={"labelName" + labelingIndex}
-                className="mx-2"
-                style={{ display: "inline" }}
-              >
+            <Group key={labelingIndex} gap="xs">
+              <Text id={"labelName" + labelingIndex} size="sm">
                 {labeling.name}
-              </div>
+              </Text>
               <Button
-                color="danger"
-                size="sm"
-                className="mx-2"
+                color="red"
+                size="xs"
                 onClick={() => onDeleteLabeling(labeling.originalName)}
               >
                 Delete
               </Button>
-            </div>
+            </Group>
           );
         })}
-      </div>
+      </Group>
       <hr />
     </div>
   );
