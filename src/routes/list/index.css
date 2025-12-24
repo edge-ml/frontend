@@ -53,6 +53,29 @@
   color: rgb(131, 136, 159);
 }
 
+.dataset-labeling-list {
+  margin-left: 4px;
+}
+
+.dataset-labeling-item {
+  border-left: 3px solid rgb(230, 230, 234);
+  padding-left: 8px;
+}
+
+.dataset-labeling-title {
+  color: rgb(131, 136, 159);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dataset-labeling-badges {
+  margin-top: 4px;
+}
+
+.dataset-labeling-more {
+  border: 1px solid #000;
+}
+
 .showInfo {
   height: 0;
   overflow: hidden;

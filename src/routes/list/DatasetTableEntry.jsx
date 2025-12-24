@@ -15,6 +15,7 @@ import {
   Checkbox,
   Group,
   Text,
+  Stack,
 } from "@mantine/core";
 
 import classNames from "classnames";
@@ -51,46 +52,48 @@ const Labelings = (props) => {
   }
 
   const labelings = props.dataset.labelings
-    .map((elm) =>
-      props.labelings.find((labeling) => labeling.id === elm.labelingId)
-    )
-    .filter((elm) => elm !== undefined);
+    .map((datasetLabeling) => {
+      const labeling = props.labelings.find(
+        (item) => item.id === datasetLabeling.labelingId
+      );
+      if (!labeling) {
+        return null;
+      }
+      const labelTypes = new Set(
+        (datasetLabeling.labels || []).map((elm) => elm.type)
+      );
+      const labels = labeling.labels.filter((label) => labelTypes.has(label.id));
+      return { labeling, labels };
+    })
+    .filter(Boolean);
 
   return (
     <div className="mt-1 ms-4 p-lg-0 m-lg-0">
-      <Group className="ps-1 ms-1 p-lg-0 m-lg-0 " gap="sm">
-        {labelings.map((labeling, idx) => (
-          <Badge
-            className="me-2 badgeSize badgeLabelings pb-2 mt-2 mb-2"
-            color="gray"
-            size="md"
-            key={labeling + idx}
-          >
-            <div className="labelingBadgeWrapper">
-              {labeling.name.toUpperCase()}
-            </div>
-            <div>
-              {labeling.labels.map((label, index) => {
-                const labelTypes = props.dataset.labelings[idx].labels.map(
-                  (elm) => elm.type
-                );
-                if (!labelTypes.includes(label.id)) {
-                  return null;
-                }
-                return (
-                  <LabelBadge
-                    key={label + index}
-                    className="badgeSize mx-1"
-                    color={label.color}
-                  >
-                    {label.name}
-                  </LabelBadge>
-                );
-              })}
-            </div>
-          </Badge>
+      <Stack className="dataset-labeling-list" gap="sm">
+        {labelings.map(({ labeling, labels }) => (
+          <div className="dataset-labeling-item" key={labeling.id}>
+            <Text className="dataset-labeling-title" size="xs" fw={700}>
+              {labeling.name}
+            </Text>
+            <Group gap="xs" wrap="wrap" className="dataset-labeling-badges">
+              {labels.slice(0, 6).map((label) => (
+                <LabelBadge
+                  key={label.id}
+                  className="badgeSize"
+                  color={label.color}
+                >
+                  {label.name || "Untitled"}
+                </LabelBadge>
+              ))}
+              {labels.length > 6 && (
+                <Badge className="dataset-labeling-more" color="gray" size="sm">
+                  +{labels.length - 6}
+                </Badge>
+              )}
+            </Group>
+          </div>
         ))}
-      </Group>
+      </Stack>
     </div>
   );
 };
