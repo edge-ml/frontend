@@ -66,7 +66,10 @@ const NavbarUserSettings = () => {
               fullWidth
               variant="outline"
               color="blue"
-              onClick={toggleUserSettingsModal}
+              onClick={() => {
+                toggleUserSettingsModal();
+                setUserPopoverOpen(false);
+              }}
             >
               Settings
             </Button>

@@ -2,7 +2,6 @@ import create from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { getProjects as getProjects_API } from "../services/ApiServices/ProjectService";
 import { getProject, setProject } from "../services/LocalStorageService";
-import { getUserNames } from "../services/ApiServices/AuthentificationServices";
 
 const useProjectStore = create(
   immer((set, get) => ({
@@ -36,31 +35,8 @@ const useProjectStore = create(
     },
 
     getProjects: async function () {
-      var projects = await getProjects_API();
-
-      // projects = await Promise.all(projects.map(async prj => {
-      //   const users = await getUserNames([prj.admin, ...prj.users]);
-      //   prj.admin = users[0]
-      //   prj.users = users.slice(1)
-      //   return prj;
-      // }));
-      
-      console.log(projects)
-      set({ projects });
-
-      // If there's no current project set, initialize it from the projects list
-      if (projects.length > 0 && !get().currentProject) {
-        let currentProject = projects[0];
-        const projectId = getProject();
-        if (projectId) {
-          currentProject =
-            projects.find((project) => project.id === projectId) ||
-            projects[0];
-        }
-
-        set({ currentProject });
-        setProject(currentProject ? currentProject.id : null);
-      }
+      const projects = await getProjects_API();
+      get().setProjects(projects);
     },
   }))
 );

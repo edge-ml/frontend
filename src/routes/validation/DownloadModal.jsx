@@ -12,10 +12,11 @@ import {
   downloadModalLink,
 } from "../../services/ApiServices/MLDeploymentService";
 import { downloadBlob } from "../../services/helpers";
-import { getProject } from "../../services/LocalStorageService";
+import useProjectStore from "../../stores/projectStore";
 
 const DownloadModal = ({ model, onClose }) => {
   const [language, setLanguage] = useState("cpp");
+  const currentProject = useProjectStore((state) => state.currentProject);
 
   if (!model) {
     return null;
@@ -23,7 +24,10 @@ const DownloadModal = ({ model, onClose }) => {
 
   const downloadModel = async () => {
     if (language === "python") {
-      downloadModalLink(getProject(), model.id, "python");
+      if (!currentProject?.id) {
+        return;
+      }
+      downloadModalLink(currentProject.id, model.id, "python");
       return;
     }
 

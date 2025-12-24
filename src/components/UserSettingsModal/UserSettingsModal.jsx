@@ -1,5 +1,5 @@
 import React from "react";
-import { Divider, Stack } from "@mantine/core";
+import { Stack, Text, Title } from "@mantine/core";
 import { Modal, ModalHeader, ModalFooter, ModalBody } from "../Common/Modal";
 import MailSettings from "./MailSettings";
 import PasswordSettings from "./PasswordSettings";
@@ -7,6 +7,26 @@ import UserNameSettings from "./UserNameSettings";
 import DeleteUser from "./DeleteUser";
 import UserSettingsProvider from "./UserSettingsProvider";
 import useUserStore from "../../Hooks/useUser";
+import "../../components/Common/EdgeMLTable/index.css";
+import "./UserSettingsModal.css";
+
+const UserSettingsItem = ({ title, description, children }) => {
+  return (
+    <div className="settings-item">
+      <div className="table-header-wrapper settings-item-header">
+        <Stack gap={2}>
+          <Title order={5}>{title}</Title>
+          {description ? (
+            <Text c="dimmed" size="sm">
+              {description}
+            </Text>
+          ) : null}
+        </Stack>
+      </div>
+      <div className="table-body-wrapper settings-item-body">{children}</div>
+    </div>
+  );
+};
 
 const UserSettingsModal = ({ isOpen, onClose }) => {
   const user = useUserStore((state) => state.user);
@@ -22,17 +42,34 @@ const UserSettingsModal = ({ isOpen, onClose }) => {
         <Stack gap="md">
           {!user.provider || user.provider === "local" ? (
             <>
-              <MailSettings id="mailSettings" />
-              <Divider />
-              <PasswordSettings id="passwordSettings" />
-              <Divider />
-              <UserNameSettings id="userNameSettings" />
-              <Divider />
+              <UserSettingsItem
+                title="Change Mail"
+                description="Update the email address for your account"
+              >
+                <MailSettings id="mailSettings" />
+              </UserSettingsItem>
+              <UserSettingsItem
+                title="Change Password"
+                description="Set a new password for this account"
+              >
+                <PasswordSettings id="passwordSettings" />
+              </UserSettingsItem>
+              <UserSettingsItem
+                title="Change Username"
+                description="Update your username"
+              >
+                <UserNameSettings id="userNameSettings" />
+              </UserSettingsItem>
             </>
           ) : null}
-          <UserSettingsProvider>
-            <DeleteUser />
-          </UserSettingsProvider>
+          <UserSettingsItem
+            title="Delete User"
+            description="Permanently delete this account"
+          >
+            <UserSettingsProvider>
+              <DeleteUser />
+            </UserSettingsProvider>
+          </UserSettingsItem>
         </Stack>
       </ModalBody>
       <ModalFooter></ModalFooter>

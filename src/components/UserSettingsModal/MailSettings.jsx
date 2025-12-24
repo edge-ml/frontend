@@ -54,9 +54,6 @@ class MailSettings extends Component {
   render() {
     return (
       <div>
-        <Text fw={700} size="lg">
-          Change Mail
-        </Text>
         <Stack gap="sm">
           <TextInput
             id="inputNewMail"

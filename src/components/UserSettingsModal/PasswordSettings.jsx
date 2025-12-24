@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Button, Stack, Text, TextInput } from "@mantine/core";
 
 import { changeUserPassword } from "./../../services/ApiServices/AuthentificationServices";
 
@@ -66,7 +66,6 @@ class PasswordSettings extends Component {
   render() {
     return (
       <Stack>
-        <Title order={4}>Change password</Title>
         <TextInput
           id="inputNewPassword"
           type="password"

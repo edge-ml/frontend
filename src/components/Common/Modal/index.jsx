@@ -2,6 +2,8 @@ import React, { useCallback, useEffect } from "react";
 import { ActionIcon, Box, Group, Modal as MantineModal } from "@mantine/core";
 
 import "./index.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCross, faX } from "@fortawesome/free-solid-svg-icons";
 
 export const Modal = (props) => {
   const { isOpen, onClose, onConfirm, children, ...rest } = props;
@@ -56,8 +58,13 @@ export const ModalHeader = (props) => {
     >
       <Box>{props.children}</Box>
       <div className="modal-close-button">
-        <ActionIcon size="sm" variant="subtle" onClick={props.onClose}>
-          ×
+        <ActionIcon
+          size={32}
+          variant="subtle"
+          onClick={props.onClose}
+          style={{ fontSize: "20px", fontWeight: 700 }}
+        >
+          <FontAwesomeIcon icon={faX} />
         </ActionIcon>
       </div>
     </Group>

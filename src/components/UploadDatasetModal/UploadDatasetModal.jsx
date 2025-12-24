@@ -6,12 +6,12 @@ import {
   Box,
   Button,
   Group,
-  Modal,
   Progress,
   Stack,
   Text,
 } from "@mantine/core";
 import DragDrop from "../Common/DragDrop";
+import { Modal, ModalBody, ModalHeader } from "../Common/Modal";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -443,168 +443,170 @@ export const UploadDatasetModal = ({
     <Modal
       className="modal-xl"
       data-testid="modal"
-      opened={isOpen}
+      isOpen={isOpen}
       onClose={handleModalClose}
       size="xl"
-      title="Create new dataset"
       closeOnClickOutside={!showWarning}
       closeOnEscape={!showWarning}
     >
-      <Stack gap="md">
-        {showWarning ? (
-          <Alert color="red" title="Warning">
-            <Group justify="space-between" align="center">
-              <Text size="sm">
-                Ongoing uploads will be cancelled if you close the menu! Are you
-                sure?
-              </Text>
-              <Group gap="xs">
-                <Button color="gray" variant="light" onClick={handleCancelClose}>
-                  <FontAwesomeIcon icon={faBan} />
-                </Button>
-                <Button color="red" onClick={handleConfirmClose}>
-                  <FontAwesomeIcon icon={faCheck} />
-                </Button>
+      <ModalHeader>Create new dataset</ModalHeader>
+      <ModalBody>
+        <Stack gap="md">
+          {showWarning ? (
+            <Alert color="red" title="Warning">
+              <Group justify="space-between" align="center">
+                <Text size="sm">
+                  Ongoing uploads will be cancelled if you close the menu! Are you
+                  sure?
+                </Text>
+                <Group gap="xs">
+                  <Button color="gray" variant="light" onClick={handleCancelClose}>
+                    <FontAwesomeIcon icon={faBan} />
+                  </Button>
+                  <Button color="red" onClick={handleConfirmClose}>
+                    <FontAwesomeIcon icon={faCheck} />
+                  </Button>
+                </Group>
               </Group>
-            </Group>
-          </Alert>
-        ) : null}
-        <DragDrop
-          onClick={() => {}}
-          style={{ height: "100px" }}
-          className="my-2"
-          onFileInput={onFileInput}
-        />
-        {files ? (
-          <Stack gap="md" mt="xs">
-            {files.map((f) =>
-              !f.config || !f.config.editingModeActive ? (
-                <Group key={f.id} align="center" wrap="nowrap" gap="md">
-                  <Stack align="center" gap={4} style={{ width: 120 }}>
-                    <FontAwesomeIcon icon={faFile} size="2x" />
-                    <Text size="xs" ta="center">
-                      {f.name}
-                    </Text>
-                  </Stack>
-                  <Stack gap={4} style={{ flex: 1 }}>
-                    <Progress
-                      id={`progress-bar-${f.id}`}
-                      value={f.progress}
-                      color={
-                        f.status === FileStatus.COMPLETE
-                          ? "green"
-                          : f.status === FileStatus.ERROR ||
-                              f.status === FileStatus.CANCELLED
-                            ? "red"
-                            : "blue"
-                      }
-                    />
-                    <Text size="xs">{getStatusText(f)}</Text>
-                  </Stack>
-                  <Group gap="xs" wrap="nowrap">
-                    {f.status === FileStatus.COMPLETE && (
-                      <ActionIcon
-                        size="lg"
-                        className="modal-icon-button"
-                        variant="subtle"
-                        color="green"
-                        onClick={() => handleDelete(f.id)}
-                        title="Removes item from list"
-                      >
-                        <FontAwesomeIcon
-                          icon={faCheckCircle}
-                          style={{ fontSize: "1.1em" }}
-                        />
-                      </ActionIcon>
-                    )}
-                    {f.status === FileStatus.CONFIGURATION && (
-                      <Group gap="xs" wrap="nowrap">
+            </Alert>
+          ) : null}
+          <DragDrop
+            onClick={() => {}}
+            style={{ height: "100px" }}
+            className="my-2"
+            onFileInput={onFileInput}
+          />
+          {files ? (
+            <Stack gap="md" mt="xs">
+              {files.map((f) =>
+                !f.config || !f.config.editingModeActive ? (
+                  <Group key={f.id} align="center" wrap="nowrap" gap="md">
+                    <Stack align="center" gap={4} style={{ width: 120 }}>
+                      <FontAwesomeIcon icon={faFile} size="2x" />
+                      <Text size="xs" ta="center">
+                        {f.name}
+                      </Text>
+                    </Stack>
+                    <Stack gap={4} style={{ flex: 1 }}>
+                      <Progress
+                        id={`progress-bar-${f.id}`}
+                        value={f.progress}
+                        color={
+                          f.status === FileStatus.COMPLETE
+                            ? "green"
+                            : f.status === FileStatus.ERROR ||
+                                f.status === FileStatus.CANCELLED
+                              ? "red"
+                              : "blue"
+                        }
+                      />
+                      <Text size="xs">{getStatusText(f)}</Text>
+                    </Stack>
+                    <Group gap="xs" wrap="nowrap">
+                      {f.status === FileStatus.COMPLETE && (
                         <ActionIcon
-                          variant="subtle"
-                          color="blue"
-                          onClick={() =>
-                            changeConfig(f.id, {
-                              ...f.config,
-                              editingModeActive: true,
-                            })
-                          }
-                          title="Opens configuration menu"
-                        >
-                          <FontAwesomeIcon icon={faCog} />
-                        </ActionIcon>
-                        <ActionIcon
-                          variant="subtle"
-                          color="red"
                           size="lg"
+                          className="modal-icon-button"
+                          variant="subtle"
+                          color="green"
                           onClick={() => handleDelete(f.id)}
                           title="Removes item from list"
                         >
+                          <FontAwesomeIcon
+                            icon={faCheckCircle}
+                            style={{ fontSize: "1.1em" }}
+                          />
+                        </ActionIcon>
+                      )}
+                      {f.status === FileStatus.CONFIGURATION && (
+                        <Group gap="xs" wrap="nowrap">
+                          <ActionIcon
+                            variant="subtle"
+                            color="blue"
+                            onClick={() =>
+                              changeConfig(f.id, {
+                                ...f.config,
+                                editingModeActive: true,
+                              })
+                            }
+                            title="Opens configuration menu"
+                          >
+                            <FontAwesomeIcon icon={faCog} />
+                          </ActionIcon>
+                          <ActionIcon
+                            variant="subtle"
+                            color="red"
+                            size="lg"
+                            onClick={() => handleDelete(f.id)}
+                            title="Removes item from list"
+                          >
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                          </ActionIcon>
+                        </Group>
+                      )}
+                      {f.status === FileStatus.UPLOADING && (
+                        <ActionIcon
+                          variant="subtle"
+                          color="red"
+                          title="Cancels ongoing upload"
+                          onClick={() => handleCancel(f)}
+                        >
+                          <FontAwesomeIcon icon={faBan} />
+                        </ActionIcon>
+                      )}
+                      {(f.status === FileStatus.CANCELLED ||
+                        f.status === FileStatus.ERROR) && (
+                        <ActionIcon
+                          variant="subtle"
+                          color="red"
+                          title="Removes item from list"
+                          onClick={() => handleDelete(f.id)}
+                        >
                           <FontAwesomeIcon icon={faTrashAlt} />
                         </ActionIcon>
-                      </Group>
-                    )}
-                    {f.status === FileStatus.UPLOADING && (
-                      <ActionIcon
-                        variant="subtle"
-                        color="red"
-                        title="Cancels ongoing upload"
-                        onClick={() => handleCancel(f)}
-                      >
-                        <FontAwesomeIcon icon={faBan} />
-                      </ActionIcon>
-                    )}
-                    {(f.status === FileStatus.CANCELLED ||
-                      f.status === FileStatus.ERROR) && (
-                      <ActionIcon
-                        variant="subtle"
-                        color="red"
-                        title="Removes item from list"
-                        onClick={() => handleDelete(f.id)}
-                      >
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                      </ActionIcon>
-                    )}
-                    {f.status === FileStatus.PROCESSING && (
-                      <Box>
-                        <FontAwesomeIcon
-                          spin
-                          size="lg"
-                          className="me-2"
-                          icon={faSpinner}
-                        />
-                      </Box>
-                    )}
+                      )}
+                      {f.status === FileStatus.PROCESSING && (
+                        <Box>
+                          <FontAwesomeIcon
+                            spin
+                            size="lg"
+                            className="me-2"
+                            icon={faSpinner}
+                          />
+                        </Box>
+                      )}
+                    </Group>
                   </Group>
-                </Group>
-              ) : (
-                <DatasetConfigView
-                  key={f.id}
-                  fileId={f.id}
-                  fileConfig={f.config}
-                  changeConfig={changeConfig}
-                  backendId={f.backendId}
-                />
-              )
-            )}
-          </Stack>
-        ) : null}
-        <Group justify="space-between" align="center">
-          <Text size="sm">
-            <Anchor href="/example_file.csv" download="example_file.csv">
-              Click here
-            </Anchor>{" "}
-            to download an example CSV file.
-          </Text>
-          <Button
-            color="blue"
-            variant="outline"
-            disabled={!files.find((f) => f.status === FileStatus.CONFIGURATION)}
-            onClick={handleUploadAll}
-          >
-            Upload All
-          </Button>
-        </Group>
-      </Stack>
+                ) : (
+                  <DatasetConfigView
+                    key={f.id}
+                    fileId={f.id}
+                    fileConfig={f.config}
+                    changeConfig={changeConfig}
+                    backendId={f.backendId}
+                  />
+                )
+              )}
+            </Stack>
+          ) : null}
+          <Group justify="space-between" align="center">
+            <Text size="sm">
+              <Anchor href="/example_file.csv" download="example_file.csv">
+                Click here
+              </Anchor>{" "}
+              to download an example CSV file.
+            </Text>
+            <Button
+              color="blue"
+              variant="outline"
+              disabled={!files.find((f) => f.status === FileStatus.CONFIGURATION)}
+              onClick={handleUploadAll}
+            >
+              Upload All
+            </Button>
+          </Group>
+        </Stack>
+      </ModalBody>
     </Modal>
   );
 };

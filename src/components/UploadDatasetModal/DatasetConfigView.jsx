@@ -44,10 +44,11 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
           <tr>
             <th colSpan="2">
               <Group gap="sm" align="center">
-                <Text fw={600}>Dataset-name</Text>
+                <Text fw={600}>Dataset name</Text>
                 <TextInput
                   className="fw-bold"
                   id={"datasetName" + String(0)}
+                  label="Name"
                   placeholder="Name"
                   value={fileConfig.name}
                   onChange={(e) =>
@@ -89,6 +90,11 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
           </tbody>
         ) : (
           <tbody>
+            <tr>
+              <td colSpan="6">
+                <hr />
+              </td>
+            </tr>
             {fileConfig.timeSeries.map((timeSeries, seriesIndex) => {
               if (timeSeries.removed) return null;
               return (
@@ -96,6 +102,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                   <td style={{ width: "40%" }}>
                     <TextInput
                       data-testid="nameInput"
+                      label="Time series name"
                       placeholder="Name"
                       value={timeSeries.name}
                       onChange={(e) =>
@@ -118,6 +125,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                   <td style={{ width: "15%" }}>
                     <TextInput
                       data-testid="unitInput"
+                      label="Unit"
                       placeholder="Unit"
                       value={timeSeries.unit}
                       onChange={(e) =>
@@ -140,6 +148,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                   <td style={{ width: "15%" }}>
                     <TextInput
                       data-testid="scaleInput"
+                      label="Scale"
                       placeholder="1"
                       value={timeSeries.scale}
                       onChange={(e) => {
@@ -165,6 +174,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                   <td style={{ width: "15%" }}>
                     <TextInput
                       data-testid="offsetInput"
+                      label="Offset"
                       placeholder="0"
                       value={timeSeries.offset}
                       onChange={(e) => {

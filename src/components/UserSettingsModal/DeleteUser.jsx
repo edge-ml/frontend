@@ -32,8 +32,7 @@ class DeleteUser extends Component {
 
   render() {
     return (
-      <Stack mt="md">
-        <Title order={4}>Delete User</Title>
+      <Stack>
         <Stack gap={4}>
           <Text size="sm">
             Please type <Text component="span" fw={700}>{this.props.userMail}</Text> to confirm

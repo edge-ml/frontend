@@ -1,4 +1,5 @@
 import localStorageService from "./../LocalStorageService";
+import useProjectStore from "../../stores/projectStore";
 
 const currentHost = window.location.host.split(":")[0];
 
@@ -119,7 +120,8 @@ export const generateApiRequest = (
   params = {},
   contentType = "application/json"
 ) => {
-  const project = localStorageService.getProject();
+  const { currentProject } = useProjectStore.getState();
+  const project = currentProject?.id;
   return {
     method: method,
     url: baseUri + endpoint,

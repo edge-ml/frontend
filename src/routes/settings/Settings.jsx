@@ -1,9 +1,11 @@
 import React from "react";
-import { Container, Paper, Stack, Text, Title } from "@mantine/core";
+import { Container, Stack, Text, Title } from "@mantine/core";
 import EditName from "./EditName";
 import DeleteProject from "./DeleteProject";
 import GenerateCode from "./GenerateCode";
 import UserEdit from "./UserEdit";
+import "./Settings.css";
+import "../../components/Common/EdgeMLTable/index.css";
 
 // const SettingItem = ({ name, description, children }) => {
 //   const [modalOpen, setModalOpen] = useState();
@@ -42,13 +44,17 @@ import UserEdit from "./UserEdit";
 
 const SettingItem = ({ name, description, children }) => {
   return (
-    <Paper p="lg" radius="md" withBorder>
-      <Stack gap="xs">
-        <Title order={5}>{name}</Title>
-        <Text c="dimmed">{description}</Text>
-        <div>{children}</div>
-      </Stack>
-    </Paper>
+    <div className="settings-item">
+      <div className="table-header-wrapper settings-item-header">
+        <Stack gap={2}>
+          <Title order={5}>{name}</Title>
+          <Text c="dimmed" size="sm">
+            {description}
+          </Text>
+        </Stack>
+      </div>
+      <div className="table-body-wrapper settings-item-body">{children}</div>
+    </div>
   );
 };
 

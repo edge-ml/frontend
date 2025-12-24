@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Button, Stack, Text, TextInput } from "@mantine/core";
 
 import { changeUserName } from "../../services/ApiServices/AuthentificationServices";
 
@@ -51,7 +51,6 @@ class UserNameSettings extends Component {
   render() {
     return (
       <Stack>
-        <Title order={4}>Change UserName</Title>
         <TextInput
           id="inputUserName"
           label="Username"
