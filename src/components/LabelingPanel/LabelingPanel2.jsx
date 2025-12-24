@@ -96,6 +96,7 @@ class LabelingPanel extends Component {
                             label.id === this.state.selectedLabelTypeId
                               ? null
                               : label.color,
+                          borderColor: "#000",
                         }}
                         onClick={(e) =>
                           this.handleLabelTypeClicked(e, label.id)

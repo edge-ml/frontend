@@ -22,13 +22,13 @@ const Labelings = () => {
     return <Loader loading></Loader>;
   }
 
-  const removeLabeling = (labelings) => {
-    labelings.forEach((labeling) => {
-      deleteLabeling(labeling.id);
+  const removeLabeling = (labelingIds) => {
+    labelingIds.forEach((labelingId) => {
+      deleteLabeling(labelingId);
     });
 
     const remainingLabelings = selectedLabelings.filter(
-      (labeling) => !labelings.map((elm) => elm.id).includes(labeling.id)
+      (labelingId) => !labelingIds.includes(labelingId)
     );
     setSelectedLabelings(remainingLabelings);
   };
@@ -37,18 +37,15 @@ const Labelings = () => {
     const isChecked = e.target.checked;
     setSelectedLabelings((prevSelectedLabelings) => {
       if (isChecked) {
-        return [...prevSelectedLabelings, labeling];
+        return [...prevSelectedLabelings, labeling.id];
       } else {
-        return prevSelectedLabelings
-          .map((elm) => elm.id)
-          .filter((id) => id !== labeling.id);
+        return prevSelectedLabelings.filter((id) => id !== labeling.id);
       }
     });
   };
 
-  const labelingIdSet = new Set(labelings.map((elm) => elm.id)).size;
-  const selectedLabelingSet = new Set(selectedLabelings).size;
-  const allSelected = labelingIdSet === selectedLabelingSet;
+  const allSelected =
+    labelings.length > 0 && selectedLabelings.length === labelings.length;
 
   const selectAll = () => {
     if (allSelected) {

@@ -26,6 +26,7 @@ const LabelButtonView = ({
                 label.id === selectedLabelTypeId
                   ? hexToForegroundColor(label.color)
                   : label.color,
+              borderColor: "#000",
             }}
             onClick={(e) => setSelectedLabelTypeId(label.id)}
             key={index}

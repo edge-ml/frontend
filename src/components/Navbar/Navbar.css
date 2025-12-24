@@ -29,12 +29,12 @@
 }
 
 .navbar-project-item:hover {
-  background-color: #ddd;
+  background-color: rgba(72, 187, 120, 0.18);
 }
 
 .navbar-project-item-active {
-  color: black;
-  background-color: #ddd;
+  color: white;
+  background-color: rgb(72, 187, 120);
 }
 
 .navbar-project-item-color {
@@ -51,7 +51,7 @@
 }
 
 .navbar-project:hover {
-  background-color: black !important;
+  background-color: rgb(72, 187, 120) !important;
   color: white !important;
 }
 

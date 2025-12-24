@@ -23,12 +23,20 @@ const LabelingTable = ({
   const deleteSelectedLabelings = async () => {
     setDeleteModalOpen(true);
   };
+  const partiallySelected =
+    selectedLabelings.length > 0 &&
+    !allSelected &&
+    labelings.length > 0;
 
   return (
     <EdgeMLTable>
       <EdgeMLTableHeader>
         <Group className="p-1" align="center">
-          <Checkbox checked={allSelected} onChange={() => selectAll()} />
+          <Checkbox
+            checked={allSelected}
+            indeterminate={partiallySelected}
+            onChange={() => selectAll()}
+          />
           <Button
             className="ms-3 btn-delete"
             id="deleteDatasetsButton"
@@ -52,9 +60,7 @@ const LabelingTable = ({
             key={"labeling" + index}
             labeling={labeling}
             labelings={labelings}
-            isSelected={selectedLabelings
-              .map((elm) => elm.id)
-              .includes(labeling.id)}
+            isSelected={selectedLabelings.includes(labeling.id)}
             updateLabeling={updateLabeling}
             deleteLabelings={deleteLabelings}
             toggleCheck={toggleCheck}
@@ -72,11 +78,16 @@ const LabelingTable = ({
         <div>
           <div>Are you sure you want to delete the following labelings?</div>
           {selectedLabelings.length > 0
-            ? selectedLabelings.map((labeling, index) => (
-                <div className="m-2" key={index}>
-                  {labeling.name}
-                </div>
-              ))
+            ? selectedLabelings.map((labelingId) => {
+                const labeling = labelings.find(
+                  (entry) => entry.id === labelingId
+                );
+                return (
+                  <div className="m-2" key={labelingId}>
+                    {labeling ? labeling.name : labelingId}
+                  </div>
+                );
+              })
             : null}
         </div>
       </DeleteConfirmationModal>

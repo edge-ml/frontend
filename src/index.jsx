@@ -9,7 +9,25 @@ import { MantineProvider } from "@mantine/core";
 const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
-  <MantineProvider>
+  <MantineProvider
+    theme={{
+      primaryColor: "brand",
+      colors: {
+        brand: [
+          "#48bb78",
+          "#dff5e6",
+          "#b8e9c9",
+          "#8edcab",
+          "#67cf8f",
+          "#48bb78",
+          "#34a665",
+          "#238f54",
+          "#167746",
+          "#0c5f39",
+        ],
+      },
+    }}
+  >
     <BrowserRouter>
       <App></App>
     </BrowserRouter>
