@@ -1,68 +1,73 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import {
-  Modal as Modal_ReactStrap,
-  ModalHeader as ModalHeader_Reactstrap,
-  ModalBody as ModalBody_Reactstrap,
-  ModalFooter as ModalFooter_Reactstrap,
-  Button,
-} from "reactstrap";
+import React, { useCallback, useEffect } from "react";
+import { ActionIcon, Box, Group, Modal as MantineModal } from "@mantine/core";
 
 import "./index.css";
 
 export const Modal = (props) => {
+  const { isOpen, onClose, onConfirm, children, ...rest } = props;
 
-  const handleKeyDown = useCallback((e) => {
-    if (!props.isOpen) return;
-    if (e.key === "Escape") {
-      e.preventDefault();
-      e.stopPropagation();
-      props.onClose();
-    } else if (e.key === "Enter" && props.onConfirm) {
-      e.preventDefault();
-      e.stopPropagation();
-      props.onConfirm();
-    }
-  });
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (!isOpen) return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose && onClose();
+      } else if (e.key === "Enter" && onConfirm) {
+        e.preventDefault();
+        e.stopPropagation();
+        onConfirm();
+      }
+    },
+    [isOpen, onClose, onConfirm]
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  });
-
+  }, [handleKeyDown]);
 
   return (
-    <Modal_ReactStrap {...props}>
-      {React.Children.map(props.children, (child) => {
-        return React.cloneElement(child, {
-          onClose: props.onClose,
-          onConfirm: props.onConfirm,
-        });
-      })}
-    </Modal_ReactStrap>
+    <MantineModal
+      opened={isOpen}
+      onClose={onClose}
+      withCloseButton={false}
+      {...rest}
+    >
+      {React.Children.map(children, (child) =>
+        React.cloneElement(child, {
+          onClose: onClose,
+          onConfirm: onConfirm,
+        })
+      )}
+    </MantineModal>
   );
 };
 
 export const ModalHeader = (props) => {
   return (
-    <ModalHeader_Reactstrap {...props} className="modal-header">
-      {props.children}
+    <Group
+      {...props}
+      className="modal-header"
+      justify="space-between"
+      align="center"
+    >
+      <Box>{props.children}</Box>
       <div className="modal-close-button">
-        <Button size="sm" close onClick={props.onClose}></Button>
+        <ActionIcon size="sm" variant="subtle" onClick={props.onClose}>
+          ×
+        </ActionIcon>
       </div>
-    </ModalHeader_Reactstrap>
+    </Group>
   );
 };
 
 export const ModalBody = (props) => {
-  return (
-    <ModalBody_Reactstrap {...props}>{props.children}</ModalBody_Reactstrap>
-  );
+  return <Box {...props}>{props.children}</Box>;
 };
 
 export const ModalFooter = (props) => {
-  return (
-    <ModalFooter_Reactstrap {...props}>{props.children}</ModalFooter_Reactstrap>
-  );
+  return <Box {...props}>{props.children}</Box>;
 };

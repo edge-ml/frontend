@@ -1,20 +1,15 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { file } from "jszip";
-import { Button } from "reactstrap";
+import { ActionIcon, Group, Text } from "@mantine/core";
 
 const FileList = ({ file }) => {
   return (
-    <div className="d-flex justify-content-between m-3 align-items-center">
-      <div>
-        <div className="fw-bold">{file.name}</div>
-      </div>
-      <div>
-        <Button>
-          <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
-        </Button>
-      </div>
-    </div>
+    <Group justify="space-between" px="md" py="sm">
+      <Text fw={600}>{file.name}</Text>
+      <ActionIcon variant="outline" color="red">
+        <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
+      </ActionIcon>
+    </Group>
   );
 };
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Spinner, Badge } from "reactstrap";
+import { Badge, Group, Loader, Text } from "@mantine/core";
 import {
   faCheck,
   faHourglass,
@@ -22,13 +22,7 @@ export const TrainingStateCounter = ({
   training: { training_state, error_msg },
 }) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        gap: "8px",
-      }}
-    >
+    <Group gap="sm">
       {training_state !== "TRAINING_FAILED" &&
         states.map(([k, v], i) => {
           const color =
@@ -38,16 +32,9 @@ export const TrainingStateCounter = ({
                 ? "success"
                 : "secondary";
           return (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "4px",
-              }}
-            >
+            <Group key={k} gap="xs" align="center">
               {training_state === k ? (
-                <Spinner color="info" size="sm" />
+                <Loader size="xs" />
               ) : i <= states.findIndex((x) => x[0] === training_state) ? (
                 <FontAwesomeIcon style={{ color: BS_SUCCESS }} icon={faCheck} />
               ) : (
@@ -57,25 +44,18 @@ export const TrainingStateCounter = ({
                 />
               )}{" "}
               <Badge color={color}>{v}</Badge>
-            </div>
+            </Group>
           );
         })}
       {training_state === "TRAINING_FAILED" && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            gap: "4px",
-          }}
-        >
+        <Group gap="xs" align="center">
           <FontAwesomeIcon
             style={{ color: BS_FAILURE }}
             icon={faExclamationTriangle}
           />{" "}
-          <Badge color="danger">Training failed: {error_msg}</Badge>
-        </div>
+          <Badge color="red">Training failed: {error_msg}</Badge>
+        </Group>
       )}
-    </div>
+    </Group>
   );
 };

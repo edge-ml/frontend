@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Col, Row } from "reactstrap";
+import { Anchor, Stack, Text, Title } from "@mantine/core";
 
 class ErrorPage extends Component {
   constructor(props) {
@@ -9,36 +9,24 @@ class ErrorPage extends Component {
 
   render() {
     return (
-      <Col style={{ textAlign: "center", paddingTop: "100px" }}>
-        <Row className="justify-content-md-center">
-          <h1 style={{ fontSize: "70px" }}>{this.props.match.params.error}</h1>
-        </Row>
+      <Stack align="center" pt={100}>
+        <Title order={1} size={70}>
+          {this.props.match.params.error}
+        </Title>
         {this.props.match.params.errorText ? (
-          <Row className="justify-content-md-center">
-            <h2>{this.props.match.params.errorText}</h2>
-          </Row>
+          <Title order={2}>{this.props.match.params.errorText}</Title>
         ) : null}
-        <Row
-          className="justify-content-md-center"
-          style={{ textAlign: "center", paddingTop: "30px" }}
-        >
-          <h5>
-            The page you are looking for doesn't exist or an other error
-            occured.
-          </h5>
-        </Row>
-        <Row
-          className="justify-content-md-center"
-          style={{ textAlign: "center", paddingTop: "30px" }}
-        >
+        <Text pt="md">
+          The page you are looking for doesn't exist or an other error occured.
+        </Text>
+        <Text pt="md">
           If you want to try again click{" "}
-          <a href="/" style={{ whiteSpace: "pre-wrap" }}>
-            {" "}
+          <Anchor href="/" style={{ whiteSpace: "pre-wrap" }}>
             here
-          </a>
+          </Anchor>
           .
-        </Row>
-      </Col>
+        </Text>
+      </Stack>
     );
   }
 }

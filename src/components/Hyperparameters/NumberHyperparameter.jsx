@@ -1,33 +1,29 @@
-import React, { Component } from "react";
-import { InputGroupText, Input } from "reactstrap";
+import React from "react";
+import { NumberInput } from "@mantine/core";
 
 import Hyperparameter from "./Hyperparameter";
 
 const NumberHyperparameter = (props) => {
   return (
     <Hyperparameter {...props}>
-      <Input
-        style={{ minHeight: "38px" }}
-        type="number"
+      <NumberInput
         value={props.value}
-        defaultValue={props.value}
         step={props.step_size}
         min={props.number_min}
         max={props.number_max}
-        onChange={(e) => {
+        onChange={(value) => {
           props.handleChange({
             parameter_name: props.parameter_name,
-            state: e.target.value,
+            state: value,
           });
         }}
-        className={`hyperparameter-input-container text-center 
-              ${
-                props.value === null ||
-                (props.number_min <= props.value &&
-                  props.number_max >= props.value)
-                  ? ""
-                  : "border border-danger"
-              }`}
+        error={
+          props.value !== null &&
+          (props.number_min > props.value || props.number_max < props.value)
+            ? "Value out of range"
+            : null
+        }
+        styles={{ input: { textAlign: "center", minHeight: 38 } }}
       />
     </Hyperparameter>
   );

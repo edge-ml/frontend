@@ -1,28 +1,27 @@
 import React from "react";
-import { InputGroup, InputGroupText, UncontrolledTooltip } from "reactstrap";
+import { Group, Text, Tooltip } from "@mantine/core";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const Hyperparameter = (props) => (
-  <InputGroup className="w-100">
-    <InputGroupText>
+  <Group align="center" wrap="nowrap" w="100%">
+    <Tooltip
+      label={
+        <span>
+          <b>Description:</b> {props.description}
+        </span>
+      }
+      withArrow
+    >
       <FontAwesomeIcon
-        id={"hyperparameter" + props.parameter_name}
         style={{ color: "#8b8d8f" }}
         icon={faInfoCircle}
-        className="me-2 fa-s"
       />
-      <UncontrolledTooltip
-        placement="top-start"
-        target={"hyperparameter" + props.parameter_name}
-      >
-        <b>Description:</b> {props.description}
-      </UncontrolledTooltip>
-      <span className="text-truncate">{props.display_name}</span>
-    </InputGroupText>
+    </Tooltip>
+    <Text lineClamp={1}>{props.display_name}</Text>
     {props.children}
-  </InputGroup>
+  </Group>
 );
 
 export default Hyperparameter;

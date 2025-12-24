@@ -1,4 +1,5 @@
 import React from "react";
+import { Divider, Stack } from "@mantine/core";
 import { Modal, ModalHeader, ModalFooter, ModalBody } from "../Common/Modal";
 import MailSettings from "./MailSettings";
 import PasswordSettings from "./PasswordSettings";
@@ -18,19 +19,21 @@ const UserSettingsModal = ({ isOpen, onClose }) => {
     >
       <ModalHeader style={{ borderBottom: "None" }}>User Settings</ModalHeader>
       <ModalBody style={{ maxHeight: "calc(100vh)", overflowY: "auto" }}>
-        {!user.provider || user.provider === "local" ? (
-          <>
-            <MailSettings id="mailSettings" />
-            <hr />
-            <PasswordSettings id="passwordSettings" />
-            <hr />
-            <UserNameSettings id="userNameSettings" />
-            <hr />
-          </>
-        ) : null}
-        <UserSettingsProvider>
-          <DeleteUser />
-        </UserSettingsProvider>
+        <Stack gap="md">
+          {!user.provider || user.provider === "local" ? (
+            <>
+              <MailSettings id="mailSettings" />
+              <Divider />
+              <PasswordSettings id="passwordSettings" />
+              <Divider />
+              <UserNameSettings id="userNameSettings" />
+              <Divider />
+            </>
+          ) : null}
+          <UserSettingsProvider>
+            <DeleteUser />
+          </UserSettingsProvider>
+        </Stack>
       </ModalBody>
       <ModalFooter></ModalFooter>
     </Modal>

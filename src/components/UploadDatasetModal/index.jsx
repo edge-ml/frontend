@@ -1,4 +1,4 @@
-import { Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Modal, Stack, Text } from "@mantine/core";
 import DragDrop from "../Common/DragDrop";
 import FileList from "./FileList";
 import { useState } from "react";
@@ -16,25 +16,22 @@ const UploadDatasetModal = ({ isOpen, onCloseModal, onDatasetComplete }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} size="xl">
-      <ModalHeader>Upload</ModalHeader>
-      <ModalBody>
-        <DragDrop
-          style={{ height: "100px" }}
-          className="my-2"
-          onFileInput={onFileInput}
-        />
+    <Modal opened={isOpen} onClose={onCloseModal} size="xl" title="Upload">
+      <Stack gap="md">
+        <DragDrop style={{ height: "100px" }} onFileInput={onFileInput} />
         <EdgeMLTable>
-          <EdgeMLTableHeader>Selected files</EdgeMLTableHeader>
+          <EdgeMLTableHeader>
+            <Text fw={600}>Selected files</Text>
+          </EdgeMLTableHeader>
           {files.map((file) => {
             return (
-              <EdgeMLTableEntry>
+              <EdgeMLTableEntry key={file.name}>
                 <FileList file={file}></FileList>
               </EdgeMLTableEntry>
             );
           })}
         </EdgeMLTable>
-      </ModalBody>
+      </Stack>
     </Modal>
   );
 };

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Button, Stack, Text, TextInput } from "@mantine/core";
 
 import { validateEmail } from "./../../services/helpers";
 import { changeUserMail } from "./../../services/ApiServices/AuthentificationServices";
@@ -54,47 +54,39 @@ class MailSettings extends Component {
   render() {
     return (
       <div>
-        <h4 className="fw-bold">Change Mail</h4>
-        <InputGroup>
-          <InputGroupText>E-Mail</InputGroupText>
-          <Input
+        <Text fw={700} size="lg">
+          Change Mail
+        </Text>
+        <Stack gap="sm">
+          <TextInput
             id="inputNewMail"
+            label="E-Mail"
             placeholder="New e-mail"
             onChange={this.onNewEmailChange}
           />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupText>E-Mail</InputGroupText>
-          <Input
+          <TextInput
             id="inputNewMailConfirm"
+            label="E-Mail"
             placeholder="Retype new e-mail"
             onChange={this.onConfirmationEmailChange}
           />
-        </InputGroup>
           <Button
-            outline
             id="buttonSaveNewMail"
+            variant="outline"
             disabled={
               !this.state.newEmail ||
               this.state.newEmail !== this.state.confirmationEmail
             }
-            color="primary"
             onClick={this.onEmailChangeSubmit}
           >
             Save new e-mail
           </Button>
-        {this.state.emailError ? (
-          <div
-            id="emailError"
-            style={{
-              display: "inline",
-              color: "red",
-              marginLeft: "16px",
-            }}
-          >
-            {this.state.emailError}
-          </div>
-        ) : null}
+          {this.state.emailError ? (
+            <Text id="emailError" c="red">
+              {this.state.emailError}
+            </Text>
+          ) : null}
+        </Stack>
       </div>
     );
   }

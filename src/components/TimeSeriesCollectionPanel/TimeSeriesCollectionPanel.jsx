@@ -4,8 +4,8 @@ import "./TimeSeriesCollectionPanel.css";
 import TimeSeriesPanel from "../TimeSeriesPanel/TimeSeriesPanel";
 import Highcharts from "highcharts/highstock";
 import RangeSlider from "../RangeSlider/RangeSlider";
+import { Alert } from "@mantine/core";
 import { updateTimeSeriesConfig } from "../../services/ApiServices/DatasetServices";
-import { Alert } from "reactstrap";
 
 class TimeSeriesCollectionPanel extends Component {
   constructor(props) {
@@ -185,20 +185,24 @@ class TimeSeriesCollectionPanel extends Component {
             width: "87%",
           }}
         >
-          <Alert
-            color="success"
-            isOpen={this.state.successAlertVisible}
-            toggle={() => this.setState({ successAlertVisible: false })}
-          >
-            Configuration saved successfully!
-          </Alert>
-          <Alert
-            color="danger"
-            isOpen={this.state.errorAlertVisible}
-            toggle={() => this.setState({ errorAlertVisible: false })}
-          >
-            Error saving configuration. Please try again.
-          </Alert>
+          {this.state.successAlertVisible ? (
+            <Alert
+              color="green"
+              withCloseButton
+              onClose={() => this.setState({ successAlertVisible: false })}
+            >
+              Configuration saved successfully!
+            </Alert>
+          ) : null}
+          {this.state.errorAlertVisible ? (
+            <Alert
+              color="red"
+              withCloseButton
+              onClose={() => this.setState({ errorAlertVisible: false })}
+            >
+              Error saving configuration. Please try again.
+            </Alert>
+          ) : null}
         </div>
         <div
           className="d-flex flex-column justify-content-start flex-fill"

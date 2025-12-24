@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Spinner } from "reactstrap";
+import { Button } from "@mantine/core";
 
 function SpinnerButton({
   children,
@@ -9,22 +9,12 @@ function SpinnerButton({
   ...props
 }) {
   return (
-    <Button {...props}>
-      {loading ? (
-        <div>
-          {loadingtext}
-          <Spinner
-            style={{
-              width: "1rem",
-              height: "1rem",
-              marginLeft: "4px",
-            }}
-            color={spinnercolor}
-          />
-        </div>
-      ) : (
-        children
-      )}
+    <Button
+      {...props}
+      loading={loading}
+      loaderProps={{ color: spinnercolor }}
+    >
+      {loading ? loadingtext : children}
     </Button>
   );
 }

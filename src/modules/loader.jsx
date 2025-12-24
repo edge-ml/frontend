@@ -1,19 +1,14 @@
 import React from "react";
-import { Spinner } from "reactstrap";
-import EdgeMLBrandLogo from "../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
+import { Center, Loader as MantineLoader } from "@mantine/core";
 
 import "./loader.css";
 
 const Loader = (props) => {
   if (props.loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center v-100 h-100">
-        <Spinner
-          className="loader"
-          color="primary"
-          loading={props.loading.toString()}
-        />
-      </div>
+      <Center h="100%" w="100%">
+        <MantineLoader className="loader" color="blue" />
+      </Center>
     );
   } else {
     return props.children;

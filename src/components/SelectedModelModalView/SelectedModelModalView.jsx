@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 
-import { Button, Table, Row, Col } from "reactstrap";
+import { Button, Group, Stack, Table, Text } from "@mantine/core";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
 import ConfusionMatrixView from "../ConfusionMatrix/ConfusionMatrixView";
@@ -10,7 +10,7 @@ import "./index.css";
 import classNames from "classnames";
 import LabelBadge from "../Common/LabelBadge";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 export const SelectedModelModalView = ({
   model,
@@ -32,31 +32,25 @@ export const SelectedModelModalView = ({
       <ModalBody>
         {model ? (
           <>
-            <div className="d-flex justify-content-between w-100">
-              <div className="d-flex justify-content-start">
+            <Group justify="space-between" align="flex-start">
+              <Group align="flex-start" wrap="nowrap">
                 <General_info
                   model={model}
                   onButtonDeploy={onButtonDeploy}
                   onButtonDownload={onButtonDownload}
                 ></General_info>
                 <PerformanceInfo metrics={metrics.metrics}></PerformanceInfo>
-              </div>
-              <div>
-                <Button
-                  outline
-                  className="me-auto"
-                  onClick={() => {}}
-                  color="danger"
-                >
-                  <FontAwesomeIcon
-                    className="mx-1"
-                    icon={faTrashAlt}
-                  ></FontAwesomeIcon>
-                  Delete
-                </Button>
-              </div>
-            </div>
-            <div className="my-5 d-flex justify-content-start align-items-center">
+              </Group>
+              <Button
+                variant="outline"
+                color="red"
+                onClick={() => {}}
+                leftSection={<FontAwesomeIcon icon={faTrashAlt} />}
+              >
+                Delete
+              </Button>
+            </Group>
+            <Group align="flex-start" mt="lg">
               <Classification_report
                 report={metrics.classification_report}
               ></Classification_report>
@@ -64,14 +58,14 @@ export const SelectedModelModalView = ({
                 matrix={JSON.parse(metrics.confusion_matrix)}
                 labels={model.labels.map((elm) => elm.name)}
               ></ConfusionMatrixView>
-            </div>
+            </Group>
             <Training_config model={model}></Training_config>
           </>
         ) : (
           <Loader loading></Loader>
         )}
       </ModalBody>
-      <ModalFooter className="justify-content-end">
+      <ModalFooter>
         {/* <div>
                 <Button
                   outline
@@ -95,9 +89,11 @@ export const SelectedModelModalView = ({
                   Deploy
                 </Button>
               </div> */}
-        <Button outline onClick={onClosed}>
+        <Group justify="flex-end">
+          <Button variant="outline" onClick={onClosed}>
           Close
         </Button>
+        </Group>
       </ModalFooter>
     </Modal>
   );
@@ -111,35 +107,33 @@ const General_info = ({
 }) => {
   return (
     <div>
-      <h5>
-        <b>General information</b>
-      </h5>
-      <Row>
-        <Col className="col-auto">
-          <Table borderless size="sm" striped>
-            <tbody>
-              <tr>
-                <th>Name</th>
-                <td>{model.name}</td>
-              </tr>
-              <tr>
-                <th>Pipeline</th>
-                <td>{model.pipeline.selectedPipeline.name}</td>
-              </tr>
-
-              <tr>
-                <th>Used labels</th>
-                <td>
-                  {model.labels.map((elm, index) => (
-                    <LabelBadge color={elm.color}>{elm.name}</LabelBadge>
-                  ))}
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-        </Col>
-        <Col></Col>
-      </Row>
+      <Text fw={700} size="lg">
+        General information
+      </Text>
+      <Table striped withRowBorders={false}>
+        <tbody>
+          <tr>
+            <th>Name</th>
+            <td>{model.name}</td>
+          </tr>
+          <tr>
+            <th>Pipeline</th>
+            <td>{model.pipeline.selectedPipeline.name}</td>
+          </tr>
+          <tr>
+            <th>Used labels</th>
+            <td>
+              <Group gap="xs">
+                {model.labels.map((elm) => (
+                  <LabelBadge key={elm.id} color={elm.color}>
+                    {elm.name}
+                  </LabelBadge>
+                ))}
+              </Group>
+            </td>
+          </tr>
+        </tbody>
+      </Table>
     </div>
   );
 };
@@ -149,24 +143,30 @@ const Classification_report = ({ report }) => {
   const metrics = Object.keys(report[keys[0]]);
   return (
     <div>
-      <h5>
-        <b>Classification report</b>
-      </h5>
-      <Table borderless size="sm" striped>
+      <Text fw={700} size="lg">
+        Classification report
+      </Text>
+      <Table striped withRowBorders={false}>
         <thead>
           <tr>
             <th></th>
             {metrics.map((key) => (
-              <th className="text-center">{key}</th>
+              <th key={key}>
+                <Text ta="center">{key}</Text>
+              </th>
             ))}
           </tr>
         </thead>
         <tbody>
           {keys.map((key) => (
-            <tr>
-              <th>{key}</th>
+            <tr key={key}>
+              <th>
+                <Text>{key}</Text>
+              </th>
               {metrics.map((met) => (
-                <td className="px-4">{metric(report[key][met])}</td>
+                <td key={met}>
+                  <Text px="md">{metric(report[key][met])}</Text>
+                </td>
               ))}
             </tr>
           ))}
@@ -207,35 +207,37 @@ const Training_config = ({ model }) => {
 
   return (
     <Fragment>
-      <h5>
-        <b>Pipeline configuration</b>
-      </h5>
-      <div className="d-flex justify-content-start">
+      <Text fw={700} size="lg">
+        Pipeline configuration
+      </Text>
+      <Group align="center">
         {model.pipeline.selectedPipeline.steps
           .filter((elm) => elm.type === "PRE" || elm.type === "CORE")
           .map((elm) => Render_Step(elm, onClickStep))}
-      </div>
+      </Group>
 
-      <div className="mx-2 borderTop p-2">
+      <Stack mt="sm" px="sm" className="borderTop" pt="sm">
         {/* <h5>
           <b>{selectedStep.name}</b>
         </h5> */}
-        <div>
+        <Text>
           <b>Method: </b>
           {selectedStep.options.name}
-        </div>
+        </Text>
         {selectedStep.options.parameters.length > 0 ? (
-          <div>
-            <b>Parameters: </b>
+          <Stack gap={4}>
+            <Text>
+              <b>Parameters: </b>
+            </Text>
             {selectedStep.options.parameters.map((param) => (
-              <div>
+              <Text key={param.name}>
                 <span>{param.name}: </span>
                 <span>{param.value}</span>
-              </div>
+              </Text>
             ))}
-          </div>
+          </Stack>
         ) : null}
-      </div>
+      </Stack>
     </Fragment>
   );
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Row, Container } from "reactstrap";
+import { Box, SimpleGrid } from "@mantine/core";
 import NumberHyperparameter from "./NumberHyperparameter";
 import SelectionHyperparameter from "./SelectionHyperparameter";
 import TextHyperparameter from "./TextHyperparameter";
@@ -10,48 +10,46 @@ export const HyperparameterView = ({
   isAdvanced,
 }) => {
   return (
-    <Container fluid>
-      <Row>
+    <Box>
+      <SimpleGrid cols={{ base: 1, md: 2 }} spacing="md">
         {hyperparameters.length > 0 &&
           hyperparameters
             .filter((h) => h.is_advanced === isAdvanced)
             .map((h) => {
               if (h.parameter_type === "number") {
                 return (
-                  <Col className="col-md-6 col-12 ps-0">
-                    <NumberHyperparameter
-                      {...h}
-                      id={"input_" + h.parameter_name}
-                      handleChange={handleHyperparameterChange}
-                      value={h.value}
-                    />
-                  </Col>
+                  <NumberHyperparameter
+                    key={h.parameter_name}
+                    {...h}
+                    id={"input_" + h.parameter_name}
+                    handleChange={handleHyperparameterChange}
+                    value={h.value}
+                  />
                 );
               } else if (h.parameter_type === "selection") {
                 return (
-                  <Col className="col-md-6 col-12 ps-0">
-                    <SelectionHyperparameter
-                      {...h}
-                      id={"input_" + h.parameter_name}
-                      handleChange={handleHyperparameterChange}
-                      value={h.value}
-                    />
-                  </Col>
+                  <SelectionHyperparameter
+                    key={h.parameter_name}
+                    {...h}
+                    id={"input_" + h.parameter_name}
+                    handleChange={handleHyperparameterChange}
+                    value={h.value}
+                  />
                 );
               } else if (h.parameter_type === "text") {
                 return (
-                  <Col className="col-md-6 col-12 ps-0">
-                    <TextHyperparameter
-                      {...h}
-                      id={"input_" + h.parameter_name}
-                      handleChange={handleHyperparameterChange}
-                      value={h.value}
-                    />
-                  </Col>
+                  <TextHyperparameter
+                    key={h.parameter_name}
+                    {...h}
+                    id={"input_" + h.parameter_name}
+                    handleChange={handleHyperparameterChange}
+                    value={h.value}
+                  />
                 );
               }
+              return null;
             })}
-      </Row>
-    </Container>
+      </SimpleGrid>
+    </Box>
   );
 };

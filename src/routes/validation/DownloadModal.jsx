@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import {
   Modal,
   ModalFooter,
@@ -22,7 +16,6 @@ import { getProject } from "../../services/LocalStorageService";
 
 const DownloadModal = ({ model, onClose }) => {
   const [language, setLanguage] = useState("cpp");
-  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false); // State for language dropdown
 
   if (!model) {
     return null;
@@ -34,9 +27,9 @@ const DownloadModal = ({ model, onClose }) => {
       return;
     }
 
-    console.log("Downloading model")
+    console.log("Downloading model");
     const blob = await downloadDeploymentModel(model.id, "C");
-    console.log(blob)
+    console.log(blob);
     downloadBlob(blob, `${model.name}_${language}.zip`);
   };
 
@@ -64,55 +57,47 @@ int main() {
 
     if (code === "") {
       return (
-        <div className="d-flex w-100 justify-content-center align-items-center mh-25 fw-bold">
-          No sample code available
-        </div>
+        <Group justify="center" align="center">
+          <Text fw={600}>No sample code available</Text>
+        </Group>
       );
     }
 
     return (
       <div>
-        <b>Code</b>
+        <Text fw={600}>Code</Text>
         <CodeView language={language} code={genCode}></CodeView>
       </div>
     );
   };
 
   return (
-    <Modal isOpen={model} size="xl" onClose={onClose}>
+    <Modal isOpen={!!model} size="xl" onClose={onClose}>
       <ModalHeader>Download: {model.name}</ModalHeader>
       <ModalBody>
-        <div className="d-flex align-items-center justify-content-between">
-          <div className="d-flex align-items-center">
-            <b className="me-2">Language:</b>
-            <Dropdown
-              isOpen={languageDropdownOpen}
-              toggle={() => setLanguageDropdownOpen(!languageDropdownOpen)}
-            >
-              <DropdownToggle outline color="primary" caret>
-                {language.toUpperCase()}
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={() => setLanguage("cpp")}>
-                  C++
-                </DropdownItem>
-                {/* <DropdownItem onClick={() => setLanguage("python")}>
-                  Python
-                </DropdownItem> */}
-                {/* Add more language options as DropdownItems */}
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-          <Button outline color="primary" onClick={downloadModel}>
+        <Group justify="space-between" align="center">
+          <Group align="center">
+            <Text fw={600}>Language:</Text>
+            <Select
+              value={language}
+              onChange={(value) => value && setLanguage(value)}
+              data={[{ value: "cpp", label: "C++" }]}
+              allowDeselect={false}
+            />
+          </Group>
+          <Button variant="outline" onClick={downloadModel}>
             Download
           </Button>
-        </div>
-        <div className="pt-2"></div>
-        <hr></hr>
-        <CodeSnippet language={language} code={getCode()}></CodeSnippet>
+        </Group>
+        <Stack gap="md" mt="md">
+          <hr />
+          <CodeSnippet language={language} code={getCode()}></CodeSnippet>
+        </Stack>
       </ModalBody>
       <ModalFooter>
-        <Button outline onClick={onClose}>Close</Button>
+        <Button variant="outline" onClick={onClose}>
+          Close
+        </Button>
       </ModalFooter>
     </Modal>
   );

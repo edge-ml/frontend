@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button } from "reactstrap";
+import { Box, Button, Center, Stack, Text, Title } from "@mantine/core";
 import logoSvg from "../../logo.svg";
 
 const DataLossPage = ({ children }) => {
@@ -29,33 +29,38 @@ const DataLossPage = ({ children }) => {
   return (
     <>
       {children}
-      <div
-        className="d-flex justify-content-center align-items-center vh-100 vw-100 flex-column fw-bold position-absolute fixed-top left-0 z-index-10000"
-        style={{ backgroundColor: "rgba(255,255,255,0.9)" }}
+      <Box
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 10000,
+          backgroundColor: "rgba(255,255,255,0.9)",
+        }}
       >
-        <div className="d-flex align-items-center m-5">
-          <img
-            style={{ marginRight: "8px", width: "100px" }}
-            src={logoSvg}
-            alt="Logo"
-          />
-          <b>
-            <div style={{ color: "black", fontSize: "40px" }}>edge-ml</div>
-          </b>
-        </div>
-        <h2 className="m-2 text-center">This is an edge-ml beta deployment.</h2>
-        <h2 className="m-2 text-center">
-          Data, including your account, may get deleted at any time.
-        </h2>
-        <Button
-          size="lg"
-          className="m-5"
-          color="primary"
-          onClick={acceptDataLoss}
-        >
-          Accept
-        </Button>
-      </div>
+        <Center h="100vh" w="100vw">
+          <Stack align="center" gap="lg">
+            <Center>
+              <img
+                style={{ marginRight: 8, width: 100 }}
+                src={logoSvg}
+                alt="Logo"
+              />
+              <Title order={2} c="black">
+                edge-ml
+              </Title>
+            </Center>
+            <Text size="xl" ta="center">
+              This is an edge-ml beta deployment.
+            </Text>
+            <Text size="xl" ta="center">
+              Data, including your account, may get deleted at any time.
+            </Text>
+            <Button size="lg" onClick={acceptDataLoss}>
+              Accept
+            </Button>
+          </Stack>
+        </Center>
+      </Box>
     </>
   );
 };

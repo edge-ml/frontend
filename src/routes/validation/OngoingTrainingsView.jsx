@@ -1,14 +1,14 @@
 import React from "react";
-import { Table } from "reactstrap";
+import { Group, Text } from "@mantine/core";
 import { TrainingStateCounter } from "./TrainingStateCounter";
 
 export const OngoingTrainingsView = ({ trainings }) => (
   <div>
     {trainings.map((t) => (
-      <div className="d-flex justify-content-between flex-row">
-        <span>{t.name}</span>
+      <Group key={t.id || t.name} justify="space-between">
+        <Text>{t.name}</Text>
         <TrainingStateCounter training={t} />
-      </div>
+      </Group>
     ))}
   </div>
 );

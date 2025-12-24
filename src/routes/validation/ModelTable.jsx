@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import Checkbox from "../../components/Common/Checkbox";
-import { Button } from "reactstrap";
+import { Button, Checkbox, Group } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import DeleteModal from "../../components/Common/DeleteModal";
@@ -34,22 +33,21 @@ const ModelTable = ({ models, stepOptions, updateModel, deleteModels }) => {
 
   const onDeleteModels = (models) => {
     setModelsToDelete(models);
-  }
+  };
 
   return (
     <EdgeMLTable>
       <EdgeMLTableHeader>
-        <div className="ml-0 me-0 ml-md-2 me-md-3 d-flex align-items-center">
+        <Group align="center" gap="sm">
           <Checkbox
-            isSelected={models.length == selectedModels.length}
-            onClick={onSelectAll}
-          ></Checkbox>
+            checked={models.length === selectedModels.length}
+            onChange={onSelectAll}
+          />
           <Button
-            className="btn-delete ms-2"
             id="deleteDatasetsButton"
-            size="sm"
-            outline
-            color="danger"
+            size="xs"
+            variant="outline"
+            color="red"
             onClick={() => {
               onDeleteModels(
                 selectedModels.map((elm) =>
@@ -58,13 +56,10 @@ const ModelTable = ({ models, stepOptions, updateModel, deleteModels }) => {
               );
             }}
           >
-            <FontAwesomeIcon
-              className="me-2"
-              icon={faTrashAlt}
-            ></FontAwesomeIcon>
+            <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
             Delete
           </Button>
-        </div>
+        </Group>
       </EdgeMLTableHeader>
       {models.map((model, index) => {
         return (

@@ -6,7 +6,7 @@ import {
   faPlay,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "reactstrap";
+import { Button } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useProjectRouter from "../../Hooks/ProjectRouter";
 
@@ -33,11 +33,14 @@ const ListButton = ({ onClick, icon, children, ...props }) => {
   };
 
   return (
-    <Button {...props} className="btn-edit ms-2 my-2" onClick={onClickStop}>
-      <FontAwesomeIcon icon={icon}></FontAwesomeIcon>
-      <div>
-        <small>{children}</small>
-      </div>
+    <Button
+      {...props}
+      size="xs"
+      variant="outline"
+      onClick={onClickStop}
+      leftSection={<FontAwesomeIcon icon={icon} />}
+    >
+      {children}
     </Button>
   );
 };
@@ -57,24 +60,21 @@ const ButtonList = ({
       {model.trainStatus === "done" && !model.error && (
         <>
           <ListButton
-            color="info"
-            outline
+            color="blue"
             icon={faInfoCircle}
             onClick={() => setModalModel(model)}
           >
             Info
           </ListButton>
           <ListButton
-            color="primary"
-            outline
+            color="blue"
             icon={faPlay}
             onClick={() => navigateTo("models/live/" + model.id)}
           >
             View live
           </ListButton>
           <ListButton
-            color="primary"
-            outline
+            color="blue"
             icon={faMicrochip}
             onClick={() => {
               setDeployModalOpen(true);
@@ -84,8 +84,7 @@ const ButtonList = ({
             Deploy
           </ListButton>
           <ListButton
-            color="primary"
-            outline
+            color="blue"
             icon={faDownload}
             onClick={() => setModelDownload(model)}
           >
@@ -94,8 +93,7 @@ const ButtonList = ({
         </>
       )}
       <ListButton
-        color="danger"
-        outline
+        color="red"
         icon={faTrashAlt}
         onClick={() => onDeleteSingleModel(model)}
       >

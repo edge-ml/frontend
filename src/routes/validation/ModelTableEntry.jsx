@@ -1,6 +1,13 @@
 import React, { useState } from "react";
-import Checkbox from "../../components/Common/Checkbox";
-import { Row, Col, UncontrolledTooltip, Spinner } from "reactstrap";
+import {
+  ActionIcon,
+  Checkbox,
+  Group,
+  Loader,
+  Stack,
+  Text,
+  Tooltip,
+} from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faPen } from "@fortawesome/free-solid-svg-icons";
 import DownloadModal from "./DownloadModal";
@@ -9,22 +16,29 @@ import ButtonList from "./ButtonList";
 import DeployModal from "./DeployModal";
 import EditModal from "../../components/EditModal";
 
-const ModelCheckBoxInfo = ({ selectedModels, model, clickCheckBox, onClickEditName }) => (
-  <Col>
-    <div className="d-flex align-items-center h-100">
-      <Checkbox
-        isSelected={selectedModels.map(model => model.id).includes(model.id)}
-        onClick={() => clickCheckBox(model)}
-      ></Checkbox>
-      <div className="ms-2">
-        <div>
-          <b className="font-size-lg h5 fw-bold me-1">{model.name}</b>
-          <FontAwesomeIcon className="cursor-pointer" icon={faPen} onClick={onClickEditName}></FontAwesomeIcon>
-        </div>
-        <div>{model.pipeline.selectedPipeline.name}</div>
-      </div>
-    </div>
-  </Col>
+const ModelCheckBoxInfo = ({
+  selectedModels,
+  model,
+  clickCheckBox,
+  onClickEditName,
+}) => (
+  <Group align="center" wrap="nowrap">
+    <Checkbox
+      checked={selectedModels.map((item) => item.id).includes(model.id)}
+      onChange={() => clickCheckBox(model)}
+    />
+    <Stack gap={2}>
+      <Group gap="xs" align="center">
+        <Text fw={700} size="xl">
+          {model.name}
+        </Text>
+        <ActionIcon variant="subtle" onClick={onClickEditName}>
+          <FontAwesomeIcon icon={faPen} />
+        </ActionIcon>
+      </Group>
+      <Text size="sm">{model.pipeline.selectedPipeline.name}</Text>
+    </Stack>
+  </Group>
 );
 
 const TrainErrorSection = ({
@@ -38,55 +52,47 @@ const TrainErrorSection = ({
   setDeployModalOpen,
   onClickEditName
 }) => (
-  <Row className="p-2">
+  <Group align="center" justify="space-between" px="sm" py="xs">
     <ModelCheckBoxInfo
       selectedModels={selectedModels}
       model={model}
       clickCheckBox={clickCheckBox}
       onClickEditName={onClickEditName}
     ></ModelCheckBoxInfo>
-    <Col
-      className="ms-5 flex-grow-1 d-flex justify-content-start align-items-center"
-      style={{ color: "red" }}
-    >
+    <Group align="center" style={{ color: "red", flex: 1 }}>
       {model.error ? (
         <>
-          An error occurred while training!
-          <FontAwesomeIcon
-            id={"tooltip" + model.id}
-            className="m-2"
-            icon={faCircleInfo}
-          ></FontAwesomeIcon>
-          <UncontrolledTooltip target={"tooltip" + model.id}>
-            {model.error}
-          </UncontrolledTooltip>
+          <Text> An error occurred while training!</Text>
+          <Tooltip label={model.error}>
+            <ActionIcon variant="subtle" color="red">
+              <FontAwesomeIcon icon={faCircleInfo}></FontAwesomeIcon>
+            </ActionIcon>
+          </Tooltip>
         </>
       ) : (
-        <>
-          <div>
+        <Stack gap={0}>
+          <Text>
             <b>Acc: </b>
             {metric(model.metrics.accuracy_score)}%
-          </div>
-          <div>
+          </Text>
+          <Text>
             <b>F1: </b>
             {metric(model.metrics.f1_score)}%
-          </div>
-        </>
+          </Text>
+        </Stack>
       )}
-    </Col>
-    <Col className="col-sm-auto flex-row">
-      <div className="d-flex">
-        <ButtonList
-          model={model}
-          setModalModel={setModalModel}
-          setModelDownload={setModelDownload}
-          onDeleteSingleModel={(model) => onDeleteModels([model])}
-          stepOptions={stepOptions}
-          setDeployModalOpen={setDeployModalOpen}
-        ></ButtonList>
-      </div>
-    </Col>
-  </Row>
+    </Group>
+    <Group align="center">
+      <ButtonList
+        model={model}
+        setModalModel={setModalModel}
+        setModelDownload={setModelDownload}
+        onDeleteSingleModel={(model) => onDeleteModels([model])}
+        stepOptions={stepOptions}
+        setDeployModalOpen={setDeployModalOpen}
+      ></ButtonList>
+    </Group>
+  </Group>
 );
 
 const metric = (metric) => Math.round(metric * 100 * 100) / 100;
@@ -128,7 +134,7 @@ const ModelTableEntry = ({
   }
 
   return (
-    <Row className="p-2">
+    <Group align="center" justify="space-between" px="sm" py="xs">
       <ModelCheckBoxInfo
         selectedModels={selectedModels}
         model={model}
@@ -136,34 +142,32 @@ const ModelTableEntry = ({
         onClickEditName={() => setDatasetNameEditOpen(true)}
       ></ModelCheckBoxInfo>
       {model.trainStatus !== "done" ? (
-        <Col className="d-flex align-items-center">
-          <Spinner size="sm" className="me-2">Loading...</Spinner>
-          <span>Training...</span>
-        </Col>
+        <Group align="center">
+          <Loader size="sm" />
+          <Text>Training...</Text>
+        </Group>
       ) : (
-        <Col className="d-flex flex-column justify-content-center">
-          <div>
+        <Stack gap={0}>
+          <Text>
             <b>Acc: </b>
             {metrics && metric(metrics.accuracy_score)}%
-          </div>
-          <div>
+          </Text>
+          <Text>
             <b>F1: </b>
             {metrics && metric(metrics.f1_score)}%
-          </div>
-        </Col>
+          </Text>
+        </Stack>
       )}
-      <Col className="col-sm-auto flex-row">
-        <div className="d-flex">
-          <ButtonList
-            model={model}
-            setModalModel={setModalModel}
-            setModelDownload={setModelDownload}
-            onDeleteSingleModel={(model) => onDeleteModels([model])}
-            stepOptions={stepOptions}
-            setDeployModalOpen={setDeployModalOpen}
-          ></ButtonList>
-        </div>
-      </Col>
+      <Group align="center">
+        <ButtonList
+          model={model}
+          setModalModel={setModalModel}
+          setModelDownload={setModelDownload}
+          onDeleteSingleModel={(model) => onDeleteModels([model])}
+          stepOptions={stepOptions}
+          setDeployModalOpen={setDeployModalOpen}
+        ></ButtonList>
+      </Group>
       <SelectedModelModalView
         model={modalModel}
         onClosed={() => setModalModel(null)}
@@ -188,7 +192,7 @@ const ModelTableEntry = ({
         }}
         onCancel={() => setDatasetNameEditOpen(false)}
       ></EditModal>
-    </Row>
+    </Group>
   );
 };
 

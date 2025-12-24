@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container } from "reactstrap";
+import { Center, Text } from "@mantine/core";
 
 class NoProjectPage extends Component {
   constructor(props) {
@@ -8,8 +8,8 @@ class NoProjectPage extends Component {
   }
   render() {
     return (
-      <Container className="d-flex align-items-center justify-content-center h-75 py-5">
-        <h2>
+      <Center h="75vh">
+        <Text size="xl" fw={600}>
           {this.props.text ? (
             this.props.text
           ) : (
@@ -17,8 +17,8 @@ class NoProjectPage extends Component {
               Open or create a project on the left to get started!
             </div>
           )}
-        </h2>
-      </Container>
+        </Text>
+      </Center>
     );
   }
 }

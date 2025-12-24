@@ -20,19 +20,19 @@ const UserEdit = () => {
   const { user } = useUserStore();
 
   const [userSearchValue, setUserSearchValue] = useState("");
-  const [userNames, setUserNames] = useState(currentProject.users);
+  const [users, setUsers] = useState(currentProject.users);
 
   const handleAddUserName = async (nextUserName) => {
     if (!nextUserName) {
       return;
     }
-    if (userNames.some((existing) => existing.userName === nextUserName)) {
+    if (users.some((existing) => existing.userName === nextUserName)) {
       setUserSearchValue("");
       return;
     }
     try {
       await addProjectUser(nextUserName);
-      setUserNames([...userNames, { userName: nextUserName }]);
+      setUsers([...users, { userName: nextUserName }]);
       setUserSearchValue("");
     } catch {
       setUserSearchValue("");
@@ -44,15 +44,13 @@ const UserEdit = () => {
   };
 
   const handleDeleteUserName = (userNameToDelete) => {
-    setUserNames(
-      userNames.filter((user) => user.userName !== userNameToDelete)
-    );
+    setUsers(users.filter((user) => user.userName !== userNameToDelete));
   };
 
   if (!currentProject.users) {
     return null;
   }
-  
+
   return (
     <div>
       <Stack gap="md">
@@ -81,16 +79,17 @@ const UserEdit = () => {
             Save
           </Button>
         </Group>
-        {userNames.length > 0 ? (
+        {users.length > 0 ? (
           <EdgeMLTable>
             <EdgeMLTableHeader>Users in the project</EdgeMLTableHeader>
-            {userNames.map((user, index) => (
+            {users.map((user, index) => (
               <EdgeMLTableEntry
                 key={index}
                 className="d-flex justify-content-between p-2 align-items-center"
               >
                 <div>{index + 1}</div>
-                <div>{user.userName}</div>
+                <div> {user.username}</div>
+                <div>{user.email ? ` (${user.email})` : ""}</div>
                 <Button
                   variant="outline"
                   size="xs"
