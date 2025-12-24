@@ -1,13 +1,5 @@
-import React, { useState, Fragment } from "react";
-import {
-  ModalBody,
-  Button,
-  ModalFooter,
-  Dropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
-} from "reactstrap";
+import React, { useState } from "react";
+import { Select, Text } from "@mantine/core";
 import { HyperparameterView } from "../../Hyperparameters/HyperparameterView";
 const Select_Windowing = ({
   onBack,
@@ -17,7 +9,6 @@ const Select_Windowing = ({
   setWindower,
   footer,
 }) => {
-  const [dropDownOpen, setDropDownOpen] = useState(false);
   const [window_index, set_window_index] = useState(0);
 
   if (!windowers.length) {
@@ -34,34 +25,28 @@ const Select_Windowing = ({
   };
 
   return (
-    <Fragment>
-      <h3 className="fw-bold">4. Select Windowing</h3>
-      <Dropdown
-        isOpen={dropDownOpen}
-        toggle={() => setDropDownOpen(!dropDownOpen)}
-      >
-        <DropdownToggle caret size="lg">
-          {windowers[window_index].name}
-        </DropdownToggle>
-        <DropdownMenu>
-          {windowers.map((n, idx) => (
-            <DropdownItem
-              onClick={() => {
-                set_window_index(idx);
-                setSelectedWindower(windowers[idx]);
-              }}
-            >
-              {n.name}
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      </Dropdown>
+    <>
+      <Text fw={700} size="lg">
+        4. Select Windowing
+      </Text>
+      <Select
+        data={windowers.map((n) => n.name)}
+        value={windowers[window_index]?.name ?? null}
+        onChange={(value) => {
+          const nextIdx = windowers.findIndex((n) => n.name === value);
+          if (nextIdx === -1) return;
+          set_window_index(nextIdx);
+          setSelectedWindower(windowers[nextIdx]);
+        }}
+        mt="sm"
+        size="lg"
+      />
       <HyperparameterView
         handleHyperparameterChange={onParameterChanged}
         isAdvanced={false}
         hyperparameters={windowers[window_index].parameters}
-      ></HyperparameterView>
-    </Fragment>
+      />
+    </>
   );
 };
 

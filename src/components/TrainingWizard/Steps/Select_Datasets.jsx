@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import Checkbox from "../../Common/Checkbox";
 import classNames from "classnames";
-import { Badge, Table, Row, Col } from "reactstrap";
+import { Badge, Box, Grid, Group, Stack, Table, Text, Title } from "@mantine/core";
 import { humanDuration, intersect } from "../../../services/helpers";
 import {
   EdgeMLTable,
@@ -105,13 +105,13 @@ const Wizard_SelectDataset = ({
     .filter((elm) => !checkUsable(elm))
     .every((elm) => elm.selected);
   return (
-    <div className="p-2">
-      <h3 className="fw-bold">2. Select datasets</h3>
-      <Row className="mx-0">
-        <Col>
+    <Box p="sm">
+      <Title order={3}>2. Select datasets</Title>
+      <Grid mt="sm">
+        <Grid.Col span={{ base: 12, md: 6 }}>
           <EdgeMLTable>
             <EdgeMLTableHeader>
-              <div className="d-flex">
+              <Group align="center">
                 <Checkbox
                   isSelected={selectedAllActive}
                   onClick={() =>
@@ -120,9 +120,9 @@ const Wizard_SelectDataset = ({
                       !selectedAllActive
                     )
                   }
-                ></Checkbox>
-                <div className="ms-2 align-self-center">Select all</div>
-              </div>
+                />
+                <Text ml="sm">Select all</Text>
+              </Group>
             </EdgeMLTableHeader>
             {datasets
               .filter((elm) => !checkUsable(elm))
@@ -132,27 +132,29 @@ const Wizard_SelectDataset = ({
                     className={classNames("datasetRow", {
                       disabled: checkUsable(dataset),
                     })}
+                    key={dataset.id}
                   >
-                    <div className="d-flex me-2">
+                    <Box mr="sm">
                       <Checkbox
                         isSelected={dataset.selected}
                         onClick={() => toggleSelectDataset(dataset.id)}
-                      ></Checkbox>
-                    </div>
+                      />
+                    </Box>
                     <div className="datasetName">{dataset.name}</div>
                   </EdgeMLTableEntry>
                 );
               })}
           </EdgeMLTable>
-        </Col>
-        <Col className="pt-3">
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, md: 6 }} pt="md">
           {datasets.filter((elm) => elm.selected).length ? (
             <Fragment>
-              <h5 className="fw-bold">Selected Timeseries</h5>
-              <div style={{ overflow: "auto" }}>
+              <Title order={5}>Selected Timeseries</Title>
+              <Box style={{ overflow: "auto" }}>
                 {intersectingTSNames.length > 0 ? (
                   intersectingTSNames.map((tsNameObj) => (
                     <Badge
+                      key={tsNameObj.name}
                       onClick={() => toggleDisableTimeseries(tsNameObj.name)}
                       style={{
                         ...(tsNameObj.disabled
@@ -160,81 +162,84 @@ const Wizard_SelectDataset = ({
                           : {}),
                         userSelect: "none",
                       }}
-                      {...(tsNameObj.disabled
-                        ? { color: "light" }
-                        : { color: "primary" })}
+                      color={tsNameObj.disabled ? "gray" : "blue"}
+                      mr="xs"
                     >
                       {`${tsNameObj.name}`}
                     </Badge>
                   ))
                 ) : (
-                  <div className="my-2">
+                  <Text my="sm">
                     Selected datasets do not have any timeseries in common.
-                  </div>
+                  </Text>
                 )}
                 {intersectingTSNames.length !==
                 selectedDatasetTimeseriesNames.length ? (
                   <Fragment>
-                    <div className="my-2">
+                    <Text my="sm">
                       Following timeseries were filtered because they are
                       missing from at least one dataset.
-                    </div>
+                    </Text>
                     {nonintersectingTSNames.map((tsNameObj) => (
                       <Badge
+                        key={tsNameObj.name}
                         style={{
                           textDecoration: "line-through",
                           userSelect: "none",
                         }}
-                        color="light"
+                        color="gray"
+                        mr="xs"
                       >
                         {`${tsNameObj.name}`}
                       </Badge>
                     ))}
                   </Fragment>
                 ) : null}
-              </div>
-              <div className="my-2">
+              </Box>
+              <Text my="sm">
                 For training, all time-series will be downsampled to{" "}
                 {Math.round(1000 / minSamplingRate)} Hz
-              </div>
-              <h5 className="fw-bold mt-4">Covered Labels</h5>
-              <Table size="sm" borderless style={{ width: "unset" }}>
-                <thead>
-                  <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Count</th>
-                    <th scope="col">Duration</th>
-                  </tr>
-                </thead>
-                <tbody>
+              </Text>
+              <Title order={5} mt="md">
+                Covered Labels
+              </Title>
+              <Table withRowBorders={false} style={{ width: "unset" }} mt="xs">
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th></Table.Th>
+                    <Table.Th>Count</Table.Th>
+                    <Table.Th>Duration</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
                   {selectedLabeling.labels
                     .filter(
                       (l) => !selectedLabeling.disabledLabels.includes(l.id)
                     )
                     .map((label) => (
-                      <tr>
-                        <th scope="row">
-                          <LabelBadge className="badge" color={label.color}>
+                      <Table.Tr key={label.id}>
+                        <Table.Td>
+                          <LabelBadge color={label.color}>
                             {label.name}
                           </LabelBadge>
-                        </th>
-                        <td className="align-middle">
+                        </Table.Td>
+                        <Table.Td>
                           {coveredLabels[label.id]?.count ?? 0}
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                           {humanDuration(
                             coveredLabels[label.id]?.duration ?? 0
                           )}
-                        </td>
-                      </tr>
+                        </Table.Td>
+                      </Table.Tr>
                     ))}
-                </tbody>
+                </Table.Tbody>
               </Table>
             </Fragment>
           ) : null}
-        </Col>
-      </Row>
-    </div>
+        </Grid.Col>
+      </Grid>
+    </Box>
   );
 };
 

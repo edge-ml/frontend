@@ -1,12 +1,5 @@
 import React, { Component } from "react";
-import {
-  CardBody,
-  Form,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupText,
-} from "reactstrap";
+import { ActionIcon, Box, Group, Text, TextInput, Title } from "@mantine/core";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faCheck } from "@fortawesome/free-solid-svg-icons"; // Added faCheck icon
@@ -57,10 +50,10 @@ class MetadataPanel extends Component {
   render() {
     return (
       <>
-        <div className="sidepanel-heading m-2">
-          <h4>Metadata</h4>
-        </div>
-        <div className="m-2">
+        <Box className="sidepanel-heading" m="sm">
+          <Title order={4}>Metadata</Title>
+        </Box>
+        <Box m="sm">
           <div className="customMetaDataItem">
             <div className="customMetaDataItem_key">Name</div>
             <div
@@ -69,26 +62,22 @@ class MetadataPanel extends Component {
               }`}
             >
               {this.state.nameEditActive ? (
-                <Form>
-                  <FormGroup>
-                    <InputGroup className="datasetNameChangeInputArea">
-                      <Input
-                        className="datasetNameChangeInput"
-                        type="text"
-                        value={this.state.editedName}
-                        onChange={this.handleNameInput}
-                      />
-                      <InputGroupText>
-                        <button
-                          className="confirmDatasetNameButton"
-                          onClick={this.handleNameSave}
-                        >
-                          <FontAwesomeIcon icon={faCheck} />
-                        </button>
-                      </InputGroupText>
-                    </InputGroup>
-                  </FormGroup>
-                </Form>
+                <Group className="datasetNameChangeInputArea" gap="xs">
+                  <TextInput
+                    className="datasetNameChangeInput"
+                    type="text"
+                    value={this.state.editedName}
+                    onChange={this.handleNameInput}
+                  />
+                  <ActionIcon
+                    className="confirmDatasetNameButton"
+                    onClick={this.handleNameSave}
+                    variant="light"
+                    color="green"
+                  >
+                    <FontAwesomeIcon icon={faCheck} />
+                  </ActionIcon>
+                </Group>
               ) : (
                 <>
                   {this.state.datasetName}
@@ -113,7 +102,7 @@ class MetadataPanel extends Component {
             this.props.end != undefined ? unixTimeToString(this.props.end) : ""
           )}
           {this.metaDataItem("User", this.props.user)}
-        </div>
+        </Box>
       </>
     );
   }

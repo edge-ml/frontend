@@ -1,19 +1,5 @@
 import React, { Component } from "react";
-import {
-  Card,
-  InputGroup,
-  InputGroupText,
-  Input,
-  CardBody,
-  CardHeader,
-  Button,
-  CardFooter,
-  FormFeedback,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
+import { Box, Button, Group, Modal, Stack, Text, TextInput, Title } from "@mantine/core";
 import "./MetadataPanel.css";
 
 class MetaDataEditModal extends Component {
@@ -90,73 +76,61 @@ class MetaDataEditModal extends Component {
 
   renderMetaData() {
     return this.state.metaData.map((elm, idx) => (
-      <div key={idx}>
-        <InputGroup>
-          <InputGroupText>
-            <Input
-              style={{
-                background: "lightGrey",
-                borderBottomRightRadius: 0,
-                borderTopRightRadius: 0,
-              }}
-              value={elm.key}
-              onChange={(e) => this.onEditKey(e, idx)}
-              invalid={this.checkError(elm)}
-              placeholder="key"
-            ></Input>
-          </InputGroupText>
-          <Input
-            className="shadow-none"
-            // style={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
+      <Stack key={idx} gap="xs">
+        <Group align="center" gap="xs">
+          <TextInput
+            value={elm.key}
+            onChange={(e) => this.onEditKey(e, idx)}
+            error={this.checkError(elm) ? "Duplicate key" : null}
+            placeholder="key"
+            styles={{
+              input: { background: "lightGrey" },
+            }}
+            w={160}
+          />
+          <TextInput
             value={elm.data}
             onChange={(e) => this.onEditValue(e, idx)}
-            invalid={this.checkError(elm) || elm.data == ""}
+            error={this.checkError(elm) || elm.data == "" ? "Required" : null}
             placeholder="data"
-          ></Input>
-          <InputGroupText>
-            <Button
-              style={{
-                borderBottomRightRadius: "0.25rem",
-                borderTopRightRadius: "0.25rem",
-              }}
-              color="danger"
-              onClick={(e) => this.onDeleteMetaData(idx)}
-            >
-              X
-            </Button>
-          </InputGroupText>
-
-          <FormFeedback>
+            w={240}
+          />
+          <Button color="red" onClick={() => this.onDeleteMetaData(idx)}>
+            X
+          </Button>
+        </Group>
+        {(this.checkError(elm) || elm.data == "") && (
+          <Text size="xs" c="red">
             {this.checkError(elm)
               ? "Keys with the same name are not allowed."
               : "Each key needs some data"}
-          </FormFeedback>
-        </InputGroup>
-      </div>
+          </Text>
+        )}
+      </Stack>
     ));
   }
 
   render() {
     return (
-      <Modal size="lg" isOpen={this.props.isOpen}>
-        <ModalHeader>Edit custom Metadata</ModalHeader>
-        <ModalBody>
-          <div>{this.renderMetaData()}</div>
-          <Button color="primary" onClick={this.onAddMetaData}>
+      <Modal size="lg" opened={this.props.isOpen} onClose={this.onClose}>
+        <Title order={4}>Edit custom Metadata</Title>
+        <Stack mt="sm">
+          {this.renderMetaData()}
+          <Button color="blue" onClick={this.onAddMetaData}>
             + Add
           </Button>
-        </ModalBody>
-        <ModalFooter style={{ justifyContent: "space-between" }}>
-          <Button color="secondary" onClick={this.onClose}>
+        </Stack>
+        <Group justify="space-between" mt="md">
+          <Button color="gray" onClick={this.onClose}>
             Cancel
           </Button>
           <Button
-            color="primary"
+            color="blue"
             onClick={() => this.props.onSave(this.state.metaData)}
           >
             Save
           </Button>
-        </ModalFooter>
+        </Group>
       </Modal>
     );
   }

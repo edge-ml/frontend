@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Input, InputGroup, InputGroupText, Badge } from "reactstrap";
+import { Badge, Box, Group, NumberInput, Select, Table, Text, Title } from "@mantine/core";
 import Checkbox from "../Common/Checkbox";
 
 function BlePanelSensorList({
@@ -22,95 +22,100 @@ function BlePanelSensorList({
   console.log("SensorData", sensors);
 
   return (
-    <div className="m-2">
-      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
-        <h4>2. Configure sensors</h4>
-      </div>
-      <div className="body-wrapper">
+    <Box m="sm">
+      <Box className="header-wrapper">
+        <Title order={4}>2. Configure sensors</Title>
+      </Box>
+      <Box className="body-wrapper">
         <Table>
-          <thead>
-            <tr className="bg-light">
-              <th>Select</th>
-              <th>SensorName</th>
-              <th>Sample rate</th>
-              <th>Components</th>
-            </tr>
-          </thead>
-          <tbody>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>Select</Table.Th>
+              <Table.Th>SensorName</Table.Th>
+              <Table.Th>Sample rate</Table.Th>
+              <Table.Th>Components</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
             {Object.keys(sensors).map((sensorKey) => {
               const sensorData = sensors[sensorKey];
               return (
-                <tr key={sensorKey}>
-                  <td className="align-middle">
+                <Table.Tr key={sensorKey}>
+                  <Table.Td style={{ verticalAlign: "middle" }}>
                     <Checkbox
                       disabled={disabled}
                       isSelected={selectedSensors.has(sensorKey)}
                       className="datasets-check"
                       onClick={() => onToggleSensor(sensorKey)}
-                    ></Checkbox>
-                  </td>
-                  <td className="align-middle">{sensorData.name}</td>
-                  <td className="align-middle">
-                    <InputGroup
-                      style={{ margin: 0, minWidth: "90px" }}
-                      size="sm"
-                    >
+                    />
+                  </Table.Td>
+                  <Table.Td style={{ verticalAlign: "middle" }}>
+                    {sensorData.name}
+                  </Table.Td>
+                  <Table.Td style={{ verticalAlign: "middle" }}>
+                    <Group gap="xs" align="center" wrap="nowrap">
                       {sensorData.options ? (
-                        <Input
+                        <Select
+                          value={String(sensorData.sampleRate)}
+                          disabled={disabled}
+                          onChange={(value) => {
+                            if (value === null) return;
+                            onChangeSampleRate(sensorKey, parseInt(value, 10));
+                          }}
+                          data={sensorData.options.frequencies.frequencies.map(
+                            (elm, index) => ({
+                              value: String(index),
+                              label: String(elm),
+                            })
+                          )}
+                          w={120}
+                          size="xs"
+                        />
+                      ) : (
+                        <NumberInput
                           value={sensorData.sampleRate}
                           disabled={disabled}
-onChange={(e) => {
-  console.log(e.target.value);
-  onChangeSampleRate(
-    sensorKey,
-    parseInt(e.target.value)
-                            )}
+                          onChange={(value) =>
+                            onChangeSampleRate(sensorKey, value)
                           }
-                          type="select"
-                        >
-                          {sensorData.options.frequencies.frequencies.map((elm, index) => (
-                            <option key={elm + index} value={index}>
-                              {elm}
-                            </option>
-                          ))}
-                        </Input>):
-                      <Input
-                        value={sensorData.sampleRate}
-                        disabled={disabled}
-                        onChange={(e) =>
-                          onChangeSampleRate(sensorKey, e.target.value)
-                        }
-                        type="number"
-                        min={0}
-                        max={50}
-                      ></Input>}
-                      <InputGroupText>Hz</InputGroupText>
-                    </InputGroup>
-                  </td>
-                  <td className="align-middle">
-                    {sensorData.parseScheme.map((elm, index) => (
-                      <Badge color="primary" key={elm.name + index}>
-                        {elm.name + (elm.unit ? ` (${elm.unit})` : "")}
-                      </Badge>
-                    ))}
-                  </td>
-                </tr>
+                          min={0}
+                          max={50}
+                          w={120}
+                          size="xs"
+                        />
+                      )}
+                      <Text size="xs">Hz</Text>
+                    </Group>
+                  </Table.Td>
+                  <Table.Td style={{ verticalAlign: "middle" }}>
+                    <Group gap="xs" wrap="wrap">
+                      {sensorData.parseScheme.map((elm, index) => (
+                        <Badge color="blue" key={elm.name + index}>
+                          {elm.name + (elm.unit ? ` (${elm.unit})` : "")}
+                        </Badge>
+                      ))}
+                    </Group>
+                  </Table.Td>
+                </Table.Tr>
               );
             })}
-          </tbody>
+          </Table.Tbody>
         </Table>
         {sampleRateSum > maxSampleRate && (
-          <div className="p-2">
-            <small className="text-danger">
-              <strong>Warning: </strong>Collecting data from multiple sensors
-              with high sampling rate can cause delays / errors during
-              recording. It is recommended to keep the sum of sample rates below{" "}
-              {maxSampleRate} Hz. You are currently at {sampleRateSum} Hz.
-            </small>
-          </div>
+          <Box p="sm">
+            <Text size="xs" c="red">
+              <Text component="span" fw={700}>
+                Warning:
+              </Text>{" "}
+              Collecting data from multiple sensors with high sampling rate can
+              cause delays / errors during recording. It is recommended to keep
+              the sum of sample rates below {maxSampleRate} Hz. You are
+              currently at {sampleRateSum} Hz.
+            </Text>
+          </Box>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment } from "react";
-import { Button } from "reactstrap";
+import { Box, Group, Text } from "@mantine/core";
 import PlatformList from "../Common/PlatformList";
 
 const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
@@ -25,21 +25,23 @@ const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
     }
   });
   return (
-    <div
+    <Box
       key={pipeline.name}
-      className="edgeml-border p-2 m-2 cursor-pointer hover-bigger"
+      className="edgeml-border cursor-pointer hover-bigger"
+      p="sm"
+      m="sm"
       onClick={() => onSelectTrainingMethod(pipeline)}
     >
-      <div className="d-flex justify-content-between">
-        <div>
-          <div className="fw-bold">{pipeline.name}</div>
-          <div>{pipeline.description}</div>
-        </div>
-        <div className="d-flex align-items-center">
-          <PlatformList size="3rem" platforms={platforms}></PlatformList>
-        </div>
-      </div>
-    </div>
+      <Group justify="space-between" align="center">
+        <Box>
+          <Text fw={700}>{pipeline.name}</Text>
+          <Text size="sm">{pipeline.description}</Text>
+        </Box>
+        <Group align="center">
+          <PlatformList size="3rem" platforms={platforms} />
+        </Group>
+      </Group>
+    </Box>
   );
 };
 

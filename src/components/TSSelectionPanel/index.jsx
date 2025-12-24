@@ -1,5 +1,5 @@
 import React from "react";
-import { Badge } from "reactstrap";
+import { Badge } from "@mantine/core";
 import "./index.css";
 
 const TSSelectionPanel = (props) => {
@@ -19,9 +19,7 @@ const TSSelectionPanel = (props) => {
               onClick={() => onClickSelectSeries(ts.id)}
               key={`ts-badge-${idx}`}
               className={
-                activeSeries.includes(ts.id)
-                  ? "badgeActive badge"
-                  : "badgeInactive badge"
+                activeSeries.includes(ts.id) ? "badgeActive" : "badgeInactive"
               }
             >
               {ts.name}

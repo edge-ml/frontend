@@ -1,12 +1,13 @@
 import React, { useState, useContext, Fragment } from "react";
 import {
+  Box,
   Button,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Dropdown,
-} from "reactstrap";
+  Divider,
+  Group,
+  Menu,
+  ScrollArea,
+  Text,
+} from "@mantine/core";
 import "./LabelingSelectionPanel.css";
 
 import HelpModal from "./HelpModal";
@@ -73,63 +74,57 @@ const LabelingSelectionPanel = () => {
 
   const TimeSeriesSelection = () => {
     return (
-      <div>
-        <Dropdown
-          isOpen={isTSDropdownOpen}
-          toggle={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
-          className="me-2"
-        >
-          <DropdownToggle
-            caret
-            outline
-            color="secondary"
+      <Menu opened={isTSDropdownOpen} onChange={setIsTSDropdownOpen}>
+        <Menu.Target>
+          <Button
+            variant="outline"
+            color="gray"
             onClick={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
+            mr="sm"
           >
             Selected Timeseries:{" "}
-            <div className="d-inline font-weight-normal">
+            <Text component="span" fw={400}>
               {activeTimeSeries.length + "/" + dataset.timeSeries.length}
-            </div>{" "}
-          </DropdownToggle>
-          <DropdownMenu>
-            <div className="scrollable-dropdown">
+            </Text>
+          </Button>
+        </Menu.Target>
+        <Menu.Dropdown>
+          <ScrollArea h={200}>
+            <Box>
               {dataset.timeSeries.map((elm) => {
                 return (
-                  <DropdownItem key={elm.id} className="p-0 p-2">
-                    <div
+                  <Box key={elm.id} p="xs">
+                    <Box
                       onClick={(e) => {
                         onClickSelectSeries(elm.id);
                         e.preventDefault();
                         e.stopPropagation();
                       }}
                     >
-                      <div className="d-flex align-items-center">
-                        <Checkbox
-                          isSelected={selectedTs.includes(elm.id)}
-                        ></Checkbox>
-                        <div className="ms-2">{elm.name}</div>
-                      </div>
-                    </div>
-                  </DropdownItem>
+                      <Group align="center" gap="xs">
+                        <Checkbox isSelected={selectedTs.includes(elm.id)} />
+                        <Text>{elm.name}</Text>
+                      </Group>
+                    </Box>
+                  </Box>
                 );
               })}
-            </div>
-            <DropdownItem divider></DropdownItem>
-            <div className="w-100 p-2">
-              <Button
-                className="w-100"
-                color="primary"
-                outline
-                onClick={(e) => {
-                  onApplyTs(e);
-                  setIsTSDropdownOpen(false);
-                }}
-              >
-                Apply
-              </Button>
-            </div>
-          </DropdownMenu>
-        </Dropdown>
-      </div>
+            </Box>
+          </ScrollArea>
+          <Divider my="sm" />
+          <Button
+            fullWidth
+            variant="outline"
+            color="blue"
+            onClick={(e) => {
+              onApplyTs(e);
+              setIsTSDropdownOpen(false);
+            }}
+          >
+            Apply
+          </Button>
+        </Menu.Dropdown>
+      </Menu>
     );
   };
 
@@ -137,68 +132,57 @@ const LabelingSelectionPanel = () => {
 
   return (
     <div>
-      <div className="LabelingSelectionPanel p-1">
-        <div className="d-flex align-items-center">
-          <div className="d-flex">
-            <TimeSeriesSelection></TimeSeriesSelection>
-            <UncontrolledDropdown>
-              <DropdownToggle caret outline color="secondary">
+      <Group className="LabelingSelectionPanel" p="xs" justify="space-between">
+        <Group align="center">
+          <TimeSeriesSelection />
+          <Menu>
+            <Menu.Target>
+              <Button variant="outline" color="gray">
                 {activeLabeling ? "Select Labeling: " : "Selected Labeling: "}
-                <div className="d-inline font-weight-normal">
+                <Text component="span" fw={400}>
                   {name || "None"}
-                </div>
-              </DropdownToggle>
-              <DropdownMenu className="scrollable-dropdown">
-                {labelings.map((elm) => (
-                  <DropdownItem
-                    key={elm.id}
-                    onClick={() => setActiveLabeling(elm)}
-                  >
-                    {elm.name}
-                  </DropdownItem>
-                ))}
-                <DropdownItem divider></DropdownItem>
-                <DropdownItem
-                  className="fw-bold"
-                  onClick={() => navigate("labelings/new")}
-                >
-                  + Add Labeling Set
-                </DropdownItem>
-                {activeLabeling ? null : (
-                  <Fragment>
-                    <DropdownItem divider></DropdownItem>
-                    <DropdownItem
-                      className="text-danger"
-                      onClick={() => setActiveLabeling(undefined)}
-                    >
-                      Hide Labels
-                    </DropdownItem>
-                  </Fragment>
-                )}
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </div>
-        </div>
-        <div className="d-flex align-items-center">
-          <Button
-            outline
-            id="btn-secondary"
-            className="m-1"
-            onClick={downloadDataSet}
-          >
-            <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon>
+                </Text>
+              </Button>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <ScrollArea h={200}>
+                <Box>
+                  {labelings.map((elm) => (
+                    <Menu.Item key={elm.id} onClick={() => setActiveLabeling(elm)}>
+                      {elm.name}
+                    </Menu.Item>
+                  ))}
+                </Box>
+              </ScrollArea>
+              <Divider my="sm" />
+              <Menu.Item onClick={() => navigate("labelings/new")}>
+                <Text fw={700}>+ Add Labeling Set</Text>
+              </Menu.Item>
+              {activeLabeling ? null : (
+                <>
+                  <Divider my="sm" />
+                  <Menu.Item c="red" onClick={() => setActiveLabeling(undefined)}>
+                    Hide Labels
+                  </Menu.Item>
+                </>
+              )}
+            </Menu.Dropdown>
+          </Menu>
+        </Group>
+        <Group align="center">
+          <Button variant="outline" id="btn-secondary" onClick={downloadDataSet}>
+            <FontAwesomeIcon icon={faDownload} />
           </Button>
           <Button
-            outline
+            variant="outline"
             id="buttonOpenHelpModal"
-            className="m-1"
-            color="info"
+            color="cyan"
             onClick={toggleHelpModal}
           >
-            <FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon>
+            <FontAwesomeIcon icon={faQuestion} />
           </Button>
-        </div>
-      </div>
+        </Group>
+      </Group>
       <div className="bottom-line"></div>
       {isHelpModalOpen ? (
         <HelpModal isOpen={isHelpModalOpen} onCloseModal={toggleHelpModal} />

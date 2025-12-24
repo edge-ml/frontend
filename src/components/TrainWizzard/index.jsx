@@ -1,13 +1,13 @@
 import React from "react";
-import { ModalHeader, Modal } from "reactstrap";
+import { Modal, Title } from "@mantine/core";
 
 import SelectLabeling from "./SelectLabeling";
 
-const TrainWizzard = ({isOpen}) => {
+const TrainWizzard = ({ isOpen }) => {
   return (
-    <Modal isOpen={isOpen} size="xl">
-      <ModalHeader>Train</ModalHeader>
-      <SelectLabeling></SelectLabeling>
+    <Modal opened={isOpen} onClose={() => {}} size="xl" withCloseButton={false}>
+      <Title order={4}>Train</Title>
+      <SelectLabeling />
     </Modal>
   );
 };

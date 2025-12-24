@@ -1,4 +1,4 @@
-import { Badge, Table, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Badge, Group, NumberInput, Table, Text } from "@mantine/core";
 import {
   useBootstrapMDBreakpoint,
   usePersistedState,
@@ -9,21 +9,11 @@ import Checkbox from "../Common/Checkbox";
 
 import React, { Component } from "react";
 
-const Th = (props) => (
-  <th
-    {...props}
-    className={"border-top-0 " + (props.className ? props.className : "")}
-  />
-);
-const Td = (props) => (
-  <td
-    {...props}
-    className={"border-top-0 " + (props.className ? props.className : "")}
-  />
-);
+const Th = (props) => <Table.Th {...props} style={{ borderTop: 0 }} />;
+const Td = (props) => <Table.Td {...props} style={{ borderTop: 0 }} />;
 
 const BadgeSensorComponent = ({ shortComponent }) => (
-  <Badge className="m-1">{shortComponent}</Badge>
+  <Badge m="xs">{shortComponent}</Badge>
 );
 
 export const SensorList = ({
@@ -44,9 +34,9 @@ export const SensorList = ({
 
   return (
     <React.Fragment>
-      <Table responsive>
-        <thead>
-          <tr>
+      <Table>
+        <Table.Thead>
+          <Table.Tr>
             <Th />
             <Th>Sensor</Th>
             {isDesktop ? (
@@ -59,9 +49,9 @@ export const SensorList = ({
                 <Th />
               </React.Fragment>
             )}
-          </tr>
-        </thead>
-        <tbody>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {sensors.map((sensor) => {
             const {
               name,
@@ -72,16 +62,17 @@ export const SensorList = ({
             } = sensor;
 
             const rateInput = (
-              <InputGroup style={{ margin: 0, minWidth: "90px" }} size="sm">
-                <Input
+              <Group gap="xs" align="center">
+                <NumberInput
                   value={sampleRate}
-                  onChange={(e) => setSensorRate(name, e.target.value)}
-                  type="number"
+                  onChange={(value) => setSensorRate(name, value)}
                   min={0}
                   max={50}
-                ></Input>{" "}
-                <InputGroupText>Hz</InputGroupText>
-              </InputGroup>
+                  w={120}
+                  size="xs"
+                />
+                <Text size="xs">Hz</Text>
+              </Group>
             );
 
             const badges = shortComponents.map((c, i) =>
@@ -117,12 +108,10 @@ export const SensorList = ({
 
             return (
               <React.Fragment key={name}>
-                <tr>
+                <Table.Tr>
                   <Td>
-                    {" "}
                     <Checkbox
                       isSelected={selectedSensors[name]}
-                      className="position-relative ml-0"
                       onClick={(e) => {
                         setSensor(name, !selectedSensors[name]);
                         if (onlyShowSelectedDetails) {
@@ -162,37 +151,37 @@ export const SensorList = ({
                       </Td>
                     </React.Fragment>
                   )}
-                </tr>
+                </Table.Tr>
                 {isDesktop ? null : (
                   <React.Fragment>
-                    <tr style={visibilityStyle(collapseState[name])}>
-                      <Td className="p-0" />
-                      <Td className="p-0" colSpan="2">
-                        <div className="d-flex align-items-center">
-                          <small>
-                            <b>Sample Rate:</b>
-                          </small>
+                    <Table.Tr style={visibilityStyle(collapseState[name])}>
+                      <Td />
+                      <Td colSpan="2">
+                        <Group align="center" gap="xs">
+                          <Text size="xs" fw={700}>
+                            Sample Rate:
+                          </Text>
                           {rateInput}
-                        </div>
+                        </Group>
                       </Td>
-                    </tr>
-                    <tr style={visibilityStyle(collapseState[name])}>
-                      <Td className="p-0" />
-                      <Td className="p-0" colspan="2">
-                        <div className="d-flex flex-wrap align-items-center">
-                          <small>
-                            <b>Components:</b>
-                          </small>
+                    </Table.Tr>
+                    <Table.Tr style={visibilityStyle(collapseState[name])}>
+                      <Td />
+                      <Td colSpan="2">
+                        <Group align="center" gap="xs" wrap="wrap">
+                          <Text size="xs" fw={700}>
+                            Components:
+                          </Text>
                           {badges}
-                        </div>
+                        </Group>
                       </Td>
-                    </tr>
+                    </Table.Tr>
                   </React.Fragment>
                 )}
               </React.Fragment>
             );
           })}
-        </tbody>
+        </Table.Tbody>
       </Table>
     </React.Fragment>
   );

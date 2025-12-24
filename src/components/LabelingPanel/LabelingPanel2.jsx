@@ -1,13 +1,5 @@
 import React, { Component } from "react";
-import {
-  Button,
-  Card,
-  CardBody,
-  InputGroup,
-  InputGroupText,
-  InputGroupText,
-  Input,
-} from "reactstrap";
+import { Box, Button, Card, Group, Stack, TextInput } from "@mantine/core";
 import "./LabelingPanel.css";
 
 class LabelingPanel extends Component {
@@ -69,11 +61,12 @@ class LabelingPanel extends Component {
   render() {
     return (
       <Card className="LabelingPanel edgeml-border edgeml-fade-one">
-        <CardBody className="p-1 d-flex flex-wrap">
-          <div className="labelingBox d-flex flex-wrap">
+        <Group p="xs" wrap="wrap" align="flex-start">
+          <Group className="labelingBox" wrap="wrap">
             <Button
-              className="labelingButton m-1"
-              color="secondary"
+              className="labelingButton"
+              m="xs"
+              color="gray"
               onClick={this.onAddLabel}
             >
               + Add Label
@@ -84,7 +77,8 @@ class LabelingPanel extends Component {
                   .map((label, index, array) => {
                     return (
                       <Button
-                        className="m-1 labelingButton"
+                        className="labelingButton"
+                        m="xs"
                         disabled={
                           this.state.selectedLabelTypeId === undefined ||
                           !this.state.canEdit
@@ -113,46 +107,42 @@ class LabelingPanel extends Component {
                     );
                   })
               : null}
-          </div>
-          <div className="informationBox">
-            <InputGroup className="inputGroup m-1">
-              <InputGroupText className="inputLabel">From</InputGroupText>
-              <Input
-                value={
-                  this.state.from
-                    ? new Date(this.state.from).toUTCString().split(" ")[4]
-                    : ""
-                }
-                readOnly
-                className="timeInput text-center"
-              />
-            </InputGroup>
-            <InputGroup className="inputGroup m-1">
-              <InputGroupText className="inputLabel">To</InputGroupText>
-              <Input
-                value={
-                  this.state.to
-                    ? new Date(this.state.to).toUTCString().split(" ")[4]
-                    : ""
-                }
-                readOnly
-                className="timeInput text-center"
-              />
-            </InputGroup>
+          </Group>
+          <Stack className="informationBox" gap="xs">
+            <TextInput
+              label="From"
+              value={
+                this.state.from
+                  ? new Date(this.state.from).toUTCString().split(" ")[4]
+                  : ""
+              }
+              readOnly
+              className="timeInput"
+            />
+            <TextInput
+              label="To"
+              value={
+                this.state.to
+                  ? new Date(this.state.to).toUTCString().split(" ")[4]
+                  : ""
+              }
+              readOnly
+              className="timeInput"
+            />
             <Button
               disabled={
                 this.state.selectedLabelTypeId === undefined ||
                 !this.state.canEdit
               }
-              className="deleteButton m-1"
-              outline
-              color="danger"
+              className="deleteButton"
+              variant="outline"
+              color="red"
               onClick={(e) => this.state.onDeleteSelectedLabel()}
             >
               Delete
             </Button>
-          </div>
-        </CardBody>
+          </Stack>
+        </Group>
       </Card>
     );
   }

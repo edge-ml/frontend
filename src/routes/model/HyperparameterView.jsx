@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Row, Col, Container } from "reactstrap";
+import { Container, Grid } from "@mantine/core";
 
 import Loader from "../../modules/loader";
 
@@ -16,14 +16,14 @@ export const HyperparameterView = ({
   return (
     <Loader loading={!model}>
       <Container fluid>
-        <Row>
+        <Grid>
           {model &&
             Object.keys(model.hyperparameters)
               .filter((h) => model.hyperparameters[h].is_advanced == isAdvanced)
               .map((h) => {
                 if (model.hyperparameters[h].parameter_type === "number") {
                   return (
-                    <Col className="col-md-4 col-12 ps-0">
+                    <Grid.Col span={{ base: 12, md: 4 }} pl={0}>
                       <NumberHyperparameter
                         {...model.hyperparameters[h]}
                         id={"input_" + model.hyperparameters[h].parameter_name}
@@ -36,13 +36,13 @@ export const HyperparameterView = ({
                           ).state
                         }
                       />
-                    </Col>
+                    </Grid.Col>
                   );
                 } else if (
                   model.hyperparameters[h].parameter_type === "selection"
                 ) {
                   return (
-                    <Col className="col-md-4 col-12 ps-0">
+                    <Grid.Col span={{ base: 12, md: 4 }} pl={0}>
                       <SelectionHyperparameter
                         {...model.hyperparameters[h]}
                         id={"input_" + model.hyperparameters[h].parameter_name}
@@ -55,11 +55,11 @@ export const HyperparameterView = ({
                           ).state
                         }
                       />
-                    </Col>
+                    </Grid.Col>
                   );
                 }
               })}
-        </Row>
+        </Grid>
       </Container>
     </Loader>
   );

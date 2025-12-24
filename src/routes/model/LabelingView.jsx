@@ -1,5 +1,14 @@
 import React from "react";
-import { Form, Badge, FormGroup, Card, CardBody, CardHeader } from "reactstrap";
+import {
+  Badge,
+  Card,
+  Checkbox,
+  Group,
+  Radio,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
 
 import Loader from "../../modules/loader";
 
@@ -16,34 +25,24 @@ export const LabelingView = ({
   changeLabelSelection,
 }) => {
   return (
-    <Card className="text-left">
-      <CardHeader>
-        <h4>Target Labeling</h4>
-      </CardHeader>
-      <CardBody className="d-flex flex-column justify-content-between align-items-start">
+    <Card>
+      <Text fw={700} size="lg">
+        Target Labeling
+      </Text>
+      <Stack align="flex-start" justify="space-between" mt="sm">
         <Loader loading={!labelings && !labels}>
-          <fieldset>
+          <Stack gap="sm">
             {labelings && labelings.length
               ? labelings.map((x) => {
                   return (
-                    <div className="d-flex flex-row align-items-center mt-2">
-                      <div className="d-flex flex-row align-items-center align-self-baseline">
-                        <input
-                          id={x.id}
-                          type="radio"
-                          style={{ marginTop: "0.1em" }}
-                          onClick={(y) => changeSelectedLabeling(x.id)}
-                          checked={selectedLabeling === x.id}
-                        ></input>
-                        <label
-                          className="mb-0 ms-1 me-1"
-                          htmlFor={x.id}
-                          onClick={(y) => changeSelectedLabeling(x.id)}
-                        >
-                          {x.name}
-                        </label>
-                      </div>
-                      <div className="d-flex flex-wrap flex-row align-items-center align-content-start mt-0">
+                    <Stack key={x.id} gap={6}>
+                      <Radio
+                        id={x.id}
+                        label={x.name}
+                        checked={selectedLabeling === x.id}
+                        onChange={() => changeSelectedLabeling(x.id)}
+                      />
+                      <Group wrap="wrap" gap="xs" align="center">
                         {x.labels.map((labelId) => {
                           const label = labels.find(
                             (label) => label.id === labelId
@@ -51,77 +50,72 @@ export const LabelingView = ({
                           return (
                             <Badge
                               key={labelId}
-                              className="m-1"
                               style={{ backgroundColor: label.color }}
                             >
-                              {label.name}
-                              <input
-                                type="checkbox"
-                                disabled={selectedLabeling !== x.id}
-                                className="ms-1 float-right"
-                                checked={selectedLabelsFor[x.id][labelId]}
-                                onClick={(y) =>
-                                  changeLabelSelection(x.id, labelId)
-                                }
-                              />
+                              <Group gap={6} align="center">
+                                <Text size="xs" fw={700}>
+                                  {label.name}
+                                </Text>
+                                <Checkbox
+                                  size="xs"
+                                  disabled={selectedLabeling !== x.id}
+                                  checked={selectedLabelsFor[x.id][labelId]}
+                                  onChange={() =>
+                                    changeLabelSelection(x.id, labelId)
+                                  }
+                                />
+                              </Group>
                             </Badge>
                           );
                         })}
-                        <Badge className="m-1">
-                          <Form inline>
-                            <FormGroup>
-                              <input
-                                type="text"
-                                value={unlabelledNameFor[x.id]}
-                                onChange={(e) =>
-                                  changeUnlabelledName(e.target.value, x.id)
-                                }
-                                disabled={selectedLabeling !== x.id}
-                                style={{
+                        <Badge>
+                          <Group gap="xs" align="center">
+                            <TextInput
+                              value={unlabelledNameFor[x.id]}
+                              onChange={(e) =>
+                                changeUnlabelledName(e.target.value, x.id)
+                              }
+                              disabled={selectedLabeling !== x.id}
+                              styles={{
+                                input: {
                                   backgroundColor: "rgba(0,0,0,0)",
                                   border: "none",
                                   color: "white",
-                                  outline: "none",
-                                  verticalAlign: "baseline",
-                                  display: "inline-block",
                                   fontWeight: 700,
                                   padding: 0,
                                   height: "12px",
-                                  width: "37px",
-                                }}
-                              />
-                            </FormGroup>
-                            <FormGroup>
-                              <input
-                                type="checkbox"
-                                disabled={selectedLabeling !== x.id}
-                                className="float-left"
-                                checked={useUnlabelledFor[x.id]}
-                                onClick={(e) =>
-                                  changeUnlabelledFor(e.target.checked, x.id)
-                                }
-                              />
-                            </FormGroup>
-                          </Form>
+                                  width: "60px",
+                                },
+                              }}
+                            />
+                            <Checkbox
+                              size="xs"
+                              disabled={selectedLabeling !== x.id}
+                              checked={useUnlabelledFor[x.id]}
+                              onChange={(e) =>
+                                changeUnlabelledFor(e.currentTarget.checked, x.id)
+                              }
+                            />
+                          </Group>
                         </Badge>
-                      </div>
-                    </div>
+                      </Group>
+                    </Stack>
                   );
                 })
               : "There are no labelings defined"}
-          </fieldset>
+          </Stack>
         </Loader>
-        <small className="mt-3 text-left">
-          <b>
-            <i>Note:</i>
-          </b>{" "}
+        <Text size="xs" mt="md">
+          <Text component="span" fw={700} fs="italic">
+            Note:
+          </Text>{" "}
           Model will classify based on target labeling.
           <br />
           Check "Other" to mark unlabeled data and use it in training.
           <br />
           Click and type into the "Other" field to rename the label.
-        </small>
-      </CardBody>
+        </Text>
+      </Stack>
     </Card>
   );
 };

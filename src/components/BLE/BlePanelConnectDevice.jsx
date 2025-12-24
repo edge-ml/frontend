@@ -1,6 +1,6 @@
 import React from "react";
 import SpinnerButton from "../Common/SpinnerButton";
-import { Button } from "reactstrap";
+import { Box, Button, Group, Stack, Text, Title } from "@mantine/core";
 
 const getInfoText = (props) => {
   if (!props.connectedBLEDevice) {
@@ -35,10 +35,10 @@ const getInfoText = (props) => {
       return (
         <div>
           {renderDeviceName(props)}
-          <div className="text-danger">
+          <Text c="red">
             This device does not have the edge-ml firmware installed. Please
             install via the guide
-          </div>
+          </Text>
         </div>
       );
     }
@@ -84,11 +84,11 @@ const getButtonView = (props) => {
     props.basicEdgeMLArduinoFirmware
   ) {
     return (
-      <div>
-        <Button outline color="primary" onClick={props.toggleDFUModal}>
+      <Box>
+        <Button variant="outline" color="blue" onClick={props.toggleDFUModal}>
           Flash edge-ml firmware
         </Button>
-      </div>
+      </Box>
     );
   }
   return null;
@@ -96,34 +96,23 @@ const getButtonView = (props) => {
 
 function BlePanelConnectDevice(props) {
   return (
-    <div className="m-2">
-      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
-        <h4>1. Device</h4>
-      </div>
-      <div className="body-wrapper p-2">
-        <small className="text-danger">
-          <strong>Warning: </strong>
+    <Box m="sm">
+      <Box className="header-wrapper">
+        <Title order={4}>1. Device</Title>
+      </Box>
+      <Box className="body-wrapper" p="sm">
+        <Text size="xs" c="red">
+          <Text component="span" fw={700}>
+            Warning:
+          </Text>{" "}
           If your device can not be found, try to turn bluetooth off and on
           again in your settings.
-        </small>
+        </Text>
         <div className="panelDivider" />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            flexDirection: "row",
-          }}
-        >
-          {getInfoText(props)}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              marginRight: "2",
-              padding: "4",
-            }}
-          >
-            <div className="me-2">{getButtonView(props)}</div>
+        <Group justify="space-between" align="flex-start" mt="sm">
+          <Box>{getInfoText(props)}</Box>
+          <Group align="center" gap="sm">
+            {getButtonView(props)}
             <SpinnerButton
               outline
               loadingtext={
@@ -138,10 +127,10 @@ function BlePanelConnectDevice(props) {
                 ? "Disconnect device"
                 : "Connect device"}
             </SpinnerButton>
-          </div>
-        </div>
-      </div>
-    </div>
+          </Group>
+        </Group>
+      </Box>
+    </Box>
   );
 }
 

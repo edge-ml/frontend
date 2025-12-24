@@ -1,14 +1,5 @@
-import React from "react";
-import { useState, Fragment } from "react";
-import {
-  ModalBody,
-  Button,
-  ModalFooter,
-  Dropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
-} from "reactstrap";
+import React, { useState } from "react";
+import { Select, Text } from "@mantine/core";
 
 const Select_FeatureExtractor = ({
   onBack,
@@ -17,7 +8,6 @@ const Select_FeatureExtractor = ({
   setFeatureExtractor,
   footer,
 }) => {
-  const [dropDownOpen, setDropDownOpen] = useState(false);
   const [featureExtractor_index, setFeatureExtractor_index] = useState(0);
 
   if (featureExtractors.length === 0) {
@@ -25,29 +15,23 @@ const Select_FeatureExtractor = ({
   }
 
   return (
-    <Fragment>
-      <h3 className="fw-bold">5. Select Feature Extractor</h3>
-      <Dropdown
-        isOpen={dropDownOpen}
-        toggle={() => setDropDownOpen(!dropDownOpen)}
-      >
-        <DropdownToggle caret size="lg">
-          {featureExtractors[featureExtractor_index].name}
-        </DropdownToggle>
-        <DropdownMenu>
-          {featureExtractors.map((n, idx) => (
-            <DropdownItem
-              onClick={() => {
-                setFeatureExtractor_index(idx);
-                setFeatureExtractor(featureExtractors[idx]);
-              }}
-            >
-              {n.name}
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      </Dropdown>
-    </Fragment>
+    <>
+      <Text fw={700} size="lg">
+        5. Select Feature Extractor
+      </Text>
+      <Select
+        data={featureExtractors.map((n) => n.name)}
+        value={featureExtractors[featureExtractor_index]?.name ?? null}
+        onChange={(value) => {
+          const nextIdx = featureExtractors.findIndex((n) => n.name === value);
+          if (nextIdx === -1) return;
+          setFeatureExtractor_index(nextIdx);
+          setFeatureExtractor(featureExtractors[nextIdx]);
+        }}
+        mt="sm"
+        size="lg"
+      />
+    </>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Button, Stack, Text, TextInput, Title } from "@mantine/core";
 
 import { changeUserPassword } from "./../../services/ApiServices/AuthentificationServices";
 
@@ -65,64 +65,50 @@ class PasswordSettings extends Component {
 
   render() {
     return (
-      <div>
-        <h4 className="fw-bold">Change password</h4>
-        <InputGroup>
-          <InputGroupText>Password</InputGroupText>
-          <Input
-            id="inputNewPassword"
-            type="password"
-            placeholder="New password"
-            onChange={this.onNewPasswordChange}
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupText>Password</InputGroupText>
-          <Input
-            id="inputNewPasswordConfirm"
-            type="password"
-            placeholder="Retype new password"
-            onChange={this.onConfirmationPasswordChange}
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupText>Password</InputGroupText>
-          <Input
-            id="inputCurrentPassword"
-            type="password"
-            placeholder="Current password"
-            onChange={this.onCurrentPasswordChanged}
-          />
-        </InputGroup>
-          <Button
-            outline
-            id="buttonSaveNewPassword"
-            color="primary"
-            className="m-1 me-auto"
-            disabled={
-              !(
-                this.state.currentPassword &&
-                this.state.newConfirmationPassword &&
-                this.state.newPassword
-              )
-            }
-            onClick={this.onPasswordChangeSubmit}
-          >
-            Save new password
-          </Button>
+      <Stack>
+        <Title order={4}>Change password</Title>
+        <TextInput
+          id="inputNewPassword"
+          type="password"
+          label="Password"
+          placeholder="New password"
+          onChange={this.onNewPasswordChange}
+        />
+        <TextInput
+          id="inputNewPasswordConfirm"
+          type="password"
+          label="Password"
+          placeholder="Retype new password"
+          onChange={this.onConfirmationPasswordChange}
+        />
+        <TextInput
+          id="inputCurrentPassword"
+          type="password"
+          label="Password"
+          placeholder="Current password"
+          onChange={this.onCurrentPasswordChanged}
+        />
+        <Button
+          variant="outline"
+          id="buttonSaveNewPassword"
+          color="blue"
+          disabled={
+            !(
+              this.state.currentPassword &&
+              this.state.newConfirmationPassword &&
+              this.state.newPassword
+            )
+          }
+          onClick={this.onPasswordChangeSubmit}
+        >
+          Save new password
+        </Button>
         {this.state.passwordError ? (
-          <div
-            id="passwordError"
-            style={{
-              display: "inline",
-              color: "red",
-              marginLeft: "16px",
-            }}
-          >
+          <Text id="passwordError" c="red">
             {this.state.passwordError}
-          </div>
+          </Text>
         ) : null}
-      </div>
+      </Stack>
     );
   }
 }

@@ -1,16 +1,13 @@
 import React from "react";
-import Select from "react-select";
-
 import {
   Button,
-  InputGroup,
-  InputGroupText,
-  Input,
-  FormFeedback,
   Card,
-  CardBody,
-  CardHeader,
-} from "reactstrap";
+  Group,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
 
 import { faCheck, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,29 +32,34 @@ export const ClassifierView = ({
 }) => {
   return (
     <Card>
-      <CardHeader className="d-flex flex-row justify-content-between w-100">
-        <h4 className="me-2">Classifier</h4>
+      <Group justify="space-between" align="center">
+        <Text fw={700} size="lg">
+          Classifier
+        </Text>
         <Select
-          options={models.map((m) => {
-            return { value: m.id, label: m.name };
-          })}
-          value={modelSelection}
-          onChange={changeModelSelection}
-          isSearchable={false}
-        ></Select>
-      </CardHeader>
-      <CardBody className="h-100 d-flex flex-column align-items-start flex-column justify-content-between">
-        <InputGroup style={{ maxWidth: "350px" }}>
-          <InputGroupText>Model Name</InputGroupText>
-          <Input
-            type={"text"}
-            value={modelName}
-            onChange={changeModelName}
-            invalid={!modelName}
-          ></Input>
-        </InputGroup>
-        <FormFeedback invalid></FormFeedback>
-        <h6 className="mt-3">Hyperparameters</h6>
+          data={models.map((m) => ({ value: m.id, label: m.name }))}
+          value={modelSelection?.value ?? null}
+          onChange={(value) =>
+            changeModelSelection(
+              models
+                .map((m) => ({ value: m.id, label: m.name }))
+                .find((m) => String(m.value) === String(value))
+            )
+          }
+          searchable={false}
+        />
+      </Group>
+      <Stack align="flex-start" justify="space-between" mt="sm">
+        <TextInput
+          label="Model Name"
+          value={modelName}
+          onChange={changeModelName}
+          error={!modelName ? "Model name cannot be blank" : null}
+          style={{ maxWidth: "350px" }}
+        />
+        <Text fw={600} mt="sm">
+          Hyperparameters
+        </Text>
         <HyperparameterView
           model={models.find((m) => m.id === parseInt(selectedModelId, 10))}
           hyperparameters={hyperparameters}
@@ -76,15 +78,15 @@ export const ClassifierView = ({
           onClick={handleTrainButton}
           project={project}
         >
-          <div>
-            <span className="me-1">Train Model</span>
+          <Group gap={6}>
+            <Text size="sm">Train Model</Text>
             <FontAwesomeIcon
               icon={requestInProgress ? faSpinner : faCheck}
               pulse={requestInProgress}
             />
-          </div>
+          </Group>
         </Button>
-      </CardBody>
+      </Stack>
     </Card>
   );
 };

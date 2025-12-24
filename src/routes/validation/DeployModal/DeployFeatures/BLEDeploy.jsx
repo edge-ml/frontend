@@ -4,7 +4,7 @@ import {
   EdgeMLTableEntry,
   EdgeMLTableHeader,
 } from "../../../../components/Common/EdgeMLTable";
-import { FormGroup, Input } from "reactstrap";
+import { Box, Group, Switch, Text, TextInput } from "@mantine/core";
 
 const BLEDeploy = ({ onUpdateState }) => {
   const [useBLE, setUseBLE] = useState(false);
@@ -24,46 +24,40 @@ const BLEDeploy = ({ onUpdateState }) => {
   }, [useBLE, serviceUUID, characteristicUUID]);
 
   return (
-    <EdgeMLTable className="m-2" style={{ width: "400px" }}>
+    <EdgeMLTable m="sm" style={{ width: "400px" }}>
       <EdgeMLTableHeader>
-        <div className="d-flex justify-content-center w-100">
-          <div>Use BLE</div>
-          <FormGroup style={{ margin: 0 }}>
-            <Input
-              className="ms-2"
-              inline
-              onChange={(e) => setUseBLE(!useBLE)}
-              type="switch"
-              id="exampleCustomSwitch"
-              // checked={this.props.project.enableDeviceApi}
-              // onChange={(e) => this.props.onDeviceApiSwitch(e.target.checked)}
-            />
-          </FormGroup>
-        </div>
+        <Group justify="center" align="center">
+          <Text>Use BLE</Text>
+          <Switch
+            ml="sm"
+            checked={useBLE}
+            onChange={() => setUseBLE(!useBLE)}
+          />
+        </Group>
       </EdgeMLTableHeader>
       <EdgeMLTableEntry>
-        <div className="d-flex p-2 align-items-center">
-          <div className="fw-bold" style={{ width: "200px" }}>
+        <Group align="center" p="sm">
+          <Text fw={700} style={{ width: "200px" }}>
             Service-UUID
-          </div>
-          <Input
+          </Text>
+          <TextInput
             onChange={(e) => setServiceUUID(e.target.value)}
             disabled={!useBLE}
             value={serviceUUID}
-          ></Input>
-        </div>
+          />
+        </Group>
       </EdgeMLTableEntry>
       <EdgeMLTableEntry>
-        <div className="d-flex p-2 algin-items-center">
-          <div className="fw-bold" style={{ width: "200px" }}>
+        <Group align="center" p="sm">
+          <Text fw={700} style={{ width: "200px" }}>
             Characteristic-UUID
-          </div>
-          <Input
+          </Text>
+          <TextInput
             onChange={(e) => setCharacteristicUUID(e.target.value)}
             disabled={!useBLE}
             value={characteristicUUID}
-          ></Input>
-        </div>
+          />
+        </Group>
       </EdgeMLTableEntry>
     </EdgeMLTable>
   );

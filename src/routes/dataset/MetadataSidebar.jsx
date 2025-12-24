@@ -8,7 +8,7 @@ import {
 import { Fragment } from "react";
 import MetadataContainer from "../../components/MetadataPanel/MetadataContainer";
 import { DatasetContext } from "./DatasetContext";
-import { Container } from "reactstrap";
+import { Box, Container, Group } from "@mantine/core";
 
 const MetadataSidebar = ({}) => {
   const { dataset } = useContext(DatasetContext);
@@ -21,33 +21,37 @@ const MetadataSidebar = ({}) => {
 
   if (!isExtended) {
     return (
-      <div
-        className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton"
+      <Group
+        className="metaDataCollapseButton"
+        justify="center"
+        align="center"
         onClick={() => toggleMetaData(true)}
+        style={{ cursor: "pointer" }}
       >
-        <div>
-          <FontAwesomeIcon size="1x" icon={faChevronLeft}></FontAwesomeIcon>
-        </div>
-      </div>
+        <FontAwesomeIcon size="1x" icon={faChevronLeft} />
+      </Group>
     );
   }
 
   if (isExtended) {
     return (
       <Fragment>
-        <div
+        <Box
           className="sidePanelBackdrop"
           onClick={() => toggleMetaData(false)}
-        ></div>
+        />
         <Container>
           <div className="dataset-side-panel">
-            <div className="d-flex">
-              <div
+            <Group align="flex-start" gap="sm">
+              <Group
                 onClick={() => toggleMetaData(false)}
-                className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton"
+                className="metaDataCollapseButton"
+                justify="center"
+                align="center"
+                style={{ cursor: "pointer" }}
               >
-                <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
-              </div>
+                <FontAwesomeIcon icon={faChevronRight} />
+              </Group>
               <MetadataContainer
                 start={Math.min(...dataset.timeSeries.map((elm) => elm.start))}
                 end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
@@ -56,8 +60,8 @@ const MetadataSidebar = ({}) => {
                 handleDatasetNameChange={() => {}}
                 metaData={dataset.metaData}
                 onUpdateMetaData={() => {}}
-              ></MetadataContainer>
-            </div>
+              />
+            </Group>
           </div>
         </Container>
       </Fragment>

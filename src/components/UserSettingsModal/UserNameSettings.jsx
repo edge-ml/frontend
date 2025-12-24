@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Button, Stack, Text, TextInput, Title } from "@mantine/core";
 
 import { changeUserName } from "../../services/ApiServices/AuthentificationServices";
 
@@ -50,50 +50,38 @@ class UserNameSettings extends Component {
 
   render() {
     return (
-      <div>
-        <h4 className="fw-bold">Change UserName</h4>
-        <InputGroup>
-            <InputGroupText>Username</InputGroupText>
-          <Input
-            id="inputUserName"
-            placeholder="New username"
-            onChange={this.onUserNameChange}
-          />
-        </InputGroup>
-        <InputGroup>
-            <InputGroupText>Username</InputGroupText>
-          <Input
-            id="inputUserNameConfirm"
-            placeholder="Retype new username"
-            onChange={this.onUserNameConfirmChange}
-          />
-        </InputGroup>
+      <Stack>
+        <Title order={4}>Change UserName</Title>
+        <TextInput
+          id="inputUserName"
+          label="Username"
+          placeholder="New username"
+          onChange={this.onUserNameChange}
+        />
+        <TextInput
+          id="inputUserNameConfirm"
+          label="Username"
+          placeholder="Retype new username"
+          onChange={this.onUserNameConfirmChange}
+        />
         <Button
-          outline
+          variant="outline"
           disabled={
             !this.state.userName ||
             this.state.userName !== this.state.userNameConfirm
           }
           id="buttonSaveUserName"
-          color="primary"
-          className="m-1 me-auto"
+          color="blue"
           onClick={this.onUserNameSubmit}
         >
           Save new username
         </Button>
         {this.state.userNameError ? (
-          <div
-            id="userNameError"
-            style={{
-              display: "inline",
-              color: "red",
-              marginLeft: "16px",
-            }}
-          >
+          <Text id="userNameError" c="red">
             {this.state.userNameError}
-          </div>
+          </Text>
         ) : null}
-      </div>
+      </Stack>
     );
   }
 }

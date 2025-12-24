@@ -1,5 +1,5 @@
 import React from "react";
-import { Badge } from "reactstrap";
+import { Box, Group, Text, Title } from "@mantine/core";
 import "../index.css";
 import Checkbox from "../../../components/Common/Checkbox";
 import classNames from "classnames";
@@ -41,22 +41,18 @@ const Wizard_SelectLabeling = ({
   };
 
   return (
-    <div className="p-2">
-      <h3 className="fw-bold">1. Select Labeling</h3>
+    <Box p="sm">
+      <Title order={3}>1. Select Labeling</Title>
       <EdgeMLTable>
         <EdgeMLTableHeader>
-          <div>
-            <h4>
-              <b>Labeling</b>
-            </h4>
-          </div>
-          <div className="d-flex justify-content-center align-items-center">
+          <Title order={4}>Labeling</Title>
+          <Group justify="center" align="center">
             <Checkbox
               onClick={() => toggleZeroClass(!zeroClass)}
               isSelected={zeroClass}
-            ></Checkbox>
-            <div className="ms-2">Use 0-Class</div>
-          </div>
+            />
+            <Text ml="sm">Use 0-Class</Text>
+          </Group>
         </EdgeMLTableHeader>
         {labelings
           .filter((elm) => countDatasets(elm))
@@ -66,20 +62,22 @@ const Wizard_SelectLabeling = ({
                 disabled: countDatasets(labeling) === 0,
               })}
             >
-              <Checkbox
-                className="me-2"
-                onClick={() => setLabeling({ ...labeling, disabledLabels: [] })}
-                isSelected={
-                  selectedLabeling
-                    ? selectedLabeling.id === labeling.id
-                    : false
-                }
-              ></Checkbox>
+              <Box mr="sm">
+                <Checkbox
+                  onClick={() =>
+                    setLabeling({ ...labeling, disabledLabels: [] })
+                  }
+                  isSelected={
+                    selectedLabeling
+                      ? selectedLabeling.id === labeling.id
+                      : false
+                  }
+                />
+              </Box>
               <div className="labelingName">{labeling.name} </div>
               <div>
                 {labeling.labels.map((label) => (
                   <LabelBadge
-                    className="badge"
                     onClick={() =>
                       selectedLabeling?.disabledLabels &&
                       selectedLabeling.id === labeling.id &&
@@ -116,7 +114,7 @@ const Wizard_SelectLabeling = ({
             </EdgeMLTableEntry>
           ))}
       </EdgeMLTable>
-    </div>
+    </Box>
   );
 };
 

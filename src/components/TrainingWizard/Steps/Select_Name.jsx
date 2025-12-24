@@ -1,20 +1,21 @@
-import { Input, ModalBody, InputGroup, InputGroupText } from "reactstrap";
-import React, { Fragment } from "react";
+import { Box, Text, TextInput } from "@mantine/core";
+import React from "react";
 
 const Select_Name = ({ modelName, setModelName, screen }) => {
   return (
-    <div className="m-2">
-      <h3 className="fw-bold">{screen + 1 + ". Model Metadata"}</h3>
-      <InputGroup style={{ maxWidth: "350px" }}>
-        <InputGroupText>Model Name</InputGroupText>
-        <Input
-          type={"text"}
-          value={modelName}
-          onChange={(e) => setModelName(e.target.value)}
-          invalid={!modelName}
-        ></Input>
-      </InputGroup>
-    </div>
+    <Box m="sm">
+      <Text fw={700} size="lg">
+        {screen + 1 + ". Model Metadata"}
+      </Text>
+      <TextInput
+        label="Model Name"
+        value={modelName}
+        onChange={(e) => setModelName(e.target.value)}
+        error={!modelName ? "Model name cannot be blank" : null}
+        style={{ maxWidth: "350px" }}
+        mt="sm"
+      />
+    </Box>
   );
 };
 

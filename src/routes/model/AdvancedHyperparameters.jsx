@@ -1,5 +1,5 @@
 import React from "react";
-import { Collapse, CardBody, Card, CardHeader } from "reactstrap";
+import { Box, Card, Collapse, Group, Text } from "@mantine/core";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
@@ -14,33 +14,36 @@ export const AdvancedHyperparameters = ({
   handleHyperparameterChange,
 }) => {
   return (
-    <div className="mb-3 mt-2 align-self-stretch">
-      <Card className="shadow-none">
-        <CardHeader
-          className={
-            "align-items-start text-left " +
-            (showAdvanced ? "" : "border-bottom-0")
-          }
+    <Box mb="md" mt="sm" style={{ alignSelf: "stretch" }}>
+      <Card shadow="sm">
+        <Box
           onClick={toggleShowAdvanced}
+          style={{
+            cursor: "pointer",
+            borderBottom: showAdvanced ? undefined : "none",
+          }}
+          p="sm"
         >
-          {showAdvanced ? (
-            <FontAwesomeIcon icon={faCaretDown} />
-          ) : (
-            <FontAwesomeIcon icon={faCaretRight} />
-          )}
-          <span style={{ fontWeight: 500 }}> Advanced Hyperparameters</span>
-        </CardHeader>
-        <Collapse isOpen={showAdvanced}>
-          <CardBody>
+          <Group align="flex-start" gap="xs">
+            {showAdvanced ? (
+              <FontAwesomeIcon icon={faCaretDown} />
+            ) : (
+              <FontAwesomeIcon icon={faCaretRight} />
+            )}
+            <Text fw={500}>Advanced Hyperparameters</Text>
+          </Group>
+        </Box>
+        <Collapse in={showAdvanced}>
+          <Box p="sm">
             <HyperparameterView
               model={model}
               hyperparameters={hyperparameters}
               handleHyperparameterChange={handleHyperparameterChange}
               isAdvanced={true}
             />
-          </CardBody>
+          </Box>
         </Collapse>
       </Card>
-    </div>
+    </Box>
   );
 };

@@ -1,14 +1,14 @@
 import React from "react";
 import {
-  Row,
-  Col,
-  ListGroup,
-  ListGroupItem,
+  Box,
+  Button,
   Card,
-  CardHeader,
-  CardBody,
   Container,
-} from "reactstrap";
+  Grid,
+  ScrollArea,
+  Stack,
+  Title,
+} from "@mantine/core";
 
 import { Empty } from "./components/Empty";
 
@@ -21,42 +21,41 @@ export const ExportView = ({
 }) => {
   return (
     <Container>
-      <Row>
-        <Col xs={12} lg={4} className="pt-3">
-          <Card className="text-left" style={{ maxHeight: "80vh" }}>
-            <CardHeader>
-              <h4>Models</h4>
-            </CardHeader>
-            <CardBody className="overflow-auto">
+      <Grid>
+        <Grid.Col span={{ base: 12, lg: 4 }}>
+          <Card style={{ maxHeight: "80vh" }}>
+            <Title order={4}>Models</Title>
+            <ScrollArea h="70vh" mt="sm">
               {models.length ? (
-                <ListGroup>
-                  {models.map((m) => (
-                    <ListGroupItem
-                      key={m.id}
-                      active={selectedModel && m.id === selectedModel.id}
-                      action
-                      tag="button"
-                      onClick={() => selectModel(m.id)}
-                    >
-                      {m.name}
-                    </ListGroupItem>
-                  ))}
-                </ListGroup>
+                <Stack gap="xs">
+                  {models.map((m) => {
+                    const isActive = selectedModel && m.id === selectedModel.id;
+                    return (
+                      <Button
+                        key={m.id}
+                        variant={isActive ? "filled" : "light"}
+                        color="blue"
+                        onClick={() => selectModel(m.id)}
+                        justify="flex-start"
+                      >
+                        {m.name}
+                      </Button>
+                    );
+                  })}
+                </Stack>
               ) : (
                 <Empty>No models available</Empty>
               )}
-            </CardBody>
+            </ScrollArea>
           </Card>
-        </Col>
-        <Col xs={12} lg={8} className="pt-3">
-          <Card className="text-left">
-            <CardHeader>
-              <h4>Deployment</h4>
-            </CardHeader>
-            <CardBody>{detail}</CardBody>
+        </Grid.Col>
+        <Grid.Col span={{ base: 12, lg: 8 }}>
+          <Card>
+            <Title order={4}>Deployment</Title>
+            <Box mt="sm">{detail}</Box>
           </Card>
-        </Col>
-      </Row>
+        </Grid.Col>
+      </Grid>
     </Container>
   );
 };

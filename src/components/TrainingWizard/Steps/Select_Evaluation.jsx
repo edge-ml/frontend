@@ -1,14 +1,5 @@
-import React from "react";
-import { useState, Fragment } from "react";
-import {
-  Row,
-  Col,
-  Container,
-  DropdownMenu,
-  DropdownItem,
-  Dropdown,
-  DropdownToggle,
-} from "reactstrap";
+import React, { useState } from "react";
+import { Container, Grid, Select, Text } from "@mantine/core";
 import NumberHyperparameter from "../../Hyperparameters/NumberHyperparameter";
 import SelectionHyperparameter from "../../Hyperparameters/SelectionHyperparameter";
 
@@ -18,7 +9,6 @@ const SelectEvaluation = ({
   setSelectedEval,
   footer,
 }) => {
-  const [dropDownOpen, setDropDownOpen] = useState(false);
   const [selectedEvaluation, setSelectedEvaluation] = useState(0);
 
   // useEffect(() => {
@@ -43,30 +33,28 @@ const SelectEvaluation = ({
   }
 
   return (
-    <Fragment>
-      <h3 className="fw-bold">7. Select Evaluation Strategy</h3>
-      <Dropdown
-        isOpen={dropDownOpen}
-        toggle={() => setDropDownOpen(!dropDownOpen)}
-      >
-        <DropdownToggle caret size="lg">
-          {evaluation[selectedEvaluation].name}
-        </DropdownToggle>
-        <DropdownMenu>
-          {evaluation.map((evl, idx) => (
-            <DropdownItem onClick={() => setSelectedEvaluation(idx)}>
-              {evl.name}
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      </Dropdown>
+    <>
+      <Text fw={700} size="lg">
+        7. Select Evaluation Strategy
+      </Text>
+      <Select
+        data={evaluation.map((evl) => evl.name)}
+        value={evaluation[selectedEvaluation]?.name ?? null}
+        onChange={(value) => {
+          const nextIdx = evaluation.findIndex((evl) => evl.name === value);
+          if (nextIdx === -1) return;
+          setSelectedEvaluation(nextIdx);
+        }}
+        mt="sm"
+        size="lg"
+      />
       {evaluation[0] ? (
         <HyperparameterView
           handleHyperparameterChange={handleHyperparameterChange}
           hyperparameters={evaluation[selectedEvaluation].parameters}
-        ></HyperparameterView>
+        />
       ) : null}
-    </Fragment>
+    </>
   );
 };
 
@@ -76,34 +64,34 @@ export const HyperparameterView = ({
 }) => {
   return (
     <Container fluid>
-      <Row>
+      <Grid>
         {hyperparameters.length > 0 &&
           hyperparameters.map((h) => {
             if (h.parameter_type === "number") {
               return (
-                <Col className="col-md-6 col-12 ps-0">
+                <Grid.Col span={{ base: 12, md: 6 }} pl={0}>
                   <NumberHyperparameter
                     {...h}
                     id={"input_" + h.parameter_name}
                     handleChange={handleHyperparameterChange}
                     value={h.value}
                   />
-                </Col>
+                </Grid.Col>
               );
             } else if (h.parameter_type === "selection") {
               return (
-                <Col className="col-md-6 col-12 ps-0">
+                <Grid.Col span={{ base: 12, md: 6 }} pl={0}>
                   <SelectionHyperparameter
                     {...h}
                     id={"input_" + h.parameter_name}
                     handleChange={handleHyperparameterChange}
                     value={h.value}
                   />
-                </Col>
+                </Grid.Col>
               );
             }
           })}
-      </Row>
+      </Grid>
     </Container>
   );
 };

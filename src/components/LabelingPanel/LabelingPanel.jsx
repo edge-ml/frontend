@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "reactstrap";
+import { Box, Button, Group, Stack, Text } from "@mantine/core";
 import { hexToForegroundColor } from "../../services/ColorService";
 import { useContext } from "react";
 import { DatasetContext } from "../../routes/dataset/DatasetContext";
@@ -13,11 +13,12 @@ const LabelButtonView = ({
   setSelectedLabelTypeId,
 }) => {
   return (
-    <div>
+    <Box>
       {labeling &&
         labeling.labels.map((label, index) => (
           <Button
-            className="m-1 labelingButton"
+            className="labelingButton"
+            m="xs"
             style={{
               backgroundColor:
                 label.id === selectedLabelTypeId ? label.color : "white",
@@ -32,34 +33,28 @@ const LabelButtonView = ({
             {label.name} {"(" + (index + 1) + ")"}
           </Button>
         ))}
-    </div>
+    </Box>
   );
 };
 
 const TimeDisplay = ({ from, to }) => {
   return (
-    <div className="mx-2">
-      <small>
-        <div className="d-flex justify-content-center fw-bold">
-          Selected Label
-        </div>
-      </small>
-      <div className="d-flex align-items-center">
-        <small>
-          <div className="monospace text-sm">
-            {new Date(from).toUTCString().split(" ")[4]}
-          </div>
-        </small>
-        <small>
-          <div className="mx-1 monospace">-</div>
-        </small>
-        <small>
-          <div className="monospace">
-            {new Date(to).toUTCString().split(" ")[4]}
-          </div>
-        </small>
-      </div>
-    </div>
+    <Stack mx="sm" gap={4}>
+      <Text size="xs" fw={700} ta="center">
+        Selected Label
+      </Text>
+      <Group align="center" gap="xs">
+        <Text size="xs" className="monospace">
+          {new Date(from).toUTCString().split(" ")[4]}
+        </Text>
+        <Text size="xs" className="monospace">
+          -
+        </Text>
+        <Text size="xs" className="monospace">
+          {new Date(to).toUTCString().split(" ")[4]}
+        </Text>
+      </Group>
+    </Stack>
   );
 };
 
@@ -97,30 +92,29 @@ const LabelingPanel = ({}) => {
   });
 
   return (
-    <div>
-      <div className="labelingPanelBorder"></div>
-      <div className="d-flex justify-content-between p-1">
+    <Box>
+      <Box className="labelingPanelBorder" />
+      <Group justify="space-between" p="xs">
         {!hideLabels ? (
-          <div className="d-flex">
-            <LabelButtonView
-              labeling={activeLabeling}
-              selectedLabelTypeId={selectedLabelTypeId}
-              setSelectedLabelTypeId={setSelectedLabelTypeId}
-            ></LabelButtonView>
-          </div>
+          <LabelButtonView
+            labeling={activeLabeling}
+            selectedLabelTypeId={selectedLabelTypeId}
+            setSelectedLabelTypeId={setSelectedLabelTypeId}
+          />
         ) : (
-          <div></div>
+          <Box />
         )}
-        <div className="d-flex">
+        <Group align="center">
           <TimeDisplay
             from={selectedLabel && selectedLabel.start}
             to={selectedLabel && selectedLabel.end}
-          ></TimeDisplay>
+          />
           <Button
             disabled={selectedLabel === undefined}
-            className="deleteButton m-1"
-            outline
-            color="danger"
+            className="deleteButton"
+            m="xs"
+            variant="outline"
+            color="red"
             onClick={() => setDeleteModalOpen(true)}
           >
             Delete
@@ -135,8 +129,8 @@ const LabelingPanel = ({}) => {
           >
             <div>SelectedLabel</div>
           </DeleteModal>
-        </div>
-      </div>
+        </Group>
+      </Group>
       <DeleteModal
         isOpen={deleteModalOpen}
         onCancel={() => setDeleteModalOpen(false)}
@@ -144,9 +138,10 @@ const LabelingPanel = ({}) => {
           onDeleteSelectedLabel();
           setDeleteModalOpen(false);
         }}
-      >        The selected label
+      >
+        The selected label
       </DeleteModal>
-    </div>
+    </Box>
   );
 };
 

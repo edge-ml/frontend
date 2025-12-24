@@ -1,19 +1,5 @@
 import React, { Component } from "react";
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  InputGroup,
-  Input,
-  InputGroupText,
-  InputGroupText,
-  FormGroup,
-  Label,
-  Row,
-  Col,
-} from "reactstrap";
+import { Button, Group, Modal, Stack, TextInput, Title } from "@mantine/core";
 import CodeSnippet from "./CodeSnippet";
 import CodeSettings from "./CodeSettings";
 
@@ -61,20 +47,16 @@ class CodeSnippetModal extends Component {
 
   render() {
     return (
-      <Modal className="modal-xl" isOpen={this.props.isOpen}>
-        <ModalHeader>Generate code snippet</ModalHeader>
-        <ModalBody>
-          <InputGroup>
-            <InputGroupText>
-              <InputGroupText>{"Dataset-name"}</InputGroupText>
-            </InputGroupText>
-            <Input
-              id="inputProjectName"
-              placeholder={"Dataset-name"}
-              value={this.state.datasetName}
-              onChange={this.onDatasetNameChanged}
-            />
-          </InputGroup>
+      <Modal opened={this.props.isOpen} onClose={this.onCancel} size="xl">
+        <Title order={4}>Generate code snippet</Title>
+        <Stack mt="sm">
+          <TextInput
+            id="inputProjectName"
+            label="Dataset-name"
+            placeholder="Dataset-name"
+            value={this.state.datasetName}
+            onChange={this.onDatasetNameChanged}
+          />
           <CodeSettings
             platform={this.state.platform}
             servertime={this.state.servertime}
@@ -87,18 +69,17 @@ class CodeSnippetModal extends Component {
             datasetName={this.state.datasetName}
             useServertime={this.state.servertime}
             deviceApiKey={this.props.readApiKey} // TODO: FIX CODESNIPPET DEVICEAPIKEY
-          ></CodeSnippet>
-        </ModalBody>
-        <ModalFooter>
+          />
+        </Stack>
+        <Group justify="flex-end" mt="md">
           <Button
             id="btnSaveProjectCancel"
-            color="secondary"
-            className="m-1"
+            color="gray"
             onClick={this.onCancel}
           >
             Cancel
           </Button>
-        </ModalFooter>
+        </Group>
       </Modal>
     );
   }

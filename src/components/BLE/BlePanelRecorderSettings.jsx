@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, InputGroup, InputGroupText } from "reactstrap";
+import { Box, Group, Stack, Text, TextInput } from "@mantine/core";
 import SpinnerButton from "../Common/SpinnerButton";
 import classNames from "classnames";
 import Checkbox from "../Common/Checkbox";
@@ -49,24 +49,24 @@ function BlePanelRecorderSettings({
   };
 
   return (
-    <div
-      className="m-2"
+    <Box
+      m="sm"
       style={disabled ? { opacity: "0.4", pointerEvents: "none" } : null}
     >
-      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
-        <h4>3. Record dataset</h4>
-      </div>
-      <div className="body-wrapper p-3">
-        <InputGroup>
-          <InputGroupText>{"Dataset name"}</InputGroupText>
-          <Input
-            id="bleDatasetName"
-            placeholder={"dataset name"}
-            onChange={handleDatasetNameChanged}
-            value={datasetName}
-            disabled={recorderState !== "ready"}
-          />
-        </InputGroup>
+      <Box className="header-wrapper">
+        <Text fw={700} size="lg">
+          3. Record dataset
+        </Text>
+      </Box>
+      <Box className="body-wrapper" p="md">
+        <TextInput
+          id="bleDatasetName"
+          label="Dataset name"
+          placeholder="dataset name"
+          onChange={handleDatasetNameChanged}
+          value={datasetName}
+          disabled={recorderState !== "ready"}
+        />
         {/* TODO reenable this when sample rate issues have been resolved
         <InputGroup>
           <InputGroupText>
@@ -89,23 +89,17 @@ function BlePanelRecorderSettings({
             Samplerate must be between 0 and 50
           </FormFeedback>
         </InputGroup>*/}
-        <hr />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <Box mt="md">
+          <Group justify="space-between" align="center">
           <SpinnerButton
-            className="me-2"
             outline
             style={
               buttonErrorAnimate
                 ? {
+                    marginRight: "0.5rem",
                     animation: "hzejgT 0.3s ease 0s 1 normal none running",
                   }
-                : null
+                : { marginRight: "0.5rem" }
             }
             color={buttonColor}
             spinnercolor={buttonColor}
@@ -119,7 +113,7 @@ function BlePanelRecorderSettings({
           >
             {buttonText}
           </SpinnerButton>
-          <div
+          <Text
             style={
               sensorNotSelectedError
                 ? { color: "red", fontSize: "smaller" }
@@ -127,38 +121,41 @@ function BlePanelRecorderSettings({
             }
           >
             Sensors need to be selected
-          </div>
-          <small>
-            <div>
-              <div className="d-flex flex-row">
-                <Checkbox
-                  onClick={onToggleStream}
-                  className="stream-check"
-                  id="stream-check"
-                />
-                <div className="ms-2">Disable sensor streaming</div>
-              </div>
-              <div className="d-flex flex-row mt-2">
-                <Checkbox
-                  onClick={onToggleSampleRate}
-                  className="sampleRate-check"
-                  id="sampleRate-check"
-                />
-                <div className="ms-2">
-                  Show sensor data at full sampling rate
-                </div>
-              </div>
-            </div>
-          </small>
-        </div>
+          </Text>
+          <Stack gap="xs">
+            <Group align="center">
+              <Checkbox
+                onClick={onToggleStream}
+                className="stream-check"
+                id="stream-check"
+              />
+              <Text size="xs" ml="sm">
+                Disable sensor streaming
+              </Text>
+            </Group>
+            <Group align="center">
+              <Checkbox
+                onClick={onToggleSampleRate}
+                className="sampleRate-check"
+                id="sampleRate-check"
+              />
+              <Text size="xs" ml="sm">
+                Show sensor data at full sampling rate
+              </Text>
+            </Group>
+          </Stack>
+        </Group>
+        </Box>
         {fullSampleRate ? (
-          <small className="text-danger">
-            <strong>Warning: </strong>
+          <Text size="xs" c="red" mt="sm">
+            <Text component="span" fw={700}>
+              Warning:
+            </Text>{" "}
             Showing sensor data at full sample rate can affect performance.
-          </small>
+          </Text>
         ) : null}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

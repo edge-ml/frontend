@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Row, Col, Input, Button } from "reactstrap";
+import { Box, Button, Grid, Text, TextInput, Title } from "@mantine/core";
 import {
   init2FA,
   verify2FA,
@@ -51,50 +51,48 @@ class TwoFaSettings extends Component {
 
   render() {
     return (
-      <div>
+      <Box>
         {!this.props.twoFAEnabled ? (
-          <Row>
-            <Col>
+          <Grid>
+            <Grid.Col span={{ base: 12, md: 6 }}>
               <img width="100%" alt="2FA QR Code" src={this.state.qrCode} />
-            </Col>
-            <Col style={{ marginTop: "15px" }}>
-              Scan the qr-code with a supported app then enter the token from
-              the app in order to activate two-factor authentication
-              <Input
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, md: 6 }} mt="md">
+              <Text size="sm">
+                Scan the qr-code with a supported app then enter the token from
+                the app in order to activate two-factor authentication
+              </Text>
+              <TextInput
                 autoFocus
                 id="inputTwoFAToken"
-                className={"mt-1"}
                 placeholder="Token"
                 style={{ textAlign: "center" }}
                 onChange={this.onTokenChanged}
                 ref={(input) => {
                   this.tokenInput = input;
                 }}
+                mt="xs"
               />
-            </Col>
-          </Row>
+            </Grid.Col>
+          </Grid>
         ) : (
-          <div style={{ marginTop: "8px" }}>
-            <Row>
-              <Col>
-                <h5 className="text-center">2FA is activated</h5>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="text-center">
-                <Button
-                  id="buttonDisableTwoFA"
-                  color="danger"
-                  outline
-                  onClick={this.on2FADisable}
-                >
-                  Disable
-                </Button>
-              </Col>
-            </Row>
-          </div>
+          <Box mt="sm">
+            <Title order={5} ta="center">
+              2FA is activated
+            </Title>
+            <Box mt="sm" style={{ textAlign: "center" }}>
+              <Button
+                id="buttonDisableTwoFA"
+                color="red"
+                variant="outline"
+                onClick={this.on2FADisable}
+              >
+                Disable
+              </Button>
+            </Box>
+          </Box>
         )}
-      </div>
+      </Box>
     );
   }
 }

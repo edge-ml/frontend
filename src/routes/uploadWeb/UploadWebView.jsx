@@ -1,50 +1,58 @@
 import React from "react";
-import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
+import { Box, Container, Grid, Stack, Text, Title } from "@mantine/core";
 
 export const UploadWebView = ({ sensorList, datasetSettings, graph, fabs }) => {
   return (
     <Container>
       {sensorList || datasetSettings ? (
-        <Row>
+        <Grid>
           {sensorList ? (
-            <Col md={6} className="pt-3">
-              <div className="p-2">
-                <div className="header-wrapper d-flex flex-column justify-content-flex-start align-content-center">
-                  <h4>Sensor Selection</h4>
-                  <span>Select sensors you want to record in a dataset.</span>
-                </div>
-                <div className="body-wrapper">{sensorList}</div>
-              </div>
-            </Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Box p="sm">
+                <Stack className="header-wrapper" gap={4}>
+                  <Title order={4}>Sensor Selection</Title>
+                  <Text size="sm">
+                    Select sensors you want to record in a dataset.
+                  </Text>
+                </Stack>
+                <Box className="body-wrapper" mt="sm">
+                  {sensorList}
+                </Box>
+              </Box>
+            </Grid.Col>
           ) : null}
           {datasetSettings ? (
-            <Col md={6} className="pt-3">
-              <div className="p-2">
-                <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
-                  <h4>Dataset Configuration</h4>
-                </div>
-                <div className="body-wrapper p-3">{datasetSettings}</div>
-              </div>
-            </Col>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Box p="sm">
+                <Box className="header-wrapper">
+                  <Title order={4}>Dataset Configuration</Title>
+                </Box>
+                <Box className="body-wrapper" p="md">
+                  {datasetSettings}
+                </Box>
+              </Box>
+            </Grid.Col>
           ) : null}
-        </Row>
+        </Grid>
       ) : null}
       {graph ? (
-        <Row>
-          <Col className="pt-3">
-            <div className="p-2">
-              <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
-                <h4>Data Preview</h4>
-              </div>
-              <div className="body-wrapper p-3">{graph}</div>
-            </div>
-          </Col>
-        </Row>
+        <Grid>
+          <Grid.Col span={12}>
+            <Box p="sm">
+              <Box className="header-wrapper">
+                <Title order={4}>Data Preview</Title>
+              </Box>
+              <Box className="body-wrapper" p="md">
+                {graph}
+              </Box>
+            </Box>
+          </Grid.Col>
+        </Grid>
       ) : null}
-      <div className="pb-3" />
-      <div className="position-fixed" style={{ bottom: "24px", right: "24px" }}>
+      <Box pb="md" />
+      <Box pos="fixed" style={{ bottom: "24px", right: "24px" }}>
         {fabs}
-      </div>
+      </Box>
     </Container>
   );
 };

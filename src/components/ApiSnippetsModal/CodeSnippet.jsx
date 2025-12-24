@@ -5,7 +5,6 @@ import "prismjs/components/prism-java";
 import "prismjs/components/prism-c";
 import "prismjs/components/prism-cpp";
 import "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard";
-import { Button } from "reactstrap";
 import CodeView from "./CodeView";
 
 import { codeJava, codeArduino, codeNode, codeJs } from "./Code";

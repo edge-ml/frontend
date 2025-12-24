@@ -1,13 +1,5 @@
-import React, { useState, Fragment } from "react";
-import {
-  ModalBody,
-  Button,
-  ModalFooter,
-  Dropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
-} from "reactstrap";
+import React, { useState } from "react";
+import { Select, Text } from "@mantine/core";
 
 const Select_Normalizer = ({
   onBack,
@@ -16,36 +8,29 @@ const Select_Normalizer = ({
   setNormalizer,
   footer,
 }) => {
-  const [dropDownOpen, setDropDownOpen] = useState(false);
   const [selectedNormalizer, setSelectedNormalizer] = useState(0);
 
   if (!normalizer.length) {
     return;
   }
   return (
-    <Fragment>
-      <h3 className="fw-bold">6. Select Normalization</h3>
-      <Dropdown
-        isOpen={dropDownOpen}
-        toggle={() => setDropDownOpen(!dropDownOpen)}
-      >
-        <DropdownToggle caret size="lg">
-          {normalizer[selectedNormalizer].name}
-        </DropdownToggle>
-        <DropdownMenu>
-          {normalizer.map((n, idx) => (
-            <DropdownItem
-              onClick={() => {
-                setSelectedNormalizer(idx);
-                setNormalizer(normalizer[idx]);
-              }}
-            >
-              {n.name}
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      </Dropdown>
-    </Fragment>
+    <>
+      <Text fw={700} size="lg">
+        6. Select Normalization
+      </Text>
+      <Select
+        data={normalizer.map((n) => n.name)}
+        value={normalizer[selectedNormalizer]?.name ?? null}
+        onChange={(value) => {
+          const nextIdx = normalizer.findIndex((n) => n.name === value);
+          if (nextIdx === -1) return;
+          setSelectedNormalizer(nextIdx);
+          setNormalizer(normalizer[nextIdx]);
+        }}
+        mt="sm"
+        size="lg"
+      />
+    </>
   );
 };
 

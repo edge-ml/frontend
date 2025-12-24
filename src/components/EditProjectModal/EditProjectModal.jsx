@@ -1,16 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  InputGroup,
-  InputGroupText,
-  Input,
-  Table,
-  Col,
-  Row,
-  FormFeedback,
-} from "reactstrap";
-
-import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
+import { Box, Button, Group, Modal, Stack, Text, TextInput, Title } from "@mantine/core";
 
 import useCreateProject from "../../Hooks/useCreateProject";
 import AutoCompleteInput from "../../components/AutoCompleteInput/AutocompleteInput";
@@ -37,33 +26,30 @@ const EditProjectModal = ({ isOpen, onClose }) => {
   console.log(project.users);
 
   return (
-    <Modal id="editProjectModal" isOpen={isOpen} onClose={onClose}>
-      <ModalHeader>Create new Project</ModalHeader>
-      <ModalBody>
-        <InputGroup>
-          <InputGroupText>{"Name"}</InputGroupText>
-          <Input
-            id="inputProjectName"
-            placeholder={"Project-name"}
-            value={project.name}
-            onChange={(e) => setProjectName(e.target.value)}
-          />
-          <FormFeedback></FormFeedback>
-        </InputGroup>
-        <InputGroup>
-          <InputGroupText>{"Admin"}</InputGroupText>
-          <Input
-            disabled
-            id="inputProjectAdmin"
-            placeholder={"Project-admin"}
-            value={project.admin.name + " (" + project.admin.mail + ")"}
-          />
-        </InputGroup>
-        <h5 style={{ paddingTop: "16px" }}>Users</h5>
+    <Modal id="editProjectModal" opened={isOpen} onClose={onClose} size="lg">
+      <Title order={4}>Create new Project</Title>
+      <Stack mt="sm">
+        <TextInput
+          id="inputProjectName"
+          label="Name"
+          placeholder="Project-name"
+          value={project.name}
+          onChange={(e) => setProjectName(e.target.value)}
+        />
+        <TextInput
+          disabled
+          id="inputProjectAdmin"
+          label="Admin"
+          placeholder="Project-admin"
+          value={project.admin.name + " (" + project.admin.mail + ")"}
+        />
+        <Title order={5} mt="md">
+          Users
+        </Title>
         <EdgeMLTable>
           <EdgeMLTableHeader>
-            <InputGroup>
-              <InputGroupText>Search user</InputGroupText>
+            <Group align="center" gap="xs">
+              <Text>Search user</Text>
               <AutoCompleteInput
                 type="text"
                 name="User ID"
@@ -79,50 +65,45 @@ const EditProjectModal = ({ isOpen, onClose }) => {
                   ...project.users.map((elm) => elm.userName),
                   project.admin.name,
                 ]}
-              ></AutoCompleteInput>
-            </InputGroup>
+              />
+            </Group>
           </EdgeMLTableHeader>
           {project.users.map((elm) => {
             return (
-              <EdgeMLTableEntry>
-                <div className="d-flex justify-content-between m-2 align-items-center">
-                  <div>
-                    <b>{elm.userName}</b>
-                  </div>
-                  <div>
-                    <Button
-                      outline
-                      color="danger"
-                      onClick={() => removeUser(elm.userName)}
-                    >
-                      <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
-                    </Button>
-                  </div>
-                </div>
+              <EdgeMLTableEntry key={elm.userName}>
+                <Group justify="space-between" m="sm" align="center">
+                  <Text fw={700}>{elm.userName}</Text>
+                  <Button
+                    variant="outline"
+                    color="red"
+                    onClick={() => removeUser(elm.userName)}
+                  >
+                    <FontAwesomeIcon icon={faTrashAlt} />
+                  </Button>
+                </Group>
               </EdgeMLTableEntry>
             );
           })}
           {project.users.length === 0 && (
-            <div className="m-2 d-flex justify-content-center">
-              No users added yet
-            </div>
+            <Group justify="center" m="sm">
+              <Text>No users added yet</Text>
+            </Group>
           )}
         </EdgeMLTable>
-      </ModalBody>
-      <ModalFooter className="justify-content-end">
+      </Stack>
+      <Group justify="flex-end" mt="md">
         <Button
-          outline
+          variant="outline"
           id="btnSaveProject"
-          color="primary"
-          className="m-1"
+          color="blue"
           onClick={async () => {
             await createProject();
             onClose();
           }}
         >
           Save
-        </Button>{" "}
-      </ModalFooter>
+        </Button>
+      </Group>
     </Modal>
   );
 };

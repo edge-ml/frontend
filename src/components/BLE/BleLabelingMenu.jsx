@@ -1,15 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  DropdownToggle,
-  Badge,
-  Label,
-} from "reactstrap";
+import React, { useState } from "react";
+import { Box, Button, Group, Menu, Stack, Text } from "@mantine/core";
 import LabelBadge from "../Common/LabelBadge";
 
 export const BleLabelingMenu = ({
@@ -24,50 +14,48 @@ export const BleLabelingMenu = ({
   };
 
   return (
-    <div className="m-2">
-      <div className="header-wrapper d-flex justify-content-between align-content-center ">
-        <h4>4. Labelings</h4>
-        <Dropdown
-          isOpen={dropdownOpen}
-          toggle={toggleDropdown}
-          className="position-relative p-0"
-        >
-          <DropdownToggle outline color="primary" caret>
-            Labelings
-          </DropdownToggle>
-          <DropdownMenu>
-            {/* <DropdownItem header>Labelings</DropdownItem> */}
+    <Box m="sm">
+      <Group className="header-wrapper" justify="space-between" align="center">
+        <Text fw={700} size="lg">
+          4. Labelings
+        </Text>
+        <Menu opened={dropdownOpen} onChange={setDropdownOpen}>
+          <Menu.Target>
+            <Button variant="outline" color="blue">
+              Labelings
+            </Button>
+          </Menu.Target>
+          <Menu.Dropdown>
             {labelings.map((labeling) => (
-              <DropdownItem
+              <Menu.Item
                 key={labeling.name}
-                onClick={(e) => handleSelectLabeling(labeling)}
+                onClick={() => handleSelectLabeling(labeling)}
               >
                 {labeling.name}
-              </DropdownItem>
+              </Menu.Item>
             ))}
-          </DropdownMenu>
-        </Dropdown>
-      </div>
-      <div className="body-wrapper p-3 d-flex flex-column">
-        {selectedLabeling ? <h5>Labels in {selectedLabeling.name}:</h5> : null}
-        <div className="d-flex mb-2 flex-wrap">
+          </Menu.Dropdown>
+        </Menu>
+      </Group>
+      <Stack className="body-wrapper" p="md" gap="xs">
+        {selectedLabeling ? (
+          <Text fw={600}>Labels in {selectedLabeling.name}:</Text>
+        ) : null}
+        <Group wrap="wrap" gap="xs">
           {selectedLabeling &&
             selectedLabeling.labels.map((label, labelIdx) => (
-              <div
-                key={label.id}
-                className="d-flex flex-column align-items-center me-1"
-              >
-                <LabelBadge color={label.color}> {label.name}</LabelBadge>
-                <span>{shortcutKeys[labelIdx]}</span>
-              </div>
+              <Stack key={label.id} align="center" gap={2}>
+                <LabelBadge color={label.color}>{label.name}</LabelBadge>
+                <Text size="xs">{shortcutKeys[labelIdx]}</Text>
+              </Stack>
             ))}
-        </div>
-        <span>To start/stop labeling the data during recording:</span>
-        <span>
+        </Group>
+        <Text size="sm">To start/stop labeling the data during recording:</Text>
+        <Text size="sm">
           Press the shortcut key on the keyboard which corresponds the desired
           label.
-        </span>
-      </div>
-    </div>
+        </Text>
+      </Stack>
+    </Box>
   );
 };

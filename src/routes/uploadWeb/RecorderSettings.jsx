@@ -1,4 +1,4 @@
-import { Alert, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Alert, Divider, Stack, Text, TextInput } from "@mantine/core";
 import React from "react";
 import { mobileAndTabletCheck } from "../../services/helpers";
 import {
@@ -19,18 +19,16 @@ export const RecorderSettings = ({
   errors = {},
   selectedSensors,
 }) => (
-  <React.Fragment>
-    <InputGroup>
-      <InputGroupText>Dataset name</InputGroupText>
-      <Input
-        id="datasetName"
-        placeholder="dataset name"
-        onChange={(e) => onDatasetNameChanged(e.target.value)}
-        value={datasetName}
-        disabled={disabledForm(recorderState)}
-      />
-    </InputGroup>
-    <hr />
+  <Stack gap="sm">
+    <TextInput
+      id="datasetName"
+      label="Dataset name"
+      placeholder="dataset name"
+      onChange={(e) => onDatasetNameChanged(e.target.value)}
+      value={datasetName}
+      disabled={disabledForm(recorderState)}
+    />
+    <Divider />
     <StartStopButton
       outline
       selectedSensors={selectedSensors}
@@ -39,24 +37,27 @@ export const RecorderSettings = ({
       onClickRecordButton={onClickRecordButton}
     />
     {mobileAndTabletCheck() ? null : (
-      <small className="ms-3">
-        <b>
-          <i>Note:</i>
-        </b>{" "}
+      <Text size="xs" ml="sm">
+        <Text component="span" fw={700} fs="italic">
+          Note:
+        </Text>{" "}
         Not running on a mobile browser. You may want to visit this page on your
         phone or tablet.
-      </small>
+      </Text>
     )}
     {Object.keys(errors).length !== 0 ? (
-      <React.Fragment>
-        <hr />
-        <h5>Warnings and Errors</h5>
+      <>
+        <Divider />
+        <Text fw={700}>Warnings and Errors</Text>
         {Object.entries(errors).map(([comp, { error, isWarning }]) => (
-          <Alert color={isWarning ? "warning" : "danger"}>
-            <strong>{comp}</strong>: {error}
+          <Alert key={comp} color={isWarning ? "yellow" : "red"}>
+            <Text fw={700} component="span">
+              {comp}
+            </Text>
+            : {error}
           </Alert>
         ))}
-      </React.Fragment>
+      </>
     ) : null}
-  </React.Fragment>
+  </Stack>
 );

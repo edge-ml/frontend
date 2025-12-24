@@ -1,13 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import {
-  ModalHeader,
-  Button,
-  Progress,
-  Spinner,
-  Modal,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
+import { Box, Button, Group, Modal, Progress, Stack, Text, Title } from "@mantine/core";
 import { getArduinoFirmware } from "../../../services/ApiServices/ArduinoFirmwareServices";
 import DFUManager from "./DFU";
 
@@ -111,11 +103,11 @@ const DFUModal = ({
 
   const renderModalBody = () => {
     if (flashError) {
-      return <div className="text-danger">{flashError}</div>;
+      return <Text c="red">{flashError}</Text>;
     } else {
       return (
-        <div className="align-items-center">
-          <div>
+        <Stack align="stretch" gap="sm">
+          <Text>
             Connected BLE device:{" "}
             {
               <strong>
@@ -124,82 +116,67 @@ const DFUModal = ({
                   : connectedBLEDevice.name}
               </strong>
             }
-          </div>
-          <div>
+          </Text>
+          <Text>
             Latest edge-ml version: <strong>{latestEdgeMLVersion}</strong>
-          </div>
-          <div>
+          </Text>
+          <Text>
             {isEdgeMLInstalled
               ? "This device already has edge-ml installed, but an update is possible. Please do not close this window, while the firmware is flashing."
               : "This device does not have edge-ml installed. Flash now to install the firmware. Please do not close this window, while the firmware is flashing."}
-          </div>
-          <div className="panelDivider"></div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <div>
+          </Text>
+          <Box className="panelDivider" />
+          <Group justify="space-between" align="center">
+            <Text>
               You can download and install the latest version of the edge-ml
               firmware by clicking on the update button.
-            </div>
+            </Text>
             <Button
-              outline
+              variant="outline"
               color="primary"
               disabled={flashState !== "connected"}
               onClick={downLoadAndInstallFW}
             >
               Update firmware
             </Button>
-          </div>
-          <div className="panelDivider"></div>
+          </Group>
+          <Box className="panelDivider" />
 
-          <div className="mt-3">
+          <Box mt="md">
             <Progress
               color={flashState === "uploadFinished" ? "primary" : "success"}
               value={flashProgress}
             />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {renderProgressInfo()}
-          </div>
-        </div>
+          </Box>
+          <Group justify="center" align="center">
+            <Text>{renderProgressInfo()}</Text>
+          </Group>
+        </Stack>
       );
     }
   };
 
   return (
-    <div>
-      <Modal
-        isOpen={showDFUModal}
-        className="modal-xl"
-        backdrop="static"
-        keyboard={false}
-      >
-        <ModalHeader>Update firmware</ModalHeader>
-        <ModalBody>{renderModalBody()}</ModalBody>
-        <ModalFooter>
-          <Button
-            outline
-            color="danger"
-            onClick={toggleDFUModal}
-            disabled={
-              flashState === "downloadingFW" || flashState === "uploading"
-            }
-          >
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </div>
+    <Modal
+      opened={showDFUModal}
+      onClose={toggleDFUModal}
+      size="xl"
+      closeOnClickOutside={false}
+      closeOnEscape={false}
+    >
+      <Title order={4}>Update firmware</Title>
+      <Box mt="md">{renderModalBody()}</Box>
+      <Group justify="flex-end" mt="md">
+        <Button
+          variant="outline"
+          color="red"
+          onClick={toggleDFUModal}
+          disabled={flashState === "downloadingFW" || flashState === "uploading"}
+        >
+          Cancel
+        </Button>
+      </Group>
+    </Modal>
   );
 };
 export default DFUModal;

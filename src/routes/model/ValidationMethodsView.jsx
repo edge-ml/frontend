@@ -1,13 +1,14 @@
 import React from "react";
-import Select from "react-select";
 import {
   Badge,
-  InputGroup,
-  Input,
   Card,
-  CardBody,
-  CardHeader,
-} from "reactstrap";
+  Divider,
+  Group,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
 
 import { withLoader } from "../../modules/loader";
 
@@ -27,32 +28,29 @@ const ValidationMethodsViewRaw = ({
   onValidationMethodOptionsChange = () => {},
 }) => {
   return (
-    <div className="w-100 text-left">
-      <h6>Train Test Split</h6>
-      <div className="d-flex flex-row align-items-baseline justify-content-between w-100">
-        <span>Split: </span>
-        <InputGroup style={{ width: "200px" }}>
-          <Input
-            type={"text"}
-            value={testSplit}
-            onChange={onTestSplitChange}
-          ></Input>
-        </InputGroup>
-      </div>
-      <h6>Validation</h6>
-      <div className="d-flex flex-row align-items-baseline justify-content-between">
-        <span>Method: </span>
-        <span style={{ minWidth: "200px" }}>
-          <Select
-            value={validationSelectOptions[currentValidationMethod]}
-            onChange={(x) => onValidationMethodChange(x.value)}
-            options={validationMethods.map((x) => validationSelectOptions[x])}
-          />
-        </span>
-      </div>
+    <Stack>
+      <Text fw={600}>Train Test Split</Text>
+      <Group justify="space-between" align="baseline">
+        <Text size="sm">Split:</Text>
+        <TextInput
+          value={testSplit}
+          onChange={onTestSplitChange}
+          w={200}
+        />
+      </Group>
+      <Text fw={600}>Validation</Text>
+      <Group justify="space-between" align="baseline">
+        <Text size="sm">Method:</Text>
+        <Select
+          value={currentValidationMethod}
+          onChange={(value) => onValidationMethodChange(value)}
+          data={validationMethods.map((x) => validationSelectOptions[x])}
+          w={200}
+        />
+      </Group>
       {currentValidationMethod &&
       currentValidationMethod !== validationSelectOptions.none.value ? (
-        <hr></hr>
+        <Divider my="sm" />
       ) : null}
       {currentValidationMethod === validationSelectOptions.LOSO.value ? (
         <LOSO
@@ -61,7 +59,7 @@ const ValidationMethodsViewRaw = ({
           onOptionsChange={onValidationMethodOptionsChange}
         />
       ) : null}
-    </div>
+    </Stack>
   );
 };
 
@@ -73,55 +71,57 @@ const LOSO = ({
   onOptionsChange,
 }) => {
   return (
-    <div>
-      <p>
+    <Stack>
+      <Text size="sm">
         Datasets will be grouped together according to the selected "leave one
         out" variable, and challenged against the others.
-      </p>
-      <div className="d-flex flex-row align-items-center justify-content-between">
-        <h6>"leave one out" variable: </h6>
-        <span style={{ minWidth: "200px" }}>
-          <Select
-            value={{ value: selectedMetaDataKey, label: selectedMetaDataKey }}
-            onChange={(x) =>
-              onOptionsChange({ ...options, selectedMetaDataKey: x.value })
-            }
-            options={customMetaData.metaDataKeys.map((x) => ({
-              value: x,
-              label: x,
-            }))}
-          />
-        </span>
-      </div>
-      <h6>Available Metadata in Datasets: metadata (#datasets)</h6>
-      <div>
+      </Text>
+      <Group justify="space-between" align="center">
+        <Text fw={600} size="sm">
+          "leave one out" variable:
+        </Text>
+        <Select
+          value={selectedMetaDataKey}
+          onChange={(value) =>
+            onOptionsChange({ ...options, selectedMetaDataKey: value })
+          }
+          data={customMetaData.metaDataKeys.map((x) => ({
+            value: x,
+            label: x,
+          }))}
+          w={200}
+        />
+      </Group>
+      <Text fw={600} size="sm">
+        Available Metadata in Datasets: metadata (#datasets)
+      </Text>
+      <Group gap="xs" wrap="wrap">
         {Object.entries(customMetaData.metaDataKeyFrequency).map(
           ([key, freq]) => (
-            <Badge pill className="me-1">{`${key} (${freq})`}</Badge>
+            <Badge key={key} radius="xl">{`${key} (${freq})`}</Badge>
           )
         )}
-      </div>
-      <br />
-      <small>
-        <strong>
-          <em>Note:</em>
-        </strong>{" "}
+      </Group>
+      <Text size="xs">
+        <Text component="span" fw={700} fs="italic">
+          Note:
+        </Text>{" "}
         Datasets without the selected metadata present will <strong>not</strong>{" "}
         be ignored, but instead collectively included in the validation as
         another group.
-      </small>
-    </div>
+      </Text>
+    </Stack>
   );
 };
 
 const withCard = (name, Wrapped) => (props) => (
-  <Card className="text-left">
-    <CardHeader>
-      <h4>{name}</h4>
-    </CardHeader>
-    <CardBody className="d-flex flex-column align-items-start flex-column justify-content-between">
+  <Card>
+    <Text fw={700} size="lg">
+      {name}
+    </Text>
+    <Stack mt="sm" align="flex-start" justify="space-between">
       <Wrapped {...props} />
-    </CardBody>
+    </Stack>
   </Card>
 );
 
