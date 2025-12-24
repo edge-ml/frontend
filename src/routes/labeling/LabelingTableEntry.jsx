@@ -46,7 +46,12 @@ const LabelingTableEntry = ({
               <Labeling labeling={labeling} />
             </div>
           </Box>
-          <Group justify="flex-end" wrap="nowrap" className="col-2 p-0">
+          <Group
+            justify="flex-end"
+            wrap="nowrap"
+            className="col-2 p-0"
+            style={{ marginLeft: "auto" }}
+          >
             <ActionIcon
               size="lg"
               variant="outline"

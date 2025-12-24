@@ -75,7 +75,7 @@ const useChartEvents = (chart, labeling) => {
     return plotBand;
   };
 
-  const updatePlotElements = (labelId, from, to) => {
+  const updatePlotElements = (labelId, draggedPlotLineId, from, to) => {
     Highcharts.charts.forEach((chartInstance) => {
       if (!chartInstance || !chartInstance.xAxis || !chartInstance.xAxis[0]) {
         return;
@@ -95,49 +95,47 @@ const useChartEvents = (chart, labeling) => {
         });
       }
 
-      const leftId = "pl" + labelId;
-      const rightId = "pr" + labelId;
-      const leftPlotLine = plotItems.find(
-        (item) => item.options.isPlotline && item.options.id === leftId
+      const draggedPlotLine = plotItems.find(
+        (item) =>
+          item.options.isPlotline && item.options.id === draggedPlotLineId
       );
-      const rightPlotLine = plotItems.find(
-        (item) => item.options.isPlotline && item.options.id === rightId
-      );
-      if (leftPlotLine) {
-        const leftOptions = leftPlotLine.options;
-        axis.removePlotLine(leftOptions.id);
-        axis.addPlotLine({ ...leftOptions, value: from });
-      }
-      if (rightPlotLine) {
-        const rightOptions = rightPlotLine.options;
-        axis.removePlotLine(rightOptions.id);
-        axis.addPlotLine({ ...rightOptions, value: to });
+      if (draggedPlotLine) {
+        const draggedOptions = draggedPlotLine.options;
+        const value = draggedOptions.isLeftPlotline ? from : to;
+        axis.removePlotLine(draggedOptions.id);
+        axis.addPlotLine({ ...draggedOptions, value });
       }
     });
   };
 
-  const calcBounds = (e, chart, activePlotLine) => {
-    const allPlotLinesAndBands = chart.current.chart.xAxis[0].plotLinesAndBands;
-    const activeLabelId = activePlotLine.options.labelId;
-    const activePlotLine_x = activePlotLine.svgElem.getBBox().x;
-    const chartBBox = chart.current.container.current.getBoundingClientRect();
+  const calcValueBounds = (axis, activePlotLine) => {
+    const allPlotLinesAndBands = axis.plotLinesAndBands || [];
+    const activeValue = activePlotLine.options.value;
+    const activeId = activePlotLine.options.id;
+    let minValue = axis.min ?? Number.NEGATIVE_INFINITY;
+    let maxValue = axis.max ?? Number.POSITIVE_INFINITY;
 
-    let minDiffLeft = 0;
-    let minDiffRight = chartBBox.right - chartBBox.left;
-    for (var i = 0; i < allPlotLinesAndBands.length; i++) {
-      const elm = allPlotLinesAndBands[i];
-      if (activeLabelId == elm.options.labelId || !elm.options.isPlotline) {
+    for (let i = 0; i < allPlotLinesAndBands.length; i++) {
+      const item = allPlotLinesAndBands[i];
+      if (!item?.options?.isPlotline) {
         continue;
       }
-      const pos = elm.svgElem.getBBox().x;
-      const diff = activePlotLine_x - pos;
-      if (diff < 0) {
-        minDiffRight = Math.min(pos, minDiffRight);
-      } else {
-        minDiffLeft = Math.max(pos, minDiffLeft);
+      if (item.options.id === activeId) {
+        continue;
+      }
+      const value = item.options.value;
+      if (value === undefined || value === null) {
+        continue;
+      }
+      if (value < activeValue && value > minValue) {
+        minValue = value;
+      }
+      if (value > activeValue && value < maxValue) {
+        maxValue = value;
       }
     }
-    return [minDiffLeft, minDiffRight];
+
+    return [minValue, maxValue];
   };
 
   const onMouseMoved = (e, chart) => {
@@ -152,16 +150,19 @@ const useChartEvents = (chart, labeling) => {
     const plotLine = getPlotLineById(
       currentPlotLine && currentPlotLine.plotBandId
     );
+    if (!plotLine) {
+      return;
+    }
 
-    const [leftBound, rightBound] = calcBounds(e, chart, plotLine);
+    const axis = chart.current.chart.xAxis[0];
     const chartBBox = chart.current.container.current.getBoundingClientRect();
-    var mousePos = e.clientX - chartBBox.left;
-    const dragPosition = Math.min(
-      Math.max(mousePos, leftBound + 1),
-      rightBound - 1
-    );
-    const draggedPosition = chart.current.chart.xAxis[0].toValue(
-      Math.max(leftBound, Math.min(mousePos, rightBound))
+    const mousePos = e.clientX - chartBBox.left;
+    const minGap = 1;
+    const rawPosition = axis.toValue(mousePos);
+    const [leftBound, rightBound] = calcValueBounds(axis, plotLine);
+    const draggedPosition = Math.min(
+      Math.max(rawPosition, leftBound + minGap),
+      rightBound - minGap
     );
 
     var plotLinesAndBands = chart.current.chart.xAxis[0].plotLinesAndBands;
@@ -179,13 +180,21 @@ const useChartEvents = (chart, labeling) => {
     }
     const activePlotbandOptions = plotBand.options;
 
-    let fixedPosition = plotLine.options.isLeftPlotline
-      ? activePlotbandOptions.to
-      : activePlotbandOptions.from;
+    const siblingId = plotLine.options.isLeftPlotline
+      ? "pr" + plotLine.options.labelId
+      : "pl" + plotLine.options.labelId;
+    const siblingPlotLine = plotLinesAndBands.find(
+      (item) => item.options.isPlotline && item.options.id === siblingId
+    );
+    let fixedPosition = siblingPlotLine
+      ? siblingPlotLine.options.value
+      : plotLine.options.isLeftPlotline
+        ? activePlotbandOptions.to
+        : activePlotbandOptions.from;
 
     const from = Math.min(draggedPosition, fixedPosition);
     const to = Math.max(draggedPosition, fixedPosition);
-    updatePlotElements(currentPlotLine.labelId, from, to);
+    updatePlotElements(currentPlotLine.labelId, plotLine.options.id, from, to);
   };
 
   const onMouseUp = (e, chart) => {
