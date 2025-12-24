@@ -1,15 +1,14 @@
 import apiConsts from "./ApiConstants";
 import ax from "axios";
 import apiRequest from "./request";
-import useProjectStore from "../../stores/projectStore";
+import { getCurrentProjectId } from "./projectContext";
 import localStorageService from "./../LocalStorageService";
 
 const axios = ax.create();
 
 export const processCSVBackend = (formData, fileId, handleProgress) => {
   const source = ax.CancelToken.source();
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const cancellationHandler = () => {
     source.cancel("Operation cancelled by the user");
   };
@@ -29,7 +28,7 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
     },
     cancelToken: source.token,
     headers: {
-      project: currentProject.id,
+      project: projectId,
       Authorization: localStorageService.getAccessToken(),
     },
     withCredentials: true,

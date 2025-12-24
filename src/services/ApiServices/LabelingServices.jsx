@@ -6,11 +6,10 @@ import {
   HTTP_METHODS,
 } from "./ApiConstants";
 import apiRequest from "./request";
-import useProjectStore from "../../stores/projectStore";
+import { getCurrentProjectId } from "./projectContext";
 
 export const getLabelings = async () => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
 
   const res = await apiRequest(
     HTTP_METHODS.GET,
@@ -22,8 +21,7 @@ export const getLabelings = async () => {
 
 export const updateLabeling = async (labeling) => {
   console.log(labeling);
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const res = await apiRequest(
     HTTP_METHODS.PUT,
     DATASET_STORE,
@@ -44,8 +42,7 @@ export const addLabeling = async (labeling) => {
 };
 
 export const deleteLabeling = async (labelingId, conflictingDatasetIds) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const res = await apiRequest(
     HTTP_METHODS.DELETE,
     API_URI,

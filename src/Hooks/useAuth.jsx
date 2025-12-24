@@ -6,6 +6,7 @@ import {
   logout as logout_api
 } from "../services/ApiServices/AuthentificationServices";
 import useUserStore from "./useUser";
+import { setToken } from "../services/LocalStorageService";
 
 const useAuth = () => {
   const setUser = useUserStore((state) => state.setUser);
@@ -20,7 +21,10 @@ const useAuth = () => {
   };
 
   const login = async (email, password) => {
-    const success = await loginUser(email, password);
+    const userData = await loginUser(email, password);
+    if (userData?.access_token) {
+      setToken(userData.access_token, userData.refresh_token);
+    }
     const user = await getUser_api();
     setUser(user);
 

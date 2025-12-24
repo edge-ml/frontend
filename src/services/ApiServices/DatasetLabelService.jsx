@@ -1,6 +1,6 @@
 import apiConsts from "./ApiConstants";
 import apiRequest from "./request";
-import useProjectStore from "../../stores/projectStore";
+import { getCurrentProjectId } from "./projectContext";
 
 const buildDatasetLabelPayload = (labelingId, label) => ({
   labeling: labelingId,
@@ -11,8 +11,7 @@ const buildDatasetLabelPayload = (labelingId, label) => ({
 });
 
 export const createDatasetLabel = async (datasetId, labelingId, label) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const payload = buildDatasetLabelPayload(labelingId, label);
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.POST,
@@ -28,8 +27,7 @@ export const changeDatasetLabel = async (
   labelingId,
   changedLabel
 ) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const labelId = changedLabel?.id;
   const payload = buildDatasetLabelPayload(labelingId, {
     ...changedLabel,
@@ -46,8 +44,7 @@ export const changeDatasetLabel = async (
 };
 
 export const deleteDatasetLabel = async (datasetId, labelingId, labelId) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.DELETE,
     apiConsts.API_URI,

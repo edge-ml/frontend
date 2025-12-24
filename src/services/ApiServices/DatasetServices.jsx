@@ -1,52 +1,43 @@
 import apiConsts from "./ApiConstants";
 import ax from "axios";
 import apiRequest from "./request";
-import useProjectStore from "../../stores/projectStore";
+import { getCurrentProjectId } from "./projectContext";
 
 const axios = ax.create();
 
 export const getDatasets = async (project) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
 
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.GET,
-    apiConsts.DATASET_STORE,
-    // apiConsts.DATASET_STORE_ENDPOINTS.DATASETS
-    `${projectId}/datasets`
-  );
-  return res;
+  return apiRequest({
+    method: apiConsts.HTTP_METHODS.GET,
+    baseUri: apiConsts.DATASET_STORE,
+    endpoint: `${projectId}/datasets`,
+  });
 };
 
 export const getDatasetsPagination = async (skip, limit, sort) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.GET,
-    apiConsts.DATASET_STORE,
-    `${projectId}/datasets/view`,
-    {},
-    { skip: skip, limit: limit, sort: sort }
-  );
-  return res;
+  const projectId = getCurrentProjectId();
+  return apiRequest({
+    method: apiConsts.HTTP_METHODS.GET,
+    baseUri: apiConsts.DATASET_STORE,
+    endpoint: `${projectId}/datasets/view`,
+    params: { skip: skip, limit: limit, sort: sort },
+  });
 };
 
 export const updateDataset = async (dataset) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const datasetId = dataset?.id || dataset?._id;
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.PUT,
-    apiConsts.DATASET_STORE,
-    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}${datasetId}`,
-    dataset
-  );
-  return res;
+  return apiRequest({
+    method: apiConsts.HTTP_METHODS.PUT,
+    baseUri: apiConsts.DATASET_STORE,
+    endpoint: `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}${datasetId}`,
+    body: dataset,
+  });
 };
 
 export const getDatasetTimeseries = (id, info) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
 
   const { max_resolution, start, end } = info;
   return new Promise((resolve, reject) => {
@@ -64,8 +55,7 @@ export const getDatasetTimeseries = (id, info) => {
 };
 
 export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
 
 
   const { max_resolution, start, end } = info;
@@ -85,16 +75,14 @@ export const getTimeSeriesDataPartial = (id, ts_ids, info) => {
 };
 
 export const getDataset = async (id) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
 
 
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.GET,
-    apiConsts.DATASET_STORE,
-    projectId + "/" + apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`
-  );
-  return res;
+  return apiRequest({
+    method: apiConsts.HTTP_METHODS.GET,
+    baseUri: apiConsts.DATASET_STORE,
+    endpoint: projectId + "/" + apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${id}`,
+  });
 };
 
 export const deleteDatasets = (ids) => {
@@ -107,26 +95,22 @@ export const deleteDatasets = (ids) => {
 };
 
 export const deleteDataset = async (datasetId) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.DELETE,
-    apiConsts.DATASET_STORE,
-    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}${datasetId}`
-  );
-  return res;
+  const projectId = getCurrentProjectId();
+  return apiRequest({
+    method: apiConsts.HTTP_METHODS.DELETE,
+    baseUri: apiConsts.DATASET_STORE,
+    endpoint: `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}${datasetId}`,
+  });
 };
 
 export const createDataset = async (dataset) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.POST,
-    apiConsts.DATASET_STORE,
-    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}`,
-    dataset
-  );
-  return res;
+  const projectId = getCurrentProjectId();
+  return apiRequest({
+    method: apiConsts.HTTP_METHODS.POST,
+    baseUri: apiConsts.DATASET_STORE,
+    endpoint: `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}`,
+    body: dataset,
+  });
 };
 
 export const createDatasets = async (datasets) => {
@@ -138,28 +122,25 @@ export const createDatasets = async (datasets) => {
 };
 
 export const appendToDataset = async (dataset, data) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.POST,
-    apiConsts.DATASET_STORE,
-    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}` +
+  const projectId = getCurrentProjectId();
+  return apiRequest({
+    method: apiConsts.HTTP_METHODS.POST,
+    baseUri: apiConsts.DATASET_STORE,
+    endpoint:
+      `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}` +
       `${dataset["_id"]}/append`,
-    data
-  );
-  return res;
+    body: data,
+  });
 };
 
 export const getUploadProcessingProgress = async (datasetId) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.GET,
-    apiConsts.DATASET_STORE,
-    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.GET_PROCESSING_PROGRESS}` +
-      `?datasetId=${datasetId}`
-  );
-  return res;
+  const projectId = getCurrentProjectId();
+  return apiRequest({
+    method: apiConsts.HTTP_METHODS.GET,
+    baseUri: apiConsts.DATASET_STORE,
+    endpoint: `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.GET_PROCESSING_PROGRESS}`,
+    params: { datasetId },
+  });
 };
 
 export const updateTimeSeriesConfig = async (
@@ -169,13 +150,11 @@ export const updateTimeSeriesConfig = async (
   scaling,
   offset
 ) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.PUT,
-    apiConsts.DATASET_STORE,
-    `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}` +
-      `${datasetId}/changeUnitConfig?tsId=${tsId}&unit=${unit}&scaling=${scaling}&offset=${offset}`
-  );
-  return res;
+  const projectId = getCurrentProjectId();
+  return apiRequest({
+    method: apiConsts.HTTP_METHODS.PUT,
+    baseUri: apiConsts.DATASET_STORE,
+    endpoint: `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}${datasetId}/changeUnitConfig`,
+    params: { tsId, unit, scaling, offset },
+  });
 };

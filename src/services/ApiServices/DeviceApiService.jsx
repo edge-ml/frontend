@@ -1,10 +1,9 @@
 import apiConsts from "./ApiConstants";
 import apiRequest from "./request";
-import useProjectStore from "../../stores/projectStore";
+import { getCurrentProjectId } from "./projectContext";
 
 export const setDeviceApiKey = async () => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.PUT,
     apiConsts.API_URI,
@@ -14,8 +13,7 @@ export const setDeviceApiKey = async () => {
 };
 
 export const getDeviceApiKey = async () => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.GET,
     apiConsts.API_URI,
@@ -25,8 +23,7 @@ export const getDeviceApiKey = async () => {
 };
 
 export const deleteDeviceApiKey = async () => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.DELETE,
     apiConsts.API_URI,
@@ -36,8 +33,7 @@ export const deleteDeviceApiKey = async () => {
 };
 
 export const switchDeviceApiActive = async (activeState) => {
-  const { currentProject } = useProjectStore.getState();
-  const projectId = currentProject?.id || currentProject?.id || currentProject;
+  const projectId = getCurrentProjectId();
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.POST,
     apiConsts.API_URI,

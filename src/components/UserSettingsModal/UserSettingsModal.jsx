@@ -35,10 +35,9 @@ const UserSettingsModal = ({ isOpen, onClose }) => {
       size="lg"
       isOpen={isOpen}
       onClose={onClose}
-      className="modal-dialog-scrollable"
     >
       <ModalHeader style={{ borderBottom: "None" }}>User Settings</ModalHeader>
-      <ModalBody style={{ maxHeight: "calc(100vh)", overflowY: "auto" }}>
+      <ModalBody style={{ maxHeight: "calc(100vh - 140px)", overflowY: "auto" }}>
         <Stack gap="md">
           {!user.provider || user.provider === "local" ? (
             <>

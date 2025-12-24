@@ -2,21 +2,20 @@ import { HTTP_METHODS, API_URI, API_ENDPOINTS } from "./ApiConstants";
 import apiRequest from "./request";
 
 export const getProjects = async () => {
-  const res = await apiRequest(
-    HTTP_METHODS.GET,
-    API_URI,
-    API_ENDPOINTS.PROJECTS
-  );
-  return res;
+  return apiRequest({
+    method: HTTP_METHODS.GET,
+    baseUri: API_URI,
+    endpoint: API_ENDPOINTS.PROJECTS,
+  });
 };
 
 export const createProject = async (project) => {
-  const res = await apiRequest(
-    HTTP_METHODS.POST,
-    API_URI,
-    API_ENDPOINTS.PROJECTS,
-    { name: project.name }
-  );
+  const res = await apiRequest({
+    method: HTTP_METHODS.POST,
+    baseUri: API_URI,
+    endpoint: API_ENDPOINTS.PROJECTS,
+    body: { name: project.name },
+  });
   const userNames = (project.users || [])
     .map((elm) => elm.userName)
     .filter((name) => name && name !== project.admin?.userName);
@@ -31,39 +30,35 @@ export const createProject = async (project) => {
 };
 
 export const deleteProject = async (projectId) => {
-  const res = await apiRequest(
-    HTTP_METHODS.DELETE,
-    API_URI,
-    API_ENDPOINTS.PROJECTS + `/${projectId}`
-  );
-  return res;
+  return apiRequest({
+    method: HTTP_METHODS.DELETE,
+    baseUri: API_URI,
+    endpoint: `${API_ENDPOINTS.PROJECTS}/${projectId}`,
+  });
 };
 
 export const leaveProject = async (projectId) => {
-  const res = await apiRequest(
-    HTTP_METHODS.DELETE,
-    API_URI,
-    API_ENDPOINTS.PROJECTS + `/${projectId}/leave`
-  );
-  return res;
+  return apiRequest({
+    method: HTTP_METHODS.DELETE,
+    baseUri: API_URI,
+    endpoint: `${API_ENDPOINTS.PROJECTS}/${projectId}/leave`,
+  });
 };
 
 export const updateProject = async (project) => {
-  const res = await apiRequest(
-    HTTP_METHODS.PUT,
-    API_URI,
-    API_ENDPOINTS.PROJECTS + `/${project.id}`,
-    project
-  );
-  return res;
+  return apiRequest({
+    method: HTTP_METHODS.PUT,
+    baseUri: API_URI,
+    endpoint: `${API_ENDPOINTS.PROJECTS}/${project.id}`,
+    body: project,
+  });
 };
 
 export const addProjectUser = async (projectId, username) => {
-  const res = await apiRequest(
-    HTTP_METHODS.POST,
-    API_URI,
-    API_ENDPOINTS.PROJECTS + `/${projectId}/users`,
-    { username }
-  );
-  return res;
+  return apiRequest({
+    method: HTTP_METHODS.POST,
+    baseUri: API_URI,
+    endpoint: `${API_ENDPOINTS.PROJECTS}/${projectId}/users`,
+    body: { username },
+  });
 };
