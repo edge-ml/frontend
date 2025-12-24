@@ -13,6 +13,7 @@ import "./LabelingSelectionPanel.css";
 import HelpModal from "./HelpModal";
 
 import NotificationContext from "../NotificationHandler/NotificationProvider";
+import { downloadDatasetCsv } from "../../services/DatasetService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
@@ -51,7 +52,7 @@ const LabelingSelectionPanel = () => {
   };
 
   const downloadDataSet = () => {
-    registerDatasetDownload(dataset);
+    downloadDatasetCsv(dataset.id);
   };
 
   useEffect(() => {

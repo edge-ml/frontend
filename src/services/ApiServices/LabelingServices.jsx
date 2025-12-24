@@ -32,13 +32,13 @@ export const updateLabeling = async (labeling) => {
 };
 
 export const addLabeling = async (labeling) => {
-  const res = await apiRequest(
-    HTTP_METHODS.POST,
-    DATASET_STORE,
-    DATASET_STORE_ENDPOINTS.LABELING,
-    labeling
-  );
-  return res;
+  const projectId = getCurrentProjectId();
+  return apiRequest({
+    method: HTTP_METHODS.POST,
+    baseUri: DATASET_STORE,
+    endpoint: `${projectId}/labelings/`,
+    body: labeling,
+  });
 };
 
 export const deleteLabeling = async (labelingId, conflictingDatasetIds) => {

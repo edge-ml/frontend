@@ -9,6 +9,7 @@ import {
 } from "./ApiServices/ApiConstants";
 import ax from "axios";
 import apiRequest from "./ApiServices/request";
+import { getCurrentProjectId } from "./ApiServices/projectContext";
 
 const axios = ax.create();
 
@@ -73,6 +74,14 @@ const datasetDownloadfromId = async (downloadId) => {
   window.open(`${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}${downloadId}`);
 };
 
+const downloadDatasetCsv = async (datasetId) => {
+  const projectId = getCurrentProjectId();
+  if (!projectId || !datasetId) {
+    return;
+  }
+  window.open(`${DATASET_STORE}${projectId}/datasets/${datasetId}/csv`);
+};
+
 const downloadAllAsZip = async (datasets, labelings, labels) => {
   const zip = new JSZip();
 
@@ -117,6 +126,7 @@ const downloadFile = (blob, fileName) => {
 export {
   registerDatasetDownload,
   datasetDownloadfromId,
+  downloadDatasetCsv,
   downloadAllAsZip,
   downloadFile,
   datasetDownloadStatus,
