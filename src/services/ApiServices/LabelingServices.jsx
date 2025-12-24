@@ -22,13 +22,12 @@ export const getLabelings = async () => {
 export const updateLabeling = async (labeling) => {
   console.log(labeling);
   const projectId = getCurrentProjectId();
-  const res = await apiRequest(
-    HTTP_METHODS.PUT,
-    DATASET_STORE,
-    `${projectId}/labelings`,
-    labeling
-  );
-  return res;
+  return apiRequest({
+    method: HTTP_METHODS.PUT,
+    baseUri: DATASET_STORE,
+    endpoint: `${projectId}/labelings/${labeling.id}`,
+    body: labeling,
+  });
 };
 
 export const addLabeling = async (labeling) => {

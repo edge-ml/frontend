@@ -494,11 +494,32 @@ div.card {
 }
 
 .bg-login {
-  background: linear-gradient(
-    0deg,
-    rgba(11, 12, 89, 1) 0%,
-    rgba(7, 55, 99, 1) 100%
-  );
+  position: relative;
+  overflow: hidden;
+  background-color: #0b1320;
+}
+
+.bg-login::before {
+  content: "";
+  position: absolute;
+  inset: -30px;
+  background: url("./assets/background_login.png") center/cover no-repeat;
+  filter: blur(4px);;
+  transform: scale(1.06);
+  z-index: 0;
+}
+
+.bg-login::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 13, 24, 0.35);
+  z-index: 1;
+}
+
+.bg-login > * {
+  position: relative;
+  z-index: 2;
 }
 
 .z-10000 {

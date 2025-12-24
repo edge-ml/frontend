@@ -35,7 +35,16 @@ const useEditDataset = (datasetUtils, labelings) => {
 
   useEffect(() => {
     if (dataset) {
-      _setActiveTimeSeries(dataset.timeSeries);
+      _setActiveTimeSeries((prev) => {
+        if (prev && prev.length > 0) {
+          const prevIds = new Set(prev.map((elm) => elm.id));
+          const next = dataset.timeSeries.filter((elm) => prevIds.has(elm.id));
+          if (next.length > 0) {
+            return next;
+          }
+        }
+        return dataset.timeSeries;
+      });
       const nextActiveLabeling = getActivateLabeling(activeLabeling);
       _setActiveLabeling(nextActiveLabeling);
       if (nextActiveLabeling && nextActiveLabeling.labels.length > 0) {
