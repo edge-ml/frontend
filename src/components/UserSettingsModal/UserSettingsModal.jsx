@@ -28,7 +28,7 @@ const UserSettingsItem = ({ title, description, children }) => {
   );
 };
 
-const UserSettingsModal = ({ isOpen, onClose }) => {
+const UserSettingsModal = ({ isOpen, onClose, onLogout }) => {
   const user = useUserStore((state) => state.user);
   return (
     <Modal
@@ -65,7 +65,7 @@ const UserSettingsModal = ({ isOpen, onClose }) => {
             title="Delete User"
             description="Permanently delete this account"
           >
-            <UserSettingsProvider>
+            <UserSettingsProvider userMail={user?.email} onLogout={onLogout}>
               <DeleteUser />
             </UserSettingsProvider>
           </UserSettingsItem>

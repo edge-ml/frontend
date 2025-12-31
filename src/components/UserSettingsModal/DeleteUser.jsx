@@ -7,6 +7,7 @@ class DeleteUser extends Component {
     this.state = {
       confirmationMail: "",
       confirmationModalOpen: false,
+      deleteError: undefined,
     };
     this.eMailChanged = this.eMailChanged.bind(this);
     this.toggleConfirmationModal = this.toggleConfirmationModal.bind(this);
@@ -26,8 +27,18 @@ class DeleteUser extends Component {
   }
 
   deleteUser() {
-    this.props.deleteUser(this.state.confirmationMail);
-    this.toggleConfirmationModal();
+    this.setState({ deleteError: undefined });
+    Promise.resolve(this.props.deleteUser(this.state.confirmationMail))
+      .then(() => {
+        this.toggleConfirmationModal();
+      })
+      .catch((err) => {
+        const errorMessage =
+          err?.response?.data?.detail ||
+          err?.message ||
+          "Unable to delete user.";
+        this.setState({ deleteError: errorMessage });
+      });
   }
 
   render() {
@@ -54,6 +65,11 @@ class DeleteUser extends Component {
         >
           Delete user
         </Button>
+        {this.state.deleteError ? (
+          <Text c="red" size="sm">
+            {this.state.deleteError}
+          </Text>
+        ) : null}
         <Modal
           opened={this.state.confirmationModalOpen}
           onClose={this.toggleConfirmationModal}

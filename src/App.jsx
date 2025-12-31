@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
+import { Notifications } from "@mantine/notifications";
 import { NotificationProvider } from "./components/NotificationHandler/NotificationProvider";
 import NavbarLayout from "./NavbarLayout";
 import AuthWall from "./routes/login";
@@ -18,6 +19,7 @@ const App = () => {
           path="*"
           element={
             <AuthWall>
+              <Notifications position="bottom-right" />
               <NotificationProvider>
                 <NavbarLayout>
                   <AppContent></AppContent>

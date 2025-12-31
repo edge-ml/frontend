@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Badge, Button, Group, Stack, Text } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
@@ -16,23 +16,33 @@ import useProjectStore from "../../stores/projectStore";
 
 const UserEdit = () => {
   const { currentProject } = useProjectStore();
-  const { addProjectUser } = useProjectSettings();
+  const { addProjectUser, removeProjectUser } = useProjectSettings();
   const { user } = useUserStore();
 
   const [userSearchValue, setUserSearchValue] = useState("");
-  const [users, setUsers] = useState(currentProject.users);
+  const projectUsers = useMemo(
+    () => currentProject.users || [],
+    [currentProject.users]
+  );
+  const adminUserName =
+    currentProject.admin?.userName ?? currentProject.admin?.username;
+  const isProjectAdmin = user?.id === currentProject.admin?.id;
 
   const handleAddUserName = async (nextUserName) => {
     if (!nextUserName) {
       return;
     }
-    if (users.some((existing) => existing.userName === nextUserName)) {
+    if (
+      projectUsers.some(
+        (existing) =>
+          (existing.userName ?? existing.username) === nextUserName
+      )
+    ) {
       setUserSearchValue("");
       return;
     }
     try {
       await addProjectUser(nextUserName);
-      setUsers([...users, { userName: nextUserName }]);
       setUserSearchValue("");
     } catch {
       setUserSearchValue("");
@@ -43,8 +53,12 @@ const UserEdit = () => {
     setUserSearchValue(e.target.value);
   };
 
-  const handleDeleteUserName = (userNameToDelete) => {
-    setUsers(users.filter((user) => user.userName !== userNameToDelete));
+  const handleDeleteUserName = async (userNameToDelete) => {
+    try {
+      await removeProjectUser(userNameToDelete);
+    } catch {
+      // no-op: backend enforces permissions, keep UI unchanged on error
+    }
   };
 
   if (!currentProject.users) {
@@ -79,39 +93,46 @@ const UserEdit = () => {
             onChange={handleUserNameSuggestionChange}
             getsuggestions={getUserNameSuggestions}
             filter={[
-              ...currentProject.users.map((user) => user.userName),
+              ...currentProject.users.map(
+                (user) => user.userName ?? user.username
+              ),
               user.userName,
             ]}
+            disabled={!isProjectAdmin}
           />
           <Button
             id="buttonSaveProject"
             onClick={() => handleAddUserName(userSearchValue)}
-            disabled={!userSearchValue}
+            disabled={!userSearchValue || !isProjectAdmin}
           >
             Save
           </Button>
         </Group>
-        {users.length > 0 ? (
+        {projectUsers.length > 0 ? (
           <EdgeMLTable>
             <EdgeMLTableHeader>Users in the project</EdgeMLTableHeader>
-            {users.map((user, index) => (
+            {projectUsers.map((user, index) => {
+              const userName = user.userName ?? user.username;
+              const isAdmin = userName === adminUserName;
+              return (
               <EdgeMLTableEntry
                 key={index}
                 className="d-flex justify-content-between p-2 align-items-center"
               >
                 <div>{index + 1}</div>
-                <div> {user.userName || user.username}</div>
+                <div>{userName}</div>
                 <div>{user.email ? ` (${user.email})` : ""}</div>
                 <Button
                   variant="outline"
                   size="xs"
                   color="red"
-                  onClick={() => handleDeleteUserName(user.userName)}
+                  onClick={() => handleDeleteUserName(userName)}
+                  disabled={isAdmin || !isProjectAdmin}
                 >
                   <FontAwesomeIcon icon={faTrashAlt} />
                 </Button>
               </EdgeMLTableEntry>
-            ))}
+            )})}
           </EdgeMLTable>
         ) : null}
       </Stack>

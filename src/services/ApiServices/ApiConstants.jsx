@@ -52,18 +52,15 @@ export const AUTH_ENDPOINTS = {
 
 
   REFRESH: "refresh",
-  DELETE: "unregister",
-  REGISTER: "register",
+  DELETE: "auth/unregister",
+  REGISTER: "auth/register",
   USERS: "USERS",
-  INIT2FA: "2fa/init",
-  VERIFY2FA: "2fa/verify",
-  RESET2FA: "2fa/reset",
   MAIL: "mail",
-  CHANGE_MAIL: "changeMail",
+  CHANGE_MAIL: "auth/email",
   USERNAMESUGGEST: "auth/user/suggest",
-  CHANGE_PASSWORD: "changePassword",
+  CHANGE_PASSWORD: "auth/password",
   ID: "id",
-  CHANGE_USERNAME: "changeUserName",
+  CHANGE_USERNAME: "auth/username",
   USERNAME: "userName",
   OAUTH: "login/oauth",
   LOGOUT: "logout"

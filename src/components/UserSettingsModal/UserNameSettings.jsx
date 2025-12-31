@@ -1,14 +1,16 @@
 import React, { Component } from "react";
 import { Button, Stack, Text, TextInput } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
 import { changeUserName } from "../../services/ApiServices/AuthentificationServices";
+import useUserStore from "../../Hooks/useUser";
 
 class UserNameSettings extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userName: undefined,
-      userNameConfirm: undefined,
+      userName: "",
+      userNameConfirm: "",
       userNameError: undefined,
     };
 
@@ -35,14 +37,34 @@ class UserNameSettings extends Component {
     if (!this.state.userName && !this.state.userNameConfirm) return;
     if (this.state.userName !== this.state.userNameConfirm) {
       this.setState({
-        userNameError: "E-mails do not match",
+        userNameError: "Usernames do not match",
       });
     } else {
       changeUserName(this.state.userName)
-        .then((data) => window.alert(data))
-        .catch((err) => {
+        .then((data) => {
+          const { user, setUser } = useUserStore.getState();
+          const nextUser = {
+            ...user,
+            ...data,
+            userName: data?.userName ?? data?.username ?? user?.userName ?? user?.username,
+          };
+          setUser(nextUser);
           this.setState({
-            userNameError: err.error,
+            userName: "",
+            userNameConfirm: "",
+          });
+          notifications.show({
+            color: "green",
+            message: "Username updated.",
+          });
+        })
+        .catch((err) => {
+          const errorMessage =
+            err?.response?.data?.detail ||
+            err?.message ||
+            "Unable to update username.";
+          this.setState({
+            userNameError: errorMessage,
           });
         });
     }
@@ -55,12 +77,14 @@ class UserNameSettings extends Component {
           id="inputUserName"
           label="Username"
           placeholder="New username"
+          value={this.state.userName}
           onChange={this.onUserNameChange}
         />
         <TextInput
           id="inputUserNameConfirm"
           label="Username"
           placeholder="Retype new username"
+          value={this.state.userNameConfirm}
           onChange={this.onUserNameConfirmChange}
         />
         <Button

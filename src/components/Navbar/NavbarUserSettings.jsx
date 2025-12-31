@@ -82,6 +82,7 @@ const NavbarUserSettings = () => {
       <UserSettingsModal
         isOpen={userSettingsModalOpen}
         onClose={toggleUserSettingsModal}
+        onLogout={logout}
       ></UserSettingsModal>
     </>
   );

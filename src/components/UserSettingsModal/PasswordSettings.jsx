@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Button, Stack, Text, TextInput } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
 import { changeUserPassword } from "./../../services/ApiServices/AuthentificationServices";
 
@@ -7,9 +8,9 @@ class PasswordSettings extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      newPassword: undefined,
-      newConfirmationPassword: undefined,
-      currentPassword: undefined,
+      newPassword: "",
+      newConfirmationPassword: "",
+      currentPassword: "",
       passwordError: undefined,
     };
     this.onNewPasswordChange = this.onNewPasswordChange.bind(this);
@@ -55,10 +56,24 @@ class PasswordSettings extends Component {
       return;
     }
     changeUserPassword(this.state.currentPassword, this.state.newPassword)
-      .then((data) => window.alert(data))
-      .catch((err) => {
+      .then(() => {
         this.setState({
-          passwordError: err.data,
+          currentPassword: "",
+          newPassword: "",
+          newConfirmationPassword: "",
+        });
+        notifications.show({
+          color: "green",
+          message: "Password updated.",
+        });
+      })
+      .catch((err) => {
+        const errorMessage =
+          err?.response?.data?.detail ||
+          err?.message ||
+          "Unable to update password.";
+        this.setState({
+          passwordError: errorMessage,
         });
       });
   }
@@ -71,6 +86,7 @@ class PasswordSettings extends Component {
           type="password"
           label="Password"
           placeholder="New password"
+          value={this.state.newPassword}
           onChange={this.onNewPasswordChange}
         />
         <TextInput
@@ -78,6 +94,7 @@ class PasswordSettings extends Component {
           type="password"
           label="Password"
           placeholder="Retype new password"
+          value={this.state.newConfirmationPassword}
           onChange={this.onConfirmationPasswordChange}
         />
         <TextInput
@@ -85,6 +102,7 @@ class PasswordSettings extends Component {
           type="password"
           label="Password"
           placeholder="Current password"
+          value={this.state.currentPassword}
           onChange={this.onCurrentPasswordChanged}
         />
         <Button

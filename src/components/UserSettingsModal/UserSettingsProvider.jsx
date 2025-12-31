@@ -9,10 +9,11 @@ class UserSettingsProvider extends Component {
     this.onDeleteUser = this.onDeleteUser.bind(this);
   }
 
-  onDeleteUser(confirmationMail) {
-    deleteUser(confirmationMail).then(() => {
+  async onDeleteUser(confirmationMail) {
+    await deleteUser(confirmationMail);
+    if (this.props.onLogout) {
       this.props.onLogout();
-    });
+    }
   }
 
   render() {

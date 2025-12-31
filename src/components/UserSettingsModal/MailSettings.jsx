@@ -1,15 +1,17 @@
 import React, { Component } from "react";
 import { Button, Stack, Text, TextInput } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
 import { validateEmail } from "./../../services/helpers";
 import { changeUserMail } from "./../../services/ApiServices/AuthentificationServices";
+import useUserStore from "../../Hooks/useUser";
 
 class MailSettings extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      newEmail: undefined,
-      confirmationEmail: undefined,
+      newEmail: "",
+      confirmationEmail: "",
       emailError: undefined,
     };
     this.onNewEmailChange = this.onNewEmailChange.bind(this);
@@ -42,10 +44,30 @@ class MailSettings extends Component {
       });
     } else {
       changeUserMail(this.state.newEmail)
-        .then((data) => window.alert(data))
-        .catch((err) => {
+        .then((data) => {
+          const { user, setUser } = useUserStore.getState();
+          const nextUser = {
+            ...user,
+            ...data,
+            userName: data?.userName ?? data?.username ?? user?.userName ?? user?.username,
+          };
+          setUser(nextUser);
           this.setState({
-            emailError: err.error,
+            newEmail: "",
+            confirmationEmail: "",
+          });
+          notifications.show({
+            color: "green",
+            message: "E-mail updated.",
+          });
+        })
+        .catch((err) => {
+          const errorMessage =
+            err?.response?.data?.detail ||
+            err?.message ||
+            "Unable to update e-mail.";
+          this.setState({
+            emailError: errorMessage,
           });
         });
     }
@@ -59,12 +81,14 @@ class MailSettings extends Component {
             id="inputNewMail"
             label="E-Mail"
             placeholder="New e-mail"
+            value={this.state.newEmail}
             onChange={this.onNewEmailChange}
           />
           <TextInput
             id="inputNewMailConfirm"
             label="E-Mail"
             placeholder="Retype new e-mail"
+            value={this.state.confirmationEmail}
             onChange={this.onConfirmationEmailChange}
           />
           <Button

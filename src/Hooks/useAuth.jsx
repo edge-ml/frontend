@@ -6,7 +6,7 @@ import {
   logout as logout_api
 } from "../services/ApiServices/AuthentificationServices";
 import useUserStore from "./useUser";
-import { setToken } from "../services/LocalStorageService";
+import { clearToken, setToken } from "../services/LocalStorageService";
 
 const useAuth = () => {
   const setUser = useUserStore((state) => state.setUser);
@@ -17,6 +17,7 @@ const useAuth = () => {
 
   const logout = () => {
     logout_api();
+    clearToken();
     setUser(undefined);
   };
 

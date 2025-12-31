@@ -62,3 +62,12 @@ export const addProjectUser = async (projectId, username) => {
     body: { username },
   });
 };
+
+export const removeProjectUser = async (projectId, username) => {
+  return apiRequest({
+    method: HTTP_METHODS.DELETE,
+    baseUri: API_URI,
+    endpoint: `${API_ENDPOINTS.PROJECTS}/${projectId}/users`,
+    body: { username },
+  });
+};
