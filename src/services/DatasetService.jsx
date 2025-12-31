@@ -1,45 +1,47 @@
 import * as JSZip from "jszip";
 import { generateCSV } from "./CsvService";
 import { getDataset } from "../services/ApiServices/DatasetServices";
-import {
-  generateApiRequest,
-  HTTP_METHODS,
-  DATASET_STORE,
-  DATASET_STORE_ENDPOINTS,
-} from "./ApiServices/ApiConstants";
-import ax from "axios";
+import { HTTP_METHODS, DATASET_STORE } from "./ApiServices/ApiConstants";
 import apiRequest from "./ApiServices/request";
 import { getCurrentProjectId } from "./ApiServices/projectContext";
 
-const axios = ax.create();
-
-const registerDatasetDownload = async (dataset) => {
-  const request_params = generateApiRequest(
+const registerDatasetDownload = async (datasetId) => {
+  const projectId = getCurrentProjectId();
+  if (!projectId || !datasetId) {
+    return;
+  }
+  const res = await apiRequest(
     HTTP_METHODS.POST,
     DATASET_STORE,
-    DATASET_STORE_ENDPOINTS.CSV + `dataset/${dataset.id}`
+    `${projectId}/download/dataset/${datasetId}`
   );
-  const response = await axios(request_params);
-  return response.data;
+  return res;
 };
 
 const registerProjectDownload = async () => {
-  const request_params = generateApiRequest(
+  const projectId = getCurrentProjectId();
+  if (!projectId) {
+    return;
+  }
+  const res = await apiRequest(
     HTTP_METHODS.POST,
     DATASET_STORE,
-    DATASET_STORE_ENDPOINTS.CSV + "project"
+    `${projectId}/download/project`
   );
-  const response = await axios(request_params);
-  return response.data;
+  return res;
 };
 
 const datasetDownloadStatus = async () => {
+  const projectId = getCurrentProjectId();
+  if (!projectId) {
+    return [];
+  }
   const res = await apiRequest(
     HTTP_METHODS.GET,
     DATASET_STORE,
-    DATASET_STORE_ENDPOINTS.CSV + "status/"
+    `${projectId}/download/status`
   );
-  return res;
+  return res || [];
 };
 
 // const datasetDownloadStatus = async () => {
@@ -57,29 +59,28 @@ const datasetDownloadStatus = async () => {
 // };
 
 const cancelDownload = async (downloadId) => {
-  try {
-    const request_params = generateApiRequest(
-      HTTP_METHODS.DELETE,
-      DATASET_STORE,
-      DATASET_STORE_ENDPOINTS.CSV + `${downloadId}`
-    );
-    const response = await axios(request_params);
-    return response.data;
-  } catch {
-    return 404;
+  const projectId = getCurrentProjectId();
+  if (!projectId || !downloadId) {
+    return;
   }
+  const res = await apiRequest(
+    HTTP_METHODS.DELETE,
+    DATASET_STORE,
+    `${projectId}/download/${downloadId}`
+  );
+  return res;
 };
 
 const datasetDownloadfromId = async (downloadId) => {
-  window.open(`${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}${downloadId}`);
+  const projectId = getCurrentProjectId();
+  if (!projectId || !downloadId) {
+    return;
+  }
+  window.open(`${DATASET_STORE}${projectId}/download/${downloadId}`);
 };
 
 const downloadDatasetCsv = async (datasetId) => {
-  const projectId = getCurrentProjectId();
-  if (!projectId || !datasetId) {
-    return;
-  }
-  window.open(`${DATASET_STORE}${projectId}/datasets/${datasetId}/csv`);
+  return registerDatasetDownload(datasetId);
 };
 
 const downloadAllAsZip = async (datasets, labelings, labels) => {

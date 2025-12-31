@@ -16,6 +16,9 @@ export const NotificationProvider = ({ children }) => {
   const registerProjectDownload = async () => {
     const res = await reg_project_download();
 
+    if (!res) {
+      return;
+    }
     setActiveNotifications((prevState) => [...prevState, res]);
     setHasNewNotifications(true);
     startUpdates();
@@ -24,6 +27,9 @@ export const NotificationProvider = ({ children }) => {
   const registerDatasetDownload = async (datasetId) => {
     const res = await reg_dataset_download(datasetId);
 
+    if (!res) {
+      return;
+    }
     setActiveNotifications((prevState) => [...prevState, res]);
     setHasNewNotifications(true);
     startUpdates();
@@ -38,18 +44,19 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const updateNotifications = async () => {
-    const notifications = await datasetDownloadStatus();
-    if (notifications >= 400) {
+    try {
+      const notifications = await datasetDownloadStatus();
+      setActiveNotifications(notifications);
+      const uncompletedNotifications =
+        notifications.map((elm) => elm.status).filter((elm) => elm != 100) > 0;
+      if (!uncompletedNotifications || notifications.length === 0) {
+        stopUpdates();
+      }
+      setHasNewNotifications(uncompletedNotifications); // Update the flag
+    } catch {
       setHasNewNotifications(false);
-      return;
-    }
-    setActiveNotifications(notifications);
-    const uncompletedNotifications =
-      notifications.map((elm) => elm.status).filter((elm) => elm != 100) > 0;
-    if (!uncompletedNotifications || notifications.length === 0) {
       stopUpdates();
     }
-    setHasNewNotifications(uncompletedNotifications); // Update the flag
   };
 
   const startUpdates = () => {

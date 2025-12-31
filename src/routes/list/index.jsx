@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Box, Button, Group, Modal, Stack, Text } from "@mantine/core";
 import NotificationContext from "../../components/NotificationHandler/NotificationProvider";
 import Loader from "../../modules/loader";
@@ -72,6 +72,15 @@ const ListPage = () => {
   const downloadAllDatasets = async () => {
     registerProjectDownload();
   };
+
+  useEffect(() => {
+    if (!datasets) {
+      return;
+    }
+    const datasetIds = new Set(datasets.map((dataset) => dataset.id));
+    setSelectedDatasets((prev) => prev.filter((id) => datasetIds.has(id)));
+    setDeleteSelected((prev) => prev.filter((id) => datasetIds.has(id)));
+  }, [datasets]);
 
   if (!datasets || !labelings) {
     return <Loader loading={true}></Loader>;
