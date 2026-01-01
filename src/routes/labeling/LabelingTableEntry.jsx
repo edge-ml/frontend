@@ -81,14 +81,14 @@ const LabelingTableEntry = ({
           setLabelingModalOpen(false);
         }}
         onDelete={(labeling) => {
-          deleteLabelings([labeling]);
+          deleteLabelings([labeling.id]);
           setLabelingModalOpen(false);
         }}
       ></EditLabelingModal>
       <DeleteConfirmationModal
         isOpen={deleteModalOpen}
         onConfirm={() => {
-          deleteLabelings([labeling]);
+          deleteLabelings([labeling.id]);
           setDeleteModalOpen(false);
         }}
         onCancel={() => setDeleteModalOpen(false)}

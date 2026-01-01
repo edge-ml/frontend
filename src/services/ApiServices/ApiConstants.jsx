@@ -34,7 +34,7 @@ const currentHost = window.location.host.split(":")[0];
 export const BACKEND_URL = "http://localhost:8000/api/v1/"
 export const AUTH_URI = BACKEND_URL
 export const API_URI = BACKEND_URL
-export const ML_URI = "http://localhost:3003/ml/"
+export const ML_URI = "http://localhost:8000/ml/"
 export const DATASET_STORE = BACKEND_URL
 
 

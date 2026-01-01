@@ -92,16 +92,20 @@ export const deleteUser = async (userEMail) => {
 };
 
 export const registerNewUser = async (userEMail, password, userName) => {
+  const formBody = new URLSearchParams({
+    email: userEMail,
+    password,
+    username: userName,
+  }).toString();
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.POST,
     apiConsts.AUTH_URI,
     apiConsts.AUTH_ENDPOINTS.REGISTER,
-    {
-      email: userEMail,
-      password: password,
-      userName: userName,
-    }
+    formBody,
+    {},
+    "application/x-www-form-urlencoded"
   );
+  return res;
 };
 
 export const subscribeUsers = async (callback) => {

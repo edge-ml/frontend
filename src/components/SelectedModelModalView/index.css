@@ -1,15 +1,16 @@
 .training_step {
-  background-color: rgba(7, 52, 98, 0.6);
-  color: black;
-  height: 50px;
+  background: linear-gradient(120deg, rgba(72, 187, 120, 0.9), rgba(12, 95, 57, 0.95));
+  border: 1px solid rgba(72, 187, 120, 0.6);
+  color: white;
+  min-height: 64px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 4px;
-  color: white;
-  clip-path: polygon(90% 0%, 100% 50%, 90% 100%, 0% 100%, 10% 50%, 0% 0%);
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 12px;
   font-weight: bold;
   cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
 }
 
 .training_step > * {
@@ -17,21 +18,52 @@
 }
 
 .training_step_selected {
-  background-color: rgba(7, 52, 98, 1);
+  border-color: rgba(34, 168, 132, 0.9);
+  box-shadow: 0 12px 24px rgba(12, 95, 57, 0.25);
+  transform: translateY(-2px);
 }
 
 .training_step_container {
-  width: 150%;
-}
-
-.v_line {
-  height: 20px;
-  width: 20px;
-  background-color: rgba(7, 52, 98, 1);
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  margin-bottom: -1px;
+  width: 100%;
 }
 
 .borderTop {
-  border-top: 2px solid rgba(7, 52, 98, 1);
+  border-top: 2px solid rgba(12, 95, 57, 1);
+}
+
+.training_steps_list {
+  min-width: 260px;
+  max-width: 320px;
+}
+
+.training_step_title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.training_step_badge {
+  background-color: rgba(255, 255, 255, 0.14);
+  color: white;
+}
+
+.pipeline_detail {
+  flex: 1;
+  background: linear-gradient(180deg, rgba(245, 252, 248, 1), rgba(231, 246, 238, 1));
+  border: 1px solid rgba(72, 187, 120, 0.2);
+}
+
+.param_row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 10px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid rgba(72, 187, 120, 0.16);
+}
+
+.model-info-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(243, 251, 246, 1));
+  border: 1px solid rgba(72, 187, 120, 0.2);
 }

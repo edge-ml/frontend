@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 
-import { Button, Group, Stack, Table, Text } from "@mantine/core";
+import { Badge, Button, Divider, Group, Paper, Stack, Table, Text } from "@mantine/core";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
 import ConfusionMatrixView from "../ConfusionMatrix/ConfusionMatrixView";
@@ -24,7 +24,7 @@ export const SelectedModelModalView = ({
   const metrics = model
     ? model.pipeline.selectedPipeline.steps.filter(
         (elm) => elm.type === "EVAL"
-      )[0].options.metrics
+      )[0]?.options?.metrics
     : null;
   return (
     <Modal isOpen={model} size="xl" {...props} onClose={() => onClosed()}>
@@ -32,14 +32,14 @@ export const SelectedModelModalView = ({
       <ModalBody>
         {model ? (
           <>
-            <Group justify="space-between" align="flex-start">
+            <Group justify="space-between" align="flex-start" wrap="nowrap">
               <Group align="flex-start" wrap="nowrap">
                 <General_info
                   model={model}
                   onButtonDeploy={onButtonDeploy}
                   onButtonDownload={onButtonDownload}
                 ></General_info>
-                <PerformanceInfo metrics={metrics.metrics}></PerformanceInfo>
+                <PerformanceInfo metrics={metrics?.metrics}></PerformanceInfo>
               </Group>
               <Button
                 variant="outline"
@@ -50,15 +50,16 @@ export const SelectedModelModalView = ({
                 Delete
               </Button>
             </Group>
-            <Group align="flex-start" mt="lg">
+            <Group align="flex-start" mt="lg" wrap="nowrap">
               <Classification_report
-                report={metrics.classification_report}
+                report={metrics?.classification_report}
               ></Classification_report>
               <ConfusionMatrixView
-                matrix={JSON.parse(metrics.confusion_matrix)}
+                matrix={metrics?.confusion_matrix ? JSON.parse(metrics.confusion_matrix) : []}
                 labels={model.labels.map((elm) => elm.name)}
               ></ConfusionMatrixView>
             </Group>
+            <Divider my="lg" />
             <Training_config model={model}></Training_config>
           </>
         ) : (
@@ -91,8 +92,8 @@ export const SelectedModelModalView = ({
               </div> */}
         <Group justify="flex-end">
           <Button variant="outline" onClick={onClosed}>
-          Close
-        </Button>
+            Close
+          </Button>
         </Group>
       </ModalFooter>
     </Modal>
@@ -106,8 +107,8 @@ const General_info = ({
   onButtonDownload,
 }) => {
   return (
-    <div>
-      <Text fw={700} size="lg">
+    <Paper className="model-info-card" radius="md" p="md">
+      <Text fw={700} size="lg" mb="sm">
         General information
       </Text>
       <Table striped withRowBorders={false}>
@@ -132,18 +133,46 @@ const General_info = ({
               </Group>
             </td>
           </tr>
+          <tr>
+            <th>Sampling rate</th>
+            <td>
+              {model.samplingRate != null
+                ? `${Number(model.samplingRate).toFixed(2)} Hz`
+                : "-"}
+            </td>
+          </tr>
+          <tr>
+            <th>Signals</th>
+            <td>
+              {model.timeSeries?.length
+                ? model.timeSeries.join(", ")
+                : "-"}
+            </td>
+          </tr>
         </tbody>
       </Table>
-    </div>
+    </Paper>
   );
 };
 
 const Classification_report = ({ report }) => {
+  if (!report) {
+    return (
+      <Paper className="model-info-card" radius="md" p="md">
+        <Text fw={700} size="lg" mb="sm">
+          Classification report
+        </Text>
+        <Text size="sm" c="dimmed">
+          Metrics are not available for this model.
+        </Text>
+      </Paper>
+    );
+  }
   const keys = Object.keys(report);
   const metrics = Object.keys(report[keys[0]]);
   return (
-    <div>
-      <Text fw={700} size="lg">
+    <Paper className="model-info-card" radius="md" p="md">
+      <Text fw={700} size="lg" mb="sm">
         Classification report
       </Text>
       <Table striped withRowBorders={false}>
@@ -172,31 +201,35 @@ const Classification_report = ({ report }) => {
           ))}
         </tbody>
       </Table>
-    </div>
+    </Paper>
   );
 };
 
 const Training_config = ({ model }) => {
-  const [selectedStep, setSelectedStep] = useState(
-    model.pipeline.selectedPipeline.steps[0]
-  );
+  const pipelineSteps = model.pipeline.selectedPipeline.steps || [];
+  const [selectedStep, setSelectedStep] = useState(pipelineSteps[0]);
 
   const Render_Step = (step) => {
     return (
-      <div className="training_step_container">
+      <div className="training_step_container" key={step.name}>
         <div
           className={classNames("training_step", {
             training_step_selected: step.name === selectedStep.name,
           })}
           onClick={() => onClickStep(step)}
         >
-          <div>{step.name}</div>
-        </div>
-        {step.name == selectedStep.name ? (
-          <div className="d-flex justify-content-center">
-            <div className="v_line"></div>
+          <div className="training_step_title">
+            <Text fw={700} size="sm">
+              {step.name}
+            </Text>
+            <Text size="xs" c="dimmed">
+              {step.options.name}
+            </Text>
           </div>
-        ) : null}
+          <Badge size="xs" variant="light" className="training_step_badge">
+            {step.type}
+          </Badge>
+        </div>
       </div>
     );
   };
@@ -207,37 +240,60 @@ const Training_config = ({ model }) => {
 
   return (
     <Fragment>
-      <Text fw={700} size="lg">
+      <Text fw={700} size="lg" mb="sm">
         Pipeline configuration
       </Text>
-      <Group align="center">
-        {model.pipeline.selectedPipeline.steps
-          .filter((elm) => elm.type === "PRE" || elm.type === "CORE")
-          .map((elm) => Render_Step(elm, onClickStep))}
-      </Group>
-
-      <Stack mt="sm" px="sm" className="borderTop" pt="sm">
-        {/* <h5>
-          <b>{selectedStep.name}</b>
-        </h5> */}
-        <Text>
-          <b>Method: </b>
-          {selectedStep.options.name}
+      {pipelineSteps.length === 0 ? (
+        <Text size="sm" c="dimmed">
+          No pipeline steps were stored for this model.
         </Text>
-        {selectedStep.options.parameters.length > 0 ? (
-          <Stack gap={4}>
-            <Text>
-              <b>Parameters: </b>
+      ) : (
+        <Group align="flex-start" wrap="nowrap" gap="lg">
+        <Stack className="training_steps_list">
+          {pipelineSteps
+            .filter((elm) => elm.type === "PRE" || elm.type === "CORE")
+            .map((elm) => Render_Step(elm))}
+        </Stack>
+        <Paper className="pipeline_detail" radius="md" p="md">
+          <Group justify="space-between" align="center">
+            <Text fw={700}>{selectedStep?.name}</Text>
+            <Badge variant="outline">{selectedStep?.type}</Badge>
+          </Group>
+          <Text size="sm" c="dimmed" mt={4}>
+            {selectedStep?.description}
+          </Text>
+          <Divider my="sm" />
+          <Text size="sm">
+            <b>Method:</b> {selectedStep?.options?.name}
+          </Text>
+          <Text size="xs" c="dimmed">
+            {selectedStep?.options?.description}
+          </Text>
+          <Divider my="sm" />
+          <Text fw={600} size="sm" mb={4}>
+            Parameters
+          </Text>
+          {selectedStep?.options?.parameters?.length > 0 ? (
+            <Stack gap={6}>
+              {selectedStep.options.parameters.map((param) => (
+                <div className="param_row" key={param.name}>
+                  <Text size="sm" fw={600}>
+                    {param.name}
+                  </Text>
+                  <Text size="sm" c="dimmed">
+                    {String(param.value)}
+                  </Text>
+                </div>
+              ))}
+            </Stack>
+          ) : (
+            <Text size="sm" c="dimmed">
+              No parameters for this step.
             </Text>
-            {selectedStep.options.parameters.map((param) => (
-              <Text key={param.name}>
-                <span>{param.name}: </span>
-                <span>{param.value}</span>
-              </Text>
-            ))}
-          </Stack>
-        ) : null}
-      </Stack>
+          )}
+        </Paper>
+      </Group>
+      )}
     </Fragment>
   );
 };
@@ -248,11 +304,23 @@ const metric = (metric) => {
 };
 
 const PerformanceInfo = ({ metrics }) => {
+  if (!metrics) {
+    return (
+      <Paper className="model-info-card" radius="md" p="md">
+        <Text fw={700} size="lg" mb="sm">
+          Metrics
+        </Text>
+        <Text size="sm" c="dimmed">
+          Metrics are not available for this model.
+        </Text>
+      </Paper>
+    );
+  }
   return (
-    <div>
-      <h5>
-        <b>Metrics</b>
-      </h5>
+    <Paper className="model-info-card" radius="md" p="md">
+      <Text fw={700} size="lg" mb="sm">
+        Metrics
+      </Text>
       <Table borderless size="sm" striped style={{ width: "150px" }}>
         <tbody>
           <tr>
@@ -275,6 +343,6 @@ const PerformanceInfo = ({ metrics }) => {
           </tr>
         </tbody>
       </Table>
-    </div>
+    </Paper>
   );
 };

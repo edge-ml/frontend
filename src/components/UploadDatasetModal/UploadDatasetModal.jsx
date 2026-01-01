@@ -388,11 +388,12 @@ export const UploadDatasetModal = ({
         config: { ...f.config, editingModeActive: false },
       }))
     );
-    await Promise.all(
-      files
-        .filter((elm) => elm.status === FileStatus.CONFIGURATION)
-        .map((elm) => handleUpload(elm))
+    const pendingUploads = files.filter(
+      (elm) => elm.status === FileStatus.CONFIGURATION
     );
+    for (const file of pendingUploads) {
+      await handleUpload(file);
+    }
   };
 
   const handleModalClose = () => {
