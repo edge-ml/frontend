@@ -123,12 +123,13 @@ export const createDatasets = async (datasets) => {
 
 export const appendToDataset = async (dataset, data) => {
   const projectId = getCurrentProjectId();
+  const datasetId = dataset?.id || dataset?._id;
   return apiRequest({
     method: apiConsts.HTTP_METHODS.POST,
     baseUri: apiConsts.DATASET_STORE,
     endpoint:
       `${projectId}/${apiConsts.DATASET_STORE_ENDPOINTS.DATASETS}` +
-      `${dataset["_id"]}/append`,
+      `${datasetId}/append`,
     body: data,
   });
 };

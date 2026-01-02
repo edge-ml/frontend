@@ -19,6 +19,16 @@ import {
 const NotificationHandler = ({ onClose, isOpen }) => {
   const { activeNotifications, removeNotification } =
     useContext(NotificationContext);
+  const formatExpiration = (expiresAt) => {
+    if (!expiresAt) {
+      return null;
+    }
+    const date = new Date(expiresAt);
+    if (Number.isNaN(date.getTime())) {
+      return null;
+    }
+    return date.toLocaleString();
+  };
 
   useEffect(() => {
     if (activeNotifications.length <= 0) {
@@ -90,6 +100,11 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                         ? "(Dataset in project " + elm.projectName + ")"
                         : "(Project)"}
                     </Text>
+                    {elm.expiresAt ? (
+                      <Text size="sm" c="dimmed">
+                        Expires: {formatExpiration(elm.expiresAt)}
+                      </Text>
+                    ) : null}
                   </Stack>
                   <Group align="center" gap="sm">
                     {elm.error ? <Text c="red">Error</Text> : null}
