@@ -32,7 +32,8 @@ const DownloadModal = ({ model, onClose }) => {
     }
 
     console.log("Downloading model");
-    const blob = await downloadDeploymentModel(model.id, "C");
+    const format = language === "javascript" ? "javascript" : "C";
+    const blob = await downloadDeploymentModel(model.id, format);
     console.log(blob);
     downloadBlob(blob, `${model.name}_${language}.zip`);
   };
@@ -50,7 +51,20 @@ int main() {
   cout << "Result: " << res << " <==> " << class_to_label(res) << endl;
   return 0;
 }`;
-      // Add cases for other languages here
+      case "javascript":
+        return `const Predictor = require("edge-ml");
+const score = require("./model_javascript");
+
+const predictor = new Predictor(
+  (input) => score(input),
+  ${JSON.stringify(model.timeSeries)},
+  0,
+  ${JSON.stringify(model.labels?.map((label) => label.name) || [])},
+  null,
+  { windowingMode: "sample" }
+);
+
+predictor.predict();`;
       default:
         return ""; // Handle unsupported languages
     }
@@ -85,7 +99,10 @@ int main() {
             <Select
               value={language}
               onChange={(value) => value && setLanguage(value)}
-              data={[{ value: "cpp", label: "C++" }]}
+              data={[
+                { value: "cpp", label: "C++" },
+                { value: "javascript", label: "Javascript" },
+              ]}
               allowDeselect={false}
             />
           </Group>
