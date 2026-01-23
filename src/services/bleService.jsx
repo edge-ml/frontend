@@ -150,7 +150,10 @@ export const getBaseDataset = (sensors, datasetName) => {
   Object.keys(sensors).forEach((sensorId) => {
     const sensor = sensors[sensorId];
     sensor.parseScheme.forEach((scheme, schema_idx) => {
-      const ts_name = sensor.name + "_" + sensorId + "_" + schema_idx + "_" + scheme.name;
+      const schemeName = scheme.name.startsWith(sensor.name + "_")
+        ? scheme.name
+        : sensor.name + "_" + scheme.name;
+      const ts_name = schemeName;
       console.log("ts_name", ts_name);
       timeSeries.push({
         name: ts_name,
@@ -199,10 +202,15 @@ export const parseTimeSeriesData = (
       const data = sensorData[key].map((elm) => {
         return [elm.time, elm.data[idx]];
       });
+      console.log("Timeseries", dataset.timeSeries)
+      console.log("Finding:", sensor.name + "_" + key + "_" + idx + "_" + scheme.name)
       timeSeries.push({
-        _id: dataset.timeSeries.find(
-          (elm) => elm.name === sensor.name + "_" + key + "_" + idx + "_" + scheme.name
-        )._id,
+        _id: dataset.timeSeries.find((elm) => {
+          const schemeName = scheme.name.startsWith(sensor.name + "_")
+            ? scheme.name
+            : sensor.name + "_" + scheme.name;
+          return elm.name === schemeName;
+        })._id,
         data: data,
       });
     });

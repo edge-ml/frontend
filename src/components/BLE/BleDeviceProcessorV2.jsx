@@ -96,8 +96,12 @@ class BleDeviceProcessorV2 {
 
   async startRecording(selectedSensors, latency, datasetName) {
     var oldDatasets = (await getDatasets()).map((elm) => elm._id);
+    const selectedSensorMap = {};
+    [...selectedSensors].forEach((sensorId) => {
+      selectedSensorMap[sensorId] = this.sensors[sensorId];
+    });
     const baseDataset = getBaseDataset(
-      [...selectedSensors].map((elm) => this.sensors[elm]),
+      selectedSensorMap,
       datasetName
     );
     this.newDataset = await createDataset(baseDataset);
