@@ -128,14 +128,17 @@ export const prepareSensorBleObject = (sensorArray) => {
 
 export const prepareSensorBleObjectV2 = (sensorArray) => {
   const result = {};
-  console.log("SensorArray", sensorArray)
+  console.log("SensorArray", sensorArray);
   sensorArray.forEach((elm) => {
     result[elm.sensorId] = {
       name: elm.sensorName,
       options: elm.options,
       parseScheme: elm.components.map((component) => {
+        const componentLabel = component.groupName
+          ? `${component.groupName}_${component.componentName}`
+          : component.componentName;
         return {
-          name: component.componentName,
+          name: componentLabel,
           unit: component.unitName,
           type: component.type,
         };
