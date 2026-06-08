@@ -31,8 +31,18 @@ const apiRequest = async (
     withCredentials: true,
   };
 
-  const res = await axios(requestConfig);
-  return res.data;
+  try {
+    const res = await axios(requestConfig);
+    return res.data;
+  } catch (error) {
+    // Surface the backend's error message instead of axios' generic
+    // "Request failed with status code 500".
+    const serverMessage =
+      error.response?.data?.error || error.response?.data?.message;
+    const normalized = new Error(serverMessage || error.message);
+    normalized.status = error.response?.status;
+    throw normalized;
+  }
 };
 
 export default apiRequest;

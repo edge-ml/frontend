@@ -28,11 +28,11 @@ const LoginPage = ({ children }) => {
   const user = useUserStore((state) => state.user);
   const [email, setEmail] = useState(undefined);
   const [password, setPassword] = useState(undefined);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (error) {
-      setTimeout(() => setError(false), 3000);
+      setTimeout(() => setError(""), 5000);
     }
   }, [error]);
 
@@ -45,16 +45,16 @@ const LoginPage = ({ children }) => {
   const submit = async () => {
     try {
       await login(email, password);
-    } catch {
-      setError(true);
+    } catch (e) {
+      setError(e?.message || "Wrong credentials!");
     }
   };
 
   const onOAuth = async (provider) => {
     try {
       const res = await loginOAuth(provider);
-    } catch {
-      setError(true);
+    } catch (e) {
+      setError(e?.message || "Wrong credentials!");
     }
   };
 
@@ -129,8 +129,8 @@ const LoginPage = ({ children }) => {
             </Form>
             {error ? (
               <div className="mt-3" style={{ color: "red" }}>
-                <FontAwesomeIcon icon={faTriangleExclamation}></FontAwesomeIcon>
-                Wrong credentials!
+                <FontAwesomeIcon icon={faTriangleExclamation}></FontAwesomeIcon>{" "}
+                {error}
               </div>
             ) : null}
             <hr />
