@@ -41,7 +41,10 @@
     "serve": "vite preview",
     "lint": "eslint src/**/*.{js,jsx}",
     "lint:fix": "eslint src/**/*.{js,jsx} --fix",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -55,6 +58,8 @@
   "devDependencies": {
     "@eslint/js": "^9.6.0",
     "@playwright/test": "^1.44.0",
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/cli": "^2.11.2",
     "@types/node": "^20.12.12",
     "@vitejs/plugin-react": "^4.3.0",
     "enzyme": "^3.11.0",

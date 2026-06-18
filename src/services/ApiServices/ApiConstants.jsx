@@ -1,33 +1,64 @@
 import localStorageService from "./../LocalStorageService";
 
 const currentHost = window.location.host.split(":")[0];
+const TAURI_BACKEND_URL =
+  import.meta.env.VITE_TAURI_BACKEND_URL || "https://beta.edge-ml.org";
 
-export const AUTH_URI =
+const isAbsoluteUrl = (url) => /^https?:\/\//i.test(url);
+const isTauri = () =>
+  Boolean(globalThis.isTauri || globalThis.__TAURI_INTERNALS__);
+
+const getServiceUri = (envUrl, fallbackUrl) => {
+  const url = envUrl || fallbackUrl;
+
+  if (import.meta.env.DEV || !isTauri() || isAbsoluteUrl(url)) {
+    return url;
+  }
+
+  return new URL(url, TAURI_BACKEND_URL).toString();
+};
+
+// Use Vite env vars if available, otherwise fallback to original logic
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const VITE_AUTH_BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;
+const VITE_ML_BASE_URL = import.meta.env.VITE_ML_BASE_URL;
+const VITE_DS_BASE_URL = import.meta.env.VITE_DS_BASE_URL;
+
+export const AUTH_URI = getServiceUri(
+  VITE_AUTH_BASE_URL,
   process.env.NODE_ENV === "production"
     ? "/auth/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://auth.edge-ml.ngrok.io/auth/"
-      : `http://${currentHost}:3002/auth/`;
+      : `http://${currentHost}:3002/auth/`
+);
 
-export const API_URI =
+export const API_URI = getServiceUri(
+  VITE_API_BASE_URL,
   process.env.NODE_ENV === "production"
     ? "/api/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://backend.edge-ml.ngrok.io/api/"
-      : `http://${currentHost}:3001/api/`;
-export const ML_URI =
+      : `http://${currentHost}:3001/api/`
+);
+
+export const ML_URI = getServiceUri(
+  VITE_ML_BASE_URL,
   process.env.NODE_ENV === "production"
     ? "/ml/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://ml.edge-ml.ngrok.io/ml/"
-      : `http://${currentHost}:3003/ml/`;
+      : `http://${currentHost}:3003/ml/`
+);
 
-export const DATASET_STORE =
+export const DATASET_STORE = getServiceUri(
+  VITE_DS_BASE_URL,
   process.env.NODE_ENV === "production"
     ? "/ds/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://ds.edge-ml.ngrok.io/ds/"
-      : `http://${currentHost}:3004/ds/`;
+      : `http://${currentHost}:3004/ds/`
+);
 
 export const HTTP_METHODS = {
   GET: "GET",

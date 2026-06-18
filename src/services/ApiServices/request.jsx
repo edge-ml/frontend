@@ -28,7 +28,6 @@ const apiRequest = async (
       Authorization: localStorageService.getAccessToken(),
     },
     responseType: responseType,
-    withCredentials: true,
   };
 
   try {

@@ -23,11 +23,15 @@ const useAuth = () => {
 
   const logout = () => {
     logout_api();
+    clearToken();
     setUser(undefined);
   };
 
   const login = async (email, password) => {
     const success = await loginUser(email, password);
+    if (success?.access_token) {
+      setToken(success.access_token, success.refresh_token);
+    }
     const user = await getUser_api();
     setUser(user);
 
