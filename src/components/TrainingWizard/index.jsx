@@ -113,13 +113,16 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   const [screen, setScreen] = useState(0);
 
   const [stepValidation, setStepValidation] = useState(false);
+  const [trainError, setTrainError] = useState(undefined);
 
   // Navigate the wizard
   const maxSteps = selectedPipeline ? selectedPipeline.steps.length + 3 : 0;
   const onBack = () => {
+    setTrainError(undefined);
     setScreen(Math.max(screen - 1, 0));
   };
   const onNext = () => {
+    setTrainError(undefined);
     setScreen(Math.min(screen + 1, maxSteps - 1));
   };
 
@@ -206,8 +209,15 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
       selectedPipeline: tmpSelectedPipeline,
       name: modelName,
     };
-    const model_id = await train(data);
-    onClose();
+    try {
+      setTrainError(undefined);
+      await train(data);
+      onClose();
+    } catch (e) {
+      setTrainError(
+        e?.message || "Training could not be started. Please try again."
+      );
+    }
   };
 
   const onSelectTrainingMethod = (pipeline) => {
@@ -254,6 +264,30 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
 
     setSelectedPipelineSteps(tmpPipelineData);
   };
+
+  // Centralised, live validation of the current step. Each step exposes a
+  // static `validate(props)` that returns an error message (or undefined when ok).
+  const validateCurrentStep = () => {
+    if (!selectedPipeline) return undefined;
+    if (screen === 0)
+      return Wizard_SelectLabeling.validate({
+        selectedLabeling: labeling,
+        labelings,
+        zeroClass,
+      });
+    if (screen === 1)
+      return Wizard_SelectDataset.validate({
+        datasets,
+        selectedLabeling: labeling,
+        zeroClass,
+        disabledTimeseriesNames,
+      });
+    if (screen >= 2 && screen !== maxSteps - 1)
+      return Pipelinestep.validate({ step: selectedPipelineSteps[screen - 2] });
+    if (screen === maxSteps - 1) return Select_Name.validate({ modelName });
+    return undefined;
+  };
+  const currentError = validateCurrentStep();
 
   return (
     <Modal isOpen={isOpen} size="xl">
@@ -337,7 +371,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
           </Fragment>
         ) : null}
       </ModalBody>
-      <ModalFooter className="d-flex justify-content-between">
+      <ModalFooter className="d-flex justify-content-between align-items-center">
         <div>
           {screen !== 0 ? (
             <Button color="secondary" outline onClick={onBack}>
@@ -345,17 +379,23 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             </Button>
           ) : null}
         </div>
-        {selectedPipeline ? (
-          <span className="me-3">
-            {screen + 1}/{maxSteps}
-          </span>
+        {selectedPipeline && (trainError || currentError) ? (
+          <Alert
+            color="danger"
+            className="my-0 py-2 mx-3 flex-grow-1 text-center"
+          >
+            {trainError || currentError}
+          </Alert>
         ) : null}
-        <div>
-          {selectedPipeline ? (
+        {selectedPipeline ? (
+          <div className="d-flex align-items-center">
+            <span className="me-3">
+              {screen + 1}/{maxSteps}
+            </span>
             <Button
               outline
               color="primary"
-              disabled={!stepValidation}
+              disabled={!!currentError}
               onClick={() => {
                 if (screen + 1 === maxSteps) {
                   onTrain();
@@ -366,8 +406,8 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             >
               {screen + 1 === maxSteps ? "Train" : "Next"}
             </Button>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </ModalFooter>
     </Modal>
   );

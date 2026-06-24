@@ -133,4 +133,19 @@ const Pipelinestep = ({
   );
 };
 
+Pipelinestep.validate = ({ step }) => {
+  if (!step || !step.parameters) return undefined;
+  for (const p of step.parameters) {
+    // Empty value = use the option's default, which is allowed.
+    if (p.value === null || p.value === undefined || p.value === "") continue;
+    const val = Number(p.value);
+    if (Number.isNaN(val)) continue;
+    if (typeof p.number_min === "number" && val < p.number_min)
+      return `${p.parameter_name} must be at least ${p.number_min}`;
+    if (typeof p.number_max === "number" && val > p.number_max)
+      return `${p.parameter_name} must be at most ${p.number_max}`;
+  }
+  return undefined;
+};
+
 export default Pipelinestep;
