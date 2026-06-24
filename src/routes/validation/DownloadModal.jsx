@@ -84,7 +84,7 @@ int main() {
       <ModalBody>
         <div className="d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
-            <b className="me-2">Language:</b>
+            <b className="me-2">Format:</b>
             <Dropdown
               isOpen={languageDropdownOpen}
               toggle={() => setLanguageDropdownOpen(!languageDropdownOpen)}
