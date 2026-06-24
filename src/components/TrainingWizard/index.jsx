@@ -13,7 +13,11 @@ import { useEffect, useState, Fragment } from "react";
 import Wizard_SelectDataset from "./Steps/Select_Datasets";
 import { getDatasets } from "../../services/ApiServices/DatasetServices";
 import { getLabelings } from "../../services/ApiServices/LabelingServices";
-import { getTrainConfig, train } from "../../services/ApiServices/MlService";
+import {
+  getTrainConfig,
+  train,
+  preflightTrain,
+} from "../../services/ApiServices/MlService";
 import Select_Name from "./Steps/Select_Name";
 import SelectTrainMethod from "./selectTrainMethod";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -53,6 +57,8 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   const [screen, setScreen] = useState(0);
 
   const [trainError, setTrainError] = useState(undefined);
+  const [preflight, setPreflight] = useState(null);
+  const [preflightLoading, setPreflightLoading] = useState(false);
 
   // Navigate the wizard
   const maxSteps = selectedPipeline ? selectedPipeline.steps.length + 3 : 0;
@@ -112,45 +118,47 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     setDatasets(newDatasets);
   };
 
-  const onTrain = async () => {
-    const tmpSelectedPipeline = selectedPipeline;
-    tmpSelectedPipeline.steps = tmpSelectedPipeline.steps.map((elm, i) => {
-      return { ...elm, options: selectedPipelineSteps[i] };
-    });
-
+  // Build the training request (pure — does not mutate wizard state).
+  const buildRequest = () => {
     const intersectingTSNames = intersect(
       ...datasets
         .filter((e) => e.selected)
         .map((e) => e.timeSeries.map((t) => t.name))
     );
-
-    const data = {
+    return {
       datasets: datasets
         .filter((elm) => elm.selected)
-        .map((elm) => {
-          return {
-            _id: elm._id,
-            timeSeries: elm.timeSeries
-              .filter(
-                (ts) =>
-                  intersectingTSNames.includes(ts.name) &&
-                  !disabledTimeseriesNames.includes(ts.name)
-              )
-              .map((ts) => ts._id),
-          };
-        })
+        .map((elm) => ({
+          _id: elm._id,
+          timeSeries: elm.timeSeries
+            .filter(
+              (ts) =>
+                intersectingTSNames.includes(ts.name) &&
+                !disabledTimeseriesNames.includes(ts.name)
+            )
+            .map((ts) => ts._id),
+        }))
         .filter((elm) => elm.timeSeries.length > 0),
       labeling: {
         _id: labeling._id,
         useZeroClass: zeroClass,
         disabledLabelIDs: labeling.disabledLabels || [],
       },
-      selectedPipeline: tmpSelectedPipeline,
+      selectedPipeline: {
+        ...selectedPipeline,
+        steps: selectedPipeline.steps.map((elm, i) => ({
+          ...elm,
+          options: selectedPipelineSteps[i],
+        })),
+      },
       name: modelName,
     };
+  };
+
+  const onTrain = async () => {
     try {
       setTrainError(undefined);
-      await train(data);
+      await train(buildRequest());
       onClose();
     } catch (e) {
       setTrainError(
@@ -158,6 +166,32 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
       );
     }
   };
+
+  // On the final step, validate the full config against the real data on the
+  // backend (catches window-vs-data, too-few-classes, etc.). Advisory: if the
+  // check itself fails we don't block training.
+  useEffect(() => {
+    if (!selectedPipeline || screen !== maxSteps - 1) {
+      setPreflight(null);
+      return;
+    }
+    let cancelled = false;
+    setPreflightLoading(true);
+    setPreflight(null);
+    preflightTrain(buildRequest())
+      .then((res) => {
+        if (!cancelled) setPreflight(res);
+      })
+      .catch(() => {
+        if (!cancelled) setPreflight(null);
+      })
+      .finally(() => {
+        if (!cancelled) setPreflightLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [screen, maxSteps, selectedPipeline]);
 
   const onSelectTrainingMethod = (pipeline) => {
     setSelectedPipeline(pipeline);
@@ -302,6 +336,35 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 setModelName={setModelName}
               ></Select_Name>
             ) : null}
+            {screen === maxSteps - 1 ? (
+              <div className="m-2">
+                {preflightLoading ? (
+                  <div className="text-muted">
+                    Checking your configuration against the data…
+                  </div>
+                ) : preflight ? (
+                  <Fragment>
+                    {(preflight.errors || []).map((e, i) => (
+                      <Alert key={`pfe${i}`} color="danger" className="py-2">
+                        {e.message}
+                      </Alert>
+                    ))}
+                    {(preflight.warnings || []).map((w, i) => (
+                      <Alert key={`pfw${i}`} color="warning" className="py-2">
+                        {w.message}
+                      </Alert>
+                    ))}
+                    {preflight.valid &&
+                    !(preflight.errors || []).length &&
+                    !(preflight.warnings || []).length ? (
+                      <div className="text-success">
+                        Configuration looks good — ready to train.
+                      </div>
+                    ) : null}
+                  </Fragment>
+                ) : null}
+              </div>
+            ) : null}
           </Fragment>
         ) : null}
       </ModalBody>
@@ -329,7 +392,11 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             <Button
               outline
               color="primary"
-              disabled={!!currentError}
+              disabled={
+                !!currentError ||
+                preflightLoading ||
+                (screen + 1 === maxSteps && preflight && !preflight.valid)
+              }
               onClick={() => {
                 if (screen + 1 === maxSteps) {
                   onTrain();
