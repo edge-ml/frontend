@@ -21,66 +21,6 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { intersect, toggleElement } from "../../services/helpers";
 import Pipelinestep from "./Pipelinestep";
 
-export const WizardFooter = ({
-  invalidResult = false,
-  onNext,
-  onBack,
-  onClose,
-  onTrain,
-  step,
-  maxSteps,
-}) => {
-  const [clickedOnce, setClickedOnce] = useState(false);
-  useEffect(() => setClickedOnce(false), [step]);
-
-  return (
-    <ModalFooter className="fotter">
-      <div>
-        <Button color="secondary" onClick={onClose} className="me-2">
-          Cancel
-        </Button>
-        <Button color="secondary" onClick={onBack}>
-          Back
-        </Button>
-      </div>
-      <Alert
-        color="warning"
-        style={{
-          visibility: !!invalidResult && clickedOnce ? "visible" : "hidden",
-        }}
-      >
-        {invalidResult || "No problems"}
-      </Alert>
-      <div>
-        <span className="me-3">
-          {step + 1}/{maxSteps}
-        </span>
-        <Button
-          color="primary"
-          disabled={!!invalidResult && clickedOnce}
-          onClick={() => {
-            if (!clickedOnce) {
-              setClickedOnce(true);
-            }
-
-            if (invalidResult) {
-              return;
-            }
-
-            if (step + 1 === maxSteps) {
-              onTrain();
-            } else {
-              onNext();
-            }
-          }}
-        >
-          {step + 1 === maxSteps ? "Train" : "Next"}
-        </Button>
-      </div>
-    </ModalFooter>
-  );
-};
-
 const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   // Data obtained from the server
 
@@ -112,7 +52,6 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   // Current state of the wizard
   const [screen, setScreen] = useState(0);
 
-  const [stepValidation, setStepValidation] = useState(false);
   const [trainError, setTrainError] = useState(undefined);
 
   // Navigate the wizard
@@ -323,7 +262,6 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
           <SelectTrainMethod
             pipelines={pipelines}
             onSelectTrainingMethod={onSelectTrainingMethod}
-            valdiate={setStepValidation}
           ></SelectTrainMethod>
         ) : null}
         {selectedPipeline ? (
@@ -336,7 +274,6 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 selectedLabeling={labeling}
                 toggleZeroClass={toggleZeroClass}
                 zeroClass={zeroClass}
-                validate={setStepValidation}
               ></Wizard_SelectLabeling>
             ) : null}
 
@@ -348,7 +285,6 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 selectedLabeling={labeling}
                 toggleDisableTimeseries={toggleDisableTimeseries}
                 disabledTimeseriesNames={disabledTimeseriesNames}
-                valdiate={setStepValidation}
               ></Wizard_SelectDataset>
             ) : null}
             {screen >= 2 && screen !== maxSteps - 1 ? (
@@ -357,7 +293,6 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 step={selectedPipeline.steps[screen - 2]}
                 selectedPipelineStep={selectedPipelineSteps[screen - 2]}
                 setPipelineStep={setPipelineStep}
-                valdiate={setStepValidation}
               ></Pipelinestep>
             ) : null}
             {screen == maxSteps - 1 ? (
@@ -365,7 +300,6 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 screen={screen}
                 modelName={modelName}
                 setModelName={setModelName}
-                valdiate={setStepValidation}
               ></Select_Name>
             ) : null}
           </Fragment>
