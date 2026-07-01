@@ -11,11 +11,11 @@ const isTauri = () =>
 const getServiceUri = (envUrl, fallbackUrl) => {
   const url = envUrl || fallbackUrl;
 
-  if (import.meta.env.DEV || !isTauri() || isAbsoluteUrl(url)) {
-    return url;
+  if (isTauri()) {
+    return new URL(url, TAURI_BACKEND_URL).toString();
   }
 
-  return new URL(url, TAURI_BACKEND_URL).toString();
+  return url;
 };
 
 // Use Vite env vars if available, otherwise fallback to original logic
@@ -26,7 +26,7 @@ const VITE_DS_BASE_URL = import.meta.env.VITE_DS_BASE_URL;
 
 export const AUTH_URI = getServiceUri(
   VITE_AUTH_BASE_URL,
-  process.env.NODE_ENV === "production"
+  process.env.NODE_ENV === "production" || isTauri()
     ? "/auth/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://auth.edge-ml.ngrok.io/auth/"
@@ -35,7 +35,7 @@ export const AUTH_URI = getServiceUri(
 
 export const API_URI = getServiceUri(
   VITE_API_BASE_URL,
-  process.env.NODE_ENV === "production"
+  process.env.NODE_ENV === "production" || isTauri()
     ? "/api/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://backend.edge-ml.ngrok.io/api/"
@@ -44,7 +44,7 @@ export const API_URI = getServiceUri(
 
 export const ML_URI = getServiceUri(
   VITE_ML_BASE_URL,
-  process.env.NODE_ENV === "production"
+  process.env.NODE_ENV === "production" || isTauri()
     ? "/ml/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://ml.edge-ml.ngrok.io/ml/"
@@ -53,7 +53,7 @@ export const ML_URI = getServiceUri(
 
 export const DATASET_STORE = getServiceUri(
   VITE_DS_BASE_URL,
-  process.env.NODE_ENV === "production"
+  process.env.NODE_ENV === "production" || isTauri()
     ? "/ds/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://ds.edge-ml.ngrok.io/ds/"

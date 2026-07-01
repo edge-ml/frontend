@@ -3,12 +3,19 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { isTauriBluetoothAvailable, getTauriBluetooth } from "./services/tauriBle";
+import TauriDevicePicker from "./components/BLE/TauriDevicePicker";
+
+if (isTauriBluetoothAvailable()) {
+  navigator.bluetooth = getTauriBluetooth();
+}
 
 const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
   <BrowserRouter>
     <App></App>
+    {isTauriBluetoothAvailable() && <TauriDevicePicker />}
   </BrowserRouter>
 );
 

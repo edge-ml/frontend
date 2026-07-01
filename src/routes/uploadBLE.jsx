@@ -610,7 +610,9 @@ class UploadBLE extends Component {
           this.setState({ connectedBLEDevice: bleDevice });
         }
       })
-      .catch((err) => {});
+      .catch((err) => {
+        console.error("BLE connection error:", err);
+      });
   }
 
   setCurrentData(sensorData) {
@@ -629,8 +631,10 @@ class UploadBLE extends Component {
       this.setState({ bleConnectionChanging: false });
     } else {
       // Case: Not connected, so connect
+      // Start BLE before setState to preserve user gesture for Web Bluetooth API
+      const connectPromise = this.connect();
       this.setState({ bleConnectionChanging: true });
-      await this.connect();
+      await connectPromise;
       this.setState({ bleConnectionChanging: false });
     }
   }

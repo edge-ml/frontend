@@ -7,6 +7,12 @@
   ],
   "permissions": [
     "core:default",
-    "http:default"
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "https://beta.edge-ml.org/**" },
+        { "url": "http://localhost:**" }
+      ]
+    }
   ]
 }
