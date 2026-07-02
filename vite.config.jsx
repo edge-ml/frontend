@@ -6,6 +6,9 @@ export default defineConfig({
     outDir: 'dist',
   },
   server: {
+    watch: {
+      ignored: ['**/src-tauri/target/**', '**/*.dll'],
+    },
     proxy: {
       '/ds': {
         target: 'https://beta.edge-ml.org',
@@ -40,5 +43,16 @@ export default defineConfig({
       },
     },
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'handle-watch-errors',
+      configureServer(server) {
+        server.watcher?.on('error', (err) => {
+          if (err.code === 'EBUSY') return;
+          console.error(err);
+        });
+      },
+    },
+  ],
 });

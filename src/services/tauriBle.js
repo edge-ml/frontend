@@ -22,7 +22,7 @@ class TauriBluetoothCharacteristic {
       characteristicUuid: this.uuid,
     });
     const uint8 = new Uint8Array(data);
-    return uint8.buffer;
+    return new DataView(uint8.buffer);
   }
 
   async writeValue(buffer) {

@@ -7,7 +7,15 @@ import { isTauriBluetoothAvailable, getTauriBluetooth } from "./services/tauriBl
 import TauriDevicePicker from "./components/BLE/TauriDevicePicker";
 
 if (isTauriBluetoothAvailable()) {
-  navigator.bluetooth = getTauriBluetooth();
+  try {
+    navigator.bluetooth = getTauriBluetooth();
+  } catch {
+    Object.defineProperty(navigator, 'bluetooth', {
+      value: getTauriBluetooth(),
+      writable: false,
+      configurable: true,
+    });
+  }
 }
 
 const container = document.getElementById("root");

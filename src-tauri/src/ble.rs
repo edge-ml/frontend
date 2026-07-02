@@ -35,11 +35,6 @@ pub struct BleCharacteristicInfo {
     pub properties: Vec<String>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-pub struct BleReadResult {
-    pub data: Vec<u8>,
-}
-
 async fn get_adapter(state: &State<'_, BleState>) -> Result<Adapter, String> {
     let mut guard = state.adapter.lock().await;
     if let Some(ref adapter) = *guard {
