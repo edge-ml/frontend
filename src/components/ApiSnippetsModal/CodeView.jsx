@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Prism from "prismjs";
 import "prismjs/themes/prism-tomorrow.css";
 import "prismjs/components/prism-java";
@@ -9,8 +9,13 @@ import "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard";
 import { Button } from "reactstrap";
 
 const CodeView = ({ language, code }) => {
+  const codeRef = useRef(null);
+
   useEffect(() => {
-    Prism.highlightAll();
+    // Highlight only this snippet's element, not every <code> block on the page.
+    if (codeRef.current) {
+      Prism.highlightElement(codeRef.current);
+    }
   }, [code, language]);
 
   const onCopytoClipBoard = () => {
@@ -20,7 +25,11 @@ const CodeView = ({ language, code }) => {
   return (
     <div className="Code">
       <pre className={`language-${language}`} style={{ borderRadius: "10px" }}>
-        <code className={`language-${language}`} data-prismjs-copy="Copy">
+        <code
+          ref={codeRef}
+          className={`language-${language}`}
+          data-prismjs-copy="Copy"
+        >
           {code}
         </code>
       </pre>
