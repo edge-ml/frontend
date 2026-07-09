@@ -4,13 +4,14 @@ import "prismjs/themes/prism-tomorrow.css";
 import "prismjs/components/prism-java";
 import "prismjs/components/prism-c";
 import "prismjs/components/prism-cpp";
+import "prismjs/components/prism-kotlin";
 import "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard";
 import { Button } from "reactstrap";
 
 const CodeView = ({ language, code }) => {
   useEffect(() => {
     Prism.highlightAll();
-  }, []);
+  }, [code, language]);
 
   const onCopytoClipBoard = () => {
     navigator.clipboard.writeText(code);

@@ -13,36 +13,35 @@ import {
   ModalHeader,
 } from "../../components/Common/Modal";
 import CodeView from "../../components/ApiSnippetsModal/CodeView";
-import {
-  downloadDeploymentModel,
-  downloadModalLink,
-} from "../../services/ApiServices/MLDeploymentService";
+import { downloadDeploymentModel } from "../../services/ApiServices/MLDeploymentService";
 import { downloadBlob } from "../../services/helpers";
-import { getProject } from "../../services/LocalStorageService";
+
+const FORMAT_INFO = {
+  C: { label: "C++", prismLanguage: "cpp" },
+  EXECUTORCH: { label: "ExecuTorch (.pte)", prismLanguage: "kotlin" },
+};
 
 const DownloadModal = ({ model, onClose }) => {
-  const [language, setLanguage] = useState("cpp");
-  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false); // State for language dropdown
+  // formats is computed by the backend at train time; older models predate it
+  const formats =
+    model && model.formats && model.formats.length ? model.formats : ["C"];
+  const [format, setFormat] = useState(formats[0]);
+  const [formatDropdownOpen, setFormatDropdownOpen] = useState(false);
 
   if (!model) {
     return null;
   }
 
-  const downloadModel = async () => {
-    if (language === "python") {
-      downloadModalLink(getProject(), model._id, "python");
-      return;
-    }
+  const formatInfo = FORMAT_INFO[format] || { label: format, prismLanguage: "c" };
 
-    console.log("Downloading model")
-    const blob = await downloadDeploymentModel(model._id, "C");
-    console.log(blob)
-    downloadBlob(blob, `${model.name}_${language}.zip`);
+  const downloadModel = async () => {
+    const blob = await downloadDeploymentModel(model._id, format);
+    downloadBlob(blob, `${model.name}_${format.toLowerCase()}.zip`);
   };
 
   const getCode = () => {
-    switch (language) {
-      case "cpp":
+    switch (format) {
+      case "C":
         return `#include "model.hpp"
 #include <iostream>
 
@@ -53,15 +52,22 @@ int main() {
   cout << "Result: " << res << " <==> " << class_to_label(res) << endl;
   return 0;
 }`;
-      // Add cases for other languages here
+      case "EXECUTORCH":
+        return `// Android (Kotlin) — see README.md and manifest.json in the download
+val classifier = ExampleClassifier("model.pte")
+
+// call once per sensor sample (order: ${model.timeSeries.join(", ")})
+classifier.addDatapoint(floatArrayOf(${model.timeSeries
+          .map((elm) => "val_" + elm)
+          .join(", ")}))
+
+val label = classifier.predict()`;
       default:
-        return ""; // Handle unsupported languages
+        return ""; // Handle unsupported formats
     }
   };
 
-  const CodeSnippet = ({ language, code }) => {
-    const genCode = getCode();
-
+  const CodeSnippet = ({ code }) => {
     if (code === "") {
       return (
         <div className="d-flex w-100 justify-content-center align-items-center mh-25 fw-bold">
@@ -73,7 +79,7 @@ int main() {
     return (
       <div>
         <b>Code</b>
-        <CodeView language={language} code={genCode}></CodeView>
+        <CodeView language={formatInfo.prismLanguage} code={code}></CodeView>
       </div>
     );
   };
@@ -86,20 +92,18 @@ int main() {
           <div className="d-flex align-items-center">
             <b className="me-2">Format:</b>
             <Dropdown
-              isOpen={languageDropdownOpen}
-              toggle={() => setLanguageDropdownOpen(!languageDropdownOpen)}
+              isOpen={formatDropdownOpen}
+              toggle={() => setFormatDropdownOpen(!formatDropdownOpen)}
             >
               <DropdownToggle outline color="primary" caret>
-                {language.toUpperCase()}
+                {formatInfo.label}
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem onClick={() => setLanguage("cpp")}>
-                  C++
-                </DropdownItem>
-                {/* <DropdownItem onClick={() => setLanguage("python")}>
-                  Python
-                </DropdownItem> */}
-                {/* Add more language options as DropdownItems */}
+                {formats.map((fmt) => (
+                  <DropdownItem key={fmt} onClick={() => setFormat(fmt)}>
+                    {(FORMAT_INFO[fmt] || { label: fmt }).label}
+                  </DropdownItem>
+                ))}
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -109,7 +113,7 @@ int main() {
         </div>
         <div className="pt-2"></div>
         <hr></hr>
-        <CodeSnippet language={language} code={getCode()}></CodeSnippet>
+        <CodeSnippet code={getCode()}></CodeSnippet>
       </ModalBody>
       <ModalFooter>
         <Button outline onClick={onClose}>Close</Button>
