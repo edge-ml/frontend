@@ -2,34 +2,27 @@ import * as JSZip from "jszip";
 import { generateCSV } from "./CsvService";
 import { getDataset } from "../services/ApiServices/DatasetServices";
 import {
-  generateApiRequest,
   HTTP_METHODS,
   DATASET_STORE,
   DATASET_STORE_ENDPOINTS,
 } from "./ApiServices/ApiConstants";
-import ax from "axios";
 import apiRequest from "./ApiServices/request";
-
-const axios = ax.create();
+import { downloadBlob } from "./helpers";
 
 const registerDatasetDownload = async (dataset) => {
-  const request_params = generateApiRequest(
+  return apiRequest(
     HTTP_METHODS.POST,
     DATASET_STORE,
     DATASET_STORE_ENDPOINTS.CSV + `dataset/${dataset._id}`
   );
-  const response = await axios(request_params);
-  return response.data;
 };
 
 const registerProjectDownload = async () => {
-  const request_params = generateApiRequest(
+  return apiRequest(
     HTTP_METHODS.POST,
     DATASET_STORE,
     DATASET_STORE_ENDPOINTS.CSV + "project"
   );
-  const response = await axios(request_params);
-  return response.data;
 };
 
 const datasetDownloadStatus = async () => {
@@ -57,20 +50,27 @@ const datasetDownloadStatus = async () => {
 
 const cancelDownload = async (downloadId) => {
   try {
-    const request_params = generateApiRequest(
+    return await apiRequest(
       HTTP_METHODS.DELETE,
       DATASET_STORE,
       DATASET_STORE_ENDPOINTS.CSV + `${downloadId}`
     );
-    const response = await axios(request_params);
-    return response.data;
   } catch {
     return 404;
   }
 };
 
 const datasetDownloadfromId = async (downloadId) => {
-  window.open(`${DATASET_STORE}${DATASET_STORE_ENDPOINTS.CSV}${downloadId}`);
+  const blob = await apiRequest(
+    HTTP_METHODS.GET,
+    DATASET_STORE,
+    DATASET_STORE_ENDPOINTS.CSV + downloadId,
+    null,
+    {},
+    undefined,
+    "blob"
+  );
+  return downloadBlob(blob, `edge-ml-download-${downloadId}.zip`);
 };
 
 const downloadAllAsZip = async (datasets, labelings, labels) => {
@@ -101,18 +101,10 @@ const downloadAllAsZip = async (datasets, labelings, labels) => {
     })
   );
   const zip_blob = await zip.generateAsync({ type: "blob" });
-  downloadFile(zip_blob, "datasets.zip");
+  await downloadFile(zip_blob, "datasets.zip");
 };
 
-const downloadFile = (blob, fileName) => {
-  const href = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = href;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
+const downloadFile = (blob, fileName) => downloadBlob(blob, fileName);
 
 export {
   registerDatasetDownload,

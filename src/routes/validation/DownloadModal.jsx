@@ -29,15 +29,11 @@ const DownloadModal = ({ model, onClose }) => {
   }
 
   const downloadModel = async () => {
-    if (language === "python") {
-      downloadModalLink(getProject(), model._id, "python");
-      return;
-    }
-
-    console.log("Downloading model")
-    const blob = await downloadDeploymentModel(model._id, "C");
-    console.log(blob)
-    downloadBlob(blob, `${model.name}_${language}.zip`);
+    const blob =
+      language === "python"
+        ? await downloadModalLink(getProject(), model._id, "python")
+        : await downloadDeploymentModel(model._id, "C");
+    await downloadBlob(blob, `${model.name}_${language}.zip`);
   };
 
   const getCode = () => {

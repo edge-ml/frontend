@@ -25,6 +25,7 @@ import DFUManager from "../../components/BLE/DFUModal/DFU";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import DeployFeatures from "./Models/DeployFeatures";
+import { downloadBlob } from "../../services/helpers";
 
 const DeployModal = ({isOpen, model, onClose }) => {
   const [devices, setDevices] = useState([]);
@@ -190,13 +191,8 @@ const DeployModal = ({isOpen, model, onClose }) => {
       deployFeatures
     );
 
-    const downloadLink = document.createElement("a");
     const blob = new Blob([res]);
-    const objectUrl = URL.createObjectURL(blob);
-    downloadLink.href = objectUrl;
-    downloadLink.download = `${model.name}.zip`;
-    downloadLink.click();
-    URL.revokeObjectURL(objectUrl);
+    await downloadBlob(blob, `${model.name}.zip`);
   };
 
   const handleHyperparameterChange = ({ parameter_name, state }) => {

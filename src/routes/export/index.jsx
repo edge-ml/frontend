@@ -87,7 +87,7 @@ const ExportPage = () => {
 
   const onDownloadModel = async () => {
     const blob = await downloadDeploymentModel(selectedModelId, platform);
-    downloadBlob(blob, createName(platform, selectedModel));
+    await downloadBlob(blob, createName(platform, selectedModel));
   };
 
   useEffect(() => {

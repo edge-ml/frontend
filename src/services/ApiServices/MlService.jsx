@@ -1,6 +1,5 @@
 import apiConsts from "./ApiConstants";
 import apiRequest from "./request";
-import axios from "axios";
 
 export const getStepOptions = async () => {
   const res = await apiRequest(
@@ -76,54 +75,46 @@ export const getDeployDevices = async (id) => {
   return res;
 };
 
-export const deployModel = function (
+export const deployModel = async (
   id,
   tsMap,
   parameters,
   selectedDevice,
   additionalSettings
-) {
-  return new Promise((resolve, reject) => {
-    const request = apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.POST,
-      apiConsts.ML_URI,
-      apiConsts.ML_ENDPOINTS.DEPLOY + "/" + id,
-      {
-        tsMap: tsMap,
-        parameters: parameters,
-        device: selectedDevice,
-        additionalSettings: additionalSettings,
-      }
-    );
-    request["responseType"] = "arraybuffer";
-    axios(request)
-      .then((data) => resolve(data.data))
-      .catch((err) => reject(err.response));
-  });
-};
+) =>
+  apiRequest(
+    apiConsts.HTTP_METHODS.POST,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.DEPLOY + "/" + id,
+    {
+      tsMap,
+      parameters,
+      device: selectedDevice,
+      additionalSettings,
+    },
+    {},
+    "application/json",
+    "arraybuffer"
+  );
 
-export const downloadFirmware = function (
+export const downloadFirmware = async (
   id,
   tsMap,
   parameters,
   selectedDevice,
   additionalSettings
-) {
-  return new Promise((resolve, reject) => {
-    const request = apiConsts.generateApiRequest(
-      apiConsts.HTTP_METHODS.POST,
-      apiConsts.ML_URI,
-      apiConsts.ML_ENDPOINTS.DEPLOY + "/" + id + "/download",
-      {
-        tsMap: tsMap,
-        parameters: parameters,
-        device: selectedDevice,
-        additionalSettings: additionalSettings,
-      }
-    );
-    request["responseType"] = "arraybuffer";
-    axios(request)
-      .then((data) => resolve(data.data))
-      .catch((err) => reject(err.response));
-  });
-};
+) =>
+  apiRequest(
+    apiConsts.HTTP_METHODS.POST,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.DEPLOY + "/" + id + "/download",
+    {
+      tsMap,
+      parameters,
+      device: selectedDevice,
+      additionalSettings,
+    },
+    {},
+    "application/json",
+    "arraybuffer"
+  );

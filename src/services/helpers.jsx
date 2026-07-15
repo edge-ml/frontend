@@ -102,10 +102,33 @@ export function humanFileSize(bytes, si = false, dp = 1) {
   return bytes.toFixed(dp) + " " + units[u];
 }
 
-export const downloadBlob = (blob, filename) => {
+const isTauri = () =>
+  Boolean(globalThis.isTauri || globalThis.__TAURI_INTERNALS__);
+
+export const downloadBlob = async (blob, filename) => {
   if (!(blob instanceof Blob)) {
     throw new TypeError("Expected argument to be a Blob.");
   }
+
+  if (isTauri()) {
+    const [{ save }, { writeFile }] = await Promise.all([
+      import("@tauri-apps/plugin-dialog"),
+      import("@tauri-apps/plugin-fs"),
+    ]);
+    const extension = filename.split(".").pop();
+    const path = await save({
+      defaultPath: filename,
+      filters: extension
+        ? [{ name: `${extension.toUpperCase()} file`, extensions: [extension] }]
+        : undefined,
+    });
+
+    if (!path) return false;
+
+    await writeFile(path, new Uint8Array(await blob.arrayBuffer()));
+    return true;
+  }
+
   const href = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = href;
@@ -113,6 +136,8 @@ export const downloadBlob = (blob, filename) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  URL.revokeObjectURL(href);
+  return true;
 };
 
 // https://stackoverflow.com/a/11381730/3873452

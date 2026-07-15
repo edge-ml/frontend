@@ -153,7 +153,7 @@ const ScreenOne = memo(
         true,
         downloadSingleFile
       );
-      downloadBlob(blob, filename);
+      await downloadBlob(blob, filename);
     };
 
     return (
