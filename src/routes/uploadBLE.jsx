@@ -504,7 +504,7 @@ class UploadBLE extends Component {
       this.bleDeviceProcessor = new BleDeviceProcessor(
         bleDevice,
         this.state.connectedDeviceData,
-        this.state.deviceSensors,
+        deviceSensors,
         this.sensorConfigCharacteristic,
         this.sensorDataCharacteristic,
         this
@@ -520,7 +520,7 @@ class UploadBLE extends Component {
       this.bleDeviceProcessor = new BleDeviceProcessorV2(
         bleDevice,
         this.state.connectedDeviceData,
-        this.state.deviceSensors,
+        deviceSensors,
         this.sensorConfigCharacteristic,
         this.sensorDataCharacteristic,
         this
