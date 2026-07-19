@@ -330,26 +330,12 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     return undefined;
   };
   const currentError = validateCurrentStep();
-  // With a chosen export target, option filtering guarantees every step supports
-  // it, so the model will export that way. When the target was skipped ("ANY"),
-  // no filtering happened, so report what the current selections can actually
-  // export (a pipeline exports to a target only if every PRE/CORE step does).
-  const computeSkipTargets = () => {
-    const core = (selectedPipelineSteps || []).filter(
-      (s) => s && (s.type === "PRE" || s.type === "CORE")
-    );
-    return {
-      c: core.length > 0 && core.every((s) => optionExportTargets(s).c),
-      executorch:
-        core.length > 0 && core.every((s) => optionExportTargets(s).executorch),
-    };
-  };
+  // The export target is fixed by the chosen goal; option filtering guarantees
+  // every step supports it, so the model will export that way.
   const exportTargets =
-    exportGoal === "EXECUTORCH"
-      ? { c: false, executorch: true }
-      : exportGoal === "C"
+    exportGoal === "C"
       ? { c: true, executorch: false }
-      : computeSkipTargets();
+      : { c: false, executorch: true };
 
   return (
     <Modal isOpen={isOpen} size="xl">
@@ -393,7 +379,6 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
               goalAchievable(selectedPipeline, k)
             )}
             onSelect={onSelectExportGoal}
-            onSkip={() => onSelectExportGoal("ANY")}
             onBack={() => {
               setSelectedPipeline(undefined);
               setExportGoal(undefined);

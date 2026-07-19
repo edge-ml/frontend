@@ -3,8 +3,7 @@ import { Button } from "reactstrap";
 
 // Shown right after the pipeline is picked. Choosing an export target filters the
 // options in every later step so the trained model can actually be exported that
-// way. Skipping trains with all options available; the model may then not be
-// downloadable. Keys must match the values used in the TrainingWizard.
+// way. Keys must match the values used in the TrainingWizard.
 const GOALS = [
   {
     key: "EXECUTORCH",
@@ -18,12 +17,12 @@ const GOALS = [
   },
 ];
 
-const SelectExportGoal = ({ availableKeys, onSelect, onSkip, onBack }) => (
+const SelectExportGoal = ({ availableKeys, onSelect, onBack }) => (
   <div>
     <div className="fw-bold mb-1">Where will this model run?</div>
     <div className="text-muted mb-3">
-      Pick a target to keep the options below to what can be deployed that way,
-      or skip if you just want to try models and run them live on the server.
+      This keeps the options below to the ones that can be deployed the way you
+      choose, so the trained model can actually be exported.
     </div>
     {GOALS.filter((g) => availableKeys.includes(g.key)).map((g) => (
       <div
@@ -35,12 +34,9 @@ const SelectExportGoal = ({ availableKeys, onSelect, onSkip, onBack }) => (
         <div>{g.desc}</div>
       </div>
     ))}
-    <div className="mt-3 d-flex align-items-center">
+    <div className="mt-3">
       <Button color="secondary" outline size="sm" onClick={onBack}>
         Back to pipeline selection
-      </Button>
-      <Button color="link" size="sm" className="ms-2" onClick={onSkip}>
-        Skip — I don't need to export this model
       </Button>
     </div>
   </div>
