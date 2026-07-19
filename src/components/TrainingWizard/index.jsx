@@ -27,19 +27,32 @@ import Pipelinestep from "./Pipelinestep";
 import ExportTarget from "../Common/ExportTarget";
 import SelectExportGoal from "./SelectExportGoal";
 
-// A step option's platform strings, normalized.
+// A step option's platform strings, normalized (fallback for older backends).
 const optionPlatforms = (option) =>
   (option && option.platforms ? Array.from(option.platforms) : []).map((x) =>
     String(x).toLowerCase()
   );
 
+// Accurate, download-flow-truthful export capability of an option. The backend
+// now attaches `exportTargets` (c/executorch) computed the same way the Download
+// flow decides formats — some legacy options declare a C platform they cannot
+// actually export, so prefer exportTargets and fall back to raw platforms.
+const optionExportTargets = (option) => {
+  if (option && option.exportTargets) return option.exportTargets;
+  const plats = optionPlatforms(option);
+  return {
+    c: ["c", "cpp", "c-embedded"].some((c) => plats.includes(c)),
+    executorch: plats.includes("executorch"),
+  };
+};
+
 // Does an option support the chosen deployment goal? "ANY" (server-only) accepts
-// everything; "C"/"EXECUTORCH" require the matching platform declaration.
+// everything; "C"/"EXECUTORCH" require the matching real export capability.
 const optionMatchesGoal = (option, goal) => {
   if (!goal || goal === "ANY") return true;
-  const plats = optionPlatforms(option);
-  if (goal === "EXECUTORCH") return plats.includes("executorch");
-  if (goal === "C") return ["c", "cpp", "c-embedded"].some((c) => plats.includes(c));
+  const t = optionExportTargets(option);
+  if (goal === "EXECUTORCH") return !!t.executorch;
+  if (goal === "C") return !!t.c;
   return true;
 };
 
@@ -67,16 +80,12 @@ const goalAchievable = (pipeline, goal) => {
 // server-side at train time and shown in the Download modal.
 const computeExportTargets = (steps) => {
   if (!steps || !steps.length) return { c: false, executorch: false };
-  const asList = (p) =>
-    (p ? Array.from(p) : []).map((x) => String(x).toLowerCase());
-  const C_FAMILY = ["c", "cpp", "c-embedded"];
   const core = steps.filter((s) => s && (s.type === "PRE" || s.type === "CORE"));
+  // A pipeline exports to a target only when every export-relevant step does.
   const c =
-    core.length > 0 &&
-    core.every((s) => asList(s.platforms).some((p) => C_FAMILY.includes(p)));
+    core.length > 0 && core.every((s) => optionExportTargets(s).c);
   const executorch =
-    core.length > 0 &&
-    core.every((s) => asList(s.platforms).includes("executorch"));
+    core.length > 0 && core.every((s) => optionExportTargets(s).executorch);
   return { c, executorch };
 };
 
