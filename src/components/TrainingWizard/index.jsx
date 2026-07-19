@@ -25,6 +25,40 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { intersect, toggleElement } from "../../services/helpers";
 import Pipelinestep from "./Pipelinestep";
 import ExportTarget from "../Common/ExportTarget";
+import SelectExportGoal from "./SelectExportGoal";
+
+// A step option's platform strings, normalized.
+const optionPlatforms = (option) =>
+  (option && option.platforms ? Array.from(option.platforms) : []).map((x) =>
+    String(x).toLowerCase()
+  );
+
+// Does an option support the chosen deployment goal? "ANY" (server-only) accepts
+// everything; "C"/"EXECUTORCH" require the matching platform declaration.
+const optionMatchesGoal = (option, goal) => {
+  if (!goal || goal === "ANY") return true;
+  const plats = optionPlatforms(option);
+  if (goal === "EXECUTORCH") return plats.includes("executorch");
+  if (goal === "C") return ["c", "cpp", "c-embedded"].some((c) => plats.includes(c));
+  return true;
+};
+
+// Only PRE/CORE steps are export-relevant; EVAL/INFO options are never filtered.
+const stepOptionsForGoal = (step, goal) =>
+  step && ["PRE", "CORE"].includes(step.type)
+    ? step.options.filter((o) => optionMatchesGoal(o, goal))
+    : step
+    ? step.options
+    : [];
+
+// A goal is achievable only if every PRE/CORE step has at least one option for it.
+const goalAchievable = (pipeline, goal) => {
+  if (!pipeline) return false;
+  if (goal === "ANY") return true;
+  return pipeline.steps
+    .filter((s) => ["PRE", "CORE"].includes(s.type))
+    .every((s) => s.options.some((o) => optionMatchesGoal(o, goal)));
+};
 
 // Compute what the whole pipeline can be exported to, from the selected options.
 // Mirrors the backend computeFormats intent: C needs every PRE/CORE step to be
@@ -40,9 +74,9 @@ const computeExportTargets = (steps) => {
   const c =
     core.length > 0 &&
     core.every((s) => asList(s.platforms).some((p) => C_FAMILY.includes(p)));
-  const executorch = steps.some((s) =>
-    s && asList(s.platforms).includes("executorch")
-  );
+  const executorch =
+    core.length > 0 &&
+    core.every((s) => asList(s.platforms).includes("executorch"));
   return { c, executorch };
 };
 
@@ -73,6 +107,8 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
 
   const [selectedPipeline, setSelectedPipeline] = useState(undefined);
   const [selectedPipelineSteps, setSelectedPipelineSteps] = useState(undefined);
+  // Where the model will be deployed: "C" | "EXECUTORCH" | "ANY" (undefined until chosen).
+  const [exportGoal, setExportGoal] = useState(undefined);
 
   // Current state of the wizard
   const [screen, setScreen] = useState(0);
@@ -215,9 +251,23 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   }, [screen, maxSteps, selectedPipeline]);
 
   const onSelectTrainingMethod = (pipeline) => {
+    // Defer initialising the steps until the export goal is chosen, so the
+    // defaults are compatible with that goal.
     setSelectedPipeline(pipeline);
-    const selectedPipelineSteps = pipeline.steps.map((elm) => elm.options[0]);
-    setSelectedPipelineSteps(selectedPipelineSteps);
+    setExportGoal(undefined);
+    setSelectedPipelineSteps(undefined);
+    setScreen(0);
+  };
+
+  const onSelectExportGoal = (goal) => {
+    setExportGoal(goal);
+    setScreen(0);
+    setSelectedPipelineSteps(
+      selectedPipeline.steps.map((step) => {
+        const opts = stepOptionsForGoal(step, goal);
+        return opts[0] || step.options[0];
+      })
+    );
   };
 
   const props = {
@@ -320,7 +370,20 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             onSelectTrainingMethod={onSelectTrainingMethod}
           ></SelectTrainMethod>
         ) : null}
-        {selectedPipeline ? (
+        {selectedPipeline && !exportGoal ? (
+          <SelectExportGoal
+            availableKeys={["EXECUTORCH", "C", "ANY"].filter((k) =>
+              goalAchievable(selectedPipeline, k)
+            )}
+            onSelect={onSelectExportGoal}
+            onBack={() => {
+              setSelectedPipeline(undefined);
+              setExportGoal(undefined);
+              setSelectedPipelineSteps(undefined);
+            }}
+          ></SelectExportGoal>
+        ) : null}
+        {selectedPipeline && exportGoal ? (
           <Fragment>
             {screen === 0 ? (
               <Wizard_SelectLabeling
@@ -346,7 +409,13 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             {screen >= 2 && screen !== maxSteps - 1 ? (
               <Pipelinestep
                 stepNum={screen}
-                step={selectedPipeline.steps[screen - 2]}
+                step={{
+                  ...selectedPipeline.steps[screen - 2],
+                  options: stepOptionsForGoal(
+                    selectedPipeline.steps[screen - 2],
+                    exportGoal
+                  ),
+                }}
                 selectedPipelineStep={selectedPipelineSteps[screen - 2]}
                 setPipelineStep={setPipelineStep}
                 exportTargets={exportTargets}
@@ -403,7 +472,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             </Button>
           ) : null}
         </div>
-        {selectedPipeline && (trainError || currentError) ? (
+        {selectedPipeline && exportGoal && (trainError || currentError) ? (
           <Alert
             color="danger"
             className="my-0 py-2 mx-3 flex-grow-1 text-center"
@@ -411,7 +480,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             {trainError || currentError}
           </Alert>
         ) : null}
-        {selectedPipeline ? (
+        {selectedPipeline && exportGoal ? (
           <div className="d-flex align-items-center">
             <span className="me-3">
               {screen + 1}/{maxSteps}
