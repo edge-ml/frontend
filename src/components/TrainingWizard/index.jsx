@@ -121,6 +121,11 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   const maxSteps = selectedPipeline ? selectedPipeline.steps.length + 3 : 0;
   const onBack = () => {
     setTrainError(undefined);
+    if (screen === 0) {
+      // Back from the first step returns to the "where will this run?" selector.
+      setExportGoal(undefined);
+      return;
+    }
     setScreen(Math.max(screen - 1, 0));
   };
   const onNext = () => {
@@ -466,7 +471,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
       </ModalBody>
       <ModalFooter className="d-flex justify-content-between align-items-center">
         <div>
-          {screen !== 0 ? (
+          {exportGoal ? (
             <Button color="secondary" outline onClick={onBack}>
               Back
             </Button>
