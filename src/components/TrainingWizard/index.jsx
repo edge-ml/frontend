@@ -24,6 +24,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { intersect, toggleElement } from "../../services/helpers";
 import Pipelinestep from "./Pipelinestep";
+import ExportTarget from "../Common/ExportTarget";
+
+// Compute what the whole pipeline can be exported to, from the selected options.
+// Mirrors the backend computeFormats intent: C needs every PRE/CORE step to be
+// C-capable; ExecuTorch needs a PyTorch classifier (the only option that
+// declares it). This is a pre-train hint — the definitive formats are computed
+// server-side at train time and shown in the Download modal.
+const computeExportTargets = (steps) => {
+  if (!steps || !steps.length) return { c: false, executorch: false };
+  const asList = (p) =>
+    (p ? Array.from(p) : []).map((x) => String(x).toLowerCase());
+  const C_FAMILY = ["c", "cpp", "c-embedded"];
+  const core = steps.filter((s) => s && (s.type === "PRE" || s.type === "CORE"));
+  const c =
+    core.length > 0 &&
+    core.every((s) => asList(s.platforms).some((p) => C_FAMILY.includes(p)));
+  const executorch = steps.some((s) =>
+    s && asList(s.platforms).includes("executorch")
+  );
+  return { c, executorch };
+};
 
 const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   // Data obtained from the server
@@ -261,6 +282,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     return undefined;
   };
   const currentError = validateCurrentStep();
+  const exportTargets = computeExportTargets(selectedPipelineSteps);
 
   return (
     <Modal isOpen={isOpen} size="xl">
@@ -327,6 +349,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 step={selectedPipeline.steps[screen - 2]}
                 selectedPipelineStep={selectedPipelineSteps[screen - 2]}
                 setPipelineStep={setPipelineStep}
+                exportTargets={exportTargets}
               ></Pipelinestep>
             ) : null}
             {screen == maxSteps - 1 ? (
@@ -338,6 +361,10 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             ) : null}
             {screen === maxSteps - 1 ? (
               <div className="m-2">
+                <div className="mb-3 d-flex align-items-center">
+                  <b className="me-2">Export target: </b>
+                  <ExportTarget targets={exportTargets} />
+                </div>
                 {preflightLoading ? (
                   <div className="text-muted">
                     Checking your configuration against the data…

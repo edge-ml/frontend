@@ -10,7 +10,7 @@ import {
 } from "reactstrap";
 import { HyperparameterView } from "../Hyperparameters/HyperparameterView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PlatformList from "../Common/PlatformList";
+import ExportTarget from "../Common/ExportTarget";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 const Pipelinestep = ({
@@ -18,6 +18,7 @@ const Pipelinestep = ({
   selectedPipelineStep,
   setPipelineStep,
   stepNum,
+  exportTargets,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -82,13 +83,9 @@ const Pipelinestep = ({
             {selectedPipelineStep.description}
           </div>
           {selectedPipelineStep.type !== "EVAL" && (
-            <div className="my-2">
-              <b>Platforms: </b>
-              <PlatformList
-                platforms={selectedPipelineStep.platforms}
-                size="2rem"
-                color="black"
-              ></PlatformList>
+            <div className="my-2 d-flex align-items-center">
+              <b className="me-2">Pipeline exports to: </b>
+              <ExportTarget targets={exportTargets} />
             </div>
           )}
         </div>
