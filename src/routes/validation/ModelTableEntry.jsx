@@ -8,6 +8,32 @@ import { SelectedModelModalView } from "../../components/SelectedModelModalView/
 import ButtonList from "./ButtonList";
 import DeployModal from "./DeployModal";
 import EditModal from "../../components/EditModal";
+import { deploymentLabel } from "../../components/Common/modelExport";
+
+const DeploymentBadge = ({ model }) => {
+  const label = deploymentLabel(model);
+  const isServerOnly = label === "Server-only";
+  return (
+    <span
+      title={
+        isServerOnly
+          ? "Runs live on the server; not downloadable to a device"
+          : `Downloadable for: ${label}`
+      }
+      style={{
+        display: "inline-block",
+        padding: "0.05rem 0.45rem",
+        borderRadius: "0.5rem",
+        fontSize: "0.72rem",
+        fontWeight: 600,
+        background: isServerOnly ? "#e9ecef" : "#e7f5ec",
+        color: isServerOnly ? "#6c757d" : "#1c7c43",
+      }}
+    >
+      {label}
+    </span>
+  );
+};
 
 const ModelCheckBoxInfo = ({ selectedModels, model, clickCheckBox, onClickEditName }) => (
   <Col>
@@ -21,7 +47,12 @@ const ModelCheckBoxInfo = ({ selectedModels, model, clickCheckBox, onClickEditNa
           <b className="font-size-lg h5 fw-bold me-1">{model.name}</b>
           <FontAwesomeIcon className="cursor-pointer" icon={faPen} onClick={onClickEditName}></FontAwesomeIcon>
         </div>
-        <div>{model.pipeline.selectedPipeline.name}</div>
+        <div className="d-flex align-items-center">
+          <span className="me-2">{model.pipeline.selectedPipeline.name}</span>
+          {model.trainStatus === "done" && !model.error ? (
+            <DeploymentBadge model={model} />
+          ) : null}
+        </div>
       </div>
     </div>
   </Col>

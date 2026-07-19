@@ -9,22 +9,7 @@ import {
 import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useProjectRouter from "../../Hooks/ProjectRouter";
-
-const checkExportC = (model, stepOptions) => {
-  if (!stepOptions) return false;
-  return model.pipeline.selectedPipeline.steps.every((step) => {
-    const stepOption = stepOptions.find(
-      (elm) => elm.name === step.options.name
-    );
-    if (!stepOption) return false;
-    if (!["PRE", "CORE"].includes(stepOption.type)) return true;
-
-    return (
-      ["PRE", "CORE"].includes(stepOption.type) &&
-      stepOption.platforms.includes("C")
-    );
-  });
-};
+import { canDownload, canDeployEmbedded } from "../../components/Common/modelExport";
 
 const ListButton = ({ onClick, icon, children, ...props }) => {
   const onClickStop = (e) => {
@@ -47,10 +32,11 @@ const ButtonList = ({
   setModalModel,
   setModelDownload,
   onDeleteSingleModel,
-  stepOptions,
   setDeployModalOpen
 }) => {
   const navigateTo = useProjectRouter();
+  const deployable = canDeployEmbedded(model);
+  const downloadable = canDownload(model);
 
   return (
     <>
@@ -79,7 +65,12 @@ const ButtonList = ({
             onClick={() => {
               setDeployModalOpen(true);
             }}
-            disabled={!checkExportC(model, stepOptions)}
+            disabled={!deployable}
+            title={
+              deployable
+                ? "Deploy to an embedded device"
+                : "Only models exportable to C can be deployed to embedded devices"
+            }
           >
             Deploy
           </ListButton>
@@ -88,6 +79,12 @@ const ButtonList = ({
             outline
             icon={faDownload}
             onClick={() => setModelDownload(model)}
+            disabled={!downloadable}
+            title={
+              downloadable
+                ? "Download the model"
+                : "This model runs on the server only; there is nothing to download"
+            }
           >
             Download
           </ListButton>
