@@ -73,22 +73,6 @@ const goalAchievable = (pipeline, goal) => {
     .every((s) => s.options.some((o) => optionMatchesGoal(o, goal)));
 };
 
-// Compute what the whole pipeline can be exported to, from the selected options.
-// Mirrors the backend computeFormats intent: C needs every PRE/CORE step to be
-// C-capable; ExecuTorch needs a PyTorch classifier (the only option that
-// declares it). This is a pre-train hint — the definitive formats are computed
-// server-side at train time and shown in the Download modal.
-const computeExportTargets = (steps) => {
-  if (!steps || !steps.length) return { c: false, executorch: false };
-  const core = steps.filter((s) => s && (s.type === "PRE" || s.type === "CORE"));
-  // A pipeline exports to a target only when every export-relevant step does.
-  const c =
-    core.length > 0 && core.every((s) => optionExportTargets(s).c);
-  const executorch =
-    core.length > 0 && core.every((s) => optionExportTargets(s).executorch);
-  return { c, executorch };
-};
-
 const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   // Data obtained from the server
 
@@ -346,7 +330,15 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     return undefined;
   };
   const currentError = validateCurrentStep();
-  const exportTargets = computeExportTargets(selectedPipelineSteps);
+  // The export target is fixed by the chosen deployment goal: option filtering
+  // guarantees every step supports it, so the model will export that way.
+  // Server-only ("ANY") intentionally shows no device export.
+  const exportTargets =
+    exportGoal === "EXECUTORCH"
+      ? { c: false, executorch: true }
+      : exportGoal === "C"
+      ? { c: true, executorch: false }
+      : { c: false, executorch: false };
 
   return (
     <Modal isOpen={isOpen} size="xl">
@@ -445,7 +437,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             {screen === maxSteps - 1 ? (
               <div className="m-2">
                 <div className="mb-3 d-flex align-items-center">
-                  <b className="me-2">Export target: </b>
+                  <b className="me-2">Deployment: </b>
                   <ExportTarget targets={exportTargets} />
                 </div>
                 {preflightLoading ? (

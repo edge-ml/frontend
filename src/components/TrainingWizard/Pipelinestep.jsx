@@ -84,7 +84,7 @@ const Pipelinestep = ({
           </div>
           {selectedPipelineStep.type !== "EVAL" && (
             <div className="my-2 d-flex align-items-center">
-              <b className="me-2">Pipeline exports to: </b>
+              <b className="me-2">Deployment: </b>
               <ExportTarget targets={exportTargets} />
             </div>
           )}
