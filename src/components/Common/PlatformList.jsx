@@ -11,7 +11,9 @@ import C from "./C.svg";
 const C_FAMILY = new Set(["c", "cpp", "c-embedded"]);
 
 const PlatformList = ({ platforms, size, color }) => {
-  const values = (platforms || []).map((p) => String(p).toLowerCase());
+  // Callers pass either an array (pipeline step) or a Set (pipeline picker
+  // aggregates across steps), so coerce before mapping.
+  const values = Array.from(platforms || []).map((p) => String(p).toLowerCase());
   const hasC = values.some((v) => C_FAMILY.has(v));
   const hasExecutorch = values.includes("executorch");
 
