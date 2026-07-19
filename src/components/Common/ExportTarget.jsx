@@ -10,7 +10,7 @@ const ExportTarget = ({ targets, size = "1.6rem" }) => {
   if (!c && !executorch) {
     return (
       <span className="text-muted">
-        Server-only — runs live on the server, not downloadable to a device
+        Runs live on the server — not downloadable to a device
       </span>
     );
   }

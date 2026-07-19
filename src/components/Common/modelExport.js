@@ -12,12 +12,12 @@ export const modelFormats = (model) =>
 export const canDownload = (model) => modelFormats(model).length > 0;
 export const canDeployEmbedded = (model) => modelFormats(model).includes("C");
 
-// Short human label of where the trained model can run.
+// Short human label of where a trained model can be exported, or null when it
+// is not exportable (no badge is shown in that case; Download is disabled).
 export const deploymentLabel = (model) => {
   const f = modelFormats(model);
   const parts = [];
   if (f.includes("EXECUTORCH")) parts.push("Mobile · ExecuTorch");
   if (f.includes("C")) parts.push("Embedded · C");
-  if (!parts.length) return "Server-only";
-  return parts.join(" · ");
+  return parts.length ? parts.join(" · ") : null;
 };

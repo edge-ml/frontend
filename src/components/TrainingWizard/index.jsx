@@ -46,8 +46,8 @@ const optionExportTargets = (option) => {
   };
 };
 
-// Does an option support the chosen deployment goal? "ANY" (server-only) accepts
-// everything; "C"/"EXECUTORCH" require the matching real export capability.
+// Does an option support the chosen deployment goal? "ANY" (export skipped)
+// accepts everything; "C"/"EXECUTORCH" require the matching real export capability.
 const optionMatchesGoal = (option, goal) => {
   if (!goal || goal === "ANY") return true;
   const t = optionExportTargets(option);
@@ -330,15 +330,26 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     return undefined;
   };
   const currentError = validateCurrentStep();
-  // The export target is fixed by the chosen deployment goal: option filtering
-  // guarantees every step supports it, so the model will export that way.
-  // Server-only ("ANY") intentionally shows no device export.
+  // With a chosen export target, option filtering guarantees every step supports
+  // it, so the model will export that way. When the target was skipped ("ANY"),
+  // no filtering happened, so report what the current selections can actually
+  // export (a pipeline exports to a target only if every PRE/CORE step does).
+  const computeSkipTargets = () => {
+    const core = (selectedPipelineSteps || []).filter(
+      (s) => s && (s.type === "PRE" || s.type === "CORE")
+    );
+    return {
+      c: core.length > 0 && core.every((s) => optionExportTargets(s).c),
+      executorch:
+        core.length > 0 && core.every((s) => optionExportTargets(s).executorch),
+    };
+  };
   const exportTargets =
     exportGoal === "EXECUTORCH"
       ? { c: false, executorch: true }
       : exportGoal === "C"
       ? { c: true, executorch: false }
-      : { c: false, executorch: false };
+      : computeSkipTargets();
 
   return (
     <Modal isOpen={isOpen} size="xl">
@@ -378,10 +389,11 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
         ) : null}
         {selectedPipeline && !exportGoal ? (
           <SelectExportGoal
-            availableKeys={["EXECUTORCH", "C", "ANY"].filter((k) =>
+            availableKeys={["EXECUTORCH", "C"].filter((k) =>
               goalAchievable(selectedPipeline, k)
             )}
             onSelect={onSelectExportGoal}
+            onSkip={() => onSelectExportGoal("ANY")}
             onBack={() => {
               setSelectedPipeline(undefined);
               setExportGoal(undefined);

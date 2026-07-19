@@ -12,22 +12,18 @@ import { deploymentLabel } from "../../components/Common/modelExport";
 
 const DeploymentBadge = ({ model }) => {
   const label = deploymentLabel(model);
-  const isServerOnly = label === "Server-only";
+  if (!label) return null; // not exportable — Download is disabled, no badge needed
   return (
     <span
-      title={
-        isServerOnly
-          ? "Runs live on the server; not downloadable to a device"
-          : `Downloadable for: ${label}`
-      }
+      title={`Downloadable for: ${label}`}
       style={{
         display: "inline-block",
         padding: "0.05rem 0.45rem",
         borderRadius: "0.5rem",
         fontSize: "0.72rem",
         fontWeight: 600,
-        background: isServerOnly ? "#e9ecef" : "#e7f5ec",
-        color: isServerOnly ? "#6c757d" : "#1c7c43",
+        background: "#e7f5ec",
+        color: "#1c7c43",
       }}
     >
       {label}
