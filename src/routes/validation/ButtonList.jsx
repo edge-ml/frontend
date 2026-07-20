@@ -50,30 +50,32 @@ const ButtonList = ({
           >
             Info
           </ListButton>
-          <ListButton
-            color="primary"
-            outline
-            icon={faPlay}
-            onClick={() => navigateTo("models/live/" + model._id)}
-          >
-            View live
-          </ListButton>
-          <ListButton
-            color="primary"
-            outline
-            icon={faMicrochip}
-            onClick={() => {
-              setDeployModalOpen(true);
-            }}
-            disabled={!deployable}
-            title={
-              deployable
-                ? "Deploy to an embedded device"
-                : "Only models exportable to C can be deployed to embedded devices"
-            }
-          >
-            Deploy
-          </ListButton>
+          {/* View live and Deploy are embedded-only: they need the model running
+              on a BLE microcontroller, so they only apply to C-deployable models. */}
+          {deployable ? (
+            <>
+              <ListButton
+                color="primary"
+                outline
+                icon={faPlay}
+                onClick={() => navigateTo("models/live/" + model._id)}
+                title="Watch live predictions from a connected embedded device"
+              >
+                View live
+              </ListButton>
+              <ListButton
+                color="primary"
+                outline
+                icon={faMicrochip}
+                onClick={() => {
+                  setDeployModalOpen(true);
+                }}
+                title="Compile and flash the model onto an embedded device"
+              >
+                Deploy
+              </ListButton>
+            </>
+          ) : null}
           <ListButton
             color="primary"
             outline
