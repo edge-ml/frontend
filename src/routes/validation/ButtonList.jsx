@@ -3,12 +3,10 @@ import {
   faTrashAlt,
   faDownload,
   faMicrochip,
-  faPlay,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useProjectRouter from "../../Hooks/ProjectRouter";
 import { canDownload, canDeployEmbedded } from "../../components/Common/modelExport";
 
 const ListButton = ({ onClick, icon, children, ...props }) => {
@@ -34,7 +32,6 @@ const ButtonList = ({
   onDeleteSingleModel,
   setDeployModalOpen
 }) => {
-  const navigateTo = useProjectRouter();
   const deployable = canDeployEmbedded(model);
   const downloadable = canDownload(model);
 
@@ -50,32 +47,22 @@ const ButtonList = ({
           >
             Info
           </ListButton>
-          {/* View live and Deploy are embedded-only: they need the model running
-              on a BLE microcontroller, so they only apply to C-deployable models. */}
+          {/* Deploy temporarily hidden. Embedded-only (flashes the model onto a
+              BLE microcontroller via canDeployEmbedded). Restore when needed.
           {deployable ? (
-            <>
-              <ListButton
-                color="primary"
-                outline
-                icon={faPlay}
-                onClick={() => navigateTo("models/live/" + model._id)}
-                title="Watch live predictions from a connected embedded device"
-              >
-                View live
-              </ListButton>
-              <ListButton
-                color="primary"
-                outline
-                icon={faMicrochip}
-                onClick={() => {
-                  setDeployModalOpen(true);
-                }}
-                title="Compile and flash the model onto an embedded device"
-              >
-                Deploy
-              </ListButton>
-            </>
+            <ListButton
+              color="primary"
+              outline
+              icon={faMicrochip}
+              onClick={() => {
+                setDeployModalOpen(true);
+              }}
+              title="Compile and flash the model onto an embedded device"
+            >
+              Deploy
+            </ListButton>
           ) : null}
+          */}
           <ListButton
             color="primary"
             outline
