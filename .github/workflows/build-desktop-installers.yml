@@ -17,7 +17,7 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            bundle: app
+            bundle: dmg
             artifact_name: macos-dmg
             artifact_path: src-tauri/target/release/bundle/dmg/*.dmg
           - os: windows-latest
@@ -51,20 +51,6 @@ jobs:
 
       - name: Build installer
         run: npm run tauri build -- --bundles ${{ matrix.bundle }}
-
-      - name: Create macOS disk image
-        if: matrix.os == 'macos-latest'
-        shell: bash
-        run: |
-          app_path="$(find src-tauri/target/release/bundle/macos -maxdepth 1 -name '*.app' -print -quit)"
-          version="$(node -p \"require('./src-tauri/tauri.conf.json').version\")"
-          test -n "$app_path"
-          hdiutil create \
-            -volname 'edge-ml Explorer' \
-            -srcfolder "$app_path" \
-            -ov \
-            -format UDZO \
-            "src-tauri/target/release/bundle/dmg/edge-ml-explorer-${version}-macos.dmg"
 
       - name: Upload installer to release
         shell: bash
