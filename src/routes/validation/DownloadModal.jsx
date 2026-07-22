@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+import { Button, Menu, TextInput } from "@mantine/core";
 import {
   Modal,
   ModalFooter,
@@ -22,7 +16,6 @@ import { getProject } from "../../services/LocalStorageService";
 
 const DownloadModal = ({ model, onClose }) => {
   const [language, setLanguage] = useState("cpp");
-  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false); // State for language dropdown
 
   if (!model) {
     return null;
@@ -49,9 +42,8 @@ int main() {
   cout << "Result: " << res << " <==> " << class_to_label(res) << endl;
   return 0;
 }`;
-      // Add cases for other languages here
       default:
-        return ""; // Handle unsupported languages
+        return "";
     }
   };
 
@@ -60,7 +52,7 @@ int main() {
 
     if (code === "") {
       return (
-        <div className="d-flex w-100 justify-content-center align-items-center mh-25 fw-bold">
+        <div style={{ display: "flex", width: "100%", justifyContent: "center", alignItems: "center", fontWeight: 700 }}>
           No sample code available
         </div>
       );
@@ -78,37 +70,32 @@ int main() {
     <Modal isOpen={model} size="xl" onClose={onClose}>
       <ModalHeader>Download: {model.name}</ModalHeader>
       <ModalBody>
-        <div className="d-flex align-items-center justify-content-between">
-          <div className="d-flex align-items-center">
-            <b className="me-2">Language:</b>
-            <Dropdown
-              isOpen={languageDropdownOpen}
-              toggle={() => setLanguageDropdownOpen(!languageDropdownOpen)}
-            >
-              <DropdownToggle outline color="primary" caret>
-                {language.toUpperCase()}
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={() => setLanguage("cpp")}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <b style={{ marginRight: "0.5rem" }}>Language:</b>
+            <Menu>
+              <Menu.Target>
+                <Button variant="outline" color="blue">
+                  {language.toUpperCase()}
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item onClick={() => setLanguage("cpp")}>
                   C++
-                </DropdownItem>
-                {/* <DropdownItem onClick={() => setLanguage("python")}>
-                  Python
-                </DropdownItem> */}
-                {/* Add more language options as DropdownItems */}
-              </DropdownMenu>
-            </Dropdown>
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </div>
-          <Button outline color="primary" onClick={downloadModel}>
+          <Button variant="outline" color="blue" onClick={downloadModel}>
             Download
           </Button>
         </div>
-        <div className="pt-2"></div>
+        <div style={{ paddingTop: "0.5rem" }}></div>
         <hr></hr>
         <CodeSnippet language={language} code={getCode()}></CodeSnippet>
       </ModalBody>
       <ModalFooter>
-        <Button outline onClick={onClose}>Close</Button>
+        <Button variant="outline" onClick={onClose}>Close</Button>
       </ModalFooter>
     </Modal>
   );

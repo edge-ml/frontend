@@ -1,5 +1,5 @@
 import React from "react";
-import { Badge } from "reactstrap";
+import { Badge } from "@mantine/core";
 import "./index.css";
 
 const TSSelectionPanel = (props) => {

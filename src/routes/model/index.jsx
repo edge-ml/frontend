@@ -4,9 +4,7 @@ import Loader from '../../modules/loader';
 import {
   Alert,
   Container,
-  Row,
-  Col,
-} from 'reactstrap';
+} from '@mantine/core';
 import { getLabelings } from '../../services/ApiServices/LabelingServices';
 
 import {
@@ -137,7 +135,7 @@ class ModelPage extends Component {
           customMetaData: customMetaData,
         });
       })
-      .catch((err) => 
+      .catch((err) => {})
   }
 
   handleTrainButton = (e) => {
@@ -244,9 +242,8 @@ class ModelPage extends Component {
         resetAlert();
       })
       .catch((err) => {
-        
         this.setState({
-          alertText: err.data.detail, // breaks if err is undefined
+          alertText: err.data.detail,
           trainSuccess: false,
           requestInProgress: false,
         });
@@ -306,7 +303,6 @@ class ModelPage extends Component {
     if (selectAll) {
       this.setState({ selectedSensorStreams: this.state.sensorStreams });
     } else {
-      // deselect all
       this.setState({ selectedSensorStreams: [] });
     }
   };
@@ -355,7 +351,7 @@ class ModelPage extends Component {
       <Loader loading={!this.state.ready}>
         {this.state.alertText ? (
           <Alert
-            color={this.state.trainSuccess ? 'success' : 'danger'}
+            color={this.state.trainSuccess ? 'green' : 'red'}
             style={{
               marginBottom: 0,
               position: 'fixed',
@@ -369,8 +365,8 @@ class ModelPage extends Component {
           </Alert>
         ) : null}
         <Container>
-          <Row>
-            <Col className="col-12 col-xl-4 mt-4">
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
+            <div style={{ flex: "1 1 100%", maxWidth: "33.33%", marginTop: "1rem" }}>
               <LabelingView
                 labelings={this.state.labelings}
                 selectedLabeling={this.state.selectedLabeling}
@@ -383,8 +379,8 @@ class ModelPage extends Component {
                 selectedLabelsFor={this.state.selectedLabelsFor}
                 changeLabelSelection={this.handleLabelSelection}
               />
-            </Col>
-            <Col className="col-12 col-xl-4 mt-4">
+            </div>
+            <div style={{ flex: "1 1 100%", maxWidth: "33.33%", marginTop: "1rem" }}>
               <TargetSensorsView
                 sensorStreams={this.state.sensorStreams}
                 selectedSensorStreams={this.state.selectedSensorStreams}
@@ -395,8 +391,8 @@ class ModelPage extends Component {
                   this.handleSelectedSensorStreamSelectAll
                 }
               />
-            </Col>
-            <Col className="col-12 col-xl-4 mt-4">
+            </div>
+            <div style={{ flex: "1 1 100%", maxWidth: "33.33%", marginTop: "1rem" }}>
               <ValidationMethodsView
                 testSplit={this.state.testSplit}
                 onTestSplitChange={this.handleTestSplitChange}
@@ -409,8 +405,8 @@ class ModelPage extends Component {
                 validationMethods={this.state.validationMethods}
                 validationMethodOptions={this.state.validationMethodOptions}
               />
-            </Col>
-            <Col className="col-12 mt-4">
+            </div>
+            <div style={{ flex: "1 1 100%", marginTop: "1rem" }}>
               <ClassifierView
                 models={this.state.models}
                 modelSelection={this.state.modelSelection}
@@ -426,8 +422,8 @@ class ModelPage extends Component {
                 toggleShowAdvanced={this.toggleShowAdvanced}
                 requestInProgress={this.state.requestInProgress}
               />
-            </Col>
-          </Row>
+            </div>
+          </div>
         </Container>
       </Loader>
     );

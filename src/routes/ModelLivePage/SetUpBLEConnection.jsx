@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Button, TextInput } from "@mantine/core";
 import ClassificationDevice from "./ClassificationDevice";
 import { useState } from "react";
 
@@ -46,38 +46,35 @@ const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
   };
 
   return (
-    <div className="w-100 h-100 d-flex justify-content-center">
-      <div className="m-5 w-100 d-flex justify-content-center align-items-center flex-column">
-        <div className="w-75 m-5 d-flex flex-column align-items-center">
-          <h5 className="fw-bold">1. Select the correct UUIDs</h5>
-          <InputGroup>
-            <InputGroupText>Service UUID</InputGroupText>
-            <Input
-              onChange={(e) => set_classification_service_uuid(e.target.value)}
-              value={classification_service_uuid}
-              placeholder={classification_service_uuid}
-            />
-          </InputGroup>
-          <InputGroup>
-            <InputGroupText>Characteristic UUID</InputGroupText>
-            <Input
-              onChange={(e) =>
-                set_classification_characteristics_uuid(e.target.value)
-              }
-              value={classification_characteristics_uuid}
-              placeholder={CLASSIFICATION_CHARACTERISTICS_UUID_DEFAULT}
-            />
-          </InputGroup>
+    <div style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center" }}>
+      <div style={{ margin: "3rem", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+        <div style={{ width: "75%", margin: "3rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <h5 style={{ fontWeight: 700 }}>1. Select the correct UUIDs</h5>
+          <TextInput
+            label="Service UUID"
+            onChange={(e) => set_classification_service_uuid(e.target.value)}
+            value={classification_service_uuid}
+            placeholder={classification_service_uuid}
+            style={{ width: "100%" }}
+          />
+          <TextInput
+            label="Characteristic UUID"
+            onChange={(e) =>
+              set_classification_characteristics_uuid(e.target.value)
+            }
+            value={classification_characteristics_uuid}
+            placeholder={CLASSIFICATION_CHARACTERISTICS_UUID_DEFAULT}
+            style={{ width: "100%" }}
+          />
         </div>
-        <h5 className="m-5 fw-bold">
+        <h5 style={{ margin: "3rem", fontWeight: 700 }}>
           2. Make sure your MCU is equipped with the model <b>{model.name}</b>
         </h5>
-        <div className="m-5 d-flex flex-column align-items-center">
-          <h5 className="fw-bold">3. Connect your MCU over BLE here:</h5>
+        <div style={{ margin: "3rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <h5 style={{ fontWeight: 700 }}>3. Connect your MCU over BLE here:</h5>
           <Button
-            outline
-            color="primary"
-            className="btn-neutral"
+            variant="outline"
+            color="blue"
             size="lg"
             onClick={onClickConnect}
           >

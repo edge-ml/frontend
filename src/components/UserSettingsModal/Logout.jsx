@@ -1,8 +1,5 @@
 import React, { Component } from "react";
-import { Button } from "reactstrap";
-
-import { validateEmail } from "./../../services/helpers";
-import { changeUserMail } from "./../../services/ApiServices/AuthentificationServices";
+import { Button } from "@mantine/core";
 
 class Logout extends Component {
   constructor(props) {
@@ -12,9 +9,9 @@ class Logout extends Component {
 
   render() {
     return (
-      <div className="d-flex flex-column align-items-start">
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
         <small>Click here to logout now.</small>
-        <Button className="btn-danger mt-1" onClick={this.props.onLogout}>
+        <Button color="red" style={{ marginTop: "0.25rem" }} onClick={this.props.onLogout}>
           Logout
         </Button>
       </div>

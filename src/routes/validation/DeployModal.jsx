@@ -1,18 +1,11 @@
 import React, { useEffect, useState, useMemo } from "react";
 import {
   Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
   Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown,
+  Menu,
   Progress,
-  Spinner,
-} from "reactstrap";
+  Loader,
+} from "@mantine/core";
 import {
   getDeployDevices,
   deployModel,
@@ -35,7 +28,7 @@ const DeployModal = ({isOpen, model, onClose }) => {
   const [selectedSensors, setSelectedSensors] = useState(undefined);
   const [compiledModel, setComiledModel] = useState(undefined);
   const [page, setPage] = useState(0);
-  const [flashState, setFlashState] = useState("start"); //start, connected, modelDownload, uploading, finished
+  const [flashState, setFlashState] = useState("start");
   const [flashError, setFlashError] = useState(undefined);
   const [flashProgress, setFlashProgress] = useState(0);
   const [connectedDevice, setConnectedDevice] = useState(undefined);
@@ -89,7 +82,6 @@ const DeployModal = ({isOpen, model, onClose }) => {
 
   useEffect(() => {
     return () => {
-      // Component will unmount
       if (connectedDevice) {
         dfuManager.disconnectDevice(connectedDevice);
       }
@@ -152,10 +144,6 @@ const DeployModal = ({isOpen, model, onClose }) => {
   const onDeploy = async () => {
     setFlashState("modelDownload");
 
-    // const a_settings = {};
-
-    // a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
-
     const res = await deployModel(
       model._id,
       selectedSensors,
@@ -163,10 +151,6 @@ const DeployModal = ({isOpen, model, onClose }) => {
       selectedDevice,
       deployFeatures
     );
-    /**const buffer = new ArrayBuffer(10000);
-    const view = new Uint8Array(buffer);
-
-    view.fill(0); // Fill the ArrayBuffer with zeroes */
 
     setComiledModel(res);
   };
@@ -180,9 +164,6 @@ const DeployModal = ({isOpen, model, onClose }) => {
   };
 
   const onDownloadFirmware = async () => {
-    // const a_settings = {};
-    // a_settings['ble'] = useBLE ? additionalSettings['ble'] : undefined;
-
     const res = await downloadFirmware(
       model._id,
       selectedSensors,
@@ -224,11 +205,11 @@ const DeployModal = ({isOpen, model, onClose }) => {
                 "No device connected"
               )}
             </div>
-            <div className="d-flex flex-row">
+            <div style={{ display: "flex", flexDirection: "row" }}>
               <div>{renderProgressInfo()}</div>
               {inProgress() ? (
                 <div>
-                  <Spinner color="dark" size="sm" />
+                  <Loader size="sm" color="dark" />
                 </div>
               ) : null}
             </div>
@@ -240,19 +221,19 @@ const DeployModal = ({isOpen, model, onClose }) => {
           {selectedDevice.ota_update ? (
             <>
               <Button
-                outline
+                variant="outline"
                 disabled={inProgress()}
-                className="m-2"
-                color={connectedDevice ? "danger" : "primary"}
+                style={{ margin: "0.5rem" }}
+                color={connectedDevice ? "red" : "blue"}
                 onClick={connectedDevice ? disconnectBLE : connectBLE}
               >
                 {connectedDevice ? "Disconnect device" : "Connect device"}
               </Button>
               <Button
-                color="primary"
-                outline
+                color="blue"
+                variant="outline"
                 disabled={connectedDevice === undefined || inProgress()}
-                className="m-2"
+                style={{ margin: "0.5rem" }}
                 onClick={onDeploy}
               >
                 Flash firmware
@@ -260,25 +241,25 @@ const DeployModal = ({isOpen, model, onClose }) => {
             </>
           ) : null}
           <Button
-            color="primary"
-            outline
+            color="blue"
+            variant="outline"
             disabled={inProgress()}
-            className="m-2"
+            style={{ margin: "0.5rem" }}
             onClick={onDownloadFirmware}
           >
             Download firmware
           </Button>
         </div>
         {inProgress() ? (
-          <div className="text-danger">
+          <div style={{ color: "red" }}>
             Please do not leave this page or disconnect the device, while the
             flashing is in progress.
           </div>
         ) : null}
         {selectedDevice.ota_update ? (
-          <div className="mt-3">
+          <div style={{ marginTop: "1rem" }}>
             <Progress
-              color={flashState === "uploadFinished" ? "primary" : "success"}
+              color={flashState === "uploadFinished" ? "blue" : "green"}
               value={flashProgress}
             />
           </div>
@@ -306,74 +287,71 @@ const DeployModal = ({isOpen, model, onClose }) => {
 
   return (
     <Modal isOpen={isOpen} size="xl">
-      <ModalHeader>Generate firmware: {model.name}</ModalHeader>
-      <ModalBody>
+      <Modal.Header>
+        <Modal.Title>Generate firmware: {model.name}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
         {page === 0 ? (
           <div>
-            <div className="d-flex justify-content-start align-items-center">
-              <h5 className="fw-bold m-0 me-2">1. Select Device: </h5>
-              <Dropdown
-                isOpen={deviceDropDownOpen}
-                toggle={toggleDeviceDropDown}
-              >
-                <DropdownToggle caret outline color="primary" size="lg">
-                  {selectedDevice.name}
-                </DropdownToggle>
-                <DropdownMenu>
+            <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
+              <h5 style={{ fontWeight: 700, margin: 0, marginRight: "0.5rem" }}>1. Select Device: </h5>
+              <Menu>
+                <Menu.Target>
+                  <Button variant="outline" color="blue" size="lg">
+                    {selectedDevice.name}
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
                   {devices.map((device, idx) => (
-                    <DropdownItem key={"devicekey" + idx} onClick={() => onClickSelectDevice(device)}>
+                    <Menu.Item key={"devicekey" + idx} onClick={() => onClickSelectDevice(device)}>
                       {device.name}
-                    </DropdownItem>
+                    </Menu.Item>
                   ))}
-                </DropdownMenu>
-              </Dropdown>
+                </Menu.Dropdown>
+              </Menu>
             </div>
             <hr></hr>
-            <h5 className="fw-bold">2. Configure Device:</h5>
-            <div className="d-flex">
-              <div className="my-4 ms-2 me-4" style={{ width: "500px" }}>
-                <div className="header-wrapper d-flex justify-content-center align-content-center">
+            <h5 style={{ fontWeight: 700 }}>2. Configure Device:</h5>
+            <div style={{ display: "flex" }}>
+              <div style={{ margin: "1rem 1rem 1rem 0.5rem", width: "500px" }}>
+                <div style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
                   <b>Configure TimeSeries</b>
                 </div>
                 <div className="body-wrapper-overflow">
                   {model.timeSeries.map((elm, ts_idx) => (
                     <div
                       key={"tskey" + ts_idx}
-                      className="datasetCard p-2"
+                      className="datasetCard"
                       style={{
+                        padding: "0.5rem",
                         background:
                           ts_idx % 2 === 1 ? "rgb(249, 251, 252)" : "",
                       }}
                     >
-                      <div className="d-flex align-items-center justify-content-between">
-                        <strong className="ps-2">{elm}</strong>
-                        <UncontrolledDropdown
-                          direction="left"
-                          style={{ position: "relative" }}
-                        >
-                          <DropdownToggle
-                            caret
-                            outline
-                            color="primary"
-                            size="sm"
-                          >
-                            {selectedSensors[ts_idx].sensor_id !== undefined
-                              ? selectedDevice.sensors[
-                                  selectedSensors[ts_idx].sensor_id
-                                ].name +
-                                "_" +
-                                selectedDevice.sensors[
-                                  selectedSensors[ts_idx].sensor_id
-                                ].components[
-                                  selectedSensors[ts_idx].component_id
-                                ].name
-                              : "Unset"}
-                          </DropdownToggle>
-                          <DropdownMenu>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <strong style={{ paddingLeft: "0.5rem" }}>{elm}</strong>
+                        <Menu>
+                          <Menu.Target>
+                            <Button variant="outline" color="blue" size="sm">
+                              {selectedSensors[ts_idx].sensor_id !== undefined
+                                ? selectedDevice.sensors[
+                                    selectedSensors[ts_idx].sensor_id
+                                  ].name +
+                                  "_" +
+                                  selectedDevice.sensors[
+                                    selectedSensors[ts_idx].sensor_id
+                                  ].components[
+                                    selectedSensors[ts_idx].component_id
+                                  ].name
+                                : "Unset"}
+                            </Button>
+                          </Menu.Target>
+                          <Menu.Dropdown>
                             {selectedDevice.sensors.map((sensor, sensor_idx) =>
                               sensor.components.map(
                                 (component, component_idx) => (
-                                  <DropdownItem
+                                  <Menu.Item
+                                    key={`${sensor_idx}_${component_idx}`}
                                     onClick={() =>
                                       selectSensor(
                                         ts_idx,
@@ -383,12 +361,12 @@ const DeployModal = ({isOpen, model, onClose }) => {
                                     }
                                   >
                                     {sensor.name + "_" + component.name}
-                                  </DropdownItem>
+                                  </Menu.Item>
                                 )
                               )
                             )}
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
+                          </Menu.Dropdown>
+                        </Menu>
                       </div>
                     </div>
                   ))}
@@ -400,8 +378,8 @@ const DeployModal = ({isOpen, model, onClose }) => {
               ></DeployFeatures>
             </div>
             <hr></hr>
-            <div className="m-2">
-              <h5 className="fw-bold">3. Additional Settings:</h5>
+            <div style={{ margin: "0.5rem" }}>
+              <h5 style={{ fontWeight: 700 }}>3. Additional Settings:</h5>
               <HyperparameterView
                 hyperparameters={parameters}
                 isAdvanced={false}
@@ -409,28 +387,25 @@ const DeployModal = ({isOpen, model, onClose }) => {
               ></HyperparameterView>
             </div>
             {flashError ? (
-              <div className="d-flex flex-row ms-2">
+              <div style={{ display: "flex", flexDirection: "row", marginLeft: "0.5rem" }}>
                 <div>
                   <FontAwesomeIcon icon={faCircleExclamation} color="red" />
                 </div>
-                <div className="text-danger">
+                <div style={{ color: "red" }}>
                   An error occured while flashing the model onto the device.
                 </div>
               </div>
             ) : null}
-            <div className="w-100 d-flex flex-row">
-              <div className="text-danger flex-grow-1">
+            <div style={{ width: "100%", display: "flex", flexDirection: "row" }}>
+              <div style={{ color: "red", flexGrow: 1 }}>
                 {showSelectAllSensorWarning
                   ? "Please configure all time series under configure time series before deploying."
                   : ""}
               </div>
               <div>
-                {/* <Button outline color="primary" onClick={onSwitchPage}>
-                  Deploy
-                </Button> */}
                 <Button
-                  outline
-                  color="primary"
+                  variant="outline"
+                  color="blue"
                   onClick={checkAndDownloadFirmware}
                 >
                   Download firmware
@@ -439,19 +414,19 @@ const DeployModal = ({isOpen, model, onClose }) => {
             </div>
           </div>
         ) : (
-          <div className="w-100 h-100">{renderDeployPart()}</div>
+          <div style={{ width: "100%", height: "100%" }}>{renderDeployPart()}</div>
         )}
-      </ModalBody>
-      <ModalFooter>
+      </Modal.Body>
+      <Modal.Footer>
         {page == 1 ? (
-          <Button outline color="primary" onClick={onGoBack}>
+          <Button variant="outline" color="blue" onClick={onGoBack}>
             Back
           </Button>
         ) : null}
-        <Button onClick={onClose} outline color="danger">
+        <Button onClick={onClose} variant="outline" color="red">
           Cancel
         </Button>
-      </ModalFooter>
+      </Modal.Footer>
     </Modal>
   );
 };

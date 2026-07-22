@@ -1,13 +1,5 @@
 import React, { useState, Fragment } from "react";
-import {
-  ModalBody,
-  Button,
-  ModalFooter,
-  Dropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
-} from "reactstrap";
+import { Menu, Button } from "@mantine/core";
 
 const Select_Normalizer = ({
   onBack,
@@ -16,35 +8,34 @@ const Select_Normalizer = ({
   setNormalizer,
   footer,
 }) => {
-  const [dropDownOpen, setDropDownOpen] = useState(false);
   const [selectedNormalizer, setSelectedNormalizer] = useState(0);
 
   if (!normalizer.length) {
-    return;
+    return null;
   }
   return (
     <Fragment>
-      <h3 className="fw-bold">6. Select Normalization</h3>
-      <Dropdown
-        isOpen={dropDownOpen}
-        toggle={() => setDropDownOpen(!dropDownOpen)}
-      >
-        <DropdownToggle caret size="lg">
-          {normalizer[selectedNormalizer].name}
-        </DropdownToggle>
-        <DropdownMenu>
+      <h3 style={{ fontWeight: 700 }}>6. Select Normalization</h3>
+      <Menu>
+        <Menu.Target>
+          <Button size="lg">
+            {normalizer[selectedNormalizer].name}
+          </Button>
+        </Menu.Target>
+        <Menu.Dropdown>
           {normalizer.map((n, idx) => (
-            <DropdownItem
+            <Menu.Item
+              key={n.name}
               onClick={() => {
                 setSelectedNormalizer(idx);
                 setNormalizer(normalizer[idx]);
               }}
             >
               {n.name}
-            </DropdownItem>
+            </Menu.Item>
           ))}
-        </DropdownMenu>
-      </Dropdown>
+        </Menu.Dropdown>
+      </Menu>
     </Fragment>
   );
 };

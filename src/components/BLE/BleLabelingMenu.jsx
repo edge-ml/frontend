@@ -1,15 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  DropdownToggle,
-  Badge,
-  Label,
-} from "reactstrap";
+import React, { useState } from "react";
+import { Card, Menu, Button, Badge } from "@mantine/core";
 import LabelBadge from "../Common/LabelBadge";
 
 export const BleLabelingMenu = ({
@@ -18,35 +8,28 @@ export const BleLabelingMenu = ({
   handleSelectLabeling,
   shortcutKeys,
 }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const toggleDropdown = () => {
-    setDropdownOpen((prev) => !prev);
-  };
 
   return (
-    <div className="m-2">
+    <div style={{ margin: "0.5rem" }}>
       <div className="header-wrapper d-flex justify-content-between align-content-center ">
         <h4>4. Labelings</h4>
-        <Dropdown
-          isOpen={dropdownOpen}
-          toggle={toggleDropdown}
-          className="position-relative p-0"
-        >
-          <DropdownToggle outline color="primary" caret>
-            Labelings
-          </DropdownToggle>
-          <DropdownMenu>
-            {/* <DropdownItem header>Labelings</DropdownItem> */}
+        <Menu>
+          <Menu.Target>
+            <Button variant="outline" color="blue">
+              Labelings
+            </Button>
+          </Menu.Target>
+          <Menu.Dropdown>
             {labelings.map((labeling) => (
-              <DropdownItem
+              <Menu.Item
                 key={labeling.name}
                 onClick={(e) => handleSelectLabeling(labeling)}
               >
                 {labeling.name}
-              </DropdownItem>
+              </Menu.Item>
             ))}
-          </DropdownMenu>
-        </Dropdown>
+          </Menu.Dropdown>
+        </Menu>
       </div>
       <div className="body-wrapper p-3 d-flex flex-column">
         {selectedLabeling ? <h5>Labels in {selectedLabeling.name}:</h5> : null}

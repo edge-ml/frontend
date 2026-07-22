@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Input } from "reactstrap";
+import { TextInput } from "@mantine/core";
 import { betterModulo } from "../../services/helpers";
 
 import "./AutocompleteInput.css";
@@ -32,7 +32,7 @@ class AutocompleteInput extends Component {
             newData = data.filter((elm) => !this.props.filter.includes(elm));
           }
           this.setState({
-            suggestions: newData.slice(0, 5), // Show top 5 results
+            suggestions: newData.slice(0, 5),
           });
           this.openMenu();
         })
@@ -112,13 +112,13 @@ class AutocompleteInput extends Component {
     const inputProps = { ...this.props, getsuggestions: undefined };
     return (
       <div className="autocomplete-wrapper flex-grow-1">
-        <Input
+        <TextInput
           id="autoCompleteInput"
           {...inputProps}
           autoComplete="off"
           onChange={this.onInputChange}
           onClick={(e) => e.preventDefault()}
-        ></Input>
+        />
         {this.state.menuOpen ? (
           <div className="autocomplete-menu" id="autocomplete-menu">
             {this.state.suggestions.map((item, index) => {

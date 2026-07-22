@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import Checkbox from "../../Common/Checkbox";
 import classNames from "classnames";
-import { Badge, Table, Row, Col } from "reactstrap";
+import { Badge, Table } from "@mantine/core";
 import { humanDuration, intersect } from "../../../services/helpers";
 import {
   EdgeMLTable,
@@ -29,15 +29,6 @@ const Wizard_SelectDataset = ({
         .length <= 0
     );
   };
-
-  // useEffect(() => {
-  //   validateInput();
-  // }, [datasets])
-
-  // useEffect(() => {
-  //
-  //   validateInput();
-  // },[])
 
   const validateInput = () => {
     validate(selectedLabeling);
@@ -105,13 +96,13 @@ const Wizard_SelectDataset = ({
     .filter((elm) => !checkUsable(elm))
     .every((elm) => elm.selected);
   return (
-    <div className="p-2">
-      <h3 className="fw-bold">2. Select datasets</h3>
-      <Row className="mx-0">
-        <Col>
+    <div style={{ padding: "0.5rem" }}>
+      <h3 style={{ fontWeight: 700 }}>2. Select datasets</h3>
+      <div style={{ display: "flex", flexWrap: "wrap", margin: "0 -0.75rem" }}>
+        <div style={{ flex: 1, padding: "0 0.75rem" }}>
           <EdgeMLTable>
             <EdgeMLTableHeader>
-              <div className="d-flex">
+              <div style={{ display: "flex" }}>
                 <Checkbox
                   isSelected={selectedAllActive}
                   onClick={() =>
@@ -120,8 +111,8 @@ const Wizard_SelectDataset = ({
                       !selectedAllActive
                     )
                   }
-                ></Checkbox>
-                <div className="ms-2 align-self-center">Select all</div>
+                />
+                <div style={{ marginLeft: "0.5rem", alignSelf: "center" }}>Select all</div>
               </div>
             </EdgeMLTableHeader>
             {datasets
@@ -129,63 +120,67 @@ const Wizard_SelectDataset = ({
               .map((dataset) => {
                 return (
                   <EdgeMLTableEntry
+                    key={dataset._id}
                     className={classNames("datasetRow", {
                       disabled: checkUsable(dataset),
                     })}
                   >
-                    <div className="d-flex me-2">
+                    <div style={{ display: "flex", marginRight: "0.5rem" }}>
                       <Checkbox
                         isSelected={dataset.selected}
                         onClick={() => toggleSelectDataset(dataset._id)}
-                      ></Checkbox>
+                      />
                     </div>
                     <div className="datasetName">{dataset.name}</div>
                   </EdgeMLTableEntry>
                 );
               })}
           </EdgeMLTable>
-        </Col>
-        <Col className="pt-3">
+        </div>
+        <div style={{ flex: 1, padding: "0.75rem 0.75rem 0" }}>
           {datasets.filter((elm) => elm.selected).length ? (
             <Fragment>
-              <h5 className="fw-bold">Selected Timeseries</h5>
+              <h5 style={{ fontWeight: 700 }}>Selected Timeseries</h5>
               <div style={{ overflow: "auto" }}>
                 {intersectingTSNames.length > 0 ? (
                   intersectingTSNames.map((tsNameObj) => (
                     <Badge
+                      key={tsNameObj.name}
                       onClick={() => toggleDisableTimeseries(tsNameObj.name)}
                       style={{
                         ...(tsNameObj.disabled
                           ? { textDecoration: "line-through" }
                           : {}),
                         userSelect: "none",
+                        cursor: "pointer",
                       }}
-                      {...(tsNameObj.disabled
-                        ? { color: "light" }
-                        : { color: "primary" })}
+                      variant={tsNameObj.disabled ? "outline" : "filled"}
+                      color="blue"
                     >
                       {`${tsNameObj.name}`}
                     </Badge>
                   ))
                 ) : (
-                  <div className="my-2">
+                  <div style={{ margin: "0.5rem 0" }}>
                     Selected datasets do not have any timeseries in common.
                   </div>
                 )}
                 {intersectingTSNames.length !==
                 selectedDatasetTimeseriesNames.length ? (
                   <Fragment>
-                    <div className="my-2">
+                    <div style={{ margin: "0.5rem 0" }}>
                       Following timeseries were filtered because they are
                       missing from at least one dataset.
                     </div>
                     {nonintersectingTSNames.map((tsNameObj) => (
                       <Badge
+                        key={tsNameObj.name}
                         style={{
                           textDecoration: "line-through",
                           userSelect: "none",
                         }}
-                        color="light"
+                        variant="outline"
+                        color="gray"
                       >
                         {`${tsNameObj.name}`}
                       </Badge>
@@ -193,47 +188,47 @@ const Wizard_SelectDataset = ({
                   </Fragment>
                 ) : null}
               </div>
-              <div className="my-2">
+              <div style={{ margin: "0.5rem 0" }}>
                 For training, all time-series will be downsampled to{" "}
                 {Math.round(1000 / minSamplingRate)} Hz
               </div>
-              <h5 className="fw-bold mt-4">Covered Labels</h5>
-              <Table size="sm" borderless style={{ width: "unset" }}>
-                <thead>
-                  <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Count</th>
-                    <th scope="col">Duration</th>
-                  </tr>
-                </thead>
-                <tbody>
+              <h5 style={{ fontWeight: 700, marginTop: "1rem" }}>Covered Labels</h5>
+              <Table size="sm" style={{ width: "auto" }}>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th></Table.Th>
+                    <Table.Th>Count</Table.Th>
+                    <Table.Th>Duration</Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
                   {selectedLabeling.labels
                     .filter(
                       (l) => !selectedLabeling.disabledLabels.includes(l._id)
                     )
                     .map((label) => (
-                      <tr>
-                        <th scope="row">
+                      <Table.Tr key={label._id}>
+                        <Table.Th>
                           <LabelBadge className="badge" color={label.color}>
                             {label.name}
                           </LabelBadge>
-                        </th>
-                        <td className="align-middle">
+                        </Table.Th>
+                        <Table.Td className="align-middle">
                           {coveredLabels[label._id]?.count ?? 0}
-                        </td>
-                        <td>
+                        </Table.Td>
+                        <Table.Td>
                           {humanDuration(
                             coveredLabels[label._id]?.duration ?? 0
                           )}
-                        </td>
-                      </tr>
+                        </Table.Td>
+                      </Table.Tr>
                     ))}
-                </tbody>
+                </Table.Tbody>
               </Table>
             </Fragment>
           ) : null}
-        </Col>
-      </Row>
+        </div>
+      </div>
     </div>
   );
 };

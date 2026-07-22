@@ -1,6 +1,6 @@
 import React from "react";
 import SpinnerButton from "../Common/SpinnerButton";
-import { Button } from "reactstrap";
+import { Button } from "@mantine/core";
 
 const getInfoText = (props) => {
   if (!props.connectedBLEDevice) {
@@ -35,7 +35,7 @@ const getInfoText = (props) => {
       return (
         <div>
           {renderDeviceName(props)}
-          <div className="text-danger">
+          <div style={{ color: "red" }}>
             This device does not have the edge-ml firmware installed. Please
             install via the guide
           </div>
@@ -85,7 +85,7 @@ const getButtonView = (props) => {
   ) {
     return (
       <div>
-        <Button outline color="primary" onClick={props.toggleDFUModal}>
+        <Button variant="outline" color="blue" onClick={props.toggleDFUModal}>
           Flash edge-ml firmware
         </Button>
       </div>
@@ -101,7 +101,7 @@ function BlePanelConnectDevice(props) {
         <h4>1. Device</h4>
       </div>
       <div className="body-wrapper p-2">
-        <small className="text-danger">
+        <small style={{ color: "red" }}>
           <strong>Warning: </strong>
           If your device can not be found, try to turn bluetooth off and on
           again in your settings.

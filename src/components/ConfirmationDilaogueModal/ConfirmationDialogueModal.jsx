@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from "reactstrap";
+import { Modal, Button } from "@mantine/core";
 import "./ConfirmationDialogueModal.css";
 
 class ConfirmationDialogueModal extends Component {
@@ -15,7 +15,6 @@ class ConfirmationDialogueModal extends Component {
     document.addEventListener("keydown", this.onKeyPressed, false);
   }
 
-  //important that this is called when modal is not shown! Modal has to be rendered conditionally.
   componentWillUnmount() {
     document.removeEventListener("keydown", this.onKeyPressed, false);
   }
@@ -35,35 +34,33 @@ class ConfirmationDialogueModal extends Component {
     return (
       <div>
         <Modal
-          isOpen={this.props.isOpen}
-          className="modal-body-scrollable modal-l"
+          opened={this.props.isOpen}
+          onClose={this.props.onCancel}
+          title={this.props.title}
         >
-          <ModalHeader>{this.props.title}</ModalHeader>
-          <ModalBody className="modal-scrollableBody">
-            <div style={{ whiteSpace: "pre-wrap" }}>
-              {this.props.confirmString}
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <div className="d-flex flex-row justify-content-end">
+          <Modal.Body style={{ whiteSpace: "pre-wrap" }}>
+            {this.props.confirmString}
+          </Modal.Body>
+          <Modal.Footer>
+            <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
               <Button
-                outline
-                color="danger"
-                className="m-1"
+                variant="outline"
+                color="red"
+                style={{ margin: "0.25rem" }}
                 onClick={this.props.onConfirm}
               >
                 Confirm
               </Button>
               <Button
-                outline
-                color="secondary"
-                className="m-1 me-auto"
+                variant="outline"
+                color="gray"
+                style={{ margin: "0.25rem" }}
                 onClick={this.props.onCancel}
               >
                 Cancel
               </Button>
             </div>
-          </ModalFooter>
+          </Modal.Footer>
         </Modal>
       </div>
     );

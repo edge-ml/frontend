@@ -5,7 +5,7 @@ import "prismjs/components/prism-java";
 import "prismjs/components/prism-c";
 import "prismjs/components/prism-cpp";
 import "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard";
-import { Button } from "reactstrap";
+import { Button } from "@mantine/core";
 
 const CodeView = ({ language, code }) => {
   useEffect(() => {
@@ -23,7 +23,7 @@ const CodeView = ({ language, code }) => {
           {code}
         </code>
       </pre>
-      <Button outline color="primary" onClick={() => onCopytoClipBoard()}>
+      <Button variant="outline" color="blue" onClick={() => onCopytoClipBoard()}>
         Copy Code
       </Button>
     </div>

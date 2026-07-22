@@ -7,17 +7,15 @@ import "./index.css";
 import useLabelings from "../../Hooks/useLabelings";
 import DatasetTable from "./DatasetTable";
 import DataUpload from "./DataUpload";
-import useDatasets from "../../Hooks/useDatasets";
 import usePaginatedDatasets from "../../Hooks/usePaginatedDatasets";
-import { Pagination } from "reactstrap";
 import PageSelection from "./PageSelection";
 import DeleteModal from "../../components/Common/DeleteModal";
 
-const ListPage = (props) => {
+const ListPage = () => {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
   const [pageSize, setPageSize] = useState(5);
   const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState(undefined); //name and display value of filter
+  const [selectedFilter, setSelectedFilter] = useState(undefined);
   const { registerProjectDownload } = useContext(NotificationContext);
   const [deleteSelected, setDeleteSelected] = useState([]);
 
@@ -32,7 +30,7 @@ const ListPage = (props) => {
     setSorting,
     updateDataset,
     deleteDatasets,
-  } = usePaginatedDatasets(1);
+  } = usePaginatedDatasets(pageSize);
 
   const deleteSelectedDatasets = () => {
     deleteDatasets(deleteSelected);
@@ -40,7 +38,6 @@ const ListPage = (props) => {
   };
 
   const deleteEntry = (datasetId) => {
-    console.log(datasetId);
     setDeleteSelected([datasetId]);
   };
 
@@ -65,32 +62,26 @@ const ListPage = (props) => {
   };
 
   const toggleCheck = (e, datasetId) => {
-    const checked = selectedDatasets.includes(datasetId);
-    if (!checked) {
-      if (!selectedDatasets.includes(datasetId)) {
-        setSelectedDatasets([...selectedDatasets, datasetId]);
-      }
-    } else {
-      setSelectedDatasets(selectedDatasets.filter((id) => id !== datasetId));
-    }
+    setSelectedDatasets((prev) =>
+      prev.includes(datasetId)
+        ? prev.filter((id) => id !== datasetId)
+        : [...prev, datasetId]
+    );
   };
 
   const downloadAllDatasets = async () => {
     registerProjectDownload();
   };
 
-  const toggleCreateNewDatasetModal = () => {};
-
   if (!datasets || !labelings) {
-    return <Loader loading={true}></Loader>;
+    return <Loader loading />;
   }
 
   return (
     <div id="dataList" className="d-flex flex-column h-100">
       <DataUpload
-        toggleCreateNewDatasetModal={toggleCreateNewDatasetModal}
         refreshDatasets={refreshDatasets}
-      ></DataUpload>
+      />
       <DatasetTable
         datasets={datasets}
         selectedDatasets={selectedDatasets}
@@ -102,20 +93,18 @@ const ListPage = (props) => {
         deleteEntry={deleteEntry}
         selectAll={selectAll}
         deselectAll={deselectAll}
-        sortDropDownIsOpen={sortDropDownIsOpen}
-        setSortDropdownIsOpen={setSortDropdownIsOpen}
         selectedSorting={sorting}
         setSelectedSorting={setSorting}
         selectedFilter={selectedFilter}
         updateDataset={updateDataset}
-      ></DatasetTable>
-      <div className="d-flex justify-content-center">
-        {datasets && datasets.length > 0 && (
+      />
+      <div className="d-flex justify-content-center mt-3">
+        {datasets?.length > 0 && (
           <PageSelection
             currentPage={page}
             setPage={setPage}
             totalPages={totalPages}
-          ></PageSelection>
+          />
         )}
       </div>
       <DeleteModal
@@ -128,7 +117,7 @@ const ListPage = (props) => {
             <h5>Are you sure to delete:</h5>
             {deleteSelected.map((datasetId) => (
               <div key={datasetId}>
-                {datasets.find((dataset) => dataset._id === datasetId).name}
+                {datasets.find((d) => d._id === datasetId)?.name}
               </div>
             ))}
           </div>

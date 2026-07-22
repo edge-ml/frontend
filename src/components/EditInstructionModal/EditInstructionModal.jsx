@@ -1,19 +1,11 @@
 import React, { Component } from "react";
 import {
   Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
-  InputGroup,
-  InputGroupText,
-  InputGroupText,
-  Input,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+  TextInput,
+  NumberInput,
+  Menu,
+} from "@mantine/core";
 
 import "./EditInstructionModal.css";
 
@@ -128,75 +120,68 @@ class EditInstructionModal extends Component {
     });
 
     return (
-      <Modal isOpen={this.state.isOpen}>
-        <ModalHeader>
-          {this.state.experiment && this.state.experiment["_id"]
-            ? this.state.experiment["_id"]
-            : "New Experiment"}
-        </ModalHeader>
-        <ModalBody>
-          <InputGroup>
-            <InputGroupText>
-              <InputGroupText>Name</InputGroupText>
-            </InputGroupText>
-            <Input
-              value={
-                this.state.experiment && this.state.experiment.name
-                  ? this.state.experiment.name
-                  : ""
-              }
-              onChange={(e) => this.onExperimentNameChanged(e.target.value)}
-            />
-          </InputGroup>
+      <Modal opened={this.state.isOpen} onClose={this.state.onCloseModal} title={
+        this.state.experiment && this.state.experiment["_id"]
+          ? this.state.experiment["_id"]
+          : "New Experiment"
+      }>
+        <Modal.Body>
+          <TextInput
+            label="Name"
+            value={
+              this.state.experiment && this.state.experiment.name
+                ? this.state.experiment.name
+                : ""
+            }
+            onChange={(e) => this.onExperimentNameChanged(e.target.value)}
+          />
           <hr />
           {this.state.experiment && this.state.experiment.instructions
             ? this.state.experiment.instructions.map(
                 (instruction, index, array) => (
-                  <InputGroup key={"instruction" + index}>
-                    <InputGroupText className="me-2">
-                      <div className="arrow-container">
-                        <div
-                          className={
-                            index === 0 || array.length === 1
-                              ? "arrow arrow-disabled"
-                              : "arrow"
-                          }
-                          onClick={() => this.onLabelUp(index)}
-                        >
-                          &#x25B2;
-                        </div>
-                        <div
-                          className={
-                            index === array.length - 1 || array.length === 1
-                              ? "arrow arrow-disabled"
-                              : "arrow"
-                          }
-                          onClick={() => this.onLabelDown(index)}
-                        >
-                          &#x25BC;
-                        </div>
+                  <div key={"instruction" + index} style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "8px" }}>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      <div
+                        style={{
+                          cursor: index === 0 || array.length === 1 ? "default" : "pointer",
+                          opacity: index === 0 || array.length === 1 ? 0.4 : 1,
+                        }}
+                        onClick={() => this.onLabelUp(index)}
+                      >
+                        &#x25B2;
                       </div>
-                    </InputGroupText>
+                      <div
+                        style={{
+                          cursor: index === array.length - 1 || array.length === 1 ? "default" : "pointer",
+                          opacity: index === array.length - 1 || array.length === 1 ? 0.4 : 1,
+                        }}
+                        onClick={() => this.onLabelDown(index)}
+                      >
+                        &#x25BC;
+                      </div>
+                    </div>
 
-                    <UncontrolledDropdown className="me-2 instruction-dropdown">
-                      <DropdownToggle caret>
-                        {instruction.labelingId
-                          ? labelings.filter(
-                              (labeling) =>
-                                labeling["_id"] === instruction.labelingId
-                            )[0].name
-                          : instruction.labelType
-                            ? labelings.filter((labeling) =>
-                                labeling.labels.some(
-                                  (label) =>
-                                    label["_id"] === instruction.labelType
-                                )
+                    <Menu>
+                      <Menu.Target>
+                        <Button variant="outline" style={{ minWidth: "120px" }}>
+                          {instruction.labelingId
+                            ? labelings.filter(
+                                (labeling) =>
+                                  labeling["_id"] === instruction.labelingId
                               )[0].name
-                            : "Choose a labeling"}
-                      </DropdownToggle>
-                      <DropdownMenu>
+                            : instruction.labelType
+                              ? labelings.filter((labeling) =>
+                                  labeling.labels.some(
+                                    (label) =>
+                                      label["_id"] === instruction.labelType
+                                  )
+                                )[0].name
+                              : "Choose a labeling"}
+                        </Button>
+                      </Menu.Target>
+                      <Menu.Dropdown>
                         {labelings.map((labeling) => (
-                          <DropdownItem
+                          <Menu.Item
                             key={labeling["_id"]}
                             onClick={(e) =>
                               this.onSelectedLabelingChanged(
@@ -206,20 +191,22 @@ class EditInstructionModal extends Component {
                             }
                           >
                             {labeling.name}
-                          </DropdownItem>
+                          </Menu.Item>
                         ))}
-                      </DropdownMenu>
-                    </UncontrolledDropdown>
+                      </Menu.Dropdown>
+                    </Menu>
 
-                    <UncontrolledDropdown className="me-2 instruction-dropdown">
-                      <DropdownToggle caret>
-                        {instruction.labelType
-                          ? this.state.labelTypes.filter(
-                              (type) => type["_id"] === instruction.labelType
-                            )[0].name
-                          : "Choose a label"}
-                      </DropdownToggle>
-                      <DropdownMenu>
+                    <Menu>
+                      <Menu.Target>
+                        <Button variant="outline" style={{ minWidth: "120px" }}>
+                          {instruction.labelType
+                            ? this.state.labelTypes.filter(
+                                (type) => type["_id"] === instruction.labelType
+                              )[0].name
+                            : "Choose a label"}
+                        </Button>
+                      </Menu.Target>
+                      <Menu.Dropdown>
                         {instruction.labelType ? (
                           labelings
                             .filter((labeling) =>
@@ -229,7 +216,7 @@ class EditInstructionModal extends Component {
                               )
                             )[0]
                             .labels.map((type) => (
-                              <DropdownItem
+                              <Menu.Item
                                 key={type["_id"]}
                                 onClick={(e) =>
                                   this.onSelectedLabelChanged(
@@ -239,7 +226,7 @@ class EditInstructionModal extends Component {
                                 }
                               >
                                 {type.name}
-                              </DropdownItem>
+                              </Menu.Item>
                             ))
                         ) : instruction.labelingId ? (
                           labelings
@@ -248,7 +235,7 @@ class EditInstructionModal extends Component {
                                 labeling["_id"] === instruction.labelingId
                             )[0]
                             .labels.map((type) => (
-                              <DropdownItem
+                              <Menu.Item
                                 key={type["_id"]}
                                 onClick={(e) =>
                                   this.onSelectedLabelChanged(
@@ -258,50 +245,45 @@ class EditInstructionModal extends Component {
                                 }
                               >
                                 {type.name}
-                              </DropdownItem>
+                              </Menu.Item>
                             ))
                         ) : (
-                          <DropdownItem disabled>
+                          <Menu.Item disabled>
                             Choose a labeling first
-                          </DropdownItem>
+                          </Menu.Item>
                         )}
-                      </DropdownMenu>
-                    </UncontrolledDropdown>
+                      </Menu.Dropdown>
+                    </Menu>
 
-                    <Input
+                    <NumberInput
                       min={0}
-                      type="number"
-                      step="1"
-                      onChange={(e) =>
-                        this.onDurationChanged(index, e.target.value)
+                      step={1}
+                      onChange={(value) =>
+                        this.onDurationChanged(index, value)
                       }
                       value={instruction.duration}
+                      style={{ width: "80px" }}
+                      rightSection={<>ms</>}
                     />
-                    <InputGroupText className="me-2">
-                      <InputGroupText>ms</InputGroupText>
-                    </InputGroupText>
 
-                    <InputGroupText>
-                      <Button
-                        className="m-0"
-                        color="danger"
-                        outline
-                        onClick={(e) => {
-                          this.onDeleteInstruction(instruction);
-                        }}
-                      >
-                        ✕
-                      </Button>
-                    </InputGroupText>
-                  </InputGroup>
+                    <Button
+                      color="red"
+                      variant="outline"
+                      onClick={(e) => {
+                        this.onDeleteInstruction(instruction);
+                      }}
+                    >
+                      &#x2715;
+                    </Button>
+                  </div>
                 )
               )
             : null}
           <Button
-            className="mt-3"
-            color="secondary"
-            outline
-            block
+            style={{ marginTop: "0.75rem" }}
+            variant="outline"
+            color="gray"
+            fullWidth
             onClick={this.onAddInstruction}
           >
             + Add Instruction
@@ -310,10 +292,10 @@ class EditInstructionModal extends Component {
             <div>
               <hr />
               <Button
-                color="danger"
-                block
-                className="m-0"
-                outline
+                color="red"
+                fullWidth
+                style={{ margin: 0 }}
+                variant="outline"
                 onClick={(e) => {
                   if (window.confirm("Delete this experiment?")) {
                     this.state.onDeleteExperiment(this.state.experiment["_id"]);
@@ -324,26 +306,27 @@ class EditInstructionModal extends Component {
               </Button>
             </div>
           ) : null}
-        </ModalBody>
-        <ModalFooter>
+        </Modal.Body>
+        <Modal.Footer>
           <Button
-            color="primary"
-            className="m-1 me-auto"
+            color="blue"
+            style={{ margin: "0.25rem" }}
             id="onSaveExperiment"
             onClick={(e) => {
               this.state.onSave(this.state.experiment);
             }}
           >
             Save
-          </Button>{" "}
+          </Button>
           <Button
-            color="secondary"
-            className="m-1"
+            variant="outline"
+            color="gray"
+            style={{ margin: "0.25rem" }}
             onClick={this.state.onCloseModal}
           >
             Cancel
           </Button>
-        </ModalFooter>
+        </Modal.Footer>
       </Modal>
     );
   }

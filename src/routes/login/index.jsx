@@ -1,33 +1,27 @@
 import React, { useEffect, useState } from "react";
 import {
   Card,
-  CardHeader,
-  Input,
-  InputGroup,
-  InputGroupText,
+  TextInput,
+  PasswordInput,
   Button,
-  CardBody,
-  Col,
-  Form,
-} from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import {
-  faUser,
-  faShield,
-  faTriangleExclamation,
-} from "@fortawesome/free-solid-svg-icons";
+  Text,
+  Stack,
+  Group,
+  Center,
+  Alert,
+} from "@mantine/core";
+import { IconBrandGithub, IconUser, IconShield, IconAlertTriangle } from "@tabler/icons-react";
 import EdgeMLBrandLogo from "../../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
 import useAuth from "../../Hooks/useAuth";
 import useUserStore from "../../Hooks/useUser";
 
-import "./index.css"
+import "./index.css";
 
 const LoginPage = ({ children }) => {
   const { login, loginOAuth } = useAuth();
   const user = useUserStore((state) => state.user);
-  const [email, setEmail] = useState(undefined);
-  const [password, setPassword] = useState(undefined);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -52,7 +46,7 @@ const LoginPage = ({ children }) => {
 
   const onOAuth = async (provider) => {
     try {
-      const res = await loginOAuth(provider);
+      await loginOAuth(provider);
     } catch (e) {
       setError(e?.message || "Wrong credentials!");
     }
@@ -63,87 +57,78 @@ const LoginPage = ({ children }) => {
   }
 
   return (
-    <div
-      onKeyDown={onKeyDown}
-      className="vh-100 d-flex justify-content-center align-items-center bg-login"
-    >
-      <Col xs={11} sm={8} lg={5}>
-        <Card>
-          <CardHeader className="d-flex justify-content-center">
-            <EdgeMLBrandLogo></EdgeMLBrandLogo>
-          </CardHeader>
-          <CardBody>
-            <Form>
-              <div>Login with credentials</div>
-              <InputGroup>
-                <InputGroupText style={{ background: "#ced4da" }}>
-                  <FontAwesomeIcon icon={faUser}></FontAwesomeIcon>
-                </InputGroupText>
+    <Center h="100vh" bg="gray.1">
+      <Card
+        shadow="md"
+        padding="lg"
+        radius="md"
+        withBorder
+        maw={450}
+        w="100%"
+        mx="auto"
+        onKeyDown={onKeyDown}
+      >
+        <Card.Section p="lg">
+          <Center>
+            <EdgeMLBrandLogo />
+          </Center>
+        </Card.Section>
 
-                <Input
-                  type="email"
-                  name="email"
-                  id="email"
-                  placeholder="email or username"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </InputGroup>
-              <InputGroup>
-                <InputGroupText style={{ background: "#ced4da" }}>
-                  <FontAwesomeIcon icon={faShield}></FontAwesomeIcon>
-                </InputGroupText>
-                <Input
-                  type="password"
-                  name="password"
-                  id="password"
-                  placeholder="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </InputGroup>
-              <Button
-                id="login-button"
-                outline
-                onClick={submit}
-                // disabled={this.state.buttonDisabled}
-                color="primary"
-                block
-              >
-                <b>Login</b>
-              </Button>
-              <hr></hr>
-              <div>Login with a provider</div>
-              <Button
+        <Stack gap="md">
+          <Text size="sm" fw={500}>Login with credentials</Text>
 
-                className="p-1 my-2 w-100 d-flex justify-content-center align-items-center btnGithub"
-                onClick={() => onOAuth("github")}
-              >
-                <FontAwesomeIcon
-                  className="m-1 me-2"
-                  size="2x"
-                  icon={faGithub}
-                ></FontAwesomeIcon>
-                <div>Login with <b>Github</b></div>
-              </Button>
-            </Form>
-            {error ? (
-              <div className="mt-3" style={{ color: "red" }}>
-                <FontAwesomeIcon icon={faTriangleExclamation}></FontAwesomeIcon>{" "}
-                {error}
-              </div>
-            ) : null}
-            <hr />
-            <div>Have no account?</div>
-            <a href="/register">
-              <Button className="mt-2" outline color="secondary" block>
-                <b>Register</b>
-              </Button>
-            </a>
-          </CardBody>
-        </Card>
-      </Col>
-    </div>
+          <TextInput
+            leftSection={<IconUser size={16} />}
+            placeholder="email or username"
+            value={email}
+            onChange={(e) => setEmail(e.currentTarget.value)}
+          />
+
+          <PasswordInput
+            leftSection={<IconShield size={16} />}
+            placeholder="password"
+            value={password}
+            onChange={(e) => setPassword(e.currentTarget.value)}
+          />
+
+          <Button id="login-button" onClick={submit}>
+            Login
+          </Button>
+
+          <Text size="sm" fw={500}>Login with a provider</Text>
+
+          <Button
+            variant="default"
+            leftSection={<IconBrandGithub size={20} />}
+            onClick={() => onOAuth("github")}
+            fullWidth
+            className="btnGithub"
+          >
+            <span>Login with <b>Github</b></span>
+          </Button>
+
+          {error && (
+            <Alert
+              icon={<IconAlertTriangle size={16} />}
+              color="red"
+              variant="light"
+            >
+              {error}
+            </Alert>
+          )}
+
+          <Text size="sm">Have no account?</Text>
+          <Button
+            component="a"
+            href="/register"
+            variant="outline"
+            color="gray"
+          >
+            Register
+          </Button>
+        </Stack>
+      </Card>
+    </Center>
   );
 };
 

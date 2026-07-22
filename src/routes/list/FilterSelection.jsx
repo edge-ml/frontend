@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import {
-  Button,
   Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from "reactstrap";
+  Button,
+  Group,
+  Stack,
+  Select,
+  Text,
+} from "@mantine/core";
 import LabelingSetsFilter from "./filters/LabelingSetsFilter";
-import EmptyDatasetFilter from "./filters/EmptyDatasetsFilter";
 import TextSearchFilter from "./filters/TextSearchFilter";
+
+const filtersDef = [
+  { displayName: "Empty Datasets", value: "filterEmptyDatasets" },
+  { displayName: "Text Search", value: "filterByName" },
+  { displayName: "Labeling Sets", value: "labelings" },
+];
 
 const FilterSelectionModal = ({
   filterModalOpen,
@@ -25,18 +27,11 @@ const FilterSelectionModal = ({
   labelings,
   removeFilter,
 }) => {
-  const filtersDef = [
-    { displayName: "Empty Datasets", value: "filterEmptyDatasets" },
-    { displayName: "Text Search", value: "filterByName" },
-    { displayName: "Labeling Sets", value: "labelings" },
-  ];
-
   const [currentFilter, setCurrentFilter] = useState(
-    selectedFilter === undefined ? filtersDef[0] : selectedFilter
+    selectedFilter || filtersDef[0]
   );
   const [currenFilterParams, setCurrentFilterParams] =
     useState(selectedFilterParams);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const renderFilter = () => {
     switch (currentFilter.value) {
@@ -50,10 +45,6 @@ const FilterSelectionModal = ({
             setCurrentFilterParams={setCurrentFilterParams}
           />
         );
-        break;
-      case "filterEmptyDatasets":
-        return <EmptyDatasetFilter />;
-        break;
       case "labelings":
         return (
           <LabelingSetsFilter
@@ -64,76 +55,51 @@ const FilterSelectionModal = ({
             setCurrentFilterParams={setCurrentFilterParams}
           />
         );
-        break;
       default:
-        return null;
+        return <Text>Display only datasets without time series.</Text>;
     }
   };
 
-  const applyAndClose = () => {
-    applyFilter(currentFilter, currenFilterParams);
-    setFilterModalOpen(false);
-  };
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
-  const handleFilterSelect = (filter) => {
-    setCurrentFilterParams(undefined);
-    setCurrentFilter(filter);
-  };
-
-  const _removeFilter = () => {
-    removeFilter();
-    setFilterModalOpen(false);
-  };
-
-  const filterDropdown = () => {
-    return (
-      <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-        <DropdownToggle caret>{currentFilter.displayName}</DropdownToggle>
-        <DropdownMenu>
-          {filtersDef.map((filter) => (
-            <DropdownItem
-              key={filter.value}
-              onClick={() => handleFilterSelect(filter)}
-            >
-              {filter.displayName}
-            </DropdownItem>
-          ))}
-        </DropdownMenu>
-      </Dropdown>
-    );
-  };
-
   return (
-    <div>
-      <Modal isOpen={filterModalOpen} size="xl">
-        <ModalHeader>Filter Selection</ModalHeader>
-        <ModalBody>
-          <div>
-            <div>{filterDropdown()}</div>
-            <div>{renderFilter()}</div>
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" outline onClick={_removeFilter}>
+    <Modal
+      opened={filterModalOpen}
+      onClose={() => setFilterModalOpen(false)}
+      title="Filter Selection"
+      size="xl"
+    >
+      <Stack gap="md">
+        <Select
+          value={currentFilter.value}
+          onChange={(val) => {
+            const filter = filtersDef.find((f) => f.value === val);
+            setCurrentFilterParams(undefined);
+            setCurrentFilter(filter);
+          }}
+          data={filtersDef.map((f) => ({ value: f.value, label: f.displayName }))}
+        />
+        {renderFilter()}
+        <Group justify="flex-end" gap="sm">
+          <Button variant="outline" color="red" onClick={() => {
+            removeFilter();
+            setFilterModalOpen(false);
+          }}>
             Remove filter
-          </Button>{" "}
-          <Button color="primary" outline onClick={applyAndClose}>
-            Apply
-          </Button>{" "}
+          </Button>
           <Button
-            color="danger"
-            outline
-            onClick={() => setFilterModalOpen(false)}
+            variant="outline"
+            onClick={() => {
+              applyFilter(currentFilter, currenFilterParams);
+              setFilterModalOpen(false);
+            }}
           >
+            Apply
+          </Button>
+          <Button variant="outline" color="gray" onClick={() => setFilterModalOpen(false)}>
             Cancel
           </Button>
-        </ModalFooter>
-      </Modal>
-    </div>
+        </Group>
+      </Stack>
+    </Modal>
   );
 };
 

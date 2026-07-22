@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 
 import {
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
   Collapse,
   Button,
-} from "reactstrap";
+  Menu,
+  Group,
+  Text,
+} from "@mantine/core";
 import { HyperparameterView } from "../Hyperparameters/HyperparameterView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PlatformList from "../Common/PlatformList";
@@ -19,16 +18,10 @@ const Pipelinestep = ({
   setPipelineStep,
   stepNum,
 }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleCollapse = () => {
     setIsOpen(!isOpen);
-  };
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
   };
 
   const onSelectStepOption = (option) => {
@@ -45,50 +38,45 @@ const Pipelinestep = ({
   };
 
   return (
-    <div className="p-2">
-      <div className="d-flex justify-content-between">
+    <div style={{ padding: "0.5rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div>
-          <h3 className="fw-bold">{stepNum + 1 + ". " + step.name}</h3>
+          <h3 style={{ fontWeight: 700 }}>{stepNum + 1 + ". " + step.name}</h3>
           <h5>{step.description}</h5>
         </div>
       </div>
       <hr></hr>
-      <div className="mb-2">
-        <div className="">
-          <div className="d-flex justify-content-start align-items-center">
+      <div style={{ marginBottom: "0.5rem" }}>
+        <div>
+          <Group align="center" gap="xs">
             <b>Method: </b>
-            <div>
-              <Dropdown
-                className="ms-2"
-                style={{ position: "unset", padding: "unset" }}
-                isOpen={dropdownOpen}
-                toggle={toggleDropdown}
-              >
-                <DropdownToggle caret outline color="primary">
+            <Menu>
+              <Menu.Target>
+                <Button variant="outline" color="blue">
                   {selectedPipelineStep.name}
-                </DropdownToggle>
-                <DropdownMenu>
-                  {step.options.map((option) => (
-                    <DropdownItem onClick={() => onSelectStepOption(option)}>
-                      {option.name}
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </Dropdown>
-            </div>
-          </div>
-          <div className="my-2">
+                </Button>
+              </Menu.Target>
+              <Menu.Dropdown>
+                {step.options.map((option) => (
+                  <Menu.Item key={option.name} onClick={() => onSelectStepOption(option)}>
+                    {option.name}
+                  </Menu.Item>
+                ))}
+              </Menu.Dropdown>
+            </Menu>
+          </Group>
+          <div style={{ margin: "0.5rem 0" }}>
             <b>Description: </b>
             {selectedPipelineStep.description}
           </div>
           {selectedPipelineStep.type !== "EVAL" && (
-            <div className="my-2">
+            <div style={{ margin: "0.5rem 0" }}>
               <b>Platforms: </b>
               <PlatformList
                 platforms={selectedPipelineStep.platforms}
                 size="2rem"
                 color="black"
-              ></PlatformList>
+              />
             </div>
           )}
         </div>
@@ -102,25 +90,26 @@ const Pipelinestep = ({
             handleHyperparameterChange={onHandleHyperparameterChange}
             isAdvanced={false}
             hyperparameters={selectedPipelineStep.parameters}
-          ></HyperparameterView>
+          />
         </div>
       ) : null}
       {selectedPipelineStep.parameters.filter((elm) => elm.is_advanced).length >
         0 && (
         <div>
-          <div className="d-flex align-items-center">
-            <div className="me-2 fw-bold">Advanced parameters</div>
+          <Group align="center" gap="xs">
+            <Text fw={700}>Advanced parameters</Text>
             <FontAwesomeIcon
               size="1x"
               icon={isOpen ? faCaretDown : faCaretRight}
               onClick={toggleCollapse}
-            ></FontAwesomeIcon>
-          </div>
+              style={{ cursor: "pointer" }}
+            />
+          </Group>
           <div>
             You do not need to change the advanced parameters. Leave the fields
             empty to use default values.
           </div>
-          <Collapse isOpen={isOpen}>
+          <Collapse in={isOpen}>
             <HyperparameterView
               handleHyperparameterChange={onHandleHyperparameterChange}
               isAdvanced={true}

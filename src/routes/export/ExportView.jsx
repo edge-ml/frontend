@@ -1,62 +1,61 @@
 import React from "react";
 import {
-  Row,
-  Col,
-  ListGroup,
-  ListGroupItem,
   Card,
-  CardHeader,
-  CardBody,
   Container,
-} from "reactstrap";
+  List,
+  Text,
+} from "@mantine/core";
 
 import { Empty } from "./components/Empty";
 
 export const ExportView = ({
-  models, // {id: string, name: string, creation_date: number}[]
+  models,
   selectModel,
   selectedModel,
-
   detail,
 }) => {
   return (
     <Container>
-      <Row>
-        <Col xs={12} lg={4} className="pt-3">
-          <Card className="text-left" style={{ maxHeight: "80vh" }}>
-            <CardHeader>
-              <h4>Models</h4>
-            </CardHeader>
-            <CardBody className="overflow-auto">
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
+        <div style={{ flex: "1 1 100%", flexGrow: 0, flexBasis: "33.33%", paddingTop: "1rem" }}>
+          <Card shadow="sm" padding="md" radius="md" withBorder style={{ maxHeight: "80vh", textAlign: "left" }}>
+            <Card.Section>
+              <Text fw={700} size="lg" p="md"><h4>Models</h4></Text>
+            </Card.Section>
+            <div style={{ overflow: "auto", padding: "1rem" }}>
               {models.length ? (
-                <ListGroup>
+                <List>
                   {models.map((m) => (
-                    <ListGroupItem
+                    <List.Item
                       key={m.id}
-                      active={selectedModel && m.id === selectedModel.id}
-                      action
-                      tag="button"
+                      style={{
+                        cursor: "pointer",
+                        background: selectedModel && m.id === selectedModel.id ? "#228be6" : "transparent",
+                        color: selectedModel && m.id === selectedModel.id ? "#fff" : "inherit",
+                        padding: "0.5rem 1rem",
+                        borderRadius: "4px",
+                      }}
                       onClick={() => selectModel(m.id)}
                     >
                       {m.name}
-                    </ListGroupItem>
+                    </List.Item>
                   ))}
-                </ListGroup>
+                </List>
               ) : (
                 <Empty>No models available</Empty>
               )}
-            </CardBody>
+            </div>
           </Card>
-        </Col>
-        <Col xs={12} lg={8} className="pt-3">
-          <Card className="text-left">
-            <CardHeader>
-              <h4>Deployment</h4>
-            </CardHeader>
-            <CardBody>{detail}</CardBody>
+        </div>
+        <div style={{ flex: "1 1 66.66%", paddingTop: "1rem" }}>
+          <Card shadow="sm" padding="md" radius="md" withBorder style={{ textAlign: "left" }}>
+            <Card.Section>
+              <Text fw={700} size="lg" p="md"><h4>Deployment</h4></Text>
+            </Card.Section>
+            <div style={{ padding: "1rem" }}>{detail}</div>
           </Card>
-        </Col>
-      </Row>
+        </div>
+      </div>
     </Container>
   );
 };

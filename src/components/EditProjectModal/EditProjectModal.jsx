@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import {
   Button,
-  InputGroup,
-  InputGroupText,
-  Input,
-  Table,
-  Col,
-  Row,
-  FormFeedback,
-} from "reactstrap";
+  TextInput,
+} from "@mantine/core";
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
@@ -34,36 +28,29 @@ const EditProjectModal = ({ isOpen, onClose }) => {
   const { project, setProjectName, createProject, addUser, removeUser } =
     useCreateProject();
 
-  console.log(project.users);
-
   return (
     <Modal id="editProjectModal" isOpen={isOpen} onClose={onClose}>
       <ModalHeader>Create new Project</ModalHeader>
       <ModalBody>
-        <InputGroup>
-          <InputGroupText>{"Name"}</InputGroupText>
-          <Input
-            id="inputProjectName"
-            placeholder={"Project-name"}
-            value={project.name}
-            onChange={(e) => setProjectName(e.target.value)}
-          />
-          <FormFeedback></FormFeedback>
-        </InputGroup>
-        <InputGroup>
-          <InputGroupText>{"Admin"}</InputGroupText>
-          <Input
-            disabled
-            id="inputProjectAdmin"
-            placeholder={"Project-admin"}
-            value={project.admin.name + " (" + project.admin.mail + ")"}
-          />
-        </InputGroup>
+        <TextInput
+          label="Name"
+          id="inputProjectName"
+          placeholder="Project-name"
+          value={project.name}
+          onChange={(e) => setProjectName(e.target.value)}
+        />
+        <TextInput
+          label="Admin"
+          disabled
+          id="inputProjectAdmin"
+          placeholder="Project-admin"
+          value={project.admin.name + " (" + project.admin.mail + ")"}
+        />
         <h5 style={{ paddingTop: "16px" }}>Users</h5>
         <EdgeMLTable>
           <EdgeMLTableHeader>
-            <InputGroup>
-              <InputGroupText>Search user</InputGroupText>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span>Search user</span>
               <AutoCompleteInput
                 type="text"
                 name="User ID"
@@ -79,23 +66,23 @@ const EditProjectModal = ({ isOpen, onClose }) => {
                   ...project.users.map((elm) => elm.userName),
                   project.admin.name,
                 ]}
-              ></AutoCompleteInput>
-            </InputGroup>
+              />
+            </div>
           </EdgeMLTableHeader>
           {project.users.map((elm) => {
             return (
-              <EdgeMLTableEntry>
-                <div className="d-flex justify-content-between m-2 align-items-center">
+              <EdgeMLTableEntry key={elm.userName}>
+                <div style={{ display: "flex", justifyContent: "space-between", margin: "0.5rem", alignItems: "center" }}>
                   <div>
                     <b>{elm.userName}</b>
                   </div>
                   <div>
                     <Button
-                      outline
-                      color="danger"
+                      variant="outline"
+                      color="red"
                       onClick={() => removeUser(elm.userName)}
                     >
-                      <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
+                      <FontAwesomeIcon icon={faTrashAlt} />
                     </Button>
                   </div>
                 </div>
@@ -109,19 +96,19 @@ const EditProjectModal = ({ isOpen, onClose }) => {
           )}
         </EdgeMLTable>
       </ModalBody>
-      <ModalFooter className="justify-content-end">
+      <ModalFooter style={{ justifyContent: "flex-end" }}>
         <Button
-          outline
+          variant="outline"
           id="btnSaveProject"
-          color="primary"
-          className="m-1"
+          color="blue"
+          style={{ margin: "0.25rem" }}
           onClick={async () => {
             await createProject();
             onClose();
           }}
         >
           Save
-        </Button>{" "}
+        </Button>
       </ModalFooter>
     </Modal>
   );

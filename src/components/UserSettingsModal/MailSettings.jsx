@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Button, TextInput } from "@mantine/core";
 
 import { validateEmail } from "./../../services/helpers";
 import { changeUserMail } from "./../../services/ApiServices/AuthentificationServices";
@@ -54,35 +54,31 @@ class MailSettings extends Component {
   render() {
     return (
       <div>
-        <h4 className="fw-bold">Change Mail</h4>
-        <InputGroup>
-          <InputGroupText>E-Mail</InputGroupText>
-          <Input
-            id="inputNewMail"
-            placeholder="New e-mail"
-            onChange={this.onNewEmailChange}
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupText>E-Mail</InputGroupText>
-          <Input
-            id="inputNewMailConfirm"
-            placeholder="Retype new e-mail"
-            onChange={this.onConfirmationEmailChange}
-          />
-        </InputGroup>
-          <Button
-            outline
-            id="buttonSaveNewMail"
-            disabled={
-              !this.state.newEmail ||
-              this.state.newEmail !== this.state.confirmationEmail
-            }
-            color="primary"
-            onClick={this.onEmailChangeSubmit}
-          >
-            Save new e-mail
-          </Button>
+        <h4 style={{ fontWeight: 700 }}>Change Mail</h4>
+        <TextInput
+          label="E-Mail"
+          id="inputNewMail"
+          placeholder="New e-mail"
+          onChange={this.onNewEmailChange}
+        />
+        <TextInput
+          label="E-Mail"
+          id="inputNewMailConfirm"
+          placeholder="Retype new e-mail"
+          onChange={this.onConfirmationEmailChange}
+        />
+        <Button
+          variant="outline"
+          id="buttonSaveNewMail"
+          disabled={
+            !this.state.newEmail ||
+            this.state.newEmail !== this.state.confirmationEmail
+          }
+          color="blue"
+          onClick={this.onEmailChangeSubmit}
+        >
+          Save new e-mail
+        </Button>
         {this.state.emailError ? (
           <div
             id="emailError"

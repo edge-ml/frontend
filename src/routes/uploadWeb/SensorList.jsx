@@ -1,4 +1,4 @@
-import { Badge, Table, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Badge, Table, TextInput } from "@mantine/core";
 import {
   useBootstrapMDBreakpoint,
   usePersistedState,
@@ -10,15 +10,13 @@ import Checkbox from "../../components/Common/Checkbox";
 import React from "react";
 
 const Th = (props) => (
-  <th
+  <Table.Th
     {...props}
-    className={"border-top-0 " + (props.className ? props.className : "")}
   />
 );
 const Td = (props) => (
-  <td
+  <Table.Td
     {...props}
-    className={"border-top-0 " + (props.className ? props.className : "")}
   />
 );
 
@@ -36,25 +34,25 @@ export const SensorList = ({
   );
 
   return (
-    <React.Fragment>
-      <Table responsive>
-        <thead>
-          <tr>
+    <>
+      <Table>
+        <Table.Thead>
+          <Table.Tr>
             <Th />
             <Th>Sensor</Th>
             {isDesktop ? (
-              <React.Fragment>
+              <>
                 <Th>Sample Rate</Th>
                 <Th>Components</Th>
-              </React.Fragment>
+              </>
             ) : (
-              <React.Fragment>
+              <>
                 <Th />
-              </React.Fragment>
+              </>
             )}
-          </tr>
-        </thead>
-        <tbody>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {sensors.map(
             ({
               name,
@@ -63,20 +61,20 @@ export const SensorList = ({
               properties: { fixedFrequency },
             }) => {
               const rateInput = (
-                <InputGroup style={{ margin: 0, minWidth: "90px" }} size="sm">
-                  <Input
-                    value={sampleRate}
-                    onChange={(e) => setSensorRate(name, e.target.value)}
-                    type="number"
-                    min={0}
-                    max={50}
-                  ></Input>{" "}
-                  <InputGroupText>Hz</InputGroupText>
-                </InputGroup>
+                <TextInput
+                  value={sampleRate}
+                  onChange={(e) => setSensorRate(name, e.target.value)}
+                  type="number"
+                  min={0}
+                  max={50}
+                  rightSection="Hz"
+                  size="sm"
+                  style={{ margin: 0, minWidth: "90px" }}
+                />
               );
 
               const badges = shortComponents.map((c) => (
-                <Badge className="m-1">{c}</Badge>
+                <Badge style={{ margin: "0.25rem" }}>{c}</Badge>
               ));
 
               const toggleDetails = () =>
@@ -91,51 +89,49 @@ export const SensorList = ({
 
               return (
                 <React.Fragment key={name}>
-                  <tr>
+                  <Table.Tr>
                     <Td>
                       {" "}
                       <Checkbox
                         isSelected={selectedSensors[name]}
-                        className="position-relative ml-0"
                         onClick={(e) => setSensor(name, !selectedSensors[name])}
                       />
                     </Td>
                     <Td>{name}</Td>
                     {isDesktop ? (
-                      <React.Fragment>
+                      <>
                         <Td>{fixedFrequency ? null : rateInput}</Td>
                         <Td>{badges}</Td>
-                      </React.Fragment>
+                      </>
                     ) : (
-                      <React.Fragment>
+                      <>
                         <Td>
                           <FontAwesomeIcon
                             icon={collapseState[name] ? faMinus : faPlus}
                             onClick={toggleDetails}
                           />
                         </Td>
-                      </React.Fragment>
+                      </>
                     )}
-                  </tr>
+                  </Table.Tr>
                   {isDesktop ? null : (
-                    <React.Fragment>
-                      <tr style={tableVisibilityStyle(name)}>
-                        <Td className="p-0" />
-                        <Td className="p-0" colSpan="2">
-                          <div className="d-flex align-items-center pe-3">
+                    <>
+                      <Table.Tr style={tableVisibilityStyle(name)}>
+                        <Td style={{ padding: 0 }} />
+                        <Td style={{ padding: 0 }} colSpan={2}>
+                          <div style={{ display: "flex", alignItems: "center", paddingRight: "1rem" }}>
                             <small>
                               <b>Sample Rate:</b>
                             </small>
                             {rateInput}
                           </div>
                         </Td>
-                      </tr>
-                      <tr style={tableVisibilityStyle(name)}>
-                        <Td className="p-0" />
-                        <Td className="p-0" colspan="2">
+                      </Table.Tr>
+                      <Table.Tr style={tableVisibilityStyle(name)}>
+                        <Td style={{ padding: 0 }} />
+                        <Td style={{ padding: 0 }} colSpan={2}>
                           <div
-                            className="d-flex align-items-center"
-                            style={{ flexWrap: "wrap" }}
+                            style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
                           >
                             <small>
                               <b>Components:</b>
@@ -143,15 +139,15 @@ export const SensorList = ({
                             {badges}
                           </div>
                         </Td>
-                      </tr>
-                    </React.Fragment>
+                      </Table.Tr>
+                    </>
                   )}
                 </React.Fragment>
               );
             }
           )}
-        </tbody>
+        </Table.Tbody>
       </Table>
-    </React.Fragment>
+    </>
   );
 };

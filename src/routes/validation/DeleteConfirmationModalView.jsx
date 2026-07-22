@@ -1,6 +1,5 @@
 import React from "react";
-
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import { Modal, Button, Group, Text } from "@mantine/core";
 
 export const DeleteConfirmationModalView = ({
   modelsToDelete,
@@ -9,35 +8,36 @@ export const DeleteConfirmationModalView = ({
   ...props
 }) => {
   return (
-    <Modal isOpen={modelsToDelete.length} size="l" {...props}>
-      <ModalHeader>Delete Model</ModalHeader>
-      <ModalBody>
+    <Modal
+      opened={modelsToDelete.length > 0}
+      onClose={onClosed}
+      title="Delete Model"
+      {...props}
+    >
+      <Text mb="md">
         Are you sure to delete the following models?
-        {modelsToDelete.map((id) => {
-          return (
-            <React.Fragment key={id}>
-              <br />
-              <b>{id}</b>
-            </React.Fragment>
-          );
-        })}
-      </ModalBody>
-      <ModalFooter>
+        {modelsToDelete.map((id) => (
+          <React.Fragment key={id}>
+            <br />
+            <b>{id}</b>
+          </React.Fragment>
+        ))}
+      </Text>
+      <Group justify="flex-end" gap="sm">
         <Button
-          id="deleteModelsButtonFinal"
-          outline
-          color="danger"
-          onClick={(e) => {
+          variant="outline"
+          color="red"
+          onClick={() => {
             onDelete(modelsToDelete);
             onClosed();
           }}
         >
           Yes
-        </Button>{" "}
-        <Button outline color="secondary" onClick={onClosed}>
+        </Button>
+        <Button variant="outline" color="gray" onClick={onClosed}>
           No
         </Button>
-      </ModalFooter>
+      </Group>
     </Modal>
   );
 };

@@ -1,24 +1,13 @@
 /* global Module */
 
-import { Modal, ModalFooter, ModalBody, ModalHeader, Button } from "reactstrap";
+import { Modal, Button, Badge, Menu, Table, Alert, Loader } from "@mantine/core";
 import { SUPPORTED_SENSORS } from "../../services/WebSensorServices";
 import { SensorList } from "../../components/SensorList/SensorList";
 import { usePersistedState } from "../../services/ReactHooksService";
 import { downloadDeploymentModel } from "../../services/ApiServices/MLDeploymentService";
 import { downloadBlob } from "../../services/helpers";
-import {
-  Badge,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Row,
-  Col,
-  Table,
-  Alert,
-} from "reactstrap";
 import { useState, memo, useEffect } from "react";
-import { faCross, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { objMap } from "../../services/helpers";
 import Checkbox from "../../components/Common/Checkbox";
@@ -30,19 +19,6 @@ function delay(ms) {
 const mergeSingle = (replacer) => (key, value) => {
   replacer((prev) => ({ ...prev, [key]: value }));
 };
-
-const Th = (props) => (
-  <th
-    {...props}
-    className={"border-top-0 " + (props.className ? props.className : "")}
-  />
-);
-const Td = (props) => (
-  <td
-    {...props}
-    className={"border-top-0 " + (props.className ? props.className : "")}
-  />
-);
 
 const TimeSeriesSelectingSensorComponent = ({
   shortComponent,
@@ -60,9 +36,6 @@ const TimeSeriesSelectingSensorComponent = ({
   );
   const remainingTimeseries = timeseries.filter((ts) => !matches[ts]);
 
-  const badgeClass = `m-1 badge badge-${
-    componentTimeseries ? "primary" : "secondary"
-  }`;
   const badgeText = componentTimeseries
     ? `${shortComponent} → (${componentTimeseries})`
     : shortComponent;
@@ -70,22 +43,20 @@ const TimeSeriesSelectingSensorComponent = ({
   const isDisabled = componentTimeseries || remainingTimeseries.length === 0;
 
   return (
-    <UncontrolledDropdown
-      direction="left"
-      style={{ position: "relative", padding: 0, display: "inline-block" }}
-      disabled={isDisabled}
-    >
-      <DropdownToggle
-        caret={!isDisabled}
-        size="sm"
-        className={badgeClass}
-        tag={"span"}
-      >
-        {badgeText}
-      </DropdownToggle>
-      <DropdownMenu>
+    <Menu disabled={isDisabled}>
+      <Menu.Target>
+        <Badge
+          variant={componentTimeseries ? "filled" : "outline"}
+          color={componentTimeseries ? "blue" : "gray"}
+          size="sm"
+          style={{ cursor: isDisabled ? "default" : "pointer", margin: "0.25rem" }}
+        >
+          {badgeText}
+        </Badge>
+      </Menu.Target>
+      <Menu.Dropdown>
         {remainingTimeseries.map((tsName) => (
-          <DropdownItem
+          <Menu.Item
             onClick={() =>
               onTimeseriesSelect(tsName, {
                 sensorName: sensor.name,
@@ -95,10 +66,10 @@ const TimeSeriesSelectingSensorComponent = ({
             }
           >
             {tsName}
-          </DropdownItem>
+          </Menu.Item>
         ))}
-      </DropdownMenu>
-    </UncontrolledDropdown>
+      </Menu.Dropdown>
+    </Menu>
   );
 };
 
@@ -118,7 +89,6 @@ const ScreenOne = memo(
       "routes:validation:LiveInferenceModal.sensorRates"
     );
 
-    // tsName -> { sensor, component, shortComponent }
     const [tsMatches, setTsMatches] = useState({});
 
     const sensors = SUPPORTED_SENSORS;
@@ -158,9 +128,9 @@ const ScreenOne = memo(
 
     return (
       <ModalBody>
-        <Row>
-          <Col>
-            <div className="header-wrapper d-flex justify-content-center align-content-center">
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
               <b>Configure Sensor / Timeseries Matching</b>
             </div>
             <div className="body-wrapper-overflow">
@@ -188,75 +158,74 @@ const ScreenOne = memo(
                 )}
               />
             </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col className="mt-2">
-            <div className="header-wrapper d-flex justify-content-center align-content-center">
+          </div>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          <div style={{ flex: 1, marginTop: "0.5rem" }}>
+            <div style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
               <b>Model Timeseries</b>
             </div>
             <div className="body-wrapper-overflow">
               <Table>
-                <thead>
-                  <tr>
-                    <Th>Timeseries</Th>
-                    <Th>Sensor</Th>
-                    <Th>Component</Th>
-                    <Th></Th>
-                  </tr>
-                </thead>
-                <tbody>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>Timeseries</Table.Th>
+                    <Table.Th>Sensor</Table.Th>
+                    <Table.Th>Component</Table.Th>
+                    <Table.Th></Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
                   {model.timeSeries.map((name) => (
-                    <tr>
-                      <Td>
+                    <Table.Tr key={name}>
+                      <Table.Td>
                         <b>{name}</b>
-                      </Td>
+                      </Table.Td>
                       {legalMatches[name] ? (
                         <>
-                          <Td>{legalMatches[name].sensor.name}</Td>
-                          <Td>
+                          <Table.Td>{legalMatches[name].sensor.name}</Table.Td>
+                          <Table.Td>
                             <Badge>{legalMatches[name].shortComponent}</Badge>
-                          </Td>
-                          <Td>
+                          </Table.Td>
+                          <Table.Td>
                             <Button
-                              color="danger"
-                              className="btn-edit me-3 me-md-4"
+                              color="red"
+                              size="sm"
                               onClick={() => setMatch(name, null)}
                             >
                               <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
                             </Button>
-                          </Td>
+                          </Table.Td>
                         </>
                       ) : (
                         <>
-                          <Td
-                            colspan="3"
+                          <Table.Td
+                            colSpan={3}
                             style={{ width: "100%", textAlign: "center" }}
                           >
                             Unset
-                          </Td>
+                          </Table.Td>
                         </>
                       )}
-                    </tr>
+                    </Table.Tr>
                   ))}
-                </tbody>
+                </Table.Tbody>
               </Table>
             </div>
-          </Col>
-          <Col className="mt-2 d-flex flex-column justify-content-end align-items-end">
-            <div className="mb-2 d-flex justify-content-end align-items-center">
-              <div className="d-flex justify-content-center align-items-center me-2">
+          </div>
+          <div style={{ flex: 1, marginTop: "0.5rem", display: "flex", flexDirection: "column", justifyContent: "flex-end", alignItems: "flex-end" }}>
+            <div style={{ marginBottom: "0.5rem", display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginRight: "0.5rem" }}>
                 <Checkbox
                   isSelected={downloadSingleFile}
                   onClick={(e) => {
                     setDownloadSingleFile(e.target.checked);
                   }}
                 />
-                <span className="ms-1">Single file</span>
+                <span style={{ marginLeft: "0.25rem" }}>Single file</span>
               </div>
               <Button
-                outline
-                className=""
+                variant="outline"
                 onClick={() => {
                   onDownloadWASM();
                 }}
@@ -266,20 +235,14 @@ const ScreenOne = memo(
             </div>
             <Button
               disabled={!legal}
-              outline
-              color="primary"
-              className=""
+              variant="outline"
+              color="blue"
               onClick={() => onClassify(legalMatches)}
             >
               Live Classification
             </Button>
-          </Col>
-        </Row>
-        {/* <Row>
-        <Col>
-          
-        </Col>
-      </Row> */}
+          </div>
+        </div>
       </ModalBody>
     );
   },
@@ -302,13 +265,6 @@ const ScreenTwo = ({ model, legalMatches }) => {
       const blob = await downloadDeploymentModel(model._id, "WASM", true, true);
 
       blobURL = URL.createObjectURL(blob);
-      // // This conflicts with webpack/cra (https://github.com/webpack/webpack/issues/6680)
-      // // There are some workarounds, but they are bad, thje best would be using something like SystemJS
-      // // but I could not get it working with webpack either, so script tag it is.
-
-      // import(blobURL).then((Module) => {
-      //
-      // })
 
       if (typeof Module !== "undefined") {
         // eslint-disable-next-line no-global-assign
@@ -359,7 +315,6 @@ const ScreenTwo = ({ model, legalMatches }) => {
       });
     }
 
-    // sensorData: Record<string, number>
     const onSensorData = (config) => (newData) => {
       setSensorData((prev) => ({
         ...prev,
@@ -390,8 +345,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
         await sensor.listen({
           ...(sensor.properties.fixedFrequency
             ? {}
-            : // : { frequency: this._sampleRates[sensor.name] }),
-              {}), // TODO: tackle frequency here later
+            : {}),
         });
       }
     };
@@ -428,8 +382,8 @@ const ScreenTwo = ({ model, legalMatches }) => {
 
   return (
     <ModalBody>
-      <Row>
-        <Col>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
+        <div style={{ flex: 1 }}>
           <div>
             <b>WASM Blob:</b>{" "}
             {wasmBlobLoaded ? "Downloaded." : "In progress..."}
@@ -442,11 +396,11 @@ const ScreenTwo = ({ model, legalMatches }) => {
             <b>Sensor Matching:</b>
             <ul>
               {sensorConfigs.map(({ sensor, matches }) => (
-                <li>
+                <li key={sensor.name}>
                   {sensor.name}
                   <ul>
                     {matches.map(({ tsName, match }) => (
-                      <li>
+                      <li key={tsName}>
                         {match.shortComponent} → <b>{tsName}</b>
                       </li>
                     ))}
@@ -455,18 +409,18 @@ const ScreenTwo = ({ model, legalMatches }) => {
               ))}
             </ul>
           </div>
-        </Col>
-        <Col>
+        </div>
+        <div style={{ flex: 1 }}>
           <div>
             <b>Sensor Data:</b>
             <ul>
               {sensorConfigs.map(({ sensor, matches }) => (
-                <li>
+                <li key={sensor.name}>
                   {sensor.name}
                   <ul>
                     {matches
                       .map(({ match }) => (
-                        <li>
+                        <li key={match.shortComponent}>
                           {match.shortComponent} →{" "}
                           <b>
                             {sensorData[sensor.name]?.data[match.component]}
@@ -488,17 +442,12 @@ const ScreenTwo = ({ model, legalMatches }) => {
             </div>
           ) : null}
           {Object.entries(sensorErrors).map(([comp, { error, isWarning }]) => (
-            <Alert color={isWarning ? "warning" : "danger"}>
+            <Alert color={isWarning ? "yellow" : "red"} key={comp}>
               <strong>{comp}</strong>: {error}
             </Alert>
           ))}
-        </Col>
-      </Row>
-      {/* <Row>
-        <Col>
-          <Button disabled={!legal} outline color="primary" className="float-right" onClick={onClassify}>Classify</Button>
-        </Col>
-      </Row> */}
+        </div>
+      </div>
     </ModalBody>
   );
 };
@@ -533,8 +482,6 @@ const LiveInferenceModal = ({ model, onClose: onCloseOrig }) => {
       return;
     }
 
-    // classify
-
     setLegalMatches(legalMatches);
     setPage(2);
   };
@@ -553,18 +500,20 @@ const LiveInferenceModal = ({ model, onClose: onCloseOrig }) => {
 
   return (
     <Modal isOpen={model} size="xl">
-      <ModalHeader>Live Inference: {model.name}</ModalHeader>
+      <Modal.Header>
+        <Modal.Title>Live Inference: {model.name}</Modal.Title>
+      </Modal.Header>
       {renderedScreen}
-      <ModalFooter>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "1rem", padding: "1rem" }}>
         {page !== 1 ? (
-          <Button outline color="primary" onClick={onGoBack}>
+          <Button variant="outline" color="blue" onClick={onGoBack}>
             Back
           </Button>
         ) : null}
-        <Button onClick={onClose} outline color="danger">
+        <Button onClick={onClose} variant="outline" color="red">
           Cancel
         </Button>
-      </ModalFooter>
+      </div>
     </Modal>
   );
 };

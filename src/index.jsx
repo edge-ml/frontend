@@ -2,7 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { isTauriBluetoothAvailable, getTauriBluetooth } from "./services/tauriBle";
 import TauriDevicePicker from "./components/BLE/TauriDevicePicker";
 
@@ -22,12 +22,11 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
   <BrowserRouter>
-    <App></App>
+    <App />
     {isTauriBluetoothAvailable() && <TauriDevicePicker />}
   </BrowserRouter>
 );
 
-//registerServiceWorker();
 if (window.navigator && navigator.serviceWorker) {
   navigator.serviceWorker.getRegistrations().then(function (registrations) {
     for (let registration of registrations) {

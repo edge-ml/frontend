@@ -1,13 +1,5 @@
 import React, { useState, Fragment } from "react";
-import {
-  ModalBody,
-  Button,
-  ModalFooter,
-  Dropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
-} from "reactstrap";
+import { Menu, Button } from "@mantine/core";
 import { HyperparameterView } from "../../Hyperparameters/HyperparameterView";
 const Select_Windowing = ({
   onBack,
@@ -17,11 +9,10 @@ const Select_Windowing = ({
   setWindower,
   footer,
 }) => {
-  const [dropDownOpen, setDropDownOpen] = useState(false);
   const [window_index, set_window_index] = useState(0);
 
   if (!windowers.length) {
-    return;
+    return null;
   }
 
   const onParameterChanged = ({ parameter_name, state }) => {
@@ -35,32 +26,32 @@ const Select_Windowing = ({
 
   return (
     <Fragment>
-      <h3 className="fw-bold">4. Select Windowing</h3>
-      <Dropdown
-        isOpen={dropDownOpen}
-        toggle={() => setDropDownOpen(!dropDownOpen)}
-      >
-        <DropdownToggle caret size="lg">
-          {windowers[window_index].name}
-        </DropdownToggle>
-        <DropdownMenu>
+      <h3 style={{ fontWeight: 700 }}>4. Select Windowing</h3>
+      <Menu>
+        <Menu.Target>
+          <Button size="lg">
+            {windowers[window_index].name}
+          </Button>
+        </Menu.Target>
+        <Menu.Dropdown>
           {windowers.map((n, idx) => (
-            <DropdownItem
+            <Menu.Item
+              key={n.name}
               onClick={() => {
                 set_window_index(idx);
                 setSelectedWindower(windowers[idx]);
               }}
             >
               {n.name}
-            </DropdownItem>
+            </Menu.Item>
           ))}
-        </DropdownMenu>
-      </Dropdown>
+        </Menu.Dropdown>
+      </Menu>
       <HyperparameterView
         handleHyperparameterChange={onParameterChanged}
         isAdvanced={false}
         hyperparameters={windowers[window_index].parameters}
-      ></HyperparameterView>
+      />
     </Fragment>
   );
 };

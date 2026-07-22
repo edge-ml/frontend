@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Badge, FormGroup, Card, CardBody, CardHeader } from "reactstrap";
+import { Badge, Card, Text } from "@mantine/core";
 
 import Loader from "../../modules/loader";
 
@@ -16,34 +16,34 @@ export const LabelingView = ({
   changeLabelSelection,
 }) => {
   return (
-    <Card className="text-left">
-      <CardHeader>
-        <h4>Target Labeling</h4>
-      </CardHeader>
-      <CardBody className="d-flex flex-column justify-content-between align-items-start">
+    <Card shadow="sm" padding="md" radius="md" withBorder style={{ textAlign: "left" }}>
+      <Card.Section>
+        <Text fw={700} size="lg" p="md"><h4>Target Labeling</h4></Text>
+      </Card.Section>
+      <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "flex-start", padding: "1rem" }}>
         <Loader loading={!labelings && !labels}>
           <fieldset>
             {labelings && labelings.length
               ? labelings.map((x) => {
                   return (
-                    <div className="d-flex flex-row align-items-center mt-2">
-                      <div className="d-flex flex-row align-items-center align-self-baseline">
+                    <div key={x._id} style={{ display: "flex", flexDirection: "row", alignItems: "center", marginTop: "0.5rem" }}>
+                      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", alignSelf: "baseline" }}>
                         <input
                           id={x._id}
                           type="radio"
                           style={{ marginTop: "0.1em" }}
                           onClick={(y) => changeSelectedLabeling(x._id)}
                           checked={selectedLabeling === x._id}
-                        ></input>
+                        />
                         <label
-                          className="mb-0 ms-1 me-1"
+                          style={{ marginBottom: 0, marginLeft: "0.25rem", marginRight: "0.25rem" }}
                           htmlFor={x._id}
                           onClick={(y) => changeSelectedLabeling(x._id)}
                         >
                           {x.name}
                         </label>
                       </div>
-                      <div className="d-flex flex-wrap flex-row align-items-center align-content-start mt-0">
+                      <div style={{ display: "flex", flexWrap: "wrap", flexDirection: "row", alignItems: "center", alignContent: "flex-start", marginTop: 0 }}>
                         {x.labels.map((labelId) => {
                           const label = labels.find(
                             (label) => label._id === labelId
@@ -51,14 +51,13 @@ export const LabelingView = ({
                           return (
                             <Badge
                               key={labelId}
-                              className="m-1"
-                              style={{ backgroundColor: label.color }}
+                              style={{ margin: "0.25rem", backgroundColor: label.color }}
                             >
                               {label.name}
                               <input
                                 type="checkbox"
                                 disabled={selectedLabeling !== x._id}
-                                className="ms-1 float-right"
+                                style={{ marginLeft: "0.25rem", float: "right" }}
                                 checked={selectedLabelsFor[x._id][labelId]}
                                 onClick={(y) =>
                                   changeLabelSelection(x._id, labelId)
@@ -67,9 +66,9 @@ export const LabelingView = ({
                             </Badge>
                           );
                         })}
-                        <Badge className="m-1">
-                          <Form inline>
-                            <FormGroup>
+                        <Badge style={{ margin: "0.25rem" }}>
+                          <div style={{ display: "inline" }}>
+                            <div style={{ display: "inline-block" }}>
                               <input
                                 type="text"
                                 value={unlabelledNameFor[x._id]}
@@ -90,19 +89,19 @@ export const LabelingView = ({
                                   width: "37px",
                                 }}
                               />
-                            </FormGroup>
-                            <FormGroup>
+                            </div>
+                            <div style={{ display: "inline-block" }}>
                               <input
                                 type="checkbox"
                                 disabled={selectedLabeling !== x._id}
-                                className="float-left"
+                                style={{ float: "left" }}
                                 checked={useUnlabelledFor[x._id]}
                                 onClick={(e) =>
                                   changeUnlabelledFor(e.target.checked, x._id)
                                 }
                               />
-                            </FormGroup>
-                          </Form>
+                            </div>
+                          </div>
                         </Badge>
                       </div>
                     </div>
@@ -111,7 +110,7 @@ export const LabelingView = ({
               : "There are no labelings defined"}
           </fieldset>
         </Loader>
-        <small className="mt-3 text-left">
+        <Text size="sm" c="dimmed" mt="md" style={{ textAlign: "left" }}>
           <b>
             <i>Note:</i>
           </b>{" "}
@@ -120,8 +119,8 @@ export const LabelingView = ({
           Check "Other" to mark unlabeled data and use it in training.
           <br />
           Click and type into the "Other" field to rename the label.
-        </small>
-      </CardBody>
+        </Text>
+      </div>
     </Card>
   );
 };

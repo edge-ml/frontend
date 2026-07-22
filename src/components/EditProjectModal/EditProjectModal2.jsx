@@ -1,18 +1,10 @@
 import React, { Component } from "react";
 import {
   Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
-  InputGroup,
-  InputGroupText,
-  InputGroupText,
-  Input,
+  TextInput,
   Table,
-  Col,
-  Row,
-} from "reactstrap";
+} from "@mantine/core";
 
 import {
   updateProject,
@@ -137,19 +129,17 @@ class EditProjectModal extends Component {
 
   generateTableEntry(userName, index) {
     return (
-      <tr className="table-record" key={userName}>
-        <th scope="row" className="table-record-left">
-          {index + 1}
-        </th>
-        <td className="table-record-center">{userName}</td>
-        <td className="table-record-right">
+      <tr key={userName}>
+        <td>{index + 1}</td>
+        <td>{userName}</td>
+        <td>
           <Button
             className="button-delete-user"
-            color="danger"
-            size="sm"
+            color="red"
+            size="xs"
             onClick={() => this.deleteUserName(userName)}
           >
-            <FontAwesomeIcon className="me-2" icon={faTrash}></FontAwesomeIcon>
+            <FontAwesomeIcon icon={faTrash} />
           </Button>
         </td>
       </tr>
@@ -164,69 +154,57 @@ class EditProjectModal extends Component {
     )
       return null;
     return (
-      <Modal id="editProjectModal" isOpen={this.props.isOpen}>
-        <ModalHeader>
-          {this.props.isNewProject
-            ? "Create new Project"
-            : "Edit Project: " + this.state.originalProject.name}
-        </ModalHeader>
-        <ModalBody>
-          <InputGroup>
-            <InputGroupText>
-              <InputGroupText>{"Name"}</InputGroupText>
-            </InputGroupText>
-            <Input
-              id="inputProjectName"
-              placeholder={"Project-name"}
-              value={this.state.project.name}
-              onChange={(e) => this.onNameChanged(e.target.value)}
-            />
-          </InputGroup>
-          <InputGroup>
-            <InputGroupText>
-              <InputGroupText>{"Admin"}</InputGroupText>
-            </InputGroupText>
-            <Input
-              readOnly
-              id="inputProjectAdmin"
-              placeholder={"Project-admin"}
-              value={this.props.userName}
-            />
-          </InputGroup>
+      <Modal id="editProjectModal" opened={this.props.isOpen} onClose={this.onCancel} title={
+        this.props.isNewProject
+          ? "Create new Project"
+          : "Edit Project: " + this.state.originalProject.name
+      }>
+        <Modal.Body>
+          <TextInput
+            label="Name"
+            id="inputProjectName"
+            placeholder="Project-name"
+            value={this.state.project.name}
+            onChange={(e) => this.onNameChanged(e.target.value)}
+          />
+          <TextInput
+            label="Admin"
+            readOnly
+            id="inputProjectAdmin"
+            placeholder="Project-admin"
+            value={this.props.userName}
+          />
           {this.props.isNewProject ? null : (
-            <InputGroup>
-              <InputGroupText>
-                <InputGroupText>{"Admin"}</InputGroupText>
-              </InputGroupText>
-              <Input value={this.state.project.admin.userName} readOnly />
-            </InputGroup>
+            <TextInput
+              label="Admin"
+              value={this.state.project.admin.userName}
+              readOnly
+            />
           )}
           <h5 style={{ paddingTop: "16px" }}>Users</h5>
 
-          <Row className="user-search-heading">
-            <Col className="col-3">Search users: </Col>
-            <Col>
-              <AutoCompleteInput
-                type="text"
-                name="User ID"
-                value={this.state.userSearchValue}
-                placeholder="Enter username"
-                onClick={this.onAddUserName}
-                onChange={this.onChangeUserNameSuggestion}
-                getsuggestions={getUserNameSuggestions}
-                filter={[
-                  ...this.state.project.users.map((elm) => elm.userName),
-                  this.props.userName,
-                ]}
-              ></AutoCompleteInput>
-            </Col>
-          </Row>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span>Search users: </span>
+            <AutoCompleteInput
+              type="text"
+              name="User ID"
+              value={this.state.userSearchValue}
+              placeholder="Enter username"
+              onClick={this.onAddUserName}
+              onChange={this.onChangeUserNameSuggestion}
+              getsuggestions={getUserNameSuggestions}
+              filter={[
+                ...this.state.project.users.map((elm) => elm.userName),
+                this.props.userName,
+              ]}
+            />
+          </div>
           <Table striped>
             <thead>
-              <tr className="table-record">
-                <th className="table-record-left">#</th>
-                <th className="table-record-center">UserName</th>
-                <th className="table-record-right">Delete</th>
+              <tr>
+                <th>#</th>
+                <th>UserName</th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -235,26 +213,27 @@ class EditProjectModal extends Component {
               )}
             </tbody>
           </Table>
-        </ModalBody>
-        <ModalFooter style={{ justifyContent: "space-between" }}>
+        </Modal.Body>
+        <Modal.Footer style={{ justifyContent: "space-between" }}>
           <Button
             id="btnSaveProject"
-            color="primary"
-            className="m-1"
+            color="blue"
+            style={{ margin: "0.25rem" }}
             onClick={this.onSave}
           >
             Save
-          </Button>{" "}
+          </Button>
           <div className="error-text"> {this.state.error}</div>
           <Button
             id="btnSaveProjectCancel"
-            color="secondary"
-            className="m-1"
+            variant="outline"
+            color="gray"
+            style={{ margin: "0.25rem" }}
             onClick={this.onCancel}
           >
             Cancel
           </Button>
-        </ModalFooter>
+        </Modal.Footer>
       </Modal>
     );
   }

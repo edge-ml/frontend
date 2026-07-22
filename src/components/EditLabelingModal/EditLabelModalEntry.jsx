@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import {
-  InputGroup,
-  InputGroupText,
-  Input,
-  FormFeedback,
+  TextInput,
   Button,
-} from "reactstrap";
+  Group,
+} from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faL, faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import {
   hexToForegroundColor,
   isValidColor,
@@ -29,50 +27,51 @@ const EditLabelingModalEntry = ({
   };
 
   const onChangeName = (e) => {
-    console.log(e);
     onChangeLabel({ ...label, name: e.target.value });
   };
 
   return (
-    <InputGroup>
-      <InputGroupText>Name</InputGroupText>
-      <Input
-        invalid={invalid}
+    <Group gap="xs" style={{ width: "100%", marginBottom: "0.5rem" }}>
+      <TextInput
+        label="Name"
+        error={invalid ? "Duplicate names are not allowed" : undefined}
         placeholder="Name"
         value={label.name}
         onChange={onChangeName}
+        style={{ flex: 1 }}
       />
-      <InputGroupText>Color</InputGroupText>
       <div
-        className="d-flex justify-content-center align-items-center cursor-pointer"
-        style={{ backgroundColor: label.color, width: "100px" }}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          cursor: "pointer",
+          backgroundColor: label.color,
+          width: "100px",
+          height: "36px",
+          borderRadius: "4px",
+          marginTop: "1.5rem",
+          position: "relative",
+        }}
         onClick={() => setColorPickerOpen(true)}
       >
         <FontAwesomeIcon
           color={hexToForegroundColor(label.color)}
           icon={faPen}
-        ></FontAwesomeIcon>
-        <div className="position-absolute z-10000">
-          <div>
-            <ColorPicker
-              isOpen={colorPickerOpen}
-              className="position-relative"
-              color={label.color}
-              onSave={onChangeColor}
-              disableAlpha
-            ></ColorPicker>
-          </div>
+        />
+        <div style={{ position: "absolute", zIndex: 10000 }}>
+          <ColorPicker
+            isOpen={colorPickerOpen}
+            color={label.color}
+            onSave={onChangeColor}
+            disableAlpha
+          />
         </div>
       </div>
-      <Button className="ms-1" color="danger" outline onClick={onDelete}>
-        <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
+      <Button color="red" variant="outline" onClick={onDelete} style={{ marginTop: "1.5rem" }}>
+        <FontAwesomeIcon icon={faTrashAlt} />
       </Button>
-      <FormFeedback id="labelFeedback">
-        {!isValidColor(label.color)
-          ? "Invalid color"
-          : "Duplicate names are not allowed"}
-      </FormFeedback>
-    </InputGroup>
+    </Group>
   );
 };
 

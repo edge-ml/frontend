@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "reactstrap";
+import { Button } from "@mantine/core";
 import { hexToForegroundColor } from "../../services/ColorService";
 import { useContext } from "react";
 import { DatasetContext } from "../../routes/dataset/DatasetContext";
@@ -38,20 +38,20 @@ const LabelButtonView = ({
 
 const TimeDisplay = ({ from, to }) => {
   return (
-    <div className="mx-2">
+    <div style={{ margin: "0 0.5rem" }}>
       <small>
-        <div className="d-flex justify-content-center fw-bold">
+        <div style={{ display: "flex", justifyContent: "center", fontWeight: 700 }}>
           Selected Label
         </div>
       </small>
-      <div className="d-flex align-items-center">
+      <div style={{ display: "flex", alignItems: "center" }}>
         <small>
           <div className="monospace text-sm">
             {new Date(from).toUTCString().split(" ")[4]}
           </div>
         </small>
         <small>
-          <div className="mx-1 monospace">-</div>
+          <div style={{ margin: "0 0.25rem" }} className="monospace">-</div>
         </small>
         <small>
           <div className="monospace">
@@ -99,28 +99,28 @@ const LabelingPanel = ({}) => {
   return (
     <div>
       <div className="labelingPanelBorder"></div>
-      <div className="d-flex justify-content-between p-1">
+      <div style={{ display: "flex", justifyContent: "space-between", padding: "0.25rem" }}>
         {!hideLabels ? (
-          <div className="d-flex">
+          <div style={{ display: "flex" }}>
             <LabelButtonView
               labeling={activeLabeling}
               selectedLabelTypeId={selectedLabelTypeId}
               setSelectedLabelTypeId={setSelectedLabelTypeId}
-            ></LabelButtonView>
+            />
           </div>
         ) : (
           <div></div>
         )}
-        <div className="d-flex">
+        <div style={{ display: "flex" }}>
           <TimeDisplay
             from={selectedLabel && selectedLabel.start}
             to={selectedLabel && selectedLabel.end}
-          ></TimeDisplay>
+          />
           <Button
             disabled={selectedLabel === undefined}
             className="deleteButton m-1"
-            outline
-            color="danger"
+            variant="outline"
+            color="red"
             onClick={() => setDeleteModalOpen(true)}
           >
             Delete
@@ -144,7 +144,8 @@ const LabelingPanel = ({}) => {
           onDeleteSelectedLabel();
           setDeleteModalOpen(false);
         }}
-      >        The selected label
+      >
+        The selected label
       </DeleteModal>
     </div>
   );

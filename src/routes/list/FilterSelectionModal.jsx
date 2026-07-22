@@ -5,10 +5,10 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Input,
-  Label,
-  FormGroup,
-} from "reactstrap";
+  TextInput,
+  Radio,
+  Stack,
+} from "@mantine/core";
 
 const FilterSelectionModal = ({
   toggleFilterSelectionModal,
@@ -28,7 +28,7 @@ const FilterSelectionModal = ({
 
   const handleFilterClick = (event) => {
     setFilterParam(null);
-    setCurrentFilter(event.target.value);
+    setCurrentFilter(event.currentTarget.value);
   };
 
   const renderEmptyDatasetsFilter = () => {
@@ -41,13 +41,10 @@ const FilterSelectionModal = ({
     switch (currentFilter) {
       case "filterByName":
         return null;
-        break;
       case "filterEmptyDatasets":
         return renderEmptyDatasetsFilter();
-        break;
       case "filterByLabelingSets":
         return null;
-        break;
       default:
         return null;
     }
@@ -62,38 +59,41 @@ const FilterSelectionModal = ({
 
   return (
     <div>
-      <Modal isOpen={showFilterSelectionModal} size="xl">
-        <ModalHeader>Filter Selection</ModalHeader>
-        <ModalBody>
+      <Modal opened={showFilterSelectionModal} onClose={toggleFilterSelectionModal} size="xl">
+        <Modal.Header>
+          <Modal.Title>Filter Selection</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
           <div>
-            <FormGroup className="ms-3 d-flex flex-column justify-content-center">
-              <Label>Select a filter:</Label>
-              {filters.map((filter) => (
-                <div key={filter.value}>
-                  <Label check>
-                    <Input
-                      type="radio"
-                      name="radioOption"
-                      value={filter.value}
-                      checked={currentFilter === filter.value}
-                      onChange={handleFilterClick}
-                    />{" "}
-                    {filter.displayName}
-                  </Label>
-                </div>
-              ))}
-            </FormGroup>
+            <Radio.Group
+              label="Select a filter:"
+              value={currentFilter}
+              onChange={(value) => {
+                setFilterParam(null);
+                setCurrentFilter(value);
+              }}
+            >
+              <Stack>
+                {filters.map((filter) => (
+                  <Radio
+                    key={filter.value}
+                    value={filter.value}
+                    label={filter.displayName}
+                  />
+                ))}
+              </Stack>
+            </Radio.Group>
             {renderFilter()}
           </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" outline onClick={applyAndClose}>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline" color="blue" onClick={applyAndClose}>
             Apply
           </Button>{" "}
-          <Button color="danger" outline onClick={toggleFilterSelectionModal}>
+          <Button variant="outline" color="red" onClick={toggleFilterSelectionModal}>
             Cancel
           </Button>
-        </ModalFooter>
+        </Modal.Footer>
       </Modal>
     </div>
   );

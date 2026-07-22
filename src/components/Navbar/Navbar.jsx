@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { Stack, UnstyledButton, Text, Tooltip, Loader } from "@mantine/core";
 
 import "./Navbar.css";
 import EdgeMLBrandLogo from "../EdgeMLBrandLogo/EdgeMLBrandLogo";
@@ -11,129 +12,92 @@ import NavbarInfo from "./NavbarInfo";
 import NavbarProject from "./NavbarProject";
 import EditProjectModal from "../EditProjectModal/EditProjectModal";
 import useProjectStore from "../../stores/projectStore";
-import Loader from "../../modules/loader";
-import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
   const [projectModalOpen, setProjectModalOpen] = useState(false);
 
   const { activeNotifications } = useContext(NotificationContext);
-  const { projects, currentProject, setCurrentProject } = useProjectStore();
-
-  const navigate = useNavigate();
-
-  const onProjectEditModal = () => {
-    setProjectModalOpen(true);
-  };
-
-  const toggleNotificationModal = () => {
-    setNotificationModalOpen(!notificationModalOpen);
-  };
-
-  const onProjectClick = (project) => {
-    setCurrentProject(project);
-    navigate(currentProject.admin.userName, currentProject.name, "datasets");
-  };
+  const { projects, currentProject } = useProjectStore();
 
   if (!projects) {
-    return <Loader isLoading></Loader>;
+    return <Loader />;
   }
 
   return (
-    <div
-      className="d-flex flex-column bg-light align-items-center justify-content-between navbar-base user-select-none"
-      color="light"
+    <Stack
+      className="navbar-base"
+      justify="space-between"
+      align="center"
+      gap={0}
     >
-      <div
-        className="w-100 d-flex flex-column justify-content-center align-items-center"
-        style={{ minHeight: 0 }}
-      >
+      <Stack gap={0} align="center" style={{ width: "100%", minHeight: 0 }}>
         <EdgeMLBrandLogo
           href={
             currentProject
-              ? "/" +
-                currentProject.admin.userName +
-                "/" +
-                currentProject.name +
-                "/" +
-                "datasets"
+              ? `/${currentProject.admin.userName}/${currentProject.name}/datasets`
               : null
           }
         />
         <div className="w-100 mt-3 overflow-auto">
-          {projects.map((project, index) => {
-            return (
-              <NavbarProject
-                currentProject={currentProject}
-                projects={projects}
-                project={project}
-                key={"navbarItem" + project._id}
-                onProjectClick={onProjectClick}
-              ></NavbarProject>
-            );
-          })}
+          {projects.map((project) => (
+            <NavbarProject
+              key={project._id}
+              project={project}
+            />
+          ))}
         </div>
 
-        <div
-          onClick={() => onProjectEditModal(true)}
+        <UnstyledButton
           id="btn-add-project"
-          className="w-100 mt-3 pt-2 pb-2 navbar-project text-center"
+          onClick={() => setProjectModalOpen(true)}
+          className="w-100 mt-3 pt-2 pb-2"
           style={{
             backgroundColor: "#eee",
-            border: "0px solid transparent",
             color: "#666",
             fontSize: "0.9rem",
-            cursor: "pointer",
           }}
         >
-          <FontAwesomeIcon
-            id="btnAddProject"
-            icon={faPlus}
-            className="fa-s me-1"
-          />
+          <FontAwesomeIcon icon={faPlus} className="me-1" />
           Add Project
-        </div>
-      </div>
-      <div></div>
+        </UnstyledButton>
+      </Stack>
 
-      <div className="d-flex flex-column footer w-100 text-light justify-content-center align-items-center">
-        {activeNotifications.length > 0 ? (
-          <div
-            className="pt-3 pb-3 navbar-project-item w-100 text-center"
-            onClick={toggleNotificationModal}
+      <Stack gap={0} align="center" className="w-100" style={{ color: "white" }}>
+        {activeNotifications.length > 0 && (
+          <UnstyledButton
+            className="pt-3 pb-3 w-100 text-center"
+            onClick={() => setNotificationModalOpen(true)}
+            style={{ color: "#666", cursor: "pointer" }}
           >
-            <small>
+            <Text size="xs">
               <FontAwesomeIcon icon={faDownload} className="me-2" />
-              {`${activeNotifications.length} ${
-                activeNotifications.length > 1
-                  ? "Notifications"
-                  : "Notification"
-              }`}
-            </small>
-          </div>
-        ) : null}
-        <NavbarInfo></NavbarInfo>
+              {`${activeNotifications.length} ${activeNotifications.length > 1 ? "Notifications" : "Notification"}`}
+            </Text>
+          </UnstyledButton>
+        )}
+        <NavbarInfo />
         <div
           style={{
             height: "1px",
             backgroundColor: "darkgray",
-            opacity: "0.3",
+            opacity: 0.3,
             width: "95%",
           }}
-        ></div>
-        <NavbarUserSettings></NavbarUserSettings>
-      </div>
+        />
+        <NavbarUserSettings />
+      </Stack>
+
       <NotificationHandler
         onClose={() => setNotificationModalOpen(false)}
         isOpen={notificationModalOpen}
-      ></NotificationHandler>
+      />
       <EditProjectModal
         isOpen={projectModalOpen}
         isNewProject={true}
         onClose={() => setProjectModalOpen(false)}
-      ></EditProjectModal>
-    </div>
+      />
+    </Stack>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, Button } from "reactstrap";
+import { Card, Button } from "@mantine/core";
 import "./VideoPanel.css";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -116,7 +116,7 @@ class VideoPanel extends Component {
 
   render() {
     return (
-      <Card className={"VideoPanel"} style={{ overflow: "hidden" }}>
+      <Card className={"VideoPanel"} shadow="sm" padding="md" radius="md" withBorder style={{ overflow: "hidden" }}>
         <Button
           style={{
             position: "absolute",
@@ -129,6 +129,7 @@ class VideoPanel extends Component {
               ? "hidden"
               : "visible",
           }}
+          variant="subtle"
           onClick={this.onTogglePictureInPicture}
         >
           <FontAwesomeIcon

@@ -1,6 +1,5 @@
-// Import necessary libraries and components
 import React, { useState } from "react";
-import { Button, Row, Col } from "reactstrap";
+import { SimpleGrid, Card, Text, Button, Group } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCode,
@@ -11,15 +10,9 @@ import {
 import useProjectRouter from "../../Hooks/ProjectRouter";
 import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
 
-// Component for Data Upload Panel
 const DataUpload = ({ refreshDatasets }) => {
   const navigate = useProjectRouter();
-
   const [csvModalOpen, setCSVModalOpen] = useState(false);
-
-  const iconSize = "xs";
-  const buttonColor = "secondary";
-  const linkTarget = "_blank";
 
   const dataUploadOptions = [
     {
@@ -30,7 +23,8 @@ const DataUpload = ({ refreshDatasets }) => {
           Learn how to prepare your Arduino{" "}
           <a
             href="https://github.com/edge-ml/EdgeML-Arduino"
-            target={linkTarget}
+            target="_blank"
+            rel="noreferrer"
           >
             here
           </a>
@@ -48,7 +42,8 @@ const DataUpload = ({ refreshDatasets }) => {
           Learn how to prepare your CSV file{" "}
           <a
             href="https://github.com/edge-ml/EdgeML-Arduino"
-            target={linkTarget}
+            target="_blank"
+            rel="noreferrer"
           >
             here
           </a>
@@ -76,47 +71,45 @@ const DataUpload = ({ refreshDatasets }) => {
 
   return (
     <div
-      className="p-4 pt-4 pb-5 mb-4 data-upload-panel"
+      className="p-4 pt-4 pb-5 mb-4"
       style={{
         background: "linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72))",
       }}
     >
-      <div className="mt-2 mb-4" style={{ color: "white", opacity: 0.7 }}>
-        <b>DATA UPLOAD</b>
-      </div>
+      <Text c="white" opacity={0.7} fw={700} mb="md">
+        DATA UPLOAD
+      </Text>
 
-      {/* Render the Data Upload options */}
-      <Row>
+      <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
         {dataUploadOptions.map((option, index) => (
-          <Col
+          <Card
             key={index}
-            className="col-sm-6 col-xl-3 col-12 p-3 d-flex flex-row align-items-start justify-content-start"
-            style={{ color: "white" }}
+            padding="md"
+            style={{ background: "transparent", color: "white" }}
           >
-            <div className="data-upload-icon">
-              <FontAwesomeIcon icon={option.icon} size={iconSize} />
-            </div>
-            <div className="w-100 h-100 d-flex flex-column align-items-start justify-content-between">
-              <div>
-                <small>
-                  <b>{option.title}</b>
-                  <br />
-                  {option.description}
-                </small>
+            <Group gap="sm" align="flex-start">
+              <FontAwesomeIcon icon={option.icon} />
+              <div style={{ flex: 1 }}>
+                <Text size="sm" fw={700}>
+                  {option.title}
+                </Text>
+                <Text size="xs">{option.description}</Text>
+                <Button
+                  id={`buttonUpload${option.title.replace(/ /g, "")}`}
+                  variant="outline"
+                  color="gray"
+                  size="compact-sm"
+                  mt="sm"
+                  onClick={option.buttonAction}
+                >
+                  {option.buttonText}
+                </Button>
               </div>
-              <Button
-                id={`buttonUpload${option.title.replace(/ /g, "")}`}
-                className="mt-2 btn-upload align-self-stretch align-self-md-start"
-                color={buttonColor}
-                onClick={option.buttonAction}
-                style={{ padding: "0px" }}
-              >
-                <small>{option.buttonText}</small>
-              </Button>
-            </div>
-          </Col>
+            </Group>
+          </Card>
         ))}
-      </Row>
+      </SimpleGrid>
+
       <UploadDatasetModal
         isOpen={csvModalOpen}
         onCloseModal={() => setCSVModalOpen(false)}

@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Container } from "reactstrap";
 
 class NoProjectPage extends Component {
   constructor(props) {
@@ -8,7 +7,7 @@ class NoProjectPage extends Component {
   }
   render() {
     return (
-      <Container className="d-flex align-items-center justify-content-center h-75 py-5">
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "75%", padding: "3rem 0" }}>
         <h2>
           {this.props.text ? (
             this.props.text
@@ -18,7 +17,7 @@ class NoProjectPage extends Component {
             </div>
           )}
         </h2>
-      </Container>
+      </div>
     );
   }
 }

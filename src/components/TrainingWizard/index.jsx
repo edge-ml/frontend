@@ -2,11 +2,12 @@ import React from "react";
 import {
   Modal,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   Button,
   Alert,
-} from "reactstrap";
+  Group,
+  Text,
+} from "@mantine/core";
 import Wizard_SelectLabeling from "./Steps/Select_Labeling";
 import "./index.css";
 import { useEffect, useState, Fragment } from "react";
@@ -21,69 +22,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { intersect, toggleElement } from "../../services/helpers";
 import Pipelinestep from "./Pipelinestep";
 
-export const WizardFooter = ({
-  invalidResult = false,
-  onNext,
-  onBack,
-  onClose,
-  onTrain,
-  step,
-  maxSteps,
-}) => {
-  const [clickedOnce, setClickedOnce] = useState(false);
-  useEffect(() => setClickedOnce(false), [step]);
-
-  return (
-    <ModalFooter className="fotter">
-      <div>
-        <Button color="secondary" onClick={onClose} className="me-2">
-          Cancel
-        </Button>
-        <Button color="secondary" onClick={onBack}>
-          Back
-        </Button>
-      </div>
-      <Alert
-        color="warning"
-        style={{
-          visibility: !!invalidResult && clickedOnce ? "visible" : "hidden",
-        }}
-      >
-        {invalidResult || "No problems"}
-      </Alert>
-      <div>
-        <span className="me-3">
-          {step + 1}/{maxSteps}
-        </span>
-        <Button
-          color="primary"
-          disabled={!!invalidResult && clickedOnce}
-          onClick={() => {
-            if (!clickedOnce) {
-              setClickedOnce(true);
-            }
-
-            if (invalidResult) {
-              return;
-            }
-
-            if (step + 1 === maxSteps) {
-              onTrain();
-            } else {
-              onNext();
-            }
-          }}
-        >
-          {step + 1 === maxSteps ? "Train" : "Next"}
-        </Button>
-      </div>
-    </ModalFooter>
-  );
-};
-
 const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
-  // Data obtained from the server
-
   const [pipelines, setPipelines] = useState(undefined);
 
   const [datasets, setDatasets] = useState([]);
@@ -94,7 +33,6 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   const [windowing, setWindowing] = useState([]);
   const [featureExtractors, setFeatureExtractors] = useState([]);
 
-  // User selections made in the wizard
   const [disabledTimeseriesNames, setDisabledTimeseriesNames] = useState([]);
   const [labeling, setLableing] = useState();
   const [zeroClass, toggleZeroClass] = useState(false);
@@ -109,12 +47,10 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   const [selectedPipeline, setSelectedPipeline] = useState(undefined);
   const [selectedPipelineSteps, setSelectedPipelineSteps] = useState(undefined);
 
-  // Current state of the wizard
   const [screen, setScreen] = useState(0);
 
   const [stepValidation, setStepValidation] = useState(false);
 
-  // Navigate the wizard
   const maxSteps = selectedPipeline ? selectedPipeline.steps.length + 3 : 0;
   const onBack = () => {
     setScreen(Math.max(screen - 1, 0));
@@ -243,7 +179,6 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     onEvaluationChanged: onEvaluationChanged,
     setSelectedEval: setSelectedEval,
     modelName: modelName,
-    setModelName: setModelName,
     zeroClass: zeroClass,
     toggleZeroClass: toggleZeroClass,
   };
@@ -256,8 +191,8 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} size="xl">
-      <ModalHeader>
+    <Modal opened={isOpen} onClose={onClose} size="xl">
+      <Modal.Header>
         <div>
           {"Train a model" +
             (selectedPipeline ? ": " + selectedPipeline.name : "")}
@@ -271,16 +206,15 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
           }}
           onClick={onClose}
         >
-          <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
+          <FontAwesomeIcon icon={faXmark} />
         </div>
-      </ModalHeader>
-      <ModalBody style={{ minHeight: "50vh" }}>
+      </Modal.Header>
+      <Modal.Body style={{ minHeight: "50vh" }}>
         {datasets &&
         labelings &&
         (datasets.length === 0 || labelings.length === 0) ? (
           <div
-            className="d-flex justify-content-center align-items-center fw-bold"
-            style={{ height: "30vh" }}
+            style={{ display: "flex", justifyContent: "center", alignItems: "center", fontWeight: 700, height: "30vh" }}
           >
             You need datasets and labelings to train models!
           </div>
@@ -290,7 +224,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             pipelines={pipelines}
             onSelectTrainingMethod={onSelectTrainingMethod}
             valdiate={setStepValidation}
-          ></SelectTrainMethod>
+          />
         ) : null}
         {selectedPipeline ? (
           <Fragment>
@@ -303,7 +237,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 toggleZeroClass={toggleZeroClass}
                 zeroClass={zeroClass}
                 validate={setStepValidation}
-              ></Wizard_SelectLabeling>
+              />
             ) : null}
 
             {screen === 1 ? (
@@ -315,7 +249,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 toggleDisableTimeseries={toggleDisableTimeseries}
                 disabledTimeseriesNames={disabledTimeseriesNames}
                 valdiate={setStepValidation}
-              ></Wizard_SelectDataset>
+              />
             ) : null}
             {screen >= 2 && screen !== maxSteps - 1 ? (
               <Pipelinestep
@@ -324,7 +258,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 selectedPipelineStep={selectedPipelineSteps[screen - 2]}
                 setPipelineStep={setPipelineStep}
                 valdiate={setStepValidation}
-              ></Pipelinestep>
+              />
             ) : null}
             {screen == maxSteps - 1 ? (
               <Select_Name
@@ -332,43 +266,45 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 modelName={modelName}
                 setModelName={setModelName}
                 valdiate={setStepValidation}
-              ></Select_Name>
+              />
             ) : null}
           </Fragment>
         ) : null}
-      </ModalBody>
-      <ModalFooter className="d-flex justify-content-between">
-        <div>
-          {screen !== 0 ? (
-            <Button color="secondary" outline onClick={onBack}>
-              Back
-            </Button>
-          ) : null}
-        </div>
-        {selectedPipeline ? (
-          <span className="me-3">
-            {screen + 1}/{maxSteps}
-          </span>
-        ) : null}
-        <div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Group justify="space-between" style={{ width: "100%" }}>
+          <div>
+            {screen !== 0 ? (
+              <Button variant="outline" color="gray" onClick={onBack}>
+                Back
+              </Button>
+            ) : null}
+          </div>
           {selectedPipeline ? (
-            <Button
-              outline
-              color="primary"
-              disabled={!stepValidation}
-              onClick={() => {
-                if (screen + 1 === maxSteps) {
-                  onTrain();
-                } else {
-                  onNext();
-                }
-              }}
-            >
-              {screen + 1 === maxSteps ? "Train" : "Next"}
-            </Button>
+            <Text span mr="md">
+              {screen + 1}/{maxSteps}
+            </Text>
           ) : null}
-        </div>
-      </ModalFooter>
+          <div>
+            {selectedPipeline ? (
+              <Button
+                variant="outline"
+                color="blue"
+                disabled={!stepValidation}
+                onClick={() => {
+                  if (screen + 1 === maxSteps) {
+                    onTrain();
+                  } else {
+                    onNext();
+                  }
+                }}
+              >
+                {screen + 1 === maxSteps ? "Train" : "Next"}
+              </Button>
+            ) : null}
+          </div>
+        </Group>
+      </Modal.Footer>
     </Modal>
   );
 };

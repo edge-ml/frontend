@@ -6,7 +6,7 @@ import {
   faPlay,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "reactstrap";
+import { Button, Tooltip } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useProjectRouter from "../../Hooks/ProjectRouter";
 
@@ -18,7 +18,6 @@ const checkExportC = (model, stepOptions) => {
     );
     if (!stepOption) return false;
     if (!["PRE", "CORE"].includes(stepOption.type)) return true;
-
     return (
       ["PRE", "CORE"].includes(stepOption.type) &&
       stepOption.platforms.includes("C")
@@ -27,14 +26,16 @@ const checkExportC = (model, stepOptions) => {
 };
 
 const ListButton = ({ onClick, icon, children, ...props }) => {
-  const onClickStop = (e) => {
-    onClick(e);
-    e.stopPropagation();
-  };
-
   return (
-    <Button {...props} className="btn-edit ms-2 my-2" onClick={onClickStop}>
-      <FontAwesomeIcon icon={icon}></FontAwesomeIcon>
+    <Button
+      {...props}
+      className="ms-2 my-2"
+      onClick={(e) => {
+        onClick(e);
+        e.stopPropagation();
+      }}
+    >
+      <FontAwesomeIcon icon={icon} />
       <div>
         <small>{children}</small>
       </div>
@@ -48,44 +49,48 @@ const ButtonList = ({
   setModelDownload,
   onDeleteSingleModel,
   stepOptions,
-  setDeployModalOpen
+  setDeployModalOpen,
 }) => {
   const navigateTo = useProjectRouter();
+  const canExport = model.trainStatus === "done" && !model.error;
 
   return (
-    <>
-      {model.trainStatus === "done" && !model.error && (
+    <Button.Group>
+      {canExport && (
         <>
           <ListButton
-            color="info"
-            outline
+            color="cyan"
+            variant="outline"
             icon={faInfoCircle}
             onClick={() => setModalModel(model)}
           >
             Info
           </ListButton>
           <ListButton
-            color="primary"
-            outline
+            color="blue"
+            variant="outline"
             icon={faPlay}
             onClick={() => navigateTo("models/live/" + model._id)}
           >
             View live
           </ListButton>
-          <ListButton
-            color="primary"
-            outline
-            icon={faMicrochip}
-            onClick={() => {
-              setDeployModalOpen(true);
-            }}
-            disabled={!checkExportC(model, stepOptions)}
+          <Tooltip
+            label="Selected pipeline doesn't support C export"
+            disabled={checkExportC(model, stepOptions)}
           >
-            Deploy
-          </ListButton>
+            <ListButton
+              color="blue"
+              variant="outline"
+              icon={faMicrochip}
+              onClick={() => setDeployModalOpen(true)}
+              disabled={!checkExportC(model, stepOptions)}
+            >
+              Deploy
+            </ListButton>
+          </Tooltip>
           <ListButton
-            color="primary"
-            outline
+            color="blue"
+            variant="outline"
             icon={faDownload}
             onClick={() => setModelDownload(model)}
           >
@@ -94,14 +99,14 @@ const ButtonList = ({
         </>
       )}
       <ListButton
-        color="danger"
-        outline
+        color="red"
+        variant="outline"
         icon={faTrashAlt}
         onClick={() => onDeleteSingleModel(model)}
       >
         Delete
       </ListButton>
-    </>
+    </Button.Group>
   );
 };
 

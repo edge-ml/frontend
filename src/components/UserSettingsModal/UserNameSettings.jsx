@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Button, TextInput } from "@mantine/core";
 
 import { changeUserName } from "../../services/ApiServices/AuthentificationServices";
 
@@ -51,32 +51,28 @@ class UserNameSettings extends Component {
   render() {
     return (
       <div>
-        <h4 className="fw-bold">Change UserName</h4>
-        <InputGroup>
-            <InputGroupText>Username</InputGroupText>
-          <Input
-            id="inputUserName"
-            placeholder="New username"
-            onChange={this.onUserNameChange}
-          />
-        </InputGroup>
-        <InputGroup>
-            <InputGroupText>Username</InputGroupText>
-          <Input
-            id="inputUserNameConfirm"
-            placeholder="Retype new username"
-            onChange={this.onUserNameConfirmChange}
-          />
-        </InputGroup>
+        <h4 style={{ fontWeight: 700 }}>Change UserName</h4>
+        <TextInput
+          label="Username"
+          id="inputUserName"
+          placeholder="New username"
+          onChange={this.onUserNameChange}
+        />
+        <TextInput
+          label="Username"
+          id="inputUserNameConfirm"
+          placeholder="Retype new username"
+          onChange={this.onUserNameConfirmChange}
+        />
         <Button
-          outline
+          variant="outline"
           disabled={
             !this.state.userName ||
             this.state.userName !== this.state.userNameConfirm
           }
           id="buttonSaveUserName"
-          color="primary"
-          className="m-1 me-auto"
+          color="blue"
+          style={{ margin: "0.25rem" }}
           onClick={this.onUserNameSubmit}
         >
           Save new username

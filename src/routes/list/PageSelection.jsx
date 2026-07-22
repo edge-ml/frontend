@@ -1,29 +1,46 @@
 import React from "react";
-import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { Group, Button } from "@mantine/core";
+import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react";
 
 const PageSelection = ({ currentPage, setPage, totalPages }) => {
-  const onClick = () => {
-    setPage(currentPage);
-  };
-
   return (
-    <Pagination>
-      <PaginationItem onClick={() => setPage(1)}>
-        <PaginationLink first href="#" />
-      </PaginationItem>
-      <PaginationItem onClick={() => setPage(currentPage - 1)}>
-        <PaginationLink href="#" previous />
-      </PaginationItem>
-      <PaginationItem>
-        <PaginationLink>{currentPage + "/" + totalPages}</PaginationLink>
-      </PaginationItem>
-      <PaginationItem onClick={() => setPage(currentPage + 1)}>
-        <PaginationLink href="#" next />
-      </PaginationItem>
-      <PaginationItem onClick={() => setPage(Number.MAX_SAFE_INTEGER)}>
-        <PaginationLink href="#" last />
-      </PaginationItem>
-    </Pagination>
+    <Group gap="xs">
+      <Button
+        variant="default"
+        size="compact-sm"
+        onClick={() => setPage(1)}
+        disabled={currentPage <= 1}
+      >
+        <IconChevronsLeft size={14} />
+      </Button>
+      <Button
+        variant="default"
+        size="compact-sm"
+        onClick={() => setPage(currentPage - 1)}
+        disabled={currentPage <= 1}
+      >
+        <IconChevronLeft size={14} />
+      </Button>
+      <Button variant="outline" size="compact-sm" disabled>
+        {currentPage}/{totalPages}
+      </Button>
+      <Button
+        variant="default"
+        size="compact-sm"
+        onClick={() => setPage(currentPage + 1)}
+        disabled={currentPage >= totalPages}
+      >
+        <IconChevronRight size={14} />
+      </Button>
+      <Button
+        variant="default"
+        size="compact-sm"
+        onClick={() => setPage(Number.MAX_SAFE_INTEGER)}
+        disabled={currentPage >= totalPages}
+      >
+        <IconChevronsRight size={14} />
+      </Button>
+    </Group>
   );
 };
 

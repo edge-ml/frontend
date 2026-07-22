@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ListGroup, ListGroupItem, Badge } from "reactstrap";
+import { Badge, List } from "@mantine/core";
 import Checkbox from "../../../components/Common/Checkbox";
 
 const LabelingSetsFilter = ({
@@ -86,23 +86,20 @@ const LabelingSetsFilter = ({
       return null;
     } else {
       return (
-        <div className="d-flex flex-row me-2 badgeSize pb-2">
-          {labels.map((label, index) => {
+        <div style={{ display: "flex", flexDirection: "row", paddingBottom: "0.5rem" }}>
+          {labels.map((label) => {
             return (
-              <div style={{ display: "flex", alignItems: "center" }}>
+              <div key={label._id} style={{ display: "flex", alignItems: "center" }}>
                 <Checkbox
                   isSelected={isSelectedLabel(label._id)}
-                  className="d-inline-block"
                   onClick={() => onSelectLabel(label)}
                 />
                 <Badge
-                  key={label._id}
-                  className={
-                    label.name === ""
-                      ? "font-italic font-weight-normal badgeSize mx-1 border border-dark"
-                      : "badgeSize mx-1 my-1 border border-dark"
-                  }
-                  style={{ backgroundColor: label.color }}
+                  style={{
+                    backgroundColor: label.color,
+                    border: "1px solid black",
+                    margin: "0 0.25rem",
+                  }}
                 >
                   {label.name !== "" ? label.name : "Untitled"}{" "}
                 </Badge>
@@ -116,31 +113,28 @@ const LabelingSetsFilter = ({
 
   return (
     <div>
-      <div className="mb-4">
-        {
-          "Select the labelings and/or labels of the datasets you want to display:\n"
-        }
+      <div style={{ marginBottom: "1rem" }}>
+        {"Select the labelings and/or labels of the datasets you want to display:\n"}
       </div>
       <div>
-        <ListGroup style={{ maxHeight: "600px", overflowY: "auto" }}>
+        <List style={{ maxHeight: "600px", overflowY: "auto" }}>
           {labelings.map((labeling, index) => (
-            <ListGroupItem key={index}>
-              <div className="d-flex flex-row">
-                <div className="d-flex align-items-center me-2">
+            <List.Item key={index}>
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                <div style={{ display: "flex", alignItems: "center", marginRight: "0.5rem" }}>
                   <Checkbox
                     isSelected={isSelectedLabeling(labeling._id)}
-                    className="d-inline-block"
                     onClick={() => onSelectLabelingSet(labeling)}
-                  ></Checkbox>
-                  <div className="ms-2">
+                  />
+                  <div style={{ marginLeft: "0.5rem" }}>
                     <b>{labeling.name}</b>
                   </div>
                 </div>
                 <div>{renderLabels(labeling.labels)}</div>
               </div>
-            </ListGroupItem>
+            </List.Item>
           ))}
-        </ListGroup>
+        </List>
       </div>
     </div>
   );

@@ -1,14 +1,8 @@
 import React, { Component } from "react";
-import {
-  Button,
-  Modal,
-  Card,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
+import { Button } from "@mantine/core";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Modal, ModalBody, ModalFooter, ModalHeader } from "../../components/Common/Modal";
 
 class ListItemModal extends Component {
   constructor(props) {
@@ -26,25 +20,25 @@ class ListItemModal extends Component {
   render() {
     return (
       <div>
-        <div className="p-2">
-          <div className="header-wrapper d-flex flex-column align-content-center">
+        <div style={{ padding: "0.5rem" }}>
+          <div>
             <h5>{this.props.value.name}</h5>
             <div>{this.props.value.description}</div>
           </div>
-          <div className="body-wrapper p-2">
-            <div className="p-3">
-              <Button outline color="primary" onClick={this.toggleModal}>
+          <div style={{ padding: "0.5rem" }}>
+            <div style={{ padding: "1rem" }}>
+              <Button variant="outline" color="blue" onClick={this.toggleModal}>
                 Edit
               </Button>
             </div>
           </div>
         </div>
         {this.state.modalOpen && (
-          <Modal isOpen={this.state.modalOpen}>
+          <Modal isOpen={this.state.modalOpen} onClose={this.toggleModal}>
             <ModalHeader>{this.props.value.name}</ModalHeader>
             <ModalBody>{this.props.component}</ModalBody>
             <ModalFooter>
-              <Button color="danger" onClick={this.toggleModal}>
+              <Button color="red" onClick={this.toggleModal}>
                 Cancel
               </Button>
             </ModalFooter>

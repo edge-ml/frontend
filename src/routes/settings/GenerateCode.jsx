@@ -1,17 +1,9 @@
-import React, { useContext } from "react";
-import {
-  Container,
-  FormGroup,
-  InputGroup,
-  InputGroupText,
-  Input,
-  Button,
-  Label,
-} from "reactstrap";
+import React from "react";
+import { Stack, TextInput, Button, Group, Switch, Text } from "@mantine/core";
 import useDeviceApi from "../../Hooks/useDeviceAPI";
 import useProjectStore from "../../stores/projectStore";
 
-const GenerateCode = (props) => {
+const GenerateCode = () => {
   const { currentProject } = useProjectStore();
   const { toggleDevieApi, generateApiKeys, removeApiKeys, readKey, writeKey } =
     useDeviceApi();
@@ -19,69 +11,51 @@ const GenerateCode = (props) => {
   const backendUrl = window.location.host;
 
   return (
-    <Container>
-      <div style={{ paddingTop: "16px", display: "flex" }}>
-        {currentProject.users ? (
-          <FormGroup switch>
-            <Label check>Device API</Label>
-            <Input
-              checked={currentProject.enableDeviceApi}
-              onChange={(e) => toggleDevieApi(e.target.checked)}
-              type="switch"
-              role="switch"
-            />
-          </FormGroup>
-        ) : null}
-      </div>
+    <Stack gap="md">
+      {currentProject.users && (
+        <Switch
+          label="Device API"
+          checked={currentProject.enableDeviceApi}
+          onChange={(e) => toggleDevieApi(e.currentTarget.checked)}
+        />
+      )}
       {currentProject.enableDeviceApi || currentProject.users ? (
-        <div>
-          <InputGroup>
-            <InputGroupText>{"Backend-URL"}</InputGroupText>
-            <Input disabled value={backendUrl} readOnly />
-          </InputGroup>
-          <InputGroup>
-            <InputGroupText>{"Read Key"}</InputGroupText>
-            <Input
-              value={readKey ? readKey : "Device-API is disabled for your user"}
-              readOnly
-            />
-          </InputGroup>
-          <InputGroup>
-            <InputGroupText>{"Write Key"}</InputGroupText>
-            <Input
-              value={
-                writeKey ? writeKey : "Device-API is disabled for your user"
-              }
-              readOnly
-            />
-          </InputGroup>
-          <div>
+        <Stack gap="sm">
+          <TextInput label="Backend-URL" value={backendUrl} readOnly />
+          <TextInput
+            label="Read Key"
+            value={readKey || "Device-API is disabled for your user"}
+            readOnly
+          />
+          <TextInput
+            label="Write Key"
+            value={writeKey || "Device-API is disabled for your user"}
+            readOnly
+          />
+          <Group gap="sm">
             <Button
-              outline
-              className="my-1"
+              variant="outline"
               disabled={!currentProject.enableDeviceApi}
-              color="primary"
               onClick={generateApiKeys}
             >
-              {props.state ? "Change key" : "Generate key"}
+              Generate key
             </Button>
             <Button
-              outline
-              className="mx-2 my-1"
-              color="danger"
-              disabled={
-                !currentProject.enableDeviceApi || !readKey || !writeKey
-              }
+              variant="outline"
+              color="red"
+              disabled={!currentProject.enableDeviceApi || !readKey || !writeKey}
               onClick={removeApiKeys}
             >
               Remove key
             </Button>
-          </div>
-        </div>
+          </Group>
+        </Stack>
       ) : (
-        <h6>Feature disabled by project admin</h6>
+        <Text c="dimmed" size="sm">
+          Feature disabled by project admin
+        </Text>
       )}
-    </Container>
+    </Stack>
   );
 };
 

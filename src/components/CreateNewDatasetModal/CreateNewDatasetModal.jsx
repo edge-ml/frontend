@@ -2,16 +2,10 @@ import React, { Component } from "react";
 import classnames from "classnames";
 import {
   Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
-  Input,
+  TextInput,
   Table,
-  InputGroup,
-  InputGroupText,
-  InputGroupText,
-} from "reactstrap";
+} from "@mantine/core";
 import DragDrop from "../Common/DragDrop";
 import {
   updateDataset,
@@ -117,10 +111,6 @@ class CreateNewDatasetModal extends Component {
       });
     }
 
-    //
-    //
-    //
-    //
     this.setState({
       files: [...this.state.files, ...files],
       datasets: [...this.state.datasets, ...results.map((e) => e.dataset)],
@@ -263,7 +253,6 @@ class CreateNewDatasetModal extends Component {
     } catch (e) {
       this.setState({ onUploading: false });
       if (e.status === 413) {
-        // HTTP Payload Too Large
         window.alert("Dataset is too large");
       } else {
         window.alert("An error occurred while uploading the dataset");
@@ -278,21 +267,19 @@ class CreateNewDatasetModal extends Component {
     return (
       <div>
         <Modal
-          className="modal-xl custom-modal"
-          data-testid="modal"
-          isOpen={this.props.isOpen}
+          size="xl"
+          opened={this.props.isOpen}
+          onClose={this.onCloseModal}
+          title={this.props.dataset
+            ? "Add timeseries to dataset"
+            : "Create new dataset"}
         >
-          <ModalHeader>
-            {this.props.dataset
-              ? "Add timeseries to dataset"
-              : "Create new dataset"}
-          </ModalHeader>
-          <ModalBody>
+          <Modal.Body>
             <DragDrop
               style={{ height: "100px" }}
               className="my-2 p-4"
               onFileInput={this.onFileInput}
-            ></DragDrop>
+            />
             {this.state.files.length === 0
               ? null
               : this.state.files.map((file, fileIndex) => {
@@ -302,21 +289,15 @@ class CreateNewDatasetModal extends Component {
                         <thead>
                           <tr>
                             <th colSpan="2" style={{ padding: "0 12px 0 0" }}>
-                              <InputGroup size="md">
-                                <InputGroupText>
-                                  <b>Dataset-name</b>
-                                </InputGroupText>
-                                <Input
-                                  className="fw-bold"
-                                  id={"datasetName" + String(fileIndex)}
-                                  type="text"
-                                  placeholder="Name"
-                                  value={this.state.datasets[fileIndex].name}
-                                  onChange={(e) =>
-                                    this.onDatasetNameChange(e, fileIndex)
-                                  }
-                                />
-                              </InputGroup>
+                              <TextInput
+                                label={<b>Dataset-name</b>}
+                                id={"datasetName" + String(fileIndex)}
+                                placeholder="Name"
+                                value={this.state.datasets[fileIndex].name}
+                                onChange={(e) =>
+                                  this.onDatasetNameChange(e, fileIndex)
+                                }
+                              />
                             </th>
                             <th
                               colSpan="2"
@@ -324,8 +305,7 @@ class CreateNewDatasetModal extends Component {
                             >
                               <Button
                                 id="deleteButton"
-                                color="danger"
-                                size="md"
+                                color="red"
                                 onClick={() => this.onDeleteFile(fileIndex)}
                               >
                                 Delete
@@ -347,77 +327,34 @@ class CreateNewDatasetModal extends Component {
                               (timeSeries, seriesIndex) => {
                                 return (
                                   <tr key={file + seriesIndex}>
-                                    <td
-                                      style={{
-                                        paddingTop: 0,
-                                        paddingBottom: 0,
-                                      }}
-                                    >
-                                      <InputGroup size="sm">
-                                        <InputGroupText>name</InputGroupText>
-                                        <Input
-                                          id={
-                                            "nameInput" +
-                                            String(fileIndex) +
-                                            String(seriesIndex)
-                                          }
-                                          data-testid="nameInput"
-                                          type="text"
-                                          placeholder="Name"
-                                          value={
-                                            this.state.datasets[fileIndex]
-                                              .timeSeries[seriesIndex].name
-                                          }
-                                          onChange={(e) =>
-                                            this.onNameChange(
-                                              e,
-                                              fileIndex,
-                                              seriesIndex
-                                            )
-                                          }
-                                        />
-                                      </InputGroup>
+                                    <td style={{ paddingTop: 0, paddingBottom: 0 }}>
+                                      <TextInput
+                                        label="name"
+                                        id={"nameInput" + String(fileIndex) + String(seriesIndex)}
+                                        data-testid="nameInput"
+                                        placeholder="Name"
+                                        size="sm"
+                                        value={this.state.datasets[fileIndex].timeSeries[seriesIndex].name}
+                                        onChange={(e) => this.onNameChange(e, fileIndex, seriesIndex)}
+                                      />
                                     </td>
-                                    <td
-                                      style={{
-                                        paddingTop: 0,
-                                        paddingBottom: 0,
-                                      }}
-                                    >
-                                      <InputGroup size="sm">
-                                        <InputGroupText>Unit</InputGroupText>
-                                        <Input
-                                          id={
-                                            "unitInput" +
-                                            String(fileIndex) +
-                                            String(seriesIndex)
-                                          }
-                                          data-testid="unitInput"
-                                          tpye="text"
-                                          placeholder="Unit"
-                                          bsSize="sm"
-                                          value={
-                                            this.state.datasets[fileIndex]
-                                              .timeSeries[seriesIndex].unit
-                                          }
-                                          onChange={(e) =>
-                                            this.onUnitChange(
-                                              e,
-                                              fileIndex,
-                                              seriesIndex
-                                            )
-                                          }
-                                        />
-                                      </InputGroup>
+                                    <td style={{ paddingTop: 0, paddingBottom: 0 }}>
+                                      <TextInput
+                                        label="Unit"
+                                        id={"unitInput" + String(fileIndex) + String(seriesIndex)}
+                                        data-testid="unitInput"
+                                        placeholder="Unit"
+                                        size="sm"
+                                        value={this.state.datasets[fileIndex].timeSeries[seriesIndex].unit}
+                                        onChange={(e) => this.onUnitChange(e, fileIndex, seriesIndex)}
+                                      />
                                     </td>
                                     <td style={{ textAlign: "right" }}>
                                       <Button
-                                        id="deleteButton"
-                                        color="primary"
-                                        size="sm"
-                                        onClick={() =>
-                                          this.onSetAll(fileIndex, seriesIndex)
-                                        }
+                                        id="setAllButton"
+                                        color="blue"
+                                        size="xs"
+                                        onClick={() => this.onSetAll(fileIndex, seriesIndex)}
                                       >
                                         Set all
                                       </Button>
@@ -425,14 +362,9 @@ class CreateNewDatasetModal extends Component {
                                     <td style={{ textAlign: "right" }}>
                                       <Button
                                         id="deleteButton"
-                                        color="danger"
-                                        size="sm"
-                                        onClick={() =>
-                                          this.onDeleteTimeSeries(
-                                            fileIndex,
-                                            seriesIndex
-                                          )
-                                        }
+                                        color="red"
+                                        size="xs"
+                                        onClick={() => this.onDeleteTimeSeries(fileIndex, seriesIndex)}
                                       >
                                         Delete
                                       </Button>
@@ -444,9 +376,7 @@ class CreateNewDatasetModal extends Component {
                           </tbody>
                         )}
                       </Table>
-                      <div
-                        style={{ display: "flex", justifyContent: "center" }}
-                      >
+                      <div style={{ display: "flex", justifyContent: "center" }}>
                         {this.state.labelings[fileIndex].map(
                           (labeling, labelingIndex) => {
                             return (
@@ -458,21 +388,15 @@ class CreateNewDatasetModal extends Component {
                               >
                                 <div
                                   id={"labelName" + labelingIndex}
-                                  className="mx-2"
-                                  style={{ display: "inline" }}
+                                  style={{ margin: "0 0.5rem", display: "inline" }}
                                 >
                                   {labeling.datasetLabel.name}
                                 </div>
                                 <Button
-                                  color="danger"
-                                  size="sm"
-                                  className="mx-2"
-                                  onClick={() =>
-                                    this.onDeleteLabeling(
-                                      fileIndex,
-                                      labelingIndex
-                                    )
-                                  }
+                                  color="red"
+                                  size="xs"
+                                  style={{ margin: "0 0.5rem" }}
+                                  onClick={() => this.onDeleteLabeling(fileIndex, labelingIndex)}
                                 >
                                   Delete
                                 </Button>
@@ -493,13 +417,13 @@ class CreateNewDatasetModal extends Component {
                 to download an example CSV file.
               </div>
             ) : null}
-          </ModalBody>
-          <ModalFooter>
+          </Modal.Body>
+          <Modal.Footer>
             <Button
-              outline
+              variant="outline"
               id="cancelButton"
-              color="secondary"
-              className="m-1 me-auto"
+              color="gray"
+              style={{ margin: "0.25rem" }}
               onClick={this.onCloseModal}
             >
               Cancel
@@ -508,22 +432,22 @@ class CreateNewDatasetModal extends Component {
             <SpinnerButton
               id="uploadButton"
               data-testid="uploadButton"
-              color="primary"
-              className="m-1"
+              color="blue"
+              style={{ margin: "0.25rem" }}
               onClick={this.onUpload}
               loading={this.state.onUploading}
               loadingtext="Upload..."
             >
               Upload
             </SpinnerButton>
-          </ModalFooter>
+          </Modal.Footer>
         </Modal>
         <ErrorModal
           isOpen={this.state.uploadErrors.length !== 0}
           errors={this.state.uploadErrors}
           files={this.state.errorFiles}
           onClose={() => this.setState(this.baseState)}
-        ></ErrorModal>
+        />
       </div>
     );
   }

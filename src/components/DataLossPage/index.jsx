@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button } from "reactstrap";
+import { Button } from "@mantine/core";
 import logoSvg from "../../logo.svg";
 
 const DataLossPage = ({ children }) => {
@@ -50,7 +50,7 @@ const DataLossPage = ({ children }) => {
         <Button
           size="lg"
           className="m-5"
-          color="primary"
+          color="blue"
           onClick={acceptDataLoss}
         >
           Accept

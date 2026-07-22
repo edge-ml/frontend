@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useModels from "../../Hooks/useModels";
 import Loader from "../../modules/loader";
 import Page from "../../components/Common/Page";
-import { Button } from "reactstrap";
+import { Button } from "@mantine/core";
 import ModelTable from "./ModelTable";
 import { Empty } from "../export/components/Empty";
 import DeleteModal from "../../components/Common/DeleteModal";
@@ -13,7 +13,7 @@ const ModelPage = () => {
   const [trainWizardOpen, setTrainWizardOpen] = useState(false);
 
   if (!models) {
-    return <Loader loading></Loader>;
+    return <Loader loading />;
   }
 
   return (
@@ -23,9 +23,7 @@ const ModelPage = () => {
           <div className="fw-bold h4 justify-self-start">MODELS</div>
           <div className="justify-f-end">
             <Button
-              outline
-              color="primary"
-              className="btn-neutral"
+              variant="outline"
               onClick={() => setTrainWizardOpen(true)}
             >
               Train a model
@@ -41,12 +39,12 @@ const ModelPage = () => {
           stepOptions={stepOptions}
           updateModel={updateModel}
           deleteModels={deleteModels}
-        ></ModelTable>
+        />
       )}
       <TrainingWizard
         isOpen={trainWizardOpen}
         onClose={() => setTrainWizardOpen(false)}
-      ></TrainingWizard>
+      />
     </Page>
   );
 };

@@ -1,19 +1,9 @@
 import React, { Component } from "react";
 import {
   Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
-  InputGroup,
-  Input,
-  InputGroupText,
-  InputGroupText,
-  FormGroup,
-  Label,
-  Row,
-  Col,
-} from "reactstrap";
+  TextInput,
+} from "@mantine/core";
 import CodeSnippet from "./CodeSnippet";
 import CodeSettings from "./CodeSettings";
 
@@ -61,20 +51,15 @@ class CodeSnippetModal extends Component {
 
   render() {
     return (
-      <Modal className="modal-xl" isOpen={this.props.isOpen}>
-        <ModalHeader>Generate code snippet</ModalHeader>
-        <ModalBody>
-          <InputGroup>
-            <InputGroupText>
-              <InputGroupText>{"Dataset-name"}</InputGroupText>
-            </InputGroupText>
-            <Input
-              id="inputProjectName"
-              placeholder={"Dataset-name"}
-              value={this.state.datasetName}
-              onChange={this.onDatasetNameChanged}
-            />
-          </InputGroup>
+      <Modal size="xl" opened={this.props.isOpen} onClose={this.props.onCancel} title="Generate code snippet">
+        <Modal.Body>
+          <TextInput
+            label="Dataset-name"
+            id="inputProjectName"
+            placeholder="Dataset-name"
+            value={this.state.datasetName}
+            onChange={this.onDatasetNameChanged}
+          />
           <CodeSettings
             platform={this.state.platform}
             servertime={this.state.servertime}
@@ -86,19 +71,20 @@ class CodeSnippetModal extends Component {
             platform={this.state.platform}
             datasetName={this.state.datasetName}
             useServertime={this.state.servertime}
-            deviceApiKey={this.props.readApiKey} // TODO: FIX CODESNIPPET DEVICEAPIKEY
-          ></CodeSnippet>
-        </ModalBody>
-        <ModalFooter>
+            deviceApiKey={this.props.readApiKey}
+          />
+        </Modal.Body>
+        <Modal.Footer>
           <Button
             id="btnSaveProjectCancel"
-            color="secondary"
-            className="m-1"
+            variant="outline"
+            color="gray"
+            style={{ margin: "0.25rem" }}
             onClick={this.onCancel}
           >
             Cancel
           </Button>
-        </ModalFooter>
+        </Modal.Footer>
       </Modal>
     );
   }

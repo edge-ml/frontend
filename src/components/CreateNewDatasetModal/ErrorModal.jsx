@@ -1,16 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import {
-  Input,
-  InputGroup,
-  InputGroupText,
-  InputGroupText,
-  FormFeedback,
   Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
-} from "reactstrap";
+} from "@mantine/core";
 
 function ErrorModal(props) {
   const errors = props.errors
@@ -43,9 +35,8 @@ function ErrorModal(props) {
 
   return (
     <div>
-      <Modal isOpen={props.isOpen}>
-        <ModalHeader>Errors</ModalHeader>
-        <ModalBody>
+      <Modal opened={props.isOpen} onClose={props.onClose} title="Errors">
+        <Modal.Body>
           <div>{errors.map((elm) => renderFileError(elm))}</div>
           <div className="mt-2">
             {" "}
@@ -54,12 +45,12 @@ function ErrorModal(props) {
             </a>{" "}
             to download an example CSV file.
           </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button outline onClick={props.onClose}>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline" onClick={props.onClose}>
             OK
           </Button>
-        </ModalFooter>
+        </Modal.Footer>
       </Modal>
     </div>
   );

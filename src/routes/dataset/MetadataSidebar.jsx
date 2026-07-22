@@ -8,7 +8,6 @@ import {
 import { Fragment } from "react";
 import MetadataContainer from "../../components/MetadataPanel/MetadataContainer";
 import { DatasetContext } from "./DatasetContext";
-import { Container } from "reactstrap";
 
 const MetadataSidebar = ({}) => {
   const { dataset } = useContext(DatasetContext);
@@ -22,7 +21,8 @@ const MetadataSidebar = ({}) => {
   if (!isExtended) {
     return (
       <div
-        className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton"
+        style={{ display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer" }}
+        className="metaDataCollapseButton"
         onClick={() => toggleMetaData(true)}
       >
         <div>
@@ -39,12 +39,13 @@ const MetadataSidebar = ({}) => {
           className="sidePanelBackdrop"
           onClick={() => toggleMetaData(false)}
         ></div>
-        <Container>
+        <div>
           <div className="dataset-side-panel">
-            <div className="d-flex">
+            <div style={{ display: "flex" }}>
               <div
                 onClick={() => toggleMetaData(false)}
-                className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton"
+                style={{ display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer" }}
+                className="metaDataCollapseButton"
               >
                 <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
               </div>
@@ -59,7 +60,7 @@ const MetadataSidebar = ({}) => {
               ></MetadataContainer>
             </div>
           </div>
-        </Container>
+        </div>
       </Fragment>
     );
   }

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button } from "reactstrap";
+import { Button } from "@mantine/core";
 import MetaDataEditModal from "./MetaDataEditModal";
 import "./MetadataPanel.css";
 
@@ -40,10 +40,10 @@ class CustomMetadataPanel extends Component {
       editModalOpen: false,
     });
   }
-  //
+
   additionalMetaData() {
     return Object.keys(this.props.metaData).map((key) => (
-      <div className="customMetaDataItem mx-2">
+      <div className="customMetaDataItem mx-2" key={key}>
         <div className="customMetaDataItem_key">{key}</div>
         <div className="customMetaDataItem_value">
           {this.props.metaData[key]}
@@ -66,7 +66,7 @@ class CustomMetadataPanel extends Component {
           )}
         </div>
         <div className="m-2 d-flex justify-content-end">
-          <Button color="primary" size="sm" onClick={this.onEdit}>
+          <Button color="blue" size="xs" onClick={this.onEdit}>
             + Edit
           </Button>
         </div>
@@ -75,7 +75,7 @@ class CustomMetadataPanel extends Component {
           onSave={this.onSave}
           isOpen={this.state.editModalOpen}
           metaData={this.props.metaData}
-        ></MetaDataEditModal>
+        />
       </>
     );
   }

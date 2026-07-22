@@ -1,22 +1,23 @@
 import React from "react";
-import { Badge } from "reactstrap";
-import {
-  hexToForegroundColor,
-  isValidColor,
-} from "../../services/ColorService";
+import { hexToForegroundColor, isValidColor } from "../../services/ColorService";
 
 const LabelBadge = ({ color, children, ...props }) => {
-  // if (!isValidColor(color)) {
-  //     throw new Error('Invalid color provided: ' + color);
-  // }
+  const textColor = hexToForegroundColor(color) === "dark" ? "#fff" : "#000";
   return (
-    <Badge
-      color={hexToForegroundColor(color)}
-      style={{ backgroundColor: color, fontSize: "1em" }}
+    <span
+      style={{
+        backgroundColor: color,
+        color: textColor,
+        fontSize: "1em",
+        padding: "2px 8px",
+        borderRadius: "4px",
+        display: "inline-block",
+        fontWeight: 700,
+      }}
       {...props}
     >
       {children}
-    </Badge>
+    </span>
   );
 };
 

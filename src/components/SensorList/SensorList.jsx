@@ -1,4 +1,4 @@
-import { Badge, Table, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Badge, Table, NativeSelect, TextInput } from "@mantine/core";
 import {
   useBootstrapMDBreakpoint,
   usePersistedState,
@@ -72,16 +72,19 @@ export const SensorList = ({
             } = sensor;
 
             const rateInput = (
-              <InputGroup style={{ margin: 0, minWidth: "90px" }} size="sm">
-                <Input
-                  value={sampleRate}
-                  onChange={(e) => setSensorRate(name, e.target.value)}
-                  type="number"
-                  min={0}
-                  max={50}
-                ></Input>{" "}
-                <InputGroupText>Hz</InputGroupText>
-              </InputGroup>
+              <div style={{ display: "flex", margin: 0, minWidth: "90px" }}>
+                {fixedFrequency ? null : (
+                  <TextInput
+                    value={sampleRate}
+                    onChange={(e) => setSensorRate(name, e.target.value)}
+                    type="number"
+                    min={0}
+                    max={50}
+                    size="sm"
+                  />
+                )}
+                <span style={{ marginLeft: "4px" }}>Hz</span>
+              </div>
             );
 
             const badges = shortComponents.map((c, i) =>
@@ -168,7 +171,7 @@ export const SensorList = ({
                     <tr style={visibilityStyle(collapseState[name])}>
                       <Td className="p-0" />
                       <Td className="p-0" colSpan="2">
-                        <div className="d-flex align-items-center">
+                        <div style={{ display: "flex", alignItems: "center" }}>
                           <small>
                             <b>Sample Rate:</b>
                           </small>
@@ -178,8 +181,8 @@ export const SensorList = ({
                     </tr>
                     <tr style={visibilityStyle(collapseState[name])}>
                       <Td className="p-0" />
-                      <Td className="p-0" colspan="2">
-                        <div className="d-flex flex-wrap align-items-center">
+                      <Td className="p-0" colSpan="2">
+                        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
                           <small>
                             <b>Components:</b>
                           </small>

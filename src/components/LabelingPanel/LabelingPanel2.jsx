@@ -2,12 +2,8 @@ import React, { Component } from "react";
 import {
   Button,
   Card,
-  CardBody,
-  InputGroup,
-  InputGroupText,
-  InputGroupText,
-  Input,
-} from "reactstrap";
+  TextInput,
+} from "@mantine/core";
 import "./LabelingPanel.css";
 
 class LabelingPanel extends Component {
@@ -68,12 +64,13 @@ class LabelingPanel extends Component {
 
   render() {
     return (
-      <Card className="LabelingPanel edgeml-border edgeml-fade-one">
-        <CardBody className="p-1 d-flex flex-wrap">
+      <Card className="LabelingPanel edgeml-border edgeml-fade-one" shadow="sm" padding="md" radius="md" withBorder>
+        <Card.Section className="p-1" style={{ display: "flex", flexWrap: "wrap" }}>
           <div className="labelingBox d-flex flex-wrap">
             <Button
               className="labelingButton m-1"
-              color="secondary"
+              variant="outline"
+              color="gray"
               onClick={this.onAddLabel}
             >
               + Add Label
@@ -96,11 +93,11 @@ class LabelingPanel extends Component {
                               : "white",
                           borderColor:
                             label._id === this.state.selectedLabelTypeId
-                              ? null
+                              ? undefined
                               : label.color,
                           color:
                             label._id === this.state.selectedLabelTypeId
-                              ? null
+                              ? undefined
                               : label.color,
                         }}
                         onClick={(e) =>
@@ -115,44 +112,42 @@ class LabelingPanel extends Component {
               : null}
           </div>
           <div className="informationBox">
-            <InputGroup className="inputGroup m-1">
-              <InputGroupText className="inputLabel">From</InputGroupText>
-              <Input
-                value={
-                  this.state.from
-                    ? new Date(this.state.from).toUTCString().split(" ")[4]
-                    : ""
-                }
-                readOnly
-                className="timeInput text-center"
-              />
-            </InputGroup>
-            <InputGroup className="inputGroup m-1">
-              <InputGroupText className="inputLabel">To</InputGroupText>
-              <Input
-                value={
-                  this.state.to
-                    ? new Date(this.state.to).toUTCString().split(" ")[4]
-                    : ""
-                }
-                readOnly
-                className="timeInput text-center"
-              />
-            </InputGroup>
+            <TextInput
+              label="From"
+              value={
+                this.state.from
+                  ? new Date(this.state.from).toUTCString().split(" ")[4]
+                  : ""
+              }
+              readOnly
+              className="timeInput text-center"
+              size="sm"
+            />
+            <TextInput
+              label="To"
+              value={
+                this.state.to
+                  ? new Date(this.state.to).toUTCString().split(" ")[4]
+                  : ""
+              }
+              readOnly
+              className="timeInput text-center"
+              size="sm"
+            />
             <Button
               disabled={
                 this.state.selectedLabelTypeId === undefined ||
                 !this.state.canEdit
               }
               className="deleteButton m-1"
-              outline
-              color="danger"
+              variant="outline"
+              color="red"
               onClick={(e) => this.state.onDeleteSelectedLabel()}
             >
               Delete
             </Button>
           </div>
-        </CardBody>
+        </Card.Section>
       </Card>
     );
   }

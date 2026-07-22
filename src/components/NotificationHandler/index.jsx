@@ -1,25 +1,16 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import {
-  Badge,
-  Button,
   Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Spinner,
-  Col,
-  Row,
-} from "reactstrap";
+  Button,
+  Loader,
+  Group,
+  Stack,
+  Text,
+  ActionIcon,
+} from "@mantine/core";
+import { IconDownload, IconTrash } from "@tabler/icons-react";
 import NotificationContext from "../NotificationHandler/NotificationProvider";
-import { useContext, useEffect } from "react";
 import { datasetDownloadfromId } from "../../services/DatasetService";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faDownload,
-  faTrash,
-  faTrashAlt,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
 import {
   EdgeMLTable,
   EdgeMLTableEntry,
@@ -37,107 +28,56 @@ const NotificationHandler = ({ onClose, isOpen }) => {
   }, [activeNotifications]);
 
   return (
-    <Modal isOpen={isOpen} size="xl">
-      <ModalHeader toggle={onClose}>Notifications</ModalHeader>
-      <ModalBody>
-        {/* {
+    <Modal opened={isOpen} onClose={onClose} title="Notifications" size="xl">
+      <EdgeMLTable>
+        <EdgeMLTableHeader>Downloads</EdgeMLTableHeader>
         {activeNotifications.map((elm, idx) => (
-          <Row className="mt-2" key={elm + idx}>
-            <Col>
+          <EdgeMLTableEntry key={"notification" + idx}>
+            <Group justify="space-between" m="sm">
               <div>
-                <b>{elm.datasetName ? elm.datasetName : elm.projectName}</b>
-                <div>
+                <Text fw={700}>
+                  {elm.datasetName || elm.projectName}
+                </Text>
+                <Text size="sm" c="dimmed">
                   {elm.datasetName
-                    ? '(Dataset in project ' + elm.projectName + ')'
-                    : '(Project)'}
-                </div>
+                    ? `(Dataset in project ${elm.projectName})`
+                    : "(Project)"}
+                </Text>
               </div>
-            </Col>
-            <Col className="text-center">
-              {elm.error ? <div>Error</div> : null}
-              {elm.status < 100 ? (
-                <div className="d-flex  align-items-center">
-                  <Spinner></Spinner>
-                  <div className="ms-2">{elm.status}%</div>
-                </div>
-              ) : (
-                <div>
-                  {
-                  {elm.error ? null : (
+              <Group gap="xs">
+                {elm.error && <Text c="red">Error</Text>}
+                {elm.status < 100 ? (
+                  <Group gap="xs">
+                    <Loader size="sm" />
+                    <Text size="sm">{elm.status}%</Text>
+                  </Group>
+                ) : (
+                  !elm.error && (
                     <Button
+                      size="compact-sm"
                       onClick={() => datasetDownloadfromId(elm.downloadId)}
                     >
-                      Download
+                      <IconDownload size={14} />
                     </Button>
-                  )}
-                </div>
-              )}
-            </Col>
-            <Col style={{ textAlign: 'end' }}>
-              <Button
-                onClick={() => removeNotification(elm.downloadId)}
-                color="danger"
-              >
-                <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
-              </Button>
-            </Col>
-          </Row>
-        ))} */}
-
-        <EdgeMLTable>
-          <EdgeMLTableHeader>Downloads</EdgeMLTableHeader>
-          {activeNotifications.map((elm, idx) => {
-            return (
-              <EdgeMLTableEntry key={"notification" + idx}>
-                <div className="m-2 d-flex justify-content-between algin-items-center">
-                  <div>
-                    <b>{elm.datasetName ? elm.datasetName : elm.projectName}</b>
-                    <div>
-                      {elm.datasetName
-                        ? "(Dataset in project " + elm.projectName + ")"
-                        : "(Project)"}
-                    </div>
-                  </div>
-                  <div className="text-center d-flex align-items-center m-2">
-                    {elm.error ? <div>Error</div> : null}
-                    {elm.status < 100 ? (
-                      <div className="d-flex  align-items-center">
-                        <Spinner></Spinner>
-                        <div className="ms-2">{elm.status}%</div>
-                      </div>
-                    ) : (
-                      <div>
-                        {elm.error ? null : (
-                          <Button
-                            onClick={() =>
-                              datasetDownloadfromId(elm.downloadId)
-                            }
-                          >
-                            <FontAwesomeIcon
-                              icon={faDownload}
-                            ></FontAwesomeIcon>
-                          </Button>
-                        )}
-                      </div>
-                    )}
-                    <div className="ms-2">
-                      <Button
-                        onClick={() => removeNotification(elm.downloadId)}
-                        color="danger"
-                      >
-                        <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </EdgeMLTableEntry>
-            );
-          })}
-        </EdgeMLTable>
-      </ModalBody>
-      <ModalFooter>
-        <Button onClick={onClose}>Close</Button>
-      </ModalFooter>
+                  )
+                )}
+                <ActionIcon
+                  color="red"
+                  variant="subtle"
+                  onClick={() => removeNotification(elm.downloadId)}
+                >
+                  <IconTrash size={14} />
+                </ActionIcon>
+              </Group>
+            </Group>
+          </EdgeMLTableEntry>
+        ))}
+      </EdgeMLTable>
+      <Group justify="end" mt="md">
+        <Button variant="outline" onClick={onClose}>
+          Close
+        </Button>
+      </Group>
     </Modal>
   );
 };

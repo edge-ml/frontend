@@ -1,6 +1,6 @@
 import React, { Fragment, useState } from "react";
 
-import { Button, Table, Row, Col } from "reactstrap";
+import { Button, Table } from "@mantine/core";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
 import ConfusionMatrixView from "../ConfusionMatrix/ConfusionMatrixView";
@@ -10,7 +10,7 @@ import "./index.css";
 import classNames from "classnames";
 import LabelBadge from "../Common/LabelBadge";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 export const SelectedModelModalView = ({
   model,
@@ -32,70 +32,46 @@ export const SelectedModelModalView = ({
       <ModalBody>
         {model ? (
           <>
-            <div className="d-flex justify-content-between w-100">
-              <div className="d-flex justify-content-start">
+            <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+              <div style={{ display: "flex", justifyContent: "flex-start" }}>
                 <General_info
                   model={model}
                   onButtonDeploy={onButtonDeploy}
                   onButtonDownload={onButtonDownload}
-                ></General_info>
-                <PerformanceInfo metrics={metrics.metrics}></PerformanceInfo>
+                />
+                <PerformanceInfo metrics={metrics.metrics} />
               </div>
               <div>
                 <Button
-                  outline
-                  className="me-auto"
+                  variant="outline"
                   onClick={() => {}}
-                  color="danger"
+                  color="red"
                 >
                   <FontAwesomeIcon
-                    className="mx-1"
+                    style={{ margin: "0 0.25rem" }}
                     icon={faTrashAlt}
-                  ></FontAwesomeIcon>
+                  />
                   Delete
                 </Button>
               </div>
             </div>
-            <div className="my-5 d-flex justify-content-start align-items-center">
+            <div style={{ margin: "3rem 0", display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
               <Classification_report
                 report={metrics.classification_report}
-              ></Classification_report>
+              />
               <ConfusionMatrixView
                 matrix={JSON.parse(metrics.confusion_matrix)}
                 labels={model.labels.map((elm) => elm.name)}
-              ></ConfusionMatrixView>
+              />
             </div>
-            <Training_config model={model}></Training_config>
+            <Training_config model={model} />
           </>
         ) : (
-          <Loader loading></Loader>
+          <Loader loading />
         )}
       </ModalBody>
-      <ModalFooter className="justify-content-end">
-        {/* <div>
-                <Button
-                  outline
-                  color='primary'
-                  className="me-2"
-                  onClick={(e) => {
-                    onButtonDownload(model);
-                    e.stopPropagation();
-                  }}
-                >
-                  Download
-                </Button>
-                <Button
-                  outline
-                  color='primary'
-                  onClick={(e) => {
-                    onButtonDeploy(model);
-                    e.stopPropagation();
-                  }}
-                >
-                  Deploy
-                </Button>
-              </div> */}
-        <Button outline onClick={onClosed}>
+      <ModalFooter style={{ justifyContent: "flex-end" }}>
+        <Button variant="outline" onClick={onClosed}>
           Close
         </Button>
       </ModalFooter>
@@ -114,8 +90,8 @@ const General_info = ({
       <h5>
         <b>General information</b>
       </h5>
-      <Row>
-        <Col className="col-auto">
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
+        <div style={{ flex: "0 0 auto" }}>
           <Table borderless size="sm" striped>
             <tbody>
               <tr>
@@ -131,15 +107,15 @@ const General_info = ({
                 <th>Used labels</th>
                 <td>
                   {model.labels.map((elm, index) => (
-                    <LabelBadge color={elm.color}>{elm.name}</LabelBadge>
+                    <LabelBadge key={elm.name} color={elm.color}>{elm.name}</LabelBadge>
                   ))}
                 </td>
               </tr>
             </tbody>
           </Table>
-        </Col>
-        <Col></Col>
-      </Row>
+        </div>
+        <div></div>
+      </div>
     </div>
   );
 };
@@ -157,16 +133,16 @@ const Classification_report = ({ report }) => {
           <tr>
             <th></th>
             {metrics.map((key) => (
-              <th className="text-center">{key}</th>
+              <th style={{ textAlign: "center" }} key={key}>{key}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {keys.map((key) => (
-            <tr>
+            <tr key={key}>
               <th>{key}</th>
               {metrics.map((met) => (
-                <td className="px-4">{metric(report[key][met])}</td>
+                <td style={{ padding: "0 1rem" }} key={met}>{metric(report[key][met])}</td>
               ))}
             </tr>
           ))}
@@ -183,7 +159,7 @@ const Training_config = ({ model }) => {
 
   const Render_Step = (step) => {
     return (
-      <div className="training_step_container">
+      <div className="training_step_container" key={step.name}>
         <div
           className={classNames("training_step", {
             training_step_selected: step.name === selectedStep.name,
@@ -193,7 +169,7 @@ const Training_config = ({ model }) => {
           <div>{step.name}</div>
         </div>
         {step.name == selectedStep.name ? (
-          <div className="d-flex justify-content-center">
+          <div style={{ display: "flex", justifyContent: "center" }}>
             <div className="v_line"></div>
           </div>
         ) : null}
@@ -210,16 +186,13 @@ const Training_config = ({ model }) => {
       <h5>
         <b>Pipeline configuration</b>
       </h5>
-      <div className="d-flex justify-content-start">
+      <div style={{ display: "flex", justifyContent: "flex-start" }}>
         {model.pipeline.selectedPipeline.steps
           .filter((elm) => elm.type === "PRE" || elm.type === "CORE")
           .map((elm) => Render_Step(elm, onClickStep))}
       </div>
 
-      <div className="mx-2 borderTop p-2">
-        {/* <h5>
-          <b>{selectedStep.name}</b>
-        </h5> */}
+      <div style={{ margin: "0 0.5rem", borderTop: "1px solid #dee2e6", padding: "0.5rem" }}>
         <div>
           <b>Method: </b>
           {selectedStep.options.name}
@@ -228,7 +201,7 @@ const Training_config = ({ model }) => {
           <div>
             <b>Parameters: </b>
             {selectedStep.options.parameters.map((param) => (
-              <div>
+              <div key={param.name}>
                 <span>{param.name}: </span>
                 <span>{param.value}</span>
               </div>

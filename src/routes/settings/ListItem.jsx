@@ -1,22 +1,15 @@
-import React, { Component } from "react";
-import { Card, CardTitle, CardBody, CardSubtitle } from "reactstrap";
+import React from "react";
 
-class ListItem extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  render() {
-    return (
-      <div className="p-2 my-2">
-        <div className="header-wrapper d-flex flex-column align-content-center">
-          <h5>{name}</h5>
-          <div>{description}</div>
-        </div>
-        <div className="body-wrapper p-3">{component}</div>
+const ListItem = ({ name, description, component }) => {
+  return (
+    <div style={{ padding: "0.5rem", margin: "0.5rem 0" }}>
+      <div>
+        <h5>{name}</h5>
+        <div>{description}</div>
       </div>
-    );
-  }
-}
+      <div style={{ padding: "1rem" }}>{component}</div>
+    </div>
+  );
+};
+
 export default ListItem;

@@ -5,7 +5,7 @@ import TimeSeriesPanel from "../TimeSeriesPanel/TimeSeriesPanel";
 import Highcharts from "highcharts/highstock";
 import RangeSlider from "../RangeSlider/RangeSlider";
 import { updateTimeSeriesConfig } from "../../services/ApiServices/DatasetServices";
-import { Alert } from "reactstrap";
+import { Alert } from "@mantine/core";
 
 class TimeSeriesCollectionPanel extends Component {
   constructor(props) {
@@ -36,11 +36,6 @@ class TimeSeriesCollectionPanel extends Component {
       errorAlertVisible: false,
     };
 
-    // this.sortedPreviewTimeSeries = props.previewTimeSeriesData
-    //   .flat()
-    //   .sort((elmA, elmB) => elmA[0] - elmB[0])
-    //   .filter((e, i, a) => e[0] !== (a[i - 1] ? a[i - 1][0] : undefined));
-
     this.onCrosshairDrawn = this.onCrosshairDrawn.bind(this);
     this.toggleUnitMenu = this.toggleUnitMenu.bind(this);
     this.handleUnitChange = this.handleUnitChange.bind(this);
@@ -54,11 +49,6 @@ class TimeSeriesCollectionPanel extends Component {
       this.onCrosshairDrawn
     );
 
-    // keep a copy of the last window acquired via afterSetExtremes
-    // so that the component doesn't rerender the preview after an
-    // update to the component tree. this copy must be kept outside the
-    // react state in order not to cause an infinite loop, as highcharts
-    // is also calling afterSetExtremes outside react's scope
     this.lastWindow = null;
   }
 
@@ -80,7 +70,6 @@ class TimeSeriesCollectionPanel extends Component {
   }
 
   onCrosshairDrawn(crosshairEvent) {
-    //alert("test")
     if (
       Highcharts.charts &&
       Highcharts.charts[0] &&
@@ -99,7 +88,6 @@ class TimeSeriesCollectionPanel extends Component {
   }
 
   onTimeSeriesWindow = async (index, start, end, resolution) => {
-    // getDatasetWindow is memoized in dataset.js, so that this doesn't cause excessive requests
     this.lastWindow = await this.props.getDatasetWindow(start, end);
     return this.lastWindow[index];
   };
@@ -159,7 +147,6 @@ class TimeSeriesCollectionPanel extends Component {
       scale,
       offset
     );
-    // this.props.udateTimeSeries(timeseries_id)
     const data = await this.onTimeSeriesWindow(
       key,
       this.state.start,
@@ -185,24 +172,19 @@ class TimeSeriesCollectionPanel extends Component {
             width: "87%",
           }}
         >
-          <Alert
-            color="success"
-            isOpen={this.state.successAlertVisible}
-            toggle={() => this.setState({ successAlertVisible: false })}
-          >
-            Configuration saved successfully!
-          </Alert>
-          <Alert
-            color="danger"
-            isOpen={this.state.errorAlertVisible}
-            toggle={() => this.setState({ errorAlertVisible: false })}
-          >
-            Error saving configuration. Please try again.
-          </Alert>
+          {this.state.successAlertVisible && (
+            <Alert color="green">
+              Configuration saved successfully!
+            </Alert>
+          )}
+          {this.state.errorAlertVisible && (
+            <Alert color="red">
+              Error saving configuration. Please try again.
+            </Alert>
+          )}
         </div>
         <div
-          className="d-flex flex-column justify-content-start flex-fill"
-          style={{ overflowY: "auto" }}
+          style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", flex: 1, overflowY: "auto" }}
         >
           {this.state.activeSeries.length ? (
             <div>
@@ -232,7 +214,7 @@ class TimeSeriesCollectionPanel extends Component {
               Select some time-series on the panel on the top
             </div>
           )}
-          <div className="flex-fill" style={{ overflowY: "auto" }}>
+          <div style={{ flex: 1, overflowY: "auto" }}>
             {this.state.timeSeries.length === 0 ? (
               <TimeSeriesPanel
                 handleConfigSave={this.handleConfigSave}

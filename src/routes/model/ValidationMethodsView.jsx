@@ -2,12 +2,10 @@ import React from "react";
 import Select from "react-select";
 import {
   Badge,
-  InputGroup,
-  Input,
+  TextInput,
   Card,
-  CardBody,
-  CardHeader,
-} from "reactstrap";
+  Text,
+} from "@mantine/core";
 
 import { withLoader } from "../../modules/loader";
 
@@ -27,20 +25,18 @@ const ValidationMethodsViewRaw = ({
   onValidationMethodOptionsChange = () => {},
 }) => {
   return (
-    <div className="w-100 text-left">
+    <div style={{ width: "100%", textAlign: "left" }}>
       <h6>Train Test Split</h6>
-      <div className="d-flex flex-row align-items-baseline justify-content-between w-100">
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", width: "100%" }}>
         <span>Split: </span>
-        <InputGroup style={{ width: "200px" }}>
-          <Input
-            type={"text"}
-            value={testSplit}
-            onChange={onTestSplitChange}
-          ></Input>
-        </InputGroup>
+        <TextInput
+          value={testSplit}
+          onChange={onTestSplitChange}
+          style={{ width: "200px" }}
+        />
       </div>
       <h6>Validation</h6>
-      <div className="d-flex flex-row align-items-baseline justify-content-between">
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" }}>
         <span>Method: </span>
         <span style={{ minWidth: "200px" }}>
           <Select
@@ -78,7 +74,7 @@ const LOSO = ({
         Datasets will be grouped together according to the selected "leave one
         out" variable, and challenged against the others.
       </p>
-      <div className="d-flex flex-row align-items-center justify-content-between">
+      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <h6>"leave one out" variable: </h6>
         <span style={{ minWidth: "200px" }}>
           <Select
@@ -97,31 +93,31 @@ const LOSO = ({
       <div>
         {Object.entries(customMetaData.metaDataKeyFrequency).map(
           ([key, freq]) => (
-            <Badge pill className="me-1">{`${key} (${freq})`}</Badge>
+            <Badge key={key} style={{ marginRight: "0.25rem" }}>{`${key} (${freq})`}</Badge>
           )
         )}
       </div>
       <br />
-      <small>
+      <Text size="sm" c="dimmed">
         <strong>
           <em>Note:</em>
         </strong>{" "}
         Datasets without the selected metadata present will <strong>not</strong>{" "}
         be ignored, but instead collectively included in the validation as
         another group.
-      </small>
+      </Text>
     </div>
   );
 };
 
 const withCard = (name, Wrapped) => (props) => (
-  <Card className="text-left">
-    <CardHeader>
-      <h4>{name}</h4>
-    </CardHeader>
-    <CardBody className="d-flex flex-column align-items-start flex-column justify-content-between">
+  <Card shadow="sm" padding="md" radius="md" withBorder style={{ textAlign: "left" }}>
+    <Card.Section>
+      <Text fw={700} size="lg" p="md"><h4>{name}</h4></Text>
+    </Card.Section>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "space-between", padding: "1rem" }}>
       <Wrapped {...props} />
-    </CardBody>
+    </div>
   </Card>
 );
 

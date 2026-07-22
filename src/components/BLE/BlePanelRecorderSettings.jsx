@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input, InputGroup, InputGroupText } from "reactstrap";
+import { TextInput } from "@mantine/core";
 import SpinnerButton from "../Common/SpinnerButton";
 import classNames from "classnames";
 import Checkbox from "../Common/Checkbox";
@@ -57,38 +57,14 @@ function BlePanelRecorderSettings({
         <h4>3. Record dataset</h4>
       </div>
       <div className="body-wrapper p-3">
-        <InputGroup>
-          <InputGroupText>{"Dataset name"}</InputGroupText>
-          <Input
-            id="bleDatasetName"
-            placeholder={"dataset name"}
-            onChange={handleDatasetNameChanged}
-            value={datasetName}
-            disabled={recorderState !== "ready"}
-          />
-        </InputGroup>
-        {/* TODO reenable this when sample rate issues have been resolved
-        <InputGroup>
-          <InputGroupText>
-            <InputGroupText>{'SampleRate'}</InputGroupText>
-          </InputGroupText>
-          <Input
-            invalid={samplingRateError}
-            id="bleSampleRate"
-            type="number"
-            min={1}
-            max={50}
-            placeholder={'SampleRate'}
-            onChange={onGlobalSampleRateChanged}
-            value={sampleRate}
-            disabled={recorderState !== 'ready'}
-          />
-          <FormFeedback
-            className={classNames({ invalidFeedBack: samplingRateError })}
-          >
-            Samplerate must be between 0 and 50
-          </FormFeedback>
-        </InputGroup>*/}
+        <TextInput
+          label="Dataset name"
+          id="bleDatasetName"
+          placeholder="dataset name"
+          onChange={handleDatasetNameChanged}
+          value={datasetName}
+          disabled={recorderState !== "ready"}
+        />
         <hr />
         <div
           style={{
@@ -130,21 +106,21 @@ function BlePanelRecorderSettings({
           </div>
           <small>
             <div>
-              <div className="d-flex flex-row">
+              <div style={{ display: "flex", flexDirection: "row" }}>
                 <Checkbox
                   onClick={onToggleStream}
                   className="stream-check"
                   id="stream-check"
                 />
-                <div className="ms-2">Disable sensor streaming</div>
+                <div style={{ marginLeft: "0.5rem" }}>Disable sensor streaming</div>
               </div>
-              <div className="d-flex flex-row mt-2">
+              <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
                 <Checkbox
                   onClick={onToggleSampleRate}
                   className="sampleRate-check"
                   id="sampleRate-check"
                 />
-                <div className="ms-2">
+                <div style={{ marginLeft: "0.5rem" }}>
                   Show sensor data at full sampling rate
                 </div>
               </div>
@@ -152,7 +128,7 @@ function BlePanelRecorderSettings({
           </small>
         </div>
         {fullSampleRate ? (
-          <small className="text-danger">
+          <small style={{ color: "red" }}>
             <strong>Warning: </strong>
             Showing sensor data at full sample rate can affect performance.
           </small>

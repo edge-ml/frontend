@@ -1,5 +1,5 @@
 import React from "react";
-import { Collapse, CardBody, Card, CardHeader } from "reactstrap";
+import { Collapse, Card } from "@mantine/core";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
@@ -14,13 +14,10 @@ export const AdvancedHyperparameters = ({
   handleHyperparameterChange,
 }) => {
   return (
-    <div className="mb-3 mt-2 align-self-stretch">
-      <Card className="shadow-none">
-        <CardHeader
-          className={
-            "align-items-start text-left " +
-            (showAdvanced ? "" : "border-bottom-0")
-          }
+    <div style={{ marginBottom: "1rem", marginTop: "0.5rem", alignSelf: "stretch" }}>
+      <Card shadow="sm" padding="md" radius="md" withBorder>
+        <Card.Section
+          style={{ cursor: "pointer", padding: "0.75rem 1rem", textAlign: "left" }}
           onClick={toggleShowAdvanced}
         >
           {showAdvanced ? (
@@ -29,16 +26,16 @@ export const AdvancedHyperparameters = ({
             <FontAwesomeIcon icon={faCaretRight} />
           )}
           <span style={{ fontWeight: 500 }}> Advanced Hyperparameters</span>
-        </CardHeader>
-        <Collapse isOpen={showAdvanced}>
-          <CardBody>
+        </Card.Section>
+        <Collapse in={showAdvanced}>
+          <div style={{ padding: "1rem" }}>
             <HyperparameterView
               model={model}
               hyperparameters={hyperparameters}
               handleHyperparameterChange={handleHyperparameterChange}
               isAdvanced={true}
             />
-          </CardBody>
+          </div>
         </Collapse>
       </Card>
     </div>

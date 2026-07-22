@@ -7,7 +7,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment } from "react";
-import { Button } from "reactstrap";
 import PlatformList from "../Common/PlatformList";
 
 const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
@@ -27,16 +26,17 @@ const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
   return (
     <div
       key={pipeline.name}
-      className="edgeml-border p-2 m-2 cursor-pointer hover-bigger"
+      className="edgeml-border"
+      style={{ padding: "0.5rem", margin: "0.5rem", cursor: "pointer" }}
       onClick={() => onSelectTrainingMethod(pipeline)}
     >
-      <div className="d-flex justify-content-between">
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
         <div>
-          <div className="fw-bold">{pipeline.name}</div>
+          <div style={{ fontWeight: 700 }}>{pipeline.name}</div>
           <div>{pipeline.description}</div>
         </div>
-        <div className="d-flex align-items-center">
-          <PlatformList size="3rem" platforms={platforms}></PlatformList>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <PlatformList size="3rem" platforms={platforms} />
         </div>
       </div>
     </div>

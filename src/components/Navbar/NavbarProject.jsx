@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -8,83 +8,73 @@ import {
   faPen,
   faMicrochip,
 } from "@fortawesome/free-solid-svg-icons";
+import { Stack, Text, UnstyledButton } from "@mantine/core";
 
 import "./Navbar.css";
 import useProjectRouter from "../../Hooks/ProjectRouter";
+import useProjectStore from "../../stores/projectStore";
 import { useLocation } from "react-router-dom";
 import classNames from "classnames";
 
-const NavbarProject = ({ project, currentProject, onProjectClick }) => {
+const NavbarProject = ({ project }) => {
   const location = useLocation();
   const navigate = useProjectRouter();
+  const { currentProject, setCurrentProject } = useProjectStore();
+
+  const isActive = currentProject?._id === project._id;
 
   const getNavBarItemClasses = (location_data) => {
-    const project = currentProject;
-    const matchName =
-      "/" + project.admin.userName + "/" + project.name + "/" + location_data;
+    const matchName = `/${currentProject.admin.userName}/${currentProject.name}/${location_data}`;
     const pathName = location.pathname.toLowerCase();
-    const isSelected = pathName.startsWith(matchName.toLowerCase());
-    return (
-      "pt-2 pb-2 ps-4 small " +
-      (isSelected ? "navbar-project-item-active" : "navbar-project-item")
-    );
+    return pathName.startsWith(matchName.toLowerCase());
   };
 
+  const navItems = [
+    ["Datasets", faDatabase],
+    ["Labelings", faPen],
+    ["Models", faMicrochip],
+    ["Settings", faCogs],
+  ];
+
   return (
-    <div className="w-100 text-left" key={project._id} id={project._id}>
-      <div
-        className={classNames(
-          "d-flex align-items-center mt-1 pt-2 pb-2 ps-2 navbar-project",
-          { "bg-primary": currentProject._id === project._id }
-        )}
-        onClick={() => onProjectClick(project)}
-        style={{
-          overflow: "hidden",
-          textOverflow: "ellipsis",
+    <Stack gap={0} key={project._id} className="w-100 text-left">
+      <UnstyledButton
+        className={classNames("d-flex align-items-center mt-1 pt-2 pb-2 ps-2", {
+          "bg-primary text-white": isActive,
+        })}
+        onClick={() => {
+          setCurrentProject(project);
+          navigate("Datasets");
         }}
+        style={{ overflow: "hidden", textOverflow: "ellipsis" }}
       >
         <FontAwesomeIcon
-          style={{
-            color: "#8b8d8f",
-            float: "left",
-            cursor: "pointer",
-          }}
-          icon={currentProject._id === project._id ? faCaretDown : faCaretRight}
+          style={{ color: isActive ? "white" : "#8b8d8f", cursor: "pointer" }}
+          icon={isActive ? faCaretDown : faCaretRight}
           className="me-2 fa-s"
-        ></FontAwesomeIcon>
-        <div
-          className="navbar-projec pe-1"
-          style={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            cursor: "pointer",
-          }}
-        >
-          <b>{project.name}</b>
-        </div>
-      </div>
-      {currentProject._id === project._id ? (
-        <div>
-          {[
-            ["Datasets", faDatabase],
-            ["Labelings", faPen],
-            ["Models", faMicrochip],
-            ["Settings", faCogs],
-          ].map((elm, index) => (
-            <div
-              key={elm + index}
-              onClick={() => {
-                navigate(elm[0]);
-              }}
-              className={getNavBarItemClasses(elm[0])}
+        />
+        <Text fw={700} truncate="end" style={{ cursor: "pointer" }}>
+          {project.name}
+        </Text>
+      </UnstyledButton>
+      {isActive && (
+        <Stack gap={0}>
+          {navItems.map(([name, icon]) => (
+            <UnstyledButton
+              key={name}
+              onClick={() => navigate(name)}
+              className={classNames("pt-2 pb-2 ps-4 small", {
+                "navbar-project-item-active": getNavBarItemClasses(name),
+                "navbar-project-item": !getNavBarItemClasses(name),
+              })}
             >
-              <FontAwesomeIcon className="me-2" icon={elm[1]}></FontAwesomeIcon>
-              {elm[0]}
-            </div>
+              <FontAwesomeIcon className="me-2" icon={icon} />
+              {name}
+            </UnstyledButton>
           ))}
-        </div>
-      ) : null}
-    </div>
+        </Stack>
+      )}
+    </Stack>
   );
 };
 

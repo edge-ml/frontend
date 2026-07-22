@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Button, InputGroup, InputGroupText } from "reactstrap";
+import { Button, Group, ActionIcon } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import AutoCompleteInput from "../../components/AutoCompleteInput/AutocompleteInput";
 import { getUserNameSuggestions } from "../../services/ApiServices/AuthentificationServices";
@@ -29,29 +29,23 @@ const UserEdit = () => {
   };
 
   const handleUserNameSuggestionChange = (e) => {
-    setUserSearchValue(e.target.value);
+    setUserSearchValue(e.currentTarget.value);
   };
 
   const handleDeleteUserName = (userNameToDelete) => {
     setUserNames(
-      userNames.filter((user) => user.userName !== userNameToDelete)
+      userNames.filter((u) => u.userName !== userNameToDelete)
     );
   };
 
-  const areUsersValid = (users) => {
-    return users.every((user) => user._id !== user._id);
-  };
+  const areUsersValid = () => true;
 
-  if (!currentProject.users) {
-    return null;
-  }
-  
+  if (!currentProject.users) return null;
+
   return (
     <div>
-      <InputGroup className="w-100">
-        <InputGroupText>Search user</InputGroupText>
+      <Group gap="sm" mb="md">
         <AutoCompleteInput
-          type="text"
           name="User ID"
           value={userSearchValue}
           placeholder="Enter username"
@@ -59,44 +53,41 @@ const UserEdit = () => {
           onChange={handleUserNameSuggestionChange}
           getsuggestions={getUserNameSuggestions}
           filter={[
-            ...currentProject.users.map((user) => user.userName),
+            ...currentProject.users.map((u) => u.userName),
             user.userName,
           ]}
         />
-      </InputGroup>
-      {userNames.length > 0 ? (
+      </Group>
+      {userNames.length > 0 && (
         <EdgeMLTable>
           <EdgeMLTableHeader>Users in the project</EdgeMLTableHeader>
-          {userNames.map((user, index) => (
+          {userNames.map((u, index) => (
             <EdgeMLTableEntry
               key={index}
               className="d-flex justify-content-between p-2 align-items-center"
             >
               <div>{index + 1}</div>
-              <div>{user.userName}</div>
-              <Button
-                outline
-                size="sm"
-                color="danger"
-                onClick={() => handleDeleteUserName(user.userName)}
+              <div>{u.userName}</div>
+              <ActionIcon
+                variant="subtle"
+                color="red"
+                onClick={() => handleDeleteUserName(u.userName)}
               >
                 <FontAwesomeIcon icon={faTrashAlt} />
-              </Button>
+              </ActionIcon>
             </EdgeMLTableEntry>
           ))}
         </EdgeMLTable>
-      ) : null}
-      <div className="pt-3 d-flex justify-content-end">
+      )}
+      <Group justify="flex-end" mt="md">
         <Button
-          outline
-          id="buttonSaveProject"
-          color="primary"
+          variant="outline"
           onClick={() => changeUserNames(userNames)}
-          disabled={!areUsersValid(userNames)}
+          disabled={!areUsersValid()}
         >
           Save
         </Button>
-      </div>
+      </Group>
     </div>
   );
 };

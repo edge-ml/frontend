@@ -1,5 +1,4 @@
 import React from "react";
-import { Badge } from "reactstrap";
 import "../index.css";
 import Checkbox from "../../../components/Common/Checkbox";
 import classNames from "classnames";
@@ -41,8 +40,8 @@ const Wizard_SelectLabeling = ({
   };
 
   return (
-    <div className="p-2">
-      <h3 className="fw-bold">1. Select Labeling</h3>
+    <div style={{ padding: "0.5rem" }}>
+      <h3 style={{ fontWeight: 700 }}>1. Select Labeling</h3>
       <EdgeMLTable>
         <EdgeMLTableHeader>
           <div>
@@ -50,35 +49,37 @@ const Wizard_SelectLabeling = ({
               <b>Labeling</b>
             </h4>
           </div>
-          <div className="d-flex justify-content-center align-items-center">
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
             <Checkbox
               onClick={() => toggleZeroClass(!zeroClass)}
               isSelected={zeroClass}
-            ></Checkbox>
-            <div className="ms-2">Use 0-Class</div>
+            />
+            <div style={{ marginLeft: "0.5rem" }}>Use 0-Class</div>
           </div>
         </EdgeMLTableHeader>
         {labelings
           .filter((elm) => countDatasets(elm))
           .map((labeling) => (
             <EdgeMLTableEntry
+              key={labeling._id}
               className={classNames("labelingRow", {
                 disabled: countDatasets(labeling) === 0,
               })}
             >
               <Checkbox
-                className="me-2"
+                style={{ marginRight: "0.5rem" }}
                 onClick={() => setLabeling({ ...labeling, disabledLabels: [] })}
                 isSelected={
                   selectedLabeling
                     ? selectedLabeling._id === labeling._id
                     : false
                 }
-              ></Checkbox>
+              />
               <div className="labelingName">{labeling.name} </div>
               <div>
                 {labeling.labels.map((label) => (
                   <LabelBadge
+                    key={label._id}
                     className="badge"
                     onClick={() =>
                       selectedLabeling?.disabledLabels &&
@@ -97,9 +98,6 @@ const Wizard_SelectLabeling = ({
                         : { backgroundColor: label.color }),
                       userSelect: "none",
                     }}
-                    // {...(selectedLabeling?.disabledLabels.includes(label._id)
-                    //   ? { color: 'light' }
-                    //   : {})}
                     color={
                       selectedLabeling?.disabledLabels.includes(label._id)
                         ? "light"

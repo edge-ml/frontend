@@ -1,31 +1,30 @@
 import React from "react";
-import { Row, Button } from "reactstrap";
+import { Button } from "@mantine/core";
 import Highcharts from "highcharts/highstock";
 import HighchartsReact from "highcharts-react-official";
 
 export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
   <div>
-    <div className="d-flex justify-content-between align-items-center">
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
       <span>Data preview is {dataPreview ? "enabled" : "paused"}.</span>
       <Button
-        outline
-        color={dataPreview ? "secondary" : "primary"}
+        variant="outline"
+        color={dataPreview ? "gray" : "blue"}
         onClick={() => setDataPreview(!dataPreview)}
       >
         {dataPreview ? "Pause" : "Resume"}
       </Button>
     </div>
     {Object.entries(sensorStore).map(([sensor, value]) => (
-      <Row className="mt-3">
+      <div style={{ marginTop: "1rem" }}>
         <HighchartsReact
           highcharts={Highcharts}
           containerProps={{ style: { width: "calc(95%)", margin: "auto" } }}
           options={{
             chart: {
-              animation: Highcharts.svg, // don't animate in old IE
+              animation: Highcharts.svg,
             },
             boost: {
-              // chart-level boost when there are more than 1 series in the chart
               useGPUTranslations: true,
               seriesThreshold: 1,
             },
@@ -55,7 +54,7 @@ export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
             },
           }}
         />
-      </Row>
+      </div>
     ))}
   </div>
 );

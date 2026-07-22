@@ -5,23 +5,18 @@ import {
   ModalFooter,
   ModalHeader,
   Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Input,
-  UncontrolledDropdown,
-  FormGroup,
+  Menu,
+  TextInput,
+  Switch,
   Progress,
-  Spinner,
-} from "reactstrap";
+  Loader,
+} from "@mantine/core";
 import {
   getDeployDevices,
   deployModel,
   downloadFirmware,
 } from "../../../services/ApiServices/MlService";
 
-// import './index.css';
 import { HyperparameterView } from "../../../../components/Hyperparameters/HyperparameterView";
 import {
   EdgeMLTable,
@@ -47,7 +42,7 @@ const DeployModal = ({ model, onClose }) => {
   const [selectedSensors, setSelectedSensors] = useState(undefined);
   const [compiledModel, setComiledModel] = useState(undefined);
   const [page, setPage] = useState(0);
-  const [flashState, setFlashState] = useState("start"); //start, connected, modelDownload, uploading, finished
+  const [flashState, setFlashState] = useState("start");
   const [flashError, setFlashError] = useState(undefined);
   const [flashProgress, setFlashProgress] = useState(0);
   const [connectedDevice, setConnectedDevice] = useState(undefined);
@@ -99,7 +94,6 @@ const DeployModal = ({ model, onClose }) => {
 
   useEffect(() => {
     return () => {
-      // Component will unmount
       if (connectedDevice) {
         dfuManager.disconnectDevice(connectedDevice);
       }
@@ -160,10 +154,6 @@ const DeployModal = ({ model, onClose }) => {
       selectedDevice,
       a_settings
     );
-    /**const buffer = new ArrayBuffer(10000);
-    const view = new Uint8Array(buffer);
-
-    view.fill(0); // Fill the ArrayBuffer with zeroes */
 
     setComiledModel(res);
   };
@@ -226,11 +216,11 @@ const DeployModal = ({ model, onClose }) => {
                 "No device connected"
               )}
             </div>
-            <div className="d-flex flex-row">
+            <div style={{ display: "flex", flexDirection: "row" }}>
               <div>{renderProgressInfo()}</div>
               {inProgress() ? (
                 <div>
-                  <Spinner color="dark" size="sm" />
+                  <Loader size="sm" color="dark" />
                 </div>
               ) : null}
             </div>
@@ -242,19 +232,19 @@ const DeployModal = ({ model, onClose }) => {
           {selectedDevice.ota_update ? (
             <>
               <Button
-                outline
+                variant="outline"
                 disabled={inProgress()}
-                className="m-2"
-                color={connectedDevice ? "danger" : "primary"}
+                style={{ margin: "0.5rem" }}
+                color={connectedDevice ? "red" : "blue"}
                 onClick={connectedDevice ? disconnectBLE : connectBLE}
               >
                 {connectedDevice ? "Disconnect device" : "Connect device"}
               </Button>
               <Button
-                color="primary"
-                outline
+                color="blue"
+                variant="outline"
                 disabled={connectedDevice === undefined || inProgress()}
-                className="m-2"
+                style={{ margin: "0.5rem" }}
                 onClick={onDeploy}
               >
                 Flash firmware
@@ -262,25 +252,25 @@ const DeployModal = ({ model, onClose }) => {
             </>
           ) : null}
           <Button
-            color="primary"
-            outline
+            color="blue"
+            variant="outline"
             disabled={inProgress()}
-            className="m-2"
+            style={{ margin: "0.5rem" }}
             onClick={onDownloadFirmware}
           >
             Download firmware
           </Button>
         </div>
         {inProgress() ? (
-          <div className="text-danger">
+          <div style={{ color: "red" }}>
             Please do not leave this page or disconnect the device, while the
             flashing is in progress.
           </div>
         ) : null}
         {selectedDevice.ota_update ? (
-          <div className="mt-3">
+          <div style={{ marginTop: "1rem" }}>
             <Progress
-              color={flashState === "uploadFinished" ? "primary" : "success"}
+              color={flashState === "uploadFinished" ? "blue" : "green"}
               value={flashProgress}
             />
           </div>
@@ -308,65 +298,65 @@ const DeployModal = ({ model, onClose }) => {
 
   return (
     <Modal isOpen={model} size="xl">
-      <ModalHeader>Deploy model: {model.name}</ModalHeader>
-      <ModalBody>
+      <Modal.Header>Deploy model: {model.name}</Modal.Header>
+      <Modal.Body>
         {page === 0 ? (
           <div>
-            <div className="d-flex justify-content-center">
-              <Dropdown
-                isOpen={deviceDropDownOpen}
-                toggle={toggleDeviceDropDown}
-              >
-                <DropdownToggle caret size="lg">
-                  {selectedDevice.name}
-                </DropdownToggle>
-                <DropdownMenu>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Menu>
+                <Menu.Target>
+                  <Button size="lg">
+                    {selectedDevice.name}
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
                   {devices.map((device, idx) => (
-                    <DropdownItem onClick={() => setSelectedDevice(device)}>
+                    <Menu.Item key={idx} onClick={() => setSelectedDevice(device)}>
                       {device.name}
-                    </DropdownItem>
+                    </Menu.Item>
                   ))}
-                </DropdownMenu>
-              </Dropdown>
+                </Menu.Dropdown>
+              </Menu>
             </div>
-            <div className="d-flex">
-              <div className="my-4 ms-2 me-4" style={{ width: "500px" }}>
-                <div className="header-wrapper d-flex justify-content-center align-content-center">
+            <div style={{ display: "flex" }}>
+              <div style={{ margin: "1rem 1rem 1rem 0.5rem", width: "500px" }}>
+                <div style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
                   <b>Configure TimeSeries</b>
                 </div>
                 <div className="body-wrapper-overflow">
                   {model.timeSeries.map((elm, ts_idx) => (
                     <div
+                      key={ts_idx}
                       className="datasetCard"
                       style={{
                         background:
                           ts_idx % 2 === 1 ? "rgb(249, 251, 252)" : "",
                       }}
                     >
-                      <div className="d-flex align-items-center justify-content-between">
-                        <strong className="ps-2">{elm}</strong>
-                        <UncontrolledDropdown
-                          direction="left"
-                          style={{ position: "relative" }}
-                        >
-                          <DropdownToggle caret size="sm">
-                            {selectedSensors[ts_idx].sensor_id !== undefined
-                              ? selectedDevice.sensors[
-                                  selectedSensors[ts_idx].sensor_id
-                                ].name +
-                                "_" +
-                                selectedDevice.sensors[
-                                  selectedSensors[ts_idx].sensor_id
-                                ].components[
-                                  selectedSensors[ts_idx].component_id
-                                ].name
-                              : "Unset"}
-                          </DropdownToggle>
-                          <DropdownMenu>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <strong style={{ paddingLeft: "0.5rem" }}>{elm}</strong>
+                        <Menu>
+                          <Menu.Target>
+                            <Button size="sm">
+                              {selectedSensors[ts_idx].sensor_id !== undefined
+                                ? selectedDevice.sensors[
+                                    selectedSensors[ts_idx].sensor_id
+                                  ].name +
+                                  "_" +
+                                  selectedDevice.sensors[
+                                    selectedSensors[ts_idx].sensor_id
+                                  ].components[
+                                    selectedSensors[ts_idx].component_id
+                                  ].name
+                                : "Unset"}
+                            </Button>
+                          </Menu.Target>
+                          <Menu.Dropdown>
                             {selectedDevice.sensors.map((sensor, sensor_idx) =>
                               sensor.components.map(
                                 (component, component_idx) => (
-                                  <DropdownItem
+                                  <Menu.Item
+                                    key={`${sensor_idx}_${component_idx}`}
                                     onClick={() =>
                                       selectSensor(
                                         ts_idx,
@@ -376,60 +366,56 @@ const DeployModal = ({ model, onClose }) => {
                                     }
                                   >
                                     {sensor.name + "_" + component.name}
-                                  </DropdownItem>
+                                  </Menu.Item>
                                 )
                               )
                             )}
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
+                          </Menu.Dropdown>
+                        </Menu>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-              <EdgeMLTable className="m-2" style={{ width: "400px" }}>
+              <EdgeMLTable style={{ margin: "0.5rem", width: "400px" }}>
                 <EdgeMLTableHeader>
-                  <div className="d-flex justify-content-center w-100">
+                  <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
                     <div>Use BLE</div>
-                    <FormGroup style={{ margin: 0 }}>
-                      <Input
-                        className="ms-2"
-                        inline
-                        onChange={(e) => setUseBLE(!useBLE)}
-                        type="switch"
-                        id="exampleCustomSwitch"
-                        // checked={this.props.project.enableDeviceApi}
-                        // onChange={(e) => this.props.onDeviceApiSwitch(e.target.checked)}
-                      />
-                    </FormGroup>
+                    <Switch
+                      style={{ marginLeft: "0.5rem" }}
+                      onChange={(e) => setUseBLE(!useBLE)}
+                      checked={useBLE}
+                    />
                   </div>
                 </EdgeMLTableHeader>
                 <EdgeMLTableEntry>
-                  <div className="d-flex p-2 align-items-center">
-                    <div className="fw-bold" style={{ width: "200px" }}>
+                  <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
+                    <div style={{ fontWeight: 700, width: "200px" }}>
                       Service-UUID
                     </div>
-                    <Input
+                    <TextInput
                       disabled={!useBLE}
                       value={additionalSettings.ble.serviceUUID}
-                    ></Input>
+                      onChange={(e) => setAdditionalSettings(prev => ({...prev, ble: {...prev.ble, serviceUUID: e.target.value}}))}
+                    />
                   </div>
                 </EdgeMLTableEntry>
                 <EdgeMLTableEntry>
-                  <div className="d-flex p-2 algin-items-center">
-                    <div className="fw-bold" style={{ width: "200px" }}>
+                  <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
+                    <div style={{ fontWeight: 700, width: "200px" }}>
                       Characteristic-UUID
                     </div>
-                    <Input
+                    <TextInput
                       disabled={!useBLE}
                       value={additionalSettings.ble.characteristicUUID}
-                    ></Input>
+                      onChange={(e) => setAdditionalSettings(prev => ({...prev, ble: {...prev.ble, characteristicUUID: e.target.value}}))}
+                    />
                   </div>
                 </EdgeMLTableEntry>
               </EdgeMLTable>
             </div>
-            <div className="m-2">
-              <div className="fw-bold fs-medium">Settings</div>
+            <div style={{ margin: "0.5rem" }}>
+              <div style={{ fontWeight: 700, fontSize: "medium" }}>Settings</div>
               <HyperparameterView
                 hyperparameters={parameters}
                 isAdvanced={false}
@@ -437,42 +423,42 @@ const DeployModal = ({ model, onClose }) => {
               ></HyperparameterView>
             </div>
             {flashError ? (
-              <div className="d-flex flex-row ms-2">
+              <div style={{ display: "flex", flexDirection: "row", marginLeft: "0.5rem" }}>
                 <div>
                   <FontAwesomeIcon icon={faCircleExclamation} color="red" />
                 </div>
-                <div className="text-danger">
+                <div style={{ color: "red" }}>
                   An error occured while flashing the model onto the device.
                 </div>
               </div>
             ) : null}
-            <div className="w-100 d-flex flex-row">
-              <div className="text-danger flex-grow-1">
+            <div style={{ width: "100%", display: "flex", flexDirection: "row" }}>
+              <div style={{ color: "red", flexGrow: 1 }}>
                 {showSelectAllSensorWarning
                   ? "Please configure all time series under configure time series before deploying."
                   : ""}
               </div>
               <div>
-                <Button outline color="primary" onClick={onSwitchPage}>
+                <Button variant="outline" color="blue" onClick={onSwitchPage}>
                   Deploy
                 </Button>
               </div>
             </div>
           </div>
         ) : (
-          <div className="w-100 h-100">{renderDeployPart()}</div>
+          <div style={{ width: "100%", height: "100%" }}>{renderDeployPart()}</div>
         )}
-      </ModalBody>
-      <ModalFooter>
+      </Modal.Body>
+      <Modal.Footer>
         {page == 1 ? (
-          <Button outline color="primary" onClick={onGoBack}>
+          <Button variant="outline" color="blue" onClick={onGoBack}>
             Back
           </Button>
         ) : null}
-        <Button onClick={onClose} outline color="danger">
+        <Button onClick={onClose} variant="outline" color="red">
           Cancel
         </Button>
-      </ModalFooter>
+      </Modal.Footer>
     </Modal>
   );
 };

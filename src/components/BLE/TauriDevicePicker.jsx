@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
   Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
-  Spinner,
-} from "reactstrap";
+  Loader,
+} from "@mantine/core";
 import {
   resolveDeviceSelection,
   rejectDeviceSelection,
@@ -43,16 +40,15 @@ const TauriDevicePicker = () => {
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={handleCancel} size="lg" scrollable>
-      <ModalHeader toggle={handleCancel}>Select BLE Device</ModalHeader>
-      <ModalBody>
+    <Modal opened={isOpen} onClose={handleCancel} size="lg" title="Select BLE Device">
+      <Modal.Body>
         <p className="text-muted small mb-3">
           Found {devices.length} device{devices.length !== 1 ? "s" : ""}.
           Select one to connect.
         </p>
         {devices.length === 0 ? (
-          <div className="text-center py-4">
-            <Spinner size="sm" className="me-2" />
+          <div style={{ textAlign: "center", padding: "1.5rem 0" }}>
+            <Loader size="sm" style={{ marginRight: "0.5rem" }} />
             Scanning...
           </div>
         ) : (
@@ -76,19 +72,19 @@ const TauriDevicePicker = () => {
             ))}
           </div>
         )}
-      </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={handleCancel}>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="outline" color="gray" onClick={handleCancel}>
           Cancel
         </Button>
         <Button
-          color="primary"
+          color="blue"
           onClick={handleConnect}
           disabled={!selectedId}
         >
           Connect
         </Button>
-      </ModalFooter>
+      </Modal.Footer>
     </Modal>
   );
 };

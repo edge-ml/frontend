@@ -1,15 +1,8 @@
 import React, { Component } from "react";
-import {
-  CardBody,
-  Form,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupText,
-} from "reactstrap";
+import { TextInput } from "@mantine/core";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faCheck } from "@fortawesome/free-solid-svg-icons"; // Added faCheck icon
+import { faPen, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 import { unixTimeToString } from "../../services/helpers";
 import "./MetadataPanel.css";
@@ -69,26 +62,19 @@ class MetadataPanel extends Component {
               }`}
             >
               {this.state.nameEditActive ? (
-                <Form>
-                  <FormGroup>
-                    <InputGroup className="datasetNameChangeInputArea">
-                      <Input
-                        className="datasetNameChangeInput"
-                        type="text"
-                        value={this.state.editedName}
-                        onChange={this.handleNameInput}
-                      />
-                      <InputGroupText>
-                        <button
-                          className="confirmDatasetNameButton"
-                          onClick={this.handleNameSave}
-                        >
-                          <FontAwesomeIcon icon={faCheck} />
-                        </button>
-                      </InputGroupText>
-                    </InputGroup>
-                  </FormGroup>
-                </Form>
+                <div style={{ display: "flex", gap: "4px" }}>
+                  <TextInput
+                    className="datasetNameChangeInput"
+                    value={this.state.editedName}
+                    onChange={this.handleNameInput}
+                  />
+                  <button
+                    className="confirmDatasetNameButton"
+                    onClick={this.handleNameSave}
+                  >
+                    <FontAwesomeIcon icon={faCheck} />
+                  </button>
+                </div>
               ) : (
                 <>
                   {this.state.datasetName}

@@ -1,20 +1,14 @@
 import React, { useState } from "react";
 import {
-  Row,
-  Col,
   Button,
-  Input,
-  InputGroup,
-  InputGroupText,
-  InputGroupText,
-} from "reactstrap";
+  TextInput,
+} from "@mantine/core";
 import Select from "react-select";
 import { platforms } from "./platforms";
 import { Line } from "./components/Line";
 
 export const ExportDetailView = ({
-  model, // { name: string } // later platforms
-
+  model,
   onClickViewModelDetails,
   onClickDownloadModel,
   platformName,
@@ -28,55 +22,52 @@ export const ExportDetailView = ({
   const Code = nPlatform ? nPlatform.prism : null;
 
   return (
-    <Row>
-      <Col>
-        <Line>
-          <Button onClick={onClickViewModelDetails} className="float-right">
-            See Model Details
-          </Button>
-          <b>Model name: </b>
-          <span>{model.name}</span>
-        </Line>
-        <Line>
-          <b>Available on platforms: </b>
-          <ul className="my-0">
-            {nPlatforms.map((p) => (
-              <li key={p.value}>
-                <span>{p.label}</span>
-              </li>
-            ))}
-          </ul>
-        </Line>
+    <div>
+      <Line>
+        <Button onClick={onClickViewModelDetails} style={{ float: "right" }}>
+          See Model Details
+        </Button>
+        <b>Model name: </b>
+        <span>{model.name}</span>
+      </Line>
+      <Line>
+        <b>Available on platforms: </b>
+        <ul style={{ margin: 0 }}>
+          {nPlatforms.map((p) => (
+            <li key={p.value}>
+              <span>{p.label}</span>
+            </li>
+          ))}
+        </ul>
+      </Line>
 
-        {nPlatform ? (
-          <React.Fragment>
-            <hr />
-
-            <Line>
-              <h5>Export model</h5>
-            </Line>
-            <Line>
-              <div className="float-right d-flex">
-                <span style={{ minWidth: "200px" }}>
-                  <Select
-                    value={nPlatform}
-                    onChange={(x) => onPlatform(x.value)}
-                    options={nPlatforms}
-                  />
-                </span>
-                <Button onClick={onClickDownloadModel} className="ms-3">
-                  Download model
-                </Button>
-              </div>
-              <b>Platform: </b>
-            </Line>
-            <Line>
-              <b>Code: </b>
-              <Code code={platformContents} />
-            </Line>
-          </React.Fragment>
-        ) : null}
-      </Col>
-    </Row>
+      {nPlatform ? (
+        <>
+          <hr />
+          <Line>
+            <h5>Export model</h5>
+          </Line>
+          <Line>
+            <div style={{ float: "right", display: "flex" }}>
+              <span style={{ minWidth: "200px" }}>
+                <Select
+                  value={nPlatform}
+                  onChange={(x) => onPlatform(x.value)}
+                  options={nPlatforms}
+                />
+              </span>
+              <Button onClick={onClickDownloadModel} style={{ marginLeft: "1rem" }}>
+                Download model
+              </Button>
+            </div>
+            <b>Platform: </b>
+          </Line>
+          <Line>
+            <b>Code: </b>
+            <Code code={platformContents} />
+          </Line>
+        </>
+      ) : null}
+    </div>
   );
 };

@@ -1,14 +1,9 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import {
   Button,
-  Input,
-  InputGroup,
-  InputGroupText,
+  TextInput,
   Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
+} from "@mantine/core";
 
 class DeleteUser extends Component {
   constructor(props) {
@@ -42,56 +37,52 @@ class DeleteUser extends Component {
   render() {
     return (
       <div className="mt-3">
-        <h4 className="fw-bold">Delete User</h4>
+        <h4 style={{ fontWeight: 700 }}>Delete User</h4>
         <div>
           <h6>
             Please type <b>{this.props.userMail}</b> to confirm
           </h6>
           <div>All projects where you are admin will be deleted</div>
         </div>
-        <InputGroup>
-          <InputGroupText>E-Mail</InputGroupText>
-          <Input
-            type="text"
-            id="E-Mail"
-            placeholder="E-Mail"
-            onChange={this.eMailChanged}
-          />
-        </InputGroup>
+        <TextInput
+          label="E-Mail"
+          type="text"
+          id="E-Mail"
+          placeholder="E-Mail"
+          onChange={this.eMailChanged}
+        />
         <Button
-          outline
+          variant="outline"
           id="buttonDeleteUser"
-          color="danger"
-          className="m-1 me-auto"
+          color="red"
+          style={{ margin: "0.25rem" }}
           disabled={this.state.confirmationMail !== this.props.userMail}
           onClick={this.toggleConfirmationModal}
         >
           Delete user
         </Button>
         <Modal
-          isOpen={this.state.confirmationModalOpen}
-          toggle={this.toggleConfirmationModal}
+          opened={this.state.confirmationModalOpen}
+          onClose={this.toggleConfirmationModal}
+          title="Confirm User Deletion"
         >
-          <ModalHeader toggle={this.toggleConfirmationModal}>
-            Confirm User Deletion
-          </ModalHeader>
-          <ModalBody>
+          <Modal.Body>
             Are you sure you want to delete your user account? <br />
             When you delete your account, all projects where you are the admin
             will be deleted!
-          </ModalBody>
-          <ModalFooter className="d-flex justify-content-between">
+          </Modal.Body>
+          <Modal.Footer style={{ display: "flex", justifyContent: "space-between" }}>
             <Button
-              color="danger"
+              color="red"
               onClick={this.deleteUser}
               disabled={this.state.confirmationMail !== this.props.userMail}
             >
               Delete
             </Button>
-            <Button color="primary" onClick={this.toggleConfirmationModal}>
+            <Button color="blue" onClick={this.toggleConfirmationModal}>
               Cancel
             </Button>
-          </ModalFooter>
+          </Modal.Footer>
         </Modal>
       </div>
     );

@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Button } from "reactstrap";
+import React from "react";
+import { Button } from "@mantine/core";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
 const HelpModal = ({ isOpen, onCloseModal }) => {
@@ -7,7 +7,7 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
     <Modal isOpen={isOpen} onClose={onCloseModal}>
       <ModalHeader>{"Help"}</ModalHeader>
       <ModalBody>
-        <div className="py-2">
+        <div style={{ padding: "0.5rem 0" }}>
           <h6>Shortcuts</h6>
           <table>
             <tbody>
@@ -34,12 +34,7 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
         to download an example CSV file.
       </ModalBody>
       <ModalFooter>
-        <Button
-          outline
-          color="secondary"
-          className="m-1"
-          onClick={onCloseModal}
-        >
+        <Button variant="outline" color="gray" style={{ margin: "0.25rem" }} onClick={onCloseModal}>
           Close
         </Button>
       </ModalFooter>

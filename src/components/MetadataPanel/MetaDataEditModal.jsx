@@ -1,19 +1,5 @@
 import React, { Component } from "react";
-import {
-  Card,
-  InputGroup,
-  InputGroupText,
-  Input,
-  CardBody,
-  CardHeader,
-  Button,
-  CardFooter,
-  FormFeedback,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
+import { TextInput, Button, Modal } from "@mantine/core";
 import "./MetadataPanel.css";
 
 class MetaDataEditModal extends Component {
@@ -90,73 +76,45 @@ class MetaDataEditModal extends Component {
 
   renderMetaData() {
     return this.state.metaData.map((elm, idx) => (
-      <div key={idx}>
-        <InputGroup>
-          <InputGroupText>
-            <Input
-              style={{
-                background: "lightGrey",
-                borderBottomRightRadius: 0,
-                borderTopRightRadius: 0,
-              }}
-              value={elm.key}
-              onChange={(e) => this.onEditKey(e, idx)}
-              invalid={this.checkError(elm)}
-              placeholder="key"
-            ></Input>
-          </InputGroupText>
-          <Input
-            className="shadow-none"
-            // style={{ borderBottomLeftRadius: 0, borderTopLeftRadius: 0 }}
-            value={elm.data}
-            onChange={(e) => this.onEditValue(e, idx)}
-            invalid={this.checkError(elm) || elm.data == ""}
-            placeholder="data"
-          ></Input>
-          <InputGroupText>
-            <Button
-              style={{
-                borderBottomRightRadius: "0.25rem",
-                borderTopRightRadius: "0.25rem",
-              }}
-              color="danger"
-              onClick={(e) => this.onDeleteMetaData(idx)}
-            >
-              X
-            </Button>
-          </InputGroupText>
-
-          <FormFeedback>
-            {this.checkError(elm)
-              ? "Keys with the same name are not allowed."
-              : "Each key needs some data"}
-          </FormFeedback>
-        </InputGroup>
+      <div key={idx} style={{ display: "flex", alignItems: "center", gap: "0", marginBottom: "8px" }}>
+        <TextInput
+          value={elm.key}
+          onChange={(e) => this.onEditKey(e, idx)}
+          error={this.checkError(elm) ? "Keys with the same name are not allowed." : undefined}
+          placeholder="key"
+          style={{ background: "#f0f0f0", flex: 1 }}
+        />
+        <TextInput
+          value={elm.data}
+          onChange={(e) => this.onEditValue(e, idx)}
+          error={this.checkError(elm) || elm.data === "" ? (this.checkError(elm) ? "Keys with the same name are not allowed." : "Each key needs some data") : undefined}
+          placeholder="data"
+          style={{ flex: 1 }}
+        />
+        <Button color="red" onClick={(e) => this.onDeleteMetaData(idx)} compact>
+          X
+        </Button>
       </div>
     ));
   }
 
   render() {
     return (
-      <Modal size="lg" isOpen={this.props.isOpen}>
-        <ModalHeader>Edit custom Metadata</ModalHeader>
-        <ModalBody>
+      <Modal size="lg" opened={this.props.isOpen} onClose={this.onClose} title="Edit custom Metadata">
+        <Modal.Body>
           <div>{this.renderMetaData()}</div>
-          <Button color="primary" onClick={this.onAddMetaData}>
+          <Button color="blue" onClick={this.onAddMetaData}>
             + Add
           </Button>
-        </ModalBody>
-        <ModalFooter style={{ justifyContent: "space-between" }}>
-          <Button color="secondary" onClick={this.onClose}>
+        </Modal.Body>
+        <Modal.Footer style={{ justifyContent: "space-between" }}>
+          <Button variant="outline" onClick={this.onClose}>
             Cancel
           </Button>
-          <Button
-            color="primary"
-            onClick={() => this.props.onSave(this.state.metaData)}
-          >
+          <Button color="blue" onClick={() => this.props.onSave(this.state.metaData)}>
             Save
           </Button>
-        </ModalFooter>
+        </Modal.Footer>
       </Modal>
     );
   }

@@ -3,14 +3,9 @@ import Select from "react-select";
 
 import {
   Button,
-  InputGroup,
-  InputGroupText,
-  Input,
-  FormFeedback,
+  TextInput,
   Card,
-  CardBody,
-  CardHeader,
-} from "reactstrap";
+} from "@mantine/core";
 
 import { faCheck, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,9 +29,9 @@ export const ClassifierView = ({
   requestInProgress,
 }) => {
   return (
-    <Card>
-      <CardHeader className="d-flex flex-row justify-content-between w-100">
-        <h4 className="me-2">Classifier</h4>
+    <Card shadow="sm" padding="md" radius="md" withBorder>
+      <Card.Section style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", width: "100%", padding: "1rem" }}>
+        <h4 style={{ marginRight: "0.5rem" }}>Classifier</h4>
         <Select
           options={models.map((m) => {
             return { value: m.id, label: m.name };
@@ -44,20 +39,17 @@ export const ClassifierView = ({
           value={modelSelection}
           onChange={changeModelSelection}
           isSearchable={false}
-        ></Select>
-      </CardHeader>
-      <CardBody className="h-100 d-flex flex-column align-items-start flex-column justify-content-between">
-        <InputGroup style={{ maxWidth: "350px" }}>
-          <InputGroupText>Model Name</InputGroupText>
-          <Input
-            type={"text"}
-            value={modelName}
-            onChange={changeModelName}
-            invalid={!modelName}
-          ></Input>
-        </InputGroup>
-        <FormFeedback invalid></FormFeedback>
-        <h6 className="mt-3">Hyperparameters</h6>
+        />
+      </Card.Section>
+      <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "space-between", padding: "1rem" }}>
+        <TextInput
+          label="Model Name"
+          value={modelName}
+          onChange={changeModelName}
+          error={!modelName ? "Model name is required" : undefined}
+          style={{ maxWidth: "350px" }}
+        />
+        <h6 style={{ marginTop: "1rem" }}>Hyperparameters</h6>
         <HyperparameterView
           model={models.find((m) => m.id === parseInt(selectedModelId, 10))}
           hyperparameters={hyperparameters}
@@ -74,17 +66,16 @@ export const ClassifierView = ({
         <Button
           disabled={!modelName || requestInProgress}
           onClick={handleTrainButton}
-          project={project}
         >
           <div>
-            <span className="me-1">Train Model</span>
+            <span style={{ marginRight: "0.25rem" }}>Train Model</span>
             <FontAwesomeIcon
               icon={requestInProgress ? faSpinner : faCheck}
               pulse={requestInProgress}
             />
           </div>
         </Button>
-      </CardBody>
+      </div>
     </Card>
   );
 };

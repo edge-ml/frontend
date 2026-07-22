@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Input, InputGroup, InputGroupText, Badge } from "reactstrap";
+import { Table, NativeSelect, TextInput, Badge } from "@mantine/core";
 import Checkbox from "../Common/Checkbox";
 
 function BlePanelSensorList({
@@ -18,8 +18,6 @@ function BlePanelSensorList({
   selectedSensors.forEach((elm) => {
     sampleRateSum += sensors[elm].sampleRate;
   });
-
-  console.log("SensorData", sensors);
 
   return (
     <div className="m-2">
@@ -41,40 +39,35 @@ function BlePanelSensorList({
               const sensorData = sensors[sensorKey];
               return (
                 <tr key={sensorKey}>
-                  <td className="align-middle">
+                  <td style={{ verticalAlign: "middle" }}>
                     <Checkbox
                       disabled={disabled}
                       isSelected={selectedSensors.has(sensorKey)}
                       className="datasets-check"
                       onClick={() => onToggleSensor(sensorKey)}
-                    ></Checkbox>
+                    />
                   </td>
-                  <td className="align-middle">{sensorData.name}</td>
-                  <td className="align-middle">
-                    <InputGroup
-                      style={{ margin: 0, minWidth: "90px" }}
-                      size="sm"
-                    >
-                      {sensorData.options ? (
-                        <Input
-                          value={sensorData.sampleRate}
-                          disabled={disabled}
-onChange={(e) => {
-  console.log(e.target.value);
-  onChangeSampleRate(
-    sensorKey,
-    parseInt(e.target.value)
-                            )}
-                          }
-                          type="select"
-                        >
-                          {sensorData.options.frequencies.frequencies.map((elm, index) => (
-                            <option key={elm + index} value={index}>
-                              {elm}
-                            </option>
-                          ))}
-                        </Input>):
-                      <Input
+                  <td style={{ verticalAlign: "middle" }}>{sensorData.name}</td>
+                  <td style={{ verticalAlign: "middle" }}>
+                    {sensorData.options ? (
+                      <NativeSelect
+                        value={sensorData.sampleRate}
+                        disabled={disabled}
+                        onChange={(e) => {
+                          onChangeSampleRate(
+                            sensorKey,
+                            parseInt(e.target.value)
+                          );
+                        }}
+                        data={sensorData.options.frequencies.frequencies.map((elm, index) => ({
+                          value: String(index),
+                          label: elm,
+                        }))}
+                        rightSection="Hz"
+                        size="sm"
+                      />
+                    ) : (
+                      <TextInput
                         value={sensorData.sampleRate}
                         disabled={disabled}
                         onChange={(e) =>
@@ -83,13 +76,13 @@ onChange={(e) => {
                         type="number"
                         min={0}
                         max={50}
-                      ></Input>}
-                      <InputGroupText>Hz</InputGroupText>
-                    </InputGroup>
+                        size="sm"
+                      />
+                    )}
                   </td>
-                  <td className="align-middle">
+                  <td style={{ verticalAlign: "middle" }}>
                     {sensorData.parseScheme.map((elm, index) => (
-                      <Badge color="primary" key={elm.name + index}>
+                      <Badge color="blue" key={elm.name + index} style={{ marginRight: "4px" }}>
                         {elm.name + (elm.unit ? ` (${elm.unit})` : "")}
                       </Badge>
                     ))}
@@ -101,7 +94,7 @@ onChange={(e) => {
         </Table>
         {sampleRateSum > maxSampleRate && (
           <div className="p-2">
-            <small className="text-danger">
+            <small style={{ color: "red" }}>
               <strong>Warning: </strong>Collecting data from multiple sensors
               with high sampling rate can cause delays / errors during
               recording. It is recommended to keep the sum of sample rates below{" "}

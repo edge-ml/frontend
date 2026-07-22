@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
-  InputGroupText,
-  InputGroup,
-  Input,
   Button,
-  FormFeedback,
-} from "reactstrap";
+  TextInput,
+} from "@mantine/core";
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
@@ -42,7 +39,6 @@ const EditLabelingModal = ({
   const onLabelChange = (index, label) => {
     const newLabeling = { ...labeling };
     newLabeling.labels[index] = label;
-    console.log(newLabeling);
     setLabeling(newLabeling);
   };
 
@@ -100,25 +96,23 @@ const EditLabelingModal = ({
         {labeling ? "Edit labeling" : "Create labeling"}
       </ModalHeader>
       <ModalBody>
-        <div className="d-flex flex-column align-items-center">
-          <div className="w-100">
-            <div className="d-flex align-items-center">
-              <InputGroup className="d-flex">
-                <InputGroupText>Labeling Set</InputGroupText>
-                <Input
-                  invalid={isLabelingNameDuplicate() && labeling.name !== ""}
-                  id="labelingName"
-                  placeholder="Name"
-                  value={labeling.name}
-                  onChange={(e) => {
-                    setLabeling({ ...labeling, name: e.target.value });
-                  }}
-                />
-                <FormFeedback>Oh no! That name is already taken</FormFeedback>
-              </InputGroup>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ width: "100%" }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <TextInput
+                label="Labeling Set"
+                error={isLabelingNameDuplicate() && labeling.name !== "" ? "Oh no! That name is already taken" : undefined}
+                id="labelingName"
+                placeholder="Name"
+                value={labeling.name}
+                onChange={(e) => {
+                  setLabeling({ ...labeling, name: e.target.value });
+                }}
+                style={{ width: "100%" }}
+              />
             </div>
 
-            <h6 className="fw-bold mt-2">Labels</h6>
+            <h6 style={{ fontWeight: 700, marginTop: "0.5rem" }}>Labels</h6>
             {labeling.labels.map((label, index) => (
               <EditLabelingModalEntry
                 key={"label_" + index}
@@ -132,10 +126,9 @@ const EditLabelingModal = ({
             <hr />
             <Button
               id="buttonAddLabel"
-              className="m-0"
-              color="secondary"
-              outline
-              block
+              color="gray"
+              variant="outline"
+              fullWidth
               onClick={onAddLabel}
             >
               + Add Label
@@ -143,12 +136,12 @@ const EditLabelingModal = ({
           </div>
         </div>
       </ModalBody>
-      <ModalFooter className="d-flex justify-content-end">
+      <ModalFooter>
         <Button
-          outline
+          variant="outline"
           id="buttonSaveLabeling"
-          color="primary"
-          className="m-1"
+          color="blue"
+          style={{ margin: "0.25rem" }}
           onClick={() => onSave(labeling)}
           disabled={saveDisabled()}
         >

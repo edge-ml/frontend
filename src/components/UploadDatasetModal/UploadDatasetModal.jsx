@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Progress, Alert, ButtonGroup } from "reactstrap";
+import { Button, Progress, Alert } from "@mantine/core";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "../Common/Modal";
 import DragDrop from "../Common/DragDrop";
 
@@ -31,10 +31,10 @@ export const UploadDatasetModal = ({
   onDatasetComplete,
 }) => {
   const [files, setFiles] = useState([]);
-  const [count, setCount] = useState(0); // used to create fileId for input files
+  const [count, setCount] = useState(0);
   const [showWarning, setShowWarning] = useState(false);
   const [consecutiveNoUpdateCount, setConsecutiveNoUpdateCount] = useState(0);
-  const MAXIMUM_POLLING_INTERVAL = 60 * 1000; // 60 seconds
+  const MAXIMUM_POLLING_INTERVAL = 60 * 1000;
 
   const FileStatus = Object.freeze({
     CONFIGURATION: "Configuration",
@@ -80,10 +80,7 @@ export const UploadDatasetModal = ({
     setFiles((prevState) =>
       prevState.map((file) => {
         if (file.id === fileId) {
-          return {
-            ...file,
-            progress,
-          };
+          return { ...file, progress };
         }
         return file;
       })
@@ -138,10 +135,7 @@ export const UploadDatasetModal = ({
     setFiles((prevState) =>
       prevState.map((file) => {
         if (file.id === fileId) {
-          return {
-            ...file,
-            config: newConfig,
-          };
+          return { ...file, config: newConfig };
         }
         return file;
       })
@@ -225,7 +219,6 @@ export const UploadDatasetModal = ({
         };
       })
       .reduce((acc, label, index) => {
-        // reduce over labels
         const idx = acc.findIndex(
           (labeling) => labeling.name === label.labelingItBelongs
         );
@@ -234,7 +227,6 @@ export const UploadDatasetModal = ({
           acc[idx].indices.push(index);
         } else {
           acc.push({
-            // push resulting labelings
             name: label.labelingItBelongs,
             originalName: label.labelingItBelongs,
             removed: false,
@@ -315,9 +307,7 @@ export const UploadDatasetModal = ({
       let pollResultedInUpdate = false;
       let allComplete = true;
       for (const file of files) {
-        // if the file is uploading, skip polling but not count it as complete
         allComplete = allComplete && file.status !== FileStatus.UPLOADING;
-        // processing not started yet / already done, skip
         if (
           file.datasetId === undefined ||
           file.status === FileStatus.COMPLETE
@@ -353,7 +343,7 @@ export const UploadDatasetModal = ({
         }
       }
       if (allComplete) {
-        setConsecutiveNoUpdateCount(null); // stop polling
+        setConsecutiveNoUpdateCount(null);
         if (files.length > 0) {
           handleModalClose();
         }
@@ -417,8 +407,6 @@ export const UploadDatasetModal = ({
 
   return (
     <Modal
-      className="modal-xl"
-      data-testid="modal"
       isOpen={isOpen}
       onClose={onCloseModal}
     >
@@ -426,22 +414,22 @@ export const UploadDatasetModal = ({
         <span>Create new dataset</span>
       </ModalHeader>
       <ModalBody>
-        <Alert isOpen={showWarning} color="danger">
-          <div className="d-flex align-items-center justify-content-between">
-            Ongoing uploads will be cancelled if you close the menu! Are you
-            sure?
-            <div className="d-flex">
-              <ButtonGroup>
-                <Button color="primary" onClick={handleCancelClose}>
+        {showWarning && (
+          <Alert color="red">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              Ongoing uploads will be cancelled if you close the menu! Are you
+              sure?
+              <div style={{ display: "flex", gap: "0.25rem" }}>
+                <Button color="blue" onClick={handleCancelClose}>
                   <FontAwesomeIcon icon={faBan} />
                 </Button>
-                <Button color="danger" onClick={handleConfirmClose}>
+                <Button color="red" onClick={handleConfirmClose}>
                   <FontAwesomeIcon icon={faCheck} />
                 </Button>
-              </ButtonGroup>
+              </div>
             </div>
-          </div>
-        </Alert>
+          </Alert>
+        )}
         <DragDrop
           onClick={() => {}}
           style={{ height: "100px" }}
@@ -454,25 +442,23 @@ export const UploadDatasetModal = ({
               !f.config || !f.config.editingModeActive ? (
                 <div
                   key={f.id}
-                  className="d-flex align-items-center col-sm-2 col-md-4 col-lg-11"
+                  style={{ display: "flex", alignItems: "center" }}
                 >
-                  <div className="d-flex flex-column align-items-center me-2 ms-2 mt-2 col-lg-2">
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginRight: "0.5rem", marginLeft: "0.5rem", marginTop: "0.5rem" }}>
                     <FontAwesomeIcon icon={faFile} size="3x" />
-                    <span className="text-center">{f.name}</span>
+                    <span style={{ textAlign: "center" }}>{f.name}</span>
                   </div>
                   <Progress
-                    className="w-75 me-1 flex-shrink-0" //remove shrink and set w-100 to align the second button otherwise
-                    striped
-                    id={`progress-bar-${f.id}`}
                     value={f.progress}
                     color={
                       f.status === FileStatus.COMPLETE
-                        ? "success"
+                        ? "green"
                         : f.status === FileStatus.ERROR ||
                             f.status === FileStatus.CANCELLED
-                          ? "danger"
-                          : "primary"
+                          ? "red"
+                          : "blue"
                     }
+                    style={{ flex: 1, marginRight: "0.25rem" }}
                   >
                     {f.status === FileStatus.ERROR
                       ? `Error: ${f.error}`
@@ -484,11 +470,11 @@ export const UploadDatasetModal = ({
                             : ""
                         } ${f.progress.toFixed(2)}%`}
                   </Progress>
-                  <div className="d-flex align-items-center">
+                  <div style={{ display: "flex", alignItems: "center" }}>
                     {f.status === FileStatus.COMPLETE && (
                       <Button
-                        close
-                        className="modal-icon-button me-2"
+                        variant="subtle"
+                        style={{ marginRight: "0.5rem" }}
                         onClick={() => handleDelete(f.id)}
                       >
                         <FontAwesomeIcon
@@ -499,12 +485,11 @@ export const UploadDatasetModal = ({
                       </Button>
                     )}
                     {f.status === FileStatus.CONFIGURATION && (
-                      <div className="d-flex">
-                        <div className="me-1">
+                      <div style={{ display: "flex" }}>
+                        <div style={{ marginRight: "0.25rem" }}>
                           <FontAwesomeIcon
                             icon={faCog}
                             title="Opens configuration menu"
-                            // style={{ fontSize: "1.2em" }}
                             onClick={(e) =>
                               changeConfig(f.id, {
                                 ...f.config,
@@ -514,7 +499,7 @@ export const UploadDatasetModal = ({
                           />
                         </div>
                         <div
-                          className="me-2"
+                          style={{ marginRight: "0.5rem" }}
                           onClick={(e) => handleDelete(f.id)}
                         >
                           <FontAwesomeIcon
@@ -526,9 +511,9 @@ export const UploadDatasetModal = ({
                     )}
                     {f.status === FileStatus.UPLOADING && (
                       <Button
-                        close
+                        variant="subtle"
                         title="Cancels ongoing upload"
-                        className="modal-icon-button me-2"
+                        style={{ marginRight: "0.5rem" }}
                       >
                         <FontAwesomeIcon
                           icon={faBan}
@@ -537,26 +522,25 @@ export const UploadDatasetModal = ({
                         />
                       </Button>
                     )}
-                    {f.status === FileStatus.CANCELLED ||
-                      (f.status === FileStatus.ERROR && (
-                        <Button
-                          close
-                          title="Removes item from list"
-                          className="modal-icon-button me-2"
-                          onClick={(e) => handleDelete(f.id)}
-                        >
-                          <FontAwesomeIcon
-                            style={{ fontSize: "1.2em" }}
-                            icon={faTrashAlt}
-                          />
-                        </Button>
-                      ))}
+                    {(f.status === FileStatus.CANCELLED ||
+                      f.status === FileStatus.ERROR) && (
+                      <Button
+                        variant="subtle"
+                        title="Removes item from list"
+                        style={{ marginRight: "0.5rem" }}
+                        onClick={(e) => handleDelete(f.id)}
+                      >
+                        <FontAwesomeIcon
+                          style={{ fontSize: "1.2em" }}
+                          icon={faTrashAlt}
+                        />
+                      </Button>
+                    )}
                     {f.status === FileStatus.PROCESSING && (
                       <FontAwesomeIcon
                         spin
                         size="2x"
-                        style={{ marginLeft: "1px" }}
-                        className="me-2"
+                        style={{ marginLeft: "1px", marginRight: "0.5rem" }}
                         icon={faSpinner}
                       />
                     )}
@@ -574,17 +558,16 @@ export const UploadDatasetModal = ({
           </div>
         ) : null}
       </ModalBody>
-      <ModalFooter className="d-flex justify-content-between">
+      <ModalFooter style={{ display: "flex", justifyContent: "space-between" }}>
         <div>
-          {" "}
           <a href="/example_file.csv" download="example_file.csv">
             Click here
           </a>{" "}
           to download an example CSV file.
         </div>
         <Button
-          color="primary"
-          outline
+          variant="outline"
+          color="blue"
           disabled={!files.find((f) => f.status === FileStatus.CONFIGURATION)}
           onClick={handleUploadAll}
         >

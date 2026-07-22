@@ -1,17 +1,16 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { file } from "jszip";
-import { Button } from "reactstrap";
+import { Button } from "@mantine/core";
 
 const FileList = ({ file }) => {
   return (
-    <div className="d-flex justify-content-between m-3 align-items-center">
+    <div style={{ display: "flex", justifyContent: "space-between", margin: "0.75rem", alignItems: "center" }}>
       <div>
-        <div className="fw-bold">{file.name}</div>
+        <div style={{ fontWeight: 700 }}>{file.name}</div>
       </div>
       <div>
-        <Button>
-          <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
+        <Button variant="subtle">
+          <FontAwesomeIcon icon={faTrash} />
         </Button>
       </div>
     </div>

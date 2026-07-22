@@ -1,14 +1,6 @@
 import React from "react";
 import { useState, Fragment } from "react";
-import {
-  Row,
-  Col,
-  Container,
-  DropdownMenu,
-  DropdownItem,
-  Dropdown,
-  DropdownToggle,
-} from "reactstrap";
+import { Menu, Button } from "@mantine/core";
 import NumberHyperparameter from "../../Hyperparameters/NumberHyperparameter";
 import SelectionHyperparameter from "../../Hyperparameters/SelectionHyperparameter";
 
@@ -18,15 +10,7 @@ const SelectEvaluation = ({
   setSelectedEval,
   footer,
 }) => {
-  const [dropDownOpen, setDropDownOpen] = useState(false);
   const [selectedEvaluation, setSelectedEvaluation] = useState(0);
-
-  // useEffect(() => {
-  //   const data = {
-  //     name: evaluation[selectedEvaluation].name,
-  //     parameters: evaluation[selectedEvaluation].parameters,
-  //   };
-  // }, [selectedEvaluation]);
 
   const handleHyperparameterChange = ({ parameter_name, state }) => {
     const newEval = [...evaluation];
@@ -39,32 +23,31 @@ const SelectEvaluation = ({
   };
 
   if (evaluation.length === 0) {
-    return;
+    return null;
   }
 
   return (
     <Fragment>
-      <h3 className="fw-bold">7. Select Evaluation Strategy</h3>
-      <Dropdown
-        isOpen={dropDownOpen}
-        toggle={() => setDropDownOpen(!dropDownOpen)}
-      >
-        <DropdownToggle caret size="lg">
-          {evaluation[selectedEvaluation].name}
-        </DropdownToggle>
-        <DropdownMenu>
+      <h3 style={{ fontWeight: 700 }}>7. Select Evaluation Strategy</h3>
+      <Menu>
+        <Menu.Target>
+          <Button size="lg">
+            {evaluation[selectedEvaluation].name}
+          </Button>
+        </Menu.Target>
+        <Menu.Dropdown>
           {evaluation.map((evl, idx) => (
-            <DropdownItem onClick={() => setSelectedEvaluation(idx)}>
+            <Menu.Item key={evl.name} onClick={() => setSelectedEvaluation(idx)}>
               {evl.name}
-            </DropdownItem>
+            </Menu.Item>
           ))}
-        </DropdownMenu>
-      </Dropdown>
+        </Menu.Dropdown>
+      </Menu>
       {evaluation[0] ? (
         <HyperparameterView
           handleHyperparameterChange={handleHyperparameterChange}
           hyperparameters={evaluation[selectedEvaluation].parameters}
-        ></HyperparameterView>
+        />
       ) : null}
     </Fragment>
   );
@@ -75,36 +58,34 @@ export const HyperparameterView = ({
   hyperparameters,
 }) => {
   return (
-    <Container fluid>
-      <Row>
-        {hyperparameters.length > 0 &&
-          hyperparameters.map((h) => {
-            if (h.parameter_type === "number") {
-              return (
-                <Col className="col-md-6 col-12 ps-0">
-                  <NumberHyperparameter
-                    {...h}
-                    id={"input_" + h.parameter_name}
-                    handleChange={handleHyperparameterChange}
-                    value={h.value}
-                  />
-                </Col>
-              );
-            } else if (h.parameter_type === "selection") {
-              return (
-                <Col className="col-md-6 col-12 ps-0">
-                  <SelectionHyperparameter
-                    {...h}
-                    id={"input_" + h.parameter_name}
-                    handleChange={handleHyperparameterChange}
-                    value={h.value}
-                  />
-                </Col>
-              );
-            }
-          })}
-      </Row>
-    </Container>
+    <div style={{ display: "flex", flexWrap: "wrap" }}>
+      {hyperparameters.length > 0 &&
+        hyperparameters.map((h) => {
+          if (h.parameter_type === "number") {
+            return (
+              <div key={h.parameter_name} style={{ flex: "1 1 50%", paddingRight: 0 }}>
+                <NumberHyperparameter
+                  {...h}
+                  id={"input_" + h.parameter_name}
+                  handleChange={handleHyperparameterChange}
+                  value={h.value}
+                />
+              </div>
+            );
+          } else if (h.parameter_type === "selection") {
+            return (
+              <div key={h.parameter_name} style={{ flex: "1 1 50%", paddingRight: 0 }}>
+                <SelectionHyperparameter
+                  {...h}
+                  id={"input_" + h.parameter_name}
+                  handleChange={handleHyperparameterChange}
+                  value={h.value}
+                />
+              </div>
+            );
+          }
+        })}
+    </div>
   );
 };
 

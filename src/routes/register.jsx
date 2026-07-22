@@ -1,25 +1,21 @@
 import React, { useState } from "react";
 import {
-  Col,
-  Row,
-  Input,
-  InputGroup,
-  InputGroupText,
-  Button,
   Card,
-  CardBody,
-  CardHeader,
-  FormGroup,
-  Label,
-} from "reactstrap";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+  TextInput,
+  PasswordInput,
+  Button,
+  Text,
+  Stack,
+  Center,
+  Checkbox,
+  Alert,
+} from "@mantine/core";
 import {
-  faEnvelope,
-  faExclamationTriangle,
-  faShield,
-  faUser,
-} from "@fortawesome/free-solid-svg-icons";
+  IconMail,
+  IconShield,
+  IconUser,
+  IconAlertTriangle,
+} from "@tabler/icons-react";
 import EdgeMLBrandLogo from "../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
 import { useNavigate } from "react-router-dom";
 import useRegister from "../Hooks/useRegister";
@@ -34,26 +30,6 @@ const RegisterPage = () => {
 
   const register = useRegister();
 
-  const onEMailChanged = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const onPasswordChanged = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const onPasswordRepeatChanged = (e) => {
-    setPasswordRepeat(e.target.value);
-  };
-
-  const onUserNameChanged = (e) => {
-    setUserName(e.target.value);
-  };
-
-  const onToS_checked = () => {
-    setToS_accepted(!ToS_accepted);
-  };
-
   const onRegisterClick = async () => {
     try {
       await register(userName, email, password, passwordRepeat);
@@ -63,133 +39,89 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="vh-100 d-flex justify-content-center align-items-center bg-login">
-      <Col xs={11} sm={8} lg={5}>
-        <Card>
-          <CardHeader
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+    <Center h="100vh" bg="gray.1">
+      <Card
+        shadow="md"
+        padding="lg"
+        radius="md"
+        withBorder
+        maw={450}
+        w="100%"
+        mx="auto"
+      >
+        <Card.Section p="lg">
+          <Center>
             <EdgeMLBrandLogo />
-          </CardHeader>
-          <CardBody>
-            <Row>
-              <Col>
-                <Col>
-                  <InputGroup>
-                    <InputGroupText>
-                      <FontAwesomeIcon icon={faEnvelope} />
-                    </InputGroupText>
-                    <Input
-                      type="email"
-                      name="email"
-                      id="email"
-                      placeholder="email"
-                      onChange={onEMailChanged}
-                    />
-                  </InputGroup>
-                </Col>
-                <Col>
-                  <InputGroup>
-                    <InputGroupText>
-                      <FontAwesomeIcon icon={faShield} />
-                    </InputGroupText>
-                    <Input
-                      type="password"
-                      name="password"
-                      id="password"
-                      placeholder="password"
-                      onChange={onPasswordChanged}
-                    />
-                  </InputGroup>
-                </Col>
-                <Col>
-                  <InputGroup>
-                    <InputGroupText>
-                      <FontAwesomeIcon icon={faShield} />
-                    </InputGroupText>
-                    <Input
-                      type="password"
-                      name="passwordRepeat"
-                      id="passwordRepeat"
-                      placeholder="repeat password"
-                      onChange={onPasswordRepeatChanged}
-                    />
-                  </InputGroup>
-                </Col>
-                <Col>
-                  <InputGroup>
-                    <InputGroupText>
-                      <FontAwesomeIcon icon={faUser} />
-                    </InputGroupText>
-                    <Input
-                      type="text"
-                      name="username"
-                      id="username"
-                      placeholder="username"
-                      onChange={onUserNameChanged}
-                    />
-                  </InputGroup>
-                </Col>
-                <Col style={{ paddingBottom: "10px", textAlign: "left" }}>
-                  <FormGroup check style={{ marginTop: 20, marginBottom: 10 }}>
-                    <Label check>
-                      <Input
-                        type="checkbox"
-                        onChange={onToS_checked}
-                        id="termsCheckbox"
-                      />{" "}
-                      I have read and agree to the{" "}
-                      <a href="/terms_of_service.html" target="_blank">
-                        terms of service
-                      </a>
-                      .
-                    </Label>
-                  </FormGroup>
-                </Col>
-                {error ? (
-                  <Col
-                    className="my-1"
-                    style={{ paddingRight: "15px", paddingLeft: "15px" }}
-                  >
-                    <FontAwesomeIcon
-                      style={{ color: "red" }}
-                      icon={faExclamationTriangle}
-                      className="me-2 fa-xs"
-                      data-tip="Error"
-                      id="errorIcon"
-                    />
-                    <div style={{ color: "red", display: "inline-block" }}>
-                      {error}
-                    </div>
-                  </Col>
-                ) : null}
-                <Col>
-                  <Button
-                    id="registerButton"
-                    color="success"
-                    block
-                    onClick={onRegisterClick}
-                    disabled={!ToS_accepted}
-                    style={{ marginBottom: 10 }}
-                  >
-                    Register
-                  </Button>
-                  <hr />
-                  <div>
-                    <span>Login instead? </span>
-                    <a href="/login">Click here!</a>
-                  </div>
-                </Col>
-              </Col>
-            </Row>
-          </CardBody>
-        </Card>
-      </Col>
-    </div>
+          </Center>
+        </Card.Section>
+
+        <Stack gap="md">
+          <TextInput
+            leftSection={<IconMail size={16} />}
+            placeholder="email"
+            value={email}
+            onChange={(e) => setEmail(e.currentTarget.value)}
+          />
+
+          <PasswordInput
+            leftSection={<IconShield size={16} />}
+            placeholder="password"
+            value={password}
+            onChange={(e) => setPassword(e.currentTarget.value)}
+          />
+
+          <PasswordInput
+            leftSection={<IconShield size={16} />}
+            placeholder="repeat password"
+            value={passwordRepeat}
+            onChange={(e) => setPasswordRepeat(e.currentTarget.value)}
+          />
+
+          <TextInput
+            leftSection={<IconUser size={16} />}
+            placeholder="username"
+            value={userName}
+            onChange={(e) => setUserName(e.currentTarget.value)}
+          />
+
+          <Checkbox
+            label={
+              <Text size="sm">
+                I have read and agree to the{" "}
+                <a href="/terms_of_service.html" target="_blank">
+                  terms of service
+                </a>.
+              </Text>
+            }
+            checked={ToS_accepted}
+            onChange={() => setToS_accepted(!ToS_accepted)}
+          />
+
+          {error && (
+            <Alert
+              icon={<IconAlertTriangle size={16} />}
+              color="red"
+              variant="light"
+            >
+              {error}
+            </Alert>
+          )}
+
+          <Button
+            id="registerButton"
+            color="green"
+            onClick={onRegisterClick}
+            disabled={!ToS_accepted}
+          >
+            Register
+          </Button>
+
+          <Text size="sm">
+            Login instead? <a href="/login">Click here!</a>
+          </Text>
+        </Stack>
+      </Card>
+    </Center>
   );
 };
 

@@ -1,13 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import {
-  ModalHeader,
-  Button,
-  Progress,
-  Spinner,
-  Modal,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
+import { Button, Progress, Loader, Modal } from "@mantine/core";
 import { getArduinoFirmware } from "../../../services/ApiServices/ArduinoFirmwareServices";
 import DFUManager from "./DFU";
 
@@ -20,7 +12,7 @@ const DFUModal = ({
   showDFUModal,
   toggleDFUModal,
 }) => {
-  const [flashState, setFlashState] = useState("start"); //start, connected, downloadingFW, uploading, finished
+  const [flashState, setFlashState] = useState("start");
   const [flashError, setFlashError] = useState(undefined);
   const [flashProgress, setFlashProgress] = useState(0);
   const [connectedDevice, setConnectedDevice] = useState(connectedBLEDevice);
@@ -111,10 +103,10 @@ const DFUModal = ({
 
   const renderModalBody = () => {
     if (flashError) {
-      return <div className="text-danger">{flashError}</div>;
+      return <div style={{ color: "red" }}>{flashError}</div>;
     } else {
       return (
-        <div className="align-items-center">
+        <div style={{ alignItems: "center" }}>
           <div>
             Connected BLE device:{" "}
             {
@@ -146,8 +138,8 @@ const DFUModal = ({
               firmware by clicking on the update button.
             </div>
             <Button
-              outline
-              color="primary"
+              variant="outline"
+              color="blue"
               disabled={flashState !== "connected"}
               onClick={downLoadAndInstallFW}
             >
@@ -158,7 +150,7 @@ const DFUModal = ({
 
           <div className="mt-3">
             <Progress
-              color={flashState === "uploadFinished" ? "primary" : "success"}
+              color={flashState === "uploadFinished" ? "blue" : "green"}
               value={flashProgress}
             />
           </div>
@@ -179,17 +171,18 @@ const DFUModal = ({
   return (
     <div>
       <Modal
-        isOpen={showDFUModal}
-        className="modal-xl"
-        backdrop="static"
-        keyboard={false}
+        opened={showDFUModal}
+        size="xl"
+        closeOnClickOutside={false}
+        closeOnEscape={false}
+        onClose={toggleDFUModal}
+        title="Update firmware"
       >
-        <ModalHeader>Update firmware</ModalHeader>
-        <ModalBody>{renderModalBody()}</ModalBody>
-        <ModalFooter>
+        <Modal.Body>{renderModalBody()}</Modal.Body>
+        <Modal.Footer>
           <Button
-            outline
-            color="danger"
+            variant="outline"
+            color="red"
             onClick={toggleDFUModal}
             disabled={
               flashState === "downloadingFW" || flashState === "uploading"
@@ -197,7 +190,7 @@ const DFUModal = ({
           >
             Cancel
           </Button>
-        </ModalFooter>
+        </Modal.Footer>
       </Modal>
     </div>
   );
