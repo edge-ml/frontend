@@ -66,6 +66,16 @@ export const train = async (data) => {
   return res;
 };
 
+export const preflightTrain = async (data) => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.POST,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.TRAIN + "/preflight",
+    data
+  );
+  return res;
+};
+
 export const getDeployDevices = async (id) => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.GET,

@@ -20,7 +20,6 @@ const Wizard_SelectDataset = ({
   onNext,
   onBack,
   footer,
-  validate,
 }) => {
   const checkUsable = (dataset) => {
     return (
@@ -28,19 +27,6 @@ const Wizard_SelectDataset = ({
       dataset.labelings.filter((elm) => elm.labelingId === selectedLabeling._id)
         .length <= 0
     );
-  };
-
-  // useEffect(() => {
-  //   validateInput();
-  // }, [datasets])
-
-  // useEffect(() => {
-  //
-  //   validateInput();
-  // },[])
-
-  const validateInput = () => {
-    validate(selectedLabeling);
   };
 
   const minSamplingRate = Math.max(

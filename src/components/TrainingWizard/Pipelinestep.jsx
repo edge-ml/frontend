@@ -10,7 +10,7 @@ import {
 } from "reactstrap";
 import { HyperparameterView } from "../Hyperparameters/HyperparameterView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PlatformList from "../Common/PlatformList";
+import ExportTarget from "../Common/ExportTarget";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 const Pipelinestep = ({
@@ -18,6 +18,7 @@ const Pipelinestep = ({
   selectedPipelineStep,
   setPipelineStep,
   stepNum,
+  exportTargets,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -82,13 +83,9 @@ const Pipelinestep = ({
             {selectedPipelineStep.description}
           </div>
           {selectedPipelineStep.type !== "EVAL" && (
-            <div className="my-2">
-              <b>Platforms: </b>
-              <PlatformList
-                platforms={selectedPipelineStep.platforms}
-                size="2rem"
-                color="black"
-              ></PlatformList>
+            <div className="my-2 d-flex align-items-center">
+              <b className="me-2">Deployment: </b>
+              <ExportTarget targets={exportTargets} />
             </div>
           )}
         </div>
@@ -131,6 +128,21 @@ const Pipelinestep = ({
       )}
     </div>
   );
+};
+
+Pipelinestep.validate = ({ step }) => {
+  if (!step || !step.parameters) return undefined;
+  for (const p of step.parameters) {
+    // Empty value = use the option's default, which is allowed.
+    if (p.value === null || p.value === undefined || p.value === "") continue;
+    const val = Number(p.value);
+    if (Number.isNaN(val)) continue;
+    if (typeof p.number_min === "number" && val < p.number_min)
+      return `${p.parameter_name} must be at least ${p.number_min}`;
+    if (typeof p.number_max === "number" && val > p.number_max)
+      return `${p.parameter_name} must be at most ${p.number_max}`;
+  }
+  return undefined;
 };
 
 export default Pipelinestep;

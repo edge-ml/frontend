@@ -13,72 +13,64 @@ import { useEffect, useState, Fragment } from "react";
 import Wizard_SelectDataset from "./Steps/Select_Datasets";
 import { getDatasets } from "../../services/ApiServices/DatasetServices";
 import { getLabelings } from "../../services/ApiServices/LabelingServices";
-import { getTrainConfig, train } from "../../services/ApiServices/MlService";
+import {
+  getTrainConfig,
+  train,
+  preflightTrain,
+} from "../../services/ApiServices/MlService";
 import Select_Name from "./Steps/Select_Name";
 import SelectTrainMethod from "./selectTrainMethod";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { intersect, toggleElement } from "../../services/helpers";
 import Pipelinestep from "./Pipelinestep";
+import ExportTarget from "../Common/ExportTarget";
+import SelectExportGoal from "./SelectExportGoal";
 
-export const WizardFooter = ({
-  invalidResult = false,
-  onNext,
-  onBack,
-  onClose,
-  onTrain,
-  step,
-  maxSteps,
-}) => {
-  const [clickedOnce, setClickedOnce] = useState(false);
-  useEffect(() => setClickedOnce(false), [step]);
-
-  return (
-    <ModalFooter className="fotter">
-      <div>
-        <Button color="secondary" onClick={onClose} className="me-2">
-          Cancel
-        </Button>
-        <Button color="secondary" onClick={onBack}>
-          Back
-        </Button>
-      </div>
-      <Alert
-        color="warning"
-        style={{
-          visibility: !!invalidResult && clickedOnce ? "visible" : "hidden",
-        }}
-      >
-        {invalidResult || "No problems"}
-      </Alert>
-      <div>
-        <span className="me-3">
-          {step + 1}/{maxSteps}
-        </span>
-        <Button
-          color="primary"
-          disabled={!!invalidResult && clickedOnce}
-          onClick={() => {
-            if (!clickedOnce) {
-              setClickedOnce(true);
-            }
-
-            if (invalidResult) {
-              return;
-            }
-
-            if (step + 1 === maxSteps) {
-              onTrain();
-            } else {
-              onNext();
-            }
-          }}
-        >
-          {step + 1 === maxSteps ? "Train" : "Next"}
-        </Button>
-      </div>
-    </ModalFooter>
+// A step option's platform strings, normalized (fallback for older backends).
+const optionPlatforms = (option) =>
+  (option && option.platforms ? Array.from(option.platforms) : []).map((x) =>
+    String(x).toLowerCase()
   );
+
+// Accurate, download-flow-truthful export capability of an option. The backend
+// now attaches `exportTargets` (c/executorch) computed the same way the Download
+// flow decides formats — some legacy options declare a C platform they cannot
+// actually export, so prefer exportTargets and fall back to raw platforms.
+const optionExportTargets = (option) => {
+  if (option && option.exportTargets) return option.exportTargets;
+  const plats = optionPlatforms(option);
+  return {
+    c: ["c", "cpp", "c-embedded"].some((c) => plats.includes(c)),
+    executorch: plats.includes("executorch"),
+  };
+};
+
+// Does an option support the chosen deployment goal? "ANY" (export skipped)
+// accepts everything; "C"/"EXECUTORCH" require the matching real export capability.
+const optionMatchesGoal = (option, goal) => {
+  if (!goal || goal === "ANY") return true;
+  const t = optionExportTargets(option);
+  if (goal === "EXECUTORCH") return !!t.executorch;
+  if (goal === "C") return !!t.c;
+  return true;
+};
+
+// Only PRE/CORE steps are export-relevant; EVAL/INFO options are never filtered.
+const stepOptionsForGoal = (step, goal) =>
+  step && ["PRE", "CORE"].includes(step.type)
+    ? step.options.filter((o) => optionMatchesGoal(o, goal))
+    : step
+    ? step.options
+    : [];
+
+// A goal is achievable only if every PRE/CORE step has at least one option for it.
+const goalAchievable = (pipeline, goal) => {
+  if (!pipeline) return false;
+  if (goal === "ANY") return true;
+  return pipeline.steps
+    .filter((s) => ["PRE", "CORE"].includes(s.type))
+    .every((s) => s.options.some((o) => optionMatchesGoal(o, goal)));
 };
 
 const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
@@ -108,18 +100,29 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
 
   const [selectedPipeline, setSelectedPipeline] = useState(undefined);
   const [selectedPipelineSteps, setSelectedPipelineSteps] = useState(undefined);
+  // Where the model will be deployed: "C" | "EXECUTORCH" | "ANY" (undefined until chosen).
+  const [exportGoal, setExportGoal] = useState(undefined);
 
   // Current state of the wizard
   const [screen, setScreen] = useState(0);
 
-  const [stepValidation, setStepValidation] = useState(false);
+  const [trainError, setTrainError] = useState(undefined);
+  const [preflight, setPreflight] = useState(null);
+  const [preflightLoading, setPreflightLoading] = useState(false);
 
   // Navigate the wizard
   const maxSteps = selectedPipeline ? selectedPipeline.steps.length + 3 : 0;
   const onBack = () => {
+    setTrainError(undefined);
+    if (screen === 0) {
+      // Back from the first step returns to the "where will this run?" selector.
+      setExportGoal(undefined);
+      return;
+    }
     setScreen(Math.max(screen - 1, 0));
   };
   const onNext = () => {
+    setTrainError(undefined);
     setScreen(Math.min(screen + 1, maxSteps - 1));
   };
 
@@ -170,50 +173,99 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     setDatasets(newDatasets);
   };
 
-  const onTrain = async () => {
-    const tmpSelectedPipeline = selectedPipeline;
-    tmpSelectedPipeline.steps = tmpSelectedPipeline.steps.map((elm, i) => {
-      return { ...elm, options: selectedPipelineSteps[i] };
-    });
-
+  // Build the training request (pure — does not mutate wizard state).
+  const buildRequest = () => {
     const intersectingTSNames = intersect(
       ...datasets
         .filter((e) => e.selected)
         .map((e) => e.timeSeries.map((t) => t.name))
     );
-
-    const data = {
+    return {
       datasets: datasets
         .filter((elm) => elm.selected)
-        .map((elm) => {
-          return {
-            _id: elm._id,
-            timeSeries: elm.timeSeries
-              .filter(
-                (ts) =>
-                  intersectingTSNames.includes(ts.name) &&
-                  !disabledTimeseriesNames.includes(ts.name)
-              )
-              .map((ts) => ts._id),
-          };
-        })
+        .map((elm) => ({
+          _id: elm._id,
+          timeSeries: elm.timeSeries
+            .filter(
+              (ts) =>
+                intersectingTSNames.includes(ts.name) &&
+                !disabledTimeseriesNames.includes(ts.name)
+            )
+            .map((ts) => ts._id),
+        }))
         .filter((elm) => elm.timeSeries.length > 0),
       labeling: {
         _id: labeling._id,
         useZeroClass: zeroClass,
         disabledLabelIDs: labeling.disabledLabels || [],
       },
-      selectedPipeline: tmpSelectedPipeline,
+      selectedPipeline: {
+        ...selectedPipeline,
+        steps: selectedPipeline.steps.map((elm, i) => ({
+          ...elm,
+          options: selectedPipelineSteps[i],
+        })),
+      },
       name: modelName,
     };
-    const model_id = await train(data);
-    onClose();
   };
 
+  const onTrain = async () => {
+    try {
+      setTrainError(undefined);
+      await train(buildRequest());
+      onClose();
+    } catch (e) {
+      setTrainError(
+        e?.message || "Training could not be started. Please try again."
+      );
+    }
+  };
+
+  // On the final step, validate the full config against the real data on the
+  // backend (catches window-vs-data, too-few-classes, etc.). Advisory: if the
+  // check itself fails we don't block training.
+  useEffect(() => {
+    if (!selectedPipeline || screen !== maxSteps - 1) {
+      setPreflight(null);
+      return;
+    }
+    let cancelled = false;
+    setPreflightLoading(true);
+    setPreflight(null);
+    preflightTrain(buildRequest())
+      .then((res) => {
+        if (!cancelled) setPreflight(res);
+      })
+      .catch(() => {
+        if (!cancelled) setPreflight(null);
+      })
+      .finally(() => {
+        if (!cancelled) setPreflightLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [screen, maxSteps, selectedPipeline]);
+
   const onSelectTrainingMethod = (pipeline) => {
+    // Defer initialising the steps until the export goal is chosen, so the
+    // defaults are compatible with that goal.
     setSelectedPipeline(pipeline);
-    const selectedPipelineSteps = pipeline.steps.map((elm) => elm.options[0]);
-    setSelectedPipelineSteps(selectedPipelineSteps);
+    setExportGoal(undefined);
+    setSelectedPipelineSteps(undefined);
+    setScreen(0);
+  };
+
+  const onSelectExportGoal = (goal) => {
+    setExportGoal(goal);
+    setScreen(0);
+    setSelectedPipelineSteps(
+      selectedPipeline.steps.map((step) => {
+        const opts = stepOptionsForGoal(step, goal);
+        return opts[0] || step.options[0];
+      })
+    );
   };
 
   const props = {
@@ -255,6 +307,36 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     setSelectedPipelineSteps(tmpPipelineData);
   };
 
+  // Centralised, live validation of the current step. Each step exposes a
+  // static `validate(props)` that returns an error message (or undefined when ok).
+  const validateCurrentStep = () => {
+    if (!selectedPipeline) return undefined;
+    if (screen === 0)
+      return Wizard_SelectLabeling.validate({
+        selectedLabeling: labeling,
+        labelings,
+        zeroClass,
+      });
+    if (screen === 1)
+      return Wizard_SelectDataset.validate({
+        datasets,
+        selectedLabeling: labeling,
+        zeroClass,
+        disabledTimeseriesNames,
+      });
+    if (screen >= 2 && screen !== maxSteps - 1)
+      return Pipelinestep.validate({ step: selectedPipelineSteps[screen - 2] });
+    if (screen === maxSteps - 1) return Select_Name.validate({ modelName });
+    return undefined;
+  };
+  const currentError = validateCurrentStep();
+  // The export target is fixed by the chosen goal; option filtering guarantees
+  // every step supports it, so the model will export that way.
+  const exportTargets =
+    exportGoal === "C"
+      ? { c: true, executorch: false }
+      : { c: false, executorch: true };
+
   return (
     <Modal isOpen={isOpen} size="xl">
       <ModalHeader>
@@ -289,10 +371,22 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
           <SelectTrainMethod
             pipelines={pipelines}
             onSelectTrainingMethod={onSelectTrainingMethod}
-            valdiate={setStepValidation}
           ></SelectTrainMethod>
         ) : null}
-        {selectedPipeline ? (
+        {selectedPipeline && !exportGoal ? (
+          <SelectExportGoal
+            availableKeys={["EXECUTORCH", "C"].filter((k) =>
+              goalAchievable(selectedPipeline, k)
+            )}
+            onSelect={onSelectExportGoal}
+            onBack={() => {
+              setSelectedPipeline(undefined);
+              setExportGoal(undefined);
+              setSelectedPipelineSteps(undefined);
+            }}
+          ></SelectExportGoal>
+        ) : null}
+        {selectedPipeline && exportGoal ? (
           <Fragment>
             {screen === 0 ? (
               <Wizard_SelectLabeling
@@ -302,7 +396,6 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 selectedLabeling={labeling}
                 toggleZeroClass={toggleZeroClass}
                 zeroClass={zeroClass}
-                validate={setStepValidation}
               ></Wizard_SelectLabeling>
             ) : null}
 
@@ -314,16 +407,21 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 selectedLabeling={labeling}
                 toggleDisableTimeseries={toggleDisableTimeseries}
                 disabledTimeseriesNames={disabledTimeseriesNames}
-                valdiate={setStepValidation}
               ></Wizard_SelectDataset>
             ) : null}
             {screen >= 2 && screen !== maxSteps - 1 ? (
               <Pipelinestep
                 stepNum={screen}
-                step={selectedPipeline.steps[screen - 2]}
+                step={{
+                  ...selectedPipeline.steps[screen - 2],
+                  options: stepOptionsForGoal(
+                    selectedPipeline.steps[screen - 2],
+                    exportGoal
+                  ),
+                }}
                 selectedPipelineStep={selectedPipelineSteps[screen - 2]}
                 setPipelineStep={setPipelineStep}
-                valdiate={setStepValidation}
+                exportTargets={exportTargets}
               ></Pipelinestep>
             ) : null}
             {screen == maxSteps - 1 ? (
@@ -331,31 +429,73 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 screen={screen}
                 modelName={modelName}
                 setModelName={setModelName}
-                valdiate={setStepValidation}
               ></Select_Name>
+            ) : null}
+            {screen === maxSteps - 1 ? (
+              <div className="m-2">
+                <div className="mb-3 d-flex align-items-center">
+                  <b className="me-2">Deployment: </b>
+                  <ExportTarget targets={exportTargets} />
+                </div>
+                {preflightLoading ? (
+                  <div className="text-muted">
+                    Checking your configuration against the data…
+                  </div>
+                ) : preflight ? (
+                  <Fragment>
+                    {(preflight.errors || []).map((e, i) => (
+                      <Alert key={`pfe${i}`} color="danger" className="py-2">
+                        {e.message}
+                      </Alert>
+                    ))}
+                    {(preflight.warnings || []).map((w, i) => (
+                      <Alert key={`pfw${i}`} color="warning" className="py-2">
+                        {w.message}
+                      </Alert>
+                    ))}
+                    {preflight.valid &&
+                    !(preflight.errors || []).length &&
+                    !(preflight.warnings || []).length ? (
+                      <div className="text-success">
+                        Configuration looks good — ready to train.
+                      </div>
+                    ) : null}
+                  </Fragment>
+                ) : null}
+              </div>
             ) : null}
           </Fragment>
         ) : null}
       </ModalBody>
-      <ModalFooter className="d-flex justify-content-between">
+      <ModalFooter className="d-flex justify-content-between align-items-center">
         <div>
-          {screen !== 0 ? (
+          {exportGoal ? (
             <Button color="secondary" outline onClick={onBack}>
               Back
             </Button>
           ) : null}
         </div>
-        {selectedPipeline ? (
-          <span className="me-3">
-            {screen + 1}/{maxSteps}
-          </span>
+        {selectedPipeline && exportGoal && (trainError || currentError) ? (
+          <Alert
+            color="danger"
+            className="my-0 py-2 mx-3 flex-grow-1 text-center"
+          >
+            {trainError || currentError}
+          </Alert>
         ) : null}
-        <div>
-          {selectedPipeline ? (
+        {selectedPipeline && exportGoal ? (
+          <div className="d-flex align-items-center">
+            <span className="me-3">
+              {screen + 1}/{maxSteps}
+            </span>
             <Button
               outline
               color="primary"
-              disabled={!stepValidation}
+              disabled={
+                !!currentError ||
+                preflightLoading ||
+                (screen + 1 === maxSteps && preflight && !preflight.valid)
+              }
               onClick={() => {
                 if (screen + 1 === maxSteps) {
                   onTrain();
@@ -366,8 +506,8 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             >
               {screen + 1 === maxSteps ? "Train" : "Next"}
             </Button>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </ModalFooter>
     </Modal>
   );

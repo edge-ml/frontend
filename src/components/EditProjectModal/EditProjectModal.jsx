@@ -77,7 +77,7 @@ const EditProjectModal = ({ isOpen, onClose }) => {
                 getsuggestions={getUserNameSuggestions}
                 filter={[
                   ...project.users.map((elm) => elm.userName),
-                  project.admin.name,
+                  project.admin.userName,
                 ]}
               ></AutoCompleteInput>
             </InputGroup>

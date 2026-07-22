@@ -8,22 +8,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Fragment } from "react";
 import { Button } from "reactstrap";
-import PlatformList from "../Common/PlatformList";
 
+// Export capability depends on the classifier and steps the user picks inside
+// the pipeline, so it is shown as a live "Export target" once selections are
+// made (see TrainingWizard) rather than as a misleading badge on the picker.
 const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
-  let platforms = new Set(
-    pipeline.steps
-      .filter((elm) => ["PRE", "EVAL"].includes(elm.type))[0]
-      .options.map((elm) => elm.platforms)
-      .flat()
-  );
-
-  pipeline.steps.forEach((step) => {
-    if (step.type === "PRE" || step.type === "CORE") {
-      const plf = new Set(step.options.map((elm) => elm.platforms).flat());
-      platforms = new Set([...platforms].filter((elm) => plf.has(elm)));
-    }
-  });
   return (
     <div
       key={pipeline.name}
@@ -34,9 +23,6 @@ const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
         <div>
           <div className="fw-bold">{pipeline.name}</div>
           <div>{pipeline.description}</div>
-        </div>
-        <div className="d-flex align-items-center">
-          <PlatformList size="3rem" platforms={platforms}></PlatformList>
         </div>
       </div>
     </div>

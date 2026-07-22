@@ -9,7 +9,6 @@ import {
   EdgeMLTableEntry,
 } from "../../Common/EdgeMLTable";
 import { toggleElement } from "../../../services/helpers";
-import { useEffect } from "react";
 import LabelBadge from "../../Common/LabelBadge";
 
 const Wizard_SelectLabeling = ({
@@ -19,25 +18,12 @@ const Wizard_SelectLabeling = ({
   selectedLabeling,
   toggleZeroClass,
   zeroClass,
-  validate,
 }) => {
   const countDatasets = (labeling) => {
     return datasets
       .map((elm) => elm.labelings.map((l) => l.labelingId))
       .flat()
       .filter((elm) => elm === labeling._id).length;
-  };
-
-  useEffect(() => {
-    validateInput();
-  }, [selectedLabeling, zeroClass]);
-
-  useEffect(() => {
-    validateInput();
-  }, []);
-
-  const validateInput = () => {
-    validate(selectedLabeling);
   };
 
   return (

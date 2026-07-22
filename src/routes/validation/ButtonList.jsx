@@ -3,28 +3,11 @@ import {
   faTrashAlt,
   faDownload,
   faMicrochip,
-  faPlay,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useProjectRouter from "../../Hooks/ProjectRouter";
-
-const checkExportC = (model, stepOptions) => {
-  if (!stepOptions) return false;
-  return model.pipeline.selectedPipeline.steps.every((step) => {
-    const stepOption = stepOptions.find(
-      (elm) => elm.name === step.options.name
-    );
-    if (!stepOption) return false;
-    if (!["PRE", "CORE"].includes(stepOption.type)) return true;
-
-    return (
-      ["PRE", "CORE"].includes(stepOption.type) &&
-      stepOption.platforms.includes("C")
-    );
-  });
-};
+import { canDownload, canDeployEmbedded } from "../../components/Common/modelExport";
 
 const ListButton = ({ onClick, icon, children, ...props }) => {
   const onClickStop = (e) => {
@@ -47,10 +30,10 @@ const ButtonList = ({
   setModalModel,
   setModelDownload,
   onDeleteSingleModel,
-  stepOptions,
   setDeployModalOpen
 }) => {
-  const navigateTo = useProjectRouter();
+  const deployable = canDeployEmbedded(model);
+  const downloadable = canDownload(model);
 
   return (
     <>
@@ -64,30 +47,33 @@ const ButtonList = ({
           >
             Info
           </ListButton>
-          <ListButton
-            color="primary"
-            outline
-            icon={faPlay}
-            onClick={() => navigateTo("models/live/" + model._id)}
-          >
-            View live
-          </ListButton>
-          <ListButton
-            color="primary"
-            outline
-            icon={faMicrochip}
-            onClick={() => {
-              setDeployModalOpen(true);
-            }}
-            disabled={!checkExportC(model, stepOptions)}
-          >
-            Deploy
-          </ListButton>
+          {/* Deploy temporarily hidden. Embedded-only (flashes the model onto a
+              BLE microcontroller via canDeployEmbedded). Restore when needed.
+          {deployable ? (
+            <ListButton
+              color="primary"
+              outline
+              icon={faMicrochip}
+              onClick={() => {
+                setDeployModalOpen(true);
+              }}
+              title="Compile and flash the model onto an embedded device"
+            >
+              Deploy
+            </ListButton>
+          ) : null}
+          */}
           <ListButton
             color="primary"
             outline
             icon={faDownload}
             onClick={() => setModelDownload(model)}
+            disabled={!downloadable}
+            title={
+              downloadable
+                ? "Download the model"
+                : "This model runs on the server only; there is nothing to download"
+            }
           >
             Download
           </ListButton>
