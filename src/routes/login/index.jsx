@@ -11,7 +11,12 @@ import {
   Alert,
   Divider,
 } from "@mantine/core";
-import { IconBrandGithub, IconUser, IconShield, IconAlertTriangle } from "@tabler/icons-react";
+import {
+  IconBrandGithub,
+  IconUser,
+  IconShield,
+  IconAlertTriangle,
+} from "@tabler/icons-react";
 import EdgeMLBrandLogo from "../../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
 import useAuth from "../../Hooks/useAuth";
 import useUserStore from "../../Hooks/useUser";
@@ -76,7 +81,9 @@ const LoginPage = ({ children }) => {
         </Card.Section>
 
         <Stack gap="md">
-          <Text size="sm" fw={500}>Login with credentials</Text>
+          <Text size="sm" fw={500}>
+            Login with credentials
+          </Text>
 
           <TextInput
             leftSection={<IconUser size={16} />}
@@ -98,7 +105,9 @@ const LoginPage = ({ children }) => {
 
           <Divider />
 
-          <Text size="sm" fw={500}>Login with a provider</Text>
+          <Text size="sm" fw={500}>
+            Login with a provider
+          </Text>
 
           <Button
             leftSection={<IconBrandGithub size={20} />}
@@ -106,7 +115,9 @@ const LoginPage = ({ children }) => {
             fullWidth
             color="#24292e"
           >
-            <span>Login with <b>Github</b></span>
+            <span>
+              Login with <b>Github</b>
+            </span>
           </Button>
 
           <Divider />
@@ -122,12 +133,7 @@ const LoginPage = ({ children }) => {
           )}
 
           <Text size="sm">Have no account?</Text>
-          <Button
-            component="a"
-            href="/register"
-            variant="outline"
-            color="gray"
-          >
+          <Button component="a" href="/register" variant="outline" color="gray">
             Register
           </Button>
         </Stack>

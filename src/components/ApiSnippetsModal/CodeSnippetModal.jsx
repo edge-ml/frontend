@@ -1,9 +1,5 @@
 import React, { Component } from "react";
-import {
-  Modal,
-  Button,
-  TextInput,
-} from "@mantine/core";
+import { Modal, Button, TextInput } from "@mantine/core";
 import CodeSnippet from "./CodeSnippet";
 import CodeSettings from "./CodeSettings";
 
@@ -51,7 +47,12 @@ class CodeSnippetModal extends Component {
 
   render() {
     return (
-      <Modal size="xl" opened={this.props.isOpen} onClose={this.props.onCancel} title="Generate code snippet">
+      <Modal
+        size="xl"
+        opened={this.props.isOpen}
+        onClose={this.props.onCancel}
+        title="Generate code snippet"
+      >
         <Modal.Body>
           <TextInput
             label="Dataset-name"

@@ -1,8 +1,5 @@
 import React, { useState, useContext, Fragment } from "react";
-import {
-  Button,
-  Menu,
-} from "@mantine/core";
+import { Button, Menu } from "@mantine/core";
 import "./LabelingSelectionPanel.css";
 
 import HelpModal from "./HelpModal";
@@ -69,7 +66,11 @@ const LabelingSelectionPanel = () => {
       <div>
         <Menu>
           <Menu.Target>
-            <Button variant="outline" color="gray" style={{ marginRight: "0.5rem" }}>
+            <Button
+              variant="outline"
+              color="gray"
+              style={{ marginRight: "0.5rem" }}
+            >
               Selected Timeseries:{" "}
               <span style={{ fontWeight: "normal" }}>
                 {activeTimeSeries.length + "/" + dataset.timeSeries.length}
@@ -89,9 +90,7 @@ const LabelingSelectionPanel = () => {
                       }}
                       style={{ display: "flex", alignItems: "center" }}
                     >
-                      <Checkbox
-                        isSelected={selectedTs.includes(elm._id)}
-                      />
+                      <Checkbox isSelected={selectedTs.includes(elm._id)} />
                       <div style={{ marginLeft: "0.5rem" }}>{elm.name}</div>
                     </div>
                   </Menu.Item>
@@ -129,9 +128,7 @@ const LabelingSelectionPanel = () => {
               <Menu.Target>
                 <Button variant="outline" color="gray">
                   {activeLabeling ? "Select Labeling: " : "Selected Labeling: "}
-                  <span style={{ fontWeight: "normal" }}>
-                    {name || "None"}
-                  </span>
+                  <span style={{ fontWeight: "normal" }}>{name || "None"}</span>
                 </Button>
               </Menu.Target>
               <Menu.Dropdown className="scrollable-dropdown">

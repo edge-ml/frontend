@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { SimpleGrid, Text, Button, Group, ThemeIcon } from "@mantine/core";
-import { IconBluetooth, IconFileUpload, IconCode, IconDeviceMobile } from "@tabler/icons-react";
+import {
+  IconBluetooth,
+  IconFileUpload,
+  IconCode,
+  IconDeviceMobile,
+} from "@tabler/icons-react";
 import useProjectRouter from "../../Hooks/ProjectRouter";
 import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
 
@@ -83,7 +88,11 @@ const DataUpload = ({ refreshDatasets }) => {
                 size="lg"
                 variant="light"
                 color="green"
-                style={{ backgroundColor: "rgba(64, 192, 87, 0.15)", color: "#40C057", flexShrink: 0 }}
+                style={{
+                  backgroundColor: "rgba(71, 187, 120, 0.15)",
+                  color: "#47bb78",
+                  flexShrink: 0,
+                }}
               >
                 <Icon size={20} />
               </ThemeIcon>

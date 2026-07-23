@@ -1,8 +1,5 @@
 import React from "react";
-import {
-  Modal,
-  Button,
-} from "@mantine/core";
+import { Modal, Button } from "@mantine/core";
 
 function ErrorModal(props) {
   const errors = props.errors

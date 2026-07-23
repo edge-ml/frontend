@@ -37,9 +37,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
               <Table.Td>
                 <Group justify="space-between">
                   <div>
-                    <Text fw={700}>
-                      {elm.datasetName || elm.projectName}
-                    </Text>
+                    <Text fw={700}>{elm.datasetName || elm.projectName}</Text>
                     <Text size="sm" c="dimmed">
                       {elm.datasetName
                         ? `(Dataset in project ${elm.projectName})`

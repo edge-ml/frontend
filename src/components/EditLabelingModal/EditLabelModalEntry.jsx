@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  TextInput,
-  Button,
-  Group,
-} from "@mantine/core";
+import { TextInput, Button, Group } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -68,7 +64,12 @@ const EditLabelingModalEntry = ({
           />
         </div>
       </div>
-      <Button color="red" variant="outline" onClick={onDelete} style={{ marginTop: "1.5rem" }}>
+      <Button
+        color="red"
+        variant="outline"
+        onClick={onDelete}
+        style={{ marginTop: "1.5rem" }}
+      >
         <FontAwesomeIcon icon={faTrashAlt} />
       </Button>
     </Group>

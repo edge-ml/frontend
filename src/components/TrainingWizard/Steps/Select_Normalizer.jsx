@@ -18,9 +18,7 @@ const Select_Normalizer = ({
       <h3 style={{ fontWeight: 700 }}>6. Select Normalization</h3>
       <Menu>
         <Menu.Target>
-          <Button size="lg">
-            {normalizer[selectedNormalizer].name}
-          </Button>
+          <Button size="lg">{normalizer[selectedNormalizer].name}</Button>
         </Menu.Target>
         <Menu.Dropdown>
           {normalizer.map((n, idx) => (

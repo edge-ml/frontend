@@ -16,18 +16,49 @@ export const LabelingView = ({
   changeLabelSelection,
 }) => {
   return (
-    <Card shadow="sm" padding="md" radius="md" withBorder style={{ textAlign: "left" }}>
+    <Card
+      shadow="sm"
+      padding="md"
+      radius="md"
+      withBorder
+      style={{ textAlign: "left" }}
+    >
       <Card.Section>
-        <Text fw={700} size="lg" p="md"><h4>Target Labeling</h4></Text>
+        <Text fw={700} size="lg" p="md">
+          <h4>Target Labeling</h4>
+        </Text>
       </Card.Section>
-      <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "flex-start", padding: "1rem" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          padding: "1rem",
+        }}
+      >
         <Loader loading={!labelings && !labels}>
           <fieldset>
             {labelings && labelings.length
               ? labelings.map((x) => {
                   return (
-                    <div key={x._id} style={{ display: "flex", flexDirection: "row", alignItems: "center", marginTop: "0.5rem" }}>
-                      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", alignSelf: "baseline" }}>
+                    <div
+                      key={x._id}
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginTop: "0.5rem",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          alignSelf: "baseline",
+                        }}
+                      >
                         <input
                           id={x._id}
                           type="radio"
@@ -36,14 +67,27 @@ export const LabelingView = ({
                           checked={selectedLabeling === x._id}
                         />
                         <label
-                          style={{ marginBottom: 0, marginLeft: "0.25rem", marginRight: "0.25rem" }}
+                          style={{
+                            marginBottom: 0,
+                            marginLeft: "0.25rem",
+                            marginRight: "0.25rem",
+                          }}
                           htmlFor={x._id}
                           onClick={(y) => changeSelectedLabeling(x._id)}
                         >
                           {x.name}
                         </label>
                       </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", flexDirection: "row", alignItems: "center", alignContent: "flex-start", marginTop: 0 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          alignContent: "flex-start",
+                          marginTop: 0,
+                        }}
+                      >
                         {x.labels.map((labelId) => {
                           const label = labels.find(
                             (label) => label._id === labelId
@@ -51,13 +95,19 @@ export const LabelingView = ({
                           return (
                             <Badge
                               key={labelId}
-                              style={{ margin: "0.25rem", backgroundColor: label.color }}
+                              style={{
+                                margin: "0.25rem",
+                                backgroundColor: label.color,
+                              }}
                             >
                               {label.name}
                               <input
                                 type="checkbox"
                                 disabled={selectedLabeling !== x._id}
-                                style={{ marginLeft: "0.25rem", float: "right" }}
+                                style={{
+                                  marginLeft: "0.25rem",
+                                  float: "right",
+                                }}
                                 checked={selectedLabelsFor[x._id][labelId]}
                                 onClick={(y) =>
                                   changeLabelSelection(x._id, labelId)

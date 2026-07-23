@@ -1,9 +1,5 @@
 import React, { Component } from "react";
-import {
-  Button,
-  TextInput,
-  Modal,
-} from "@mantine/core";
+import { Button, TextInput, Modal } from "@mantine/core";
 
 class DeleteUser extends Component {
   constructor(props) {
@@ -71,7 +67,9 @@ class DeleteUser extends Component {
             When you delete your account, all projects where you are the admin
             will be deleted!
           </Modal.Body>
-          <Modal.Footer style={{ display: "flex", justifyContent: "space-between" }}>
+          <Modal.Footer
+            style={{ display: "flex", justifyContent: "space-between" }}
+          >
             <Button
               color="red"
               onClick={this.deleteUser}

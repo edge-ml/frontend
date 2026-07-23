@@ -5,7 +5,13 @@ import { faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import Checkbox from "../../components/Common/Checkbox";
 import LabelBadge from "../../components/Common/LabelBadge";
 
-const LabelingTableEntry = ({ labeling, isSelected, toggleCheck, onEdit, onDelete }) => {
+const LabelingTableEntry = ({
+  labeling,
+  isSelected,
+  toggleCheck,
+  onEdit,
+  onDelete,
+}) => {
   return (
     <Table.Tr>
       <Table.Td>

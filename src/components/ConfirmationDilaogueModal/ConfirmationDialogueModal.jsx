@@ -42,7 +42,13 @@ class ConfirmationDialogueModal extends Component {
             {this.props.confirmString}
           </Modal.Body>
           <Modal.Footer>
-            <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-end",
+              }}
+            >
               <Button
                 variant="outline"
                 color="red"

@@ -32,7 +32,13 @@ export const SelectedModelModalView = ({
       <ModalBody>
         {model ? (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
               <div style={{ display: "flex", justifyContent: "flex-start" }}>
                 <General_info
                   model={model}
@@ -42,11 +48,7 @@ export const SelectedModelModalView = ({
                 <PerformanceInfo metrics={metrics.metrics} />
               </div>
               <div>
-                <Button
-                  variant="outline"
-                  onClick={() => {}}
-                  color="red"
-                >
+                <Button variant="outline" onClick={() => {}} color="red">
                   <FontAwesomeIcon
                     style={{ margin: "0 0.25rem" }}
                     icon={faTrashAlt}
@@ -55,10 +57,15 @@ export const SelectedModelModalView = ({
                 </Button>
               </div>
             </div>
-            <div style={{ margin: "3rem 0", display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-              <Classification_report
-                report={metrics.classification_report}
-              />
+            <div
+              style={{
+                margin: "3rem 0",
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+              }}
+            >
+              <Classification_report report={metrics.classification_report} />
               <ConfusionMatrixView
                 matrix={JSON.parse(metrics.confusion_matrix)}
                 labels={model.labels.map((elm) => elm.name)}
@@ -107,7 +114,9 @@ const General_info = ({
                 <th>Used labels</th>
                 <td>
                   {model.labels.map((elm, index) => (
-                    <LabelBadge key={elm.name} color={elm.color}>{elm.name}</LabelBadge>
+                    <LabelBadge key={elm.name} color={elm.color}>
+                      {elm.name}
+                    </LabelBadge>
                   ))}
                 </td>
               </tr>
@@ -133,7 +142,9 @@ const Classification_report = ({ report }) => {
           <tr>
             <th></th>
             {metrics.map((key) => (
-              <th style={{ textAlign: "center" }} key={key}>{key}</th>
+              <th style={{ textAlign: "center" }} key={key}>
+                {key}
+              </th>
             ))}
           </tr>
         </thead>
@@ -142,7 +153,9 @@ const Classification_report = ({ report }) => {
             <tr key={key}>
               <th>{key}</th>
               {metrics.map((met) => (
-                <td style={{ padding: "0 1rem" }} key={met}>{metric(report[key][met])}</td>
+                <td style={{ padding: "0 1rem" }} key={met}>
+                  {metric(report[key][met])}
+                </td>
               ))}
             </tr>
           ))}
@@ -192,7 +205,13 @@ const Training_config = ({ model }) => {
           .map((elm) => Render_Step(elm, onClickStep))}
       </div>
 
-      <div style={{ margin: "0 0.5rem", borderTop: "1px solid #dee2e6", padding: "0.5rem" }}>
+      <div
+        style={{
+          margin: "0 0.5rem",
+          borderTop: "1px solid #dee2e6",
+          padding: "0.5rem",
+        }}
+      >
         <div>
           <b>Method: </b>
           {selectedStep.options.name}

@@ -59,7 +59,11 @@ const FilterSelectionModal = ({
 
   return (
     <div>
-      <Modal opened={showFilterSelectionModal} onClose={toggleFilterSelectionModal} size="xl">
+      <Modal
+        opened={showFilterSelectionModal}
+        onClose={toggleFilterSelectionModal}
+        size="xl"
+      >
         <Modal.Header>
           <Modal.Title>Filter Selection</Modal.Title>
         </Modal.Header>
@@ -90,7 +94,11 @@ const FilterSelectionModal = ({
           <Button variant="outline" color="blue" onClick={applyAndClose}>
             Apply
           </Button>{" "}
-          <Button variant="outline" color="red" onClick={toggleFilterSelectionModal}>
+          <Button
+            variant="outline"
+            color="red"
+            onClick={toggleFilterSelectionModal}
+          >
             Cancel
           </Button>
         </Modal.Footer>

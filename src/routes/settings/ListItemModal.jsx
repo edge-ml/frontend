@@ -2,7 +2,12 @@ import React, { Component } from "react";
 import { Button } from "@mantine/core";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Modal, ModalBody, ModalFooter, ModalHeader } from "../../components/Common/Modal";
+import {
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+} from "../../components/Common/Modal";
 
 class ListItemModal extends Component {
   constructor(props) {

@@ -64,7 +64,7 @@ const NavbarProject = ({ project }) => {
           mx={6}
           my={4}
           style={{
-            borderColor: "rgba(64, 192, 87, 0.3)",
+            borderColor: "rgba(71, 187, 120, 0.3)",
             overflow: "hidden",
           }}
         >
@@ -78,8 +78,12 @@ const NavbarProject = ({ project }) => {
                   className="pt-2 pb-2 ps-3 pe-2 small"
                   style={{
                     cursor: "pointer",
-                    color: isPageActive ? "black" : "#666",
-                    backgroundColor: isPageActive ? "#ddd" : "transparent",
+                    color: isPageActive
+                      ? "var(--mantine-color-brand-7)"
+                      : "#666",
+                    backgroundColor: isPageActive
+                      ? "var(--mantine-color-brand-1)"
+                      : "transparent",
                     userSelect: "none",
                   }}
                 >

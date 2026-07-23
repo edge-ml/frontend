@@ -31,13 +31,14 @@ const SelectEvaluation = ({
       <h3 style={{ fontWeight: 700 }}>7. Select Evaluation Strategy</h3>
       <Menu>
         <Menu.Target>
-          <Button size="lg">
-            {evaluation[selectedEvaluation].name}
-          </Button>
+          <Button size="lg">{evaluation[selectedEvaluation].name}</Button>
         </Menu.Target>
         <Menu.Dropdown>
           {evaluation.map((evl, idx) => (
-            <Menu.Item key={evl.name} onClick={() => setSelectedEvaluation(idx)}>
+            <Menu.Item
+              key={evl.name}
+              onClick={() => setSelectedEvaluation(idx)}
+            >
               {evl.name}
             </Menu.Item>
           ))}
@@ -63,7 +64,10 @@ export const HyperparameterView = ({
         hyperparameters.map((h) => {
           if (h.parameter_type === "number") {
             return (
-              <div key={h.parameter_name} style={{ flex: "1 1 50%", paddingRight: 0 }}>
+              <div
+                key={h.parameter_name}
+                style={{ flex: "1 1 50%", paddingRight: 0 }}
+              >
                 <NumberHyperparameter
                   {...h}
                   id={"input_" + h.parameter_name}
@@ -74,7 +78,10 @@ export const HyperparameterView = ({
             );
           } else if (h.parameter_type === "selection") {
             return (
-              <div key={h.parameter_name} style={{ flex: "1 1 50%", paddingRight: 0 }}>
+              <div
+                key={h.parameter_name}
+                style={{ flex: "1 1 50%", paddingRight: 0 }}
+              >
                 <SelectionHyperparameter
                   {...h}
                   id={"input_" + h.parameter_name}

@@ -4,6 +4,17 @@ import { listen } from "@tauri-apps/api/event";
 const isTauri = () =>
   Boolean(globalThis.isTauri || globalThis.__TAURI_INTERNALS__);
 
+const withTimeout = (promise, timeoutMs, message) => {
+  let timeoutId;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = window.setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    window.clearTimeout(timeoutId);
+  });
+};
+
 class TauriBluetoothCharacteristic {
   constructor(deviceId, serviceUuid, uuid, properties) {
     this.deviceId = deviceId;
@@ -56,7 +67,8 @@ class TauriBluetoothCharacteristic {
           value: dataView,
         },
       };
-      const handlers = this._eventListeners.get("characteristicvaluechanged") || [];
+      const handlers =
+        this._eventListeners.get("characteristicvaluechanged") || [];
       handlers.forEach((fn) => fn(fakeEvent));
     });
   }
@@ -133,21 +145,50 @@ class TauriBluetoothGATTServer {
     this.deviceId = deviceId;
     this.connected = false;
     this._services = null;
+    this._connectPromise = null;
   }
 
   async connect() {
     if (this.connected && this._services) {
       return this;
     }
-    const services = await invoke("ble_connect", {
-      deviceId: this.deviceId,
-    });
-    this.connected = true;
-    this._services = services.map(
-      (s) =>
-        new TauriBluetoothGATTService(this.deviceId, s.uuid, s.characteristics)
+
+    if (!this._connectPromise) {
+      const pendingConnection = invoke("ble_connect", {
+        deviceId: this.deviceId,
+      }).then((services) => {
+        this.connected = true;
+        this._services = services.map(
+          (service) =>
+            new TauriBluetoothGATTService(
+              this.deviceId,
+              service.uuid,
+              service.characteristics
+            )
+        );
+        return this;
+      });
+
+      this._connectPromise = pendingConnection;
+      pendingConnection.then(
+        () => {
+          if (this._connectPromise === pendingConnection) {
+            this._connectPromise = null;
+          }
+        },
+        () => {
+          if (this._connectPromise === pendingConnection) {
+            this._connectPromise = null;
+          }
+        }
+      );
+    }
+
+    return withTimeout(
+      this._connectPromise,
+      25000,
+      "Bluetooth connection timed out. Make sure the device is awake and nearby, then try again."
     );
-    return this;
   }
 
   disconnect() {
@@ -157,9 +198,8 @@ class TauriBluetoothGATTServer {
 
   async getPrimaryService(uuid) {
     if (!this._services) throw new Error("Not connected");
-    const fullUuid = uuid.length <= 8
-      ? `${uuid}-0000-1000-8000-00805f9b34fb`
-      : uuid;
+    const fullUuid =
+      uuid.length <= 8 ? `${uuid}-0000-1000-8000-00805f9b34fb` : uuid;
     for (const s of this._services) {
       if (
         s.uuid === fullUuid ||
@@ -195,11 +235,13 @@ class TauriBluetoothDevice {
         `ble-disconnected-${this.id}`,
         () => {
           this.gatt.connected = false;
-          const handlers = this._eventListeners.get("gattserverdisconnected") || [];
+          const handlers =
+            this._eventListeners.get("gattserverdisconnected") || [];
           handlers.forEach((fn) => fn({}));
         }
       );
-    } catch (e) {
+    } catch (error) {
+      console.warn("[TauriBle] Disconnect listener unavailable:", error);
     }
   }
 
@@ -271,9 +313,29 @@ class TauriBluetooth {
     });
   }
 
-  async _doScan(options) {
-    const result = await invoke("ble_scan");
-    return result;
+  async _doScan() {
+    if (!this._scanPromise) {
+      const pendingScan = invoke("ble_scan");
+      this._scanPromise = pendingScan;
+      pendingScan.then(
+        () => {
+          if (this._scanPromise === pendingScan) {
+            this._scanPromise = null;
+          }
+        },
+        () => {
+          if (this._scanPromise === pendingScan) {
+            this._scanPromise = null;
+          }
+        }
+      );
+    }
+
+    return withTimeout(
+      this._scanPromise,
+      20000,
+      "Bluetooth permission did not respond. Open System Settings > Privacy & Security > Bluetooth, allow edge-ml Explorer, then fully quit and reopen the app."
+    );
   }
 }
 

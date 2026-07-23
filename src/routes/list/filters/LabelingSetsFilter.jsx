@@ -86,10 +86,19 @@ const LabelingSetsFilter = ({
       return null;
     } else {
       return (
-        <div style={{ display: "flex", flexDirection: "row", paddingBottom: "0.5rem" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            paddingBottom: "0.5rem",
+          }}
+        >
           {labels.map((label) => {
             return (
-              <div key={label._id} style={{ display: "flex", alignItems: "center" }}>
+              <div
+                key={label._id}
+                style={{ display: "flex", alignItems: "center" }}
+              >
                 <Checkbox
                   isSelected={isSelectedLabel(label._id)}
                   onClick={() => onSelectLabel(label)}
@@ -114,14 +123,22 @@ const LabelingSetsFilter = ({
   return (
     <div>
       <div style={{ marginBottom: "1rem" }}>
-        {"Select the labelings and/or labels of the datasets you want to display:\n"}
+        {
+          "Select the labelings and/or labels of the datasets you want to display:\n"
+        }
       </div>
       <div>
         <List style={{ maxHeight: "600px", overflowY: "auto" }}>
           {labelings.map((labeling, index) => (
             <List.Item key={index}>
               <div style={{ display: "flex", flexDirection: "row" }}>
-                <div style={{ display: "flex", alignItems: "center", marginRight: "0.5rem" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginRight: "0.5rem",
+                  }}
+                >
                   <Checkbox
                     isSelected={isSelectedLabeling(labeling._id)}
                     onClick={() => onSelectLabelingSet(labeling)}

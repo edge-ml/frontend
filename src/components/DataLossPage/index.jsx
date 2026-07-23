@@ -47,12 +47,7 @@ const DataLossPage = ({ children }) => {
         <h2 className="m-2 text-center">
           Data, including your account, may get deleted at any time.
         </h2>
-        <Button
-          size="lg"
-          className="m-5"
-          color="blue"
-          onClick={acceptDataLoss}
-        >
+        <Button size="lg" className="m-5" color="blue" onClick={acceptDataLoss}>
           Accept
         </Button>
       </div>

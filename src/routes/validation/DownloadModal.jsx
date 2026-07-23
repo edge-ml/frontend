@@ -52,7 +52,15 @@ int main() {
 
     if (code === "") {
       return (
-        <div style={{ display: "flex", width: "100%", justifyContent: "center", alignItems: "center", fontWeight: 700 }}>
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            fontWeight: 700,
+          }}
+        >
           No sample code available
         </div>
       );
@@ -70,7 +78,13 @@ int main() {
     <Modal isOpen={model} size="xl" onClose={onClose}>
       <ModalHeader>Download: {model.name}</ModalHeader>
       <ModalBody>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <div style={{ display: "flex", alignItems: "center" }}>
             <b style={{ marginRight: "0.5rem" }}>Language:</b>
             <Menu>
@@ -80,9 +94,7 @@ int main() {
                 </Button>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item onClick={() => setLanguage("cpp")}>
-                  C++
-                </Menu.Item>
+                <Menu.Item onClick={() => setLanguage("cpp")}>C++</Menu.Item>
               </Menu.Dropdown>
             </Menu>
           </div>
@@ -95,7 +107,9 @@ int main() {
         <CodeSnippet language={language} code={getCode()}></CodeSnippet>
       </ModalBody>
       <ModalFooter>
-        <Button variant="outline" onClick={onClose}>Close</Button>
+        <Button variant="outline" onClick={onClose}>
+          Close
+        </Button>
       </ModalFooter>
     </Modal>
   );

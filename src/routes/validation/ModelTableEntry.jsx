@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import Checkbox from "../../components/Common/Checkbox";
 import { Group, Text, Loader, Tooltip, Button, Table } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo, faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleInfo,
+  faPen,
+  faTrashAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import DownloadModal from "./DownloadModal";
 import { SelectedModelModalView } from "../../components/SelectedModelModalView/SelectedModelModalView";
 import ButtonList from "./ButtonList";
@@ -26,8 +30,7 @@ const ModelTableEntry = ({
 
   const metrics =
     !model.error && model.trainStatus === "done"
-      ? model.pipeline.selectedPipeline.steps
-          .find((elm) => elm.type === "EVAL")
+      ? model.pipeline.selectedPipeline.steps.find((elm) => elm.type === "EVAL")
           ?.options.metrics.metrics
       : null;
 
@@ -78,10 +81,20 @@ const ModelTableEntry = ({
         </Table.Td>
         <Table.Td>
           <Group gap="xs" wrap="nowrap">
-            <Button variant="outline" color="red" size="sm" onClick={() => onDeleteModels([model])}>
+            <Button
+              variant="outline"
+              color="red"
+              size="sm"
+              onClick={() => onDeleteModels([model])}
+            >
               <FontAwesomeIcon icon={faTrashAlt} />
             </Button>
-            <Button variant="outline" color="blue" size="sm" onClick={() => setDatasetNameEditOpen(true)}>
+            <Button
+              variant="outline"
+              color="blue"
+              size="sm"
+              onClick={() => setDatasetNameEditOpen(true)}
+            >
               <FontAwesomeIcon icon={faPen} />
             </Button>
             <ButtonList

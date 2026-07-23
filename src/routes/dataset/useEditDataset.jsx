@@ -24,9 +24,7 @@ export const labelingEditorReducer = (state, action) => {
       return {
         draft: undefined,
         selectedLabelId:
-          state.selectedLabelId === action.labelId
-            ? undefined
-            : action.labelId,
+          state.selectedLabelId === action.labelId ? undefined : action.labelId,
         saving: false,
       };
     case "clear":
@@ -54,9 +52,8 @@ const useEditDataset = (datasetUtils, labelings) => {
   };
 
   const [activeTimeSeries, setActiveTimeSeries] = useState([]);
-  const [activeLabeling, setActiveLabelingState] = useState(
-    getActiveLabeling()
-  );
+  const [activeLabeling, setActiveLabelingState] =
+    useState(getActiveLabeling());
   const [selectedLabelTypeId, setSelectedLabelTypeIdState] =
     useState(undefined);
   const [editor, dispatch] = useReducer(

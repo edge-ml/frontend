@@ -1,10 +1,5 @@
 import React, { Component } from "react";
-import {
-  Modal,
-  Button,
-  TextInput,
-  Table,
-} from "@mantine/core";
+import { Modal, Button, TextInput, Table } from "@mantine/core";
 
 import {
   updateProject,
@@ -154,11 +149,16 @@ class EditProjectModal extends Component {
     )
       return null;
     return (
-      <Modal id="editProjectModal" opened={this.props.isOpen} onClose={this.onCancel} title={
-        this.props.isNewProject
-          ? "Create new Project"
-          : "Edit Project: " + this.state.originalProject.name
-      }>
+      <Modal
+        id="editProjectModal"
+        opened={this.props.isOpen}
+        onClose={this.onCancel}
+        title={
+          this.props.isNewProject
+            ? "Create new Project"
+            : "Edit Project: " + this.state.originalProject.name
+        }
+      >
         <Modal.Body>
           <TextInput
             label="Name"

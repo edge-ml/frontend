@@ -1,22 +1,122 @@
-.labelInfo {
-  padding-left: 8px;
-  padding-right: 8px;
+.upload-modal-header {
+  background: linear-gradient(135deg, rgb(20, 30, 48), rgb(36, 48, 68));
+  padding: 1rem 1.5rem;
 }
 
-.labelBorder {
-  border-left: black solid 1px;
+.upload-modal-header-text {
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
 }
 
-.modal-close-button {
-  position: absolute;
-  top: 0.3rem;
-  right: 0.3rem;
+.upload-modal-body {
+  padding: 1.5rem;
 }
 
-.modal-icon-button {
-  padding: 0;
-  background-color: transparent;
-  border: 0;
-  height: 32px;
-  width: 32px;
+.upload-modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgb(230, 230, 234);
+}
+
+.upload-modal-footer a {
+  color: #47bb78;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.upload-modal-footer a:hover {
+  text-decoration: underline;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgb(230, 230, 234);
+  border-radius: 10px;
+  background: white;
+  transition: border-color 120ms ease;
+}
+
+.file-item:hover {
+  border-color: #47bb78;
+}
+
+.file-icon-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 0.75rem;
+  min-width: 60px;
+}
+
+.file-icon-wrapper svg {
+  color: #47bb78;
+}
+
+.file-icon-wrapper span {
+  font-size: 0.75rem;
+  color: #5c5f66;
+  text-align: center;
+  margin-top: 0.25rem;
+  word-break: break-word;
+}
+
+.file-progress {
+  flex: 1;
+  margin-right: 0.5rem;
+}
+
+.file-status-text {
+  font-size: 0.8rem;
+  color: #5c5f66;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.file-action-btn {
+  padding: 0.25rem;
+  color: #909296;
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+
+.file-action-btn:hover {
+  color: #47bb78;
+}
+
+.file-action-btn--danger:hover {
+  color: #fa5252;
+}
+
+.drag-area-text {
+  color: #5c5f66;
+}
+
+.drag-area-text u {
+  color: #47bb78;
+}
+
+.warning-alert-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.warning-alert-actions {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
 }

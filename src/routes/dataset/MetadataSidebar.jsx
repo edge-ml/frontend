@@ -32,7 +32,10 @@ const MetadataSidebar = () => {
 
   return (
     <Fragment>
-      <div className="sidePanelBackdrop" onClick={() => toggleMetaData(false)} />
+      <div
+        className="sidePanelBackdrop"
+        onClick={() => toggleMetaData(false)}
+      />
       <div className="dataset-side-panel">
         <div style={{ display: "flex" }}>
           <div

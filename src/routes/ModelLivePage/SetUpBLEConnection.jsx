@@ -46,9 +46,33 @@ const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
   };
 
   return (
-    <div style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center" }}>
-      <div style={{ margin: "3rem", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-        <div style={{ width: "75%", margin: "3rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          margin: "3rem",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+        }}
+      >
+        <div
+          style={{
+            width: "75%",
+            margin: "3rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <h5 style={{ fontWeight: 700 }}>1. Select the correct UUIDs</h5>
           <TextInput
             label="Service UUID"
@@ -70,8 +94,17 @@ const SetUpBLEConnection = ({ model, setBLEDevice, onDeviceDisconnect }) => {
         <h5 style={{ margin: "3rem", fontWeight: 700 }}>
           2. Make sure your MCU is equipped with the model <b>{model.name}</b>
         </h5>
-        <div style={{ margin: "3rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <h5 style={{ fontWeight: 700 }}>3. Connect your MCU over BLE here:</h5>
+        <div
+          style={{
+            margin: "3rem",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <h5 style={{ fontWeight: 700 }}>
+            3. Connect your MCU over BLE here:
+          </h5>
           <Button
             variant="outline"
             color="blue"

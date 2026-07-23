@@ -3,7 +3,7 @@ import { Modal } from "@mantine/core";
 
 import SelectLabeling from "./SelectLabeling";
 
-const TrainWizzard = ({isOpen}) => {
+const TrainWizzard = ({ isOpen }) => {
   return (
     <Modal opened={isOpen} size="xl">
       <Modal.Header>

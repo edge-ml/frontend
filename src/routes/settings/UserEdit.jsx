@@ -28,9 +28,7 @@ const UserEdit = () => {
   };
 
   const handleDeleteUserName = (userNameToDelete) => {
-    setUserNames(
-      userNames.filter((u) => u.userName !== userNameToDelete)
-    );
+    setUserNames(userNames.filter((u) => u.userName !== userNameToDelete));
   };
 
   const areUsersValid = () => true;

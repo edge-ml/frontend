@@ -1,6 +1,14 @@
 /* global Module */
 
-import { Modal, Button, Badge, Menu, Table, Alert, Loader } from "@mantine/core";
+import {
+  Modal,
+  Button,
+  Badge,
+  Menu,
+  Table,
+  Alert,
+  Loader,
+} from "@mantine/core";
 import { SUPPORTED_SENSORS } from "../../services/WebSensorServices";
 import { SensorList } from "../../components/SensorList/SensorList";
 import { usePersistedState } from "../../services/ReactHooksService";
@@ -49,7 +57,10 @@ const TimeSeriesSelectingSensorComponent = ({
           variant={componentTimeseries ? "filled" : "outline"}
           color={componentTimeseries ? "blue" : "gray"}
           size="sm"
-          style={{ cursor: isDisabled ? "default" : "pointer", margin: "0.25rem" }}
+          style={{
+            cursor: isDisabled ? "default" : "pointer",
+            margin: "0.25rem",
+          }}
         >
           {badgeText}
         </Badge>
@@ -130,7 +141,13 @@ const ScreenOne = memo(
       <ModalBody>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignContent: "center",
+              }}
+            >
               <b>Configure Sensor / Timeseries Matching</b>
             </div>
             <div className="body-wrapper-overflow">
@@ -162,7 +179,13 @@ const ScreenOne = memo(
         </div>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           <div style={{ flex: 1, marginTop: "0.5rem" }}>
-            <div style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignContent: "center",
+              }}
+            >
               <b>Model Timeseries</b>
             </div>
             <div className="body-wrapper-overflow">
@@ -213,9 +236,32 @@ const ScreenOne = memo(
               </Table>
             </div>
           </div>
-          <div style={{ flex: 1, marginTop: "0.5rem", display: "flex", flexDirection: "column", justifyContent: "flex-end", alignItems: "flex-end" }}>
-            <div style={{ marginBottom: "0.5rem", display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginRight: "0.5rem" }}>
+          <div
+            style={{
+              flex: 1,
+              marginTop: "0.5rem",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "flex-end",
+              alignItems: "flex-end",
+            }}
+          >
+            <div
+              style={{
+                marginBottom: "0.5rem",
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginRight: "0.5rem",
+                }}
+              >
                 <Checkbox
                   isSelected={downloadSingleFile}
                   onClick={(e) => {
@@ -343,9 +389,7 @@ const ScreenTwo = ({ model, legalMatches }) => {
         sensor.on("error", onSensorError(sensor));
         sensor.on("data", onSensorData(config));
         await sensor.listen({
-          ...(sensor.properties.fixedFrequency
-            ? {}
-            : {}),
+          ...(sensor.properties.fixedFrequency ? {} : {}),
         });
       }
     };
@@ -504,7 +548,15 @@ const LiveInferenceModal = ({ model, onClose: onCloseOrig }) => {
         <Modal.Title>Live Inference: {model.name}</Modal.Title>
       </Modal.Header>
       {renderedScreen}
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "1rem", padding: "1rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          gap: "0.5rem",
+          marginTop: "1rem",
+          padding: "1rem",
+        }}
+      >
         {page !== 1 ? (
           <Button variant="outline" color="blue" onClick={onGoBack}>
             Back

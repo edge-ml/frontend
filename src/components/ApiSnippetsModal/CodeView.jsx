@@ -23,7 +23,11 @@ const CodeView = ({ language, code }) => {
           {code}
         </code>
       </pre>
-      <Button variant="outline" color="blue" onClick={() => onCopytoClipBoard()}>
+      <Button
+        variant="outline"
+        color="blue"
+        onClick={() => onCopytoClipBoard()}
+      >
         Copy Code
       </Button>
     </div>

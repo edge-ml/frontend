@@ -5,7 +5,13 @@ import HighchartsReact from "highcharts-react-official";
 
 export const SensorGraphs = ({ sensorStore, dataPreview, setDataPreview }) => (
   <div>
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
       <span>Data preview is {dataPreview ? "enabled" : "paused"}.</span>
       <Button
         variant="outline"

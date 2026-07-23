@@ -1,11 +1,6 @@
 import React, { Component } from "react";
 import classnames from "classnames";
-import {
-  Modal,
-  Button,
-  TextInput,
-  Table,
-} from "@mantine/core";
+import { Modal, Button, TextInput, Table } from "@mantine/core";
 import DragDrop from "../Common/DragDrop";
 import {
   updateDataset,
@@ -270,9 +265,11 @@ class CreateNewDatasetModal extends Component {
           size="xl"
           opened={this.props.isOpen}
           onClose={this.onCloseModal}
-          title={this.props.dataset
-            ? "Add timeseries to dataset"
-            : "Create new dataset"}
+          title={
+            this.props.dataset
+              ? "Add timeseries to dataset"
+              : "Create new dataset"
+          }
         >
           <Modal.Body>
             <DragDrop
@@ -327,26 +324,62 @@ class CreateNewDatasetModal extends Component {
                               (timeSeries, seriesIndex) => {
                                 return (
                                   <tr key={file + seriesIndex}>
-                                    <td style={{ paddingTop: 0, paddingBottom: 0 }}>
+                                    <td
+                                      style={{
+                                        paddingTop: 0,
+                                        paddingBottom: 0,
+                                      }}
+                                    >
                                       <TextInput
                                         label="name"
-                                        id={"nameInput" + String(fileIndex) + String(seriesIndex)}
+                                        id={
+                                          "nameInput" +
+                                          String(fileIndex) +
+                                          String(seriesIndex)
+                                        }
                                         data-testid="nameInput"
                                         placeholder="Name"
                                         size="sm"
-                                        value={this.state.datasets[fileIndex].timeSeries[seriesIndex].name}
-                                        onChange={(e) => this.onNameChange(e, fileIndex, seriesIndex)}
+                                        value={
+                                          this.state.datasets[fileIndex]
+                                            .timeSeries[seriesIndex].name
+                                        }
+                                        onChange={(e) =>
+                                          this.onNameChange(
+                                            e,
+                                            fileIndex,
+                                            seriesIndex
+                                          )
+                                        }
                                       />
                                     </td>
-                                    <td style={{ paddingTop: 0, paddingBottom: 0 }}>
+                                    <td
+                                      style={{
+                                        paddingTop: 0,
+                                        paddingBottom: 0,
+                                      }}
+                                    >
                                       <TextInput
                                         label="Unit"
-                                        id={"unitInput" + String(fileIndex) + String(seriesIndex)}
+                                        id={
+                                          "unitInput" +
+                                          String(fileIndex) +
+                                          String(seriesIndex)
+                                        }
                                         data-testid="unitInput"
                                         placeholder="Unit"
                                         size="sm"
-                                        value={this.state.datasets[fileIndex].timeSeries[seriesIndex].unit}
-                                        onChange={(e) => this.onUnitChange(e, fileIndex, seriesIndex)}
+                                        value={
+                                          this.state.datasets[fileIndex]
+                                            .timeSeries[seriesIndex].unit
+                                        }
+                                        onChange={(e) =>
+                                          this.onUnitChange(
+                                            e,
+                                            fileIndex,
+                                            seriesIndex
+                                          )
+                                        }
                                       />
                                     </td>
                                     <td style={{ textAlign: "right" }}>
@@ -354,7 +387,9 @@ class CreateNewDatasetModal extends Component {
                                         id="setAllButton"
                                         color="blue"
                                         size="xs"
-                                        onClick={() => this.onSetAll(fileIndex, seriesIndex)}
+                                        onClick={() =>
+                                          this.onSetAll(fileIndex, seriesIndex)
+                                        }
                                       >
                                         Set all
                                       </Button>
@@ -364,7 +399,12 @@ class CreateNewDatasetModal extends Component {
                                         id="deleteButton"
                                         color="red"
                                         size="xs"
-                                        onClick={() => this.onDeleteTimeSeries(fileIndex, seriesIndex)}
+                                        onClick={() =>
+                                          this.onDeleteTimeSeries(
+                                            fileIndex,
+                                            seriesIndex
+                                          )
+                                        }
                                       >
                                         Delete
                                       </Button>
@@ -376,7 +416,9 @@ class CreateNewDatasetModal extends Component {
                           </tbody>
                         )}
                       </Table>
-                      <div style={{ display: "flex", justifyContent: "center" }}>
+                      <div
+                        style={{ display: "flex", justifyContent: "center" }}
+                      >
                         {this.state.labelings[fileIndex].map(
                           (labeling, labelingIndex) => {
                             return (
@@ -388,7 +430,10 @@ class CreateNewDatasetModal extends Component {
                               >
                                 <div
                                   id={"labelName" + labelingIndex}
-                                  style={{ margin: "0 0.5rem", display: "inline" }}
+                                  style={{
+                                    margin: "0 0.5rem",
+                                    display: "inline",
+                                  }}
                                 >
                                   {labeling.datasetLabel.name}
                                 </div>
@@ -396,7 +441,12 @@ class CreateNewDatasetModal extends Component {
                                   color="red"
                                   size="xs"
                                   style={{ margin: "0 0.5rem" }}
-                                  onClick={() => this.onDeleteLabeling(fileIndex, labelingIndex)}
+                                  onClick={() =>
+                                    this.onDeleteLabeling(
+                                      fileIndex,
+                                      labelingIndex
+                                    )
+                                  }
                                 >
                                   Delete
                                 </Button>

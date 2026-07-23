@@ -4,7 +4,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
 const DeleteModal = ({ isOpen, children, onCancel, onDelete }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onCancel} onConfirm={onDelete}>
+    <Modal isOpen={isOpen} onClose={onCancel}>
       <ModalHeader>Are you sure to delete:</ModalHeader>
       <ModalBody>{children}</ModalBody>
       <ModalFooter>

@@ -173,9 +173,7 @@ class TimeSeriesCollectionPanel extends Component {
           }}
         >
           {this.state.successAlertVisible && (
-            <Alert color="green">
-              Configuration saved successfully!
-            </Alert>
+            <Alert color="green">Configuration saved successfully!</Alert>
           )}
           {this.state.errorAlertVisible && (
             <Alert color="red">
@@ -184,7 +182,13 @@ class TimeSeriesCollectionPanel extends Component {
           )}
         </div>
         <div
-          style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", flex: 1, overflowY: "auto" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            flex: 1,
+            overflowY: "auto",
+          }}
         >
           {this.state.activeSeries.length ? (
             <div>

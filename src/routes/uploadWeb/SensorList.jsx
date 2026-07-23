@@ -9,16 +9,8 @@ import Checkbox from "../../components/Common/Checkbox";
 
 import React from "react";
 
-const Th = (props) => (
-  <Table.Th
-    {...props}
-  />
-);
-const Td = (props) => (
-  <Table.Td
-    {...props}
-  />
-);
+const Th = (props) => <Table.Th {...props} />;
+const Td = (props) => <Table.Td {...props} />;
 
 export const SensorList = ({
   sensors,
@@ -119,7 +111,13 @@ export const SensorList = ({
                       <Table.Tr style={tableVisibilityStyle(name)}>
                         <Td style={{ padding: 0 }} />
                         <Td style={{ padding: 0 }} colSpan={2}>
-                          <div style={{ display: "flex", alignItems: "center", paddingRight: "1rem" }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              paddingRight: "1rem",
+                            }}
+                          >
                             <small>
                               <b>Sample Rate:</b>
                             </small>
@@ -131,7 +129,11 @@ export const SensorList = ({
                         <Td style={{ padding: 0 }} />
                         <Td style={{ padding: 0 }} colSpan={2}>
                           <div
-                            style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              flexWrap: "wrap",
+                            }}
                           >
                             <small>
                               <b>Components:</b>

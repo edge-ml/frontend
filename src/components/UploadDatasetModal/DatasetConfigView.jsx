@@ -1,5 +1,4 @@
 import React from "react";
-
 import { TextInput, Button } from "@mantine/core";
 
 export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
@@ -38,7 +37,15 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
   };
 
   return (
-    <div style={{ marginBottom: "0.5rem", marginTop: "0.5rem" }}>
+    <div
+      style={{
+        marginBottom: "0.75rem",
+        marginTop: "0.5rem",
+        border: "1px solid rgb(230, 230, 234)",
+        borderRadius: "10px",
+        padding: "1rem",
+      }}
+    >
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
@@ -61,7 +68,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <Button
                   id="confirmButton"
-                  color="blue"
+                  color="green"
                   onClick={() => {
                     changeConfig(fileId, {
                       ...fileConfig,
@@ -90,7 +97,13 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
               if (timeSeries.removed) return null;
               return (
                 <tr key={seriesIndex}>
-                  <td style={{ paddingTop: 0, paddingBottom: 0, width: "40%" }}>
+                  <td
+                    style={{
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                      width: "40%",
+                    }}
+                  >
                     <TextInput
                       label="Name"
                       data-testid="nameInput"
@@ -110,7 +123,13 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                       }
                     />
                   </td>
-                  <td style={{ paddingTop: 0, paddingBottom: 0, width: "15%" }}>
+                  <td
+                    style={{
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                      width: "15%",
+                    }}
+                  >
                     <TextInput
                       label="Unit"
                       data-testid="unitInput"
@@ -130,7 +149,13 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                       }
                     />
                   </td>
-                  <td style={{ paddingTop: 0, paddingBottom: 0, width: "15%" }}>
+                  <td
+                    style={{
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                      width: "15%",
+                    }}
+                  >
                     <TextInput
                       label="Scale"
                       data-testid="scaleInput"
@@ -146,7 +171,8 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                             if (ts === timeSeries) {
                               return {
                                 ...ts,
-                                scale: e.target.value === "" ? 1 : e.target.value,
+                                scale:
+                                  e.target.value === "" ? 1 : e.target.value,
                               };
                             }
                             return ts;
@@ -155,7 +181,13 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                       }}
                     />
                   </td>
-                  <td style={{ paddingTop: 0, paddingBottom: 0, width: "15%" }}>
+                  <td
+                    style={{
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                      width: "15%",
+                    }}
+                  >
                     <TextInput
                       label="Offset"
                       data-testid="offsetInput"
@@ -171,7 +203,8 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                             if (ts === timeSeries) {
                               return {
                                 ...ts,
-                                offset: e.target.value === "" ? 0 : e.target.value,
+                                offset:
+                                  e.target.value === "" ? 0 : e.target.value,
                               };
                             }
                             return ts;
@@ -183,7 +216,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                   <td style={{ textAlign: "right" }}>
                     <Button
                       id="setAllButton"
-                      color="blue"
+                      color="green"
                       size="xs"
                       onClick={() =>
                         onSetAllUnits(fileConfig.timeSeries[seriesIndex])
@@ -216,21 +249,32 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
           </tbody>
         )}
       </table>
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "0.5rem",
+          marginTop: "0.5rem",
+        }}
+      >
         {fileConfig.labelings.map((labeling, labelingIndex) => {
           if (labeling.removed) return null;
           return (
             <div key={labeling.originalName}>
-              <div
+              <span
                 id={"labelName" + labelingIndex}
-                style={{ margin: "0 0.5rem", display: "inline" }}
+                style={{
+                  marginRight: "0.25rem",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                  color: "#5C5F66",
+                }}
               >
                 {labeling.name}
-              </div>
+              </span>
               <Button
                 color="red"
                 size="xs"
-                style={{ margin: "0 0.5rem" }}
                 onClick={() => onDeleteLabeling(labeling.originalName)}
               >
                 Delete
@@ -239,7 +283,6 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
           );
         })}
       </div>
-      <hr />
     </div>
   );
 };

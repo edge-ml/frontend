@@ -1,11 +1,5 @@
 import React, { Component } from "react";
-import {
-  Modal,
-  Button,
-  TextInput,
-  NumberInput,
-  Menu,
-} from "@mantine/core";
+import { Modal, Button, TextInput, NumberInput, Menu } from "@mantine/core";
 
 import "./EditInstructionModal.css";
 
@@ -120,11 +114,15 @@ class EditInstructionModal extends Component {
     });
 
     return (
-      <Modal opened={this.state.isOpen} onClose={this.state.onCloseModal} title={
-        this.state.experiment && this.state.experiment["_id"]
-          ? this.state.experiment["_id"]
-          : "New Experiment"
-      }>
+      <Modal
+        opened={this.state.isOpen}
+        onClose={this.state.onCloseModal}
+        title={
+          this.state.experiment && this.state.experiment["_id"]
+            ? this.state.experiment["_id"]
+            : "New Experiment"
+        }
+      >
         <Modal.Body>
           <TextInput
             label="Name"
@@ -139,11 +137,22 @@ class EditInstructionModal extends Component {
           {this.state.experiment && this.state.experiment.instructions
             ? this.state.experiment.instructions.map(
                 (instruction, index, array) => (
-                  <div key={"instruction" + index} style={{ display: "flex", gap: "8px", alignItems: "center", marginBottom: "8px" }}>
+                  <div
+                    key={"instruction" + index}
+                    style={{
+                      display: "flex",
+                      gap: "8px",
+                      alignItems: "center",
+                      marginBottom: "8px",
+                    }}
+                  >
                     <div style={{ display: "flex", flexDirection: "column" }}>
                       <div
                         style={{
-                          cursor: index === 0 || array.length === 1 ? "default" : "pointer",
+                          cursor:
+                            index === 0 || array.length === 1
+                              ? "default"
+                              : "pointer",
                           opacity: index === 0 || array.length === 1 ? 0.4 : 1,
                         }}
                         onClick={() => this.onLabelUp(index)}
@@ -152,8 +161,14 @@ class EditInstructionModal extends Component {
                       </div>
                       <div
                         style={{
-                          cursor: index === array.length - 1 || array.length === 1 ? "default" : "pointer",
-                          opacity: index === array.length - 1 || array.length === 1 ? 0.4 : 1,
+                          cursor:
+                            index === array.length - 1 || array.length === 1
+                              ? "default"
+                              : "pointer",
+                          opacity:
+                            index === array.length - 1 || array.length === 1
+                              ? 0.4
+                              : 1,
                         }}
                         onClick={() => this.onLabelDown(index)}
                       >
@@ -258,9 +273,7 @@ class EditInstructionModal extends Component {
                     <NumberInput
                       min={0}
                       step={1}
-                      onChange={(value) =>
-                        this.onDurationChanged(index, value)
-                      }
+                      onChange={(value) => this.onDurationChanged(index, value)}
                       value={instruction.duration}
                       style={{ width: "80px" }}
                       rightSection={<>ms</>}

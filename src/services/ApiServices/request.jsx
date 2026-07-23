@@ -43,9 +43,7 @@ const apiRequest = async (
 ) => {
   const url = new URL(baseUri + endpoint, window.location.origin);
   if (Object.keys(params).length > 0) {
-    Object.entries(params).forEach(([k, v]) =>
-      url.searchParams.append(k, v)
-    );
+    Object.entries(params).forEach(([k, v]) => url.searchParams.append(k, v));
   }
 
   const projectId = localStorageService.getProject();
@@ -76,11 +74,13 @@ const apiRequest = async (
         ? await response.arrayBuffer()
         : responseType === "blob"
           ? await response.blob()
-        : responseType === "json"
-          ? await response.json()
-          : await response.text();
+          : responseType === "json"
+            ? await response.json()
+            : await response.text();
     if (!response.ok) {
-      const err = new Error(data?.error || data?.message || response.statusText);
+      const err = new Error(
+        data?.error || data?.message || response.statusText
+      );
       err.status = response.status;
       throw err;
     }

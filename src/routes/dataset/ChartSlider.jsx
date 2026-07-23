@@ -26,7 +26,10 @@ const ChartSlider = ({ start, end, visibleRange, onRangeChange }) => {
 
   const moveRange = (delta, sourceValue = value) => {
     const duration = sourceValue[1] - sourceValue[0];
-    const min = Math.max(start, Math.min(end - duration, sourceValue[0] + delta));
+    const min = Math.max(
+      start,
+      Math.min(end - duration, sourceValue[0] + delta)
+    );
     updateRange([min, min + duration]);
   };
 

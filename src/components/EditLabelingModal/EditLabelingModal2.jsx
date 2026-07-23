@@ -120,12 +120,16 @@ class EditLabelingModal extends Component {
     return (
       <div>
         <div>
-          {"You are about to delete the labels that are used in the following dataset(s):"}
+          {
+            "You are about to delete the labels that are used in the following dataset(s):"
+          }
         </div>
         {conflictDatasets}
         <br />
         <div>
-          {'Do you want to proceed? If you choose "Confirm", all these labels will be deleted from the dataset(s).'}
+          {
+            'Do you want to proceed? If you choose "Confirm", all these labels will be deleted from the dataset(s).'
+          }
         </div>
       </div>
     );
@@ -337,7 +341,11 @@ class EditLabelingModal extends Component {
           <Group align="center" style={{ width: "100%" }}>
             <TextInput
               label="Labeling Set"
-              error={this.labelingNameInValid() ? "The same name already exists" : undefined}
+              error={
+                this.labelingNameInValid()
+                  ? "The same name already exists"
+                  : undefined
+              }
               id="labelingName"
               placeholder="Name"
               value={
@@ -365,10 +373,18 @@ class EditLabelingModal extends Component {
           <hr />
           {this.state.labeling.labels
             ? this.state.labeling.labels.map((label, index) => (
-                <Group key={"label" + index} gap="xs" style={{ width: "100%", marginBottom: "0.5rem" }}>
+                <Group
+                  key={"label" + index}
+                  gap="xs"
+                  style={{ width: "100%", marginBottom: "0.5rem" }}
+                >
                   <TextInput
                     label="Label"
-                    error={this.labelNameInvalid(label, index) ? "Duplicate names are not allowed" : undefined}
+                    error={
+                      this.labelNameInvalid(label, index)
+                        ? "Duplicate names are not allowed"
+                        : undefined
+                    }
                     id={"labelName" + index}
                     placeholder="Name"
                     value={label.name}
@@ -391,7 +407,9 @@ class EditLabelingModal extends Component {
                     onChange={(e) =>
                       this.onLabelColorChanged(index, e.target.value)
                     }
-                    error={!isValidColor(label.color) ? "Invalid color" : undefined}
+                    error={
+                      !isValidColor(label.color) ? "Invalid color" : undefined
+                    }
                   />
                   <Button
                     id={"buttonDeleteLabel" + index}

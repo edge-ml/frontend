@@ -49,7 +49,12 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
         to download an example CSV file.
       </ModalBody>
       <ModalFooter>
-        <Button variant="outline" color="gray" style={{ margin: "0.25rem" }} onClick={onCloseModal}>
+        <Button
+          variant="outline"
+          color="gray"
+          style={{ margin: "0.25rem" }}
+          onClick={onCloseModal}
+        >
           Close
         </Button>
       </ModalFooter>

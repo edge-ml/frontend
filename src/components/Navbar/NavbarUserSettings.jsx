@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { Popover, Button, Stack, Avatar, Text, UnstyledButton } from "@mantine/core";
+import {
+  Popover,
+  Button,
+  Stack,
+  Avatar,
+  Text,
+  UnstyledButton,
+} from "@mantine/core";
 
 import "./Navbar.css";
 import useAuth from "../../Hooks/useAuth";
@@ -37,7 +44,13 @@ const NavbarUserSettings = () => {
         </Popover.Target>
         <Popover.Dropdown>
           <Stack gap="xs" align="stretch">
-            <Button variant="outline" onClick={() => { setUserSettingsModalOpen(true); setUserPopoverOpen(false); }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setUserSettingsModalOpen(true);
+                setUserPopoverOpen(false);
+              }}
+            >
               Settings
             </Button>
             <Button variant="outline" color="red" onClick={logout}>

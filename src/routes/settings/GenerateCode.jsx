@@ -43,7 +43,9 @@ const GenerateCode = () => {
             <Button
               variant="outline"
               color="red"
-              disabled={!currentProject.enableDeviceApi || !readKey || !writeKey}
+              disabled={
+                !currentProject.enableDeviceApi || !readKey || !writeKey
+              }
               onClick={removeApiKeys}
             >
               Remove key

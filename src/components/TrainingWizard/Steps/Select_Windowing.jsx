@@ -29,9 +29,7 @@ const Select_Windowing = ({
       <h3 style={{ fontWeight: 700 }}>4. Select Windowing</h3>
       <Menu>
         <Menu.Target>
-          <Button size="lg">
-            {windowers[window_index].name}
-          </Button>
+          <Button size="lg">{windowers[window_index].name}</Button>
         </Menu.Target>
         <Menu.Dropdown>
           {windowers.map((n, idx) => (

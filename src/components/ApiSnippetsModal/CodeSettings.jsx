@@ -6,10 +6,7 @@ const CodeSettings = (props) => {
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <span style={{ minWidth: "120px" }}>Platform:</span>
-        <Radio.Group
-          value={props.platform}
-          onChange={props.onPlatformChange}
-        >
+        <Radio.Group value={props.platform} onChange={props.onPlatformChange}>
           <Group>
             <Radio value="Java" label="Java" />
             <Radio value="Node.js" label="Node.js" />
@@ -18,11 +15,20 @@ const CodeSettings = (props) => {
           </Group>
         </Radio.Group>
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          marginTop: "8px",
+        }}
+      >
         <span style={{ minWidth: "120px" }}>Use deviceTime:</span>
         <Radio.Group
           value={props.servertime ? "Yes" : "No"}
-          onChange={(val) => props.onServerTimeChange({ target: { value: val } })}
+          onChange={(val) =>
+            props.onServerTimeChange({ target: { value: val } })
+          }
         >
           <Group>
             <Radio value="Yes" label="Yes" />

@@ -3,13 +3,16 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { isTauriBluetoothAvailable, getTauriBluetooth } from "./services/tauriBle";
+import {
+  isTauriBluetoothAvailable,
+  getTauriBluetooth,
+} from "./services/tauriBle";
 
 if (isTauriBluetoothAvailable()) {
   try {
     navigator.bluetooth = getTauriBluetooth();
   } catch {
-    Object.defineProperty(navigator, 'bluetooth', {
+    Object.defineProperty(navigator, "bluetooth", {
       value: getTauriBluetooth(),
       writable: false,
       configurable: true,

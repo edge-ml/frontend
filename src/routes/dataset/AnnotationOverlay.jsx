@@ -94,7 +94,10 @@ const AnnotationOverlay = ({
         const right = plot.valToPos(end, "x");
         const isSelected = selectedLabel?._id === label._id;
 
-        if (interval.start > visibleMax || (hasEnd && interval.end < visibleMin)) {
+        if (
+          interval.start > visibleMax ||
+          (hasEnd && interval.end < visibleMin)
+        ) {
           return null;
         }
 

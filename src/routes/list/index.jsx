@@ -78,9 +78,7 @@ const ListPage = () => {
 
   return (
     <div id="dataList" className="d-flex flex-column h-100">
-      <DataUpload
-        refreshDatasets={refreshDatasets}
-      />
+      <DataUpload refreshDatasets={refreshDatasets} />
       <DatasetTable
         datasets={datasets}
         selectedDatasets={selectedDatasets}
@@ -97,7 +95,7 @@ const ListPage = () => {
         selectedFilter={selectedFilter}
         updateDataset={updateDataset}
       />
-      <div className="d-flex justify-content-center mt-3">
+      <div className="d-flex justify-content-center mt-3 pb-3">
         {datasets?.length > 0 && (
           <PageSelection
             currentPage={page}

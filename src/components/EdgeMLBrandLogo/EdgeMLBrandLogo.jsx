@@ -12,7 +12,11 @@ const EdgeMLBrandLogo = ({ href }) => {
       className="mt-2"
       style={{ display: "flex", alignItems: "center", textDecoration: "none" }}
     >
-      <img style={{ marginRight: "8px", width: "32px" }} src={logoSvg} alt="edge-ml" />
+      <img
+        style={{ marginRight: "8px", width: "32px" }}
+        src={logoSvg}
+        alt="edge-ml"
+      />
       <div>
         <Text fw={700} c="black">
           edge-ml

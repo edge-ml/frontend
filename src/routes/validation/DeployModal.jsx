@@ -1,11 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import {
-  Modal,
-  Button,
-  Menu,
-  Progress,
-  Loader,
-} from "@mantine/core";
+import { Modal, Button, Menu, Progress, Loader } from "@mantine/core";
 import {
   getDeployDevices,
   deployModel,
@@ -20,7 +14,7 @@ import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 import DeployFeatures from "./Models/DeployFeatures";
 import { downloadBlob } from "../../services/helpers";
 
-const DeployModal = ({isOpen, model, onClose }) => {
+const DeployModal = ({ isOpen, model, onClose }) => {
   const [devices, setDevices] = useState([]);
   const [parameters, setParameters] = useState([]);
   const [selectedDevice, setSelectedDevice] = useState(undefined);
@@ -293,8 +287,16 @@ const DeployModal = ({isOpen, model, onClose }) => {
       <Modal.Body>
         {page === 0 ? (
           <div>
-            <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-              <h5 style={{ fontWeight: 700, margin: 0, marginRight: "0.5rem" }}>1. Select Device: </h5>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+              }}
+            >
+              <h5 style={{ fontWeight: 700, margin: 0, marginRight: "0.5rem" }}>
+                1. Select Device:{" "}
+              </h5>
               <Menu>
                 <Menu.Target>
                   <Button variant="outline" color="blue" size="lg">
@@ -303,7 +305,10 @@ const DeployModal = ({isOpen, model, onClose }) => {
                 </Menu.Target>
                 <Menu.Dropdown>
                   {devices.map((device, idx) => (
-                    <Menu.Item key={"devicekey" + idx} onClick={() => onClickSelectDevice(device)}>
+                    <Menu.Item
+                      key={"devicekey" + idx}
+                      onClick={() => onClickSelectDevice(device)}
+                    >
                       {device.name}
                     </Menu.Item>
                   ))}
@@ -314,7 +319,13 @@ const DeployModal = ({isOpen, model, onClose }) => {
             <h5 style={{ fontWeight: 700 }}>2. Configure Device:</h5>
             <div style={{ display: "flex" }}>
               <div style={{ margin: "1rem 1rem 1rem 0.5rem", width: "500px" }}>
-                <div style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignContent: "center",
+                  }}
+                >
                   <b>Configure TimeSeries</b>
                 </div>
                 <div className="body-wrapper-overflow">
@@ -328,7 +339,13 @@ const DeployModal = ({isOpen, model, onClose }) => {
                           ts_idx % 2 === 1 ? "rgb(249, 251, 252)" : "",
                       }}
                     >
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
                         <strong style={{ paddingLeft: "0.5rem" }}>{elm}</strong>
                         <Menu>
                           <Menu.Target>
@@ -387,7 +404,13 @@ const DeployModal = ({isOpen, model, onClose }) => {
               ></HyperparameterView>
             </div>
             {flashError ? (
-              <div style={{ display: "flex", flexDirection: "row", marginLeft: "0.5rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  marginLeft: "0.5rem",
+                }}
+              >
                 <div>
                   <FontAwesomeIcon icon={faCircleExclamation} color="red" />
                 </div>
@@ -396,7 +419,9 @@ const DeployModal = ({isOpen, model, onClose }) => {
                 </div>
               </div>
             ) : null}
-            <div style={{ width: "100%", display: "flex", flexDirection: "row" }}>
+            <div
+              style={{ width: "100%", display: "flex", flexDirection: "row" }}
+            >
               <div style={{ color: "red", flexGrow: 1 }}>
                 {showSelectAllSensorWarning
                   ? "Please configure all time series under configure time series before deploying."
@@ -414,7 +439,9 @@ const DeployModal = ({isOpen, model, onClose }) => {
             </div>
           </div>
         ) : (
-          <div style={{ width: "100%", height: "100%" }}>{renderDeployPart()}</div>
+          <div style={{ width: "100%", height: "100%" }}>
+            {renderDeployPart()}
+          </div>
         )}
       </Modal.Body>
       <Modal.Footer>

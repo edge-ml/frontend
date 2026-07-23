@@ -7,7 +7,13 @@ import DeleteModal from "../../components/Common/DeleteModal";
 import ModelTableEntry from "./ModelTableEntry";
 import { Empty } from "../export/components/Empty";
 
-const ModelTable = ({ models, stepOptions, updateModel, deleteModels, onCreate }) => {
+const ModelTable = ({
+  models,
+  stepOptions,
+  updateModel,
+  deleteModels,
+  onCreate,
+}) => {
   const [selectedModels, setSelectedModels] = useState([]);
   const [modelsToDelete, setModelsToDelete] = useState([]);
 

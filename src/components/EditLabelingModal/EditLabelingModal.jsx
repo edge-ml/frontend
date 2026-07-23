@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  TextInput,
-} from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
@@ -96,12 +93,22 @@ const EditLabelingModal = ({
         {labeling ? "Edit labeling" : "Create labeling"}
       </ModalHeader>
       <ModalBody>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
           <div style={{ width: "100%" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <TextInput
                 label="Labeling Set"
-                error={isLabelingNameDuplicate() && labeling.name !== "" ? "Oh no! That name is already taken" : undefined}
+                error={
+                  isLabelingNameDuplicate() && labeling.name !== ""
+                    ? "Oh no! That name is already taken"
+                    : undefined
+                }
                 id="labelingName"
                 placeholder="Name"
                 value={labeling.name}

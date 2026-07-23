@@ -1,27 +1,306 @@
 .bleActivatedContainer {
-  margin: 8px;
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  padding: clamp(20px, 3vw, 40px);
+  color: #172033;
 }
 
-.panelDivider {
-  border-bottom: 1px solid;
-  margin-top: 8px;
-  margin-bottom: 8px;
-  opacity: 0.2;
+.ble-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 26px;
 }
 
-.panelHeader {
-  font-size: x-large;
+.ble-progress {
+  display: flex;
+  align-items: center;
+  max-width: 620px;
+  margin-bottom: 24px;
 }
 
-.invalidFeedBack {
-  display: flex !important;
-  justify-content: end;
+.ble-progress__step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8a94a6;
+  white-space: nowrap;
 }
 
-ul {
-  list-style-type: none;
+.ble-progress__step--active,
+.ble-progress__step--complete {
+  color: #172033;
 }
 
-.labelingArea {
-  opacity: 0.2;
+.ble-progress__line {
+  flex: 1;
+  height: 2px;
+  min-width: 28px;
+  margin: 0 12px;
+  background: #e2e8f0;
+}
+
+.ble-progress__line--active {
+  background: #85a6cc;
+}
+
+.ble-connect-card,
+.ble-workflow-card,
+.ble-recording-panel,
+.ble-empty-state {
+  border-color: #e1e7ef;
+  box-shadow: 0 8px 24px rgba(22, 34, 52, 0.045);
+  background: #ffffff;
+}
+
+.ble-connect-card {
+  padding: clamp(18px, 2.2vw, 26px);
+}
+
+.ble-connect-card__main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.ble-connect-card__icon {
+  flex: 0 0 auto;
+}
+
+.ble-connect-card__actions {
+  flex: 0 0 auto;
+}
+
+.ble-empty-state {
+  min-height: 210px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 36px;
+  text-align: left;
+  background: radial-gradient(
+      circle at 10% 0%,
+      rgba(41, 89, 139, 0.06),
+      transparent 32%
+    ),
+    #ffffff;
+}
+
+.ble-workflow-card {
+  padding: clamp(18px, 2vw, 24px);
+}
+
+.ble-setup-grid {
+  align-items: start;
+}
+
+.ble-sensor-option {
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.ble-sensor-option--selected {
+  border-color: #8eadd0;
+  background: #f7faff;
+  box-shadow: inset 3px 0 0 #346da7;
+}
+
+.ble-sensor-option__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(126px, 0.35fr);
+  align-items: center;
+  gap: 14px;
+}
+
+.ble-sensor-option__details {
+  min-width: 0;
+}
+
+.ble-sensor-option__rate {
+  min-width: 126px;
+}
+
+.ble-record-button {
+  min-width: 158px;
+}
+
+.ble-label-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ble-label-button {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  background: #ffffff;
+  cursor: pointer;
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease,
+    transform 140ms ease;
+}
+
+.ble-label-button:hover:not(:disabled) {
+  border-color: #9eb4ce;
+  background: #f7faff;
+  transform: translateY(-1px);
+}
+
+.ble-label-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.ble-label-button--active {
+  border-color: #6d91ba;
+  background: #f0f6fd;
+  box-shadow: inset 0 0 0 1px #6d91ba;
+}
+
+.ble-label-button__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.ble-label-button__name {
+  overflow: hidden;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ble-empty-copy {
+  padding: 15px;
+  border: 1px dashed #d7dee8;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.ble-recording-panel {
+  padding: clamp(18px, 2vw, 24px);
+  border: 1px solid #e1e7ef;
+  border-radius: 12px;
+}
+
+.ble-sensor-chart-card {
+  overflow: hidden;
+  border-color: #e1e7ef;
+}
+
+.ble-live-chart {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  padding: 4px 10px 10px;
+  overflow: hidden;
+}
+
+.ble-live-chart .uplot {
+  max-width: 100%;
+}
+
+.ble-live-chart .u-legend {
+  margin: 0 0 6px 52px;
+  font-size: 11px;
+}
+
+.ble-live-chart__annotations {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ble-live-chart__annotation {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  border-right: 2px solid;
+  border-left: 2px solid;
+  opacity: 0.9;
+}
+
+.ble-live-chart__annotation--active {
+  border-right-style: dashed;
+  animation: ble-label-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ble-label-pulse {
+  0%,
+  100% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .bleActivatedContainer {
+    padding: 18px 14px 28px;
+  }
+
+  .ble-progress {
+    max-width: none;
+  }
+
+  .ble-progress__step {
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.75rem;
+  }
+
+  .ble-progress__line {
+    margin: 0 7px 18px;
+  }
+
+  .ble-connect-card__main {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .ble-connect-card__actions {
+    justify-content: flex-end;
+  }
+
+  .ble-sensor-option__row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .ble-sensor-option__rate {
+    grid-column: 2;
+  }
+
+  .ble-label-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 460px) {
+  .ble-connect-card__actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .ble-empty-state {
+    flex-direction: column;
+    text-align: center;
+  }
 }

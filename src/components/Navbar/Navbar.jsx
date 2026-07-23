@@ -1,7 +1,8 @@
 import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faDownload } from "@fortawesome/free-solid-svg-icons";
-import { Stack, UnstyledButton, Text, Tooltip, Loader } from "@mantine/core";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { Stack, UnstyledButton, Loader, Divider } from "@mantine/core";
 
 import "./Navbar.css";
 import EdgeMLBrandLogo from "../EdgeMLBrandLogo/EdgeMLBrandLogo";
@@ -41,10 +42,7 @@ const Navbar = () => {
         />
         <div className="w-100 mt-3 overflow-auto">
           {projects.map((project) => (
-            <NavbarProject
-              key={project._id}
-              project={project}
-            />
+            <NavbarProject key={project._id} project={project} />
           ))}
         </div>
 
@@ -65,28 +63,42 @@ const Navbar = () => {
         </UnstyledButton>
       </Stack>
 
-      <Stack gap={0} align="center" className="w-100" style={{ color: "white" }}>
+      <Stack
+        gap={0}
+        align="center"
+        className="w-100"
+        style={{ color: "white" }}
+      >
+        <Divider w="95%" mx="auto" />
         {activeNotifications.length > 0 && (
           <UnstyledButton
-            className="pt-3 pb-3 w-100 text-center"
+            className="w-100 text-center"
             onClick={() => setNotificationModalOpen(true)}
-            style={{ color: "#666", cursor: "pointer" }}
+            style={{
+              color: "#666",
+              cursor: "pointer",
+              fontSize: "0.9rem",
+              padding: "10px 16px",
+            }}
           >
-            <Text size="xs">
-              <FontAwesomeIcon icon={faDownload} className="me-2" />
-              {`${activeNotifications.length} ${activeNotifications.length > 1 ? "Notifications" : "Notification"}`}
-            </Text>
+            <FontAwesomeIcon icon={faDownload} className="me-2" />
+            {`${activeNotifications.length} ${activeNotifications.length > 1 ? "Notifications" : "Notification"}`}
           </UnstyledButton>
         )}
-        <NavbarInfo />
+        <Divider w="95%" mx="auto" />
         <div
-          style={{
-            height: "1px",
-            backgroundColor: "darkgray",
-            opacity: 0.3,
-            width: "95%",
-          }}
-        />
+          className="pt-3 pb-3 w-100 text-center"
+          style={{ color: "#666", cursor: "pointer", fontSize: "0.8rem" }}
+          onClick={() =>
+            window.open("https://github.com/edge-ml/edge-ml/issues", "_blank")
+          }
+        >
+          <FontAwesomeIcon icon={faGithub} className="me-2" />
+          Report a bug
+        </div>
+        <Divider w="95%" mx="auto" />
+        <NavbarInfo />
+        <Divider w="95%" mx="auto" />
         <NavbarUserSettings />
       </Stack>
 

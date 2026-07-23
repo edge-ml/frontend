@@ -26,7 +26,9 @@ const TextSearchFilter = ({
 
   return (
     <div>
-      <div style={{ marginBottom: "1rem" }}>{"Search for datasets via name:\n"}</div>
+      <div style={{ marginBottom: "1rem" }}>
+        {"Search for datasets via name:\n"}
+      </div>
       <div>
         <TextInput
           placeholder="Search..."

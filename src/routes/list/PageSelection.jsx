@@ -1,6 +1,11 @@
 import React from "react";
 import { Group, Button } from "@mantine/core";
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight } from "@tabler/icons-react";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronsLeft,
+  IconChevronsRight,
+} from "@tabler/icons-react";
 
 const PageSelection = ({ currentPage, setPage, totalPages }) => {
   return (

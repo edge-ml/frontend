@@ -1,11 +1,8 @@
-import create from "zustand";
+import { create } from "zustand";
 import { jwtDecode } from "jwt-decode";
 import { setToken, clearToken } from "./services/LocalStorageService";
 import { loginUser } from "./services/ApiServices/AuthentificationServices";
-import {
-  getAccessToken,
-  getRefreshToken,
-} from "./services/LocalStorageService";
+import { getAccessToken } from "./services/LocalStorageService";
 
 const useAuthStore = create((set) => ({
   user: undefined,
@@ -28,7 +25,6 @@ const useAuthStore = create((set) => ({
 
   checkLoginStatus: () => {
     const accessToken = getAccessToken();
-    const refreshToken = getRefreshToken();
     if (accessToken) {
       const decoded = jwtDecode(accessToken);
       if (decoded.exp * 1000 >= Date.now()) {

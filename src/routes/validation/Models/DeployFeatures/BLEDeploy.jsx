@@ -23,7 +23,13 @@ const BLEDeploy = ({ onUpdateState }) => {
       <Table.Thead>
         <Table.Tr>
           <Table.Th>
-            <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
               <div>Use BLE</div>
               <Switch
                 style={{ marginLeft: "0.5rem" }}
@@ -37,7 +43,13 @@ const BLEDeploy = ({ onUpdateState }) => {
       <Table.Tbody>
         <Table.Tr>
           <Table.Td>
-            <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                padding: "0.5rem",
+                alignItems: "center",
+              }}
+            >
               <div style={{ fontWeight: 700, width: "200px" }}>
                 Service-UUID
               </div>
@@ -51,7 +63,13 @@ const BLEDeploy = ({ onUpdateState }) => {
         </Table.Tr>
         <Table.Tr>
           <Table.Td>
-            <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                padding: "0.5rem",
+                alignItems: "center",
+              }}
+            >
               <div style={{ fontWeight: 700, width: "200px" }}>
                 Characteristic-UUID
               </div>

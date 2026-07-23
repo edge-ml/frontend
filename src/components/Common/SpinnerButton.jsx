@@ -5,10 +5,11 @@ function SpinnerButton({
   children,
   loading = false,
   loadingtext = "Loading...",
+  disabled = false,
   ...props
 }) {
   return (
-    <Button {...props}>
+    <Button {...props} disabled={disabled || loading}>
       {loading ? (
         <>
           {loadingtext}

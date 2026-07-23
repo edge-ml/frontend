@@ -1,141 +1,101 @@
 import React, { useState } from "react";
-import { TextInput } from "@mantine/core";
+import { Alert, Checkbox, Group, Stack, Text, TextInput } from "@mantine/core";
+import {
+  IconAlertCircle,
+  IconPlayerRecordFilled,
+  IconPlayerStopFilled,
+} from "@tabler/icons-react";
 import SpinnerButton from "../Common/SpinnerButton";
-import classNames from "classnames";
-import Checkbox from "../Common/Checkbox";
 import "./BleActivated.css";
 
-function BlePanelRecorderSettings({
+const BlePanelRecorderSettings = ({
   recorderState = "ready",
-  disabled = false,
-  sampleRate,
   sensorsSelected,
   onClickRecordButton,
   onDatasetNameChanged,
   datasetName,
   onToggleStream,
   onToggleSampleRate,
+  stream,
   fullSampleRate,
-}) {
-  const [samplingRateError, setSamplingRateError] = useState(false);
-  const [sensorNotSelectedError, setSensorNotSelectedError] = useState(false);
-  const [buttonErrorAnimate, setButtonErrorAnimate] = useState(false);
+  recordingError,
+}) => {
+  const [validationError, setValidationError] = useState("");
+  const isReady = recorderState === "ready";
+  const isRecording = recorderState === "recording";
+  const isChanging = ["startup", "finalizing"].includes(recorderState);
 
-  const handleClickRecordButton = (e) => {
-    const tmpSamplingRateError = sampleRate <= 0 || sampleRate > 50;
-
-    setSamplingRateError(tmpSamplingRateError);
-    setSensorNotSelectedError(!sensorsSelected);
-
-    if (tmpSamplingRateError || !sensorsSelected) {
-      setButtonErrorAnimate(true);
+  const handleRecordClick = (event) => {
+    if (isReady && !sensorsSelected) {
+      setValidationError("Select at least one sensor before recording.");
       return;
     }
-    onClickRecordButton(e);
-  };
-
-  const buttonColor = ["ready", "startup"].includes(recorderState)
-    ? "primary"
-    : "danger";
-
-  const buttonLoading = ["startup", "finalizing"].includes(recorderState);
-  const buttonText =
-    recorderState === "ready" ? "Start recording" : "Stop recording";
-  const buttonLoadingText =
-    recorderState === "startup" ? "Starting recording" : "Stopping recording";
-
-  const handleDatasetNameChanged = (e) => {
-    onDatasetNameChanged(e);
+    setValidationError("");
+    onClickRecordButton(event);
   };
 
   return (
-    <div
-      className="m-2"
-      style={disabled ? { opacity: "0.4", pointerEvents: "none" } : null}
-    >
-      <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
-        <h4>3. Record dataset</h4>
-      </div>
-      <div className="body-wrapper p-3">
-        <TextInput
-          label="Dataset name"
-          id="bleDatasetName"
-          placeholder="dataset name"
-          onChange={handleDatasetNameChanged}
-          value={datasetName}
-          disabled={recorderState !== "ready"}
+    <Stack gap="md">
+      <TextInput
+        label="Dataset name"
+        description="Leave empty to generate a name automatically."
+        id="bleDatasetName"
+        placeholder="e.g. walking-session-01"
+        onChange={onDatasetNameChanged}
+        value={datasetName}
+        disabled={!isReady}
+      />
+
+      <Stack gap="xs">
+        <Checkbox
+          checked={stream}
+          onChange={onToggleStream}
+          disabled={!isReady}
+          label="Show a live sensor preview"
+          description="Recording continues even when the preview is hidden."
         />
-        <hr />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
+        <Checkbox
+          checked={fullSampleRate}
+          onChange={onToggleSampleRate}
+          disabled={!isReady || !stream}
+          label="Render every sample"
+          description="Use only when you need full visual fidelity; it can reduce performance."
+        />
+      </Stack>
+
+      {(validationError || recordingError) && (
+        <Alert color="red" variant="light" icon={<IconAlertCircle size={17} />}>
+          {validationError || recordingError}
+        </Alert>
+      )}
+
+      <Group justify="space-between" align="center" mt="xs">
+        <Text size="sm" c="dimmed">
+          {isRecording
+            ? "Data is being saved continuously."
+            : `${sensorsSelected ? "Sensors configured" : "No sensors selected"}`}
+        </Text>
+        <SpinnerButton
+          className="ble-record-button"
+          color={isRecording ? "red" : "blue"}
+          onClick={handleRecordClick}
+          loading={isChanging}
+          loadingtext={
+            recorderState === "startup" ? "Starting" : "Saving dataset"
+          }
+          leftSection={
+            isRecording ? (
+              <IconPlayerStopFilled size={17} />
+            ) : (
+              <IconPlayerRecordFilled size={17} />
+            )
+          }
         >
-          <SpinnerButton
-            className="me-2"
-            outline
-            style={
-              buttonErrorAnimate
-                ? {
-                    animation: "hzejgT 0.3s ease 0s 1 normal none running",
-                  }
-                : null
-            }
-            color={buttonColor}
-            spinnercolor={buttonColor}
-            onClick={handleClickRecordButton}
-            loading={buttonLoading}
-            loadingtext={buttonLoadingText}
-            disabled={buttonLoading}
-            onAnimationEnd={() => {
-              setButtonErrorAnimate(false);
-            }}
-          >
-            {buttonText}
-          </SpinnerButton>
-          <div
-            style={
-              sensorNotSelectedError
-                ? { color: "red", fontSize: "smaller" }
-                : { display: "none" }
-            }
-          >
-            Sensors need to be selected
-          </div>
-          <small>
-            <div>
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <Checkbox
-                  onClick={onToggleStream}
-                  className="stream-check"
-                  id="stream-check"
-                />
-                <div style={{ marginLeft: "0.5rem" }}>Disable sensor streaming</div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "row", marginTop: "0.5rem" }}>
-                <Checkbox
-                  onClick={onToggleSampleRate}
-                  className="sampleRate-check"
-                  id="sampleRate-check"
-                />
-                <div style={{ marginLeft: "0.5rem" }}>
-                  Show sensor data at full sampling rate
-                </div>
-              </div>
-            </div>
-          </small>
-        </div>
-        {fullSampleRate ? (
-          <small style={{ color: "red" }}>
-            <strong>Warning: </strong>
-            Showing sensor data at full sample rate can affect performance.
-          </small>
-        ) : null}
-      </div>
-    </div>
+          {isRecording ? "Stop & save" : "Start recording"}
+        </SpinnerButton>
+      </Group>
+    </Stack>
   );
-}
+};
 
 export default BlePanelRecorderSettings;

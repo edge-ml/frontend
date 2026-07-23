@@ -28,16 +28,14 @@ export const getUserNames = async (userIds) => {
   return res;
 };
 
-
-
 export const logout = async () => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.GET,
     apiConsts.AUTH_URI,
     apiConsts.AUTH_ENDPOINTS.LOGOUT
-  )
+  );
   return res;
-}
+};
 
 export const getUser = async () => {
   const res = await apiRequest(
@@ -57,10 +55,13 @@ export const loginOAuth = async (provider) => {
   // );
   // return res;
 
-  const url = apiConsts.AUTH_URI + apiConsts.AUTH_ENDPOINTS.OAUTH + "?provider=" + provider
-  console.log(url)
+  const url =
+    apiConsts.AUTH_URI +
+    apiConsts.AUTH_ENDPOINTS.OAUTH +
+    "?provider=" +
+    provider;
+  console.log(url);
   window.open(url, "_self");
-
 };
 
 export const loginUserRefresh = async (refreshToken) => {

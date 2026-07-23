@@ -23,11 +23,7 @@ const DeleteProject = () => {
 
   return (
     <>
-      <Button
-        variant="outline"
-        color="red"
-        onClick={() => setModalOpen(true)}
-      >
+      <Button variant="outline" color="red" onClick={() => setModalOpen(true)}>
         {isAdmin ? "Delete project" : "Leave project"}
       </Button>
       <ConfirmationDialogueModal

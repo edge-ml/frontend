@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  Button,
-  Group,
-  Stack,
-  Select,
-  Text,
-} from "@mantine/core";
+import { Modal, Button, Group, Stack, Select, Text } from "@mantine/core";
 import LabelingSetsFilter from "./filters/LabelingSetsFilter";
 import TextSearchFilter from "./filters/TextSearchFilter";
 
@@ -75,14 +68,21 @@ const FilterSelectionModal = ({
             setCurrentFilterParams(undefined);
             setCurrentFilter(filter);
           }}
-          data={filtersDef.map((f) => ({ value: f.value, label: f.displayName }))}
+          data={filtersDef.map((f) => ({
+            value: f.value,
+            label: f.displayName,
+          }))}
         />
         {renderFilter()}
         <Group justify="flex-end" gap="sm">
-          <Button variant="outline" color="red" onClick={() => {
-            removeFilter();
-            setFilterModalOpen(false);
-          }}>
+          <Button
+            variant="outline"
+            color="red"
+            onClick={() => {
+              removeFilter();
+              setFilterModalOpen(false);
+            }}
+          >
             Remove filter
           </Button>
           <Button
@@ -94,7 +94,11 @@ const FilterSelectionModal = ({
           >
             Apply
           </Button>
-          <Button variant="outline" color="gray" onClick={() => setFilterModalOpen(false)}>
+          <Button
+            variant="outline"
+            color="gray"
+            onClick={() => setFilterModalOpen(false)}
+          >
             Cancel
           </Button>
         </Group>

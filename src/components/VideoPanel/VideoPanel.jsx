@@ -116,7 +116,14 @@ class VideoPanel extends Component {
 
   render() {
     return (
-      <Card className={"VideoPanel"} shadow="sm" padding="md" radius="md" withBorder style={{ overflow: "hidden" }}>
+      <Card
+        className={"VideoPanel"}
+        shadow="sm"
+        padding="md"
+        radius="md"
+        withBorder
+        style={{ overflow: "hidden" }}
+      >
         <Button
           style={{
             position: "absolute",

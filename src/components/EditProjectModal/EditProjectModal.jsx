@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  TextInput,
-  Table,
-} from "@mantine/core";
+import { Button, TextInput, Table } from "@mantine/core";
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
@@ -47,7 +43,9 @@ const EditProjectModal = ({ isOpen, onClose }) => {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
                   <span>Search user</span>
                   <AutoCompleteInput
                     type="text"
@@ -82,7 +80,14 @@ const EditProjectModal = ({ isOpen, onClose }) => {
               project.users.map((elm) => (
                 <Table.Tr key={elm.userName}>
                   <Table.Td>
-                    <div style={{ display: "flex", justifyContent: "space-between", margin: "0.5rem", alignItems: "center" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        margin: "0.5rem",
+                        alignItems: "center",
+                      }}
+                    >
                       <div>
                         <b>{elm.userName}</b>
                       </div>

@@ -1,25 +1,22 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import Loader from '../../modules/loader';
-import {
-  Alert,
-  Container,
-} from '@mantine/core';
-import { getLabelings } from '../../services/ApiServices/LabelingServices';
+import Loader from "../../modules/loader";
+import { Alert, Container } from "@mantine/core";
+import { getLabelings } from "../../services/ApiServices/LabelingServices";
 
 import {
   getProjectSensorStreams,
   getProjectCustomMetaData,
-} from '../../services/ApiServices/ProjectService';
+} from "../../services/ApiServices/ProjectService";
 
-import { getModels, train } from '../../services/ApiServices/MlService';
-import { LabelingView } from './LabelingView';
-import { TargetSensorsView } from './TargetSensorsView';
-import { ClassifierView } from './ClassifierView';
+import { getModels, train } from "../../services/ApiServices/MlService";
+import { LabelingView } from "./LabelingView";
+import { TargetSensorsView } from "./TargetSensorsView";
+import { ClassifierView } from "./ClassifierView";
 import {
   ValidationMethodsView,
   validationSelectOptions,
-} from './ValidationMethodsView';
+} from "./ValidationMethodsView";
 
 class ModelPage extends Component {
   constructor(props) {
@@ -36,7 +33,7 @@ class ModelPage extends Component {
       models: [],
       selectedModelId: undefined,
       hyperparameters: [],
-      modelName: '',
+      modelName: "",
       alertText: undefined,
       trainSuccess: undefined,
       useUnlabelledFor: {},
@@ -63,7 +60,7 @@ class ModelPage extends Component {
       return {
         parameter_name: e[0],
         state:
-          e[1].parameter_type === 'number'
+          e[1].parameter_type === "number"
             ? e[1].default
             : e[1].multi_select
               ? e[1].default.map((x) => {
@@ -102,30 +99,30 @@ class ModelPage extends Component {
         this.setState({
           selectedLabeling: result[0].labelings[0]
             ? result[0].labelings[0]._id
-            : '',
+            : "",
           selectedLabelsFor: result[0].labelings.reduce(
             (acc, labeling) => ({
               ...acc,
               [labeling._id]: labeling.labels.reduce(
                 (c, label) => ({ ...c, [label]: true }),
-                {},
+                {}
               ),
             }),
-            {},
+            {}
           ),
           labelings: result[0].labelings,
           labels: result[0].labels,
           useUnlabelledFor: result[0].labelings.reduce(
             (acc, labeling) => ({ ...acc, [labeling._id]: false }),
-            {},
+            {}
           ),
           unlabelledNameFor: result[0].labelings.reduce(
-            (acc, labeling) => ({ ...acc, [labeling._id]: 'Other' }),
-            {},
+            (acc, labeling) => ({ ...acc, [labeling._id]: "Other" }),
+            {}
           ),
           sensorStreams: result[1] ? result[1] : [],
           models: result[2],
-          selectedModelId: result[2][0] ? result[2][0].id : '',
+          selectedModelId: result[2][0] ? result[2][0].id : "",
           modelSelection: result[2][0]
             ? { value: result[2][0].id, label: result[2][0].name }
             : {},
@@ -135,7 +132,7 @@ class ModelPage extends Component {
           customMetaData: customMetaData,
         });
       })
-      .catch((err) => {})
+      .catch((err) => {});
   }
 
   handleTrainButton = (e) => {
@@ -153,12 +150,12 @@ class ModelPage extends Component {
         ...acc,
         [cur.parameter_name]: cur.state,
       }),
-      {},
+      {}
     );
     const hyperparameterRestrictions = Object.values(
-      this.state.models[this.state.selectedModelId].hyperparameters,
+      this.state.models[this.state.selectedModelId].hyperparameters
     ).reduce((acc, cur) => {
-      if (cur.parameter_type === 'number') {
+      if (cur.parameter_type === "number") {
         return {
           ...acc,
           [cur.parameter_name]: {
@@ -170,16 +167,16 @@ class ModelPage extends Component {
       return { ...acc };
     }, {});
     const violatingHyperparams = Object.entries(
-      hyperparameterRestrictions,
+      hyperparameterRestrictions
     ).filter(
       ([name, restriction]) =>
         hyperparameterConfig[name] !== null &&
         (restriction.min > hyperparameterConfig[name] ||
-          restriction.max < hyperparameterConfig[name]),
+          restriction.max < hyperparameterConfig[name])
     );
     if (violatingHyperparams.length > 0) {
       this.setState({
-        alertText: 'Invalid Hyperparameter Configuration',
+        alertText: "Invalid Hyperparameter Configuration",
         trainSuccess: false,
       });
       resetAlert();
@@ -187,13 +184,13 @@ class ModelPage extends Component {
     }
 
     const selectedLabels = Object.keys(
-      this.state.selectedLabelsFor[this.state.selectedLabeling],
+      this.state.selectedLabelsFor[this.state.selectedLabeling]
     ).filter(
-      (x) => this.state.selectedLabelsFor[this.state.selectedLabeling][x],
+      (x) => this.state.selectedLabelsFor[this.state.selectedLabeling][x]
     );
     if (!selectedLabels.length) {
       this.setState({
-        alertText: 'Please select at least one label in target labeling',
+        alertText: "Please select at least one label in target labeling",
         trainSuccess: false,
       });
       resetAlert();
@@ -207,7 +204,7 @@ class ModelPage extends Component {
           cross_validation: [
             {
               loso_variable:
-                this.state.validationMethodOptions['selectedMetaDataKey'],
+                this.state.validationMethodOptions["selectedMetaDataKey"],
             },
           ],
         };
@@ -235,7 +232,7 @@ class ModelPage extends Component {
     })
       .then(() => {
         this.setState({
-          alertText: 'Training started successfully',
+          alertText: "Training started successfully",
           trainSuccess: true,
           requestInProgress: false,
         });
@@ -289,7 +286,7 @@ class ModelPage extends Component {
     if (this.state.selectedSensorStreams.includes(sensor)) {
       this.setState({
         selectedSensorStreams: this.state.selectedSensorStreams.filter(
-          (z) => z !== sensor,
+          (z) => z !== sensor
         ),
       });
       return;
@@ -315,8 +312,8 @@ class ModelPage extends Component {
     this.setState({
       hyperparameters: this.formatHyperparameters(
         this.state.models.find(
-          (m) => m.id === parseInt(modelSelection.value, 10),
-        ).hyperparameters,
+          (m) => m.id === parseInt(modelSelection.value, 10)
+        ).hyperparameters
       ),
     });
   };
@@ -351,14 +348,14 @@ class ModelPage extends Component {
       <Loader loading={!this.state.ready}>
         {this.state.alertText ? (
           <Alert
-            color={this.state.trainSuccess ? 'green' : 'red'}
+            color={this.state.trainSuccess ? "green" : "red"}
             style={{
               marginBottom: 0,
-              position: 'fixed',
+              position: "fixed",
               zIndex: 100,
-              bottom: '40px',
-              left: '50%',
-              marginLeft: '-100px',
+              bottom: "40px",
+              left: "50%",
+              marginLeft: "-100px",
             }}
           >
             {this.state.alertText}
@@ -366,7 +363,13 @@ class ModelPage extends Component {
         ) : null}
         <Container>
           <div style={{ display: "flex", flexWrap: "wrap" }}>
-            <div style={{ flex: "1 1 100%", maxWidth: "33.33%", marginTop: "1rem" }}>
+            <div
+              style={{
+                flex: "1 1 100%",
+                maxWidth: "33.33%",
+                marginTop: "1rem",
+              }}
+            >
               <LabelingView
                 labelings={this.state.labelings}
                 selectedLabeling={this.state.selectedLabeling}
@@ -380,7 +383,13 @@ class ModelPage extends Component {
                 changeLabelSelection={this.handleLabelSelection}
               />
             </div>
-            <div style={{ flex: "1 1 100%", maxWidth: "33.33%", marginTop: "1rem" }}>
+            <div
+              style={{
+                flex: "1 1 100%",
+                maxWidth: "33.33%",
+                marginTop: "1rem",
+              }}
+            >
               <TargetSensorsView
                 sensorStreams={this.state.sensorStreams}
                 selectedSensorStreams={this.state.selectedSensorStreams}
@@ -392,7 +401,13 @@ class ModelPage extends Component {
                 }
               />
             </div>
-            <div style={{ flex: "1 1 100%", maxWidth: "33.33%", marginTop: "1rem" }}>
+            <div
+              style={{
+                flex: "1 1 100%",
+                maxWidth: "33.33%",
+                marginTop: "1rem",
+              }}
+            >
               <ValidationMethodsView
                 testSplit={this.state.testSplit}
                 onTestSplitChange={this.handleTestSplitChange}

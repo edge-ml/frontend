@@ -182,7 +182,13 @@ export const SensorList = ({
                     <tr style={visibilityStyle(collapseState[name])}>
                       <Td className="p-0" />
                       <Td className="p-0" colSpan="2">
-                        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            alignItems: "center",
+                          }}
+                        >
                           <small>
                             <b>Components:</b>
                           </small>

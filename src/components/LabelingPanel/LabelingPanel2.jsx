@@ -1,9 +1,5 @@
 import React, { Component } from "react";
-import {
-  Button,
-  Card,
-  TextInput,
-} from "@mantine/core";
+import { Button, Card, TextInput } from "@mantine/core";
 import "./LabelingPanel.css";
 
 class LabelingPanel extends Component {
@@ -64,8 +60,17 @@ class LabelingPanel extends Component {
 
   render() {
     return (
-      <Card className="LabelingPanel edgeml-border edgeml-fade-one" shadow="sm" padding="md" radius="md" withBorder>
-        <Card.Section className="p-1" style={{ display: "flex", flexWrap: "wrap" }}>
+      <Card
+        className="LabelingPanel edgeml-border edgeml-fade-one"
+        shadow="sm"
+        padding="md"
+        radius="md"
+        withBorder
+      >
+        <Card.Section
+          className="p-1"
+          style={{ display: "flex", flexWrap: "wrap" }}
+        >
           <div className="labelingBox d-flex flex-wrap">
             <Button
               className="labelingButton m-1"

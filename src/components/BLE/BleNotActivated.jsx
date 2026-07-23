@@ -33,7 +33,8 @@ class BleNotActivated extends Component {
               Learn{" "}
               <a
                 target="_blank"
-                href="https://support.google.com/chrome/answer/10612145?hl=en" rel="noreferrer"
+                href="https://support.google.com/chrome/answer/10612145?hl=en"
+                rel="noreferrer"
               >
                 here
               </a>{" "}
@@ -47,8 +48,7 @@ class BleNotActivated extends Component {
             </div>
             <hr />
             <div>
-              You don't have to do anything. Web Bluetooth works out of the
-              box
+              You don't have to do anything. Web Bluetooth works out of the box
             </div>
           </div>
           <div className="shadow p-3 mb-5 bg-white rounded">

@@ -1,9 +1,19 @@
 import React, { useEffect, useState } from "react";
 import {
-  Modal,
+  Badge,
   Button,
+  Group,
   Loader,
+  Modal,
+  Paper,
+  Radio,
+  ScrollArea,
+  Stack,
+  Text,
+  ThemeIcon,
+  UnstyledButton,
 } from "@mantine/core";
+import { IconBluetooth, IconBluetoothConnected } from "@tabler/icons-react";
 import {
   resolveDeviceSelection,
   rejectDeviceSelection,
@@ -27,7 +37,7 @@ const TauriDevicePicker = () => {
 
   const handleConnect = () => {
     if (!selectedId) return;
-    const device = devices.find((d) => d.id === selectedId);
+    const device = devices.find((candidate) => candidate.id === selectedId);
     if (device) {
       setIsOpen(false);
       resolveDeviceSelection(device);
@@ -36,55 +46,135 @@ const TauriDevicePicker = () => {
 
   const handleCancel = () => {
     setIsOpen(false);
-    rejectDeviceSelection(new DOMException("Device selection cancelled"));
+    rejectDeviceSelection(
+      new DOMException("Device selection cancelled", "NotFoundError")
+    );
   };
 
   return (
-    <Modal opened={isOpen} onClose={handleCancel} size="lg" title="Select BLE Device">
-      <Modal.Body>
-        <p className="text-muted small mb-3">
-          Found {devices.length} device{devices.length !== 1 ? "s" : ""}.
-          Select one to connect.
-        </p>
+    <Modal
+      opened={isOpen}
+      onClose={handleCancel}
+      size="lg"
+      centered
+      title={
+        <Group gap="sm">
+          <ThemeIcon variant="light" color="blue" radius="xl">
+            <IconBluetooth size={18} />
+          </ThemeIcon>
+          <div>
+            <Text fw={700}>Select a Bluetooth device</Text>
+            <Text size="xs" c="dimmed" fw={400}>
+              Choose the sensor device you want to record from.
+            </Text>
+          </div>
+        </Group>
+      }
+    >
+      <Stack gap="md">
+        <Group justify="space-between">
+          <Text size="sm" c="dimmed">
+            {devices.length === 0
+              ? "Looking for nearby devices…"
+              : `${devices.length} nearby device${
+                  devices.length === 1 ? "" : "s"
+                } found`}
+          </Text>
+          {devices.length > 0 && (
+            <Badge variant="light" color="teal">
+              Scan complete
+            </Badge>
+          )}
+        </Group>
+
         {devices.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "1.5rem 0" }}>
-            <Loader size="sm" style={{ marginRight: "0.5rem" }} />
-            Scanning...
-          </div>
+          <Paper withBorder radius="md" p="xl" style={{ textAlign: "center" }}>
+            <Loader size="sm" mb="sm" />
+            <Text size="sm" c="dimmed">
+              Keep your device nearby and make sure it is discoverable.
+            </Text>
+          </Paper>
         ) : (
-          <div className="list-group">
-            {devices.map((d) => (
-              <button
-                key={d.id}
-                type="button"
-                className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${
-                  selectedId === d.id ? "active" : ""
-                }`}
-                onClick={() => setSelectedId(d.id)}
-              >
-                <span>
-                  <strong>{d.name || "Unknown"}</strong>
-                  <br />
-                  <small className="text-muted">{d.id}</small>
-                </span>
-                {selectedId === d.id && <span>&#10003;</span>}
-              </button>
-            ))}
-          </div>
+          <ScrollArea.Autosize mah={360} offsetScrollbars>
+            <Radio.Group
+              value={selectedId || ""}
+              onChange={setSelectedId}
+              aria-label="Available Bluetooth devices"
+            >
+              <Stack gap="xs">
+                {devices.map((device) => {
+                  const selected = selectedId === device.id;
+                  return (
+                    <UnstyledButton
+                      key={device.id}
+                      component="label"
+                      htmlFor={`tauri-device-${device.id}`}
+                    >
+                      <Paper
+                        withBorder
+                        radius="md"
+                        p="md"
+                        style={{
+                          borderColor: selected
+                            ? "var(--mantine-color-blue-5)"
+                            : undefined,
+                          background: selected
+                            ? "var(--mantine-color-blue-0)"
+                            : undefined,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Group wrap="nowrap">
+                          <ThemeIcon
+                            variant="light"
+                            color={selected ? "blue" : "gray"}
+                            radius="xl"
+                            size="lg"
+                          >
+                            {selected ? (
+                              <IconBluetoothConnected size={18} />
+                            ) : (
+                              <IconBluetooth size={18} />
+                            )}
+                          </ThemeIcon>
+                          <div style={{ minWidth: 0, flex: 1 }}>
+                            <Text fw={650} truncate>
+                              {device.name || "Unknown device"}
+                            </Text>
+                            <Text size="xs" c="dimmed" truncate>
+                              {device.id}
+                            </Text>
+                          </div>
+                          <Radio
+                            id={`tauri-device-${device.id}`}
+                            value={device.id}
+                            aria-label={`Select ${
+                              device.name || "unknown device"
+                            }`}
+                          />
+                        </Group>
+                      </Paper>
+                    </UnstyledButton>
+                  );
+                })}
+              </Stack>
+            </Radio.Group>
+          </ScrollArea.Autosize>
         )}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="outline" color="gray" onClick={handleCancel}>
-          Cancel
-        </Button>
-        <Button
-          color="blue"
-          onClick={handleConnect}
-          disabled={!selectedId}
-        >
-          Connect
-        </Button>
-      </Modal.Footer>
+
+        <Group justify="flex-end" mt="xs">
+          <Button variant="subtle" color="gray" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConnect}
+            disabled={!selectedId}
+            leftSection={<IconBluetoothConnected size={17} />}
+          >
+            Connect device
+          </Button>
+        </Group>
+      </Stack>
     </Modal>
   );
 };

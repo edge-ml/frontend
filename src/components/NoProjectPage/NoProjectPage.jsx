@@ -7,7 +7,15 @@ class NoProjectPage extends Component {
   }
   render() {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "75%", padding: "3rem 0" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "75%",
+          padding: "3rem 0",
+        }}
+      >
         <h2>
           {this.props.text ? (
             this.props.text

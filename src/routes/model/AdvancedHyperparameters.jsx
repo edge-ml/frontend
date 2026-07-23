@@ -14,10 +14,20 @@ export const AdvancedHyperparameters = ({
   handleHyperparameterChange,
 }) => {
   return (
-    <div style={{ marginBottom: "1rem", marginTop: "0.5rem", alignSelf: "stretch" }}>
+    <div
+      style={{
+        marginBottom: "1rem",
+        marginTop: "0.5rem",
+        alignSelf: "stretch",
+      }}
+    >
       <Card shadow="sm" padding="md" radius="md" withBorder>
         <Card.Section
-          style={{ cursor: "pointer", padding: "0.75rem 1rem", textAlign: "left" }}
+          style={{
+            cursor: "pointer",
+            padding: "0.75rem 1rem",
+            textAlign: "left",
+          }}
           onClick={toggleShowAdvanced}
         >
           {showAdvanced ? (

@@ -46,9 +46,7 @@ const Wizard_Hyperparameters = ({
       <h3 style={{ fontWeight: 700 }}>3. Select Classifier</h3>
       <Menu>
         <Menu.Target>
-          <Button size="lg">
-            {classifier[classififier_index].name}
-          </Button>
+          <Button size="lg">{classifier[classififier_index].name}</Button>
         </Menu.Target>
         <Menu.Dropdown>
           {classifier.map((cls, idx) => (
@@ -65,8 +63,16 @@ const Wizard_Hyperparameters = ({
         </Menu.Dropdown>
       </Menu>
       <div>
-        <div style={{ width: "100%", alignItems: "center", marginBottom: "0.5rem" }}>
-          <div style={{ fontWeight: 700, fontSize: "1.25rem" }}>Hyperparameters</div>
+        <div
+          style={{
+            width: "100%",
+            alignItems: "center",
+            marginBottom: "0.5rem",
+          }}
+        >
+          <div style={{ fontWeight: 700, fontSize: "1.25rem" }}>
+            Hyperparameters
+          </div>
         </div>
         {basicCnt > 0 ? (
           <HyperparameterView
@@ -85,7 +91,13 @@ const Wizard_Hyperparameters = ({
         {advancedCnt > 0 ? (
           <Fragment>
             <div>
-              <div style={{ width: "100%", alignItems: "center", marginBottom: "0.5rem" }}>
+              <div
+                style={{
+                  width: "100%",
+                  alignItems: "center",
+                  marginBottom: "0.5rem",
+                }}
+              >
                 <Group align="center" gap="xs">
                   <div style={{ fontWeight: 700, fontSize: "1.25rem" }}>
                     Advanced Hyperparameters
@@ -95,15 +107,9 @@ const Wizard_Hyperparameters = ({
                     onClick={() => setShowAdvanced(!showAdvanced)}
                   >
                     {showAdvanced ? (
-                      <FontAwesomeIcon
-                        size="lg"
-                        icon={faCaretDown}
-                      />
+                      <FontAwesomeIcon size="lg" icon={faCaretDown} />
                     ) : (
-                      <FontAwesomeIcon
-                        size="lg"
-                        icon={faCaretRight}
-                      />
+                      <FontAwesomeIcon size="lg" icon={faCaretRight} />
                     )}
                   </div>
                 </Group>

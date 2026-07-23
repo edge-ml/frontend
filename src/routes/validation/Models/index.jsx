@@ -301,13 +301,14 @@ const DeployModal = ({ model, onClose }) => {
             <div style={{ display: "flex", justifyContent: "center" }}>
               <Menu>
                 <Menu.Target>
-                  <Button size="lg">
-                    {selectedDevice.name}
-                  </Button>
+                  <Button size="lg">{selectedDevice.name}</Button>
                 </Menu.Target>
                 <Menu.Dropdown>
                   {devices.map((device, idx) => (
-                    <Menu.Item key={idx} onClick={() => setSelectedDevice(device)}>
+                    <Menu.Item
+                      key={idx}
+                      onClick={() => setSelectedDevice(device)}
+                    >
                       {device.name}
                     </Menu.Item>
                   ))}
@@ -316,7 +317,13 @@ const DeployModal = ({ model, onClose }) => {
             </div>
             <div style={{ display: "flex" }}>
               <div style={{ margin: "1rem 1rem 1rem 0.5rem", width: "500px" }}>
-                <div style={{ display: "flex", justifyContent: "center", alignContent: "center" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignContent: "center",
+                  }}
+                >
                   <b>Configure TimeSeries</b>
                 </div>
                 <div className="body-wrapper-overflow">
@@ -329,7 +336,13 @@ const DeployModal = ({ model, onClose }) => {
                           ts_idx % 2 === 1 ? "rgb(249, 251, 252)" : "",
                       }}
                     >
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
                         <strong style={{ paddingLeft: "0.5rem" }}>{elm}</strong>
                         <Menu>
                           <Menu.Target>
@@ -377,7 +390,13 @@ const DeployModal = ({ model, onClose }) => {
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>
-                      <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          width: "100%",
+                        }}
+                      >
                         <div>Use BLE</div>
                         <Switch
                           style={{ marginLeft: "0.5rem" }}
@@ -391,28 +410,53 @@ const DeployModal = ({ model, onClose }) => {
                 <Table.Tbody>
                   <Table.Tr>
                     <Table.Td>
-                      <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          padding: "0.5rem",
+                          alignItems: "center",
+                        }}
+                      >
                         <div style={{ fontWeight: 700, width: "200px" }}>
                           Service-UUID
                         </div>
                         <TextInput
                           disabled={!useBLE}
                           value={additionalSettings.ble.serviceUUID}
-                          onChange={(e) => setAdditionalSettings(prev => ({...prev, ble: {...prev.ble, serviceUUID: e.target.value}}))}
+                          onChange={(e) =>
+                            setAdditionalSettings((prev) => ({
+                              ...prev,
+                              ble: { ...prev.ble, serviceUUID: e.target.value },
+                            }))
+                          }
                         />
                       </div>
                     </Table.Td>
                   </Table.Tr>
                   <Table.Tr>
                     <Table.Td>
-                      <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          padding: "0.5rem",
+                          alignItems: "center",
+                        }}
+                      >
                         <div style={{ fontWeight: 700, width: "200px" }}>
                           Characteristic-UUID
                         </div>
                         <TextInput
                           disabled={!useBLE}
                           value={additionalSettings.ble.characteristicUUID}
-                          onChange={(e) => setAdditionalSettings(prev => ({...prev, ble: {...prev.ble, characteristicUUID: e.target.value}}))}
+                          onChange={(e) =>
+                            setAdditionalSettings((prev) => ({
+                              ...prev,
+                              ble: {
+                                ...prev.ble,
+                                characteristicUUID: e.target.value,
+                              },
+                            }))
+                          }
                         />
                       </div>
                     </Table.Td>
@@ -421,7 +465,9 @@ const DeployModal = ({ model, onClose }) => {
               </Table>
             </div>
             <div style={{ margin: "0.5rem" }}>
-              <div style={{ fontWeight: 700, fontSize: "medium" }}>Settings</div>
+              <div style={{ fontWeight: 700, fontSize: "medium" }}>
+                Settings
+              </div>
               <HyperparameterView
                 hyperparameters={parameters}
                 isAdvanced={false}
@@ -429,7 +475,13 @@ const DeployModal = ({ model, onClose }) => {
               ></HyperparameterView>
             </div>
             {flashError ? (
-              <div style={{ display: "flex", flexDirection: "row", marginLeft: "0.5rem" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  marginLeft: "0.5rem",
+                }}
+              >
                 <div>
                   <FontAwesomeIcon icon={faCircleExclamation} color="red" />
                 </div>
@@ -438,7 +490,9 @@ const DeployModal = ({ model, onClose }) => {
                 </div>
               </div>
             ) : null}
-            <div style={{ width: "100%", display: "flex", flexDirection: "row" }}>
+            <div
+              style={{ width: "100%", display: "flex", flexDirection: "row" }}
+            >
               <div style={{ color: "red", flexGrow: 1 }}>
                 {showSelectAllSensorWarning
                   ? "Please configure all time series under configure time series before deploying."
@@ -452,7 +506,9 @@ const DeployModal = ({ model, onClose }) => {
             </div>
           </div>
         ) : (
-          <div style={{ width: "100%", height: "100%" }}>{renderDeployPart()}</div>
+          <div style={{ width: "100%", height: "100%" }}>
+            {renderDeployPart()}
+          </div>
         )}
       </Modal.Body>
       <Modal.Footer>

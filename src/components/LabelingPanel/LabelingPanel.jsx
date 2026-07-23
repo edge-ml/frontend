@@ -45,23 +45,23 @@ const TimeDisplay = ({ from, to }) => {
   return (
     <div style={{ margin: "0 0.5rem" }}>
       <small>
-        <div style={{ display: "flex", justifyContent: "center", fontWeight: 700 }}>
+        <div
+          style={{ display: "flex", justifyContent: "center", fontWeight: 700 }}
+        >
           Selected Label
         </div>
       </small>
       <div style={{ display: "flex", alignItems: "center" }}>
         <small>
-          <div className="monospace text-sm">
-            {formatTime(from)}
+          <div className="monospace text-sm">{formatTime(from)}</div>
+        </small>
+        <small>
+          <div style={{ margin: "0 0.25rem" }} className="monospace">
+            -
           </div>
         </small>
         <small>
-          <div style={{ margin: "0 0.25rem" }} className="monospace">-</div>
-        </small>
-        <small>
-          <div className="monospace">
-            {formatTime(to)}
-          </div>
+          <div className="monospace">{formatTime(to)}</div>
         </small>
       </div>
     </div>
@@ -83,7 +83,13 @@ const LabelingPanel = () => {
   return (
     <div>
       <div className="labelingPanelBorder"></div>
-      <div style={{ display: "flex", justifyContent: "space-between", padding: "0.25rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          padding: "0.25rem",
+        }}
+      >
         {!hideLabels ? (
           <div style={{ display: "flex" }}>
             <LabelButtonView

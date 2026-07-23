@@ -76,18 +76,36 @@ class MetaDataEditModal extends Component {
 
   renderMetaData() {
     return this.state.metaData.map((elm, idx) => (
-      <div key={idx} style={{ display: "flex", alignItems: "center", gap: "0", marginBottom: "8px" }}>
+      <div
+        key={idx}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0",
+          marginBottom: "8px",
+        }}
+      >
         <TextInput
           value={elm.key}
           onChange={(e) => this.onEditKey(e, idx)}
-          error={this.checkError(elm) ? "Keys with the same name are not allowed." : undefined}
+          error={
+            this.checkError(elm)
+              ? "Keys with the same name are not allowed."
+              : undefined
+          }
           placeholder="key"
           style={{ background: "#f0f0f0", flex: 1 }}
         />
         <TextInput
           value={elm.data}
           onChange={(e) => this.onEditValue(e, idx)}
-          error={this.checkError(elm) || elm.data === "" ? (this.checkError(elm) ? "Keys with the same name are not allowed." : "Each key needs some data") : undefined}
+          error={
+            this.checkError(elm) || elm.data === ""
+              ? this.checkError(elm)
+                ? "Keys with the same name are not allowed."
+                : "Each key needs some data"
+              : undefined
+          }
           placeholder="data"
           style={{ flex: 1 }}
         />
@@ -100,7 +118,12 @@ class MetaDataEditModal extends Component {
 
   render() {
     return (
-      <Modal size="lg" opened={this.props.isOpen} onClose={this.onClose} title="Edit custom Metadata">
+      <Modal
+        size="lg"
+        opened={this.props.isOpen}
+        onClose={this.onClose}
+        title="Edit custom Metadata"
+      >
         <Modal.Body>
           <div>{this.renderMetaData()}</div>
           <Button color="blue" onClick={this.onAddMetaData}>
@@ -111,7 +134,10 @@ class MetaDataEditModal extends Component {
           <Button variant="outline" onClick={this.onClose}>
             Cancel
           </Button>
-          <Button color="blue" onClick={() => this.props.onSave(this.state.metaData)}>
+          <Button
+            color="blue"
+            onClick={() => this.props.onSave(this.state.metaData)}
+          >
             Save
           </Button>
         </Modal.Footer>

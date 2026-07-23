@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  TextInput,
-} from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
 import Select from "react-select";
 import { platforms } from "./platforms";
 import { Line } from "./components/Line";
@@ -56,7 +53,10 @@ export const ExportDetailView = ({
                   options={nPlatforms}
                 />
               </span>
-              <Button onClick={onClickDownloadModel} style={{ marginLeft: "1rem" }}>
+              <Button
+                onClick={onClickDownloadModel}
+                style={{ marginLeft: "1rem" }}
+              >
                 Download model
               </Button>
             </div>

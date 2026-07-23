@@ -1,11 +1,7 @@
 import React from "react";
 import Select from "react-select";
 
-import {
-  Button,
-  TextInput,
-  Card,
-} from "@mantine/core";
+import { Button, TextInput, Card } from "@mantine/core";
 
 import { faCheck, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -30,7 +26,15 @@ export const ClassifierView = ({
 }) => {
   return (
     <Card shadow="sm" padding="md" radius="md" withBorder>
-      <Card.Section style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", width: "100%", padding: "1rem" }}>
+      <Card.Section
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          width: "100%",
+          padding: "1rem",
+        }}
+      >
         <h4 style={{ marginRight: "0.5rem" }}>Classifier</h4>
         <Select
           options={models.map((m) => {
@@ -41,7 +45,16 @@ export const ClassifierView = ({
           isSearchable={false}
         />
       </Card.Section>
-      <div style={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "space-between", padding: "1rem" }}>
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          padding: "1rem",
+        }}
+      >
         <TextInput
           label="Model Name"
           value={modelName}

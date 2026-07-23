@@ -1,7 +1,4 @@
-import {
-  faDownload,
-  faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { Button, Group, Text, Table } from "@mantine/core";

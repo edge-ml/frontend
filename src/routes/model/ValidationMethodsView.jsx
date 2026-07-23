@@ -1,11 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import {
-  Badge,
-  TextInput,
-  Card,
-  Text,
-} from "@mantine/core";
+import { Badge, TextInput, Card, Text } from "@mantine/core";
 
 import { withLoader } from "../../modules/loader";
 
@@ -27,7 +22,15 @@ const ValidationMethodsViewRaw = ({
   return (
     <div style={{ width: "100%", textAlign: "left" }}>
       <h6>Train Test Split</h6>
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", width: "100%" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
         <span>Split: </span>
         <TextInput
           value={testSplit}
@@ -36,7 +39,14 @@ const ValidationMethodsViewRaw = ({
         />
       </div>
       <h6>Validation</h6>
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "baseline", justifyContent: "space-between" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+        }}
+      >
         <span>Method: </span>
         <span style={{ minWidth: "200px" }}>
           <Select
@@ -74,7 +84,14 @@ const LOSO = ({
         Datasets will be grouped together according to the selected "leave one
         out" variable, and challenged against the others.
       </p>
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <h6>"leave one out" variable: </h6>
         <span style={{ minWidth: "200px" }}>
           <Select
@@ -93,7 +110,10 @@ const LOSO = ({
       <div>
         {Object.entries(customMetaData.metaDataKeyFrequency).map(
           ([key, freq]) => (
-            <Badge key={key} style={{ marginRight: "0.25rem" }}>{`${key} (${freq})`}</Badge>
+            <Badge
+              key={key}
+              style={{ marginRight: "0.25rem" }}
+            >{`${key} (${freq})`}</Badge>
           )
         )}
       </div>
@@ -111,11 +131,27 @@ const LOSO = ({
 };
 
 const withCard = (name, Wrapped) => (props) => (
-  <Card shadow="sm" padding="md" radius="md" withBorder style={{ textAlign: "left" }}>
+  <Card
+    shadow="sm"
+    padding="md"
+    radius="md"
+    withBorder
+    style={{ textAlign: "left" }}
+  >
     <Card.Section>
-      <Text fw={700} size="lg" p="md"><h4>{name}</h4></Text>
+      <Text fw={700} size="lg" p="md">
+        <h4>{name}</h4>
+      </Text>
     </Card.Section>
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "space-between", padding: "1rem" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        padding: "1rem",
+      }}
+    >
       <Wrapped {...props} />
     </div>
   </Card>
