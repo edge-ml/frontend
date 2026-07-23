@@ -9,6 +9,8 @@ import NavbarLayout from "./NavbarLayout";
 import AuthWall from "./routes/login";
 import RegisterPage from "./routes/register";
 import AppContent from "./AppContent";
+import { isTauriBluetoothAvailable } from "./services/tauriBle";
+import TauriDevicePicker from "./components/BLE/TauriDevicePicker";
 
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
@@ -32,6 +34,7 @@ const App = () => {
           }
         />
       </Routes>
+      {isTauriBluetoothAvailable() && <TauriDevicePicker />}
     </MantineProvider>
   );
 };

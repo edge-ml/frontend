@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  EdgeMLTable,
-  EdgeMLTableEntry,
-  EdgeMLTableHeader,
-} from "../../../../components/Common/EdgeMLTable";
-import { Switch, TextInput } from "@mantine/core";
+import { Switch, TextInput, Table } from "@mantine/core";
 
 const BLEDeploy = ({ onUpdateState }) => {
   const [useBLE, setUseBLE] = useState(false);
@@ -24,42 +19,52 @@ const BLEDeploy = ({ onUpdateState }) => {
   }, [useBLE, serviceUUID, characteristicUUID]);
 
   return (
-    <EdgeMLTable style={{ margin: "0.5rem", width: "400px" }}>
-      <EdgeMLTableHeader>
-        <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-          <div>Use BLE</div>
-          <Switch
-            style={{ marginLeft: "0.5rem" }}
-            onChange={(e) => setUseBLE(!useBLE)}
-            checked={useBLE}
-          />
-        </div>
-      </EdgeMLTableHeader>
-      <EdgeMLTableEntry>
-        <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
-          <div style={{ fontWeight: 700, width: "200px" }}>
-            Service-UUID
-          </div>
-          <TextInput
-            onChange={(e) => setServiceUUID(e.target.value)}
-            disabled={!useBLE}
-            value={serviceUUID}
-          />
-        </div>
-      </EdgeMLTableEntry>
-      <EdgeMLTableEntry>
-        <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
-          <div style={{ fontWeight: 700, width: "200px" }}>
-            Characteristic-UUID
-          </div>
-          <TextInput
-            onChange={(e) => setCharacteristicUUID(e.target.value)}
-            disabled={!useBLE}
-            value={characteristicUUID}
-          />
-        </div>
-      </EdgeMLTableEntry>
-    </EdgeMLTable>
+    <Table style={{ margin: "0.5rem", width: "400px" }}>
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th>
+            <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+              <div>Use BLE</div>
+              <Switch
+                style={{ marginLeft: "0.5rem" }}
+                onChange={(e) => setUseBLE(!useBLE)}
+                checked={useBLE}
+              />
+            </div>
+          </Table.Th>
+        </Table.Tr>
+      </Table.Thead>
+      <Table.Tbody>
+        <Table.Tr>
+          <Table.Td>
+            <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
+              <div style={{ fontWeight: 700, width: "200px" }}>
+                Service-UUID
+              </div>
+              <TextInput
+                onChange={(e) => setServiceUUID(e.target.value)}
+                disabled={!useBLE}
+                value={serviceUUID}
+              />
+            </div>
+          </Table.Td>
+        </Table.Tr>
+        <Table.Tr>
+          <Table.Td>
+            <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
+              <div style={{ fontWeight: 700, width: "200px" }}>
+                Characteristic-UUID
+              </div>
+              <TextInput
+                onChange={(e) => setCharacteristicUUID(e.target.value)}
+                disabled={!useBLE}
+                value={characteristicUUID}
+              />
+            </div>
+          </Table.Td>
+        </Table.Tr>
+      </Table.Tbody>
+    </Table>
   );
 };
 

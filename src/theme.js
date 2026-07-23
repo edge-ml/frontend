@@ -1,4 +1,4 @@
-import { createTheme, virtualColor } from '@mantine/core';
+import { createTheme } from '@mantine/core';
 
 export const theme = createTheme({
   primaryColor: 'blue',
@@ -26,6 +26,15 @@ export const theme = createTheme({
         highlightOnHover: true,
         withTableBorder: true,
         withColumnBorders: false,
+        borderColor: 'rgb(230, 230, 234)',
+      },
+      styles: {
+        table: {
+          borderRadius: '10px',
+          overflow: 'hidden',
+          outline: '2px solid rgb(230, 230, 234)',
+          outlineOffset: '-2px',
+        },
       },
     },
     Modal: {
@@ -36,12 +45,27 @@ export const theme = createTheme({
     },
     Button: {
       defaultProps: {
-        size: 'sm',
+        size: 'md',
       },
     },
     Badge: {
       defaultProps: {
-        size: 'sm',
+        variant: 'light',
+        color: 'blue',
+        size: 'md',
+        radius: 'md',
+      },
+      styles: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 600,
+          letterSpacing: 0,
+          verticalAlign: 'middle',
+          transition: 'background-color 120ms ease, color 120ms ease, border-color 120ms ease',
+        },
+        label: {
+          lineHeight: 1.2,
+        },
       },
     },
   },

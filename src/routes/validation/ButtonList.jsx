@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  faTrashAlt,
   faDownload,
   faMicrochip,
   faPlay,
@@ -47,7 +46,6 @@ const ButtonList = ({
   model,
   setModalModel,
   setModelDownload,
-  onDeleteSingleModel,
   stepOptions,
   setDeployModalOpen,
 }) => {
@@ -98,14 +96,6 @@ const ButtonList = ({
           </ListButton>
         </>
       )}
-      <ListButton
-        color="red"
-        variant="outline"
-        icon={faTrashAlt}
-        onClick={() => onDeleteSingleModel(model)}
-      >
-        Delete
-      </ListButton>
     </Button.Group>
   );
 };

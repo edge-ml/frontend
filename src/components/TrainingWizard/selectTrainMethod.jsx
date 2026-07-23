@@ -1,58 +1,75 @@
 import React from "react";
-import {
-  faGear,
-  faGears,
-  faSliders,
-  faUserGear,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment } from "react";
+import { Card, Group, SimpleGrid, Stack, Text } from "@mantine/core";
 import PlatformList from "../Common/PlatformList";
 
-const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
+const getPipelinePlatforms = (pipeline) => {
+  const initialStep = pipeline.steps.find((step) =>
+    ["PRE", "EVAL"].includes(step.type)
+  );
   let platforms = new Set(
-    pipeline.steps
-      .filter((elm) => ["PRE", "EVAL"].includes(elm.type))[0]
-      .options.map((elm) => elm.platforms)
-      .flat()
+    initialStep
+      ? initialStep.options.map((option) => option.platforms).flat()
+      : []
   );
 
   pipeline.steps.forEach((step) => {
     if (step.type === "PRE" || step.type === "CORE") {
-      const plf = new Set(step.options.map((elm) => elm.platforms).flat());
-      platforms = new Set([...platforms].filter((elm) => plf.has(elm)));
+      const supportedPlatforms = new Set(
+        step.options.map((option) => option.platforms).flat()
+      );
+      platforms = new Set(
+        [...platforms].filter((platform) => supportedPlatforms.has(platform))
+      );
     }
   });
-  return (
-    <div
-      key={pipeline.name}
-      className="edgeml-border"
-      style={{ padding: "0.5rem", margin: "0.5rem", cursor: "pointer" }}
-      onClick={() => onSelectTrainingMethod(pipeline)}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div>
-          <div style={{ fontWeight: 700 }}>{pipeline.name}</div>
-          <div>{pipeline.description}</div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <PlatformList size="3rem" platforms={platforms} />
-        </div>
-      </div>
+
+  return platforms;
+};
+
+const SelectTrainMethod = ({ pipelines, onSelectTrainingMethod }) => (
+  <div className="training-wizard-step">
+    <div className="training-wizard-step-header">
+      <Text fw={700} size="xl">
+        Choose a training pipeline
+      </Text>
+      <Text c="dimmed">
+        Each pipeline combines preprocessing, training, and evaluation steps for
+        a particular deployment workflow.
+      </Text>
     </div>
-  );
-};
-
-const SelectTrainMethod = ({ pipelines, onSelectTrainingMethod }) => {
-  return (
-    <Fragment>
-      {pipelines.map((elm) => TrainingMethod(elm, onSelectTrainingMethod))}
-    </Fragment>
-  );
-};
-
-SelectTrainMethod.validate = () => {
-  return false;
-};
+    <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+      {pipelines.map((pipeline) => (
+        <Card
+          key={pipeline.name}
+          withBorder
+          radius="md"
+          padding="lg"
+          className="training-wizard-pipeline-card"
+          onClick={() => onSelectTrainingMethod(pipeline)}
+        >
+          <Stack gap="md" h="100%" justify="space-between">
+            <Stack gap={6}>
+              <Text fw={700} size="lg">
+                {pipeline.name}
+              </Text>
+              <Text size="sm" c="dimmed" lh={1.5}>
+                {pipeline.description}
+              </Text>
+            </Stack>
+            <Group justify="space-between" wrap="nowrap">
+              <Text size="xs" fw={600} c="dimmed">
+                Supported platforms
+              </Text>
+              <PlatformList
+                size="2rem"
+                platforms={getPipelinePlatforms(pipeline)}
+              />
+            </Group>
+          </Stack>
+        </Card>
+      ))}
+    </SimpleGrid>
+  </div>
+);
 
 export default SelectTrainMethod;

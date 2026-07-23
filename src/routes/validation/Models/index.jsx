@@ -18,11 +18,7 @@ import {
 } from "../../../services/ApiServices/MlService";
 
 import { HyperparameterView } from "../../../../components/Hyperparameters/HyperparameterView";
-import {
-  EdgeMLTable,
-  EdgeMLTableEntry,
-  EdgeMLTableHeader,
-} from "../../../../components/Common/EdgeMLTable";
+import { Table } from "@mantine/core";
 import DFUManager from "../../../../components/BLE/DFUModal/DFU";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
@@ -377,42 +373,52 @@ const DeployModal = ({ model, onClose }) => {
                   ))}
                 </div>
               </div>
-              <EdgeMLTable style={{ margin: "0.5rem", width: "400px" }}>
-                <EdgeMLTableHeader>
-                  <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-                    <div>Use BLE</div>
-                    <Switch
-                      style={{ marginLeft: "0.5rem" }}
-                      onChange={(e) => setUseBLE(!useBLE)}
-                      checked={useBLE}
-                    />
-                  </div>
-                </EdgeMLTableHeader>
-                <EdgeMLTableEntry>
-                  <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
-                    <div style={{ fontWeight: 700, width: "200px" }}>
-                      Service-UUID
-                    </div>
-                    <TextInput
-                      disabled={!useBLE}
-                      value={additionalSettings.ble.serviceUUID}
-                      onChange={(e) => setAdditionalSettings(prev => ({...prev, ble: {...prev.ble, serviceUUID: e.target.value}}))}
-                    />
-                  </div>
-                </EdgeMLTableEntry>
-                <EdgeMLTableEntry>
-                  <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
-                    <div style={{ fontWeight: 700, width: "200px" }}>
-                      Characteristic-UUID
-                    </div>
-                    <TextInput
-                      disabled={!useBLE}
-                      value={additionalSettings.ble.characteristicUUID}
-                      onChange={(e) => setAdditionalSettings(prev => ({...prev, ble: {...prev.ble, characteristicUUID: e.target.value}}))}
-                    />
-                  </div>
-                </EdgeMLTableEntry>
-              </EdgeMLTable>
+              <Table style={{ margin: "0.5rem", width: "400px" }}>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th>
+                      <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                        <div>Use BLE</div>
+                        <Switch
+                          style={{ marginLeft: "0.5rem" }}
+                          onChange={(e) => setUseBLE(!useBLE)}
+                          checked={useBLE}
+                        />
+                      </div>
+                    </Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  <Table.Tr>
+                    <Table.Td>
+                      <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
+                        <div style={{ fontWeight: 700, width: "200px" }}>
+                          Service-UUID
+                        </div>
+                        <TextInput
+                          disabled={!useBLE}
+                          value={additionalSettings.ble.serviceUUID}
+                          onChange={(e) => setAdditionalSettings(prev => ({...prev, ble: {...prev.ble, serviceUUID: e.target.value}}))}
+                        />
+                      </div>
+                    </Table.Td>
+                  </Table.Tr>
+                  <Table.Tr>
+                    <Table.Td>
+                      <div style={{ display: "flex", padding: "0.5rem", alignItems: "center" }}>
+                        <div style={{ fontWeight: 700, width: "200px" }}>
+                          Characteristic-UUID
+                        </div>
+                        <TextInput
+                          disabled={!useBLE}
+                          value={additionalSettings.ble.characteristicUUID}
+                          onChange={(e) => setAdditionalSettings(prev => ({...prev, ble: {...prev.ble, characteristicUUID: e.target.value}}))}
+                        />
+                      </div>
+                    </Table.Td>
+                  </Table.Tr>
+                </Table.Tbody>
+              </Table>
             </div>
             <div style={{ margin: "0.5rem" }}>
               <div style={{ fontWeight: 700, fontSize: "medium" }}>Settings</div>

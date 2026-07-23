@@ -51,14 +51,16 @@ const Navbar = () => {
         <UnstyledButton
           id="btn-add-project"
           onClick={() => setProjectModalOpen(true)}
-          className="w-100 mt-3 pt-2 pb-2"
+          className="w-100"
           style={{
             backgroundColor: "#eee",
             color: "#666",
             fontSize: "0.9rem",
+            padding: "10px 16px",
+            marginTop: "12px",
           }}
         >
-          <FontAwesomeIcon icon={faPlus} className="me-1" />
+          <FontAwesomeIcon icon={faPlus} style={{ marginRight: 6 }} />
           Add Project
         </UnstyledButton>
       </Stack>

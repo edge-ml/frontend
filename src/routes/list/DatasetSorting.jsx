@@ -11,7 +11,7 @@ const sortingOptions = {
 const DatasetSorting = ({ setSelectedSorting, selectedSorting }) => {
   return (
     <Select
-      size="xs"
+      size="sm"
       value={selectedSorting}
       onChange={setSelectedSorting}
       data={Object.entries(sortingOptions).map(([value, label]) => ({

@@ -4,7 +4,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-import { Button, Group, Text } from "@mantine/core";
+import { Button, Group, Text, Table } from "@mantine/core";
 import Checkbox from "../../components/Common/Checkbox";
 import DatasetTableEntry from "./DatasetTableEntry";
 import DatasetSorting from "./DatasetSorting";
@@ -34,68 +34,80 @@ const DatasetTable = ({
         </Text>
         <Button
           variant="outline"
-          size="compact-sm"
+          size="sm"
           disabled={datasets.length === 0}
           onClick={downloadAllDatasets}
+          leftSection={<FontAwesomeIcon icon={faDownload} />}
         >
-          <FontAwesomeIcon icon={faDownload} /> Download All
+          Download All
         </Button>
       </Group>
       {datasets.length > 0 ? (
-        <div style={{ borderRadius: 10 }}>
-          <div className="datasets-header-wrapper mt-3 d-flex justify-content-between flex-md-row align-content-baseline">
-            <Group gap="xs" p="xs">
-              <Checkbox
-                isSelected={areAllSelected}
-                onClick={() => {
-                  setAllSelected(!areAllSelected);
-                  if (areAllSelected) {
-                    deselectAll();
-                  } else {
-                    selectAll();
-                  }
-                }}
-              />
-              <Button
-                variant="outline"
-                color="red"
-                size="compact-sm"
-                disabled={selectedDatasets.length === 0}
-                onClick={openDeleteModal}
-                id="deleteDatasetsButton"
-              >
-                <FontAwesomeIcon icon={faTrashAlt} className="me-2" />
-                Delete
-              </Button>
-              <Button
-                id="selectAllEmptyButton"
-                size="compact-sm"
-                variant="outline"
-                onClick={selectAllEmpty}
-              >
-                Select Empty Datasets
-              </Button>
-            </Group>
-            <Group gap="xs">
-              <DatasetSorting
-                selectedSorting={selectedSorting}
-                setSelectedSorting={setSelectedSorting}
-              />
-            </Group>
-          </div>
-          <div
-            className="w-100 position-relative"
-            style={{
-              border: "2px solid rgb(230, 230, 234)",
-              borderRadius: "0px 0px 10px 10px",
-              overflow: "hidden",
-            }}
-          >
-            {datasets.map((dataset, index) => (
+        <Table className="mt-3">
+          <Table.Thead>
+            <Table.Tr style={{ borderBottom: "2px solid rgb(230, 230, 234)" }}>
+              <Table.Th colSpan={5} p={0}>
+                <Group
+                  justify="space-between"
+                  style={{
+                    background: "rgb(249, 251, 252)",
+                    padding: "10px",
+                  }}
+                >
+                  <Group gap="xs" p="xs">
+                    <Checkbox
+                      isSelected={areAllSelected}
+                      onClick={() => {
+                        setAllSelected(!areAllSelected);
+                        if (areAllSelected) {
+                          deselectAll();
+                        } else {
+                          selectAll();
+                        }
+                      }}
+                    />
+                    <Button
+                      variant="outline"
+                      color="red"
+                      size="sm"
+                      disabled={selectedDatasets.length === 0}
+                      onClick={openDeleteModal}
+                      id="deleteDatasetsButton"
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} className="me-2" />
+                      Delete
+                    </Button>
+                    <Button
+                      id="selectAllEmptyButton"
+                      variant="outline"
+                      size="sm"
+                      onClick={selectAllEmpty}
+                    >
+                      Select Empty Datasets
+                    </Button>
+                  </Group>
+                  <Group gap="xs">
+                    <DatasetSorting
+                      selectedSorting={selectedSorting}
+                      setSelectedSorting={setSelectedSorting}
+                    />
+                  </Group>
+                </Group>
+              </Table.Th>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Th w={40}></Table.Th>
+              <Table.Th>Dataset</Table.Th>
+              <Table.Th>Labelings</Table.Th>
+              <Table.Th>Metadata</Table.Th>
+              <Table.Th w={110}>Actions</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {datasets.map((dataset) => (
               <DatasetTableEntry
                 key={dataset._id}
                 dataset={dataset}
-                index={index}
                 toggleCheck={toggleCheck}
                 isSelected={selectedDatasets.includes(dataset._id)}
                 labelings={labelings}
@@ -103,8 +115,8 @@ const DatasetTable = ({
                 updateDataset={updateDataset}
               />
             ))}
-          </div>
-        </div>
+          </Table.Tbody>
+        </Table>
       ) : (
         <Empty>No datasets available yet</Empty>
       )}

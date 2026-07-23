@@ -1,12 +1,6 @@
 import React, { useState } from "react";
-import { SimpleGrid, Card, Text, Button, Group } from "@mantine/core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCode,
-  faFile,
-  faMicrochip,
-  faMobileAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { SimpleGrid, Text, Button, Group, ThemeIcon } from "@mantine/core";
+import { IconBluetooth, IconFileUpload, IconCode, IconDeviceMobile } from "@tabler/icons-react";
 import useProjectRouter from "../../Hooks/ProjectRouter";
 import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
 
@@ -16,7 +10,7 @@ const DataUpload = ({ refreshDatasets }) => {
 
   const dataUploadOptions = [
     {
-      icon: faMicrochip,
+      icon: IconBluetooth,
       title: "WebBLE Direct Connect",
       description: (
         <>
@@ -35,7 +29,7 @@ const DataUpload = ({ refreshDatasets }) => {
       buttonAction: () => navigate("ble"),
     },
     {
-      icon: faFile,
+      icon: IconFileUpload,
       title: "CSV File Upload",
       description: (
         <>
@@ -54,14 +48,14 @@ const DataUpload = ({ refreshDatasets }) => {
       buttonAction: () => setCSVModalOpen(true),
     },
     {
-      icon: faCode,
+      icon: IconCode,
       title: "Library Upload",
       description: "Implement custom logic using edge-ml libraries.",
       buttonText: "Generate Code",
       buttonAction: () => navigate("settings/getCode"),
     },
     {
-      icon: faMobileAlt,
+      icon: IconDeviceMobile,
       title: "Web Sensor API",
       description: "Collect sensor data from a smartphone in a browser.",
       buttonText: "Collect Web Sensor Data",
@@ -73,7 +67,7 @@ const DataUpload = ({ refreshDatasets }) => {
     <div
       className="p-4 pt-4 pb-5 mb-4"
       style={{
-        background: "linear-gradient(rgb(26, 32, 44), rgb(45, 55, 72))",
+        background: "linear-gradient(135deg, rgb(20, 30, 48), rgb(36, 48, 68))",
       }}
     >
       <Text c="white" opacity={0.7} fw={700} mb="md">
@@ -81,23 +75,29 @@ const DataUpload = ({ refreshDatasets }) => {
       </Text>
 
       <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
-        {dataUploadOptions.map((option, index) => (
-          <Card
-            key={index}
-            padding="md"
-            style={{ background: "transparent", color: "white" }}
-          >
-            <Group gap="sm" align="flex-start">
-              <FontAwesomeIcon icon={option.icon} />
+        {dataUploadOptions.map((option, index) => {
+          const Icon = option.icon;
+          return (
+            <Group key={index} gap="sm" align="flex-start" wrap="nowrap">
+              <ThemeIcon
+                size="lg"
+                variant="light"
+                color="green"
+                style={{ backgroundColor: "rgba(64, 192, 87, 0.15)", color: "#40C057", flexShrink: 0 }}
+              >
+                <Icon size={20} />
+              </ThemeIcon>
               <div style={{ flex: 1 }}>
-                <Text size="sm" fw={700}>
+                <Text size="sm" fw={700} mb={4} c="white">
                   {option.title}
                 </Text>
-                <Text size="xs">{option.description}</Text>
+                <Text size="xs" c="gray.4">
+                  {option.description}
+                </Text>
                 <Button
                   id={`buttonUpload${option.title.replace(/ /g, "")}`}
                   variant="outline"
-                  color="gray"
+                  color="green"
                   size="compact-sm"
                   mt="sm"
                   onClick={option.buttonAction}
@@ -106,8 +106,8 @@ const DataUpload = ({ refreshDatasets }) => {
                 </Button>
               </div>
             </Group>
-          </Card>
-        ))}
+          );
+        })}
       </SimpleGrid>
 
       <UploadDatasetModal

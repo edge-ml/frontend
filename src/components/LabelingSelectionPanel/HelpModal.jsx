@@ -23,8 +23,23 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
                 </td>
                 <td>Delete current label</td>
               </tr>
+              <tr>
+                <td>
+                  <kbd>Escape</kbd>
+                </td>
+                <td>Cancel the current label or selection</td>
+              </tr>
             </tbody>
           </table>
+        </div>
+        <hr />
+        <div style={{ padding: "0.5rem 0" }}>
+          <h6>Create a label</h6>
+          <p>
+            Select a label type, click once on a chart to set the start, then
+            click again to set the end. Select an existing label to drag either
+            boundary.
+          </p>
         </div>
         <hr />
         <h6>Upload CSV</h6>

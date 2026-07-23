@@ -1,12 +1,120 @@
-.plotband-selected {
-  opacity: 0.5;
+.time-series-chart {
+  min-width: 320px;
+  width: 100%;
+  height: 200px;
 }
 
-.plotband-deselected {
-  opacity: 0.2;
+.time-series-chart .uplot {
+  font-family: inherit;
 }
 
-.plotline {
-  /* opacity: 0.7; */
+.time-series-chart .u-over {
+  cursor: grab;
+  touch-action: none;
+}
+
+.time-series-chart .u-over--panning {
+  cursor: grabbing;
+}
+
+.u-annotation-root,
+.annotation-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.annotation {
+  --annotation-color: #228be6;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 2px;
+  border-left: 2px solid var(--annotation-color);
+  border-right: 2px solid var(--annotation-color);
+  background: color-mix(in srgb, var(--annotation-color) 18%, transparent);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.annotation:hover,
+.annotation--selected {
+  background: color-mix(in srgb, var(--annotation-color) 32%, transparent);
+}
+
+.annotation--draft {
+  width: 0 !important;
+  border-right: 0;
+  border-left-style: dashed;
+  pointer-events: none;
+}
+
+.annotation__name {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  max-width: calc(100% - 8px);
+  padding: 1px 4px;
+  overflow: hidden;
+  color: var(--annotation-color);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.annotation__handle {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  width: 12px;
   cursor: col-resize;
+  touch-action: none;
+}
+
+.annotation__handle--start {
+  left: -7px;
+}
+
+.annotation__handle--end {
+  right: -7px;
+}
+
+.timeline-navigator {
+  padding: 18px 28px 12px;
+}
+
+.timeline-navigator__control {
+  position: relative;
+}
+
+.timeline-navigator__drag-track {
+  position: absolute;
+  z-index: 2;
+  top: 4px;
+  right: 8px;
+  left: 8px;
+  height: 8px;
+  pointer-events: none;
+}
+
+.timeline-navigator__range {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 2px;
+  border-radius: 999px;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.timeline-navigator__range--dragging {
+  cursor: grabbing;
 }

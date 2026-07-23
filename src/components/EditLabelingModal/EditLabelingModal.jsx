@@ -13,7 +13,7 @@ const EditLabelingModal = ({
   isOpen,
   currentLabeling,
   onSave,
-  onCancel,
+  onClose,
   labelings,
 }) => {
   const [labeling, setLabeling] = useState(
@@ -91,7 +91,7 @@ const EditLabelingModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onCancel}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <ModalHeader>
         {labeling ? "Edit labeling" : "Create labeling"}
       </ModalHeader>

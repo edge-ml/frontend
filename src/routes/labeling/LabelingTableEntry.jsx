@@ -1,30 +1,41 @@
 import React from "react";
-import { Group, Badge, ActionIcon, Text } from "@mantine/core";
+import { Group, Button, Text, Table } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import Checkbox from "../../components/Common/Checkbox";
 import LabelBadge from "../../components/Common/LabelBadge";
 
-const LabelingTableEntry = ({ labeling, isSelected, toggleCheck, onEdit }) => {
+const LabelingTableEntry = ({ labeling, isSelected, toggleCheck, onEdit, onDelete }) => {
   return (
-    <Group p="sm" gap="sm" wrap="nowrap">
-      <Checkbox isSelected={isSelected} onClick={toggleCheck} />
-      <div style={{ flex: 1 }}>
-        <Text fw={700}>{labeling.name}</Text>
-        <Group gap={4} mt={4}>
-          {labeling.labels?.map((label) => (
-            <LabelBadge key={label._id} color={label.color}>
-              {label.name}
-            </LabelBadge>
-          ))}
+    <Table.Tr>
+      <Table.Td>
+        <Checkbox isSelected={isSelected} onClick={toggleCheck} />
+      </Table.Td>
+      <Table.Td>
+        <div className="text-left d-inline-block m-2">
+          <Text fw={700} size="lg" component="span">
+            {labeling.name}
+          </Text>
+          <Group gap={6} mt={6}>
+            {labeling.labels?.map((label) => (
+              <LabelBadge key={label._id} color={label.color}>
+                {label.name}
+              </LabelBadge>
+            ))}
+          </Group>
+        </div>
+      </Table.Td>
+      <Table.Td>
+        <Group gap="xs" wrap="nowrap">
+          <Button variant="outline" color="red" size="sm" onClick={onDelete}>
+            <FontAwesomeIcon icon={faTrashAlt} />
+          </Button>
+          <Button variant="outline" color="blue" size="sm" onClick={onEdit}>
+            <FontAwesomeIcon icon={faPen} />
+          </Button>
         </Group>
-      </div>
-      <Group gap="xs">
-        <ActionIcon variant="subtle" color="blue" onClick={onEdit}>
-          <FontAwesomeIcon icon={faEdit} />
-        </ActionIcon>
-      </Group>
-    </Group>
+      </Table.Td>
+    </Table.Tr>
   );
 };
 

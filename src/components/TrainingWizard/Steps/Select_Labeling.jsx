@@ -1,14 +1,8 @@
 import React from "react";
 import "../index.css";
 import Checkbox from "../../../components/Common/Checkbox";
-import classNames from "classnames";
-import {
-  EdgeMLTable,
-  EdgeMLTableHeader,
-  EdgeMLTableEntry,
-} from "../../Common/EdgeMLTable";
+import { Group, Stack, Table, Text } from "@mantine/core";
 import { toggleElement } from "../../../services/helpers";
-import { useEffect } from "react";
 import LabelBadge from "../../Common/LabelBadge";
 
 const Wizard_SelectLabeling = ({
@@ -18,7 +12,6 @@ const Wizard_SelectLabeling = ({
   selectedLabeling,
   toggleZeroClass,
   zeroClass,
-  validate,
 }) => {
   const countDatasets = (labeling) => {
     return datasets
@@ -27,93 +20,125 @@ const Wizard_SelectLabeling = ({
       .filter((elm) => elm === labeling._id).length;
   };
 
-  useEffect(() => {
-    validateInput();
-  }, [selectedLabeling, zeroClass]);
-
-  useEffect(() => {
-    validateInput();
-  }, []);
-
-  const validateInput = () => {
-    validate(selectedLabeling);
-  };
+  const usableLabelings = labelings.filter((elm) => countDatasets(elm));
 
   return (
-    <div style={{ padding: "0.5rem" }}>
-      <h3 style={{ fontWeight: 700 }}>1. Select Labeling</h3>
-      <EdgeMLTable>
-        <EdgeMLTableHeader>
-          <div>
-            <h4>
-              <b>Labeling</b>
-            </h4>
-          </div>
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <Checkbox
-              onClick={() => toggleZeroClass(!zeroClass)}
-              isSelected={zeroClass}
-            />
-            <div style={{ marginLeft: "0.5rem" }}>Use 0-Class</div>
-          </div>
-        </EdgeMLTableHeader>
-        {labelings
-          .filter((elm) => countDatasets(elm))
-          .map((labeling) => (
-            <EdgeMLTableEntry
-              key={labeling._id}
-              className={classNames("labelingRow", {
-                disabled: countDatasets(labeling) === 0,
-              })}
-            >
-              <Checkbox
-                style={{ marginRight: "0.5rem" }}
-                onClick={() => setLabeling({ ...labeling, disabledLabels: [] })}
-                isSelected={
-                  selectedLabeling
-                    ? selectedLabeling._id === labeling._id
-                    : false
-                }
-              />
-              <div className="labelingName">{labeling.name} </div>
-              <div>
-                {labeling.labels.map((label) => (
-                  <LabelBadge
-                    key={label._id}
-                    className="badge"
-                    onClick={() =>
-                      selectedLabeling?.disabledLabels &&
-                      selectedLabeling._id === labeling._id &&
-                      setLabeling({
-                        ...selectedLabeling,
-                        disabledLabels: toggleElement(
-                          selectedLabeling.disabledLabels,
-                          label._id
-                        ),
-                      })
-                    }
-                    style={{
-                      ...(selectedLabeling?.disabledLabels.includes(label._id)
-                        ? { textDecoration: "line-through" }
-                        : { backgroundColor: label.color }),
-                      userSelect: "none",
-                    }}
-                    color={
-                      selectedLabeling?.disabledLabels.includes(label._id)
-                        ? "light"
-                        : ""
-                    }
-                  >
-                    {label.name}
-                  </LabelBadge>
-                ))}
-              </div>
-              <div>{`(${countDatasets(labeling)} ${
-                countDatasets(labeling) === 1 ? "dataset" : "datasets"
-              })`}</div>
-            </EdgeMLTableEntry>
+    <div className="training-wizard-step">
+      <div className="training-wizard-step-header">
+        <Text fw={700} size="xl">
+          Select a labeling
+        </Text>
+        <Text c="dimmed">
+          Choose the target classes for the model. Individual labels can be
+          excluded after selecting a labeling.
+        </Text>
+      </div>
+      <Table>
+        <Table.Thead>
+          <Table.Tr style={{ borderBottom: "2px solid rgb(230, 230, 234)" }}>
+            <Table.Th colSpan={3} p={0}>
+              <Group
+                justify="space-between"
+                style={{
+                  background: "rgb(249, 251, 252)",
+                  padding: "10px",
+                }}
+              >
+                <Group gap="sm" p="sm">
+                  <Checkbox
+                    onClick={() => toggleZeroClass(!zeroClass)}
+                    isSelected={zeroClass}
+                  />
+                  <Stack gap={0}>
+                    <Text size="sm" fw={600}>
+                      Include zero class
+                    </Text>
+                    <Text size="xs" c="dimmed" fw={400}>
+                      Train a fallback class for unlabeled windows
+                    </Text>
+                  </Stack>
+                </Group>
+              </Group>
+            </Table.Th>
+          </Table.Tr>
+          <Table.Tr>
+            <Table.Th w={40}></Table.Th>
+            <Table.Th>Labeling</Table.Th>
+            <Table.Th>Labels</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {usableLabelings.map((labeling) => (
+            <Table.Tr key={labeling._id}>
+              <Table.Td>
+                <Checkbox
+                  onClick={() =>
+                    setLabeling({ ...labeling, disabledLabels: [] })
+                  }
+                  isSelected={
+                    selectedLabeling
+                      ? selectedLabeling._id === labeling._id
+                      : false
+                  }
+                />
+              </Table.Td>
+              <Table.Td>
+                <Stack gap={2} py={4}>
+                  <Text fw={700} size="lg" component="span">
+                    {labeling.name}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    {countDatasets(labeling)}{" "}
+                    {countDatasets(labeling) === 1 ? "dataset" : "datasets"}
+                  </Text>
+                </Stack>
+              </Table.Td>
+              <Table.Td>
+                <Group gap={4}>
+                  {labeling.labels.map((label) => (
+                    <LabelBadge
+                      key={label._id}
+                      onClick={() =>
+                        selectedLabeling?.disabledLabels &&
+                        selectedLabeling._id === labeling._id &&
+                        setLabeling({
+                          ...selectedLabeling,
+                          disabledLabels: toggleElement(
+                            selectedLabeling.disabledLabels,
+                            label._id
+                          ),
+                        })
+                      }
+                      style={{
+                        ...(selectedLabeling?.disabledLabels.includes(label._id)
+                          ? { textDecoration: "line-through", opacity: 0.65 }
+                          : {}),
+                        userSelect: "none",
+                        cursor:
+                          selectedLabeling?._id === labeling._id
+                            ? "pointer"
+                            : "default",
+                      }}
+                      color={
+                        selectedLabeling?.disabledLabels.includes(label._id)
+                          ? "gray"
+                          : label.color
+                      }
+                      variant={
+                        selectedLabeling?.disabledLabels.includes(label._id)
+                          ? "outline"
+                          : "light"
+                      }
+                    >
+                      {label.name}
+                    </LabelBadge>
+                  ))}
+                </Group>
+              </Table.Td>
+            </Table.Tr>
           ))}
-      </EdgeMLTable>
+        </Table.Tbody>
+      </Table>
     </div>
   );
 };

@@ -4,7 +4,6 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { isTauriBluetoothAvailable, getTauriBluetooth } from "./services/tauriBle";
-import TauriDevicePicker from "./components/BLE/TauriDevicePicker";
 
 if (isTauriBluetoothAvailable()) {
   try {
@@ -23,7 +22,6 @@ const root = createRoot(container);
 root.render(
   <BrowserRouter>
     <App />
-    {isTauriBluetoothAvailable() && <TauriDevicePicker />}
   </BrowserRouter>
 );
 

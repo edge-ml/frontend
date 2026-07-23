@@ -1,4 +1,5 @@
 import React from "react";
+import { SimpleGrid } from "@mantine/core";
 import NumberHyperparameter from "./NumberHyperparameter";
 import SelectionHyperparameter from "./SelectionHyperparameter";
 import TextHyperparameter from "./TextHyperparameter";
@@ -9,14 +10,14 @@ export const HyperparameterView = ({
   isAdvanced,
 }) => {
   return (
-    <div style={{ display: "flex", flexWrap: "wrap" }}>
+    <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
       {hyperparameters.length > 0 &&
         hyperparameters
           .filter((h) => h.is_advanced === isAdvanced)
           .map((h) => {
             if (h.parameter_type === "number") {
               return (
-                <div key={h.parameter_name} style={{ flex: "1 1 50%", paddingRight: 0 }}>
+                <div key={h.parameter_name}>
                   <NumberHyperparameter
                     {...h}
                     id={"input_" + h.parameter_name}
@@ -27,7 +28,7 @@ export const HyperparameterView = ({
               );
             } else if (h.parameter_type === "selection") {
               return (
-                <div key={h.parameter_name} style={{ flex: "1 1 50%", paddingRight: 0 }}>
+                <div key={h.parameter_name}>
                   <SelectionHyperparameter
                     {...h}
                     id={"input_" + h.parameter_name}
@@ -38,7 +39,7 @@ export const HyperparameterView = ({
               );
             } else if (h.parameter_type === "text") {
               return (
-                <div key={h.parameter_name} style={{ flex: "1 1 50%", paddingRight: 0 }}>
+                <div key={h.parameter_name}>
                   <TextHyperparameter
                     {...h}
                     id={"input_" + h.parameter_name}
@@ -49,6 +50,6 @@ export const HyperparameterView = ({
               );
             }
           })}
-    </div>
+    </SimpleGrid>
   );
 };

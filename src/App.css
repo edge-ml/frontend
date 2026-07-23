@@ -313,13 +313,13 @@ div.card {
 }
 
 .hyperparameter-input-container {
-  width: auto;
+  width: 100%;
   height: auto;
   border-radius: 0px 4px 4px 0px;
 }
 
 .hyperparameter-input-container-multi {
-  width: auto;
+  width: 100%;
   height: auto;
 }
 

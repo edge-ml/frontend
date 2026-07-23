@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import useDataset from "../../Hooks/useDataset";
 import LabelingSelectionPanel from "../../components/LabelingSelectionPanel/LabelingSelectionPanel";
@@ -18,15 +18,6 @@ const Dataset = () => {
   const datasetUtils = useDataset(datasetId);
   const { labelings } = useLabelings();
   const datasetEdit = useEditDataset(datasetUtils, labelings);
-
-  const handleResize = () => {
-    window.location.reload();
-  };
-
-  useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const { dataset } = datasetUtils;
 

@@ -8,7 +8,7 @@ import {
   faPen,
   faMicrochip,
 } from "@fortawesome/free-solid-svg-icons";
-import { Stack, Text, UnstyledButton } from "@mantine/core";
+import { Stack, Text, UnstyledButton, Paper } from "@mantine/core";
 
 import "./Navbar.css";
 import useProjectRouter from "../../Hooks/ProjectRouter";
@@ -58,21 +58,38 @@ const NavbarProject = ({ project }) => {
         </Text>
       </UnstyledButton>
       {isActive && (
-        <Stack gap={0}>
-          {navItems.map(([name, icon]) => (
-            <UnstyledButton
-              key={name}
-              onClick={() => navigate(name)}
-              className={classNames("pt-2 pb-2 ps-4 small", {
-                "navbar-project-item-active": getNavBarItemClasses(name),
-                "navbar-project-item": !getNavBarItemClasses(name),
-              })}
-            >
-              <FontAwesomeIcon className="me-2" icon={icon} />
-              {name}
-            </UnstyledButton>
-          ))}
-        </Stack>
+        <Paper
+          withBorder
+          radius="sm"
+          mx={6}
+          my={4}
+          style={{
+            borderColor: "rgba(64, 192, 87, 0.3)",
+            overflow: "hidden",
+          }}
+        >
+          <Stack gap={0}>
+            {navItems.map(([name, icon]) => {
+              const isPageActive = getNavBarItemClasses(name);
+              return (
+                <UnstyledButton
+                  key={name}
+                  onClick={() => navigate(name)}
+                  className="pt-2 pb-2 ps-3 pe-2 small"
+                  style={{
+                    cursor: "pointer",
+                    color: isPageActive ? "black" : "#666",
+                    backgroundColor: isPageActive ? "#ddd" : "transparent",
+                    userSelect: "none",
+                  }}
+                >
+                  <FontAwesomeIcon className="me-2" icon={icon} />
+                  {name}
+                </UnstyledButton>
+              );
+            })}
+          </Stack>
+        </Paper>
       )}
     </Stack>
   );

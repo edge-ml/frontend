@@ -1,10 +1,45 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
+
+const initialEditorState = {
+  draft: undefined,
+  selectedLabelId: undefined,
+  saving: false,
+};
+
+export const labelingEditorReducer = (state, action) => {
+  switch (action.type) {
+    case "start":
+      return {
+        draft: {
+          start: action.timestamp,
+          end: undefined,
+          type: action.labelTypeId,
+        },
+        selectedLabelId: undefined,
+        saving: false,
+      };
+    case "saving":
+      return { ...state, saving: true };
+    case "select":
+      return {
+        draft: undefined,
+        selectedLabelId:
+          state.selectedLabelId === action.labelId
+            ? undefined
+            : action.labelId,
+        saving: false,
+      };
+    case "clear":
+      return initialEditorState;
+    default:
+      return state;
+  }
+};
 
 const useEditDataset = (datasetUtils, labelings) => {
-  const { dataset, deleteLabel, addLabel, updateLabel, updateDataset } =
-    datasetUtils;
+  const { dataset, deleteLabel, addLabel, updateLabel } = datasetUtils;
 
-  const getActivateLabeling = () => {
+  const getActiveLabeling = () => {
     if (
       labelings &&
       dataset &&
@@ -12,201 +47,197 @@ const useEditDataset = (datasetUtils, labelings) => {
       dataset.labelings.length > 0
     ) {
       const labelingId = dataset.labelings[0].labelingId;
-      return labelings.find((elm) => elm._id === labelingId);
+      return labelings.find((labeling) => labeling._id === labelingId);
     }
 
-    if (labelings && labelings.length > 0) {
-      return labelings[0];
-    }
-    return undefined;
+    return labelings?.[0];
   };
 
-  const [activeTimeSeries, _setActiveTimeSeries] = useState([]);
-  const [activeLabeling, _setActiveLabeling] = useState(getActivateLabeling());
-  const [selectedLabel, _setSelectedLabel] = useState(undefined);
-  const [selectedLabelTypeId, _setSelectedLabelTypeId] = useState(undefined);
-  const [provisionalLabel, _setProvisionalLabel] = useState(undefined);
+  const [activeTimeSeries, setActiveTimeSeries] = useState([]);
+  const [activeLabeling, setActiveLabelingState] = useState(
+    getActiveLabeling()
+  );
+  const [selectedLabelTypeId, setSelectedLabelTypeIdState] =
+    useState(undefined);
+  const [editor, dispatch] = useReducer(
+    labelingEditorReducer,
+    initialEditorState
+  );
+
+  const datasetLabeling = useMemo(
+    () =>
+      dataset?.labelings?.find(
+        (labeling) => labeling.labelingId === activeLabeling?._id
+      ),
+    [activeLabeling?._id, dataset?.labelings]
+  );
+
+  const selectedLabel = useMemo(
+    () =>
+      datasetLabeling?.labels?.find(
+        (label) => label._id === editor.selectedLabelId
+      ),
+    [datasetLabeling?.labels, editor.selectedLabelId]
+  );
 
   useEffect(() => {
-    if (dataset) {
-      _setActiveTimeSeries(dataset.timeSeries);
-      const activeLabeling = getActivateLabeling();
-      _setActiveLabeling(activeLabeling);
-      if (activeLabeling && activeLabeling.labels.length > 0) {
-        const activeLabelType = activeLabeling.labels.find(
-          (elm) => elm._id === selectedLabelTypeId
-        );
-        if (activeLabelType) {
-          _setSelectedLabelTypeId(activeLabelType._id);
-          return;
-        }
-        _setSelectedLabelTypeId(activeLabeling.labels[0]._id);
+    if (!dataset) return;
+
+    setActiveTimeSeries(dataset.timeSeries);
+  }, [dataset?._id]);
+
+  useEffect(() => {
+    const nextActiveLabeling = getActiveLabeling();
+    setActiveLabelingState(nextActiveLabeling);
+    setSelectedLabelTypeIdState((currentTypeId) => {
+      if (
+        nextActiveLabeling?.labels.some((label) => label._id === currentTypeId)
+      ) {
+        return currentTypeId;
       }
-    }
-  }, [dataset]);
+      return nextActiveLabeling?.labels?.[0]?._id;
+    });
+    dispatch({ type: "clear" });
+  }, [dataset?._id, labelings]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
+      const shortcutIndex = Number(event.key) - 1;
       if (
         event.ctrlKey &&
-        event.key >= "0" &&
-        event.key <= "9" &&
-        event.key <= activeLabeling.labels.length
+        Number.isInteger(shortcutIndex) &&
+        shortcutIndex >= 0 &&
+        shortcutIndex < (activeLabeling?.labels.length ?? 0)
       ) {
-        const index = parseInt(event.key, 10);
-        setSelectedLabelTypeId(activeLabeling.labels[index - 1]._id);
+        event.preventDefault();
+        setSelectedLabelTypeId(activeLabeling.labels[shortcutIndex]._id);
         return;
       }
 
-      switch (event.key) {
-        case "Delete":
-        case "Backspace":
-          if (selectedLabel) {
-            event.preventDefault();
-            onDeleteSelectedLabel();
-          }
-          break;
-        case "Escape":
-          if (selectedLabel) {
-            event.preventDefault();
-            _setSelectedLabel(undefined);
-          }
-          break;
+      if (event.key === "Escape") {
+        dispatch({ type: "clear" });
+        return;
+      }
+
+      if (
+        (event.key === "Delete" || event.key === "Backspace") &&
+        selectedLabel
+      ) {
+        event.preventDefault();
+        onDeleteSelectedLabel();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [selectedLabel, provisionalLabel]);
-
-  useEffect(() => {
-    if (labelings && labelings.length > 0) {
-      const activeLabeling = getActivateLabeling();
-      _setActiveLabeling(activeLabeling);
-      if (activeLabeling && activeLabeling.labels.length > 0) {
-        const activeLabelType = activeLabeling.labels.find(
-          (elm) => elm._id === selectedLabelTypeId
-        );
-        if (activeLabelType) {
-          _setSelectedLabelTypeId(activeLabelType._id);
-          return;
-        }
-        _setSelectedLabelTypeId(activeLabeling.labels[0]._id);
-      }
-    }
-  }, [labelings]);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeLabeling, selectedLabel]);
 
   const setSelectedLabelTypeId = async (labelTypeId) => {
-    _setSelectedLabelTypeId(labelTypeId);
-    _setProvisionalLabel(undefined);
-    if (selectedLabel) {
-      selectedLabel.type = labelTypeId;
-      const newDataset = { ...dataset };
-      const labeling = newDataset.labelings.map((elm) => {
-        if (elm.labelingId === activeLabeling._id) {
-          elm.labels = elm.labels.map((label) => {
-            if (label._id === selectedLabel._id) {
-              return { ...label, type: labelTypeId };
-            }
-            return label;
-          });
-        }
-        return elm;
-      });
-      newDataset.labelings = labeling;
-      await updateDataset(newDataset);
-    }
-  };
+    setSelectedLabelTypeIdState(labelTypeId);
 
-  const onDeleteSelectedLabel = async () => {
-    if (selectedLabel && selectedLabel._id) {
-      await deleteLabel(selectedLabel._id);
-      _setSelectedLabel(undefined);
+    if (selectedLabel && activeLabeling) {
+      await updateLabel(activeLabeling._id, {
+        ...selectedLabel,
+        type: labelTypeId,
+      });
+    } else {
+      dispatch({ type: "clear" });
     }
   };
 
   const setActiveLabeling = (labeling) => {
-    _setActiveLabeling(labeling);
-    if (labeling && labeling.labels.length > 0) {
-      _setSelectedLabelTypeId(labeling.labels[0]._id);
-    }
-    _setProvisionalLabel(undefined);
+    setActiveLabelingState(labeling);
+    setSelectedLabelTypeIdState(labeling?.labels?.[0]?._id);
+    dispatch({ type: "clear" });
   };
 
   const setSelectedLabel = (label) => {
-    _setSelectedLabel(label);
-    _setProvisionalLabel(undefined);
-    _setSelectedLabelTypeId(label && label.type);
+    if (label?.type) {
+      setSelectedLabelTypeIdState(label.type);
+    }
+    dispatch({ type: "select", labelId: label?._id });
   };
 
-  const updateLabelStartEnd = async (labelId, start, end) => {
-    const newDataset = { ...dataset };
-    const labeling = newDataset.labelings.map((elm) => {
-      if (elm.labelingId === activeLabeling._id) {
-        elm.labels = elm.labels.map((label) => {
-          if (label._id === labelId) {
-            return { ...label, start: Math.ceil(start), end: Math.floor(end) };
-          }
-          return label;
-        });
-      }
-      return elm;
-    });
-    newDataset.labelings = labeling;
-    await updateDataset(newDataset);
-  };
-
-  const setProvisionalLabel = async (label) => {
-    if (provisionalLabel) {
-      // Set label
-      if (label) {
-        const updatedLabel = {
-          ...provisionalLabel,
-          end: label.end,
-        };
-        if (updatedLabel.start > updatedLabel.end) {
-          const temp = updatedLabel.start;
-          updatedLabel.start = updatedLabel.end;
-          updatedLabel.end = temp;
-        }
-        const labelToAdd = {
-          ...updatedLabel,
-          name: activeLabeling.labels.find(
-            (elm) => elm._id === updatedLabel.type
-          ).name,
-        };
-        const newlabel = await addLabel(activeLabeling._id, labelToAdd);
-        _setSelectedLabel(newlabel);
-      }
-      _setProvisionalLabel(undefined);
+  const onPlotClick = async (timestamp) => {
+    if (
+      !activeLabeling ||
+      !selectedLabelTypeId ||
+      editor.saving ||
+      !Number.isFinite(timestamp)
+    ) {
       return;
     }
 
-    _setProvisionalLabel(label);
+    const roundedTimestamp = Math.round(timestamp);
+    if (!editor.draft) {
+      dispatch({
+        type: "start",
+        timestamp: roundedTimestamp,
+        labelTypeId: selectedLabelTypeId,
+      });
+      return;
+    }
+
+    const labelType = activeLabeling.labels.find(
+      (label) => label._id === editor.draft.type
+    );
+    const start = Math.min(editor.draft.start, roundedTimestamp);
+    const end = Math.max(editor.draft.start, roundedTimestamp);
+
+    dispatch({ type: "saving" });
+    try {
+      await addLabel(activeLabeling._id, {
+        start,
+        end,
+        type: editor.draft.type,
+        name: labelType?.name,
+      });
+    } finally {
+      dispatch({ type: "clear" });
+    }
   };
 
-  let labelsToShow = undefined;
-  if (dataset && dataset.labelings && activeLabeling) {
-    const datasetLabeling = dataset.labelings.find(
-      (elm) => elm.labelingId === activeLabeling._id
-    );
+  const onDeleteSelectedLabel = async () => {
+    if (!selectedLabel?._id) return;
 
-    if (datasetLabeling) {
-      const labelsToUse = provisionalLabel
-        ? [...datasetLabeling.labels, provisionalLabel]
-        : datasetLabeling.labels;
-      labelsToShow = labelsToUse.map((elm) => {
-        const label = activeLabeling.labels.find((l) => l._id === elm.type);
-        return { ...label, ...elm };
-      });
-    }
-  }
+    await deleteLabel(selectedLabel._id);
+    dispatch({ type: "clear" });
+  };
+
+  const updateLabelStartEnd = async (labelId, start, end) => {
+    if (!activeLabeling) return;
+
+    const label = datasetLabeling?.labels.find(
+      (candidate) => candidate._id === labelId
+    );
+    if (!label) return;
+
+    await updateLabel(activeLabeling._id, {
+      ...label,
+      start: Math.round(Math.min(start, end)),
+      end: Math.round(Math.max(start, end)),
+    });
+  };
+
+  const labelsToShow = useMemo(() => {
+    if (!activeLabeling) return [];
+
+    const persistedLabels = datasetLabeling?.labels ?? [];
+    const labels = editor.draft
+      ? [...persistedLabels, { ...editor.draft, _id: "draft" }]
+      : persistedLabels;
+
+    return labels.map((label) => {
+      const labelType = activeLabeling.labels.find(
+        (candidate) => candidate._id === label.type
+      );
+      return { ...labelType, ...label };
+    });
+  }, [activeLabeling, datasetLabeling?.labels, editor.draft]);
 
   return {
     activeTimeSeries,
-    setActiveTimeSeries: _setActiveTimeSeries,
+    setActiveTimeSeries,
     activeLabeling,
     setActiveLabeling,
     selectedLabel,
@@ -214,10 +245,11 @@ const useEditDataset = (datasetUtils, labelings) => {
     onDeleteSelectedLabel,
     selectedLabelTypeId,
     setSelectedLabelTypeId,
-    provisionalLabel,
-    setProvisionalLabel,
+    provisionalLabel: editor.draft,
     labelsToShow,
+    onPlotClick,
     updateLabelStartEnd,
+    isSavingLabel: editor.saving,
   };
 };
 

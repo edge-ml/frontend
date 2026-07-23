@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@mantine/core";
 import { hexToForegroundColor } from "../../services/ColorService";
 import { useContext } from "react";
@@ -26,7 +26,7 @@ const LabelButtonView = ({
                   ? hexToForegroundColor(label.color)
                   : label.color,
             }}
-            onClick={(e) => setSelectedLabelTypeId(label._id)}
+            onClick={() => setSelectedLabelTypeId(label._id)}
             key={index}
           >
             {label.name} {"(" + (index + 1) + ")"}
@@ -37,6 +37,11 @@ const LabelButtonView = ({
 };
 
 const TimeDisplay = ({ from, to }) => {
+  const formatTime = (timestamp) =>
+    Number.isFinite(timestamp)
+      ? new Date(timestamp).toUTCString().split(" ")[4]
+      : "--:--:--";
+
   return (
     <div style={{ margin: "0 0.5rem" }}>
       <small>
@@ -47,7 +52,7 @@ const TimeDisplay = ({ from, to }) => {
       <div style={{ display: "flex", alignItems: "center" }}>
         <small>
           <div className="monospace text-sm">
-            {new Date(from).toUTCString().split(" ")[4]}
+            {formatTime(from)}
           </div>
         </small>
         <small>
@@ -55,7 +60,7 @@ const TimeDisplay = ({ from, to }) => {
         </small>
         <small>
           <div className="monospace">
-            {new Date(to).toUTCString().split(" ")[4]}
+            {formatTime(to)}
           </div>
         </small>
       </div>
@@ -63,10 +68,9 @@ const TimeDisplay = ({ from, to }) => {
   );
 };
 
-const LabelingPanel = ({}) => {
+const LabelingPanel = () => {
   const {
     hideLabels,
-    onAddLabel,
     onDeleteSelectedLabel,
     selectedLabel,
     activeLabeling,
@@ -75,26 +79,6 @@ const LabelingPanel = ({}) => {
   } = useContext(DatasetContext);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-
-  const handleKeys = (e) => {
-    if (e.key === "Delete" && selectedLabel) {
-      setDeleteModalOpen(true);
-    }
-    if (e.ctrlKey && e.key > 0) {
-      if (e.key - 1 > activeLabeling.labels.length) {
-        return;
-      }
-      const newLabelType = activeLabeling.labels[Number(e.key - 1)];
-      setSelectedLabelTypeId(newLabelType._id);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeys);
-    return () => {
-      document.removeEventListener("keydown", handleKeys);
-    };
-  });
 
   return (
     <div>
@@ -137,16 +121,6 @@ const LabelingPanel = ({}) => {
           </DeleteModal>
         </div>
       </div>
-      <DeleteModal
-        isOpen={deleteModalOpen}
-        onCancel={() => setDeleteModalOpen(false)}
-        onDelete={() => {
-          onDeleteSelectedLabel();
-          setDeleteModalOpen(false);
-        }}
-      >
-        The selected label
-      </DeleteModal>
     </div>
   );
 };

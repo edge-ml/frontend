@@ -1,12 +1,7 @@
-import { Modal } from "@mantine/core";
+import { Modal, Table } from "@mantine/core";
 import DragDrop from "../Common/DragDrop";
 import FileList from "./FileList";
 import { useState } from "react";
-import {
-  EdgeMLTable,
-  EdgeMLTableEntry,
-  EdgeMLTableHeader,
-} from "../Common/EdgeMLTable";
 
 const UploadDatasetModal = ({ isOpen, onCloseModal, onDatasetComplete }) => {
   const [files, setFiles] = useState([]);
@@ -21,16 +16,22 @@ const UploadDatasetModal = ({ isOpen, onCloseModal, onDatasetComplete }) => {
         style={{ height: "100px", marginTop: "0.5rem", marginBottom: "0.5rem" }}
         onFileInput={onFileInput}
       />
-      <EdgeMLTable>
-        <EdgeMLTableHeader>Selected files</EdgeMLTableHeader>
-        {files.map((file) => {
-          return (
-            <EdgeMLTableEntry key={file.name}>
-              <FileList file={file}></FileList>
-            </EdgeMLTableEntry>
-          );
-        })}
-      </EdgeMLTable>
+      <Table>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Selected files</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {files.map((file) => (
+            <Table.Tr key={file.name}>
+              <Table.Td>
+                <FileList file={file} />
+              </Table.Td>
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+      </Table>
     </Modal>
   );
 };

@@ -9,61 +9,52 @@ import { Fragment } from "react";
 import MetadataContainer from "../../components/MetadataPanel/MetadataContainer";
 import { DatasetContext } from "./DatasetContext";
 
-const MetadataSidebar = ({}) => {
+const MetadataSidebar = () => {
   const { dataset } = useContext(DatasetContext);
 
-  const [isExtended, setExtendend] = useState(false);
+  const [isExtended, setExtended] = useState(false);
 
-  const toggleMetaData = () => {
-    setExtendend(!isExtended);
+  const toggleMetaData = (value) => {
+    setExtended((prev) => (typeof value === "boolean" ? value : !prev));
   };
 
   if (!isExtended) {
     return (
       <div
-        style={{ display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer" }}
         className="metaDataCollapseButton"
         onClick={() => toggleMetaData(true)}
+        style={{ cursor: "pointer" }}
       >
-        <div>
-          <FontAwesomeIcon size="1x" icon={faChevronLeft}></FontAwesomeIcon>
-        </div>
+        <FontAwesomeIcon size="1x" icon={faChevronLeft} />
       </div>
     );
   }
 
-  if (isExtended) {
-    return (
-      <Fragment>
-        <div
-          className="sidePanelBackdrop"
-          onClick={() => toggleMetaData(false)}
-        ></div>
-        <div>
-          <div className="dataset-side-panel">
-            <div style={{ display: "flex" }}>
-              <div
-                onClick={() => toggleMetaData(false)}
-                style={{ display: "flex", justifyContent: "center", alignItems: "center", cursor: "pointer" }}
-                className="metaDataCollapseButton"
-              >
-                <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
-              </div>
-              <MetadataContainer
-                start={Math.min(...dataset.timeSeries.map((elm) => elm.start))}
-                end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
-                user={dataset.userId}
-                name={dataset.name}
-                handleDatasetNameChange={() => {}}
-                metaData={dataset.metaData}
-                onUpdateMetaData={() => {}}
-              ></MetadataContainer>
-            </div>
+  return (
+    <Fragment>
+      <div className="sidePanelBackdrop" onClick={() => toggleMetaData(false)} />
+      <div className="dataset-side-panel">
+        <div style={{ display: "flex" }}>
+          <div
+            className="metaDataCollapseButton"
+            onClick={() => toggleMetaData(false)}
+            style={{ cursor: "pointer" }}
+          >
+            <FontAwesomeIcon icon={faChevronRight} />
           </div>
+          <MetadataContainer
+            start={Math.min(...dataset.timeSeries.map((elm) => elm.start))}
+            end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
+            user={dataset.userId}
+            name={dataset.name}
+            handleDatasetNameChange={() => {}}
+            metaData={dataset.metaData}
+            onUpdateMetaData={() => {}}
+          />
         </div>
-      </Fragment>
-    );
-  }
+      </div>
+    </Fragment>
+  );
 };
 
 export default MetadataSidebar;

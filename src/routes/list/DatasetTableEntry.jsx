@@ -1,24 +1,38 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEdit,
   faExclamationTriangle,
-  faList,
   faPen,
-  faTimes,
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
 import React, { useState } from "react";
-import { Button, Group, Text, Tooltip, Badge } from "@mantine/core";
-
-import { useNavigate } from "react-router-dom";
-import classNames from "classnames";
+import { Button, Group, HoverCard, Stack, Table, Text } from "@mantine/core";
 
 import Checkbox from "../../components/Common/Checkbox";
 import { displayTime } from "../../services/helpers";
-import LabelBadge from "../../components/Common/LabelBadge";
 import useProjectRouter from "../../Hooks/ProjectRouter";
 import EditModal from "../../components/EditModal";
+
+const ColorDot = ({ color = "var(--mantine-color-blue-5)" }) => (
+  <span
+    aria-hidden="true"
+    style={{
+      width: 8,
+      height: 8,
+      borderRadius: "50%",
+      backgroundColor: color,
+      boxShadow: `0 0 0 3px color-mix(in srgb, ${color} 16%, transparent)`,
+      flexShrink: 0,
+    }}
+  />
+);
+
+const MoreLink = ({ count }) =>
+  count > 0 ? (
+    <Text size="xs" c="blue" fw={600} style={{ whiteSpace: "nowrap" }}>
+      +{count} more
+    </Text>
+  ) : null;
 
 const format_time = (s) => {
   const seconds = s / 1000;
@@ -39,54 +53,119 @@ const Labelings = ({ dataset, labelings }) => {
   if (!dataset.labelings?.length || !labelings?.length) return null;
 
   const datasetLabelings = dataset.labelings
-    .map((elm) => labelings.find((labeling) => labeling._id === elm.labelingId))
+    .map((datasetLabeling) => {
+      const labeling = labelings.find(
+        (item) => item._id === datasetLabeling.labelingId
+      );
+      if (!labeling) return null;
+
+      const selectedTypes = new Set(
+        datasetLabeling.labels.map((label) => label.type)
+      );
+      return {
+        labeling,
+        activeLabels: labeling.labels.filter((label) =>
+          selectedTypes.has(label._id)
+        ),
+      };
+    })
     .filter(Boolean);
+  if (datasetLabelings.length === 0) return null;
+
+  const visible = datasetLabelings.slice(0, 2);
+  const remaining = datasetLabelings.length - visible.length;
+
+  const content = (
+    <Stack gap="md" maw={340}>
+      {datasetLabelings.map(({ labeling, activeLabels }) => (
+        <div key={labeling._id}>
+          <Text fw={700} size="sm" mb={6}>
+            {labeling.name}
+          </Text>
+          <Group gap="sm">
+            {activeLabels.map((label) => (
+              <Group key={label._id} gap={6} wrap="nowrap">
+                <ColorDot color={label.color} />
+                <Text size="sm">{label.name}</Text>
+              </Group>
+            ))}
+          </Group>
+        </div>
+      ))}
+    </Stack>
+  );
 
   return (
-    <Group gap="xs" mt="xs" ml="lg">
-      {datasetLabelings.map((labeling, idx) => (
-        <Badge
-          key={labeling._id}
-          variant="outline"
-          className="badgeSize"
-          styles={{ root: { padding: "8px" } }}
-        >
-          <Text size="xs" fw={700}>
-            {labeling.name.toUpperCase()}
-          </Text>
-          <Group gap={4} mt={2}>
-            {labeling.labels.map((label) => {
-              const labelTypes = dataset.labelings[idx].labels.map(
-                (elm) => elm.type
-              );
-              if (!labelTypes.includes(label._id)) return null;
-              return (
-                <LabelBadge key={label._id} color={label.color} size="xs">
-                  {label.name}
-                </LabelBadge>
-              );
-            })}
-          </Group>
-        </Badge>
-      ))}
-    </Group>
+    <HoverCard shadow="md" openDelay={200} withinPortal={false}>
+      <HoverCard.Target>
+        <Stack gap={7}>
+          {visible.map(({ labeling, activeLabels }) => (
+            <Group key={labeling._id} gap={8} wrap="nowrap">
+              <ColorDot color={activeLabels[0]?.color} />
+              <div style={{ minWidth: 0 }}>
+                <Text size="sm" fw={600} truncate>
+                  {labeling.name}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {activeLabels.length} selected{" "}
+                  {activeLabels.length === 1 ? "label" : "labels"}
+                </Text>
+              </div>
+            </Group>
+          ))}
+          <MoreLink count={remaining} />
+        </Stack>
+      </HoverCard.Target>
+      <HoverCard.Dropdown>{content}</HoverCard.Dropdown>
+    </HoverCard>
   );
 };
 
 const Metadata = ({ dataset }) => {
   if (!dataset.metaData) return null;
-  return (
-    <Group gap="xs" mt="xs">
-      <Text fw={700} size="sm" component="span">
-        Metadata:{' '}
-      </Text>
-      {Object.entries(dataset.metaData).map(([key, value]) => (
-        <Badge key={key} variant="outline" size="sm">
-          <b>{key}: </b>
-          {value}
-        </Badge>
+  const entries = Object.entries(dataset.metaData);
+  if (entries.length === 0) return null;
+  const visible = entries.slice(0, 2);
+  const remaining = entries.length - visible.length;
+  const formatValue = (value) => {
+    if (value === null || value === undefined || value === "") return "—";
+    return typeof value === "object" ? JSON.stringify(value) : String(value);
+  };
+
+  const content = (
+    <Stack gap={8} maw={360}>
+      {entries.map(([key, value]) => (
+        <Group key={key} gap="md" wrap="nowrap" align="baseline">
+          <Text size="xs" c="dimmed" fw={600} w={110} truncate>
+            {key}
+          </Text>
+          <Text size="sm" style={{ overflowWrap: "anywhere" }}>
+            {formatValue(value)}
+          </Text>
+        </Group>
       ))}
-    </Group>
+    </Stack>
+  );
+
+  return (
+    <HoverCard shadow="md" openDelay={200} withinPortal={false}>
+      <HoverCard.Target>
+        <Stack gap={6}>
+          {visible.map(([key, value]) => (
+            <Group key={key} gap={8} wrap="nowrap" align="baseline">
+              <Text size="xs" c="dimmed" fw={600} w={84} truncate>
+                {key}
+              </Text>
+              <Text size="sm" truncate maw={190}>
+                {formatValue(value)}
+              </Text>
+            </Group>
+          ))}
+          <MoreLink count={remaining} />
+        </Stack>
+      </HoverCard.Target>
+      <HoverCard.Dropdown>{content}</HoverCard.Dropdown>
+    </HoverCard>
   );
 };
 
@@ -145,49 +224,54 @@ const DatasetInfo = ({ dataset, updateDataset }) => {
 };
 
 const DatasetTableEntry = (props) => {
-  const { dataset, updateDataset, isSelected, toggleCheck, labelings, deleteEntry, index } = props;
+  const {
+    dataset,
+    updateDataset,
+    isSelected,
+    toggleCheck,
+    labelings,
+    deleteEntry,
+  } = props;
   const navigate = useProjectRouter();
-  const [isOpen, setOpen] = useState(false);
 
   return (
-    <div
-      className="datasetCard"
-      style={{
-        background: index % 2 === 1 ? "rgb(249, 251, 252)" : "",
-      }}
-    >
-      <Group gap="xs" p="sm" wrap="nowrap">
+    <Table.Tr>
+      <Table.Td>
         <Checkbox
           isSelected={isSelected}
           onClick={(e) => toggleCheck(e, dataset._id)}
         />
-        <Group justify="space-between" style={{ flex: 1 }} wrap="nowrap">
-          <DatasetInfo dataset={dataset} updateDataset={updateDataset} />
-          <Group gap="xs" visibleFrom="lg">
-            <Labelings dataset={dataset} labelings={labelings} />
-            <Metadata dataset={dataset} />
-          </Group>
-          <Group gap="xs" wrap="nowrap">
-            <Button
-              variant="outline"
-              color="red"
-              size="compact-sm"
-              onClick={() => deleteEntry(dataset._id)}
-            >
-              <FontAwesomeIcon icon={faTrashAlt} />
-            </Button>
-            <Button
-              variant="outline"
-              color="blue"
-              size="compact-sm"
-              onClick={() => navigate(`Datasets/${dataset._id}`)}
-            >
-              <FontAwesomeIcon icon={faPen} />
-            </Button>
-          </Group>
+      </Table.Td>
+      <Table.Td>
+        <DatasetInfo dataset={dataset} updateDataset={updateDataset} />
+      </Table.Td>
+      <Table.Td>
+        <Labelings dataset={dataset} labelings={labelings} />
+      </Table.Td>
+      <Table.Td>
+        <Metadata dataset={dataset} />
+      </Table.Td>
+      <Table.Td>
+        <Group gap="xs" wrap="nowrap">
+          <Button
+            variant="outline"
+            color="red"
+            size="sm"
+            onClick={() => deleteEntry(dataset._id)}
+          >
+            <FontAwesomeIcon icon={faTrashAlt} />
+          </Button>
+          <Button
+            variant="outline"
+            color="blue"
+            size="sm"
+            onClick={() => navigate(`Datasets/${dataset._id}`)}
+          >
+            <FontAwesomeIcon icon={faPen} />
+          </Button>
         </Group>
-      </Group>
-    </div>
+      </Table.Td>
+    </Table.Tr>
   );
 };
 

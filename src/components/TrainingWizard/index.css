@@ -1,82 +1,89 @@
+.training-wizard-modal {
+  overflow: hidden;
+}
+
+.training-wizard-header {
+  align-items: flex-start;
+  border-bottom: 1px solid var(--mantine-color-gray-2);
+  padding: 20px 24px 16px;
+}
+
+.training-wizard-heading {
+  flex: 1;
+  min-width: 0;
+}
+
 .training-wizard-body {
-  min-height: max(15vh, 200px);
-  max-height: calc(100vh - 200px);
-  overflow: auto;
+  min-height: 50vh;
+  max-height: 68vh;
+  overflow-y: auto;
+  padding: 24px;
 }
 
-.training-inner-flow {
-  max-height: 40vh;
-  overflow: auto;
-}
-
-.fotter {
+.training-wizard-step {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 20px;
 }
 
-/* Labeling-page */
-
-.badge {
-  margin: 4px;
-  border: 1px solid black;
-}
-
-.checkBoxContainer {
+.training-wizard-step-header {
   display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.labelingName {
-  font-weight: bold;
-  font-size: large;
+.training-wizard-footer {
+  background: var(--mantine-color-gray-0);
+  border-top: 1px solid var(--mantine-color-gray-2);
+  padding: 14px 24px;
 }
 
-.labelingRow {
+.training-wizard-footer-side {
   display: flex;
-  align-items: center;
-  padding: 8px;
+  flex: 1;
 }
 
-.labelingRow > * {
-  display: inline;
-  padding: 4px;
+.training-wizard-footer-end {
+  justify-content: flex-end;
 }
 
-.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-/* dataset-page */
-
-.datasetRow {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-}
-
-.datasetRow > * {
-  display: inline;
-  padding: 4px;
-}
-
-.datasetName {
-  font-weight: bold;
-  font-size: large;
-}
-
-.advancedHeading {
-  display: flex;
-  align-items: center;
-}
-
-.advancedHeading * {
-  display: inline;
-}
-
-.faIconAdvancedHyperparameters {
-  margin-left: 8px;
-}
-
-.buttonShowAdvancedHyperparameters {
+.training-wizard-pipeline-card {
   cursor: pointer;
+  height: 100%;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.training-wizard-pipeline-card:hover {
+  border-color: var(--mantine-primary-color-filled);
+  box-shadow: var(--mantine-shadow-sm);
+  transform: translateY(-1px);
+}
+
+.training-wizard-summary {
+  background: var(--mantine-color-gray-0);
+  border: 1px solid var(--mantine-color-gray-2);
+  border-radius: var(--mantine-radius-md);
+  padding: 16px;
+}
+
+.training-wizard-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (max-width: 48em) {
+  .training-wizard-header,
+  .training-wizard-body,
+  .training-wizard-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .training-wizard-body {
+    max-height: 72vh;
+  }
 }

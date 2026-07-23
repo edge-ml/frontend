@@ -7,6 +7,7 @@ const TextHyperparameter = (props) => {
   return (
     <Hyperparameter {...props}>
       <TextInput
+        style={{ width: "100%" }}
         value={props.value}
         onChange={(e) => {
           props.handleChange({

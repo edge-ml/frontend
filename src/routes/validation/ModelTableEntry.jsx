@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Checkbox from "../../components/Common/Checkbox";
-import { Group, Text, Loader, Tooltip } from "@mantine/core";
+import { Group, Text, Loader, Tooltip, Button, Table } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo, faPen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import DownloadModal from "./DownloadModal";
 import { SelectedModelModalView } from "../../components/SelectedModelModalView/SelectedModelModalView";
 import ButtonList from "./ButtonList";
@@ -33,61 +33,67 @@ const ModelTableEntry = ({
 
   return (
     <>
-      <Group p="sm" gap="sm" wrap="nowrap" align="flex-start">
-        <Checkbox
-          isSelected={selectedModels.includes(model._id)}
-          onClick={() => clickCheckBox(model)}
-        />
-        <div style={{ flex: 1 }}>
-          <Group gap="xs">
+      <Table.Tr>
+        <Table.Td>
+          <Checkbox
+            isSelected={selectedModels.includes(model._id)}
+            onClick={() => clickCheckBox(model)}
+          />
+        </Table.Td>
+        <Table.Td>
+          <div className="text-left d-inline-block m-2">
             <Text fw={700} size="lg" component="span">
               {model.name}
             </Text>
-            <FontAwesomeIcon
-              className="cursor-pointer"
-              icon={faPen}
-              onClick={() => setDatasetNameEditOpen(true)}
+            <Text size="sm" c="dimmed">
+              {model.pipeline?.selectedPipeline?.name}
+            </Text>
+          </div>
+        </Table.Td>
+        <Table.Td>
+          {model.error ? (
+            <Group gap="xs" style={{ color: "red" }}>
+              <Text c="red">An error occurred while training!</Text>
+              <Tooltip label={model.error}>
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </Tooltip>
+            </Group>
+          ) : model.trainStatus !== "done" ? (
+            <Group gap="xs">
+              <Loader size="sm" />
+              <Text size="sm">Training...</Text>
+            </Group>
+          ) : (
+            <Group gap="md">
+              <Text size="sm">
+                <b>Acc: </b>
+                {metrics ? `${metric(metrics.accuracy_score)}%` : "N/A"}
+              </Text>
+              <Text size="sm">
+                <b>F1: </b>
+                {metrics ? `${metric(metrics.f1_score)}%` : "N/A"}
+              </Text>
+            </Group>
+          )}
+        </Table.Td>
+        <Table.Td>
+          <Group gap="xs" wrap="nowrap">
+            <Button variant="outline" color="red" size="sm" onClick={() => onDeleteModels([model])}>
+              <FontAwesomeIcon icon={faTrashAlt} />
+            </Button>
+            <Button variant="outline" color="blue" size="sm" onClick={() => setDatasetNameEditOpen(true)}>
+              <FontAwesomeIcon icon={faPen} />
+            </Button>
+            <ButtonList
+              model={model}
+              setModalModel={setModalModel}
+              setModelDownload={setModelDownload}
+              stepOptions={stepOptions}
+              setDeployModalOpen={setDeployModalOpen}
             />
           </Group>
-          <Text size="sm" c="dimmed">
-            {model.pipeline?.selectedPipeline?.name}
-          </Text>
-        </div>
-
-        {model.error ? (
-          <Group gap="xs" style={{ color: "red" }}>
-            <Text c="red">An error occurred while training!</Text>
-            <Tooltip label={model.error}>
-              <FontAwesomeIcon icon={faCircleInfo} />
-            </Tooltip>
-          </Group>
-        ) : model.trainStatus !== "done" ? (
-          <Group gap="xs">
-            <Loader size="sm" />
-            <Text size="sm">Training...</Text>
-          </Group>
-        ) : (
-          <Group gap="md">
-            <Text size="sm">
-              <b>Acc: </b>
-              {metrics ? `${metric(metrics.accuracy_score)}%` : "N/A"}
-            </Text>
-            <Text size="sm">
-              <b>F1: </b>
-              {metrics ? `${metric(metrics.f1_score)}%` : "N/A"}
-            </Text>
-          </Group>
-        )}
-
-        <ButtonList
-          model={model}
-          setModalModel={setModalModel}
-          setModelDownload={setModelDownload}
-          onDeleteSingleModel={(m) => onDeleteModels([m])}
-          stepOptions={stepOptions}
-          setDeployModalOpen={setDeployModalOpen}
-        />
-      </Group>
+        </Table.Td>
+      </Table.Tr>
 
       <SelectedModelModalView
         model={modalModel}

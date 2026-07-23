@@ -1,16 +1,21 @@
 import React, { useState } from "react";
-
 import {
-  Collapse,
   Button,
-  Menu,
+  Collapse,
+  Divider,
   Group,
+  Paper,
+  Select,
+  Stack,
   Text,
 } from "@mantine/core";
-import { HyperparameterView } from "../Hyperparameters/HyperparameterView";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faChevronDown,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
+import { HyperparameterView } from "../Hyperparameters/HyperparameterView";
 import PlatformList from "../Common/PlatformList";
-import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 const Pipelinestep = ({
   step,
@@ -18,105 +23,122 @@ const Pipelinestep = ({
   setPipelineStep,
   stepNum,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleCollapse = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const onSelectStepOption = (option) => {
-    setPipelineStep(option);
-  };
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const onHandleHyperparameterChange = ({ parameter_name, state }) => {
-    const tmpSelectedPipelineStep = selectedPipelineStep;
-    const idx = tmpSelectedPipelineStep.parameters.findIndex(
-      (elm) => elm.parameter_name == parameter_name
-    );
-    tmpSelectedPipelineStep.parameters[idx].value = state;
-    setPipelineStep(tmpSelectedPipelineStep);
+    setPipelineStep({
+      ...selectedPipelineStep,
+      parameters: selectedPipelineStep.parameters.map((parameter) =>
+        parameter.parameter_name === parameter_name
+          ? { ...parameter, value: state }
+          : parameter
+      ),
+    });
   };
 
+  const basicParameters = selectedPipelineStep.parameters.filter(
+    (parameter) => !parameter.is_advanced
+  );
+  const advancedParameters = selectedPipelineStep.parameters.filter(
+    (parameter) => parameter.is_advanced
+  );
+
   return (
-    <div style={{ padding: "0.5rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div>
-          <h3 style={{ fontWeight: 700 }}>{stepNum + 1 + ". " + step.name}</h3>
-          <h5>{step.description}</h5>
-        </div>
+    <div className="training-wizard-step">
+      <div className="training-wizard-step-header">
+        <Text fw={700} size="xl">
+          {stepNum + 1}. {step.name}
+        </Text>
+        <Text c="dimmed">{step.description}</Text>
       </div>
-      <hr></hr>
-      <div style={{ marginBottom: "0.5rem" }}>
-        <div>
-          <Group align="center" gap="xs">
-            <b>Method: </b>
-            <Menu>
-              <Menu.Target>
-                <Button variant="outline" color="blue">
-                  {selectedPipelineStep.name}
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                {step.options.map((option) => (
-                  <Menu.Item key={option.name} onClick={() => onSelectStepOption(option)}>
-                    {option.name}
-                  </Menu.Item>
-                ))}
-              </Menu.Dropdown>
-            </Menu>
-          </Group>
-          <div style={{ margin: "0.5rem 0" }}>
-            <b>Description: </b>
-            {selectedPipelineStep.description}
+
+      <Paper withBorder radius="md" p="lg">
+        <Stack gap="md">
+          <Select
+            label="Method"
+            description="Choose the implementation used for this pipeline step"
+            value={selectedPipelineStep.name}
+            data={step.options.map((option) => option.name)}
+            onChange={(name) =>
+              setPipelineStep(
+                step.options.find((option) => option.name === name)
+              )
+            }
+            allowDeselect={false}
+          />
+          <div>
+            <Text size="sm" fw={600} mb={3}>
+              Description
+            </Text>
+            <Text size="sm" c="dimmed" lh={1.5}>
+              {selectedPipelineStep.description}
+            </Text>
           </div>
           {selectedPipelineStep.type !== "EVAL" && (
-            <div style={{ margin: "0.5rem 0" }}>
-              <b>Platforms: </b>
+            <Group gap="sm">
+              <Text size="sm" fw={600}>
+                Platforms
+              </Text>
               <PlatformList
                 platforms={selectedPipelineStep.platforms}
-                size="2rem"
+                size="1.75rem"
                 color="black"
               />
-            </div>
+            </Group>
           )}
-        </div>
-      </div>
-      <hr></hr>
-      {selectedPipelineStep.parameters.filter((elm) => !elm.is_advanced)
-        .length > 0 ? (
-        <div>
-          <b>Parameters:</b>
+        </Stack>
+      </Paper>
+
+      {basicParameters.length > 0 && (
+        <Stack gap="sm">
+          <div>
+            <Text fw={700} size="lg">
+              Parameters
+            </Text>
+            <Text size="sm" c="dimmed">
+              Configure the values used during this step.
+            </Text>
+          </div>
           <HyperparameterView
             handleHyperparameterChange={onHandleHyperparameterChange}
             isAdvanced={false}
             hyperparameters={selectedPipelineStep.parameters}
           />
-        </div>
-      ) : null}
-      {selectedPipelineStep.parameters.filter((elm) => elm.is_advanced).length >
-        0 && (
-        <div>
-          <Group align="center" gap="xs">
-            <Text fw={700}>Advanced parameters</Text>
-            <FontAwesomeIcon
-              size="1x"
-              icon={isOpen ? faCaretDown : faCaretRight}
-              onClick={toggleCollapse}
-              style={{ cursor: "pointer" }}
-            />
+        </Stack>
+      )}
+
+      {advancedParameters.length > 0 && (
+        <Stack gap="sm">
+          <Divider />
+          <Group justify="space-between" align="center">
+            <div>
+              <Text fw={700}>Advanced parameters</Text>
+              <Text size="sm" c="dimmed">
+                Leave these unchanged to use the recommended defaults.
+              </Text>
+            </div>
+            <Button
+              variant="subtle"
+              color="gray"
+              size="sm"
+              onClick={() => setShowAdvanced((open) => !open)}
+              rightSection={
+                <FontAwesomeIcon
+                  icon={showAdvanced ? faChevronDown : faChevronRight}
+                />
+              }
+            >
+              {showAdvanced ? "Hide" : "Show"}
+            </Button>
           </Group>
-          <div>
-            You do not need to change the advanced parameters. Leave the fields
-            empty to use default values.
-          </div>
-          <Collapse in={isOpen}>
+          <Collapse in={showAdvanced}>
             <HyperparameterView
               handleHyperparameterChange={onHandleHyperparameterChange}
               isAdvanced={true}
               hyperparameters={selectedPipelineStep.parameters}
             />
           </Collapse>
-        </div>
+        </Stack>
       )}
     </div>
   );

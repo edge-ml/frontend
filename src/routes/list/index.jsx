@@ -13,7 +13,6 @@ import DeleteModal from "../../components/Common/DeleteModal";
 
 const ListPage = () => {
   const [selectedDatasets, setSelectedDatasets] = useState([]);
-  const [pageSize, setPageSize] = useState(5);
   const [sortDropDownIsOpen, setSortDropdownIsOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(undefined);
   const { registerProjectDownload } = useContext(NotificationContext);
@@ -30,7 +29,7 @@ const ListPage = () => {
     setSorting,
     updateDataset,
     deleteDatasets,
-  } = usePaginatedDatasets(pageSize);
+  } = usePaginatedDatasets();
 
   const deleteSelectedDatasets = () => {
     deleteDatasets(deleteSelected);

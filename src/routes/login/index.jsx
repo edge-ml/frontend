@@ -9,6 +9,7 @@ import {
   Group,
   Center,
   Alert,
+  Divider,
 } from "@mantine/core";
 import { IconBrandGithub, IconUser, IconShield, IconAlertTriangle } from "@tabler/icons-react";
 import EdgeMLBrandLogo from "../../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
@@ -95,17 +96,20 @@ const LoginPage = ({ children }) => {
             Login
           </Button>
 
+          <Divider />
+
           <Text size="sm" fw={500}>Login with a provider</Text>
 
           <Button
-            variant="default"
             leftSection={<IconBrandGithub size={20} />}
             onClick={() => onOAuth("github")}
             fullWidth
-            className="btnGithub"
+            color="#24292e"
           >
             <span>Login with <b>Github</b></span>
           </Button>
+
+          <Divider />
 
           {error && (
             <Alert

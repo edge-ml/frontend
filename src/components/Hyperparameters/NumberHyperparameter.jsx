@@ -7,7 +7,7 @@ const NumberHyperparameter = (props) => {
   return (
     <Hyperparameter {...props}>
       <NumberInput
-        style={{ minHeight: "38px" }}
+        style={{ width: "100%" }}
         value={props.value}
         step={props.step_size}
         min={props.number_min}

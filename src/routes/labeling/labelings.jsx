@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { Button, Container } from "@mantine/core";
+import { Container } from "@mantine/core";
 import useLabelings from "../../Hooks/useLabelings";
 import LabelingTable from "./LabelingTable";
 import EditLabelingModal from "../../components/EditLabelingModal/EditLabelingModal";
-import { Empty } from "../export/components/Empty";
 import Loader from "../../modules/loader";
 
 const LabelingsPage = () => {
@@ -34,24 +33,16 @@ const LabelingsPage = () => {
 
   return (
     <Container fluid p="md">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div className="fw-bold h4">LABELINGS</div>
-        <Button onClick={() => setCreateModalOpen(true)}>
-          Create Labeling
-        </Button>
-      </div>
-      {labelings.length === 0 ? (
-        <Empty>No labelings created yet</Empty>
-      ) : (
-        <LabelingTable
-          labelings={labelings}
-          onEdit={onEdit}
-          deleteLabelings={deleteLabelings}
-        />
-      )}
+      <LabelingTable
+        labelings={labelings}
+        onEdit={onEdit}
+        deleteLabelings={deleteLabelings}
+        onCreate={() => setCreateModalOpen(true)}
+      />
       <EditLabelingModal
         isOpen={createModalOpen || editModalOpen}
-        labeling={editLabeling}
+        currentLabeling={editLabeling}
+        labelings={labelings}
         onClose={() => {
           setCreateModalOpen(false);
           setEditModalOpen(false);
