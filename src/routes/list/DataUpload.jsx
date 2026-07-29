@@ -7,15 +7,18 @@ import {
   faFile,
   faMicrochip,
   faMobileAlt,
+  faDatabase,
 } from "@fortawesome/free-solid-svg-icons";
 import useProjectRouter from "../../Hooks/ProjectRouter";
 import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
+import { ImportWharModal } from "../../components/ImportWharModal/ImportWharModal";
 
 // Component for Data Upload Panel
 const DataUpload = ({ refreshDatasets }) => {
   const navigate = useProjectRouter();
 
   const [csvModalOpen, setCSVModalOpen] = useState(false);
+  const [wharModalOpen, setWharModalOpen] = useState(false);
 
   const iconSize = "xs";
   const buttonColor = "secondary";
@@ -72,6 +75,14 @@ const DataUpload = ({ refreshDatasets }) => {
       buttonText: "Collect Web Sensor Data",
       buttonAction: () => navigate("uploadWeb"),
     },
+    {
+      icon: faDatabase,
+      title: "Standard WHAR Dataset",
+      description:
+        "Import a published Human Activity Recognition dataset to train on.",
+      buttonText: "Import WHAR Dataset",
+      buttonAction: () => setWharModalOpen(true),
+    },
   ];
 
   return (
@@ -120,6 +131,11 @@ const DataUpload = ({ refreshDatasets }) => {
       <UploadDatasetModal
         isOpen={csvModalOpen}
         onCloseModal={() => setCSVModalOpen(false)}
+        onDatasetComplete={refreshDatasets}
+      />
+      <ImportWharModal
+        isOpen={wharModalOpen}
+        onCloseModal={() => setWharModalOpen(false)}
         onDatasetComplete={refreshDatasets}
       />
     </div>

@@ -29,6 +29,13 @@ export const DATASET_STORE =
       ? "http://ds.edge-ml.ngrok.io/ds/"
       : `http://${currentHost}:3004/ds/`;
 
+export const WHAR_URI =
+  process.env.NODE_ENV === "production"
+    ? "/whar/"
+    : window.location.host === "edge-ml.ngrok.io"
+      ? "http://whar.edge-ml.ngrok.io/whar/"
+      : `http://${currentHost}:3006/whar/`;
+
 export const HTTP_METHODS = {
   GET: "GET",
   POST: "POST",
@@ -95,6 +102,11 @@ export const DATASET_STORE_ENDPOINTS = {
   GET_PROCESSING_PROGRESS: "datasets/create/progress",
 };
 
+export const WHAR_ENDPOINTS = {
+  DATASETS: "datasets",
+  IMPORT: "import",
+};
+
 export const generateApiRequest = (
   method = this.HTTP_METHODS.GET,
   baseUri = this.API_URI,
@@ -122,11 +134,13 @@ const expObj = {
   API_URI,
   ML_URI,
   DATASET_STORE,
+  WHAR_URI,
   HTTP_METHODS,
   AUTH_ENDPOINTS,
   API_ENDPOINTS,
   ML_ENDPOINTS,
   DATASET_STORE_ENDPOINTS,
+  WHAR_ENDPOINTS,
   generateApiRequest,
 };
 
