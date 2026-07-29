@@ -37,8 +37,17 @@ const apiRequest = async (
   } catch (error) {
     // Surface the backend's error message instead of axios' generic
     // "Request failed with status code 500".
-    const serverMessage =
-      error.response?.data?.error || error.response?.data?.message;
+    let data = error.response?.data;
+    // For blob responses (e.g. model downloads) the error body is a Blob, so the
+    // fields below are undefined; read and parse it to recover the real message.
+    if (data instanceof Blob) {
+      try {
+        data = JSON.parse(await data.text());
+      } catch (_) {
+        data = undefined;
+      }
+    }
+    const serverMessage = data?.detail || data?.error || data?.message;
     const normalized = new Error(serverMessage || error.message);
     normalized.status = error.response?.status;
     throw normalized;
