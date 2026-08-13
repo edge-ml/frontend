@@ -1,6 +1,6 @@
 // Import necessary libraries and components
 import React, { useState } from "react";
-import { Button, Row, Col } from "reactstrap";
+import { Button, Row, Col, Progress, Spinner } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCode,
@@ -8,10 +8,73 @@ import {
   faMicrochip,
   faMobileAlt,
   faDatabase,
+  faCheckCircle,
+  faTimes,
+  faCircleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import useProjectRouter from "../../Hooks/ProjectRouter";
 import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
 import { ImportWharModal } from "../../components/ImportWharModal/ImportWharModal";
+import { getWharImportStatus } from "../../services/ApiServices/WharImportService";
+import { useInterval } from "../../services/ReactHooksService";
+import useWharImportStore from "../../stores/wharImportStore";
+import {
+  isRunning,
+  percentOf,
+  captionOf,
+} from "../../components/ImportWharModal/wharProgressUtils";
+
+// Compact banner shown whenever a WHAR import is active, even with the modal
+// closed, so a long import never looks like it just vanished. Click to reopen.
+const WharImportBadge = ({ job, status, elapsed, onOpen, onDismiss }) => {
+  const state = status ? status.state : "queued";
+  const running = isRunning(state);
+  const done = state === "done";
+  const failed = state === "error";
+  const pct = percentOf(status);
+  return (
+    <div
+      className="mb-3 p-2 d-flex align-items-center"
+      style={{ background: "#fff", borderRadius: "0.5rem", color: "#222", gap: "0.75rem" }}
+    >
+      {running && <Spinner size="sm" />}
+      {done && <FontAwesomeIcon icon={faCheckCircle} style={{ color: "#1c7c43" }} />}
+      {failed && <FontAwesomeIcon icon={faCircleExclamation} style={{ color: "#c0392b" }} />}
+      <div
+        className="flex-grow-1"
+        style={{ cursor: "pointer" }}
+        onClick={onOpen}
+        role="button"
+      >
+        <div style={{ fontSize: "0.82rem" }}>
+          <b>{job.datasetName}</b>{" "}
+          <span className="text-muted">
+            {done ? "imported" : failed ? "failed" : captionOf(status, elapsed)}
+          </span>
+        </div>
+        {running && (
+          <Progress
+            className="mt-1"
+            style={{ height: "6px" }}
+            animated
+            striped={pct == null}
+            value={pct == null ? 100 : pct}
+          />
+        )}
+      </div>
+      {running && (
+        <Button size="sm" color="light" onClick={onOpen}>
+          View
+        </Button>
+      )}
+      {(done || failed) && (
+        <Button size="sm" color="link" onClick={onDismiss} title="Dismiss">
+          <FontAwesomeIcon icon={faTimes} />
+        </Button>
+      )}
+    </div>
+  );
+};
 
 // Component for Data Upload Panel
 const DataUpload = ({ refreshDatasets }) => {
@@ -19,6 +82,28 @@ const DataUpload = ({ refreshDatasets }) => {
 
   const [csvModalOpen, setCSVModalOpen] = useState(false);
   const [wharModalOpen, setWharModalOpen] = useState(false);
+  const [now, setNow] = useState(Date.now());
+
+  const { job, status, setStatus, clear } = useWharImportStore();
+
+  // Poll the active import (keeps running with the modal closed); refresh the
+  // datasets list once it completes.
+  useInterval(
+    async () => {
+      if (!job) return;
+      try {
+        const s = await getWharImportStatus(job.jobId);
+        setStatus(s);
+        if (s.state === "done") refreshDatasets && refreshDatasets();
+      } catch (err) {
+        setStatus({ state: "error", error: err.message });
+      }
+    },
+    job && (!status || isRunning(status.state)) ? 2000 : null
+  );
+
+  // Tick elapsed while a job runs.
+  useInterval(() => setNow(Date.now()), job && isRunning(status?.state) ? 1000 : null);
 
   const iconSize = "xs";
   const buttonColor = "secondary";
@@ -96,6 +181,16 @@ const DataUpload = ({ refreshDatasets }) => {
         <b>DATA UPLOAD</b>
       </div>
 
+      {job && (
+        <WharImportBadge
+          job={job}
+          status={status}
+          elapsed={now - job.startedAt}
+          onOpen={() => setWharModalOpen(true)}
+          onDismiss={clear}
+        />
+      )}
+
       {/* Render the Data Upload options */}
       <Row>
         {dataUploadOptions.map((option, index) => (
@@ -136,7 +231,6 @@ const DataUpload = ({ refreshDatasets }) => {
       <ImportWharModal
         isOpen={wharModalOpen}
         onCloseModal={() => setWharModalOpen(false)}
-        onDatasetComplete={refreshDatasets}
       />
     </div>
   );
