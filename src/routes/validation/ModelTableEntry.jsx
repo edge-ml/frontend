@@ -10,6 +10,17 @@ import DeployModal from "./DeployModal";
 import EditModal from "../../components/EditModal";
 import { deploymentLabel } from "../../components/Common/modelExport";
 
+// Live training status text. Torch classifiers report per-epoch progress;
+// everything else shows the coarse backend stage (Loading data / Training /
+// Finalizing), falling back to a plain "Training..." before any stage is set.
+const trainingProgressText = (model) => {
+  if (model.currentEpoch && model.totalEpochs) {
+    const pct = model.progress != null ? `, ${model.progress}%` : "";
+    return `Training - Epoch ${model.currentEpoch}/${model.totalEpochs}${pct}`;
+  }
+  return model.stage ? `${model.stage}...` : "Training...";
+};
+
 const DeploymentBadge = ({ model }) => {
   const label = deploymentLabel(model);
   if (!label) return null; // not exportable — Download is disabled, no badge needed
@@ -165,7 +176,7 @@ const ModelTableEntry = ({
       {model.trainStatus !== "done" ? (
         <Col className="d-flex align-items-center">
           <Spinner size="sm" className="me-2">Loading...</Spinner>
-          <span>Training...</span>
+          <span>{trainingProgressText(model)}</span>
         </Col>
       ) : (
         <Col className="d-flex flex-column justify-content-center">
