@@ -1,28 +1,12 @@
 import React from "react";
 import {
+  faTrashAlt,
   faDownload,
-  faMicrochip,
-  faPlay,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { Button, Tooltip } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useProjectRouter from "../../Hooks/ProjectRouter";
-
-const checkExportC = (model, stepOptions) => {
-  if (!stepOptions) return false;
-  return model.pipeline.selectedPipeline.steps.every((step) => {
-    const stepOption = stepOptions.find(
-      (elm) => elm.name === step.options.name
-    );
-    if (!stepOption) return false;
-    if (!["PRE", "CORE"].includes(stepOption.type)) return true;
-    return (
-      ["PRE", "CORE"].includes(stepOption.type) &&
-      stepOption.platforms.includes("C")
-    );
-  });
-};
+import { canDownload, canDeployEmbedded } from "../../components/Common/modelExport";
 
 const ListButton = ({ onClick, icon, children, ...props }) => {
   return (
@@ -46,15 +30,19 @@ const ButtonList = ({
   model,
   setModalModel,
   setModelDownload,
-  stepOptions,
+  onDeleteSingleModel,
   setDeployModalOpen,
 }) => {
-  const navigateTo = useProjectRouter();
-  const canExport = model.trainStatus === "done" && !model.error;
+  // Deploy stays hidden for now: embedded-only (flashes the model onto a BLE
+  // microcontroller via canDeployEmbedded). Restore when needed.
+  const deployable = canDeployEmbedded(model);
+  void deployable;
+  void setDeployModalOpen;
+  const downloadable = canDownload(model);
 
   return (
-    <Button.Group>
-      {canExport && (
+    <>
+      {model.trainStatus === "done" && !model.error && (
         <>
           <ListButton
             color="cyan"
@@ -67,36 +55,28 @@ const ButtonList = ({
           <ListButton
             color="blue"
             variant="outline"
-            icon={faPlay}
-            onClick={() => navigateTo("models/live/" + model._id)}
-          >
-            View live
-          </ListButton>
-          <Tooltip
-            label="Selected pipeline doesn't support C export"
-            disabled={checkExportC(model, stepOptions)}
-          >
-            <ListButton
-              color="blue"
-              variant="outline"
-              icon={faMicrochip}
-              onClick={() => setDeployModalOpen(true)}
-              disabled={!checkExportC(model, stepOptions)}
-            >
-              Deploy
-            </ListButton>
-          </Tooltip>
-          <ListButton
-            color="blue"
-            variant="outline"
             icon={faDownload}
             onClick={() => setModelDownload(model)}
+            disabled={!downloadable}
+            title={
+              downloadable
+                ? "Download the model"
+                : "This model runs on the server only; there is nothing to download"
+            }
           >
             Download
           </ListButton>
         </>
       )}
-    </Button.Group>
+      <ListButton
+        color="red"
+        variant="outline"
+        icon={faTrashAlt}
+        onClick={() => onDeleteSingleModel(model)}
+      >
+        Delete
+      </ListButton>
+    </>
   );
 };
 

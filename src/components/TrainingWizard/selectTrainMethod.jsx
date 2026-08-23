@@ -1,31 +1,9 @@
 import React from "react";
-import { Card, Group, SimpleGrid, Stack, Text } from "@mantine/core";
-import PlatformList from "../Common/PlatformList";
+import { Card, SimpleGrid, Stack, Text } from "@mantine/core";
 
-const getPipelinePlatforms = (pipeline) => {
-  const initialStep = pipeline.steps.find((step) =>
-    ["PRE", "EVAL"].includes(step.type)
-  );
-  let platforms = new Set(
-    initialStep
-      ? initialStep.options.map((option) => option.platforms).flat()
-      : []
-  );
-
-  pipeline.steps.forEach((step) => {
-    if (step.type === "PRE" || step.type === "CORE") {
-      const supportedPlatforms = new Set(
-        step.options.map((option) => option.platforms).flat()
-      );
-      platforms = new Set(
-        [...platforms].filter((platform) => supportedPlatforms.has(platform))
-      );
-    }
-  });
-
-  return platforms;
-};
-
+// Export capability depends on the classifier and steps the user picks inside
+// the pipeline, so it is shown as a live "Export target" once selections are
+// made (see TrainingWizard) rather than as a misleading badge on the picker.
 const SelectTrainMethod = ({ pipelines, onSelectTrainingMethod }) => (
   <div className="training-wizard-step">
     <div className="training-wizard-step-header">
@@ -47,24 +25,13 @@ const SelectTrainMethod = ({ pipelines, onSelectTrainingMethod }) => (
           className="training-wizard-pipeline-card"
           onClick={() => onSelectTrainingMethod(pipeline)}
         >
-          <Stack gap="md" h="100%" justify="space-between">
-            <Stack gap={6}>
-              <Text fw={700} size="lg">
-                {pipeline.name}
-              </Text>
-              <Text size="sm" c="dimmed" lh={1.5}>
-                {pipeline.description}
-              </Text>
-            </Stack>
-            <Group justify="space-between" wrap="nowrap">
-              <Text size="xs" fw={600} c="dimmed">
-                Supported platforms
-              </Text>
-              <PlatformList
-                size="2rem"
-                platforms={getPipelinePlatforms(pipeline)}
-              />
-            </Group>
+          <Stack gap={6}>
+            <Text fw={700} size="lg">
+              {pipeline.name}
+            </Text>
+            <Text size="sm" c="dimmed" lh={1.5}>
+              {pipeline.description}
+            </Text>
           </Stack>
         </Card>
       ))}

@@ -10,18 +10,19 @@ import {
   Text,
 } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HyperparameterView } from "../Hyperparameters/HyperparameterView";
+import ExportTarget from "../Common/ExportTarget";
 import {
   faChevronDown,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { HyperparameterView } from "../Hyperparameters/HyperparameterView";
-import PlatformList from "../Common/PlatformList";
 
 const Pipelinestep = ({
   step,
   selectedPipelineStep,
   setPipelineStep,
   stepNum,
+  exportTargets,
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -77,13 +78,9 @@ const Pipelinestep = ({
           {selectedPipelineStep.type !== "EVAL" && (
             <Group gap="sm">
               <Text size="sm" fw={600}>
-                Platforms
+                Deployment
               </Text>
-              <PlatformList
-                platforms={selectedPipelineStep.platforms}
-                size="1.75rem"
-                color="black"
-              />
+              <ExportTarget targets={exportTargets} />
             </Group>
           )}
         </Stack>
@@ -142,6 +139,21 @@ const Pipelinestep = ({
       )}
     </div>
   );
+};
+
+Pipelinestep.validate = ({ step }) => {
+  if (!step || !step.parameters) return undefined;
+  for (const p of step.parameters) {
+    // Empty value = use the option's default, which is allowed.
+    if (p.value === null || p.value === undefined || p.value === "") continue;
+    const val = Number(p.value);
+    if (Number.isNaN(val)) continue;
+    if (typeof p.number_min === "number" && val < p.number_min)
+      return `${p.parameter_name} must be at least ${p.number_min}`;
+    if (typeof p.number_max === "number" && val > p.number_max)
+      return `${p.parameter_name} must be at most ${p.number_max}`;
+  }
+  return undefined;
 };
 
 export default Pipelinestep;

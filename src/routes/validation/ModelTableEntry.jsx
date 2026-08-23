@@ -12,6 +12,39 @@ import { SelectedModelModalView } from "../../components/SelectedModelModalView/
 import ButtonList from "./ButtonList";
 import DeployModal from "./DeployModal";
 import EditModal from "../../components/EditModal";
+import { deploymentLabel } from "../../components/Common/modelExport";
+
+// Live training status text. Torch classifiers report per-epoch progress;
+// everything else shows the coarse backend stage (Loading data / Training /
+// Finalizing), falling back to a plain "Training..." before any stage is set.
+const trainingProgressText = (model) => {
+  if (model.currentEpoch && model.totalEpochs) {
+    const pct = model.progress != null ? `, ${model.progress}%` : "";
+    return `Training - Epoch ${model.currentEpoch}/${model.totalEpochs}${pct}`;
+  }
+  return model.stage ? `${model.stage}...` : "Training...";
+};
+
+const DeploymentBadge = ({ model }) => {
+  const label = deploymentLabel(model);
+  if (!label) return null; // not exportable — Download is disabled, no badge needed
+  return (
+    <span
+      title={`Downloadable for: ${label}`}
+      style={{
+        display: "inline-block",
+        padding: "0.05rem 0.45rem",
+        borderRadius: "0.5rem",
+        fontSize: "0.72rem",
+        fontWeight: 600,
+        background: "#e7f5ec",
+        color: "#1c7c43",
+      }}
+    >
+      {label}
+    </span>
+  );
+};
 
 const metric = (val) => Math.round(val * 100 * 100) / 100;
 
@@ -49,7 +82,10 @@ const ModelTableEntry = ({
               {model.name}
             </Text>
             <Text size="sm" c="dimmed">
-              {model.pipeline?.selectedPipeline?.name}
+              {model.pipeline?.selectedPipeline?.name}{" "}
+              {model.trainStatus === "done" && !model.error ? (
+                <DeploymentBadge model={model} />
+              ) : null}
             </Text>
           </div>
         </Table.Td>
@@ -64,7 +100,7 @@ const ModelTableEntry = ({
           ) : model.trainStatus !== "done" ? (
             <Group gap="xs">
               <Loader size="sm" />
-              <Text size="sm">Training...</Text>
+              <Text size="sm">{trainingProgressText(model)}</Text>
             </Group>
           ) : (
             <Group gap="md">
@@ -101,6 +137,7 @@ const ModelTableEntry = ({
               model={model}
               setModalModel={setModalModel}
               setModelDownload={setModelDownload}
+              onDeleteSingleModel={(m) => onDeleteModels([m])}
               stepOptions={stepOptions}
               setDeployModalOpen={setDeployModalOpen}
             />

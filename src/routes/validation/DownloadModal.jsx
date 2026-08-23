@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button, Menu, TextInput } from "@mantine/core";
+import React, { useState, useEffect } from "react";
+import { Button, Menu } from "@mantine/core";
 import {
   Modal,
   ModalFooter,
@@ -7,72 +7,85 @@ import {
   ModalHeader,
 } from "../../components/Common/Modal";
 import CodeView from "../../components/ApiSnippetsModal/CodeView";
-import {
-  downloadDeploymentModel,
-  downloadModalLink,
-} from "../../services/ApiServices/MLDeploymentService";
+import { downloadDeploymentModel } from "../../services/ApiServices/MLDeploymentService";
 import { downloadBlob } from "../../services/helpers";
-import { getProject } from "../../services/LocalStorageService";
+
+const FORMAT_INFO = {
+  C: { label: "C++", prismLanguage: "cpp" },
+  EXECUTORCH: { label: "ExecuTorch (.pte)", prismLanguage: "kotlin" },
+};
+
+const formatInfoFor = (fmt) =>
+  FORMAT_INFO[fmt] || { label: fmt, prismLanguage: "c" };
+
+// null/undefined => legacy model trained before the backend computed formats,
+// so fall back to C++. An explicit empty array means the pipeline supports no
+// download format and the download must be disabled.
+const formatsFor = (model) =>
+  model && model.formats == null ? ["C"] : (model && model.formats) || [];
 
 const DownloadModal = ({ model, onClose }) => {
-  const [language, setLanguage] = useState("cpp");
+  const [format, setFormat] = useState(null);
+  const [error, setError] = useState(null);
+
+  const formats = formatsFor(model);
+
+  // The modal is mounted continuously with model=null and only later receives a
+  // real model, so the selection has to be (re)initialised on model change
+  // rather than in the useState initialiser.
+  useEffect(() => {
+    setFormat(formats.length ? formats[0] : null);
+    setError(null);
+  }, [model && model._id]);
 
   if (!model) {
     return null;
   }
 
+  const info = format ? formatInfoFor(format) : null;
+  const timeSeries = model.timeSeries || [];
+
   const downloadModel = async () => {
-    const blob =
-      language === "python"
-        ? await downloadModalLink(getProject(), model._id, "python")
-        : await downloadDeploymentModel(model._id, "C");
-    await downloadBlob(blob, `${model.name}_${language}.zip`);
+    try {
+      setError(null);
+      const blob = await downloadDeploymentModel(model._id, format);
+      downloadBlob(blob, `${model.name}_${format.toLowerCase()}.zip`);
+    } catch (e) {
+      setError(
+        e && e.message ? e.message : "Download failed. Please try again."
+      );
+    }
   };
 
   const getCode = () => {
-    switch (language) {
-      case "cpp":
+    switch (format) {
+      case "C":
         return `#include "model.hpp"
 #include <iostream>
 
 int main() {
   cout << "SamplingRate: " << get_sampling_rate() << endl;
-  add_datapoint(${model.timeSeries.map((elm) => "val_" + elm).join(", ")});
+  add_datapoint(${timeSeries.map((elm) => "val_" + elm).join(", ")});
   int res = predict();
   cout << "Result: " << res << " <==> " << class_to_label(res) << endl;
   return 0;
 }`;
+      case "EXECUTORCH":
+        return `// Android (Kotlin) — see README.md and manifest.json in the download
+val classifier = ExampleClassifier("model.pte")
+
+// call once per sensor sample (order: ${timeSeries.join(", ")})
+classifier.addDatapoint(floatArrayOf(${timeSeries
+          .map((elm) => "val_" + elm)
+          .join(", ")}))
+
+val label = classifier.predict()`;
       default:
         return "";
     }
   };
 
-  const CodeSnippet = ({ language, code }) => {
-    const genCode = getCode();
-
-    if (code === "") {
-      return (
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-            fontWeight: 700,
-          }}
-        >
-          No sample code available
-        </div>
-      );
-    }
-
-    return (
-      <div>
-        <b>Code</b>
-        <CodeView language={language} code={genCode}></CodeView>
-      </div>
-    );
-  };
+  const code = getCode();
 
   return (
     <Modal isOpen={model} size="xl" onClose={onClose}>
@@ -86,25 +99,63 @@ int main() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center" }}>
-            <b style={{ marginRight: "0.5rem" }}>Language:</b>
-            <Menu>
-              <Menu.Target>
-                <Button variant="outline" color="blue">
-                  {language.toUpperCase()}
-                </Button>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item onClick={() => setLanguage("cpp")}>C++</Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            <b style={{ marginRight: "0.5rem" }}>Format:</b>
+            {format ? (
+              <Menu>
+                <Menu.Target>
+                  <Button variant="outline" color="blue">
+                    {info.label}
+                  </Button>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {formats.map((fmt) => (
+                    <Menu.Item key={fmt} onClick={() => setFormat(fmt)}>
+                      {formatInfoFor(fmt).label}
+                    </Menu.Item>
+                  ))}
+                </Menu.Dropdown>
+              </Menu>
+            ) : (
+              <span style={{ color: "#868e96" }}>
+                No export format available for this model
+              </span>
+            )}
           </div>
-          <Button variant="outline" color="blue" onClick={downloadModel}>
+          <Button
+            variant="outline"
+            color="blue"
+            onClick={downloadModel}
+            disabled={!format}
+          >
             Download
           </Button>
         </div>
         <div style={{ paddingTop: "0.5rem" }}></div>
         <hr></hr>
-        <CodeSnippet language={language} code={getCode()}></CodeSnippet>
+        {error && (
+          <div style={{ color: "#c92a2a", fontWeight: 700, marginBottom: "0.5rem" }}>
+            {error}
+          </div>
+        )}
+        {code === "" ? (
+          <div
+            style={{
+              display: "flex",
+              width: "100%",
+              minHeight: "12rem",
+              justifyContent: "center",
+              alignItems: "center",
+              fontWeight: 700,
+            }}
+          >
+            No sample code available
+          </div>
+        ) : (
+          <div>
+            <b>Code</b>
+            <CodeView language={info.prismLanguage} code={code}></CodeView>
+          </div>
+        )}
       </ModalBody>
       <ModalFooter>
         <Button variant="outline" onClick={onClose}>
