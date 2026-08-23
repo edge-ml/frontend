@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { SimpleGrid, Text, Button, Group, ThemeIcon, Progress, Loader } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faDatabase,
   faCheckCircle,
   faTimes,
   faCircleExclamation,
@@ -12,6 +11,7 @@ import {
   IconFileUpload,
   IconCode,
   IconDeviceMobile,
+  IconDatabase,
 } from "@tabler/icons-react";
 import useProjectRouter from "../../Hooks/ProjectRouter";
 import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
@@ -163,7 +163,7 @@ const DataUpload = ({ refreshDatasets }) => {
       buttonAction: () => navigate("uploadWeb"),
     },
     {
-      icon: faDatabase,
+      icon: IconDatabase,
       title: "Standard WHAR Dataset",
       description:
         "Import a published Human Activity Recognition dataset to train on.",
