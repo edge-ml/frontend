@@ -18,7 +18,7 @@ const ListButton = ({ onClick, icon, children, ...props }) => {
         e.stopPropagation();
       }}
     >
-      <FontAwesomeIcon icon={icon} />
+      <FontAwesomeIcon icon={icon} style={{ marginRight: 8 }} />
       <div>
         <small>{children}</small>
       </div>

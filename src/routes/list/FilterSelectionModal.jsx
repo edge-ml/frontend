@@ -63,10 +63,8 @@ const FilterSelectionModal = ({
         opened={showFilterSelectionModal}
         onClose={toggleFilterSelectionModal}
         size="xl"
+        title="Filter Selection"
       >
-        <Modal.Header>
-          <Modal.Title>Filter Selection</Modal.Title>
-        </Modal.Header>
         <Modal.Body>
           <div>
             <Radio.Group

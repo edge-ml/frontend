@@ -50,46 +50,47 @@ class UserNameSettings extends Component {
 
   render() {
     return (
-      <div>
-        <h4 style={{ fontWeight: 700 }}>Change UserName</h4>
-        <TextInput
-          label="Username"
-          id="inputUserName"
-          placeholder="New username"
-          onChange={this.onUserNameChange}
-        />
-        <TextInput
-          label="Username"
-          id="inputUserNameConfirm"
-          placeholder="Retype new username"
-          onChange={this.onUserNameConfirmChange}
-        />
-        <Button
-          variant="outline"
-          disabled={
-            !this.state.userName ||
-            this.state.userName !== this.state.userNameConfirm
-          }
-          id="buttonSaveUserName"
-          color="blue"
-          style={{ margin: "0.25rem" }}
-          onClick={this.onUserNameSubmit}
-        >
-          Save new username
-        </Button>
-        {this.state.userNameError ? (
-          <div
-            id="userNameError"
-            style={{
-              display: "inline",
-              color: "red",
-              marginLeft: "16px",
-            }}
+      <section className="user-settings-section" id={this.props.id}>
+        <div className="user-settings-section__heading">
+          <h4 className="user-settings-section__title">Change username</h4>
+          <p className="user-settings-section__description">
+            Update the name shown across your account.
+          </p>
+        </div>
+        <div className="user-settings-fields">
+          <TextInput
+            label="Username"
+            id="inputUserName"
+            placeholder="New username"
+            onChange={this.onUserNameChange}
+          />
+          <TextInput
+            label="Confirm username"
+            id="inputUserNameConfirm"
+            placeholder="Retype new username"
+            onChange={this.onUserNameConfirmChange}
+          />
+        </div>
+        <div className="user-settings-actions">
+          <Button
+            variant="outline"
+            disabled={
+              !this.state.userName ||
+              this.state.userName !== this.state.userNameConfirm
+            }
+            id="buttonSaveUserName"
+            color="blue"
+            onClick={this.onUserNameSubmit}
           >
-            {this.state.userNameError}
-          </div>
-        ) : null}
-      </div>
+            Save new username
+          </Button>
+          {this.state.userNameError ? (
+            <div id="userNameError" className="user-settings-error">
+              {this.state.userNameError}
+            </div>
+          ) : null}
+        </div>
+      </section>
     );
   }
 }

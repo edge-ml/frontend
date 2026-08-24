@@ -116,10 +116,28 @@ const TrainingWizard = ({ isOpen, onClose }) => {
     setScreen(Math.min(screen + 1, maxSteps - 1));
   };
 
+  // Every time the wizard opens, reset all configuration to a fresh state and
+  // reload the data from the server, so new datasets/labelings are picked up.
   useEffect(() => {
+    if (!isOpen) return;
+
+    // Reset wizard progress and selections
+    setDisabledTimeseriesNames([]);
+    setLableing(undefined);
+    toggleZeroClass(false);
+    setModelName("");
+    setSelectedPipeline(undefined);
+    setSelectedPipelineSteps(undefined);
+    setExportGoal(undefined);
+    setScreen(0);
+    setTrainError(undefined);
+    setPreflight(null);
+    setPreflightLoading(false);
+
+    // Reload datasets/labelings/pipelines
+    setIsLoading(true);
     Promise.all([getDatasets(), getLabelings(), getTrainConfig()])
       .then(([datasetResult, labelingResult, pipelineResult]) => {
-        setDisabledTimeseriesNames([]);
         setDatasets(
           datasetResult.map((dataset) => ({ ...dataset, selected: false }))
         );
@@ -129,7 +147,7 @@ const TrainingWizard = ({ isOpen, onClose }) => {
         setPipelines(pipelineResult);
       })
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [isOpen]);
 
   const toggleDisableTimeseries = (timeseries_id) => {
     setDisabledTimeseriesNames(
@@ -279,7 +297,10 @@ const TrainingWizard = ({ isOpen, onClose }) => {
     if (screen === maxSteps - 1) return Select_Name.validate({ modelName });
     return undefined;
   };
-  const currentError = validateCurrentStep();
+  // Only validate once we're actually inside the steps (after choosing an
+  // export goal); otherwise the labeling check fires on earlier screens.
+  const currentError =
+    selectedPipeline && exportGoal ? validateCurrentStep() : undefined;
   // The export target is fixed by the chosen goal; option filtering guarantees
   // every step supports it, so the model will export that way.
   const exportTargets =
@@ -291,7 +312,7 @@ const TrainingWizard = ({ isOpen, onClose }) => {
     <Modal
       opened={isOpen}
       onClose={onClose}
-      size="xl"
+      withCloseButton={false}
       padding={0}
       radius="lg"
       classNames={{ content: "training-wizard-modal" }}

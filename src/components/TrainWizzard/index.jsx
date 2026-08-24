@@ -5,10 +5,7 @@ import SelectLabeling from "./SelectLabeling";
 
 const TrainWizzard = ({ isOpen }) => {
   return (
-    <Modal opened={isOpen} size="xl">
-      <Modal.Header>
-        <Modal.Title>Train</Modal.Title>
-      </Modal.Header>
+    <Modal opened={isOpen} size="xl" title="Train">
       <SelectLabeling />
     </Modal>
   );

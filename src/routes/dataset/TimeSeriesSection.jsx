@@ -34,7 +34,7 @@ const TimeSeriesSection = () => {
         visibleRange={visibleRange}
         onRangeChange={setVisibleRange}
       />
-      <div className="flex-grow-1 overflow-auto">
+      <div className="flex-grow-1 overflow-auto" style={{ minHeight: 0 }}>
         {activeTimeSeries.map((timeSeries) => (
           <TimeSeriesDisplay
             key={timeSeries._id}

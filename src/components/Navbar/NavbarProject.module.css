@@ -1,0 +1,80 @@
+.tree {
+  --row-height: 30px;
+  --tree-line-color: var(--mantine-color-gray-3);
+}
+
+/*
+ * Connector lines between parent nodes and their children.
+ *
+ * Mantine's Tree indents node labels via `--label-offset`
+ * (= levelOffset * (level - 1)), while every `li` starts at x = 0.
+ * The subtree (`ul[role='group']`) therefore gets a vertical line at
+ * half the level offset, and each child `li` gets a horizontal tick
+ * connecting the vertical line to the child's label.
+ */
+
+.tree :global(ul[role='group']) {
+  position: relative;
+}
+
+/* Vertical line running down to the center of the last child */
+.tree :global(ul[role='group'])::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: calc(var(--row-height) / 2);
+  left: calc(var(--level-offset) / 2);
+  border-left: 1px solid var(--tree-line-color);
+}
+
+/* Horizontal tick per child */
+.tree :global(ul[role='group'] li[role='treeitem']) {
+  position: relative;
+}
+
+.tree :global(ul[role='group'] li[role='treeitem'])::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--row-height) / 2);
+  left: calc(var(--level-offset) / 2);
+  width: calc(var(--level-offset) / 2);
+  border-top: 1px solid var(--tree-line-color);
+}
+
+/* Top-level project row: transparent until hovered/active,
+   keeps line geometry exact, gets rounded bubble like the chips */
+.row {
+  height: var(--row-height);
+  margin: 1px 4px 1px 0;
+  padding-right: 4px;
+  border-radius: var(--mantine-radius-sm);
+}
+
+.row:hover {
+  background-color: var(--mantine-color-gray-0);
+}
+
+/* Bubble starts at the icon and stretches to the right edge */
+.chip {
+  height: var(--row-height);
+  padding: 0 6px;
+  border-radius: var(--mantine-radius-sm);
+  transition: background-color 100ms ease;
+}
+
+.chip:hover {
+  background-color: var(--mantine-color-gray-0);
+}
+
+.active,
+.active:hover {
+  background-color: var(--mantine-color-brand-1);
+}
+.caretCollapsed {
+  transition: transform 100ms ease;
+}
+
+.caretExpanded {
+  transform: rotate(90deg);
+  transition: transform 100ms ease;
+}

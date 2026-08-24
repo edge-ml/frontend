@@ -1,20 +1,34 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCaretDown,
-  faCaretRight,
   faDatabase,
   faCogs,
   faPen,
   faMicrochip,
+  faFolder,
+  faFolderOpen,
+  faCaretRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { Stack, Text, UnstyledButton, Paper } from "@mantine/core";
-
-import "./Navbar.css";
-import useProjectRouter from "../../Hooks/ProjectRouter";
-import useProjectStore from "../../stores/projectStore";
+import {
+  getTreeExpandedState,
+  Group,
+  Text,
+  Tree,
+  useTree,
+} from "@mantine/core";
 import { useLocation } from "react-router-dom";
 import classNames from "classnames";
+
+import useProjectRouter from "../../Hooks/ProjectRouter";
+import useProjectStore from "../../stores/projectStore";
+import classes from "./NavbarProject.module.css";
+
+const navItems = [
+  ["Datasets", faDatabase],
+  ["Labelings", faPen],
+  ["Models", faMicrochip],
+  ["Settings", faCogs],
+];
 
 const NavbarProject = ({ project }) => {
   const location = useLocation();
@@ -23,79 +37,135 @@ const NavbarProject = ({ project }) => {
 
   const isActive = currentProject?._id === project._id;
 
-  const getNavBarItemClasses = (location_data) => {
-    const matchName = `/${currentProject.admin.userName}/${currentProject.name}/${location_data}`;
-    const pathName = location.pathname.toLowerCase();
-    return pathName.startsWith(matchName.toLowerCase());
+  // Stable reference required by the Tree component
+  const treeData = useMemo(
+    () => [
+      {
+        value: project._id,
+        label: project.name,
+        children: navItems.map(([name]) => ({
+          value: `${project._id}:${name}`,
+          label: name,
+        })),
+      },
+    ],
+    [project._id, project.name]
+  );
+
+  const tree = useTree({
+    initialExpandedState: getTreeExpandedState(
+      treeData,
+      isActive ? [project._id] : []
+    ),
+  });
+
+  // Expand the subtree when the project becomes active (e.g. after navigation)
+  useEffect(() => {
+    if (isActive) {
+      tree.expand(project._id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive, project._id]);
+
+  const isPageActive = (page) => {
+    if (!isActive || !currentProject?.admin) return false;
+    const matchName = `/${currentProject.admin.userName}/${currentProject.name}/${page}`;
+    return location.pathname.toLowerCase().startsWith(matchName.toLowerCase());
   };
 
-  const navItems = [
-    ["Datasets", faDatabase],
-    ["Labelings", faPen],
-    ["Models", faMicrochip],
-    ["Settings", faCogs],
-  ];
+  const renderNode = ({ node, expanded, hasChildren, elementProps }) => {
+    const active = hasChildren ? isActive : isPageActive(node.label);
+    const icon = hasChildren
+      ? expanded
+        ? faFolderOpen
+        : faFolder
+      : navItems.find(([name]) => name === node.label)?.[1];
+    const activeColor = "var(--mantine-color-brand-7)";
 
-  return (
-    <Stack gap={0} key={project._id} className="w-100 text-left">
-      <UnstyledButton
-        className={classNames("d-flex align-items-center mt-1 pt-2 pb-2 ps-2", {
-          "bg-primary text-white": isActive,
+    if (!hasChildren) {
+      // Submenu entries: bubble hugs the icon+text on the left,
+      // then stretches to the right edge of the navbar
+      return (
+        <div
+          {...elementProps}
+          className={classNames(elementProps.className, classes.row)}
+          onClick={(event) => {
+            // Keeps the Tree's built-in expand/collapse behaviour working
+            elementProps.onClick?.(event);
+            navigate(node.label);
+          }}
+        >
+          <Group
+            wrap="nowrap"
+            gap={6}
+            className={classNames(classes.chip, {
+              [classes.active]: active,
+            })}
+          >
+            <FontAwesomeIcon
+              icon={icon}
+              fontSize={13}
+              color={active ? activeColor : "#8b8d8f"}
+            />
+            <Text size="sm" c={active ? activeColor : undefined}>
+              {node.label}
+            </Text>
+          </Group>
+        </div>
+      );
+    }
+
+    return (
+      <Group
+        wrap="nowrap"
+        gap={7}
+        {...elementProps}
+        className={classNames(elementProps.className, classes.row, {
+          [classes.active]: active,
         })}
-        onClick={() => {
+        onClick={(event) => {
+          // Keeps the Tree's built-in expand/collapse behaviour working
+          elementProps.onClick?.(event);
           setCurrentProject(project);
           navigate("Datasets");
         }}
-        style={{ overflow: "hidden", textOverflow: "ellipsis" }}
       >
         <FontAwesomeIcon
-          style={{ color: isActive ? "white" : "#8b8d8f", cursor: "pointer" }}
-          icon={isActive ? faCaretDown : faCaretRight}
-          className="me-2 fa-s"
+          icon={faCaretRight}
+          fontSize={10}
+          style={{ marginLeft: 6 }}
+          className={
+            expanded ? classes.caretExpanded : classes.caretCollapsed
+          }
         />
-        <Text fw={700} truncate="end" style={{ cursor: "pointer" }}>
-          {project.name}
-        </Text>
-      </UnstyledButton>
-      {isActive && (
-        <Paper
-          withBorder
-          radius="sm"
-          mx={6}
-          my={4}
-          style={{
-            borderColor: "rgba(71, 187, 120, 0.3)",
-            overflow: "hidden",
-          }}
+        <FontAwesomeIcon
+          icon={icon}
+          fontSize={13}
+          color={active ? activeColor : "#8b8d8f"}
+        />
+        <Text
+          size="sm"
+          fw={700}
+          c={active ? activeColor : undefined}
+          style={{ flex: 1 }}
+          truncate="end"
         >
-          <Stack gap={0}>
-            {navItems.map(([name, icon]) => {
-              const isPageActive = getNavBarItemClasses(name);
-              return (
-                <UnstyledButton
-                  key={name}
-                  onClick={() => navigate(name)}
-                  className="pt-2 pb-2 ps-3 pe-2 small"
-                  style={{
-                    cursor: "pointer",
-                    color: isPageActive
-                      ? "var(--mantine-color-brand-7)"
-                      : "#666",
-                    backgroundColor: isPageActive
-                      ? "var(--mantine-color-brand-1)"
-                      : "transparent",
-                    userSelect: "none",
-                  }}
-                >
-                  <FontAwesomeIcon className="me-2" icon={icon} />
-                  {name}
-                </UnstyledButton>
-              );
-            })}
-          </Stack>
-        </Paper>
-      )}
-    </Stack>
+          {node.label}
+        </Text>
+      </Group>
+    );
+  };
+
+  return (
+    <Tree
+      className={classes.tree}
+      data={treeData}
+      tree={tree}
+      levelOffset={20}
+      expandOnClick
+      allowRangeSelection={false}
+      renderNode={renderNode}
+    />
   );
 };
 

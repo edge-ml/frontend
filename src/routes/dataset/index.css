@@ -9,7 +9,7 @@
 }
 
 .time-series-chart .u-over {
-  cursor: grab;
+  cursor: crosshair;
   touch-action: none;
 }
 

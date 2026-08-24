@@ -65,55 +65,56 @@ class PasswordSettings extends Component {
 
   render() {
     return (
-      <div>
-        <h4 style={{ fontWeight: 700 }}>Change password</h4>
-        <PasswordInput
-          label="Password"
-          id="inputNewPassword"
-          placeholder="New password"
-          onChange={this.onNewPasswordChange}
-        />
-        <PasswordInput
-          label="Password"
-          id="inputNewPasswordConfirm"
-          placeholder="Retype new password"
-          onChange={this.onConfirmationPasswordChange}
-        />
-        <PasswordInput
-          label="Password"
-          id="inputCurrentPassword"
-          placeholder="Current password"
-          onChange={this.onCurrentPasswordChanged}
-        />
-        <Button
-          variant="outline"
-          id="buttonSaveNewPassword"
-          color="blue"
-          style={{ margin: "0.25rem" }}
-          disabled={
-            !(
-              this.state.currentPassword &&
-              this.state.newConfirmationPassword &&
-              this.state.newPassword
-            )
-          }
-          onClick={this.onPasswordChangeSubmit}
-        >
-          Save new password
-        </Button>
-        {this.state.passwordError ? (
-          <div
-            id="passwordError"
-            style={{
-              display: "inline",
-              color: "red",
-              marginLeft: "16px",
-            }}
+      <section className="user-settings-section" id={this.props.id}>
+        <div className="user-settings-section__heading">
+          <h4 className="user-settings-section__title">Change password</h4>
+          <p className="user-settings-section__description">
+            Choose a new password to keep your account secure.
+          </p>
+        </div>
+        <div className="user-settings-fields">
+          <PasswordInput
+            label="New password"
+            id="inputNewPassword"
+            placeholder="New password"
+            onChange={this.onNewPasswordChange}
+          />
+          <PasswordInput
+            label="Confirm new password"
+            id="inputNewPasswordConfirm"
+            placeholder="Retype new password"
+            onChange={this.onConfirmationPasswordChange}
+          />
+          <PasswordInput
+            label="Current password"
+            id="inputCurrentPassword"
+            placeholder="Current password"
+            onChange={this.onCurrentPasswordChanged}
+          />
+        </div>
+        <div className="user-settings-actions">
+          <Button
+            variant="outline"
+            id="buttonSaveNewPassword"
+            color="blue"
+            disabled={
+              !(
+                this.state.currentPassword &&
+                this.state.newConfirmationPassword &&
+                this.state.newPassword
+              )
+            }
+            onClick={this.onPasswordChangeSubmit}
           >
-            {this.state.passwordError}
-          </div>
-        ) : null}
-      </div>
+            Save new password
+          </Button>
+          {this.state.passwordError ? (
+            <div id="passwordError" className="user-settings-error">
+              {this.state.passwordError}
+            </div>
+          ) : null}
+        </div>
+      </section>
     );
   }
 }

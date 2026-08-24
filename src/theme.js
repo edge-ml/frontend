@@ -67,6 +67,15 @@ export const theme = createTheme({
         centered: true,
         size: "lg",
       },
+      styles: {
+        title: {
+          fontWeight: 700,
+          textAlign: "center",
+          fontSize: "1.25rem",
+          flex: 1,
+          color: "var(--mantine-color-brand-6)",
+        },
+      },
     },
     Button: {
       defaultProps: {

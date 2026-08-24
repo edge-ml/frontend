@@ -2,15 +2,14 @@ import React, { Fragment, useState } from "react";
 
 import { Button, Table } from "@mantine/core";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 import ConfusionMatrixView from "../ConfusionMatrix/ConfusionMatrixView";
 import Loader from "../../modules/loader";
 
 import "./index.css";
-import classNames from "classnames";
 import LabelBadge from "../Common/LabelBadge";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 export const SelectedModelModalView = ({
   model,
@@ -35,43 +34,47 @@ export const SelectedModelModalView = ({
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
+                alignItems: "flex-start",
+                gap: "1rem",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "flex-start" }}>
-                <General_info
-                  model={model}
-                  onButtonDeploy={onButtonDeploy}
-                  onButtonDownload={onButtonDownload}
-                />
-                <PerformanceInfo metrics={metrics.metrics} />
+              <div className="model-info-section" style={{ flex: "1 1 0" }}>
+                <h5 className="model-section-title">General information</h5>
+                <General_info model={model} />
               </div>
-              <div>
-                <Button variant="outline" onClick={() => {}} color="red">
-                  <FontAwesomeIcon
-                    style={{ margin: "0 0.25rem" }}
-                    icon={faTrashAlt}
-                  />
-                  Delete
-                </Button>
+              <div className="model-info-section" style={{ flex: "0 0 auto" }}>
+                <h5 className="model-section-title">Metrics</h5>
+                <PerformanceInfo metrics={metrics.metrics} />
               </div>
             </div>
             <div
+              className="model-info-sections-row"
               style={{
-                margin: "3rem 0",
+                marginTop: "1.25rem",
                 display: "flex",
-                justifyContent: "flex-start",
-                alignItems: "center",
+                gap: "1rem",
+                alignItems: "stretch",
               }}
             >
-              <Classification_report report={metrics.classification_report} />
-              <ConfusionMatrixView
-                matrix={JSON.parse(metrics.confusion_matrix)}
-                labels={model.labels.map((elm) => elm.name)}
-              />
+              <div className="model-info-section" style={{ flex: "1 1 0" }}>
+                <h5 className="model-section-title">Classification report</h5>
+                <Classification_report report={metrics.classification_report} />
+              </div>
+              <div className="model-info-section" style={{ flex: "0 0 auto" }}>
+                <h5 className="model-section-title">Confusion matrix</h5>
+                <ConfusionMatrixView
+                  matrix={JSON.parse(metrics.confusion_matrix)}
+                  labels={model.labels.map((elm) => elm.name)}
+                />
+              </div>
             </div>
-            <Training_config model={model} />
+            <div
+              className="model-info-section"
+              style={{ marginTop: "1.25rem" }}
+            >
+              <h5 className="model-section-title">Pipeline configuration</h5>
+              <Training_config model={model} />
+            </div>
           </>
         ) : (
           <Loader loading />
@@ -93,39 +96,33 @@ const General_info = ({
   onButtonDownload,
 }) => {
   return (
-    <div>
-      <h5>
-        <b>General information</b>
-      </h5>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        <div style={{ flex: "0 0 auto" }}>
-          <Table borderless size="sm" striped>
-            <tbody>
-              <tr>
-                <th>Name</th>
-                <td>{model.name}</td>
-              </tr>
-              <tr>
-                <th>Pipeline</th>
-                <td>{model.pipeline.selectedPipeline.name}</td>
-              </tr>
-
-              <tr>
-                <th>Used labels</th>
-                <td>
-                  {model.labels.map((elm, index) => (
-                    <LabelBadge key={elm.name} color={elm.color}>
-                      {elm.name}
-                    </LabelBadge>
-                  ))}
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-        </div>
-        <div></div>
-      </div>
-    </div>
+    <Table
+      size="sm"
+      verticalSpacing={6}
+      withTableBorder={false}
+      className="model-info-table"
+    >
+      <tbody>
+        <tr>
+          <th>Name</th>
+          <td>{model.name}</td>
+        </tr>
+        <tr>
+          <th>Pipeline</th>
+          <td>{model.pipeline.selectedPipeline.name}</td>
+        </tr>
+        <tr>
+          <th>Used labels</th>
+          <td>
+            {model.labels.map((elm) => (
+              <LabelBadge key={elm.name} color={elm.color}>
+                {elm.name}
+              </LabelBadge>
+            ))}
+          </td>
+        </tr>
+      </tbody>
+    </Table>
   );
 };
 
@@ -133,35 +130,35 @@ const Classification_report = ({ report }) => {
   const keys = Object.keys(report);
   const metrics = Object.keys(report[keys[0]]);
   return (
-    <div>
-      <h5>
-        <b>Classification report</b>
-      </h5>
-      <Table borderless size="sm" striped>
-        <thead>
-          <tr>
-            <th></th>
-            {metrics.map((key) => (
-              <th style={{ textAlign: "center" }} key={key}>
-                {key}
-              </th>
+    <Table
+      size="sm"
+      verticalSpacing={6}
+      withTableBorder={false}
+      className="model-info-table"
+    >
+      <thead>
+        <tr>
+          <th></th>
+          {metrics.map((key) => (
+            <th style={{ textAlign: "center" }} key={key}>
+              {key}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {keys.map((key) => (
+          <tr key={key}>
+            <th>{key}</th>
+            {metrics.map((met) => (
+              <td style={{ textAlign: "center" }} key={met}>
+                {metric(report[key][met])}
+              </td>
             ))}
           </tr>
-        </thead>
-        <tbody>
-          {keys.map((key) => (
-            <tr key={key}>
-              <th>{key}</th>
-              {metrics.map((met) => (
-                <td style={{ padding: "0 1rem" }} key={met}>
-                  {metric(report[key][met])}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </div>
+        ))}
+      </tbody>
+    </Table>
   );
 };
 
@@ -170,59 +167,45 @@ const Training_config = ({ model }) => {
     model.pipeline.selectedPipeline.steps[0]
   );
 
-  const Render_Step = (step) => {
-    return (
-      <div className="training_step_container" key={step.name}>
-        <div
-          className={classNames("training_step", {
-            training_step_selected: step.name === selectedStep.name,
-          })}
-          onClick={() => onClickStep(step)}
-        >
-          <div>{step.name}</div>
-        </div>
-        {step.name == selectedStep.name ? (
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <div className="v_line"></div>
-          </div>
-        ) : null}
-      </div>
-    );
-  };
-
-  const onClickStep = (step) => {
-    setSelectedStep(step);
-  };
+  const steps = model.pipeline.selectedPipeline.steps.filter(
+    (elm) => elm.type === "PRE" || elm.type === "CORE"
+  );
 
   return (
     <Fragment>
-      <h5>
-        <b>Pipeline configuration</b>
-      </h5>
-      <div style={{ display: "flex", justifyContent: "flex-start" }}>
-        {model.pipeline.selectedPipeline.steps
-          .filter((elm) => elm.type === "PRE" || elm.type === "CORE")
-          .map((elm) => Render_Step(elm, onClickStep))}
+      <div className="pipeline-steps">
+        {steps.map((step, index) => (
+          <Fragment key={step.name}>
+            {index > 0 ? (
+              <FontAwesomeIcon
+                className="pipeline-step-arrow"
+                icon={faChevronRight}
+              />
+            ) : null}
+            <button
+              type="button"
+              className={`pipeline-step${
+                step.name === selectedStep.name ? " pipeline-step-selected" : ""
+              }`}
+              onClick={() => setSelectedStep(step)}
+            >
+              <span className="pipeline-step-number">{index + 1}</span>
+              {step.name}
+            </button>
+          </Fragment>
+        ))}
       </div>
 
-      <div
-        style={{
-          margin: "0 0.5rem",
-          borderTop: "1px solid #dee2e6",
-          padding: "0.5rem",
-        }}
-      >
-        <div>
-          <b>Method: </b>
-          {selectedStep.options.name}
+      <div className="pipeline-details">
+        <div className="pipeline-details-method">
+          Method: {selectedStep.options.name}
         </div>
         {selectedStep.options.parameters.length > 0 ? (
-          <div>
-            <b>Parameters: </b>
+          <div className="pipeline-params-grid">
             {selectedStep.options.parameters.map((param) => (
-              <div key={param.name}>
-                <span>{param.name}: </span>
-                <span>{param.value}</span>
+              <div className="pipeline-param" key={param.name}>
+                <span className="pipeline-param-name">{param.name}</span>
+                <span className="pipeline-param-value">{param.value}</span>
               </div>
             ))}
           </div>
@@ -238,33 +221,35 @@ const metric = (metric) => {
 };
 
 const PerformanceInfo = ({ metrics }) => {
+  const stats = [
+    { label: "Accuracy", value: metric(metrics.accuracy_score) },
+    { label: "Precision", value: metric(metrics.precision_score) },
+    { label: "Recall", value: metric(metrics.recall_score) },
+  ];
   return (
-    <div>
-      <h5>
-        <b>Metrics</b>
-      </h5>
-      <Table borderless size="sm" striped style={{ width: "150px" }}>
-        <tbody>
-          <tr>
-            <td>
-              <b>Accuracy</b>
-            </td>
-            <td>{metric(metrics.accuracy_score)}%</td>
-          </tr>
-          <tr>
-            <td>
-              <b>Precision</b>
-            </td>
-            <td>{metric(metrics.precision_score)}%</td>
-          </tr>
-          <tr>
-            <td>
-              <b>Recall</b>
-            </td>
-            <td>{metric(metrics.recall_score)}%</td>
-          </tr>
-        </tbody>
-      </Table>
+    <div
+      className="model-stats-row"
+      style={{ flexDirection: "column", minWidth: "220px" }}
+    >
+      {stats.map(({ label, value }) => (
+        <div
+          key={label}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            padding: "0.35rem 0",
+          }}
+        >
+          <span className="model-stat-label" style={{ fontSize: "0.875rem" }}>
+            {label}
+          </span>
+          <span className="model-stat-value">
+            {value}
+            {value !== "" ? "%" : ""}
+          </span>
+        </div>
+      ))}
     </div>
   );
 };

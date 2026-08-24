@@ -53,45 +53,47 @@ class MailSettings extends Component {
 
   render() {
     return (
-      <div>
-        <h4 style={{ fontWeight: 700 }}>Change Mail</h4>
-        <TextInput
-          label="E-Mail"
-          id="inputNewMail"
-          placeholder="New e-mail"
-          onChange={this.onNewEmailChange}
-        />
-        <TextInput
-          label="E-Mail"
-          id="inputNewMailConfirm"
-          placeholder="Retype new e-mail"
-          onChange={this.onConfirmationEmailChange}
-        />
-        <Button
-          variant="outline"
-          id="buttonSaveNewMail"
-          disabled={
-            !this.state.newEmail ||
-            this.state.newEmail !== this.state.confirmationEmail
-          }
-          color="blue"
-          onClick={this.onEmailChangeSubmit}
-        >
-          Save new e-mail
-        </Button>
-        {this.state.emailError ? (
-          <div
-            id="emailError"
-            style={{
-              display: "inline",
-              color: "red",
-              marginLeft: "16px",
-            }}
+      <section className="user-settings-section" id={this.props.id}>
+        <div className="user-settings-section__heading">
+          <h4 className="user-settings-section__title">Change email</h4>
+          <p className="user-settings-section__description">
+            Update the email address associated with your account.
+          </p>
+        </div>
+        <div className="user-settings-fields">
+          <TextInput
+            label="E-Mail"
+            id="inputNewMail"
+            placeholder="New e-mail"
+            onChange={this.onNewEmailChange}
+          />
+          <TextInput
+            label="Confirm e-mail"
+            id="inputNewMailConfirm"
+            placeholder="Retype new e-mail"
+            onChange={this.onConfirmationEmailChange}
+          />
+        </div>
+        <div className="user-settings-actions">
+          <Button
+            variant="outline"
+            id="buttonSaveNewMail"
+            disabled={
+              !this.state.newEmail ||
+              this.state.newEmail !== this.state.confirmationEmail
+            }
+            color="blue"
+            onClick={this.onEmailChangeSubmit}
           >
-            {this.state.emailError}
-          </div>
-        ) : null}
-      </div>
+            Save new e-mail
+          </Button>
+          {this.state.emailError ? (
+            <div id="emailError" className="user-settings-error">
+              {this.state.emailError}
+            </div>
+          ) : null}
+        </div>
+      </section>
     );
   }
 }

@@ -2,9 +2,14 @@ import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { Stack, UnstyledButton, Loader, Divider } from "@mantine/core";
+import {
+  AppShell,
+  Divider,
+  Loader,
+  ScrollArea,
+  UnstyledButton,
+} from "@mantine/core";
 
-import "./Navbar.css";
 import EdgeMLBrandLogo from "../EdgeMLBrandLogo/EdgeMLBrandLogo";
 import NotificationHandler from "../NotificationHandler";
 import NotificationContext from "../NotificationHandler/NotificationProvider";
@@ -26,13 +31,12 @@ const Navbar = () => {
   }
 
   return (
-    <Stack
-      className="navbar-base"
-      justify="space-between"
-      align="center"
-      gap={0}
-    >
-      <Stack gap={0} align="center" style={{ width: "100%", minHeight: 0 }}>
+    <>
+      <AppShell.Section
+        pt="md"
+        px="sm"
+        style={{ display: "flex", justifyContent: "center" }}
+      >
         <EdgeMLBrandLogo
           href={
             currentProject
@@ -40,11 +44,12 @@ const Navbar = () => {
               : null
           }
         />
-        <div className="w-100 mt-3 overflow-auto">
-          {projects.map((project) => (
-            <NavbarProject key={project._id} project={project} />
-          ))}
-        </div>
+      </AppShell.Section>
+
+      <AppShell.Section grow mt="xs" px="sm" component={ScrollArea}>
+        {projects.map((project) => (
+          <NavbarProject key={project._id} project={project} />
+        ))}
 
         <UnstyledButton
           id="btn-add-project"
@@ -61,21 +66,15 @@ const Navbar = () => {
           <FontAwesomeIcon icon={faPlus} style={{ marginRight: 6 }} />
           Add Project
         </UnstyledButton>
-      </Stack>
+      </AppShell.Section>
 
-      <Stack
-        gap={0}
-        align="center"
-        className="w-100"
-        style={{ color: "white" }}
-      >
+      <AppShell.Section px="sm" pb="xs" style={{ color: "#666" }}>
         <Divider w="95%" mx="auto" />
         {activeNotifications.length > 0 && (
           <UnstyledButton
             className="w-100 text-center"
             onClick={() => setNotificationModalOpen(true)}
             style={{
-              color: "#666",
               cursor: "pointer",
               fontSize: "0.9rem",
               padding: "10px 16px",
@@ -88,7 +87,7 @@ const Navbar = () => {
         <Divider w="95%" mx="auto" />
         <div
           className="pt-3 pb-3 w-100 text-center"
-          style={{ color: "#666", cursor: "pointer", fontSize: "0.8rem" }}
+          style={{ cursor: "pointer", fontSize: "0.8rem" }}
           onClick={() =>
             window.open("https://github.com/edge-ml/edge-ml/issues", "_blank")
           }
@@ -100,7 +99,7 @@ const Navbar = () => {
         <NavbarInfo />
         <Divider w="95%" mx="auto" />
         <NavbarUserSettings />
-      </Stack>
+      </AppShell.Section>
 
       <NotificationHandler
         onClose={() => setNotificationModalOpen(false)}
@@ -111,7 +110,7 @@ const Navbar = () => {
         isNewProject={true}
         onClose={() => setProjectModalOpen(false)}
       />
-    </Stack>
+    </>
   );
 };
 

@@ -1,4 +1,6 @@
 .training-wizard-modal {
+  width: min(max(66vw, 1400px), calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
   overflow: hidden;
 }
 

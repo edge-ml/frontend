@@ -1,37 +1,156 @@
-.training_step {
-  background-color: rgba(7, 52, 98, 0.6);
-  color: black;
-  height: 50px;
+/* ---------- Model info sections ---------- */
+.model-info-section {
+  border: 2px solid rgb(230, 230, 234);
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.model-info-sections-row {
+  border: 0;
+}
+
+.model-section-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #083462;
+}
+
+/* ---------- Metrics stats ---------- */
+.model-stats-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.model-stat {
+  flex: 1;
+  background-color: rgba(8, 52, 98, 0.04);
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+  text-align: center;
+}
+
+.model-stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #083462;
+  line-height: 1.2;
+}
+
+.model-stat-label {
+  font-size: 0.75rem;
+  color: #5c5f66;
+  text-transform: capitalize;
+}
+
+/* ---------- Pipeline steps ---------- */
+.pipeline-steps {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 4px;
-  color: white;
-  clip-path: polygon(90% 0%, 100% 50%, 90% 100%, 0% 100%, 10% 50%, 0% 0%);
-  font-weight: bold;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.pipeline-step {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+  color: #373a40;
+  font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
+  box-shadow: none;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
 }
 
-.training_step > * {
-  color: white;
+.pipeline-step:hover {
+  background-color: rgba(8, 52, 98, 0.07);
+  color: #083462;
 }
 
-.training_step_selected {
-  background-color: rgba(7, 52, 98, 1);
+.pipeline-step-selected,
+.pipeline-step-selected:hover {
+  background-color: #083462;
+  color: #fff;
 }
 
-.training_step_container {
-  width: 150%;
+.pipeline-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background-color: rgba(8, 52, 98, 0.12);
+  color: #083462;
 }
 
-.v_line {
-  height: 20px;
-  width: 20px;
-  background-color: rgba(7, 52, 98, 1);
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-  margin-bottom: -1px;
+.pipeline-step-selected .pipeline-step-number {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 
-.borderTop {
-  border-top: 2px solid rgba(7, 52, 98, 1);
+.pipeline-step-arrow {
+  color: #a9c3df;
+  font-size: 0.75rem;
+}
+
+/* ---------- Step details ---------- */
+.pipeline-details {
+  margin-top: 0.85rem;
+}
+
+.pipeline-details-method {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.pipeline-params-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.4rem 1.5rem;
+}
+
+.pipeline-param {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  padding: 0.15rem 0;
+}
+
+.pipeline-param-name {
+  color: #5c5f66;
+}
+
+.pipeline-param-value {
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+}
+
+/* ---------- Info table ---------- */
+.model-info-table th {
+  color: #5c5f66;
+  font-weight: 500;
+  white-space: nowrap;
+  width: 1%;
+}
+
+.model-info-table td {
+  font-weight: 700;
+}
+
+.model-info-table {
+  border: 0 !important;
+  outline: none !important;
 }

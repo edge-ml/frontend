@@ -32,31 +32,37 @@ class DeleteUser extends Component {
 
   render() {
     return (
-      <div className="mt-3">
-        <h4 style={{ fontWeight: 700 }}>Delete User</h4>
-        <div>
-          <h6>
-            Please type <b>{this.props.userMail}</b> to confirm
-          </h6>
-          <div>All projects where you are admin will be deleted</div>
+      <section className="user-settings-section">
+        <div className="user-settings-section__heading">
+          <h4 className="user-settings-section__title">Delete user</h4>
+          <p className="user-settings-section__description">
+            This permanently removes your account and its projects.
+          </p>
         </div>
-        <TextInput
-          label="E-Mail"
-          type="text"
-          id="E-Mail"
-          placeholder="E-Mail"
-          onChange={this.eMailChanged}
-        />
-        <Button
-          variant="outline"
-          id="buttonDeleteUser"
-          color="red"
-          style={{ margin: "0.25rem" }}
-          disabled={this.state.confirmationMail !== this.props.userMail}
-          onClick={this.toggleConfirmationModal}
-        >
-          Delete user
-        </Button>
+        <p className="user-settings-danger-copy">
+          Type <b>{this.props.userMail}</b> below to confirm. All projects where
+          you are an admin will be deleted.
+        </p>
+        <div className="user-settings-fields">
+          <TextInput
+            label="Confirmation e-mail"
+            type="text"
+            id="E-Mail"
+            placeholder="E-Mail"
+            onChange={this.eMailChanged}
+          />
+        </div>
+        <div className="user-settings-actions">
+          <Button
+            variant="outline"
+            id="buttonDeleteUser"
+            color="red"
+            disabled={this.state.confirmationMail !== this.props.userMail}
+            onClick={this.toggleConfirmationModal}
+          >
+            Delete user
+          </Button>
+        </div>
         <Modal
           opened={this.state.confirmationModalOpen}
           onClose={this.toggleConfirmationModal}
@@ -82,7 +88,7 @@ class DeleteUser extends Component {
             </Button>
           </Modal.Footer>
         </Modal>
-      </div>
+      </section>
     );
   }
 }

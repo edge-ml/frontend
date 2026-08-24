@@ -72,6 +72,8 @@ const TimeSeriesChart = ({
       ms: 1,
       legend: { show: false },
       cursor: {
+        x: false,
+        y: false,
         drag: {
           x: false,
           y: false,

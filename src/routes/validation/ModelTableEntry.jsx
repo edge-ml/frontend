@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import Checkbox from "../../components/Common/Checkbox";
-import { Group, Text, Loader, Tooltip, Button, Table } from "@mantine/core";
+import { Group, Text, Loader, Tooltip, Table } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircleInfo,
-  faPen,
-  faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import DownloadModal from "./DownloadModal";
 import { SelectedModelModalView } from "../../components/SelectedModelModalView/SelectedModelModalView";
 import ButtonList from "./ButtonList";
 import DeployModal from "./DeployModal";
-import EditModal from "../../components/EditModal";
 import { deploymentLabel } from "../../components/Common/modelExport";
 
 // Live training status text. Torch classifiers report per-epoch progress;
@@ -54,11 +49,9 @@ const ModelTableEntry = ({
   stepOptions,
   clickCheckBox,
   onDeleteModels,
-  updateModel,
 }) => {
   const [modalModel, setModalModel] = useState(null);
   const [modelDownload, setModelDownload] = useState(null);
-  const [datasetNameEditOpen, setDatasetNameEditOpen] = useState(false);
   const [deployModalOpen, setDeployModalOpen] = useState(false);
 
   const metrics =
@@ -117,22 +110,6 @@ const ModelTableEntry = ({
         </Table.Td>
         <Table.Td>
           <Group gap="xs" wrap="nowrap">
-            <Button
-              variant="outline"
-              color="red"
-              size="sm"
-              onClick={() => onDeleteModels([model])}
-            >
-              <FontAwesomeIcon icon={faTrashAlt} />
-            </Button>
-            <Button
-              variant="outline"
-              color="blue"
-              size="sm"
-              onClick={() => setDatasetNameEditOpen(true)}
-            >
-              <FontAwesomeIcon icon={faPen} />
-            </Button>
             <ButtonList
               model={model}
               setModalModel={setModalModel}
@@ -157,17 +134,6 @@ const ModelTableEntry = ({
         isOpen={deployModalOpen}
         model={model}
         onClose={() => setDeployModalOpen(false)}
-      />
-      <EditModal
-        isOpen={datasetNameEditOpen}
-        headerText="Edit Name"
-        value=""
-        placeholder="Enter new model name"
-        onSave={(text) => {
-          updateModel({ ...model, name: text });
-          setDatasetNameEditOpen(false);
-        }}
-        onCancel={() => setDatasetNameEditOpen(false)}
       />
     </>
   );

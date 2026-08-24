@@ -329,14 +329,15 @@ class EditLabelingModal extends Component {
 
   renderLabelingEditModal() {
     return (
-      <Modal opened={this.state.isOpen} onClose={this.props.onCloseModal}>
-        <Modal.Header>
-          <Modal.Title>
-            {this.state.labeling && this.state.labeling["_id"]
-              ? "Edit Labeling Set"
-              : "Add Labeling Set"}
-          </Modal.Title>
-        </Modal.Header>
+      <Modal
+        opened={this.state.isOpen}
+        onClose={this.props.onCloseModal}
+        title={
+          this.state.labeling && this.state.labeling["_id"]
+            ? "Edit Labeling Set"
+            : "Add Labeling Set"
+        }
+      >
         <Modal.Body className="edit-labeling-body">
           <Group align="center" style={{ width: "100%" }}>
             <TextInput
