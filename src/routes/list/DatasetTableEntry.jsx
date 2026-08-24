@@ -1,17 +1,27 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faCheck,
   faExclamationTriangle,
   faPen,
   faTrashAlt,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
-import React, { useState } from "react";
-import { Button, Group, HoverCard, Stack, Table, Text } from "@mantine/core";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  ActionIcon,
+  Button,
+  Group,
+  HoverCard,
+  Stack,
+  Table,
+  Text,
+  TextInput,
+} from "@mantine/core";
 
 import Checkbox from "../../components/Common/Checkbox";
 import { displayTime } from "../../services/helpers";
 import useProjectRouter from "../../Hooks/ProjectRouter";
-import EditModal from "../../components/EditModal";
 
 const ColorDot = ({ color = "var(--mantine-color-blue-5)" }) => (
   <span
@@ -170,7 +180,28 @@ const Metadata = ({ dataset }) => {
 };
 
 const DatasetInfo = ({ dataset, updateDataset }) => {
-  const [datasetNameEditOpen, setDatasetNameEditOpen] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState(dataset.name);
+  const nameInputRef = useRef(null);
+
+  useEffect(() => {
+    if (isEditingName) {
+      setNameDraft(dataset.name);
+      // Focus and select the text once the input is mounted.
+      const id = requestAnimationFrame(() => {
+        nameInputRef.current?.select();
+      });
+      return () => cancelAnimationFrame(id);
+    }
+  }, [isEditingName]);
+
+  const saveName = () => {
+    const trimmed = nameDraft.trim();
+    if (trimmed && trimmed !== dataset.name) {
+      updateDataset({ ...dataset, name: trimmed });
+    }
+    setIsEditingName(false);
+  };
 
   const datasetStart = Math.min(...dataset.timeSeries.map((elm) => elm.start));
   const datasetEnd = Math.max(...dataset.timeSeries.map((elm) => elm.end));
@@ -181,10 +212,54 @@ const DatasetInfo = ({ dataset, updateDataset }) => {
 
   return (
     <div className="text-left d-inline-block m-2">
-      <Group gap="xs">
-        <Text fw={700} size="lg" component="span">
-          {dataset.name}
-        </Text>
+      <Group gap="xs" wrap="nowrap">
+        {isEditingName ? (
+          <Group gap="xs" wrap="nowrap">
+            <TextInput
+              w={220}
+              size="sm"
+              value={nameDraft}
+              ref={nameInputRef}
+              onChange={(e) => setNameDraft(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") saveName();
+                if (e.key === "Escape") setIsEditingName(false);
+              }}
+              placeholder="Enter new dataset name"
+            />
+            <ActionIcon
+              variant="filled"
+              color="blue"
+              onClick={saveName}
+              title="Save name"
+            >
+              <FontAwesomeIcon icon={faCheck} />
+            </ActionIcon>
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              onClick={() => setIsEditingName(false)}
+              title="Cancel"
+            >
+              <FontAwesomeIcon icon={faXmark} />
+            </ActionIcon>
+          </Group>
+        ) : (
+          <>
+            <Text fw={700} size="lg" component="span">
+              {dataset.name}
+            </Text>
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              aria-label={`Rename ${dataset.name}`}
+              title="Rename"
+              onClick={() => setIsEditingName(true)}
+            >
+              <FontAwesomeIcon icon={faPen} style={{ fontSize: "0.8rem" }} />
+            </ActionIcon>
+          </>
+        )}
       </Group>
       {!empty ? (
         <>
@@ -208,17 +283,6 @@ const DatasetInfo = ({ dataset, updateDataset }) => {
           </Text>
         </Group>
       )}
-      <EditModal
-        isOpen={datasetNameEditOpen}
-        headerText="Edit Name"
-        value=""
-        placeholder="Enter new dataset name"
-        onSave={(text) => {
-          updateDataset({ ...dataset, name: text });
-          setDatasetNameEditOpen(false);
-        }}
-        onCancel={() => setDatasetNameEditOpen(false)}
-      />
     </div>
   );
 };

@@ -163,18 +163,100 @@
 }
 
 .customMetaDataItem {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
   background-color: #f7f9fa;
   border: 1px solid #eceff2;
   border-radius: 8px;
-  padding: 7px 10px;
+  padding: 5px 10px 5px 30px;
   transition: border-color 0.15s ease;
 }
 
 .customMetaDataItem:hover {
   border-color: rgba(71, 187, 120, 0.45);
+}
+
+.customMetaDataItem--invalid,
+.customMetaDataItem--invalid:hover {
+  border-color: rgba(229, 62, 62, 0.55);
+}
+
+/* Key/value side by side; the value fills the remaining space */
+.customMetaDataInput {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.customMetaDataInput--key {
+  flex: 0 0 38%;
+}
+
+.customMetaDataSeparator {
+  color: #a0aec0;
+  font-weight: 700;
+  user-select: none;
+}
+
+/* Inline editing inputs inside a metadata card */
+.customMetaDataInput input {
+  font-size: 0.85rem;
+  background: transparent;
+}
+
+.customMetaDataInput input::placeholder {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #a0aec0;
+}
+
+.customMetaDataDelete {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background-color: transparent;
+  color: #cbd5e0;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.customMetaDataDelete:hover {
+  color: #e53e3e;
+  background-color: rgba(229, 62, 62, 0.08);
+}
+
+.custom-metadata-add {
+  padding: 0 14px 14px 14px;
+}
+
+.customMetadataAddButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  color: #4299e1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.customMetadataAddButton:hover {
+  background-color: rgba(66, 153, 225, 0.08);
 }
 
 .customMetaDataItem_key {

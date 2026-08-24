@@ -4,6 +4,14 @@
   height: 200px;
 }
 
+/* Sensor name above each chart: small, tight to the chart, brand blue. */
+.time-series-name {
+  font-size: var(--mantine-font-size-sm);
+  color: var(--mantine-color-brand-6);
+  margin-bottom: 0.15rem;
+  line-height: 1.2;
+}
+
 .time-series-chart .uplot {
   font-family: inherit;
 }
@@ -123,6 +131,16 @@
   padding: calc(var(--mantine-spacing-xs) / 2) var(--mantine-spacing-xs);
   border-radius: var(--mantine-radius-sm);
   white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* Show the custom timestamp badges while hovering the slider or while
+   actively dragging it — the drag uses pointer capture, so the cursor can
+   move away from the slider without ending the interaction. */
+.timeline-navigator__control:hover .timeline-navigator__timestamp,
+.timeline-navigator__control--dragging .timeline-navigator__timestamp {
+  opacity: 1;
 }
 
 .timeline-navigator__control {

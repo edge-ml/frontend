@@ -63,7 +63,7 @@ const TimeSeriesSelection = () => {
   return (
     <Menu withinPortal position="bottom-start">
       <Menu.Target>
-        <Button variant="default" radius="md" size="compact-sm">
+        <Button variant="default" radius="md">
           <FontAwesomeIcon icon={faWaveSquare} className="dsp-toolbar-icon" />
           <Box mx={6} fz="sm" fw={600}>
             Time Series
@@ -120,7 +120,7 @@ const LabelingSelection = ({ navigate }) => {
   return (
     <Menu withinPortal position="bottom-start">
       <Menu.Target>
-        <Button variant="default" radius="md" size="compact-sm">
+        <Button variant="default" radius="md">
           <FontAwesomeIcon icon={faTags} className="dsp-toolbar-icon" />
           <Box mx={6} fz="sm" fw={600}>
             Labeling
@@ -187,7 +187,8 @@ const LabelingSelectionPanel = () => {
               aria-label="Download dataset"
               variant="default"
               radius="md"
-              size="lg"
+              w={30}
+              h={30}
               onClick={() => registerDatasetDownload(dataset)}
             >
               <FontAwesomeIcon icon={faDownload} />
@@ -199,7 +200,8 @@ const LabelingSelectionPanel = () => {
               aria-label="Open help"
               variant="default"
               radius="md"
-              size="lg"
+              w={30}
+              h={30}
               onClick={() => setIsHelpModalOpen(true)}
             >
               <FontAwesomeIcon icon={faQuestion} />

@@ -7,6 +7,7 @@ const formatTimestamp = (timestamp) =>
 const ChartSlider = ({ start, end, visibleRange, onRangeChange }) => {
   const [value, setValue] = useState([visibleRange.min, visibleRange.max]);
   const [isDraggingRange, setIsDraggingRange] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
   const dragRef = useRef();
   const trackRef = useRef();
   const step = Math.max(1, Math.floor((end - start) / 1000));
@@ -14,6 +15,19 @@ const ChartSlider = ({ start, end, visibleRange, onRangeChange }) => {
   useEffect(() => {
     setValue([visibleRange.min, visibleRange.max]);
   }, [visibleRange.max, visibleRange.min]);
+
+  // While interacting with the slider (thumbs or range-drag bar) keep the
+  // timestamp badges visible even if the cursor leaves the slider area.
+  useEffect(() => {
+    if (!isInteracting) return;
+    const stop = () => setIsInteracting(false);
+    window.addEventListener("pointerup", stop);
+    window.addEventListener("pointercancel", stop);
+    return () => {
+      window.removeEventListener("pointerup", stop);
+      window.removeEventListener("pointercancel", stop);
+    };
+  }, [isInteracting]);
 
   if (!Number.isFinite(start) || !Number.isFinite(end) || start === end) {
     return null;
@@ -97,7 +111,18 @@ const ChartSlider = ({ start, end, visibleRange, onRangeChange }) => {
 
   return (
     <div className="timeline-navigator">
-      <div className="timeline-navigator__control">
+      <div
+        className={`timeline-navigator__control ${
+          isDraggingRange || isInteracting
+            ? "timeline-navigator__control--dragging"
+            : ""
+        }`}
+        onPointerDownCapture={(event) => {
+          if (event.button === 0) {
+            setIsInteracting(true);
+          }
+        }}
+      >
         <RangeSlider
           min={start}
           max={end}
@@ -105,6 +130,7 @@ const ChartSlider = ({ start, end, visibleRange, onRangeChange }) => {
           step={step}
           value={value}
           onChange={updateRange}
+          label={null}
           aria-label="Visible time range"
         />
         <div className="timeline-navigator__timestamps" aria-hidden>

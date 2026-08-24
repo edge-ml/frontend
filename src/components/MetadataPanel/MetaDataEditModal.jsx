@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { TextInput, Button, Modal } from "@mantine/core";
+import { TextInput, Button, Modal, Group } from "@mantine/core";
 import "./MetadataPanel.css";
 
 class MetaDataEditModal extends Component {
@@ -109,7 +109,11 @@ class MetaDataEditModal extends Component {
           placeholder="data"
           style={{ flex: 1 }}
         />
-        <Button color="red" onClick={(e) => this.onDeleteMetaData(idx)} compact>
+        <Button
+          color="red"
+          onClick={(e) => this.onDeleteMetaData(idx)}
+          size="compact-sm"
+        >
           X
         </Button>
       </div>
@@ -124,13 +128,15 @@ class MetaDataEditModal extends Component {
         onClose={this.onClose}
         title="Edit custom Metadata"
       >
-        <Modal.Body>
-          <div>{this.renderMetaData()}</div>
-          <Button color="blue" onClick={this.onAddMetaData}>
-            + Add
-          </Button>
-        </Modal.Body>
-        <Modal.Footer style={{ justifyContent: "space-between" }}>
+        <div>{this.renderMetaData()}</div>
+        <Button color="blue" onClick={this.onAddMetaData}>
+          + Add
+        </Button>
+        <Group
+          justify="space-between"
+          mt="md"
+          style={{ paddingTop: "var(--mantine-spacing-md)" }}
+        >
           <Button variant="outline" onClick={this.onClose}>
             Cancel
           </Button>
@@ -140,7 +146,7 @@ class MetaDataEditModal extends Component {
           >
             Save
           </Button>
-        </Modal.Footer>
+        </Group>
       </Modal>
     );
   }

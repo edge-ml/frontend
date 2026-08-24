@@ -17,7 +17,8 @@
   align-items: center;
   gap: 6px;
   max-width: 220px;
-  padding: 4px 10px;
+  height: 30px;
+  padding: 0 10px;
   border: 1px solid;
   border-radius: var(--mantine-radius-md);
   background-color: transparent;

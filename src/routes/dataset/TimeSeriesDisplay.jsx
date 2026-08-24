@@ -27,7 +27,7 @@ const TimeSeriesDisplay = ({
 
   return (
     <section className="m-2">
-      <h4 className="fw-bold">{timeSeries.name}</h4>
+      <h6 className="fw-bold time-series-name">{timeSeries.name}</h6>
       <TimeSeriesChart
         name={timeSeries.name}
         unit={timeSeries.unit}

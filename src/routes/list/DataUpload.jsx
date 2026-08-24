@@ -9,7 +9,6 @@ import {
 import {
   IconBluetooth,
   IconFileUpload,
-  IconCode,
   IconDeviceMobile,
   IconDatabase,
 } from "@tabler/icons-react";
@@ -147,13 +146,6 @@ const DataUpload = ({ refreshDatasets }) => {
       ),
       buttonText: "Upload CSV Files",
       buttonAction: () => setCSVModalOpen(true),
-    },
-    {
-      icon: IconCode,
-      title: "Library Upload",
-      description: "Implement custom logic using edge-ml libraries.",
-      buttonText: "Generate Code",
-      buttonAction: () => navigate("settings/getCode"),
     },
     {
       icon: IconDeviceMobile,

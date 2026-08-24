@@ -125,7 +125,6 @@ const LabelingPanel = () => {
             aria-label="Delete selected label"
             variant="outline"
             color="red"
-            size="compact-sm"
             radius="md"
             leftIcon={<FontAwesomeIcon icon={faTrashCan} size="xs" />}
             onClick={() => setDeleteModalOpen(true)}

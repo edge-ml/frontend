@@ -30,7 +30,10 @@ const Dataset = () => {
       <DatasetProvider
         dataset={dataset}
         labelings={labelings}
-        datasetEdit={datasetEdit}
+        datasetEdit={{
+          ...datasetEdit,
+          updateDataset: datasetUtils.updateDataset,
+        }}
       >
         <LabelingProvider labelings={labelings}>
           <div className="d-flex w-100 h-100">

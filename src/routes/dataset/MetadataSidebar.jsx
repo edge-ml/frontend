@@ -10,7 +10,7 @@ import MetadataContainer from "../../components/MetadataPanel/MetadataContainer"
 import { DatasetContext } from "./DatasetContext";
 
 const MetadataSidebar = () => {
-  const { dataset } = useContext(DatasetContext);
+  const { dataset, updateDataset } = useContext(DatasetContext);
 
   const [isExtended, setExtended] = useState(false);
 
@@ -52,7 +52,9 @@ const MetadataSidebar = () => {
           name={dataset.name}
           handleDatasetNameChange={() => {}}
           metaData={dataset.metaData}
-          onUpdateMetaData={() => {}}
+          onUpdateMetaData={({ metaData }) =>
+            updateDataset({ ...dataset, metaData: metaData ?? {} })
+          }
         />
       </div>
     </Fragment>
