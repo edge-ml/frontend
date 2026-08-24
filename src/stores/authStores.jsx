@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import { jwtDecode } from "jwt-decode";
-import { setToken, clearToken } from "./services/LocalStorageService";
-import { loginUser } from "./services/ApiServices/AuthentificationServices";
-import { getAccessToken } from "./services/LocalStorageService";
+import { setToken, clearToken, getAccessToken } from "../services/LocalStorageService";
+import { loginUser } from "../services/ApiServices/AuthentificationServices";
 
 const useAuthStore = create((set) => ({
   user: undefined,

@@ -1,4 +1,4 @@
-import * as JSZip from "jszip";
+import JSZip from "jszip";
 import { generateCSV } from "./CsvService";
 import { getDataset } from "../services/ApiServices/DatasetServices";
 import {

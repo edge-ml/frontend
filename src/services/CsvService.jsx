@@ -99,18 +99,27 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
 
   const tPtr = new Array(dataset.timeSeries.length).fill(0);
 
+  // Time series data points may be [timestamp, value] pairs or
+  // { timestamp, datapoint } objects depending on where the dataset came from.
+  const toTimestamp = (elm) =>
+    Array.isArray(elm) ? elm[0] : typeof elm === "number" ? elm : elm?.timestamp;
+  const toValue = (elm) => (Array.isArray(elm) ? elm[1] : elm?.datapoint);
+
   const getNextSensorData = () => {
     const timeStamps = dataset.timeSeries.map((elm, index) => {
       if (tPtr[index] < elm.data.length) {
         return elm.data[tPtr[index]];
       }
-      return { timestamp: Number.POSITIVE_INFINITY };
+      // Exhausted series must expose their timestamp through the same
+      // accessor as regular data points, otherwise Math.min() returns NaN
+      // and the export loop below never terminates.
+      return Number.POSITIVE_INFINITY;
     });
-    const minTimeStamp = Math.min(...timeStamps.map((elm) => elm[0]));
+    const minTimeStamp = Math.min(...timeStamps.map((elm) => toTimestamp(elm)));
     const sensorData = timeStamps.map((elm, index) => {
-      if (elm[0] === minTimeStamp) {
+      if (toTimestamp(elm) === minTimeStamp) {
         tPtr[index]++;
-        return elm.datapoint;
+        return toValue(elm);
       }
       return "";
     });
@@ -139,12 +148,12 @@ export const generateCSV = (dataset, props_labelings, props_labels) => {
   };
 
   var nextSensorLine = getNextSensorData();
-  var nextLabelLine = getLabelData(nextSensorLine[0]);
+  var nextLabelLine = getLabelData(nextSensorLine.timeStamp);
   var i = 0;
   while (nextSensorLine.changed) {
-    csv.push([nextSensorLine[0], ...nextSensorLine.data, ...nextLabelLine]);
+    csv.push([nextSensorLine.timeStamp, ...nextSensorLine.data, ...nextLabelLine]);
     nextSensorLine = getNextSensorData();
-    nextLabelLine = getLabelData(nextSensorLine[0]);
+    nextLabelLine = getLabelData(nextSensorLine.timeStamp);
     i = i + 1;
   }
 

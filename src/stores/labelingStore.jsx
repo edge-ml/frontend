@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import getLabelings from "../services/ApiServices/LabelingServices";
+import { getLabelings } from "../services/ApiServices/LabelingServices";
 
 const useLabelingStore = create((set) => ({
   Labelings: [],
@@ -11,3 +11,6 @@ const useLabelingStore = create((set) => ({
     set({ labelings });
   },
 }));
+
+export default useLabelingStore;
+
