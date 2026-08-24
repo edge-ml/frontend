@@ -98,13 +98,25 @@ const useEditDataset = (datasetUtils, labelings) => {
   }, [dataset?._id, labelings]);
 
   useEffect(() => {
+    const isTypingTarget = (target) =>
+      target instanceof HTMLElement &&
+      (target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.tagName === "SELECT" ||
+        target.isContentEditable);
+
     const handleKeyDown = (event) => {
       const shortcutIndex = Number(event.key) - 1;
-      if (
-        event.ctrlKey &&
+      const isValidShortcut =
         Number.isInteger(shortcutIndex) &&
         shortcutIndex >= 0 &&
-        shortcutIndex < (activeLabeling?.labels.length ?? 0)
+        shortcutIndex < (activeLabeling?.labels.length ?? 0);
+
+      // Change the active label type (re-types the selected label, if any)
+      // with plain number keys or Ctrl + number.
+      if (
+        isValidShortcut &&
+        !isTypingTarget(event.target)
       ) {
         event.preventDefault();
         setSelectedLabelTypeId(activeLabeling.labels[shortcutIndex]._id);

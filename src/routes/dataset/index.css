@@ -43,6 +43,17 @@
   background: color-mix(in srgb, var(--annotation-color) 32%, transparent);
 }
 
+/* Annotations are wide flat bars — the default blue :focus-visible
+   outline renders as distracting “blue bars”. Use a subtle,
+   color-matched cue instead; selection state is shown via the tint
+   and drag handles above. */
+.annotation:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1px var(--annotation-color),
+    0 0 0 3px color-mix(in srgb, var(--annotation-color) 35%, transparent);
+}
+
 .annotation--draft {
   width: 0 !important;
   border-right: 0;
@@ -88,6 +99,30 @@
 
 .timeline-navigator {
   padding: 18px 28px 12px;
+}
+
+/* Timestamp badges for the visible range edges. These are rendered by
+   ChartSlider itself (not Mantine's floating thumb labels, which are
+   anchored inside the thumb element and can escape the container —
+   sliding under the fixed left navbar or off-screen at the ends).
+   Positions come from JS, already clamped to stay within the track. */
+.timeline-navigator__timestamps {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(50% + var(--slider-size, 1rem));
+  height: 0;
+  pointer-events: none;
+}
+
+.timeline-navigator__timestamp {
+  position: absolute;
+  transform: translateX(-50%);
+  background-color: var(--mantine-color-gray-9);
+  color: var(--mantine-color-white);
+  font-size: var(--mantine-font-size-xs);
+  padding: calc(var(--mantine-spacing-xs) / 2) var(--mantine-spacing-xs);
+  border-radius: var(--mantine-radius-sm);
+  white-space: nowrap;
 }
 
 .timeline-navigator__control {

@@ -59,10 +59,13 @@ const NavbarProject = ({ project }) => {
     ),
   });
 
-  // Expand the subtree when the project becomes active (e.g. after navigation)
+  // Keep at most one project expanded: expand this one when it becomes
+  // active, collapse it whenever another project takes over
   useEffect(() => {
     if (isActive) {
       tree.expand(project._id);
+    } else {
+      tree.collapse(project._id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive, project._id]);
@@ -124,8 +127,12 @@ const NavbarProject = ({ project }) => {
           [classes.active]: active,
         })}
         onClick={(event) => {
-          // Keeps the Tree's built-in expand/collapse behaviour working
-          elementProps.onClick?.(event);
+          // Keeps the Tree's built-in expand/collapse behaviour working.
+          // The active project is skipped so it can never be collapsed
+          // manually - it stays open until another project becomes active.
+          if (!isActive) {
+            elementProps.onClick?.(event);
+          }
           setCurrentProject(project);
           navigate("Datasets");
         }}

@@ -1,5 +1,9 @@
 import React, { Component } from "react";
 import { Button } from "@mantine/core";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSlidersH, faTags } from "@fortawesome/free-solid-svg-icons";
+
 import MetaDataEditModal from "./MetaDataEditModal";
 import "./MetadataPanel.css";
 
@@ -43,7 +47,7 @@ class CustomMetadataPanel extends Component {
 
   additionalMetaData() {
     return Object.keys(this.props.metaData).map((key) => (
-      <div className="customMetaDataItem mx-2" key={key}>
+      <div className="customMetaDataItem" key={key}>
         <div className="customMetaDataItem_key">{key}</div>
         <div className="customMetaDataItem_value">
           {this.props.metaData[key]}
@@ -53,30 +57,49 @@ class CustomMetadataPanel extends Component {
   }
 
   render() {
+    const count = Object.keys(this.props.metaData).length;
+
     return (
-      <>
-        <div className="sidepanel-heading mt-5">
-          <h4>Custom Metadata</h4>
-        </div>
-        <div style={{ overflowY: "auto" }}>
-          {Object.keys(this.props.metaData).length ? (
-            this.additionalMetaData()
-          ) : (
-            <div className="m-2">No custom metadata</div>
-          )}
-        </div>
-        <div className="m-2 d-flex justify-content-end">
-          <Button color="blue" size="xs" onClick={this.onEdit}>
-            + Edit
+      <div className="metadata-section">
+        <div className="metadata-section-header">
+          <h4 className="metadata-section-title">
+            <FontAwesomeIcon
+              className="metadata-section-icon"
+              icon={faSlidersH}
+            />
+            Custom Metadata
+            {count > 0 && (
+              <span className="metadata-count-badge">{count}</span>
+            )}
+          </h4>
+          <Button
+            color="blue"
+            size="xs"
+            variant="light"
+            leftIcon={<FontAwesomeIcon icon={faTags} size="xs" />}
+            onClick={this.onEdit}
+          >
+            Edit
           </Button>
         </div>
+        {count ? (
+          <div className="custom-metadata-list">{this.additionalMetadata()}</div>
+        ) : (
+          <div className="custom-metadata-empty">
+            <FontAwesomeIcon icon={faTags} />
+            <span>No custom metadata yet</span>
+            <span style={{ fontSize: "0.78rem" }}>
+              Use “Edit” to add your own key/value pairs.
+            </span>
+          </div>
+        )}
         <MetaDataEditModal
           onClose={this.onCancelEdit}
           onSave={this.onSave}
           isOpen={this.state.editModalOpen}
           metaData={this.props.metaData}
         />
-      </>
+      </div>
     );
   }
 }

@@ -37,7 +37,7 @@ export const extractHeader = (file) => {
 export const parseHeader = (header) => {
   const fields = header.split(",").map((f) => f.trim());
   const invalid = fields.find(
-    (f) => !f.startsWith("sensor_") && !f.startsWith("label_") && f != "time"
+    (f) => !f.startsWith("sensor_") && !f.startsWith("label_") && f !== "time"
   );
   if (invalid || fields.length < 2) {
     return [undefined, undefined];
@@ -61,14 +61,19 @@ export const parseHeader = (header) => {
       };
     });
   const labelings = fields
-    .filter((f) => f.startsWith("label_"))
-    .map((f) => {
-      const [, labeling, label] = f.split("_");
+    .map((field, index) => {
+      if (!field.startsWith("label_")) return undefined;
+      const labelField = field.slice("label_".length);
+      const separatorIndex = labelField.indexOf("_");
+      if (separatorIndex === -1) return undefined;
+
       return {
-        name: label,
-        labelingItBelongs: labeling,
+        name: labelField.slice(separatorIndex + 1),
+        labelingItBelongs: labelField.slice(0, separatorIndex),
+        index,
       };
     })
+    .filter(Boolean)
     .reduce((acc, label) => {
       const idx = acc.findIndex(
         (labeling) => labeling.name === label.labelingItBelongs
@@ -82,7 +87,7 @@ export const parseHeader = (header) => {
           originalName: label.labelingItBelongs,
           removed: false,
           labels: [label.name],
-          indices: [0],
+          indices: [label.index],
         });
       }
       return acc;

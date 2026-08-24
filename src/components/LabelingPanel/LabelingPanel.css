@@ -1,9 +1,32 @@
-.labelingPanelBorder {
-  border-top: 1px solid lightgray !important;
-  margin-left: 4px;
-  margin-right: 4px;
+/* Label bar — only hover/selected chip styling lives here.
+   Layout is handled by Mantine Group + style props. */
+
+.dsp-labelbar-wrap {
+  border-top: 1px solid var(--mantine-color-gray-3);
 }
 
-.monospace {
-  font-family: monospace;
+.dsp-labelbar-chips {
+  overflow-x: auto;
+}
+
+/* --- Label type chips (dynamic colors require inline styles,
+       so only the static shell is a class) --- */
+
+.dsp-label-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 220px;
+  padding: 4px 10px;
+  border: 1px solid;
+  border-radius: var(--mantine-radius-md);
+  background-color: transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.dsp-label-chip.selected {
+  box-shadow: 0 1px 4px rgba(17, 24, 39, 0.2);
 }

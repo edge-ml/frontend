@@ -21,6 +21,7 @@ export const UploadDatasetModal = ({
     showWarning,
     onFileInput,
     handleUploadAll,
+    handleModalClose,
     handleDelete,
     handleCancel,
     handleConfirmClose,
@@ -29,7 +30,15 @@ export const UploadDatasetModal = ({
   } = useFileUploads(onDatasetComplete, onCloseModal);
 
   return (
-    <Modal isOpen={isOpen} onClose={onCloseModal}>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleModalClose}
+      size="min(1100px, calc(100vw - 2rem))"
+      centered
+      styles={{
+        body: { overflow: "visible" },
+      }}
+    >
       <ModalHeader>
         <div className="upload-modal-header" style={{ width: "100%" }}>
           <span className="upload-modal-header-text">Create new dataset</span>
@@ -83,7 +92,7 @@ export const UploadDatasetModal = ({
           <Button
             variant="filled"
             color="green"
-            disabled={!files.find((f) => f.status === FileStatus.CONFIGURATION)}
+            disabled={!files.some((f) => f.status === FileStatus.CONFIGURATION)}
             onClick={handleUploadAll}
           >
             Upload All

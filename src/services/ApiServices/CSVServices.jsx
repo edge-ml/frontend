@@ -1,6 +1,5 @@
 import apiConsts from "./ApiConstants";
 import ax from "axios";
-import apiRequest from "./request";
 import useProjectStore from "../../stores/projectStore";
 import localStorageService from "./../LocalStorageService";
 

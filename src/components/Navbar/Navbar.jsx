@@ -33,8 +33,8 @@ const Navbar = () => {
   return (
     <>
       <AppShell.Section
-        pt="md"
-        px="sm"
+        pt={4}
+        px={6}
         style={{ display: "flex", justifyContent: "center" }}
       >
         <EdgeMLBrandLogo
@@ -46,7 +46,7 @@ const Navbar = () => {
         />
       </AppShell.Section>
 
-      <AppShell.Section grow mt="xs" px="sm" component={ScrollArea}>
+      <AppShell.Section grow mt={4} px={6} component={ScrollArea}>
         {projects.map((project) => (
           <NavbarProject key={project._id} project={project} />
         ))}
@@ -59,8 +59,9 @@ const Navbar = () => {
             backgroundColor: "#eee",
             color: "#666",
             fontSize: "0.9rem",
-            padding: "10px 16px",
-            marginTop: "12px",
+            padding: "8px 12px",
+            marginTop: "8px",
+            borderRadius: "var(--mantine-radius-sm)",
           }}
         >
           <FontAwesomeIcon icon={faPlus} style={{ marginRight: 6 }} />
@@ -68,7 +69,7 @@ const Navbar = () => {
         </UnstyledButton>
       </AppShell.Section>
 
-      <AppShell.Section px="sm" pb="xs" style={{ color: "#666" }}>
+      <AppShell.Section px={6} pb={4} style={{ color: "#666" }}>
         <Divider w="95%" mx="auto" />
         {activeNotifications.length > 0 && (
           <UnstyledButton
@@ -77,7 +78,7 @@ const Navbar = () => {
             style={{
               cursor: "pointer",
               fontSize: "0.9rem",
-              padding: "10px 16px",
+              padding: "8px 12px",
             }}
           >
             <FontAwesomeIcon icon={faDownload} className="me-2" />
@@ -86,7 +87,7 @@ const Navbar = () => {
         )}
         <Divider w="95%" mx="auto" />
         <div
-          className="pt-3 pb-3 w-100 text-center"
+          className="pt-2 pb-2 w-100 text-center"
           style={{ cursor: "pointer", fontSize: "0.8rem" }}
           onClick={() =>
             window.open("https://github.com/edge-ml/edge-ml/issues", "_blank")

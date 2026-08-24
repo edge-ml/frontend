@@ -68,8 +68,32 @@ const ChartSlider = ({ start, end, visibleRange, onRangeChange }) => {
   };
 
   const startPercent = ((value[0] - start) / (end - start)) * 100;
-  const widthPercent = ((value[1] - value[0]) / (end - start)) * 100;
+  const endPercent = ((value[1] - start) / (end - start)) * 100;
+  const widthPercent = endPercent - startPercent;
   const canMoveRange = value[1] - value[0] < end - start;
+
+  // Center the badges on their range edge, but pin them flush to the
+  // track ends so they never slide under the navbar or off-screen:
+  // near the left end they align their left edge to the track start,
+  // near the right end their right edge to the track end.
+  const labelTransformFor = (percent) => {
+    if (percent < 10) return "translateX(0)";
+    if (percent > 90) return "translateX(-100%)";
+    return "translateX(-50%)";
+  };
+  const labelLeftFor = (percent) => Math.min(100, Math.max(0, percent));
+
+  const renderTimestamp = (timestamp, percent) => (
+    <span
+      className="timeline-navigator__timestamp"
+      style={{
+        left: `${labelLeftFor(percent)}%`,
+        transform: labelTransformFor(percent),
+      }}
+    >
+      {formatTimestamp(timestamp)}
+    </span>
+  );
 
   return (
     <div className="timeline-navigator">
@@ -81,9 +105,12 @@ const ChartSlider = ({ start, end, visibleRange, onRangeChange }) => {
           step={step}
           value={value}
           onChange={updateRange}
-          label={formatTimestamp}
           aria-label="Visible time range"
         />
+        <div className="timeline-navigator__timestamps" aria-hidden>
+          {renderTimestamp(value[0], startPercent)}
+          {renderTimestamp(value[1], endPercent)}
+        </div>
         <div className="timeline-navigator__drag-track" ref={trackRef}>
           {canMoveRange && (
             <div

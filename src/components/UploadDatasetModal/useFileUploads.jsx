@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
+import axios from "axios";
 import { processCSVBackend } from "../../services/ApiServices/CSVServices";
 import { getUploadProcessingProgress } from "../../services/ApiServices/DatasetServices";
 import { useInterval } from "../../services/ReactHooksService";
@@ -13,239 +14,295 @@ const FileStatus = Object.freeze({
   CANCELLED: "Cancelled",
 });
 
+const INITIAL_POLLING_INTERVAL = 1000;
 const MAXIMUM_POLLING_INTERVAL = 60 * 1000;
 
 export { FileStatus };
 
 export const useFileUploads = (onDatasetComplete, onCloseModal) => {
   const [files, setFiles] = useState([]);
-  const [count, setCount] = useState(0);
   const [showWarning, setShowWarning] = useState(false);
-  const [consecutiveNoUpdateCount, setConsecutiveNoUpdateCount] = useState(0);
+  const [pollingInterval, setPollingInterval] = useState(
+    INITIAL_POLLING_INTERVAL
+  );
+  const nextFileId = useRef(0);
   const filesRef = useRef(files);
   filesRef.current = files;
 
-  const updateFile = (fileId, updates) => {
-    setFiles((prev) =>
-      prev.map((f) => (f.id === fileId ? { ...f, ...updates } : f))
-    );
-  };
+  const updateFile = useCallback((fileId, updates) => {
+    setFiles((previousFiles) => {
+      const nextFiles = previousFiles.map((file) =>
+        file.id === fileId ? { ...file, ...updates } : file
+      );
+      filesRef.current = nextFiles;
+      return nextFiles;
+    });
+  }, []);
 
-  const addFiles = (inputFiles) => {
-    const formatted = [...inputFiles].map((f, idx) => ({
-      name: f.name,
+  const addFiles = useCallback((inputFiles) => {
+    const formattedFiles = Array.from(inputFiles, (file) => ({
+      name: file.name,
       progress: 0,
       status: FileStatus.CONFIGURATION,
-      id: count + idx,
-      csv: inputFiles[idx],
+      id: nextFileId.current++,
+      csv: file,
       error: undefined,
       datasetId: undefined,
       processingStep: undefined,
       processedTimeseries: [undefined, undefined],
     }));
-    setFiles((prev) => [...prev, ...formatted]);
-    setCount((prev) => prev + inputFiles.length);
-    return formatted.map((f) => f.id);
-  };
 
-  const setController = (fileId, cancellationHandler) => {
-    updateFile(fileId, { cancellationHandler });
-  };
+    setFiles((previousFiles) => {
+      const nextFiles = [...previousFiles, ...formattedFiles];
+      filesRef.current = nextFiles;
+      return nextFiles;
+    });
 
-  const handleProgress = (fileId, progress) => {
-    updateFile(fileId, { progress });
-  };
+    return formattedFiles;
+  }, []);
 
-  const handleStatus = (fileId, status) => {
-    if (status === FileStatus.ERROR) {
-      updateFile(fileId, { status, progress: 100 });
-    } else {
-      updateFile(fileId, { status });
-    }
-  };
+  const onFileInput = useCallback(
+    async (inputFiles) => {
+      const addedFiles = addFiles(inputFiles);
 
-  const handleCancel = (cancelledFile) => {
-    cancelledFile.cancellationHandler();
-  };
+      for (let index = 0; index < inputFiles.length; index += 1) {
+        const file = addedFiles[index];
+        try {
+          const header = await extractHeader(inputFiles[index]);
+          const [timeSeries, labelings] = parseHeader(header);
 
-  const handleDelete = (fileId) => {
-    setFiles((prev) => prev.filter((file) => file.id !== fileId));
-  };
+          if (!timeSeries || !labelings) {
+            updateFile(file.id, {
+              error: "Invalid format, parsing failed",
+              status: FileStatus.ERROR,
+              progress: 100,
+            });
+            continue;
+          }
 
-  const changeConfig = (fileId, newConfig) => {
-    updateFile(fileId, { config: newConfig });
-  };
-
-  const initConfig = (fileId, timeSeries, labelings) => {
-    setFiles((prev) =>
-      prev.map((file) => {
-        if (file.id !== fileId) return file;
-        const name = file.name.endsWith(".csv")
-          ? file.name.substring(0, file.name.length - 4)
-          : file.name;
-        return {
-          ...file,
-          config: { timeSeries, labelings, name, editingModeActive: false },
-        };
-      })
-    );
-  };
-
-  const onFileInput = async (inputFiles) => {
-    const fileIds = addFiles(inputFiles);
-    for (let i = 0; i < inputFiles.length; ++i) {
-      try {
-        const header = await extractHeader(inputFiles[i]);
-        const [timeSeries, labelings] = parseHeader(header);
-        if (!timeSeries || !labelings) {
-          updateFile(fileIds[i], {
-            error: "Invalid format, parsing failed",
+          const name = file.name.endsWith(".csv")
+            ? file.name.slice(0, -4)
+            : file.name;
+          updateFile(file.id, {
+            config: {
+              timeSeries,
+              labelings,
+              name,
+              editingModeActive: false,
+            },
+          });
+        } catch (error) {
+          updateFile(file.id, {
+            error: error.message || "Failed to parse file",
             status: FileStatus.ERROR,
             progress: 100,
           });
-          continue;
         }
-        initConfig(fileIds[i], timeSeries, labelings);
-      } catch (err) {
-        updateFile(fileIds[i], {
-          error: err.message || "Failed to parse file",
-          status: FileStatus.ERROR,
-          progress: 100,
-        });
       }
-    }
-  };
-
-  const handleUpload = async (file) => {
-    const formData = new FormData();
-    formData.append("CSVFile", file.csv);
-    formData.append("CSVConfig", JSON.stringify(file.config));
-    handleStatus(file.id, FileStatus.UPLOADING);
-    setConsecutiveNoUpdateCount(0);
-    const [cancellationHandler, response] = processCSVBackend(
-      formData,
-      file.id,
-      handleProgress
-    );
-    setController(file.id, cancellationHandler);
-    try {
-      const result = await response;
-      updateFile(file.id, {
-        datasetId: result.data.datasetId,
-        status: FileStatus.PROCESSING,
-        processingStep: "Started processing",
-      });
-      onDatasetComplete();
-    } catch (err) {
-      const message = err?.response?.data?.detail || err.message;
-      updateFile(file.id, { error: message });
-      handleStatus(file.id, FileStatus.ERROR);
-      return false;
-    }
-    return true;
-  };
-
-  useInterval(
-    () => {
-      const currentFiles = filesRef.current;
-      let pollResultedInUpdate = false;
-      let allComplete = true;
-
-      const poll = async () => {
-        for (const file of currentFiles) {
-          allComplete = allComplete && file.status !== FileStatus.UPLOADING;
-          if (
-            file.datasetId === undefined ||
-            file.status === FileStatus.COMPLETE
-          ) {
-            continue;
-          }
-          const [
-            step,
-            progress,
-            currentTimeseries = undefined,
-            totalTimeseries = undefined,
-          ] = await getUploadProcessingProgress(file.datasetId);
-          if (
-            step !== file.processingStep ||
-            file.processedTimeseries[0] !== currentTimeseries
-          ) {
-            pollResultedInUpdate = true;
-            if (progress === 100) {
-              handleStatus(file.id, FileStatus.COMPLETE);
-            }
-            updateFile(file.id, {
-              processingStep: step,
-              processedTimeseries: [currentTimeseries, totalTimeseries],
-            });
-            allComplete = allComplete && progress === 100;
-          }
-        }
-
-        if (allComplete) {
-          setConsecutiveNoUpdateCount(null);
-          if (currentFiles.length > 0) {
-            handleModalClose();
-          }
-        } else if (!pollResultedInUpdate) {
-          setConsecutiveNoUpdateCount((prevCount) => prevCount + 1);
-        } else {
-          setConsecutiveNoUpdateCount(0);
-        }
-      };
-
-      poll();
     },
-    consecutiveNoUpdateCount === null
-      ? null
-      : Math.min(
-          MAXIMUM_POLLING_INTERVAL,
-          1.5 ** consecutiveNoUpdateCount * 1000 + Math.random() * 100
-        )
+    [addFiles, updateFile]
   );
 
-  const handleUploadAll = async () => {
-    setFiles((prev) =>
-      prev.map((f) => ({
-        ...f,
-        config: { ...f.config, editingModeActive: false },
-      }))
-    );
-    await Promise.all(
-      files
-        .filter((elm) => elm.status === FileStatus.CONFIGURATION)
-        .map((elm) => handleUpload(elm))
-    );
-  };
+  const handleProgress = useCallback(
+    (fileId, progress) => updateFile(fileId, { progress }),
+    [updateFile]
+  );
 
-  const handleModalClose = () => {
-    const anyOngoing = filesRef.current.find(
-      (f) => f.status === FileStatus.UPLOADING
-    );
-    if (anyOngoing) {
-      setShowWarning(true);
-    } else {
-      handleConfirmClose();
-    }
-  };
+  const handleUpload = useCallback(
+    async (file) => {
+      const formData = new FormData();
+      formData.append("CSVFile", file.csv);
+      formData.append(
+        "CSVConfig",
+        JSON.stringify({ ...file.config, editingModeActive: false })
+      );
+      updateFile(file.id, {
+        status: FileStatus.UPLOADING,
+        error: undefined,
+      });
 
-  const handleConfirmClose = () => {
-    const current = filesRef.current;
-    const anyComplete = current.find((f) => f.status === FileStatus.COMPLETE);
-    for (const file of current) {
-      if (file.status === FileStatus.UPLOADING) {
-        handleCancel(file);
+      const [cancellationHandler, response] = processCSVBackend(
+        formData,
+        file.id,
+        handleProgress
+      );
+      updateFile(file.id, { cancellationHandler });
+
+      try {
+        const result = await response;
+        updateFile(file.id, {
+          datasetId: result.data.datasetId,
+          status: FileStatus.PROCESSING,
+          processingStep: "Started processing",
+        });
+        return true;
+      } catch (error) {
+        const cancelled =
+          axios.isCancel(error) || error?.code === "ERR_CANCELED";
+        updateFile(file.id, {
+          status: cancelled ? FileStatus.CANCELLED : FileStatus.ERROR,
+          progress: 100,
+          error: cancelled
+            ? "Upload cancelled"
+            : error?.response?.data?.detail ||
+              error.message ||
+              "Failed to upload file",
+        });
+        return false;
       }
-    }
-    setCount(0);
+    },
+    [handleProgress, updateFile]
+  );
+
+  const handleCancel = useCallback(
+    (file) => {
+      file.cancellationHandler?.();
+      updateFile(file.id, {
+        status: FileStatus.CANCELLED,
+        progress: 100,
+        error: "Upload cancelled",
+      });
+    },
+    [updateFile]
+  );
+
+  const handleDelete = useCallback((fileId) => {
+    setFiles((previousFiles) => {
+      const nextFiles = previousFiles.filter((file) => file.id !== fileId);
+      filesRef.current = nextFiles;
+      return nextFiles;
+    });
+  }, []);
+
+  const changeConfig = useCallback(
+    (fileId, newConfig) => updateFile(fileId, { config: newConfig }),
+    [updateFile]
+  );
+
+  const handleConfirmClose = useCallback(() => {
+    filesRef.current
+      .filter((file) => file.status === FileStatus.UPLOADING)
+      .forEach((file) => file.cancellationHandler?.());
+
+    filesRef.current = [];
     setFiles([]);
     setShowWarning(false);
+    setPollingInterval(INITIAL_POLLING_INTERVAL);
     onCloseModal();
-  };
+  }, [onCloseModal]);
 
-  const handleCancelClose = () => {
-    setShowWarning(false);
-  };
+  const handleModalClose = useCallback(() => {
+    const hasOngoingUpload = filesRef.current.some(
+      (file) => file.status === FileStatus.UPLOADING
+    );
+    if (hasOngoingUpload) {
+      setShowWarning(true);
+      return;
+    }
+    handleConfirmClose();
+  }, [handleConfirmClose]);
+
+  const handleUploadAll = useCallback(async () => {
+    const uploadableFiles = filesRef.current
+      .filter((file) => file.status === FileStatus.CONFIGURATION && file.config)
+      .map((file) => ({
+        ...file,
+        config: { ...file.config, editingModeActive: false },
+      }));
+
+    setFiles((previousFiles) => {
+      const nextFiles = previousFiles.map((file) => {
+        const uploadable = uploadableFiles.find((item) => item.id === file.id);
+        return uploadable ? { ...file, config: uploadable.config } : file;
+      });
+      filesRef.current = nextFiles;
+      return nextFiles;
+    });
+
+    await Promise.all(uploadableFiles.map(handleUpload));
+  }, [handleUpload]);
+
+  const pollProcessingFiles = useCallback(async () => {
+    const currentFiles = filesRef.current;
+    const processingFiles = currentFiles.filter(
+      (file) => file.status === FileStatus.PROCESSING && file.datasetId
+    );
+
+    if (processingFiles.length === 0) {
+      setPollingInterval(INITIAL_POLLING_INTERVAL);
+      return;
+    }
+
+    const progressResults = await Promise.all(
+      processingFiles.map(async (file) => {
+        try {
+          const progress = await getUploadProcessingProgress(file.datasetId);
+          return { file, progress };
+        } catch (error) {
+          return { file, error };
+        }
+      })
+    );
+
+    let completedFile = false;
+    let changed = false;
+    const nextFiles = currentFiles.map((file) => {
+      const result = progressResults.find((item) => item.file.id === file.id);
+      if (!result) return file;
+
+      if (result.error) {
+        changed = true;
+        return {
+          ...file,
+          status: FileStatus.ERROR,
+          progress: 100,
+          error:
+            result.error?.response?.data?.detail ||
+            result.error.message ||
+            "Failed to read processing progress",
+        };
+      }
+
+      const [processingStep, progress, currentTimeseries, totalTimeseries] =
+        result.progress;
+      const complete = progress >= 100;
+      changed = true;
+      if (complete && file.status !== FileStatus.COMPLETE) {
+        completedFile = true;
+      }
+
+      return {
+        ...file,
+        status: complete ? FileStatus.COMPLETE : FileStatus.PROCESSING,
+        progress,
+        processingStep,
+        processedTimeseries: [currentTimeseries, totalTimeseries],
+      };
+    });
+
+    if (!changed) return;
+
+    filesRef.current = nextFiles;
+    setFiles(nextFiles);
+
+    if (completedFile) {
+      onDatasetComplete?.();
+      if (nextFiles.every((file) => file.status === FileStatus.COMPLETE)) {
+        handleConfirmClose();
+        return;
+      }
+      setPollingInterval(INITIAL_POLLING_INTERVAL);
+    } else {
+      setPollingInterval((previous) =>
+        Math.min(MAXIMUM_POLLING_INTERVAL, previous * 1.5)
+      );
+    }
+  }, [handleConfirmClose, onDatasetComplete]);
+
+  const hasProcessingFiles = files.some(
+    (file) => file.status === FileStatus.PROCESSING
+  );
+  useInterval(pollProcessingFiles, hasProcessingFiles ? pollingInterval : null);
 
   return {
     files,
@@ -256,7 +313,7 @@ export const useFileUploads = (onDatasetComplete, onCloseModal) => {
     handleDelete,
     handleCancel,
     handleConfirmClose,
-    handleCancelClose,
+    handleCancelClose: () => setShowWarning(false),
     changeConfig,
     FileStatus,
   };

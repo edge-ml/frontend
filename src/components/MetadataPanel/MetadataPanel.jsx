@@ -2,7 +2,14 @@ import React, { Component } from "react";
 import { TextInput } from "@mantine/core";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPen, faCheck } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPen,
+  faCheck,
+  faTag,
+  faCalendarDay,
+  faUser,
+  faFingerprint,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { unixTimeToString } from "../../services/helpers";
 import "./MetadataPanel.css";
@@ -20,17 +27,20 @@ class MetadataPanel extends Component {
     this.handleNameSave = this.handleNameSave.bind(this);
   }
 
-  metaDataItem(key, value) {
+  metaDataItem(icon, key, value) {
     return (
-      <div className="customMetaDataItem">
-        <div className="customMetaDataItem_key">{key}</div>
-        <div className="customMetaDataItem_value">{value}</div>
+      <div className="metadata-row" key={key}>
+        <div className="metadata-row-label">
+          <FontAwesomeIcon icon={icon} />
+          <span>{key}</span>
+        </div>
+        <div className="metadata-row-value">{value}</div>
       </div>
     );
   }
 
   handleNameEditButtonClick() {
-    this.setState({ nameEditActive: true });
+    this.setState({ nameEditActive: true, editedName: this.state.datasetName });
   }
 
   handleNameInput(event) {
@@ -49,58 +59,69 @@ class MetadataPanel extends Component {
 
   render() {
     return (
-      <>
-        <div className="sidepanel-heading m-2">
-          <h4>Metadata</h4>
+      <div className="metadata-section">
+        <div className="metadata-section-header">
+          <h4 className="metadata-section-title">
+            <FontAwesomeIcon
+              className="metadata-section-icon"
+              icon={faFingerprint}
+            />
+            Dataset Info
+          </h4>
         </div>
-        <div className="m-2">
-          <div className="customMetaDataItem">
-            <div className="customMetaDataItem_key">Name</div>
-            <div
-              className={`customMetaDataItem_value ${
-                this.state.nameEditActive ? "editing" : ""
-              }`}
-            >
+        <div className="metadata-rows">
+          <div className="metadata-row">
+            <div className="metadata-row-label">
+              <FontAwesomeIcon icon={faTag} />
+              <span>Name</span>
+            </div>
+            <div className="metadata-row-value">
               {this.state.nameEditActive ? (
                 <div style={{ display: "flex", gap: "4px" }}>
                   <TextInput
                     className="datasetNameChangeInput"
+                    size="xs"
                     value={this.state.editedName}
                     onChange={this.handleNameInput}
+                    autoFocus
                   />
                   <button
                     className="confirmDatasetNameButton"
+                    title="Save name"
                     onClick={this.handleNameSave}
                   >
                     <FontAwesomeIcon icon={faCheck} />
                   </button>
                 </div>
               ) : (
-                <>
+                <div className="metadata-name-display">
                   {this.state.datasetName}
                   <button
                     className="changeDatasetNameButton"
+                    title="Rename dataset"
                     onClick={this.handleNameEditButtonClick}
                   >
-                    <FontAwesomeIcon icon={faPen} />
+                    <FontAwesomeIcon icon={faPen} size="xs" />
                   </button>
-                </>
+                </div>
               )}
             </div>
           </div>
           {this.metaDataItem(
+            faCalendarDay,
             "Start",
             this.props.start !== undefined
               ? unixTimeToString(this.props.start)
               : ""
           )}
           {this.metaDataItem(
+            faCalendarDay,
             "End",
             this.props.end != undefined ? unixTimeToString(this.props.end) : ""
           )}
-          {this.metaDataItem("User", this.props.user)}
+          {this.metaDataItem(faUser, "User", this.props.user)}
         </div>
-      </>
+      </div>
     );
   }
 }

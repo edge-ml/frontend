@@ -1,10 +1,11 @@
 .upload-modal-header {
-  background: linear-gradient(135deg, rgb(20, 30, 48), rgb(36, 48, 68));
+  background: rgb(249, 251, 252);
+  border-bottom: 1px solid rgb(230, 230, 234);
   padding: 1rem 1.5rem;
 }
 
 .upload-modal-header-text {
-  color: white;
+  color: #212529;
   font-weight: 700;
   font-size: 1.1rem;
 }

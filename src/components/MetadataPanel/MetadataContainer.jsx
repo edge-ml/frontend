@@ -12,10 +12,7 @@ const MetadataContainer = ({
   onUpdateMetaData,
 }) => {
   return (
-    <div
-      className="d-flex flex-column p-2"
-      style={{ height: "100vh", width: "100%" }}
-    >
+    <div className="metadata-container">
       <MetadataPanel
         start={start}
         end={end}
@@ -26,7 +23,7 @@ const MetadataContainer = ({
       <CustomMetadataPanel
         metaData={metaData}
         onUpdateMetaData={onUpdateMetaData}
-      ></CustomMetadataPanel>
+      />
     </div>
   );
 };

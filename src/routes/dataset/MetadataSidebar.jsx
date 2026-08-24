@@ -20,13 +20,14 @@ const MetadataSidebar = () => {
 
   if (!isExtended) {
     return (
-      <div
-        className="metaDataCollapseButton"
+      <button
+        className="metadata-sidebar-handle"
         onClick={() => toggleMetaData(true)}
-        style={{ cursor: "pointer" }}
+        title="Show metadata"
       >
-        <FontAwesomeIcon size="1x" icon={faChevronLeft} />
-      </div>
+        <FontAwesomeIcon icon={faChevronLeft} size="xs" />
+        <span className="metadata-sidebar-handle-label">Metadata</span>
+      </button>
     );
   }
 
@@ -37,24 +38,22 @@ const MetadataSidebar = () => {
         onClick={() => toggleMetaData(false)}
       />
       <div className="dataset-side-panel">
-        <div style={{ display: "flex" }}>
-          <div
-            className="metaDataCollapseButton"
-            onClick={() => toggleMetaData(false)}
-            style={{ cursor: "pointer" }}
-          >
-            <FontAwesomeIcon icon={faChevronRight} />
-          </div>
-          <MetadataContainer
-            start={Math.min(...dataset.timeSeries.map((elm) => elm.start))}
-            end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
-            user={dataset.userId}
-            name={dataset.name}
-            handleDatasetNameChange={() => {}}
-            metaData={dataset.metaData}
-            onUpdateMetaData={() => {}}
-          />
-        </div>
+        <button
+          className="metadata-sidebar-close"
+          onClick={() => toggleMetaData(false)}
+          title="Hide metadata"
+        >
+          <FontAwesomeIcon icon={faChevronRight} size="sm" />
+        </button>
+        <MetadataContainer
+          start={Math.min(...dataset.timeSeries.map((elm) => elm.start))}
+          end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
+          user={dataset.userId}
+          name={dataset.name}
+          handleDatasetNameChange={() => {}}
+          metaData={dataset.metaData}
+          onUpdateMetaData={() => {}}
+        />
       </div>
     </Fragment>
   );

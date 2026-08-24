@@ -32,7 +32,7 @@ const NavbarUserSettings = () => {
       >
         <Popover.Target>
           <UnstyledButton
-            className="d-flex justify-content-center align-items-center pt-3 pb-3 w-100"
+            className="d-flex justify-content-center align-items-center pt-2 pb-2 w-100"
             onClick={() => setUserPopoverOpen((o) => !o)}
             style={{ color: "#666", cursor: "pointer" }}
           >

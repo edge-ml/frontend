@@ -5,8 +5,8 @@ import { KITLogo, TECOLogo } from "../Common/logos";
 const NavbarInfo = () => {
   return (
     <>
-      <div className="navbar-project-item-color navbar-logos pt-3 px-3 pb-1">
-        <div>
+      <div className="navbar-project-item-color navbar-logos pt-2 px-2 pb-1">
+        <div style={{ whiteSpace: "nowrap", textAlign: "center" }}>
           <small>Open source from</small>
         </div>
         <div className="my-1 d-flex justify-content-between">

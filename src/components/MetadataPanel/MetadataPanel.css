@@ -1,20 +1,110 @@
-.customMetaDataItem {
+/* ===== Metadata sidebar layout ===== */
+
+.metadata-container {
   display: flex;
-  justify-content: space-between;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid gray;
-  height: 32px;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+  width: 100%;
+  overflow-y: auto;
 }
 
-.customMetaDataItem_key {
+.metadata-section {
+  background-color: #ffffff;
+  border: 1px solid #e6e6ea;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(17, 24, 39, 0.06);
+  overflow: hidden;
+}
+
+/* ===== Section headers ===== */
+
+.metadata-section-header {
   display: flex;
-  font-weight: bold;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #eef0f4;
+  background-color: #fafbfc;
 }
 
-.customMetaDataItem_value {
+.metadata-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #2d3748;
+  margin: 0;
+}
+
+.metadata-section-title .metadata-section-icon {
+  color: rgb(71, 187, 120);
+  font-size: 0.9rem;
+}
+
+.metadata-count-badge {
+  background-color: rgba(71, 187, 120, 0.15);
+  color: rgb(43, 122, 79);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 8px;
+  line-height: 1.5;
+}
+
+/* ===== Key/value rows ===== */
+
+.metadata-rows {
+  padding: 6px 14px 10px 14px;
+}
+
+.metadata-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f3f6;
+}
+
+.metadata-row:last-child {
+  border-bottom: none;
+}
+
+.metadata-row-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #718096;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.metadata-row-label svg {
+  width: 14px;
+  text-align: center;
+  color: #a0aec0;
+}
+
+.metadata-row-value {
   text-align: end;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1a202c;
+  word-break: break-word;
+}
+
+/* ===== Dataset name row ===== */
+
+.metadata-name-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .changeDatasetNameButton,
@@ -22,6 +112,32 @@
   border: none;
   outline: none;
   background-color: transparent;
+  cursor: pointer;
+  color: #a0aec0;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.confirmDatasetNameButton {
+  color: rgb(71, 187, 120);
+  font-size: 0.95rem;
+}
+
+.confirmDatasetNameButton:hover {
+  color: rgb(43, 122, 79);
+  background-color: rgba(71, 187, 120, 0.12);
+}
+
+.metadata-name-display:hover .changeDatasetNameButton,
+.changeDatasetNameButton:focus-visible {
+  color: rgb(71, 187, 120);
+}
+
+.changeDatasetNameButton:hover {
+  background-color: rgba(71, 187, 120, 0.12);
 }
 
 .datasetNameChangeInputArea {
@@ -35,6 +151,69 @@
   border: none;
   outline: none;
   box-shadow: none !important;
+}
+
+/* ===== Custom metadata cards ===== */
+
+.custom-metadata-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 14px 14px 14px;
+}
+
+.customMetaDataItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background-color: #f7f9fa;
+  border: 1px solid #eceff2;
+  border-radius: 8px;
+  padding: 7px 10px;
+  transition: border-color 0.15s ease;
+}
+
+.customMetaDataItem:hover {
+  border-color: rgba(71, 187, 120, 0.45);
+}
+
+.customMetaDataItem_key {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #718096;
+}
+
+.customMetaDataItem_value {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #1a202c;
+  word-break: break-word;
+}
+
+.custom-metadata-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px 14px;
+  color: #a0aec0;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.custom-metadata-empty svg {
+  font-size: 1.4rem;
+  opacity: 0.6;
+}
+
+/* ===== Section footer actions ===== */
+
+.metadata-section-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 14px 12px 14px;
 }
 
 .editButton {

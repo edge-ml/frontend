@@ -50,10 +50,6 @@
   border-radius: var(--mantine-radius-sm);
 }
 
-.row:hover {
-  background-color: var(--mantine-color-gray-0);
-}
-
 /* Bubble starts at the icon and stretches to the right edge */
 .chip {
   height: var(--row-height);
@@ -62,12 +58,7 @@
   transition: background-color 100ms ease;
 }
 
-.chip:hover {
-  background-color: var(--mantine-color-gray-0);
-}
-
-.active,
-.active:hover {
+.active {
   background-color: var(--mantine-color-brand-1);
 }
 .caretCollapsed {
