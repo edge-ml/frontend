@@ -77,6 +77,7 @@ const BlePanelRecorderSettings = ({
         </Text>
         <SpinnerButton
           className="ble-record-button"
+          variant="outline"
           color={isRecording ? "red" : "blue"}
           onClick={handleRecordClick}
           loading={isChanging}

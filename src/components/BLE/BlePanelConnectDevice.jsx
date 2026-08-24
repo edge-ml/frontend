@@ -1,18 +1,8 @@
 import React from "react";
-import {
-  Alert,
-  Badge,
-  Button,
-  Group,
-  Paper,
-  Stack,
-  Text,
-  ThemeIcon,
-} from "@mantine/core";
+import { Alert, Badge, Button, Card, Group, Text } from "@mantine/core";
 import {
   IconAlertCircle,
   IconBluetooth,
-  IconBluetoothConnected,
   IconCheck,
   IconRefresh,
   IconUnlink,
@@ -36,53 +26,38 @@ const BlePanelConnectDevice = ({
     connectedDeviceData?.name || connectedBLEDevice?.name || "Bluetooth device";
 
   return (
-    <Paper className="ble-connect-card" withBorder radius="lg">
+    <Card shadow="sm" padding="lg" radius="md" withBorder>
       <div className="ble-connect-card__main">
-        <Group gap="md" wrap="nowrap">
-          <ThemeIcon
-            className="ble-connect-card__icon"
-            size={48}
-            radius="xl"
-            variant="light"
-            color={isConnected ? "teal" : "blue"}
-          >
-            {isConnected ? (
-              <IconBluetoothConnected size={25} />
-            ) : (
-              <IconBluetooth size={25} />
-            )}
-          </ThemeIcon>
-          <Stack gap={3}>
-            <Group gap="xs">
-              <Text fw={700} size="lg">
-                {isConnected ? displayName : "Connect a sensor device"}
-              </Text>
-              {isConnected && isEdgeMLInstalled && (
-                <Badge
-                  color="teal"
-                  variant="light"
-                  leftSection={<IconCheck size={12} />}
-                >
-                  Ready
-                </Badge>
-              )}
-            </Group>
-            <Text size="sm" c="dimmed">
-              {isConnected
-                ? connectedDeviceData?.installedFWVersion
-                  ? `Firmware ${connectedDeviceData.installedFWVersion}`
-                  : `Device ID ${connectedBLEDevice.id}`
-                : "Choose a nearby Edge ML device to configure its sensors and start recording."}
+        <div className="flex-grow-1">
+          <Group gap="xs">
+            <Text fw={700} size="lg">
+              {isConnected ? displayName : "Connect a sensor device"}
             </Text>
-          </Stack>
-        </Group>
+            {isConnected && isEdgeMLInstalled && (
+              <Badge
+                color="teal"
+                variant="light"
+                leftSection={<IconCheck size={12} />}
+              >
+                Ready
+              </Badge>
+            )}
+          </Group>
+          <Text size="sm" c="dimmed">
+            {isConnected
+              ? connectedDeviceData?.installedFWVersion
+                ? `Firmware ${connectedDeviceData.installedFWVersion}`
+                : `Device ID ${connectedBLEDevice.id}`
+              : "Choose a nearby Edge ML device to configure its sensors and start recording."}
+          </Text>
+        </div>
 
         <Group gap="sm" className="ble-connect-card__actions">
           {isConnected &&
             hasDFUFunction &&
             (outdatedVersionInstalled || !isEdgeMLInstalled) && (
               <Button
-                variant="light"
+                variant="outline"
                 leftSection={<IconRefresh size={17} />}
                 onClick={toggleDFUModal}
               >
@@ -90,7 +65,7 @@ const BlePanelConnectDevice = ({
               </Button>
             )}
           <SpinnerButton
-            variant={isConnected ? "subtle" : "filled"}
+            variant="outline"
             color={isConnected ? "red" : "blue"}
             leftSection={
               isConnected ? (
@@ -130,7 +105,7 @@ const BlePanelConnectDevice = ({
           compatible firmware before recording.
         </Alert>
       )}
-    </Paper>
+    </Card>
   );
 };
 

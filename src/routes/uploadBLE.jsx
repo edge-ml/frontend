@@ -26,24 +26,7 @@ import { BleLabelingMenu } from "../components/BLE/BleLabelingMenu";
 
 import { getLabelings } from "../services/ApiServices/LabelingServices";
 import { get_parse_schema } from "../utils/ble";
-import {
-  Badge,
-  Group,
-  Paper,
-  SimpleGrid,
-  Stack,
-  Text,
-  ThemeIcon,
-  Title,
-} from "@mantine/core";
-import {
-  IconAdjustments,
-  IconCheck,
-  IconDatabase,
-  IconDeviceWatch,
-  IconPlayerRecord,
-  IconTags,
-} from "@tabler/icons-react";
+import { Card, Container, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 
 class UploadBLE extends Component {
   constructor(props) {
@@ -796,226 +779,131 @@ class UploadBLE extends Component {
 
     return (
       <div
-        className="bleActivatedContainer"
         ref={this.componentRef}
         onKeyDown={this.handleKeyDown}
         tabIndex="0"
         style={{ outline: "none" }}
       >
-        <header className="ble-page-header">
-          <div>
-            <Group gap="xs" mb={5}>
-              <Badge variant="light" color="blue">
-                Data collection
-              </Badge>
-              {isRecording && (
-                <Badge variant="light" color="red">
-                  Recording in progress
-                </Badge>
-              )}
-            </Group>
-            <Title order={2}>Record from a Bluetooth device</Title>
-            <Text c="dimmed" mt={6}>
-              Connect your device, choose the signals you need, and save a
-              labeled dataset.
+        <Container fluid p="md">
+          {isRecording && (
+            <Text c="red" fw={600} mb="xs">
+              Recording in progress
             </Text>
-          </div>
-        </header>
-
-        <div className="ble-progress" aria-label="Recording setup progress">
-          {[
-            {
-              label: "Connect",
-              icon: IconDeviceWatch,
-              complete: isConnected,
-              active: !isConnected,
-            },
-            {
-              label: "Configure",
-              icon: IconAdjustments,
-              complete: isRecording,
-              active: isDeviceReady && !isRecording,
-            },
-            {
-              label: "Record",
-              icon: IconPlayerRecord,
-              complete: false,
-              active: isRecording,
-            },
-          ].map((step, index) => {
-            const StepIcon = step.complete ? IconCheck : step.icon;
-            return (
-              <React.Fragment key={step.label}>
-                {index > 0 && (
-                  <div
-                    className={`ble-progress__line${
-                      step.complete || step.active
-                        ? " ble-progress__line--active"
-                        : ""
-                    }`}
-                  />
-                )}
-                <div
-                  className={`ble-progress__step${
-                    step.complete
-                      ? " ble-progress__step--complete"
-                      : step.active
-                        ? " ble-progress__step--active"
-                        : ""
-                  }`}
-                >
-                  <ThemeIcon
-                    size="lg"
-                    radius="xl"
-                    variant={step.complete || step.active ? "filled" : "light"}
-                    color={step.complete ? "teal" : "blue"}
-                  >
-                    <StepIcon size={17} />
-                  </ThemeIcon>
-                  <Text size="sm" fw={600}>
-                    {step.label}
-                  </Text>
-                </div>
-              </React.Fragment>
-            );
-          })}
-        </div>
-
-        <Stack gap="lg">
-          <BlePanelConnectDevice
-            bleConnectionChanging={this.state.bleConnectionChanging}
-            toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
-            connectedBLEDevice={this.state.connectedBLEDevice}
-            hasDFUFunction={this.state.hasDFUFunction}
-            toggleDFUModal={this.toggleDFUModal}
-            deviceNotUsable={this.state.deviceNotUsable}
-            latestEdgeMLVersion={this.state.latestEdgeMLVersion}
-            isEdgeMLInstalled={this.state.isEdgeMLInstalled}
-            outdatedVersionInstalled={this.state.outdatedVersionInstalled}
-            connectedDeviceData={this.state.connectedDeviceData}
-            connectionError={this.state.connectionError}
-          />
-          {this.state.showDFUModal ? (
-            <DFUModal
-              connectedBLEDevice={this.state.connectedBLEDevice}
-              isEdgeMLInstalled={this.state.isEdgeMLInstalled}
-              connectedDeviceData={this.state.connectedDeviceData}
-              toggleDFUModal={this.toggleDFUModal}
-              showDFUModal={this.state.showDFUModal}
-              latestEdgeMLVersion={this.state.latestEdgeMLVersion}
-              onDisconnection={this.onDisconnection}
-            />
-          ) : null}
-
-          {!isConnected && (
-            <Paper className="ble-empty-state" withBorder radius="lg">
-              <ThemeIcon size={52} radius="xl" variant="light" color="blue">
-                <IconDeviceWatch size={27} />
-              </ThemeIcon>
-              <div>
-                <Text fw={650}>Your recording workspace will appear here</Text>
-                <Text size="sm" c="dimmed" mt={4}>
-                  Use the connect button above and select a nearby Bluetooth
-                  device.
-                </Text>
-              </div>
-            </Paper>
           )}
+          <Title order={3} mb="md">
+            Record from a Bluetooth device
+          </Title>
 
-          {isDeviceReady ? (
-            <>
-              <SimpleGrid
-                cols={{ base: 1, lg: 2 }}
-                spacing="lg"
-                className="ble-setup-grid"
-              >
-                <Paper className="ble-workflow-card" withBorder radius="lg">
-                  <Group gap="sm" mb="lg">
-                    <ThemeIcon variant="light" color="blue">
-                      <IconAdjustments size={18} />
-                    </ThemeIcon>
-                    <div>
-                      <Text fw={700}>Choose sensors</Text>
-                      <Text size="sm" c="dimmed">
-                        Select the signals to include in the dataset.
+          <Stack gap="lg">
+            <BlePanelConnectDevice
+              bleConnectionChanging={this.state.bleConnectionChanging}
+              toggleBLEDeviceConnection={this.toggleBLEDeviceConnection}
+              connectedBLEDevice={this.state.connectedBLEDevice}
+              hasDFUFunction={this.state.hasDFUFunction}
+              toggleDFUModal={this.toggleDFUModal}
+              deviceNotUsable={this.state.deviceNotUsable}
+              latestEdgeMLVersion={this.state.latestEdgeMLVersion}
+              isEdgeMLInstalled={this.state.isEdgeMLInstalled}
+              outdatedVersionInstalled={this.state.outdatedVersionInstalled}
+              connectedDeviceData={this.state.connectedDeviceData}
+              connectionError={this.state.connectionError}
+            />
+            {this.state.showDFUModal ? (
+              <DFUModal
+                connectedBLEDevice={this.state.connectedBLEDevice}
+                isEdgeMLInstalled={this.state.isEdgeMLInstalled}
+                connectedDeviceData={this.state.connectedDeviceData}
+                toggleDFUModal={this.toggleDFUModal}
+                showDFUModal={this.state.showDFUModal}
+                latestEdgeMLVersion={this.state.latestEdgeMLVersion}
+                onDisconnection={this.onDisconnection}
+              />
+            ) : null}
+
+            {!isConnected && (
+              <Card shadow="sm" padding="lg" radius="md" withBorder>
+                <Text c="dimmed">
+                  Connect your device above, choose the signals you need, and
+                  save a labeled dataset.
+                </Text>
+              </Card>
+            )}
+
+            {isDeviceReady ? (
+              <>
+                <SimpleGrid
+                  cols={{ base: 1, lg: 2 }}
+                  spacing="lg"
+                  className="ble-setup-grid"
+                >
+                  <Card shadow="sm" padding="lg" radius="md" withBorder>
+                    <Text fw={700} size="lg" mb="md">
+                      Choose sensors
+                    </Text>
+                    <BlePanelSensorList
+                      maxSampleRate={
+                        this.state.connectedDeviceData.maxSampleRate
+                      }
+                      selectedSensors={this.state.selectedSensors}
+                      onChangeSampleRate={this.onChangeSampleRate}
+                      sensors={this.state.deviceSensors}
+                      onToggleSensor={this.onToggleSensor}
+                      disabled={configurationLocked}
+                    />
+                  </Card>
+
+                  <Stack gap="lg">
+                    <Card shadow="sm" padding="lg" radius="md" withBorder>
+                      <Text fw={700} size="lg" mb="md">
+                        Recording session
                       </Text>
-                    </div>
-                  </Group>
-                  <BlePanelSensorList
-                    maxSampleRate={this.state.connectedDeviceData.maxSampleRate}
+                      <BlePanelRecorderSettings
+                        onDatasetNameChanged={this.onDatasetNameChanged}
+                        datasetName={this.state.datasetName}
+                        onClickRecordButton={this.onClickRecordButton}
+                        recorderState={this.state.recorderState}
+                        sensorsSelected={this.state.selectedSensors.size > 0}
+                        onToggleStream={this.onToggleStream}
+                        onToggleSampleRate={this.onToggleSampleRate}
+                        stream={this.state.stream}
+                        fullSampleRate={this.state.fullSampleRate}
+                        recordingError={this.state.recordingError}
+                      />
+                    </Card>
+
+                    <Card shadow="sm" padding="lg" radius="md" withBorder>
+                      <Text fw={700} size="lg" mb="md">
+                        Annotate while recording
+                      </Text>
+                      <BleLabelingMenu
+                        labelings={this.state.labelings}
+                        selectedLabeling={this.state.selectedLabeling}
+                        handleSelectLabeling={this.handleLabelingSelect}
+                        handleSelectLabel={this.toggleLabelingActive}
+                        shortcutKeys={this.shortcutKeys}
+                        recorderState={this.state.recorderState}
+                        currentLabel={this.state.currentLabel}
+                      />
+                    </Card>
+                  </Stack>
+                </SimpleGrid>
+
+                {isRecording && this.state.stream ? (
+                  <BlePanelRecordingDisplay
+                    deviceSensors={this.state.deviceSensors}
                     selectedSensors={this.state.selectedSensors}
-                    onChangeSampleRate={this.onChangeSampleRate}
-                    sensors={this.state.deviceSensors}
-                    onToggleSensor={this.onToggleSensor}
-                    disabled={configurationLocked}
+                    lastData={this.currentData}
+                    sensorKeys={this.sensorKeys}
+                    fullSampleRate={this.state.fullSampleRate}
+                    currentLabel={this.state.currentLabel}
+                    prevLabel={this.state.prevLabel}
+                    recordingStartTime={this.state.recordingStartTime}
                   />
-                </Paper>
-
-                <Stack gap="lg">
-                  <Paper className="ble-workflow-card" withBorder radius="lg">
-                    <Group gap="sm" mb="lg">
-                      <ThemeIcon
-                        variant="light"
-                        color={isRecording ? "red" : "blue"}
-                      >
-                        <IconDatabase size={18} />
-                      </ThemeIcon>
-                      <div>
-                        <Text fw={700}>Recording session</Text>
-                        <Text size="sm" c="dimmed">
-                          Name the dataset and control the live preview.
-                        </Text>
-                      </div>
-                    </Group>
-                    <BlePanelRecorderSettings
-                      onDatasetNameChanged={this.onDatasetNameChanged}
-                      datasetName={this.state.datasetName}
-                      onClickRecordButton={this.onClickRecordButton}
-                      recorderState={this.state.recorderState}
-                      sensorsSelected={this.state.selectedSensors.size > 0}
-                      onToggleStream={this.onToggleStream}
-                      onToggleSampleRate={this.onToggleSampleRate}
-                      stream={this.state.stream}
-                      fullSampleRate={this.state.fullSampleRate}
-                      recordingError={this.state.recordingError}
-                    />
-                  </Paper>
-
-                  <Paper className="ble-workflow-card" withBorder radius="lg">
-                    <Group gap="sm" mb="lg">
-                      <ThemeIcon variant="light" color="violet">
-                        <IconTags size={18} />
-                      </ThemeIcon>
-                      <Text fw={700}>Annotate while recording</Text>
-                    </Group>
-                    <BleLabelingMenu
-                      labelings={this.state.labelings}
-                      selectedLabeling={this.state.selectedLabeling}
-                      handleSelectLabeling={this.handleLabelingSelect}
-                      handleSelectLabel={this.toggleLabelingActive}
-                      shortcutKeys={this.shortcutKeys}
-                      recorderState={this.state.recorderState}
-                      currentLabel={this.state.currentLabel}
-                    />
-                  </Paper>
-                </Stack>
-              </SimpleGrid>
-
-              {isRecording && this.state.stream ? (
-                <BlePanelRecordingDisplay
-                  deviceSensors={this.state.deviceSensors}
-                  selectedSensors={this.state.selectedSensors}
-                  lastData={this.currentData}
-                  sensorKeys={this.sensorKeys}
-                  fullSampleRate={this.state.fullSampleRate}
-                  currentLabel={this.state.currentLabel}
-                  prevLabel={this.state.prevLabel}
-                  recordingStartTime={this.state.recordingStartTime}
-                />
-              ) : null}
-            </>
-          ) : null}
-        </Stack>
+                ) : null}
+              </>
+            ) : null}
+          </Stack>
+        </Container>
       </div>
     );
   }

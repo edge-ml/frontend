@@ -25,7 +25,7 @@ export const BleLabelingMenu = ({
         <Menu position="bottom-end" withinPortal>
           <Menu.Target>
             <Button
-              variant="light"
+              variant="outline"
               rightSection={<IconChevronDown size={15} />}
               leftSection={<IconTags size={16} />}
               disabled={isRecording}

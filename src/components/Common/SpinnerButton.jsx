@@ -13,7 +13,7 @@ function SpinnerButton({
       {loading ? (
         <>
           {loadingtext}
-          <Loader size="xs" color="white" ml={4} />
+          <Loader size="xs" color="currentColor" ml={4} />
         </>
       ) : (
         children

@@ -167,6 +167,7 @@ const TauriDevicePicker = () => {
             Cancel
           </Button>
           <Button
+            variant="outline"
             onClick={handleConnect}
             disabled={!selectedId}
             leftSection={<IconBluetoothConnected size={17} />}
