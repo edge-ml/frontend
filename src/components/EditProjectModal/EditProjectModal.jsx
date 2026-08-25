@@ -8,14 +8,11 @@ import AutoCompleteInput from "../../components/AutoCompleteInput/AutocompleteIn
 import { getUserNameSuggestions } from "../../services/ApiServices/AuthentificationServices";
 
 import "./EditProjectModal.css";
-import useUserStore from "../../Hooks/useUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import useProjectStore from "../../stores/projectStore";
 
 const EditProjectModal = ({ isOpen, onClose }) => {
   const [userSearchValue, setUserSearchValue] = useState("");
-  const projects = useProjectStore((state) => state.projects);
 
   const { project, setProjectName, createProject, addUser, removeUser } =
     useCreateProject();
@@ -36,7 +33,12 @@ const EditProjectModal = ({ isOpen, onClose }) => {
           disabled
           id="inputProjectAdmin"
           placeholder="Project-admin"
-          value={project.admin.name + " (" + project.admin.mail + ")"}
+          value={
+            (project.admin?.userName ?? "") +
+            " (" +
+            (project.admin?.email ?? "") +
+            ")"
+          }
         />
         <h5 style={{ paddingTop: "16px" }}>Users</h5>
         <Table>

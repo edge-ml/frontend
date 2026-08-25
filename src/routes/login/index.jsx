@@ -12,7 +12,7 @@ import {
   Divider,
 } from "@mantine/core";
 import {
-  IconBrandGithub,
+  // IconBrandGithub,  // GitHub OAuth temporarily disabled
   IconUser,
   IconShield,
   IconAlertTriangle,
@@ -103,6 +103,7 @@ const LoginPage = ({ children }) => {
             Login
           </Button>
 
+          {/* GitHub OAuth temporarily disabled
           <Divider />
 
           <Text size="sm" fw={500}>
@@ -119,6 +120,9 @@ const LoginPage = ({ children }) => {
               Login with <b>Github</b>
             </span>
           </Button>
+
+          <Divider />
+          */}
 
           <Divider />
 

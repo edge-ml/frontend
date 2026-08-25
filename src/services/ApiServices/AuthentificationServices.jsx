@@ -17,7 +17,6 @@ export const loginUser = async (userMail, password) => {
   );
   return res;
 };
-
 export const getUserNames = async (userIds) => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.POST,
@@ -64,18 +63,6 @@ export const loginOAuth = async (provider) => {
   window.open(url, "_self");
 };
 
-export const loginUserRefresh = async (refreshToken) => {
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.POST,
-    apiConsts.AUTH_URI,
-    apiConsts.AUTH_ENDPOINTS.REFRESH,
-    {
-      refresh_token: refreshToken,
-    }
-  );
-  return res;
-};
-
 export const deleteUser = async (userEMail) => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.DELETE,
@@ -99,24 +86,6 @@ export const registerNewUser = async (userEMail, password, userName) => {
       userName: userName,
     }
   );
-};
-
-export const subscribeUsers = async (callback) => {
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.GET,
-    apiConsts.AUTH_URI,
-    apiConsts.AUTH_ENDPOINTS.USERS
-  );
-  callback(res);
-};
-
-export const getUserMail = async () => {
-  const res = await apiRequest(
-    apiConsts.HTTP_METHODS.GET,
-    apiConsts.AUTH_URI,
-    apiConsts.AUTH_ENDPOINTS.MAIL
-  );
-  return res;
 };
 
 export const changeUserMail = async (newUserMail) => {

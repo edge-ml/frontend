@@ -7,11 +7,8 @@ import {
   getUserNames,
   logout,
   getUser,
-  loginUserRefresh,
   deleteUser,
   registerNewUser,
-  subscribeUsers,
-  getUserMail,
   changeUserMail,
   changeUserName,
   changeUserPassword,
@@ -67,19 +64,6 @@ describe("AuthentificationServices", () => {
     expect(await getUser()).toEqual({ email: "x@y.z", userName: "n" });
   });
 
-  it("loginUserRefresh POSTs the refresh token", async () => {
-    let body;
-    server.use(
-      http.post(`${AUTH_URI}${apiConsts.AUTH_ENDPOINTS.REFRESH}`, async ({ request }) => {
-        body = await request.json();
-        return HttpResponse.json({ access_token: "x" });
-      })
-    );
-    const res = await loginUserRefresh("r-token");
-    expect(res).toEqual({ access_token: "x" });
-    expect(body).toEqual({ refresh_token: "r-token" });
-  });
-
   it("deleteUser DELETEs with email payload", async () => {
     let method;
     server.use(
@@ -109,26 +93,6 @@ describe("AuthentificationServices", () => {
       password: "pw",
       userName: "newbie",
     });
-  });
-
-  it("subscribeUsers passes the result to the callback", async () => {
-    server.use(
-      http.get(`${AUTH_URI}${apiConsts.AUTH_ENDPOINTS.USERS}`, () =>
-        HttpResponse.json(["u1", "u2"])
-      )
-    );
-    const spy = vi.fn((users) => users);
-    await subscribeUsers(spy);
-    expect(spy).toHaveBeenCalledWith(["u1", "u2"]);
-  });
-
-  it("getUserMail returns the mail", async () => {
-    server.use(
-      http.get(`${AUTH_URI}${apiConsts.AUTH_ENDPOINTS.MAIL}`, () =>
-        HttpResponse.json("me@edge-ml.org")
-      )
-    );
-    expect(await getUserMail()).toBe("me@edge-ml.org");
   });
 
   it.each([

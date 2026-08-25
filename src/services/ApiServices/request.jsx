@@ -29,6 +29,10 @@ const hasRequestBody = (method, body) => {
     return true;
   }
 
+  if (Array.isArray(body)) {
+    return body.length > 0;
+  }
+
   return Object.keys(body).length > 0;
 };
 
@@ -49,7 +53,9 @@ const apiRequest = async (
   const projectId = localStorageService.getProject();
   const headers = {
     ...(contentType && { "Content-Type": contentType }),
-    Authorization: localStorageService.getAccessToken(),
+    ...(localStorageService.getAuthHeader() && {
+      Authorization: localStorageService.getAuthHeader(),
+    }),
     ...(projectId && { project: projectId }),
   };
 
@@ -79,7 +85,7 @@ const apiRequest = async (
             : await response.text();
     if (!response.ok) {
       const err = new Error(
-        data?.error || data?.message || response.statusText
+        data?.detail || data?.error || data?.message || response.statusText
       );
       err.status = response.status;
       throw err;

@@ -29,7 +29,7 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
     cancelToken: source.token,
     headers: {
       project: currentProject._id,
-      Authorization: localStorageService.getAccessToken(),
+      Authorization: localStorageService.getAuthHeader(),
     },
     withCredentials: true,
   };

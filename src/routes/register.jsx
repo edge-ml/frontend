@@ -16,11 +16,9 @@ import {
   IconShield,
   IconUser,
   IconAlertTriangle,
-  IconBrandGithub,
 } from "@tabler/icons-react";
 import EdgeMLBrandLogo from "../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
 import useRegister from "../Hooks/useRegister";
-import useAuth from "../Hooks/useAuth";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState("");
@@ -31,7 +29,6 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
 
   const register = useRegister();
-  const { loginOAuth } = useAuth();
 
   const onKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -44,14 +41,6 @@ const RegisterPage = () => {
       await register(userName, email, password, passwordRepeat);
     } catch (e) {
       setError(e.message);
-    }
-  };
-
-  const onOAuth = async (provider) => {
-    try {
-      await loginOAuth(provider);
-    } catch (e) {
-      setError(e?.message || "OAuth login failed");
     }
   };
 
@@ -126,23 +115,6 @@ const RegisterPage = () => {
             disabled={!ToS_accepted}
           >
             Register
-          </Button>
-
-          <Divider />
-
-          <Text size="sm" fw={500}>
-            Register with a provider
-          </Text>
-
-          <Button
-            leftSection={<IconBrandGithub size={20} />}
-            onClick={() => onOAuth("github")}
-            fullWidth
-            color="#24292e"
-          >
-            <span>
-              Register with <b>Github</b>
-            </span>
           </Button>
 
           {error && (

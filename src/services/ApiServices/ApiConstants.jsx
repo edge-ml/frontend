@@ -1,18 +1,54 @@
 import localStorageService from "./../LocalStorageService";
 
 const currentHost = window.location.host.split(":")[0];
-const TAURI_BACKEND_URL =
-  import.meta.env.VITE_TAURI_BACKEND_URL || "https://beta.edge-ml.org";
 
-const isAbsoluteUrl = (url) => /^https?:\/\//i.test(url);
 const isTauri = () =>
   Boolean(globalThis.isTauri || globalThis.__TAURI_INTERNALS__);
+
+// The mono backend (dataset-store) serves /auth/, /api/ and /ds/ itself, so
+// the standalone Tauri app only ever needs a single backend host.
+export const DEFAULT_TAURI_BACKEND_URL = "https://beta.edge-ml.org";
+export const LOCAL_MONO_BACKEND_URL = "http://localhost:3004";
+
+const TRUTHY_FLAGS = new Set(["1", "true", "yes", "on"]);
+
+/**
+ * Resolves the backend the Tauri app talks to.
+ * Priority:
+ *  1. VITE_TAURI_BACKEND_URL (explicit URL, wins over everything)
+ *  2. localStorage key "tauri-backend" set to "local"
+ *     (runtime switch for packaged builds)
+ *  3. VITE_TAURI_USE_LOCAL_BACKEND truthy flag (build-time)
+ *  4. default: beta
+ */
+export const getTauriBackendUrl = () => {
+  const explicit = import.meta.env.VITE_TAURI_BACKEND_URL;
+  if (explicit) return explicit;
+
+  try {
+    if (globalThis.localStorage?.getItem("tauri-backend") === "local") {
+      return LOCAL_MONO_BACKEND_URL;
+    }
+  } catch (_) {
+    /* localStorage unavailable */
+  }
+
+  if (
+    TRUTHY_FLAGS.has(
+      String(import.meta.env.VITE_TAURI_USE_LOCAL_BACKEND ?? "").toLowerCase(),
+    )
+  ) {
+    return LOCAL_MONO_BACKEND_URL;
+  }
+
+  return DEFAULT_TAURI_BACKEND_URL;
+};
 
 const getServiceUri = (envUrl, fallbackUrl) => {
   const url = envUrl || fallbackUrl;
 
   if (isTauri()) {
-    return new URL(url, TAURI_BACKEND_URL).toString();
+    return new URL(url, getTauriBackendUrl()).toString();
   }
 
   return url;
@@ -75,16 +111,9 @@ export const HTTP_METHODS = {
 };
 
 export const AUTH_ENDPOINTS = {
-  DEFAULT: "/",
   LOGIN: "login",
-  REFRESH: "refresh",
   DELETE: "unregister",
   REGISTER: "register",
-  USERS: "USERS",
-  INIT2FA: "2fa/init",
-  VERIFY2FA: "2fa/verify",
-  RESET2FA: "2fa/reset",
-  MAIL: "mail",
   CHANGE_MAIL: "changeMail",
   USERNAMESUGGEST: "userNameSuggest",
   CHANGE_PASSWORD: "changePassword",
@@ -155,7 +184,9 @@ export const generateApiRequest = (
     headers: {
       "Content-Type": contentType,
       ...(project && { project: project }),
-      Authorization: localStorageService.getAccessToken(),
+      ...(localStorageService.getAuthHeader() && {
+        Authorization: localStorageService.getAuthHeader(),
+      }),
     },
   };
 };

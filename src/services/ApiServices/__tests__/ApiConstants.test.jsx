@@ -43,6 +43,31 @@ describe("ApiConstants URI resolution", () => {
     expect(apiConsts.API_URI).toBe("https://beta.edge-ml.org/api/");
   });
 
+  it("uses the local mono backend when VITE_TAURI_USE_LOCAL_BACKEND is set", async () => {
+    globalThis.__TAURI_INTERNALS__ = {};
+    vi.stubEnv("VITE_TAURI_USE_LOCAL_BACKEND", "1");
+    const apiConsts = (await import("../ApiConstants")).default;
+
+    expect(apiConsts.AUTH_URI).toBe("http://localhost:3004/auth/");
+    expect(apiConsts.API_URI).toBe("http://localhost:3004/api/");
+    expect(apiConsts.DATASET_STORE).toBe("http://localhost:3004/ds/");
+  });
+
+  it("prefers the localStorage runtime switch over the default backend", async () => {
+    globalThis.__TAURI_INTERNALS__ = {};
+    localStorage.setItem("tauri-backend", "local");
+    const apiConsts = (await import("../ApiConstants")).default;
+    expect(apiConsts.API_URI).toBe("http://localhost:3004/api/");
+  });
+
+  it("an explicit VITE_TAURI_BACKEND_URL wins over the local flag", async () => {
+    globalThis.__TAURI_INTERNALS__ = {};
+    vi.stubEnv("VITE_TAURI_USE_LOCAL_BACKEND", "true");
+    vi.stubEnv("VITE_TAURI_BACKEND_URL", "https://staging.example.com");
+    const apiConsts = (await import("../ApiConstants")).default;
+    expect(apiConsts.API_URI).toBe("https://staging.example.com/api/");
+  });
+
   it("falls back to dev-server ports outside production", async () => {
     // .env sets all four VITE_* URLs; stub them falsy to exercise the
     // local dev-server fallback branch.
