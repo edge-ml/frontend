@@ -18,6 +18,7 @@ import {
   IconAlertTriangle,
 } from "@tabler/icons-react";
 import EdgeMLBrandLogo from "../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
+import { AuthLayout } from "../components/AuthBrandPanel/AuthBrandPanel";
 import useRegister from "../Hooks/useRegister";
 
 const RegisterPage = () => {
@@ -45,20 +46,20 @@ const RegisterPage = () => {
   };
 
   return (
-    <Center h="100vh" bg="gray.1">
+    <AuthLayout>
       <Card
         shadow="md"
-        padding="lg"
         radius="md"
         withBorder
-        maw={450}
+        maw={680}
         w="100%"
         mx="auto"
+        padding="xl"
         onKeyDown={onKeyDown}
       >
         <Card.Section p="lg">
           <Center>
-            <EdgeMLBrandLogo />
+            <EdgeMLBrandLogo logoWidth={48} textSize="xl" />
           </Center>
         </Card.Section>
 
@@ -135,7 +136,7 @@ const RegisterPage = () => {
           </Button>
         </Stack>
       </Card>
-    </Center>
+    </AuthLayout>
   );
 };
 

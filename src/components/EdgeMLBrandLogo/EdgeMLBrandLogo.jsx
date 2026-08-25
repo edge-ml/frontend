@@ -2,8 +2,12 @@ import React from "react";
 import { Text, Anchor } from "@mantine/core";
 import logoSvg from "../../logo.svg";
 
-const EdgeMLBrandLogo = ({ href }) => {
-  const isBeta = window.location.host === "edge-ml-beta.dmz.teco.edu";
+const EdgeMLBrandLogo = ({
+  href,
+  logoWidth = 32,
+  textSize,
+  isBeta = window.location.host === "edge-ml-beta.dmz.teco.edu",
+}) => {
 
   return (
     <Anchor
@@ -13,12 +17,12 @@ const EdgeMLBrandLogo = ({ href }) => {
       style={{ display: "flex", alignItems: "center", textDecoration: "none" }}
     >
       <img
-        style={{ marginRight: "8px", width: "32px" }}
+        style={{ marginRight: "8px", width: logoWidth }}
         src={logoSvg}
         alt="edge-ml"
       />
       <div>
-        <Text fw={700} c="black">
+        <Text fw={700} c="black" size={textSize}>
           edge-ml
         </Text>
         {isBeta && (

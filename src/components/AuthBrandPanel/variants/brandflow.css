@@ -1,0 +1,307 @@
+/* Variant "brandflow" — layered streams of the edge-ml mark on a deep,
+   product-coloured canvas. */
+
+.auth-layout.v-brandflow {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  isolation: isolate;
+  background: #f5f7fa;
+}
+
+.brandflow-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.brandflow-mesh {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(169, 195, 223, 0.48), transparent 28%),
+    radial-gradient(circle at 86% 84%, rgba(128, 218, 160, 0.16), transparent 25%),
+    radial-gradient(circle at 74% 8%, rgba(212, 225, 239, 0.62), transparent 27%),
+    linear-gradient(135deg, #f7f9fc 0%, #edf2f7 52%, #e8eef5 100%);
+  animation: brandflow-mesh-shift 24s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+
+@keyframes brandflow-mesh-shift {
+  from {
+    transform: translate3d(-1.5%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(1.5%, 1%, 0) scale(1.04);
+  }
+}
+
+.brandflow-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.38;
+  background-image:
+    linear-gradient(rgba(8, 52, 98, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(8, 52, 98, 0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    black 18%,
+    black 82%,
+    transparent
+  );
+}
+
+/* The rows are slightly tilted to suggest a continuous data stream. Each
+   track contains two identical sets, creating a seamless marquee. */
+.brandflow-row {
+  position: absolute;
+  left: -12vw;
+  width: 124vw;
+  overflow: hidden;
+  transform: rotate(-7deg);
+  transform-origin: center;
+}
+
+.brandflow-track,
+.brandflow-set {
+  display: flex;
+  width: max-content;
+  align-items: center;
+}
+
+.brandflow-track {
+  animation: brandflow-scroll 216s linear infinite;
+  will-change: transform;
+}
+
+.brandflow-set {
+  justify-content: space-around;
+  min-width: 124vw;
+}
+
+.brandflow-logo {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  color: rgba(8, 52, 98, 0.26);
+}
+
+.brandflow-logo-mark {
+  width: 60px;
+  height: 60px;
+}
+
+.brandflow-row.row-a {
+  opacity: 0.3;
+}
+
+.brandflow-row.row-b {
+  opacity: 0.4;
+}
+
+.brandflow-row.row-b .brandflow-track {
+  animation-duration: 234s;
+  animation-direction: reverse;
+}
+
+.brandflow-row.row-c {
+  opacity: 0.46;
+}
+
+.brandflow-row.row-c .brandflow-track {
+  animation-duration: 222s;
+}
+
+.brandflow-row.row-d {
+  opacity: 0.52;
+}
+
+.brandflow-row.row-d .brandflow-track {
+  animation-duration: 246s;
+  animation-direction: reverse;
+}
+
+.brandflow-row.row-e {
+  opacity: 0.44;
+}
+
+.brandflow-row.row-e .brandflow-track {
+  animation-duration: 228s;
+}
+
+.brandflow-row.row-f {
+  opacity: 0.38;
+}
+
+.brandflow-row.row-f .brandflow-track {
+  animation-duration: 240s;
+  animation-direction: reverse;
+}
+
+.brandflow-row.row-g {
+  opacity: 0.28;
+}
+
+.brandflow-row.row-g .brandflow-track {
+  animation-duration: 219s;
+}
+
+.brandflow-row.row-h {
+  opacity: 0.34;
+}
+
+.brandflow-row.row-h .brandflow-track {
+  animation-duration: 232s;
+  animation-direction: reverse;
+}
+
+.brandflow-row.row-i {
+  opacity: 0.3;
+}
+
+.brandflow-row.row-i .brandflow-track {
+  animation-duration: 224s;
+}
+
+.brandflow-row.row-j {
+  opacity: 0.26;
+}
+
+.brandflow-row.row-j .brandflow-track {
+  animation-duration: 238s;
+  animation-direction: reverse;
+}
+
+.brandflow-row.row-k {
+  opacity: 0.32;
+}
+
+.brandflow-row.row-k .brandflow-track {
+  animation-duration: 226s;
+}
+
+.brandflow-row.row-l {
+  opacity: 0.28;
+}
+
+.brandflow-row.row-l .brandflow-track {
+  animation-duration: 236s;
+  animation-direction: reverse;
+}
+
+.brandflow-row.row-m {
+  opacity: 0.3;
+}
+
+.brandflow-row.row-m .brandflow-track {
+  animation-duration: 230s;
+}
+
+.brandflow-row.row-n {
+  opacity: 0.26;
+}
+
+.brandflow-row.row-n .brandflow-track {
+  animation-duration: 242s;
+  animation-direction: reverse;
+}
+
+@keyframes brandflow-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* This wash keeps the moving marks quiet around the form. */
+.brandflow-halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(72vw, 920px);
+  height: min(88vh, 820px);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(247, 249, 252, 0.96) 0%,
+    rgba(247, 249, 252, 0.78) 36%,
+    transparent 72%
+  );
+}
+
+.brandflow-form-side {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: min(100%, 440px);
+  padding: 24px;
+}
+
+.v-brandflow .mantine-Card-root {
+  border-color: rgba(8, 52, 98, 0.11);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  box-shadow:
+    0 2px 5px rgba(8, 52, 98, 0.035),
+    0 22px 58px -20px rgba(8, 52, 98, 0.25);
+}
+
+@media (max-width: 800px) {
+  .brandflow-form-side {
+    padding: 18px;
+  }
+
+  .brandflow-row {
+    left: -40vw;
+    width: 180vw;
+  }
+
+  .brandflow-set {
+    min-width: 180vw;
+  }
+
+  .brandflow-row.row-g,
+  .brandflow-row.row-h,
+  .brandflow-row.row-i,
+  .brandflow-row.row-j,
+  .brandflow-row.row-k,
+  .brandflow-row.row-l,
+  .brandflow-row.row-m,
+  .brandflow-row.row-n {
+    display: none;
+  }
+
+  .brandflow-logo {
+    width: 68px;
+    height: 68px;
+  }
+}
+
+@media (max-height: 760px) {
+  .auth-layout.v-brandflow {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brandflow-mesh,
+  .brandflow-track {
+    animation: none;
+  }
+}

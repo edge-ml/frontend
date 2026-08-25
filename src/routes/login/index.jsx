@@ -6,7 +6,6 @@ import {
   Button,
   Text,
   Stack,
-  Group,
   Center,
   Alert,
   Divider,
@@ -18,13 +17,14 @@ import {
   IconAlertTriangle,
 } from "@tabler/icons-react";
 import EdgeMLBrandLogo from "../../components/EdgeMLBrandLogo/EdgeMLBrandLogo";
+import { AuthLayout } from "../../components/AuthBrandPanel/AuthBrandPanel";
 import useAuth from "../../Hooks/useAuth";
 import useUserStore from "../../Hooks/useUser";
 
 import "./index.css";
 
 const LoginPage = ({ children }) => {
-  const { login, loginOAuth } = useAuth();
+  const { login } = useAuth();
   const user = useUserStore((state) => state.user);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,33 +50,25 @@ const LoginPage = ({ children }) => {
     }
   };
 
-  const onOAuth = async (provider) => {
-    try {
-      await loginOAuth(provider);
-    } catch (e) {
-      setError(e?.message || "Wrong credentials!");
-    }
-  };
-
   if (user) {
     return children;
   }
 
   return (
-    <Center h="100vh" bg="gray.1">
+    <AuthLayout>
       <Card
         shadow="md"
-        padding="lg"
         radius="md"
         withBorder
-        maw={450}
+        maw={680}
         w="100%"
         mx="auto"
+        padding="xl"
         onKeyDown={onKeyDown}
       >
         <Card.Section p="lg">
           <Center>
-            <EdgeMLBrandLogo />
+            <EdgeMLBrandLogo logoWidth={48} textSize="xl" />
           </Center>
         </Card.Section>
 
@@ -142,7 +134,7 @@ const LoginPage = ({ children }) => {
           </Button>
         </Stack>
       </Card>
-    </Center>
+    </AuthLayout>
   );
 };
 
