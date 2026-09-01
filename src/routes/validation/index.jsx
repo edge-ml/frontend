@@ -6,7 +6,8 @@ import ModelTable from "./ModelTable";
 import TrainingWizard from "../../components/TrainingWizard";
 
 const ModelPage = () => {
-  const { models, stepOptions, deleteModels, updateModel } = useModels();
+  const { models, stepOptions, deleteModels, updateModel, refreshModels } =
+    useModels();
   const [trainWizardOpen, setTrainWizardOpen] = useState(false);
 
   if (!models) {
@@ -25,6 +26,7 @@ const ModelPage = () => {
       <TrainingWizard
         isOpen={trainWizardOpen}
         onClose={() => setTrainWizardOpen(false)}
+        onTrained={refreshModels}
       />
     </Container>
   );

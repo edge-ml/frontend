@@ -61,6 +61,7 @@ const useModels = () => {
     stepOptions: stepOptions,
     deleteModels: deleteModels,
     updateModel: updateModel,
+    refreshModels: refreshModels,
   };
 };
 

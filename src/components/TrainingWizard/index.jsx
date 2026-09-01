@@ -75,7 +75,7 @@ const goalAchievable = (pipeline, goal) => {
     .every((s) => s.options.some((o) => optionMatchesGoal(o, goal)));
 };
 
-const TrainingWizard = ({ isOpen, onClose }) => {
+const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
   // Data obtained from the server
 
   const [pipelines, setPipelines] = useState(undefined);
@@ -214,6 +214,7 @@ const TrainingWizard = ({ isOpen, onClose }) => {
     try {
       setTrainError(undefined);
       await train(buildRequest());
+      onTrained && onTrained(); // show the queued job immediately, don't wait for the poll
       onClose();
     } catch (e) {
       setTrainError(
