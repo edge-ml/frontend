@@ -431,6 +431,21 @@ const TrainingWizard = ({ isOpen, onClose }) => {
                   const options = rawSelected
                     ? goalOptions
                     : goalOptions.filter((o) => !RAW_ONLY.includes(o.name));
+                  // Proactive hint on the feature-extraction step (the one that
+                  // owns the raw-extractor option), plus the "hidden" note on the
+                  // classifier step.
+                  const isFeatureStep = goalOptions.some(
+                    (o) => o.name === RAW_EXTRACTOR
+                  );
+                  const currentName = selectedPipelineSteps?.[screen - 2]?.name;
+                  let note;
+                  if (hidden.length) {
+                    note = `${hidden.join(", ")} ${
+                      hidden.length > 1 ? "are" : "is"
+                    } only available with the "${RAW_EXTRACTOR}" feature extraction.`;
+                  } else if (isFeatureStep && currentName !== RAW_EXTRACTOR) {
+                    note = `WHAR Model and PyTorch 1D CNN are only available with the "${RAW_EXTRACTOR}" method — they are hidden with the current selection.`;
+                  }
                   return (
                     <Pipelinestep
                       stepNum={screen}
@@ -441,13 +456,7 @@ const TrainingWizard = ({ isOpen, onClose }) => {
                       selectedPipelineStep={selectedPipelineSteps[screen - 2]}
                       setPipelineStep={setPipelineStep}
                       exportTargets={exportTargets}
-                      note={
-                        hidden.length
-                          ? `${hidden.join(", ")} ${
-                              hidden.length > 1 ? "are" : "is"
-                            } only available with the "${RAW_EXTRACTOR}" feature extraction.`
-                          : undefined
-                      }
+                      note={note}
                     />
                   );
                 })()
