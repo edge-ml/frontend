@@ -406,21 +406,52 @@ const TrainingWizard = ({ isOpen, onClose }) => {
                 disabledTimeseriesNames={disabledTimeseriesNames}
               />
             ) : null}
-            {screen >= 2 && screen !== maxSteps - 1 ? (
-              <Pipelinestep
-                stepNum={screen}
-                step={{
-                  ...selectedPipeline.steps[screen - 2],
-                  options: stepOptionsForGoal(
+            {screen >= 2 && screen !== maxSteps - 1
+              ? (() => {
+                  // Classifiers that consume the raw window sequence are only
+                  // usable with the raw feature extractor; hide them (with a
+                  // note) unless it is selected. Mirrors the ml preflight guard.
+                  const RAW_EXTRACTOR = "Raw Time-Series (Sensors only)";
+                  const RAW_ONLY = [
+                    "WHAR Model",
+                    "PyTorch 1D Convolutional Neural Network",
+                  ];
+                  const rawSelected = (selectedPipelineSteps || []).some(
+                    (s) => s && s.name === RAW_EXTRACTOR
+                  );
+                  const goalOptions = stepOptionsForGoal(
                     selectedPipeline.steps[screen - 2],
                     exportGoal
-                  ),
-                }}
-                selectedPipelineStep={selectedPipelineSteps[screen - 2]}
-                setPipelineStep={setPipelineStep}
-                exportTargets={exportTargets}
-              />
-            ) : null}
+                  );
+                  const hidden = rawSelected
+                    ? []
+                    : goalOptions
+                        .filter((o) => RAW_ONLY.includes(o.name))
+                        .map((o) => o.name);
+                  const options = rawSelected
+                    ? goalOptions
+                    : goalOptions.filter((o) => !RAW_ONLY.includes(o.name));
+                  return (
+                    <Pipelinestep
+                      stepNum={screen}
+                      step={{
+                        ...selectedPipeline.steps[screen - 2],
+                        options,
+                      }}
+                      selectedPipelineStep={selectedPipelineSteps[screen - 2]}
+                      setPipelineStep={setPipelineStep}
+                      exportTargets={exportTargets}
+                      note={
+                        hidden.length
+                          ? `${hidden.join(", ")} ${
+                              hidden.length > 1 ? "are" : "is"
+                            } only available with the "${RAW_EXTRACTOR}" feature extraction.`
+                          : undefined
+                      }
+                    />
+                  );
+                })()
+              : null}
             {screen === maxSteps - 1 ? (
               <Select_Name
                 screen={screen}

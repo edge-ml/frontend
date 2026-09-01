@@ -23,6 +23,7 @@ const Pipelinestep = ({
   setPipelineStep,
   stepNum,
   exportTargets,
+  note,
 }) => {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -67,6 +68,11 @@ const Pipelinestep = ({
             }
             allowDeselect={false}
           />
+          {note ? (
+            <Text size="xs" c="orange.7">
+              {note}
+            </Text>
+          ) : null}
           <div>
             <Text size="sm" fw={600} mb={3}>
               Description
