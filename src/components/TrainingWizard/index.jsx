@@ -432,9 +432,48 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
                     : goalOptions
                         .filter((o) => RAW_ONLY.includes(o.name))
                         .map((o) => o.name);
-                  const options = rawSelected
+                  let options = rawSelected
                     ? goalOptions
                     : goalOptions.filter((o) => !RAW_ONLY.includes(o.name));
+                  // A few WHAR architectures constrain the channel count:
+                  // deepsense pairs acc/gyro (even count) and global_fusion needs
+                  // enough channels to fuse (>= 6). Offer them everywhere but hide
+                  // them from the Architecture dropdown when the selected data's
+                  // channel count is incompatible (the ml preflight backs this up).
+                  const CHANNEL_CONSTRAINED_ARCHS = {
+                    deepsense: (n) => n % 2 === 0,
+                    global_fusion: (n) => n >= 6,
+                  };
+                  const selDatasets = datasets.filter((d) => d.selected);
+                  const channelCount = selDatasets.length
+                    ? intersect(
+                        ...selDatasets.map((d) =>
+                          d.timeSeries.map((t) => t.name)
+                        )
+                      ).filter((n) => !disabledTimeseriesNames.includes(n)).length
+                    : 0;
+                  const archAllowed = (arch) =>
+                    !CHANNEL_CONSTRAINED_ARCHS[arch] ||
+                    !channelCount ||
+                    CHANNEL_CONSTRAINED_ARCHS[arch](channelCount);
+                  const filterWharArchs = (opt) => {
+                    if (!opt || opt.name !== "WHAR Model") return opt;
+                    return {
+                      ...opt,
+                      parameters: (opt.parameters || []).map((p) =>
+                        p.parameter_name === "model_id"
+                          ? {
+                              ...p,
+                              options: (p.options || []).filter(archAllowed),
+                            }
+                          : p
+                      ),
+                    };
+                  };
+                  options = options.map(filterWharArchs);
+                  const selectedStep = filterWharArchs(
+                    selectedPipelineSteps[screen - 2]
+                  );
                   // Proactive hint on the feature-extraction step (the one that
                   // owns the raw-extractor option), plus the "hidden" note on the
                   // classifier step.
@@ -442,6 +481,19 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
                     (o) => o.name === RAW_EXTRACTOR
                   );
                   const currentName = selectedPipelineSteps?.[screen - 2]?.name;
+                  const hiddenArchs =
+                    currentName === "WHAR Model" && channelCount
+                      ? Object.keys(CHANNEL_CONSTRAINED_ARCHS).filter(
+                          (a) =>
+                            !CHANNEL_CONSTRAINED_ARCHS[a](channelCount) &&
+                            goalOptions
+                              .find((o) => o.name === "WHAR Model")
+                              ?.parameters?.find(
+                                (p) => p.parameter_name === "model_id"
+                              )
+                              ?.options?.includes(a)
+                        )
+                      : [];
                   let note;
                   if (hidden.length) {
                     note = `${hidden.join(", ")} ${
@@ -449,6 +501,10 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
                     } only available with the "${RAW_EXTRACTOR}" feature extraction.`;
                   } else if (isFeatureStep && currentName !== RAW_EXTRACTOR) {
                     note = `WHAR Model and PyTorch 1D CNN are only available with the "${RAW_EXTRACTOR}" method — they are hidden with the current selection.`;
+                  } else if (hiddenArchs.length) {
+                    note = `${hiddenArchs.join(", ")} ${
+                      hiddenArchs.length > 1 ? "are" : "is"
+                    } hidden — your ${channelCount}-channel selection isn't compatible (deepsense needs an even channel count, global_fusion needs 6+).`;
                   }
                   return (
                     <Pipelinestep
@@ -457,7 +513,7 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
                         ...selectedPipeline.steps[screen - 2],
                         options,
                       }}
-                      selectedPipelineStep={selectedPipelineSteps[screen - 2]}
+                      selectedPipelineStep={selectedStep}
                       setPipelineStep={setPipelineStep}
                       exportTargets={exportTargets}
                       note={note}
