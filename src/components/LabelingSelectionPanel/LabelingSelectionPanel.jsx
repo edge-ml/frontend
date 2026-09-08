@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   ActionIcon,
   Badge,
@@ -36,6 +36,14 @@ const TimeSeriesSelection = () => {
   const [selectedTs, setSelectedTs] = useState(
     activeTimeSeries.map((elm) => elm._id)
   );
+
+  // activeTimeSeries starts empty and is populated once the dataset loads, so
+  // the initial useState above captures a stale (empty) list — the checkboxes
+  // then wouldn't reflect what's actually active. Re-seed whenever the applied
+  // selection changes (on load and on every Apply elsewhere).
+  useEffect(() => {
+    setSelectedTs(activeTimeSeries.map((elm) => elm._id));
+  }, [activeTimeSeries]);
 
   const toggleSelect = (elmId) => {
     setSelectedTs((prev) =>
