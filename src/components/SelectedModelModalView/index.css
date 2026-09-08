@@ -1,46 +1,54 @@
-/* ---------- Model info sections ---------- */
-.model-info-section {
-  border: 2px solid rgb(230, 230, 234);
-  border-radius: 10px;
-  padding: 1rem;
-}
-
-.model-info-sections-row {
-  border: 0;
-}
-
-.model-section-title {
-  margin: 0 0 0.75rem;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #083462;
-}
-
-/* ---------- Metrics stats ---------- */
-.model-stats-row {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.model-stat {
-  flex: 1;
-  background-color: rgba(8, 52, 98, 0.04);
-  border-radius: 8px;
-  padding: 0.6rem 0.75rem;
+/* ---------- Summary stat cards ---------- */
+.stat-card {
   text-align: center;
+  background-color: rgba(8, 52, 98, 0.03);
 }
 
-.model-stat-value {
-  font-size: 1.25rem;
+.stat-card-value {
+  font-size: 1.5rem;
   font-weight: 700;
   color: #083462;
-  line-height: 1.2;
+  line-height: 1.15;
 }
 
-.model-stat-label {
+.stat-card-label {
   font-size: 0.75rem;
   color: #5c5f66;
-  text-transform: capitalize;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-top: 2px;
+}
+
+/* ---------- Classification report ---------- */
+.report-table thead th {
+  color: #5c5f66;
+  font-weight: 600;
+  background: #fff;
+}
+
+.report-num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.report-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.report-summary-row td {
+  border-top: 2px solid #e9ecef;
+  color: #495057;
+  font-style: italic;
 }
 
 /* ---------- Pipeline steps ---------- */
@@ -136,21 +144,4 @@
   font-weight: 600;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.8125rem;
-}
-
-/* ---------- Info table ---------- */
-.model-info-table th {
-  color: #5c5f66;
-  font-weight: 500;
-  white-space: nowrap;
-  width: 1%;
-}
-
-.model-info-table td {
-  font-weight: 700;
-}
-
-.model-info-table {
-  border: 0 !important;
-  outline: none !important;
 }

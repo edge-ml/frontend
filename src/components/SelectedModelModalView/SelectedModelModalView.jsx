@@ -1,6 +1,15 @@
 import React, { Fragment, useState } from "react";
 
-import { Button, Table } from "@mantine/core";
+import {
+  Button,
+  Table,
+  Tabs,
+  Paper,
+  SimpleGrid,
+  Group,
+  Text,
+  ScrollArea,
+} from "@mantine/core";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
@@ -11,70 +20,67 @@ import Loader from "../../modules/loader";
 import "./index.css";
 import LabelBadge from "../Common/LabelBadge";
 
-export const SelectedModelModalView = ({
-  model,
-  labels,
-  onDelete = null,
-  onClosed,
-  onButtonDeploy,
-  onButtonDownload,
-  ...props
-}) => {
+// sklearn's classification_report groups these apart from the per-label rows.
+const SUMMARY_ROWS = ["accuracy", "macro avg", "weighted avg"];
+
+const asPercent = (v) => {
+  const val = Math.round(v * 100 * 100) / 100;
+  return isNaN(val) ? "—" : `${val}%`;
+};
+
+const asCount = (v) => (v == null || isNaN(v) ? "—" : Math.round(v));
+
+export const SelectedModelModalView = ({ model, onClosed, ...rest }) => {
+  // Some callers still pass deploy/download/delete handlers and a labels list;
+  // this view doesn't render those actions, so drop them here rather than let
+  // them leak onto the underlying Modal as unknown DOM props.
+  // eslint-disable-next-line no-unused-vars
+  const { labels, onDelete, onButtonDeploy, onButtonDownload, ...props } = rest;
+
   const metrics = model
     ? model.pipeline.selectedPipeline.steps.filter(
         (elm) => elm.type === "EVAL"
       )[0].options.metrics
     : null;
+
+  const colorMap = model
+    ? Object.fromEntries(model.labels.map((l) => [l.name, l.color]))
+    : {};
+
   return (
     <Modal isOpen={model} size="xl" {...props} onClose={() => onClosed()}>
       <ModalHeader>Model: {model && model.name}</ModalHeader>
       <ModalBody>
         {model ? (
           <>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                gap: "1rem",
-              }}
-            >
-              <div className="model-info-section" style={{ flex: "1 1 0" }}>
-                <h5 className="model-section-title">General information</h5>
-                <General_info model={model} />
-              </div>
-              <div className="model-info-section" style={{ flex: "0 0 auto" }}>
-                <h5 className="model-section-title">Metrics</h5>
-                <PerformanceInfo metrics={metrics.metrics} />
-              </div>
-            </div>
-            <div
-              className="model-info-sections-row"
-              style={{
-                marginTop: "1.25rem",
-                display: "flex",
-                gap: "1rem",
-                alignItems: "stretch",
-              }}
-            >
-              <div className="model-info-section" style={{ flex: "1 1 0" }}>
-                <h5 className="model-section-title">Classification report</h5>
-                <Classification_report report={metrics.classification_report} />
-              </div>
-              <div className="model-info-section" style={{ flex: "0 0 auto" }}>
-                <h5 className="model-section-title">Confusion matrix</h5>
+            <SummaryStrip model={model} metrics={metrics.metrics} />
+
+            <Tabs defaultValue="report" mt="lg" keepMounted={false}>
+              <Tabs.List>
+                <Tabs.Tab value="report">Classification report</Tabs.Tab>
+                <Tabs.Tab value="confusion">Confusion matrix</Tabs.Tab>
+                <Tabs.Tab value="pipeline">Pipeline</Tabs.Tab>
+              </Tabs.List>
+
+              <Tabs.Panel value="report" pt="md">
+                <ClassificationReport
+                  report={metrics.classification_report}
+                  colorMap={colorMap}
+                />
+              </Tabs.Panel>
+
+              <Tabs.Panel value="confusion" pt="md">
                 <ConfusionMatrixView
                   matrix={JSON.parse(metrics.confusion_matrix)}
                   labels={model.labels.map((elm) => elm.name)}
+                  colorMap={colorMap}
                 />
-              </div>
-            </div>
-            <div
-              className="model-info-section"
-              style={{ marginTop: "1.25rem" }}
-            >
-              <h5 className="model-section-title">Pipeline configuration</h5>
-              <Training_config model={model} />
-            </div>
+              </Tabs.Panel>
+
+              <Tabs.Panel value="pipeline" pt="md">
+                <TrainingConfig model={model} />
+              </Tabs.Panel>
+            </Tabs>
           </>
         ) : (
           <Loader loading />
@@ -89,87 +95,118 @@ export const SelectedModelModalView = ({
   );
 };
 
-const General_info = ({
-  model,
-  onDeploy,
-  onButtonDeploy,
-  onButtonDownload,
-}) => {
-  return (
-    <Table
-      size="sm"
-      verticalSpacing={6}
-      withTableBorder={false}
-      className="model-info-table"
-    >
-      <tbody>
-        <tr>
-          <th>Name</th>
-          <td>{model.name}</td>
-        </tr>
-        <tr>
-          <th>Pipeline</th>
-          <td>{model.pipeline.selectedPipeline.name}</td>
-        </tr>
-        <tr>
-          <th>Used labels</th>
-          <td>
-            {model.labels.map((elm) => (
-              <LabelBadge key={elm.name} color={elm.color}>
-                {elm.name}
-              </LabelBadge>
-            ))}
-          </td>
-        </tr>
-      </tbody>
-    </Table>
-  );
-};
+// Always-visible header: headline metrics + a compact identity + wrapping labels.
+const SummaryStrip = ({ model, metrics }) => {
+  const stats = [
+    { label: "Accuracy", value: asPercent(metrics.accuracy_score) },
+    { label: "Precision", value: asPercent(metrics.precision_score) },
+    { label: "Recall", value: asPercent(metrics.recall_score) },
+    { label: "F1 score", value: asPercent(metrics.f1_score) },
+  ];
 
-const Classification_report = ({ report }) => {
-  const keys = Object.keys(report);
-  const metrics = Object.keys(report[keys[0]]);
   return (
-    <Table
-      size="sm"
-      verticalSpacing={6}
-      withTableBorder={false}
-      className="model-info-table"
-    >
-      <thead>
-        <tr>
-          <th></th>
-          {metrics.map((key) => (
-            <th style={{ textAlign: "center" }} key={key}>
-              {key}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {keys.map((key) => (
-          <tr key={key}>
-            <th>{key}</th>
-            {metrics.map((met) => (
-              <td style={{ textAlign: "center" }} key={met}>
-                {metric(report[key][met])}
-              </td>
-            ))}
-          </tr>
+    <div>
+      <SimpleGrid cols={{ base: 2, xs: 4 }} spacing="sm">
+        {stats.map(({ label, value }) => (
+          <Paper key={label} withBorder radius="md" p="sm" className="stat-card">
+            <Text className="stat-card-value">{value}</Text>
+            <Text className="stat-card-label">{label}</Text>
+          </Paper>
         ))}
-      </tbody>
-    </Table>
+      </SimpleGrid>
+
+      <Group justify="space-between" align="flex-start" mt="md" wrap="nowrap">
+        <div style={{ minWidth: 0 }}>
+          <Text size="sm">
+            <Text span c="dimmed">
+              Pipeline:{" "}
+            </Text>
+            {model.pipeline.selectedPipeline.name}
+          </Text>
+        </div>
+        <Text size="sm" c="dimmed" style={{ whiteSpace: "nowrap" }}>
+          {model.labels.length} labels
+        </Text>
+      </Group>
+
+      <Group gap={6} mt={8}>
+        {model.labels.map((elm) => (
+          <LabelBadge key={elm.name} color={elm.color}>
+            {elm.name}
+          </LabelBadge>
+        ))}
+      </Group>
+    </div>
   );
 };
 
-const Training_config = ({ model }) => {
-  const [selectedStep, setSelectedStep] = useState(
-    model.pipeline.selectedPipeline.steps[0]
+const ReportRow = ({ name, row, colorMap, summary }) => (
+  <Table.Tr className={summary ? "report-summary-row" : undefined}>
+    <Table.Td>
+      <span className="report-label">
+        {!summary ? (
+          <span
+            className="report-dot"
+            style={{ background: colorMap[name] || "#adb5bd" }}
+          />
+        ) : null}
+        {name}
+      </span>
+    </Table.Td>
+    <Table.Td className="report-num">{asPercent(row["precision"])}</Table.Td>
+    <Table.Td className="report-num">{asPercent(row["recall"])}</Table.Td>
+    <Table.Td className="report-num">{asPercent(row["f1-score"])}</Table.Td>
+    <Table.Td className="report-num">{asCount(row["support"])}</Table.Td>
+  </Table.Tr>
+);
+
+const ClassificationReport = ({ report, colorMap }) => {
+  const keys = Object.keys(report);
+  const labelRows = keys.filter((k) => !SUMMARY_ROWS.includes(k));
+  const summaryRows = keys.filter(
+    (k) => SUMMARY_ROWS.includes(k) && typeof report[k] === "object"
   );
 
+  return (
+    <ScrollArea.Autosize mah="55vh" type="auto">
+      <Table
+        stickyHeader
+        highlightOnHover
+        verticalSpacing={8}
+        className="report-table"
+      >
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Label</Table.Th>
+            <Table.Th className="report-num">Precision</Table.Th>
+            <Table.Th className="report-num">Recall</Table.Th>
+            <Table.Th className="report-num">F1 score</Table.Th>
+            <Table.Th className="report-num">Support</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {labelRows.map((key) => (
+            <ReportRow
+              key={key}
+              name={key}
+              row={report[key]}
+              colorMap={colorMap}
+            />
+          ))}
+          {summaryRows.map((key) => (
+            <ReportRow key={key} name={key} row={report[key]} summary />
+          ))}
+        </Table.Tbody>
+      </Table>
+    </ScrollArea.Autosize>
+  );
+};
+
+const TrainingConfig = ({ model }) => {
   const steps = model.pipeline.selectedPipeline.steps.filter(
     (elm) => elm.type === "PRE" || elm.type === "CORE"
   );
+  const [selectedStep, setSelectedStep] = useState(steps[0]);
 
   return (
     <Fragment>
@@ -209,47 +246,12 @@ const Training_config = ({ model }) => {
               </div>
             ))}
           </div>
-        ) : null}
+        ) : (
+          <Text size="sm" c="dimmed">
+            No parameters for this step.
+          </Text>
+        )}
       </div>
     </Fragment>
-  );
-};
-
-const metric = (metric) => {
-  const val = Math.round(metric * 100 * 100) / 100;
-  return isNaN(val) ? "" : val;
-};
-
-const PerformanceInfo = ({ metrics }) => {
-  const stats = [
-    { label: "Accuracy", value: metric(metrics.accuracy_score) },
-    { label: "Precision", value: metric(metrics.precision_score) },
-    { label: "Recall", value: metric(metrics.recall_score) },
-  ];
-  return (
-    <div
-      className="model-stats-row"
-      style={{ flexDirection: "column", minWidth: "220px" }}
-    >
-      {stats.map(({ label, value }) => (
-        <div
-          key={label}
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "baseline",
-            padding: "0.35rem 0",
-          }}
-        >
-          <span className="model-stat-label" style={{ fontSize: "0.875rem" }}>
-            {label}
-          </span>
-          <span className="model-stat-value">
-            {value}
-            {value !== "" ? "%" : ""}
-          </span>
-        </div>
-      ))}
-    </div>
   );
 };
