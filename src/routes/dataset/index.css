@@ -8,8 +8,23 @@
 .time-series-name {
   font-size: var(--mantine-font-size-sm);
   color: var(--mantine-color-brand-6);
-  margin-bottom: 0.15rem;
+  margin-bottom: 0;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The per-chart hide button stays quiet until the chart is hovered/focused,
+   so it doesn't clutter the stack of charts. */
+.time-series-hide {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.time-series-item:hover .time-series-hide,
+.time-series-hide:focus-visible {
+  opacity: 1;
 }
 
 .time-series-chart .uplot {

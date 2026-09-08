@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useMemo, useContext } from "react";
 import {
   ActionIcon,
   Badge,
@@ -8,8 +8,10 @@ import {
   Divider,
   Group,
   Menu,
+  ScrollArea,
   Stack,
   Text,
+  TextInput,
   Tooltip,
 } from "@mantine/core";
 
@@ -22,6 +24,7 @@ import {
   faQuestion,
   faWaveSquare,
   faTags,
+  faMagnifyingGlass,
 } from "@fortawesome/free-solid-svg-icons";
 
 import useProjectRouter from "../../Hooks/ProjectRouter";
@@ -32,44 +35,37 @@ import "./LabelingSelectionPanel.css";
 const TimeSeriesSelection = () => {
   const { activeTimeSeries, setActiveTimeSeries, dataset } =
     useContext(DatasetContext);
+  const [search, setSearch] = useState("");
 
-  const [selectedTs, setSelectedTs] = useState(
-    activeTimeSeries.map((elm) => elm._id)
+  const activeIds = useMemo(
+    () => new Set(activeTimeSeries.map((elm) => elm._id)),
+    [activeTimeSeries]
   );
 
-  // activeTimeSeries starts empty and is populated once the dataset loads, so
-  // the initial useState above captures a stale (empty) list — the checkboxes
-  // then wouldn't reflect what's actually active. Re-seed whenever the applied
-  // selection changes (on load and on every Apply elsewhere).
-  useEffect(() => {
-    setSelectedTs(activeTimeSeries.map((elm) => elm._id));
-  }, [activeTimeSeries]);
-
-  const toggleSelect = (elmId) => {
-    setSelectedTs((prev) =>
-      prev.includes(elmId)
-        ? prev.filter((id) => id !== elmId)
-        : [...prev, elmId]
-    );
+  // Toggle in real time — charts update immediately, no Apply step. Rebuild
+  // from dataset.timeSeries so the active set always keeps the dataset order.
+  const toggle = (id) => {
+    const next = new Set(activeIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setActiveTimeSeries(dataset.timeSeries.filter((ts) => next.has(ts._id)));
   };
 
-  const onSelectAll = () =>
-    setSelectedTs(dataset.timeSeries.map((elm) => elm._id));
+  const onSelectAll = () => setActiveTimeSeries(dataset.timeSeries);
+  const onClear = () => setActiveTimeSeries([]);
 
-  const onClear = () => setSelectedTs([]);
-
-  const onApply = () => {
-    setActiveTimeSeries(
-      selectedTs
-        .map((select_id) =>
-          dataset.timeSeries.find((elm) => elm._id === select_id)
-        )
-        .filter(Boolean)
-    );
-  };
+  const query = search.trim().toLowerCase();
+  const filtered = query
+    ? dataset.timeSeries.filter((ts) => ts.name.toLowerCase().includes(query))
+    : dataset.timeSeries;
 
   return (
-    <Menu withinPortal position="bottom-start">
+    <Menu
+      withinPortal
+      position="bottom-start"
+      closeOnItemClick={false}
+      keepMounted={false}
+    >
       <Menu.Target>
         <Button variant="default" radius="md">
           <FontAwesomeIcon icon={faWaveSquare} className="dsp-toolbar-icon" />
@@ -81,40 +77,74 @@ const TimeSeriesSelection = () => {
           </Badge>
         </Button>
       </Menu.Target>
-      <Menu.Dropdown w={280}>
-        <Stack gap={0} p="4px" maw={280}>
-          {dataset.timeSeries.map((elm) => (
-            <Menu.Item
-              key={elm._id}
-              leftSection={
-                <MantineCheckbox
-                  size="xs"
-                  readOnly
-                  tabIndex={-1}
-                  checked={selectedTs.includes(elm._id)}
-                />
-              }
-              onClick={() => toggleSelect(elm._id)}
-            >
-              <Text fz="sm" truncate="end">
-                {elm.name}
+      <Menu.Dropdown w={300}>
+        <Box px="6px" pt="6px">
+          <TextInput
+            size="xs"
+            placeholder="Search time series…"
+            value={search}
+            onChange={(e) => setSearch(e.currentTarget.value)}
+            // Keep the Menu's arrow/typeahead handling from hijacking typing,
+            // but let Escape bubble up so it still closes the menu.
+            onKeyDown={(e) => {
+              if (e.key !== "Escape") e.stopPropagation();
+            }}
+            leftSection={
+              <FontAwesomeIcon icon={faMagnifyingGlass} size="xs" />
+            }
+          />
+        </Box>
+        <ScrollArea.Autosize mah={280} type="auto">
+          <Stack gap={0} p="4px">
+            {filtered.length === 0 ? (
+              <Text fz="sm" c="dimmed" ta="center" py="sm">
+                No matching time series
               </Text>
-            </Menu.Item>
-          ))}
-        </Stack>
+            ) : (
+              filtered.map((elm) => (
+                <Menu.Item
+                  key={elm._id}
+                  leftSection={
+                    <MantineCheckbox
+                      size="xs"
+                      readOnly
+                      tabIndex={-1}
+                      checked={activeIds.has(elm._id)}
+                    />
+                  }
+                  onClick={() => toggle(elm._id)}
+                >
+                  <Text fz="sm" truncate="end">
+                    {elm.name}
+                  </Text>
+                </Menu.Item>
+              ))
+            )}
+          </Stack>
+        </ScrollArea.Autosize>
         <Divider />
         <Group justify="space-between" px="xs" py="6px" gap="xs">
+          <Text fz="xs" c="dimmed">
+            {activeTimeSeries.length} of {dataset.timeSeries.length} shown
+          </Text>
           <Group gap={4}>
-            <Button size="compact-xs" variant="subtle" color="gray" onClick={onSelectAll}>
+            <Button
+              size="compact-xs"
+              variant="subtle"
+              color="gray"
+              onClick={onSelectAll}
+            >
               All
             </Button>
-            <Button size="compact-xs" variant="subtle" color="gray" onClick={onClear}>
+            <Button
+              size="compact-xs"
+              variant="subtle"
+              color="gray"
+              onClick={onClear}
+            >
               None
             </Button>
           </Group>
-          <Button size="compact-xs" onClick={onApply}>
-            Apply
-          </Button>
         </Group>
       </Menu.Dropdown>
     </Menu>
