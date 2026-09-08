@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, TextInput, Table } from "@mantine/core";
+import { Button, TextInput, Table, Text } from "@mantine/core";
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
@@ -13,12 +13,20 @@ import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 const EditProjectModal = ({ isOpen, onClose }) => {
   const [userSearchValue, setUserSearchValue] = useState("");
+  const [error, setError] = useState(null);
 
   const { project, setProjectName, createProject, addUser, removeUser } =
     useCreateProject();
 
+  // Reset the error when the modal is dismissed, so a stale message doesn't
+  // greet the user next time they open it.
+  const handleClose = () => {
+    setError(null);
+    onClose();
+  };
+
   return (
-    <Modal id="editProjectModal" isOpen={isOpen} onClose={onClose}>
+    <Modal id="editProjectModal" isOpen={isOpen} onClose={handleClose}>
       <ModalHeader>Create new Project</ModalHeader>
       <ModalBody>
         <TextInput
@@ -110,6 +118,11 @@ const EditProjectModal = ({ isOpen, onClose }) => {
           </Table.Tbody>
         </Table>
       </ModalBody>
+      {error ? (
+        <Text c="red" size="sm" mt="sm" style={{ paddingLeft: "1rem" }}>
+          {error}
+        </Text>
+      ) : null}
       <ModalFooter style={{ justifyContent: "flex-end" }}>
         <Button
           variant="outline"
@@ -117,8 +130,16 @@ const EditProjectModal = ({ isOpen, onClose }) => {
           color="blue"
           style={{ margin: "0.25rem" }}
           onClick={async () => {
-            await createProject();
-            onClose();
+            try {
+              await createProject();
+              setError(null);
+              onClose();
+            } catch (err) {
+              // Surface the backend's rejection (e.g. a duplicate name) instead
+              // of silently closing. apiRequest sets err.message to the server's
+              // detail/error/message.
+              setError(err?.message || "Could not create the project.");
+            }
           }}
         >
           Save
