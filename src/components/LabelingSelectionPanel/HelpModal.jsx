@@ -13,9 +13,13 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
             <tbody>
               <tr>
                 <td>
-                  <kbd>Ctrl</kbd> + <kbd>[Number]</kbd>
+                  <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>[Key]</kbd>
                 </td>
-                <td>Set active label type</td>
+                <td>
+                  Set active label type. The first 10 labels use the number
+                  row (1–9, 0); labels 11+ use the next rows of keys
+                  (Q–P, A–L, Z–M).
+                </td>
               </tr>
               <tr>
                 <td>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button, Progress, Alert, Loader } from "@mantine/core";
+import { Button, Progress, Alert } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "../Common/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faLock, faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -118,7 +119,11 @@ export const ImportWharModal = ({ isOpen, onCloseModal }) => {
             {listError && <Alert color="red">{listError}</Alert>}
             {loadingList ? (
               <div className="text-center p-4">
-                <Loader size="sm" /> Loading datasets...
+                <LogoLoader
+                  size={20}
+                  style={{ verticalAlign: "middle", marginRight: 6 }}
+                />{" "}
+                Loading datasets...
               </div>
             ) : (
               <div style={{ maxHeight: "50vh", overflowY: "auto" }}>

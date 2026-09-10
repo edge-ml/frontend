@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Checkbox from "../../components/Common/Checkbox";
-import { Group, Text, Loader, Tooltip, Table } from "@mantine/core";
+import { Group, Text, Tooltip, Table } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import DownloadModal from "./DownloadModal";
@@ -92,7 +93,7 @@ const ModelTableEntry = ({
             </Group>
           ) : model.trainStatus !== "done" ? (
             <Group gap="xs">
-              <Loader size="sm" />
+              <LogoLoader size={24} />
               <Text size="sm">{trainingProgressText(model)}</Text>
             </Group>
           ) : (

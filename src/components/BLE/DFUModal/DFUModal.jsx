@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Button, Progress, Loader, Modal } from "@mantine/core";
+import { Button, Progress, Modal } from "@mantine/core";
 import { getArduinoFirmware } from "../../../services/ApiServices/ArduinoFirmwareServices";
 import DFUManager from "./DFU";
 

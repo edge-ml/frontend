@@ -1,5 +1,7 @@
 import React from "react";
-import { Center, Loader as MantineLoader } from "@mantine/core";
+import { Center } from "@mantine/core";
+
+import LogoLoader from "./LogoLoader";
 
 import "./loader.css";
 
@@ -7,7 +9,7 @@ const Loader = (props) => {
   if (props.loading) {
     return (
       <Center h="100%" w="100%">
-        <MantineLoader size="lg" />
+        <LogoLoader size={56} />
       </Center>
     );
   }
@@ -16,8 +18,14 @@ const Loader = (props) => {
 
 export default Loader;
 
-export const withLoader = (pred, Wrapped) => (props) => (
-  <Loader loading={!pred(props)}>
-    {pred(props) ? <Wrapped {...props} /> : null}
-  </Loader>
-);
+export const withLoader = (pred, Wrapped) => {
+  const WithLoader = (props) => (
+    <Loader loading={!pred(props)}>
+      {pred(props) ? <Wrapped {...props} /> : null}
+    </Loader>
+  );
+  WithLoader.displayName = `withLoader(${
+    Wrapped.displayName || Wrapped.name || "Component"
+  })`;
+  return WithLoader;
+};

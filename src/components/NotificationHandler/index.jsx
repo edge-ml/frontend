@@ -2,13 +2,13 @@ import React, { useContext, useEffect } from "react";
 import {
   Modal,
   Button,
-  Loader,
   Group,
   Stack,
   Text,
   ActionIcon,
   Table,
 } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import { IconDownload, IconTrash } from "@tabler/icons-react";
 import NotificationContext from "../NotificationHandler/NotificationProvider";
 import { datasetDownloadfromId } from "../../services/DatasetService";
@@ -48,7 +48,7 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                     {elm.error && <Text c="red">Error</Text>}
                     {elm.status < 100 ? (
                       <Group gap="xs">
-                        <Loader size="sm" />
+                        <LogoLoader size={20} />
                         <Text size="sm">{elm.status}%</Text>
                       </Group>
                     ) : (

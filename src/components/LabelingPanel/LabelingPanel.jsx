@@ -12,14 +12,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
 import { hexToForegroundColor } from "../../services/ColorService";
+import { indexToShortcutKey } from "../../services/ShortcutKeys";
 import { DatasetContext } from "../../routes/dataset/DatasetContext";
 import DeleteModal from "../Common/DeleteModal";
 
 import "./LabelingPanel.css";
 
-const LabelTypeButton = ({ label, index, isSelected, onSelect }) => (
+const LabelTypeButton = ({ label, index, isSelected, onSelect }) => {
+  const shortcutKey = indexToShortcutKey(index)?.toUpperCase();
+  return (
   <Tooltip
-    label={`Shortcut: ${index + 1} or Ctrl+${index + 1}`}
+    label={`Shortcut: ${shortcutKey} or Ctrl+${shortcutKey}`}
     openDelay={400}
     withinPortal
   >
@@ -49,14 +52,15 @@ const LabelTypeButton = ({ label, index, isSelected, onSelect }) => (
             : undefined
         }
       >
-        {index + 1}
+        {shortcutKey}
       </Kbd>
       <Box component="span" fz="sm" fw={600} truncate="end">
         {label.name}
       </Box>
     </button>
   </Tooltip>
-);
+  );
+};
 
 const SelectedLabelRange = ({ from, to }) => {
   const formatTime = (timestamp) =>

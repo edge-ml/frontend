@@ -1,5 +1,6 @@
 import React from "react";
-import { Loader, Badge, Group, Text } from "@mantine/core";
+import { Badge, Group, Text } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import {
   faCheck,
   faHourglass,
@@ -40,7 +41,7 @@ export const TrainingStateCounter = ({
         return (
           <Group key={k} gap={4} align="center">
             {isCurrent ? (
-              <Loader size="xs" color="blue" />
+              <LogoLoader size={16} />
             ) : isDone ? (
               <FontAwesomeIcon style={{ color: "#28a745" }} icon={faCheck} />
             ) : (

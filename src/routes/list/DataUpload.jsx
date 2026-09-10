@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { SimpleGrid, Text, Button, Group, ThemeIcon, Progress, Loader } from "@mantine/core";
+import { SimpleGrid, Text, Button, Group, ThemeIcon, Progress } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
@@ -37,7 +38,7 @@ const WharImportBadge = ({ job, status, elapsed, onOpen, onDismiss }) => {
       className="mb-3 p-2 d-flex align-items-center"
       style={{ background: "#fff", borderRadius: "0.5rem", color: "#222", gap: "0.75rem" }}
     >
-      {running && <Loader size="xs" />}
+      {running && <LogoLoader size={18} style={{ flexShrink: 0 }} />}
       {done && <FontAwesomeIcon icon={faCheckCircle} style={{ color: "#1c7c43" }} />}
       {failed && <FontAwesomeIcon icon={faCircleExclamation} style={{ color: "#c0392b" }} />}
       <div

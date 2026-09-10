@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useReducer, useState } from "react";
 
+import { keyToShortcutIndex } from "../../services/ShortcutKeys";
+
 const initialEditorState = {
   draft: undefined,
   selectedLabelId: undefined,
@@ -106,14 +108,15 @@ const useEditDataset = (datasetUtils, labelings) => {
         target.isContentEditable);
 
     const handleKeyDown = (event) => {
-      const shortcutIndex = Number(event.key) - 1;
+      const shortcutIndex = keyToShortcutIndex(event.key);
       const isValidShortcut =
-        Number.isInteger(shortcutIndex) &&
         shortcutIndex >= 0 &&
         shortcutIndex < (activeLabeling?.labels.length ?? 0);
 
       // Change the active label type (re-types the selected label, if any)
-      // with plain number keys or Ctrl + number.
+      // with its shortcut key or Ctrl/Cmd + that key. Labels 1-9 use the
+      // number row; labels 10+ use the next rows (qwertyuiop, asdfghjkl,
+      // zxcvbnm) so there is never a non-existent "10" keystroke.
       if (
         isValidShortcut &&
         !isTypingTarget(event.target)

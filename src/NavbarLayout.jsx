@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { AppShell, Center, Loader } from "@mantine/core";
+import { AppShell, Center } from "@mantine/core";
+import LogoLoader from "./modules/LogoLoader";
 import Navbar from "./components/Navbar/Navbar";
 import useProjectStore from "./stores/projectStore";
 
@@ -13,7 +14,7 @@ const NavbarLayout = ({ children }) => {
   if (!projects) {
     return (
       <Center h="100vh">
-        <Loader size="lg" />
+        <LogoLoader size={56} />
       </Center>
     );
   }

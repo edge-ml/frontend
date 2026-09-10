@@ -5,10 +5,10 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import {
   AppShell,
   Divider,
-  Loader,
   ScrollArea,
   UnstyledButton,
 } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 
 import EdgeMLBrandLogo from "../EdgeMLBrandLogo/EdgeMLBrandLogo";
 import NotificationHandler from "../NotificationHandler";
@@ -27,7 +27,7 @@ const Navbar = () => {
   const { projects, currentProject } = useProjectStore();
 
   if (!projects) {
-    return <Loader />;
+    return <LogoLoader size={40} />;
   }
 
   return (

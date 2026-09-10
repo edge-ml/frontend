@@ -9,8 +9,8 @@ import {
   TextInput,
   Switch,
   Progress,
-  Loader,
 } from "@mantine/core";
+import LogoLoader from "../../../modules/LogoLoader";
 import {
   getDeployDevices,
   deployModel,
@@ -216,7 +216,7 @@ const DeployModal = ({ model, onClose }) => {
               <div>{renderProgressInfo()}</div>
               {inProgress() ? (
                 <div>
-                  <Loader size="sm" color="dark" />
+                  <LogoLoader size={24} />
                 </div>
               ) : null}
             </div>

@@ -7,7 +7,6 @@ import {
   Menu,
   Table,
   Alert,
-  Loader,
 } from "@mantine/core";
 import { SUPPORTED_SENSORS } from "../../services/WebSensorServices";
 import { SensorList } from "../../components/SensorList/SensorList";

@@ -25,6 +25,7 @@ import { uniqueNamesGenerator } from "unique-names-generator";
 import { BleLabelingMenu } from "../components/BLE/BleLabelingMenu";
 
 import { getLabelings } from "../services/ApiServices/LabelingServices";
+import { SHORTCUT_KEYS } from "../services/ShortcutKeys";
 import { get_parse_schema } from "../utils/ble";
 import { Card, Container, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 
@@ -144,7 +145,7 @@ class UploadBLE extends Component {
     this.v2_requestSensorSchemeCharacteristicUuid =
       "caa25cba-7e1b-44f2-adc9-e8c06c9ced43";
 
-    this.shortcutKeys = "1234567890abcdefghijklmnopqrstuvwxyz";
+    this.shortcutKeys = SHORTCUT_KEYS;
     this.bleDeviceProcessor = undefined;
     this.textEncoder = new TextDecoder("utf-8");
   }

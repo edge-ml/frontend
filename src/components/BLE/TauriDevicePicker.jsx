@@ -3,7 +3,6 @@ import {
   Badge,
   Button,
   Group,
-  Loader,
   Modal,
   Paper,
   Radio,
@@ -13,6 +12,7 @@ import {
   ThemeIcon,
   UnstyledButton,
 } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import { IconBluetooth, IconBluetoothConnected } from "@tabler/icons-react";
 import {
   resolveDeviceSelection,
@@ -89,7 +89,10 @@ const TauriDevicePicker = () => {
 
         {devices.length === 0 ? (
           <Paper withBorder radius="md" p="xl" style={{ textAlign: "center" }}>
-            <Loader size="sm" mb="sm" />
+            <LogoLoader
+              size={24}
+              style={{ display: "block", margin: "0 auto 8px auto" }}
+            />
             <Text size="sm" c="dimmed">
               Keep your device nearby and make sure it is discoverable.
             </Text>

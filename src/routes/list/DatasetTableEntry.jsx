@@ -44,6 +44,25 @@ const MoreLink = ({ count }) =>
     </Text>
   ) : null;
 
+const MAX_LABEL_DOTS = 4;
+
+const LabelingDots = ({ labels }) => {
+  const visibleDots = labels.slice(0, MAX_LABEL_DOTS);
+  const remaining = labels.length - visibleDots.length;
+  return (
+    <Group gap={5} wrap="nowrap">
+      {visibleDots.map((label) => (
+        <ColorDot key={label._id} color={label.color} />
+      ))}
+      {remaining > 0 && (
+        <Text size="xs" c="dimmed" fw={700} style={{ whiteSpace: "nowrap" }}>
+          +{remaining}
+        </Text>
+      )}
+    </Group>
+  );
+};
+
 const format_time = (s) => {
   const seconds = s / 1000;
   const minutes = Math.floor(seconds / 60);
@@ -106,20 +125,32 @@ const Labelings = ({ dataset, labelings }) => {
   );
 
   return (
-    <HoverCard shadow="md" openDelay={200} withinPortal={false}>
+    <HoverCard
+      shadow="md"
+      openDelay={200}
+      withinPortal={false}
+      position="bottom"
+      offset={3}
+      withArrow
+    >
       <HoverCard.Target>
         <Stack gap={7}>
           {visible.map(({ labeling, activeLabels }) => (
             <Group key={labeling._id} gap={8} wrap="nowrap">
-              <ColorDot color={activeLabels[0]?.color} />
+              {activeLabels.length > 0 ? (
+                <LabelingDots labels={activeLabels} />
+              ) : (
+                <ColorDot color="var(--mantine-color-gray-5)" />
+              )}
               <div style={{ minWidth: 0 }}>
                 <Text size="sm" fw={600} truncate>
                   {labeling.name}
                 </Text>
-                <Text size="xs" c="dimmed">
-                  {activeLabels.length} selected{" "}
-                  {activeLabels.length === 1 ? "label" : "labels"}
-                </Text>
+                {activeLabels.length === 0 && (
+                  <Text size="xs" c="dimmed">
+                    No labels selected
+                  </Text>
+                )}
               </div>
             </Group>
           ))}
@@ -158,7 +189,14 @@ const Metadata = ({ dataset }) => {
   );
 
   return (
-    <HoverCard shadow="md" openDelay={200} withinPortal={false}>
+    <HoverCard
+      shadow="md"
+      openDelay={200}
+      withinPortal={false}
+      position="bottom"
+      offset={3}
+      withArrow
+    >
       <HoverCard.Target>
         <Stack gap={6}>
           {visible.map(([key, value]) => (

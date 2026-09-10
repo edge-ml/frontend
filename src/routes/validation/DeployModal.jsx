@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Modal, Button, Menu, Progress, Loader } from "@mantine/core";
+import { Modal, Button, Menu, Progress } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import {
   getDeployDevices,
   deployModel,
@@ -203,7 +204,7 @@ const DeployModal = ({ isOpen, model, onClose }) => {
               <div>{renderProgressInfo()}</div>
               {inProgress() ? (
                 <div>
-                  <Loader size="sm" color="dark" />
+                  <LogoLoader size={24} />
                 </div>
               ) : null}
             </div>

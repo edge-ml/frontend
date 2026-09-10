@@ -4,13 +4,13 @@ import {
   Button,
   Center,
   Group,
-  Loader,
   Modal,
   Paper,
   Progress,
   Stack,
   Text,
 } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import Wizard_SelectLabeling from "./Steps/Select_Labeling";
 import "./index.css";
 import { useEffect, useState, Fragment } from "react";
@@ -342,7 +342,7 @@ const TrainingWizard = ({ isOpen, onClose }) => {
         {isLoading ? (
           <Center mih="40vh">
             <Stack align="center" gap="sm">
-              <Loader size="sm" />
+              <LogoLoader size={24} />
               <Text size="sm" c="dimmed">
                 Loading training options…
               </Text>
