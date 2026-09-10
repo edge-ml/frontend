@@ -10,7 +10,6 @@ import {
 import {
   IconBluetooth,
   IconFileUpload,
-  IconDeviceMobile,
   IconDatabase,
 } from "@tabler/icons-react";
 import useProjectRouter from "../../Hooks/ProjectRouter";
@@ -148,13 +147,10 @@ const DataUpload = ({ refreshDatasets }) => {
       buttonText: "Upload CSV Files",
       buttonAction: () => setCSVModalOpen(true),
     },
-    {
-      icon: IconDeviceMobile,
-      title: "Web Sensor API",
-      description: "Collect sensor data from a smartphone in a browser.",
-      buttonText: "Collect Web Sensor Data",
-      buttonAction: () => navigate("uploadWeb"),
-    },
+    // "Web Sensor API" (Collect Web Sensor Data) is temporarily removed: it
+    // renders a blank screen when no usable sensors are present. Re-add once it
+    // shows the recording UI when sensors exist and a clear message when none
+    // do (the uploadWeb route is left in place for that work).
     {
       icon: IconDatabase,
       title: "Standard WHAR Dataset",

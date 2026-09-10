@@ -79,10 +79,15 @@ const useEditDataset = (datasetUtils, labelings) => {
     [datasetLabeling?.labels, editor.selectedLabelId]
   );
 
+  // Show at most the first 9 time series by default. Datasets can have dozens
+  // (108 in a Bosch recording); charting all of them at once hangs the page.
+  // The user can pick which series to view via the Time Series dropdown.
+  const DEFAULT_TIMESERIES_LIMIT = 9;
+
   useEffect(() => {
     if (!dataset) return;
 
-    setActiveTimeSeries(dataset.timeSeries);
+    setActiveTimeSeries(dataset.timeSeries.slice(0, DEFAULT_TIMESERIES_LIMIT));
   }, [dataset?._id]);
 
   useEffect(() => {

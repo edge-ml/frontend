@@ -17,7 +17,8 @@ export const canDeployEmbedded = (model) => modelFormats(model).includes("C");
 export const deploymentLabel = (model) => {
   const f = modelFormats(model);
   const parts = [];
-  if (f.includes("EXECUTORCH")) parts.push("Mobile · ExecuTorch");
-  if (f.includes("C")) parts.push("Embedded · C");
+  if (f.includes("EXECUTORCH")) parts.push("Mobile");
+  if (f.includes("C")) parts.push("Embedded");
+  if (f.includes("PYTORCH")) parts.push("Server");
   return parts.length ? parts.join(" · ") : null;
 };

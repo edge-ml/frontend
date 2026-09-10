@@ -15,6 +15,11 @@ const GOALS = [
     title: "Embedded device",
     desc: "Export to C to run on microcontrollers and embedded hardware.",
   },
+  {
+    key: "PYTORCH",
+    title: "Server / research",
+    desc: "Export to PyTorch (.pt) to run in Python on a server or desktop. Works with any PyTorch model, including ones that can't go on-device.",
+  },
 ];
 
 const SelectExportGoal = ({ availableKeys, onSelect, onBack }) => (

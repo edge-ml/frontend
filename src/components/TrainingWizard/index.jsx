@@ -55,6 +55,7 @@ const optionMatchesGoal = (option, goal) => {
   const t = optionExportTargets(option);
   if (goal === "EXECUTORCH") return !!t.executorch;
   if (goal === "C") return !!t.c;
+  if (goal === "PYTORCH") return !!t.pytorch;
   return true;
 };
 
@@ -75,7 +76,7 @@ const goalAchievable = (pipeline, goal) => {
     .every((s) => s.options.some((o) => optionMatchesGoal(o, goal)));
 };
 
-const TrainingWizard = ({ isOpen, onClose }) => {
+const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
   // Data obtained from the server
 
   const [pipelines, setPipelines] = useState(undefined);
@@ -214,6 +215,7 @@ const TrainingWizard = ({ isOpen, onClose }) => {
     try {
       setTrainError(undefined);
       await train(buildRequest());
+      onTrained && onTrained(); // show the queued job immediately, don't wait for the poll
       onClose();
     } catch (e) {
       setTrainError(
@@ -305,8 +307,10 @@ const TrainingWizard = ({ isOpen, onClose }) => {
   // every step supports it, so the model will export that way.
   const exportTargets =
     exportGoal === "C"
-      ? { c: true, executorch: false }
-      : { c: false, executorch: true };
+      ? { c: true, executorch: false, pytorch: false }
+      : exportGoal === "PYTORCH"
+        ? { c: false, executorch: false, pytorch: true }
+        : { c: false, executorch: true, pytorch: false };
 
   return (
     <Modal
@@ -372,7 +376,7 @@ const TrainingWizard = ({ isOpen, onClose }) => {
         ) : null}
         {selectedPipeline && !exportGoal ? (
           <SelectExportGoal
-            availableKeys={["EXECUTORCH", "C"].filter((k) =>
+            availableKeys={["EXECUTORCH", "C", "PYTORCH"].filter((k) =>
               goalAchievable(selectedPipeline, k)
             )}
             onSelect={onSelectExportGoal}
@@ -406,21 +410,117 @@ const TrainingWizard = ({ isOpen, onClose }) => {
                 disabledTimeseriesNames={disabledTimeseriesNames}
               />
             ) : null}
-            {screen >= 2 && screen !== maxSteps - 1 ? (
-              <Pipelinestep
-                stepNum={screen}
-                step={{
-                  ...selectedPipeline.steps[screen - 2],
-                  options: stepOptionsForGoal(
+            {screen >= 2 && screen !== maxSteps - 1
+              ? (() => {
+                  // Classifiers that consume the raw window sequence are only
+                  // usable with the raw feature extractor; hide them (with a
+                  // note) unless it is selected. Mirrors the ml preflight guard.
+                  const RAW_EXTRACTOR = "Raw Time-Series (Sensors only)";
+                  const RAW_ONLY = [
+                    "WHAR Model",
+                    "PyTorch 1D Convolutional Neural Network",
+                  ];
+                  const rawSelected = (selectedPipelineSteps || []).some(
+                    (s) => s && s.name === RAW_EXTRACTOR
+                  );
+                  const goalOptions = stepOptionsForGoal(
                     selectedPipeline.steps[screen - 2],
                     exportGoal
-                  ),
-                }}
-                selectedPipelineStep={selectedPipelineSteps[screen - 2]}
-                setPipelineStep={setPipelineStep}
-                exportTargets={exportTargets}
-              />
-            ) : null}
+                  );
+                  const hidden = rawSelected
+                    ? []
+                    : goalOptions
+                        .filter((o) => RAW_ONLY.includes(o.name))
+                        .map((o) => o.name);
+                  let options = rawSelected
+                    ? goalOptions
+                    : goalOptions.filter((o) => !RAW_ONLY.includes(o.name));
+                  // A few WHAR architectures constrain the channel count:
+                  // deepsense pairs acc/gyro (even count) and global_fusion needs
+                  // enough channels to fuse (>= 6). Offer them everywhere but hide
+                  // them from the Architecture dropdown when the selected data's
+                  // channel count is incompatible (the ml preflight backs this up).
+                  const CHANNEL_CONSTRAINED_ARCHS = {
+                    deepsense: (n) => n % 2 === 0,
+                    global_fusion: (n) => n >= 6,
+                  };
+                  const selDatasets = datasets.filter((d) => d.selected);
+                  const channelCount = selDatasets.length
+                    ? intersect(
+                        ...selDatasets.map((d) =>
+                          d.timeSeries.map((t) => t.name)
+                        )
+                      ).filter((n) => !disabledTimeseriesNames.includes(n)).length
+                    : 0;
+                  const archAllowed = (arch) =>
+                    !CHANNEL_CONSTRAINED_ARCHS[arch] ||
+                    !channelCount ||
+                    CHANNEL_CONSTRAINED_ARCHS[arch](channelCount);
+                  const filterWharArchs = (opt) => {
+                    if (!opt || opt.name !== "WHAR Model") return opt;
+                    return {
+                      ...opt,
+                      parameters: (opt.parameters || []).map((p) =>
+                        p.parameter_name === "model_id"
+                          ? {
+                              ...p,
+                              options: (p.options || []).filter(archAllowed),
+                            }
+                          : p
+                      ),
+                    };
+                  };
+                  options = options.map(filterWharArchs);
+                  const selectedStep = filterWharArchs(
+                    selectedPipelineSteps[screen - 2]
+                  );
+                  // Proactive hint on the feature-extraction step (the one that
+                  // owns the raw-extractor option), plus the "hidden" note on the
+                  // classifier step.
+                  const isFeatureStep = goalOptions.some(
+                    (o) => o.name === RAW_EXTRACTOR
+                  );
+                  const currentName = selectedPipelineSteps?.[screen - 2]?.name;
+                  const hiddenArchs =
+                    currentName === "WHAR Model" && channelCount
+                      ? Object.keys(CHANNEL_CONSTRAINED_ARCHS).filter(
+                          (a) =>
+                            !CHANNEL_CONSTRAINED_ARCHS[a](channelCount) &&
+                            goalOptions
+                              .find((o) => o.name === "WHAR Model")
+                              ?.parameters?.find(
+                                (p) => p.parameter_name === "model_id"
+                              )
+                              ?.options?.includes(a)
+                        )
+                      : [];
+                  let note;
+                  if (hidden.length) {
+                    note = `${hidden.join(", ")} ${
+                      hidden.length > 1 ? "are" : "is"
+                    } only available with the "${RAW_EXTRACTOR}" feature extraction.`;
+                  } else if (isFeatureStep && currentName !== RAW_EXTRACTOR) {
+                    note = `WHAR Model and PyTorch 1D CNN are only available with the "${RAW_EXTRACTOR}" method — they are hidden with the current selection.`;
+                  } else if (hiddenArchs.length) {
+                    note = `${hiddenArchs.join(", ")} ${
+                      hiddenArchs.length > 1 ? "are" : "is"
+                    } hidden — your ${channelCount}-channel selection isn't compatible (deepsense needs an even channel count, global_fusion needs 6+).`;
+                  }
+                  return (
+                    <Pipelinestep
+                      stepNum={screen}
+                      step={{
+                        ...selectedPipeline.steps[screen - 2],
+                        options,
+                      }}
+                      selectedPipelineStep={selectedStep}
+                      setPipelineStep={setPipelineStep}
+                      exportTargets={exportTargets}
+                      note={note}
+                    />
+                  );
+                })()
+              : null}
             {screen === maxSteps - 1 ? (
               <Select_Name
                 screen={screen}

@@ -11,8 +11,9 @@ import { downloadDeploymentModel } from "../../services/ApiServices/MLDeployment
 import { downloadBlob } from "../../services/helpers";
 
 const FORMAT_INFO = {
-  C: { label: "C++", prismLanguage: "cpp" },
-  EXECUTORCH: { label: "ExecuTorch (.pte)", prismLanguage: "kotlin" },
+  C: { label: "Embedded · C++", prismLanguage: "cpp" },
+  EXECUTORCH: { label: "Mobile · ExecuTorch (.pte)", prismLanguage: "kotlin" },
+  PYTORCH: { label: "Server · PyTorch (.pt)", prismLanguage: "python" },
 };
 
 const formatInfoFor = (fmt) =>
@@ -80,6 +81,17 @@ classifier.addDatapoint(floatArrayOf(${timeSeries
           .join(", ")}))
 
 val label = classifier.predict()`;
+      case "PYTORCH":
+        return `# Python (server / desktop) — see README.md and inference.py in the download
+import torch, numpy as np
+
+model = torch.jit.load("model.pt")   # preprocessing is baked in
+model.eval()
+
+# one raw window: (batch, window_size, num_sensors=${timeSeries.length})
+window = np.zeros((1, WINDOW_SIZE, ${timeSeries.length}), dtype=np.float32)
+logits = model(torch.from_numpy(window))
+label = int(torch.argmax(logits, dim=-1))`;
       default:
         return "";
     }
