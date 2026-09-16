@@ -35,7 +35,7 @@ class UserNameSettings extends Component {
     if (!this.state.userName && !this.state.userNameConfirm) return;
     if (this.state.userName !== this.state.userNameConfirm) {
       this.setState({
-        userNameError: "E-mails do not match",
+        userNameError: "Usernames do not match",
       });
     } else {
       changeUserName(this.state.userName)

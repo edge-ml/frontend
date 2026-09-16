@@ -41,12 +41,7 @@ const EditProjectModal = ({ isOpen, onClose }) => {
           disabled
           id="inputProjectAdmin"
           placeholder="Project-admin"
-          value={
-            (project.admin?.userName ?? "") +
-            " (" +
-            (project.admin?.email ?? "") +
-            ")"
-          }
+          value={project.admin?.userName ?? ""}
         />
         <h5 style={{ paddingTop: "16px" }}>Users</h5>
         <Table>

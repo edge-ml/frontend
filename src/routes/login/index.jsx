@@ -26,7 +26,7 @@ import "./index.css";
 const LoginPage = ({ children }) => {
   const { login } = useAuth();
   const user = useUserStore((state) => state.user);
-  const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -44,7 +44,7 @@ const LoginPage = ({ children }) => {
 
   const submit = async () => {
     try {
-      await login(email, password);
+      await login(userName, password);
     } catch (e) {
       setError(e?.message || "Wrong credentials!");
     }
@@ -79,9 +79,9 @@ const LoginPage = ({ children }) => {
 
           <TextInput
             leftSection={<IconUser size={16} />}
-            placeholder="email or username"
-            value={email}
-            onChange={(e) => setEmail(e.currentTarget.value)}
+            placeholder="username"
+            value={userName}
+            onChange={(e) => setUserName(e.currentTarget.value)}
           />
 
           <PasswordInput
