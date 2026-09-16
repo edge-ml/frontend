@@ -105,7 +105,7 @@ export const SelectedModelModalView = ({ model, onClosed, ...rest }) => {
 
   const { width: vw, height: vh } = useViewportSize();
   const layout =
-    model && vw > 0 ? computeLayout(model, metrics.metrics, vw, vh) : null;
+    model && vw > 0 ? computeLayout(model, metrics, vw, vh) : null;
 
   return (
     <Modal
