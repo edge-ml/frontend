@@ -56,7 +56,7 @@ const DeployModal = ({ isOpen, model, onClose }) => {
       setDevices(config.devices);
       setSelectedDevice(config.devices[0]);
       setParameters(config.parameters);
-      var sensorArr = Array.from({ length: model.timeSeries.length });
+      var sensorArr = Array.from({ length: (model.timeSeries || []).length });
       sensorArr = sensorArr.map((elm) => {
         return { sensor_id: undefined, component_id: undefined };
       });
@@ -329,7 +329,7 @@ const DeployModal = ({ isOpen, model, onClose }) => {
                   <b>Configure TimeSeries</b>
                 </div>
                 <div className="body-wrapper-overflow">
-                  {model.timeSeries.map((elm, ts_idx) => (
+                  {(model.timeSeries || []).map((elm, ts_idx) => (
                     <div
                       key={"tskey" + ts_idx}
                       className="datasetCard"
