@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from "react";
+import { useViewportSize } from "@mantine/hooks";
 
 import {
   Button,
@@ -28,6 +29,61 @@ const asPercent = (v) => {
   return isNaN(val) ? "—" : `${val}%`;
 };
 
+// Gap between the modal and the window edge, and Mantine's body padding.
+const GUTTER = 16;
+const BODY_PAD = 16;
+// Rough height of everything around the tab content (modal title, summary
+// strip, tab list, matrix caption + legend, footer). Only used to size the
+// matrix/report so they fit on screen without the modal scrolling.
+const CHROME_HEIGHT = 380;
+const CM_COL_HEAD = 92;
+
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+// Work out how big the confusion matrix cells can get for this viewport and
+// how wide the modal needs to be to show it. Width is shared by all tabs so
+// switching tabs doesn't make the modal jump around.
+const computeLayout = (model, metrics, vw, vh) => {
+  const labels = model.labels.map((l) => l.name);
+  const n = Math.max(1, labels.length);
+  const matrix = JSON.parse(metrics.confusion_matrix);
+  const maxDigits = String(Math.max(0, ...matrix.flat())).length;
+
+  const narrow = vw < 576;
+  const labelChars = narrow ? 10 : 18;
+  const longest = Math.min(
+    labelChars,
+    Math.max(...labels.map((l) => l.length), 4)
+  );
+  const rowHead = Math.round(longest * 7.5 + 32);
+
+  const maxModal = Math.max(280, vw - 2 * GUTTER);
+  const availW = maxModal - 2 * BODY_PAD - rowHead - 4;
+  const availH = Math.max(vh * 0.45, vh - 2 * GUTTER - CHROME_HEIGHT);
+
+  // Fit the matrix on screen when possible, but don't shrink cells below a
+  // readable size just to avoid vertical scrolling if there's width to spare.
+  const minCell = Math.max(24, maxDigits * 8 + 10);
+  const fitW = availW / n;
+  const fitH = Math.max((availH - CM_COL_HEAD) / n, 40);
+  const cell = Math.floor(clamp(Math.min(fitW, fitH), minCell, 88));
+  const font = Math.round(clamp(cell * 0.3, 10, 18));
+
+  const matrixWidth = rowHead + n * cell + 4 + 2 * BODY_PAD;
+  const modalWidth = Math.round(
+    clamp(matrixWidth, Math.min(maxModal, 760), maxModal)
+  );
+
+  return {
+    modalWidth,
+    cell,
+    font,
+    labelChars,
+    matrix,
+    scrollHeight: Math.round(availH),
+  };
+};
+
 const asCount = (v) => (v == null || isNaN(v) ? "—" : Math.round(v));
 
 export const SelectedModelModalView = ({ model, onClosed, ...rest }) => {
@@ -47,8 +103,19 @@ export const SelectedModelModalView = ({ model, onClosed, ...rest }) => {
     ? Object.fromEntries(model.labels.map((l) => [l.name, l.color]))
     : {};
 
+  const { width: vw, height: vh } = useViewportSize();
+  const layout =
+    model && vw > 0 ? computeLayout(model, metrics.metrics, vw, vh) : null;
+
   return (
-    <Modal isOpen={model} size="xl" {...props} onClose={() => onClosed()}>
+    <Modal
+      isOpen={model}
+      size={layout ? `${layout.modalWidth}px` : "xl"}
+      xOffset={GUTTER}
+      yOffset={GUTTER}
+      {...props}
+      onClose={() => onClosed()}
+    >
       <ModalHeader>Model: {model && model.name}</ModalHeader>
       <ModalBody>
         {model ? (
@@ -66,14 +133,23 @@ export const SelectedModelModalView = ({ model, onClosed, ...rest }) => {
                 <ClassificationReport
                   report={metrics.classification_report}
                   colorMap={colorMap}
+                  maxHeight={layout ? layout.scrollHeight : "55vh"}
                 />
               </Tabs.Panel>
 
               <Tabs.Panel value="confusion" pt="md">
                 <ConfusionMatrixView
-                  matrix={JSON.parse(metrics.confusion_matrix)}
+                  matrix={
+                    layout
+                      ? layout.matrix
+                      : JSON.parse(metrics.confusion_matrix)
+                  }
                   labels={model.labels.map((elm) => elm.name)}
                   colorMap={colorMap}
+                  cellSize={layout?.cell}
+                  fontSize={layout?.font}
+                  labelChars={layout?.labelChars}
+                  maxHeight={layout?.scrollHeight}
                 />
               </Tabs.Panel>
 
@@ -160,7 +236,7 @@ const ReportRow = ({ name, row, colorMap, summary }) => (
   </Table.Tr>
 );
 
-const ClassificationReport = ({ report, colorMap }) => {
+const ClassificationReport = ({ report, colorMap, maxHeight }) => {
   const keys = Object.keys(report);
   const labelRows = keys.filter((k) => !SUMMARY_ROWS.includes(k));
   const summaryRows = keys.filter(
@@ -168,7 +244,7 @@ const ClassificationReport = ({ report, colorMap }) => {
   );
 
   return (
-    <ScrollArea.Autosize mah="55vh" type="auto">
+    <ScrollArea.Autosize mah={maxHeight} type="auto">
       <Table
         stickyHeader
         highlightOnHover

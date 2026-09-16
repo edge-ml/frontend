@@ -5,6 +5,7 @@
 
 /* Only the matrix scrolls, never the whole modal. */
 .cm-scroll {
+  width: fit-content;
   max-width: 100%;
   max-height: 60vh;
   overflow: auto;
@@ -53,7 +54,6 @@
   padding: 0 10px 0 6px;
   font-weight: 600;
   color: #495057;
-  max-width: 160px;
 }
 
 .cm-row-head-text {

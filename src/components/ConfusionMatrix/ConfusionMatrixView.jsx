@@ -7,15 +7,24 @@ import "./ConfusionMatrix.css";
 const short = (s, n = 16) =>
   s && s.length > n ? s.slice(0, n - 1) + "…" : s;
 
-export const ConfusionMatrixView = ({ matrix, labels, colorMap = {} }) => {
+export const ConfusionMatrixView = ({
+  matrix,
+  labels,
+  colorMap = {},
+  cellSize,
+  fontSize,
+  labelChars = 18,
+  maxHeight,
+}) => {
   const cm = matrix || [];
   const n = cm.length;
   const maxValue = Math.max(1, ...cm.flat());
 
-  // Cells shrink as the label count grows so a big matrix stays readable
-  // without forcing the whole modal to scroll.
-  const cell = n <= 6 ? 46 : n <= 12 ? 38 : n <= 20 ? 30 : 24;
-  const font = n <= 12 ? 13 : n <= 20 ? 11 : 10;
+  // Callers can size cells to the available space; otherwise cells shrink as
+  // the label count grows so a big matrix stays readable.
+  const cell = cellSize ?? (n <= 6 ? 46 : n <= 12 ? 38 : n <= 20 ? 30 : 24);
+  const font = fontSize ?? (n <= 12 ? 13 : n <= 20 ? 11 : 10);
+  const colChars = labelChars - 2;
 
   const cellStyle = (value) => {
     const scale = (parseFloat(value) / parseFloat(maxValue)) * 70;
@@ -32,15 +41,20 @@ export const ConfusionMatrixView = ({ matrix, labels, colorMap = {} }) => {
         is correct predictions.
       </Text>
 
-      <div className="cm-scroll">
+      <div
+        className="cm-scroll"
+        style={maxHeight ? { maxHeight } : undefined}
+      >
         <table className="cm-table" style={{ fontSize: font }}>
           <thead>
             <tr>
               <th className="cm-corner" />
               {labels.map((label) => (
-                <th key={label} className="cm-col-head" style={{ width: cell }}>
-                  <Tooltip label={label} withArrow disabled={label.length <= 16}>
-                    <span className="cm-col-head-text">{short(label)}</span>
+                <th key={label} className="cm-col-head" style={{ width: cell, minWidth: cell }}>
+                  <Tooltip label={label} withArrow disabled={label.length <= colChars}>
+                    <span className="cm-col-head-text">
+                      {short(label, colChars)}
+                    </span>
                   </Tooltip>
                 </th>
               ))}
@@ -53,14 +67,14 @@ export const ConfusionMatrixView = ({ matrix, labels, colorMap = {} }) => {
                   <Tooltip
                     label={labels[r]}
                     withArrow
-                    disabled={(labels[r] || "").length <= 18}
+                    disabled={(labels[r] || "").length <= labelChars}
                   >
                     <span className="cm-row-head-text">
                       <span
                         className="cm-dot"
                         style={{ background: colorMap[labels[r]] || "#adb5bd" }}
                       />
-                      {short(labels[r], 18)}
+                      {short(labels[r], labelChars)}
                     </span>
                   </Tooltip>
                 </th>
@@ -68,7 +82,12 @@ export const ConfusionMatrixView = ({ matrix, labels, colorMap = {} }) => {
                   <td
                     key={c}
                     className={`cm-cell${r === c ? " cm-diag" : ""}`}
-                    style={{ width: cell, height: cell, ...cellStyle(value) }}
+                    style={{
+                      width: cell,
+                      minWidth: cell,
+                      height: cell,
+                      ...cellStyle(value),
+                    }}
                   >
                     <Tooltip
                       withArrow
