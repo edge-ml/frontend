@@ -71,8 +71,8 @@ const computeLayout = (model, metrics, vw, vh) => {
     const fitW = availW / n;
     const fitH = (availH - CM_COL_HEAD) / n;
     const target = fitH >= 40 ? Math.min(fitW, fitH) : fitW;
-    const cell = Math.floor(clamp(target, minCell, 88));
-    return { rowHead, cell, font: Math.round(clamp(cell * 0.3, 10, 18)) };
+    const cell = Math.floor(clamp(target, minCell, 60));
+    return { rowHead, cell, font: Math.round(clamp(cell * 0.28, 10, 15)) };
   };
   let { rowHead, cell, font } = sizeFor(13);
   ({ rowHead, cell, font } = sizeFor(font));
@@ -118,7 +118,14 @@ export const SelectedModelModalView = ({ model, onClosed, ...rest }) => {
   return (
     <Modal
       isOpen={model}
-      size={layout ? `${layout.modalWidth}px` : "xl"}
+      size={layout ? "auto" : "xl"}
+      // Set the width inline: Mantine converts `size` to rem, which the app's
+      // 90% root font-size would shrink below the px-sized matrix.
+      styles={
+        layout
+          ? { content: { flex: `0 0 ${layout.modalWidth}px` } }
+          : undefined
+      }
       xOffset={GUTTER}
       yOffset={GUTTER}
       {...props}
