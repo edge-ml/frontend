@@ -35,7 +35,7 @@ const BODY_PAD = 16;
 // Rough height of everything around the tab content (modal title, summary
 // strip, tab list, matrix caption + legend, footer). Only used to size the
 // matrix/report so they fit on screen without the modal scrolling.
-const CHROME_HEIGHT = 380;
+const CHROME_HEIGHT = 420;
 const CM_COL_HEAD = 92;
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
@@ -55,21 +55,29 @@ const computeLayout = (model, metrics, vw, vh) => {
     labelChars,
     Math.max(...labels.map((l) => l.length), 4)
   );
-  const rowHead = Math.round(longest * 7.5 + 32);
-
   const maxModal = Math.max(280, vw - 2 * GUTTER);
-  const availW = maxModal - 2 * BODY_PAD - rowHead - 4;
   const availH = Math.max(vh * 0.45, vh - 2 * GUTTER - CHROME_HEIGHT);
-
-  // Fit the matrix on screen when possible, but don't shrink cells below a
-  // readable size just to avoid vertical scrolling if there's width to spare.
   const minCell = Math.max(24, maxDigits * 8 + 10);
-  const fitW = availW / n;
-  const fitH = Math.max((availH - CM_COL_HEAD) / n, 40);
-  const cell = Math.floor(clamp(Math.min(fitW, fitH), minCell, 88));
-  const font = Math.round(clamp(cell * 0.3, 10, 18));
 
-  const matrixWidth = rowHead + n * cell + 4 + 2 * BODY_PAD;
+  // Row header width depends on the font, which depends on the cell size, so
+  // estimate once with a default font and refine with the resulting one.
+  const sizeFor = (font) => {
+    const rowHead = Math.round(longest * font * 0.66 + 36);
+    // Leave room for the scroll box border and a vertical scrollbar.
+    const availW = maxModal - 2 * BODY_PAD - rowHead - 24;
+    // Fit the whole matrix on screen when that keeps cells readable. If it
+    // has to scroll vertically anyway, size cells to the available width
+    // instead so wide screens aren't wasted.
+    const fitW = availW / n;
+    const fitH = (availH - CM_COL_HEAD) / n;
+    const target = fitH >= 40 ? Math.min(fitW, fitH) : fitW;
+    const cell = Math.floor(clamp(target, minCell, 88));
+    return { rowHead, cell, font: Math.round(clamp(cell * 0.3, 10, 18)) };
+  };
+  let { rowHead, cell, font } = sizeFor(13);
+  ({ rowHead, cell, font } = sizeFor(font));
+
+  const matrixWidth = rowHead + n * cell + 24 + 2 * BODY_PAD;
   const modalWidth = Math.round(
     clamp(matrixWidth, Math.min(maxModal, 760), maxModal)
   );

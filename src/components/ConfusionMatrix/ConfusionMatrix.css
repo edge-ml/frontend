@@ -22,27 +22,31 @@
   position: sticky;
   left: 0;
   top: 0;
-  z-index: 3;
+  z-index: 2;
   background: #fff;
 }
 
+/* Column labels are absolutely positioned so their length never widens a
+   column; they run diagonally up-left from the column centre, over the empty
+   corner cell rather than off the right edge. */
 .cm-col-head {
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 3;
   background: #fff;
-  height: 92px;
-  vertical-align: bottom;
-  padding: 0 0 4px;
+  padding: 0;
 }
 
 .cm-col-head-text {
-  display: inline-block;
-  transform: rotate(-45deg);
-  transform-origin: center bottom;
+  position: absolute;
+  right: 50%;
+  bottom: 6px;
+  transform: rotate(45deg);
+  transform-origin: right bottom;
   white-space: nowrap;
   font-weight: 600;
   color: #495057;
+  line-height: 1;
 }
 
 .cm-row-head {

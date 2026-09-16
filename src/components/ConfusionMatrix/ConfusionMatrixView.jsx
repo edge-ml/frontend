@@ -3,6 +3,8 @@ import { Group, Text, Tooltip } from "@mantine/core";
 
 import "./ConfusionMatrix.css";
 
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
 // Truncate long labels for the header cells; the full name stays in the tooltip.
 const short = (s, n = 16) =>
   s && s.length > n ? s.slice(0, n - 1) + "…" : s;
@@ -25,6 +27,15 @@ export const ConfusionMatrixView = ({
   const cell = cellSize ?? (n <= 6 ? 46 : n <= 12 ? 38 : n <= 20 ? 30 : 24);
   const font = fontSize ?? (n <= 12 ? 13 : n <= 20 ? 11 : 10);
   const colChars = labelChars - 2;
+  // Column labels are drawn diagonally and taken out of layout, so the header
+  // row needs enough height for the longest one.
+  const longestCol = Math.min(
+    colChars,
+    Math.max(0, ...labels.map((l) => l.length))
+  );
+  const colHead = Math.round(
+    clamp(longestCol * font * 0.68 * 0.71 + font + 14, 40, 190)
+  );
 
   const cellStyle = (value) => {
     const scale = (parseFloat(value) / parseFloat(maxValue)) * 70;
@@ -50,7 +61,16 @@ export const ConfusionMatrixView = ({
             <tr>
               <th className="cm-corner" />
               {labels.map((label) => (
-                <th key={label} className="cm-col-head" style={{ width: cell, minWidth: cell }}>
+                <th
+                  key={label}
+                  className="cm-col-head"
+                  style={{
+                    width: cell,
+                    minWidth: cell,
+                    maxWidth: cell,
+                    height: colHead,
+                  }}
+                >
                   <Tooltip label={label} withArrow disabled={label.length <= colChars}>
                     <span className="cm-col-head-text">
                       {short(label, colChars)}
