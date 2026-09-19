@@ -1,129 +1,177 @@
-import React from "react";
-import { useContext, useRef } from "react";
-import HighchartsReact from "highcharts-react-official";
-import Highcharts from "highcharts/highstock";
-import { DatasetContext } from "./DatasetContext";
+import { RangeSlider } from "@mantine/core";
+import React, { useEffect, useRef, useState } from "react";
 
-const ChartSlider = ({ start, end }) => {
-  const chartRef = useRef();
+const formatTimestamp = (timestamp) =>
+  new Date(timestamp).toISOString().replace("T", " ").slice(0, 19);
 
-  const data = [];
-  const step = (end - start) / (window.innerWidth - 1);
-  for (var i = 0; i < window.innerWidth; i++) {
-    data.push([start + step * i, 0]);
+const ChartSlider = ({ start, end, visibleRange, onRangeChange }) => {
+  const [value, setValue] = useState([visibleRange.min, visibleRange.max]);
+  const [isDraggingRange, setIsDraggingRange] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
+  const dragRef = useRef();
+  const trackRef = useRef();
+  const step = Math.max(1, Math.floor((end - start) / 1000));
+
+  useEffect(() => {
+    setValue([visibleRange.min, visibleRange.max]);
+  }, [visibleRange.max, visibleRange.min]);
+
+  // While interacting with the slider (thumbs or range-drag bar) keep the
+  // timestamp badges visible even if the cursor leaves the slider area.
+  useEffect(() => {
+    if (!isInteracting) return;
+    const stop = () => setIsInteracting(false);
+    window.addEventListener("pointerup", stop);
+    window.addEventListener("pointercancel", stop);
+    return () => {
+      window.removeEventListener("pointerup", stop);
+      window.removeEventListener("pointercancel", stop);
+    };
+  }, [isInteracting]);
+
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start === end) {
+    return null;
   }
 
-  const generateState = () => {
-    return {
-      navigator: {
-        maskFill: "rgba(72, 187, 120, 0.2)",
-        outlineWidth: 1,
-        enabled: true,
-        series: {
-          color: "#ffffff",
-          lineWidth: 0,
-        },
-        xAxis: {
-          crosshair: false,
-          isInternal: true,
-        },
-        yAxis: {
-          isInternal: true,
-        },
-        stickyTracking: false,
-      },
-      rangeSelector: {
-        enabled: false,
-      },
-      panning: false,
-      title: null,
-      series: [
-        {
-          lineWidth: 0,
-          marker: {
-            enabled: false,
-            states: {
-              hover: {
-                enabled: false,
-              },
-            },
-          },
-          data: data,
-          enableMouseTracking: false,
-        },
-      ],
-      xAxis: {
-        lineWidth: 0,
-        tickLength: 0,
-        labels: {
-          enabled: false,
-        },
-        type: "datetime",
-        ordinal: false,
-        crosshair: false,
-        min: start,
-        max: end,
-        events: {
-          afterSetExtremes: (e) => {
-            Highcharts.charts.forEach((elm) => {
-              if (elm) {
-                elm.xAxis[0].setExtremes(
-                  e.min,
-                  e.max,
-                  e.target.width,
-                  false,
-                  false
-                );
-              }
-            });
-          },
-        },
-      },
-      yAxis: {
-        height: 0,
-        gridLineWidth: 0,
-        labels: {
-          enabled: false,
-          align: "left",
-          x: 0,
-          y: -2,
-        },
-        title: {
-          enabled: false,
-        },
-        opposite: false,
-      },
-      legend: {
-        align: "left",
-        verticalAlign: "center",
-        layout: "vertical",
-        x: 45,
-        y: 0,
-        enabled: false,
-      },
-      tooltip: {
-        enabled: false,
-      },
-      credits: {
-        enabled: false,
-      },
-      scrollbar: {
-        height: 0,
-        buttonArrowColor: "#fff",
-      },
-    };
+  const updateRange = (nextValue) => {
+    setValue(nextValue);
+    onRangeChange({ min: nextValue[0], max: nextValue[1] });
   };
 
+  const moveRange = (delta, sourceValue = value) => {
+    const duration = sourceValue[1] - sourceValue[0];
+    const min = Math.max(
+      start,
+      Math.min(end - duration, sourceValue[0] + delta)
+    );
+    updateRange([min, min + duration]);
+  };
+
+  const startRangeDrag = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragRef.current = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      value,
+    };
+    setIsDraggingRange(true);
+  };
+
+  const dragRange = (event) => {
+    const drag = dragRef.current;
+    if (!drag || event.pointerId !== drag.pointerId) return;
+
+    event.preventDefault();
+    const trackWidth = trackRef.current?.getBoundingClientRect().width;
+    if (!trackWidth) return;
+
+    const rawDelta = ((event.clientX - drag.x) / trackWidth) * (end - start);
+    const snappedDelta = Math.round(rawDelta / step) * step;
+    moveRange(snappedDelta, drag.value);
+  };
+
+  const finishRangeDrag = (event) => {
+    if (event.pointerId !== dragRef.current?.pointerId) return;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    dragRef.current = undefined;
+    setIsDraggingRange(false);
+  };
+
+  const startPercent = ((value[0] - start) / (end - start)) * 100;
+  const endPercent = ((value[1] - start) / (end - start)) * 100;
+  const widthPercent = endPercent - startPercent;
+  const canMoveRange = value[1] - value[0] < end - start;
+
+  // Center the badges on their range edge, but pin them flush to the
+  // track ends so they never slide under the navbar or off-screen:
+  // near the left end they align their left edge to the track start,
+  // near the right end their right edge to the track end.
+  const labelTransformFor = (percent) => {
+    if (percent < 10) return "translateX(0)";
+    if (percent > 90) return "translateX(-100%)";
+    return "translateX(-50%)";
+  };
+  const labelLeftFor = (percent) => Math.min(100, Math.max(0, percent));
+
+  const renderTimestamp = (timestamp, percent) => (
+    <span
+      className="timeline-navigator__timestamp"
+      style={{
+        left: `${labelLeftFor(percent)}%`,
+        transform: labelTransformFor(percent),
+      }}
+    >
+      {formatTimestamp(timestamp)}
+    </span>
+  );
+
   return (
-    <div>
-      <HighchartsReact
-        ref={chartRef}
-        highcharts={Highcharts}
-        options={generateState()}
-        onetoOne={true}
-        constructorType={"stockChart"}
-        containerProps={{ style: { height: "80px" } }}
-      ></HighchartsReact>
+    <div className="timeline-navigator">
+      <div
+        className={`timeline-navigator__control ${
+          isDraggingRange || isInteracting
+            ? "timeline-navigator__control--dragging"
+            : ""
+        }`}
+        onPointerDownCapture={(event) => {
+          if (event.button === 0) {
+            setIsInteracting(true);
+          }
+        }}
+      >
+        <RangeSlider
+          min={start}
+          max={end}
+          minRange={Math.max(1, Math.floor((end - start) / 10000))}
+          step={step}
+          value={value}
+          onChange={updateRange}
+          label={null}
+          aria-label="Visible time range"
+        />
+        <div className="timeline-navigator__timestamps" aria-hidden>
+          {renderTimestamp(value[0], startPercent)}
+          {renderTimestamp(value[1], endPercent)}
+        </div>
+        <div className="timeline-navigator__drag-track" ref={trackRef}>
+          {canMoveRange && (
+            <div
+              aria-label="Move visible time range"
+              aria-valuemax={end}
+              aria-valuemin={start}
+              aria-valuenow={value[0]}
+              aria-valuetext={`${formatTimestamp(value[0])} – ${formatTimestamp(
+                value[1]
+              )}`}
+              className={`timeline-navigator__range ${
+                isDraggingRange ? "timeline-navigator__range--dragging" : ""
+              }`}
+              onKeyDown={(event) => {
+                if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") {
+                  return;
+                }
+                event.preventDefault();
+                const direction = event.key === "ArrowLeft" ? -1 : 1;
+                moveRange(direction * step * (event.shiftKey ? 10 : 1));
+              }}
+              onPointerCancel={finishRangeDrag}
+              onPointerDown={startRangeDrag}
+              onPointerMove={dragRange}
+              onPointerUp={finishRangeDrag}
+              role="slider"
+              style={{
+                left: `${startPercent}%`,
+                width: `${widthPercent}%`,
+              }}
+              tabIndex={0}
+            />
+          )}
+        </div>
+      </div>
     </div>
   );
 };

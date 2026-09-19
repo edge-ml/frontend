@@ -8,10 +8,18 @@
     "@fortawesome/free-regular-svg-icons": "^6.2.1",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@popperjs/core": "^2.11.8",
+    "@mantine/core": "^7.17.8",
+    "@mantine/dates": "^7.17.8",
+    "@mantine/form": "^7.17.8",
+    "@mantine/hooks": "^7.17.8",
+    "@mantine/notifications": "^7.17.8",
+    "@tabler/icons-react": "^3.45.0",
+    "@tauri-apps/plugin-dialog": "^2.7.1",
+    "@tauri-apps/plugin-fs": "^2.5.1",
+    "@tauri-apps/plugin-http": "^2.5.9",
     "axios": "^1.6.5",
-    "bootstrap": "^5.3.3",
     "classnames": "^2.2.6",
+    "dayjs": "^1.11.21",
     "highcharts": "^11.4.3",
     "highcharts-react-official": "^3.2.1",
     "humanize-duration": "^3.28.0",
@@ -26,8 +34,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "react-select": "^5.2.2",
-    "reactstrap": "^9.2.2",
     "unique-names-generator": "^4.7.1",
+    "uplot": "^1.6.32",
     "zustand": "^4.5.2"
   },
   "lint-staged": {
@@ -36,12 +44,18 @@
     ]
   },
   "scripts": {
-    "start": "vite",
+    "start": "node dev-server.cjs",
     "build": "vite build",
     "serve": "vite preview",
     "lint": "eslint src/**/*.{js,jsx}",
     "lint:fix": "eslint src/**/*.{js,jsx} --fix",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -55,18 +69,27 @@
   "devDependencies": {
     "@eslint/js": "^9.6.0",
     "@playwright/test": "^1.44.0",
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/cli": "^2.11.2",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^20.12.12",
     "@vitejs/plugin-react": "^4.3.0",
+    "@vitest/coverage-v8": "^4.1.11",
     "enzyme": "^3.11.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.34.3",
     "globals": "^15.8.0",
+    "jsdom": "^30.0.1",
+    "msw": "^2.15.0",
     "nodemon": "^3.0.3",
     "prettier": "^3.3.2",
     "sass": "^1.77.4",
-    "vite": "^5.2.11"
+    "vite": "^5.2.11",
+    "vitest": "^4.1.11"
   },
   "nodemonConfig": {
     "ignore": [

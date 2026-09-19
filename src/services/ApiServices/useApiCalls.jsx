@@ -21,7 +21,9 @@ const useApiCalls = (currentProject) => {
       headers: {
         "Content-Type": contentType,
         ...(project && { project: project }),
-        Authorization: localStorageService.getAccessToken(),
+        ...(localStorageService.getAuthHeader() && {
+          Authorization: localStorageService.getAuthHeader(),
+        }),
       },
     };
     const res = await axios(requestConfig);

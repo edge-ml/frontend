@@ -1,8 +1,15 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import {
+  AppShell,
+  Divider,
+  ScrollArea,
+  UnstyledButton,
+} from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 
-import "./Navbar.css";
 import EdgeMLBrandLogo from "../EdgeMLBrandLogo/EdgeMLBrandLogo";
 import NotificationHandler from "../NotificationHandler";
 import NotificationContext from "../NotificationHandler/NotificationProvider";
@@ -11,129 +18,100 @@ import NavbarInfo from "./NavbarInfo";
 import NavbarProject from "./NavbarProject";
 import EditProjectModal from "../EditProjectModal/EditProjectModal";
 import useProjectStore from "../../stores/projectStore";
-import Loader from "../../modules/loader";
-import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [notificationModalOpen, setNotificationModalOpen] = useState(false);
   const [projectModalOpen, setProjectModalOpen] = useState(false);
 
   const { activeNotifications } = useContext(NotificationContext);
-  const { projects, currentProject, setCurrentProject } = useProjectStore();
-
-  const navigate = useNavigate();
-
-  const onProjectEditModal = () => {
-    setProjectModalOpen(true);
-  };
-
-  const toggleNotificationModal = () => {
-    setNotificationModalOpen(!notificationModalOpen);
-  };
-
-  const onProjectClick = (project) => {
-    setCurrentProject(project);
-    navigate(currentProject.admin.userName, currentProject.name, "datasets");
-  };
+  const { projects, currentProject } = useProjectStore();
 
   if (!projects) {
-    return <Loader isLoading></Loader>;
+    return <LogoLoader size={40} />;
   }
 
   return (
-    <div
-      className="d-flex flex-column bg-light align-items-center justify-content-between navbar-base user-select-none"
-      color="light"
-    >
-      <div
-        className="w-100 d-flex flex-column justify-content-center align-items-center"
-        style={{ minHeight: 0 }}
+    <>
+      <AppShell.Section
+        pt={4}
+        px={6}
+        style={{ display: "flex", justifyContent: "center" }}
       >
         <EdgeMLBrandLogo
           href={
             currentProject
-              ? "/" +
-                currentProject.admin.userName +
-                "/" +
-                currentProject.name +
-                "/" +
-                "datasets"
+              ? `/${currentProject.admin.userName}/${currentProject.name}/datasets`
               : null
           }
         />
-        <div className="w-100 mt-3 overflow-auto">
-          {projects.map((project, index) => {
-            return (
-              <NavbarProject
-                currentProject={currentProject}
-                projects={projects}
-                project={project}
-                key={"navbarItem" + project._id}
-                onProjectClick={onProjectClick}
-              ></NavbarProject>
-            );
-          })}
-        </div>
+      </AppShell.Section>
 
-        <div
-          onClick={() => onProjectEditModal(true)}
+      <AppShell.Section grow mt={4} px={6} component={ScrollArea}>
+        {projects.map((project) => (
+          <NavbarProject key={project._id} project={project} />
+        ))}
+
+        <UnstyledButton
           id="btn-add-project"
-          className="w-100 mt-3 pt-2 pb-2 navbar-project text-center"
+          onClick={() => setProjectModalOpen(true)}
+          className="w-100"
           style={{
             backgroundColor: "#eee",
-            border: "0px solid transparent",
             color: "#666",
             fontSize: "0.9rem",
-            cursor: "pointer",
+            padding: "8px 12px",
+            marginTop: "8px",
+            borderRadius: "var(--mantine-radius-sm)",
           }}
         >
-          <FontAwesomeIcon
-            id="btnAddProject"
-            icon={faPlus}
-            className="fa-s me-1"
-          />
+          <FontAwesomeIcon icon={faPlus} style={{ marginRight: 6 }} />
           Add Project
-        </div>
-      </div>
-      <div></div>
+        </UnstyledButton>
+      </AppShell.Section>
 
-      <div className="d-flex flex-column footer w-100 text-light justify-content-center align-items-center">
-        {activeNotifications.length > 0 ? (
-          <div
-            className="pt-3 pb-3 navbar-project-item w-100 text-center"
-            onClick={toggleNotificationModal}
+      <AppShell.Section px={6} pb={4} style={{ color: "#666" }}>
+        <Divider w="95%" mx="auto" />
+        {activeNotifications.length > 0 && (
+          <UnstyledButton
+            className="w-100 text-center"
+            onClick={() => setNotificationModalOpen(true)}
+            style={{
+              cursor: "pointer",
+              fontSize: "0.9rem",
+              padding: "8px 12px",
+            }}
           >
-            <small>
-              <FontAwesomeIcon icon={faDownload} className="me-2" />
-              {`${activeNotifications.length} ${
-                activeNotifications.length > 1
-                  ? "Notifications"
-                  : "Notification"
-              }`}
-            </small>
-          </div>
-        ) : null}
-        <NavbarInfo></NavbarInfo>
+            <FontAwesomeIcon icon={faDownload} className="me-2" />
+            {`${activeNotifications.length} ${activeNotifications.length > 1 ? "Notifications" : "Notification"}`}
+          </UnstyledButton>
+        )}
+        <Divider w="95%" mx="auto" />
         <div
-          style={{
-            height: "1px",
-            backgroundColor: "darkgray",
-            opacity: "0.3",
-            width: "95%",
-          }}
-        ></div>
-        <NavbarUserSettings></NavbarUserSettings>
-      </div>
+          className="pt-2 pb-2 w-100 text-center"
+          style={{ cursor: "pointer", fontSize: "0.8rem" }}
+          onClick={() =>
+            window.open("https://github.com/edge-ml/edge-ml/issues", "_blank")
+          }
+        >
+          <FontAwesomeIcon icon={faGithub} className="me-2" />
+          Report a bug
+        </div>
+        <Divider w="95%" mx="auto" />
+        <NavbarInfo />
+        <Divider w="95%" mx="auto" />
+        <NavbarUserSettings />
+      </AppShell.Section>
+
       <NotificationHandler
         onClose={() => setNotificationModalOpen(false)}
         isOpen={notificationModalOpen}
-      ></NotificationHandler>
+      />
       <EditProjectModal
         isOpen={projectModalOpen}
         isNewProject={true}
         onClose={() => setProjectModalOpen(false)}
-      ></EditProjectModal>
-    </div>
+      />
+    </>
   );
 };
 

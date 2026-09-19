@@ -2,32 +2,106 @@ import localStorageService from "./../LocalStorageService";
 
 const currentHost = window.location.host.split(":")[0];
 
-export const AUTH_URI =
-  process.env.NODE_ENV === "production"
+const isTauri = () =>
+  Boolean(globalThis.isTauri || globalThis.__TAURI_INTERNALS__);
+
+// The mono backend (dataset-store) serves /auth/, /api/ and /ds/ itself, so
+// the standalone Tauri app only ever needs a single backend host.
+export const DEFAULT_TAURI_BACKEND_URL = "https://beta.edge-ml.org";
+export const LOCAL_MONO_BACKEND_URL = "http://localhost:3004";
+
+const TRUTHY_FLAGS = new Set(["1", "true", "yes", "on"]);
+
+/**
+ * Resolves the backend the Tauri app talks to.
+ * Priority:
+ *  1. VITE_TAURI_BACKEND_URL (explicit URL, wins over everything)
+ *  2. localStorage key "tauri-backend" set to "local"
+ *     (runtime switch for packaged builds)
+ *  3. VITE_TAURI_USE_LOCAL_BACKEND truthy flag (build-time)
+ *  4. default: beta
+ */
+export const getTauriBackendUrl = () => {
+  const explicit = import.meta.env.VITE_TAURI_BACKEND_URL;
+  if (explicit) return explicit;
+
+  try {
+    if (globalThis.localStorage?.getItem("tauri-backend") === "local") {
+      return LOCAL_MONO_BACKEND_URL;
+    }
+  } catch (_) {
+    /* localStorage unavailable */
+  }
+
+  if (
+    TRUTHY_FLAGS.has(
+      String(import.meta.env.VITE_TAURI_USE_LOCAL_BACKEND ?? "").toLowerCase(),
+    )
+  ) {
+    return LOCAL_MONO_BACKEND_URL;
+  }
+
+  return DEFAULT_TAURI_BACKEND_URL;
+};
+
+const getServiceUri = (envUrl, fallbackUrl) => {
+  const url = envUrl || fallbackUrl;
+
+  if (isTauri()) {
+    return new URL(url, getTauriBackendUrl()).toString();
+  }
+
+  return url;
+};
+
+// Use Vite env vars if available, otherwise fallback to original logic
+const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const VITE_AUTH_BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;
+const VITE_ML_BASE_URL = import.meta.env.VITE_ML_BASE_URL;
+const VITE_DS_BASE_URL = import.meta.env.VITE_DS_BASE_URL;
+
+export const AUTH_URI = getServiceUri(
+  VITE_AUTH_BASE_URL,
+  process.env.NODE_ENV === "production" || isTauri()
     ? "/auth/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://auth.edge-ml.ngrok.io/auth/"
-      : `http://${currentHost}:3002/auth/`;
+      : `http://${currentHost}:3002/auth/`
+);
 
-export const API_URI =
-  process.env.NODE_ENV === "production"
+export const API_URI = getServiceUri(
+  VITE_API_BASE_URL,
+  process.env.NODE_ENV === "production" || isTauri()
     ? "/api/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://backend.edge-ml.ngrok.io/api/"
-      : `http://${currentHost}:3001/api/`;
-export const ML_URI =
-  process.env.NODE_ENV === "production"
+      : `http://${currentHost}:3001/api/`
+);
+
+export const ML_URI = getServiceUri(
+  VITE_ML_BASE_URL,
+  process.env.NODE_ENV === "production" || isTauri()
     ? "/ml/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://ml.edge-ml.ngrok.io/ml/"
-      : `http://${currentHost}:3003/ml/`;
+      : `http://${currentHost}:3003/ml/`
+);
 
-export const DATASET_STORE =
-  process.env.NODE_ENV === "production"
+export const DATASET_STORE = getServiceUri(
+  VITE_DS_BASE_URL,
+  process.env.NODE_ENV === "production" || isTauri()
     ? "/ds/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://ds.edge-ml.ngrok.io/ds/"
-      : `http://${currentHost}:3004/ds/`;
+      : `http://${currentHost}:3004/ds/`
+);
+
+export const WHAR_URI =
+  process.env.NODE_ENV === "production"
+    ? "/whar/"
+    : window.location.host === "edge-ml.ngrok.io"
+      ? "http://whar.edge-ml.ngrok.io/whar/"
+      : `http://${currentHost}:3006/whar/`;
 
 export const HTTP_METHODS = {
   GET: "GET",
@@ -37,17 +111,9 @@ export const HTTP_METHODS = {
 };
 
 export const AUTH_ENDPOINTS = {
-  DEFAULT: "/",
   LOGIN: "login",
-  REFRESH: "refresh",
   DELETE: "unregister",
   REGISTER: "register",
-  USERS: "USERS",
-  INIT2FA: "2fa/init",
-  VERIFY2FA: "2fa/verify",
-  RESET2FA: "2fa/reset",
-  MAIL: "mail",
-  CHANGE_MAIL: "changeMail",
   USERNAMESUGGEST: "userNameSuggest",
   CHANGE_PASSWORD: "changePassword",
   ID: "id",
@@ -55,7 +121,7 @@ export const AUTH_ENDPOINTS = {
   USERNAME: "userName",
   OAUTH: "login/oauth",
   USER: "user",
-  LOGOUT: "logout"
+  LOGOUT: "logout",
 };
 
 export const API_ENDPOINTS = {
@@ -95,6 +161,11 @@ export const DATASET_STORE_ENDPOINTS = {
   GET_PROCESSING_PROGRESS: "datasets/create/progress",
 };
 
+export const WHAR_ENDPOINTS = {
+  DATASETS: "datasets",
+  IMPORT: "import",
+};
+
 export const generateApiRequest = (
   method = this.HTTP_METHODS.GET,
   baseUri = this.API_URI,
@@ -112,7 +183,9 @@ export const generateApiRequest = (
     headers: {
       "Content-Type": contentType,
       ...(project && { project: project }),
-      Authorization: localStorageService.getAccessToken(),
+      ...(localStorageService.getAuthHeader() && {
+        Authorization: localStorageService.getAuthHeader(),
+      }),
     },
   };
 };
@@ -122,11 +195,13 @@ const expObj = {
   API_URI,
   ML_URI,
   DATASET_STORE,
+  WHAR_URI,
   HTTP_METHODS,
   AUTH_ENDPOINTS,
   API_ENDPOINTS,
   ML_ENDPOINTS,
   DATASET_STORE_ENDPOINTS,
+  WHAR_ENDPOINTS,
   generateApiRequest,
 };
 

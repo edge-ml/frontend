@@ -9,7 +9,7 @@ import {
   loginUser,
   loginOAuth as loingOAuth_api,
   getUser as getUser_api,
-  logout as logout_api
+  logout as logout_api,
 } from "../services/ApiServices/AuthentificationServices";
 import useUserStore from "./useUser";
 import { getCookie } from "../utils";
@@ -23,14 +23,17 @@ const useAuth = () => {
 
   const logout = () => {
     logout_api();
+    clearToken();
     setUser(undefined);
   };
 
-  const login = async (email, password) => {
-    const success = await loginUser(email, password);
+  const login = async (userName, password) => {
+    const success = await loginUser(userName, password);
+    if (success?.access_token) {
+      setToken(success.access_token, success.refresh_token);
+    }
     const user = await getUser_api();
     setUser(user);
-
   };
 
   const loginOAuth = async (provider) => {
@@ -41,8 +44,7 @@ const useAuth = () => {
   const checkLoginStatus = async () => {
     const user = await getUser_api();
     setUser(user);
-  }
-
+  };
 
   // const checkLoginStatus = () => {
   //   const accessToken = getAccessToken() || getCookie("jwt");
@@ -67,7 +69,7 @@ const useAuth = () => {
   return {
     login: login,
     logout: logout,
-    loginOAuth: loginOAuth
+    loginOAuth: loginOAuth,
   };
 };
 

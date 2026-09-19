@@ -1,7 +1,7 @@
 class SensorParserV2 {
   constructor(
     device,
-    server,
+    server
     // serviceUuid,
     // sensorListCharUuid,
     // sensorSchemeCharUuid,

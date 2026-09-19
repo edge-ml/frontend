@@ -1,211 +1,251 @@
 import "./BleActivated.css";
 
-import React, { Component } from "react";
-import Highcharts from "highcharts/highstock";
-import HighchartsReact from "highcharts-react-official";
+import React, { useEffect, useRef } from "react";
+import uPlot from "uplot";
+import "uplot/dist/uPlot.min.css";
 
-class BlePanelSensorstreamGraph extends Component {
-  constructor(props) {
-    super(props);
+const SERIES_COLORS = [
+  "#2563eb",
+  "#0f9f8f",
+  "#8b5cf6",
+  "#e8790c",
+  "#dc3f58",
+  "#0891b2",
+];
 
-    this.handleStartLiveUpdate = this.handleStartLiveUpdate.bind(this);
-    this.handleStopLiveUpdate = this.handleStopLiveUpdate.bind(this);
-    this.updateLiveData = this.updateLiveData.bind(this);
-    this.streaming_seconds = 30;
+const STREAM_WINDOW_MS = 30000;
+const DEFAULT_INTERVAL_MS = 100;
 
-    if (this.props.fullSampleRate) {
-      // show sensor stream at full sample rate
-      this.interval_length = Math.floor(1000 / this.props.sampleRate); // in ms
-      this.datastream_length = this.props.sampleRate * this.streaming_seconds; // how many data points are visible
-    } else {
-      // show sensor stream at higher sample rate to improve performance (default)
-      this.interval_length = 100;
-      this.datastream_length = Math.floor(
-        this.streaming_seconds * (1000 / this.interval_length)
+const alphaColor = (color, opacity) => {
+  if (!color || !color.startsWith("#")) {
+    return `rgba(37, 99, 235, ${opacity})`;
+  }
+
+  const hex = color.slice(1);
+  const normalized =
+    hex.length === 3
+      ? hex
+          .split("")
+          .map((character) => character + character)
+          .join("")
+      : hex;
+  const value = Number.parseInt(normalized, 16);
+  const red = (value >> 16) & 255;
+  const green = (value >> 8) & 255;
+  const blue = value & 255;
+  return `rgba(${red}, ${green}, ${blue}, ${opacity})`;
+};
+
+const createLabelOverlayPlugin = (annotationsRef, latestTimeRef) => {
+  let root;
+
+  const drawAnnotations = (plot) => {
+    if (!root) return;
+    root.replaceChildren();
+
+    const scaleMin = plot.scales.x.min;
+    const scaleMax = plot.scales.x.max;
+    if (!Number.isFinite(scaleMin) || !Number.isFinite(scaleMax)) return;
+
+    annotationsRef.current.forEach((annotation) => {
+      const end = annotation.end ?? latestTimeRef.current;
+      if (end < scaleMin || annotation.start > scaleMax) return;
+
+      const startPosition = plot.valToPos(
+        Math.max(annotation.start, scaleMin),
+        "x"
       );
-    }
+      const endPosition = plot.valToPos(Math.min(end, scaleMax), "x");
+      const marker = document.createElement("div");
+      marker.className = `ble-live-chart__annotation${
+        annotation.end ? "" : " ble-live-chart__annotation--active"
+      }`;
+      marker.style.left = `${Math.max(0, startPosition)}px`;
+      marker.style.width = `${Math.max(3, endPosition - startPosition)}px`;
+      marker.style.background = alphaColor(annotation.color, 0.16);
+      marker.style.borderColor = annotation.color || "#2563eb";
+      root.appendChild(marker);
+    });
+  };
 
-    this.state = {
-      liveUpdate: false,
-      startPlotId: undefined,
-      endPlotId: undefined,
-      shiftHandledForPlotId: undefined,
-      offsetApplied: undefined,
-      labelActive: false,
+  return {
+    hooks: {
+      ready: [
+        (plot) => {
+          root = document.createElement("div");
+          root.className = "ble-live-chart__annotations";
+          plot.over.appendChild(root);
+          drawAnnotations(plot);
+        },
+      ],
+      draw: [drawAnnotations],
+      destroy: [
+        () => {
+          root = undefined;
+        },
+      ],
+    },
+  };
+};
+
+const BlePanelSensorstreamGraph = ({
+  sensor,
+  fullSampleRate,
+  lastData,
+  currentLabel,
+  prevLabel,
+  recordingStartTime,
+}) => {
+  const containerRef = useRef();
+  const plotRef = useRef();
+  const propsRef = useRef({ lastData, currentLabel, prevLabel });
+  const annotationsRef = useRef(new Map());
+  const latestTimeRef = useRef(recordingStartTime);
+
+  propsRef.current = { lastData, currentLabel, prevLabel };
+
+  useEffect(() => {
+    const storeCompletedLabel = (label) => {
+      if (label?.id === undefined || label?.start === undefined) return;
+      annotationsRef.current.set(label.plotId, { ...label });
     };
-  }
 
-  componentDidMount() {
-    this.highcharts_index = Highcharts.charts.length - 1; // newest chart
-    this.handleStartLiveUpdate();
-  }
-
-  componentWillUnmount() {
-    this.handleStopLiveUpdate();
-  }
-
-  updateLiveData() {
-    var chart = Highcharts.charts[this.highcharts_index];
-    const xAxis = chart.xAxis[0];
-    var shift = false;
-    for (var i = chart.series.length - 1; i > -1; i--) {
-      var series = chart.series[i];
-      var timestamp;
-      var value;
-      
-      
-      if (Array.isArray(this.props.lastData[this.props.index])) {
-        timestamp = this.props.lastData[this.props.index][0];
-        value = this.props.lastData[this.props.index][1][i];
-      } else {
-        timestamp = Date.now();
-        value = 0;
-      }
-      var shiftSeries = series.data.length >= this.datastream_length;
-      series.addPoint([timestamp, value], true, shiftSeries); // adds new data point and deletes oldest one if max datastream length is reached
+    storeCompletedLabel(prevLabel);
+    if (currentLabel?.end !== undefined) {
+      storeCompletedLabel(currentLabel);
+    } else if (currentLabel?.id !== undefined) {
+      annotationsRef.current.set(currentLabel.plotId, { ...currentLabel });
     }
-    if (shiftSeries) {
-      var extremes = chart.xAxis[0].getExtremes();
-      chart.xAxis[0].setExtremes(
-        extremes.min + this.interval_length,
-        extremes.max + this.interval_length
-      );
-    }
+  }, [currentLabel, prevLabel]);
 
-    const offsetAmount = 4 * this.interval_length;
-    const visualOffset = shiftSeries ? 0 : offsetAmount;
+  useEffect(() => {
+    if (!containerRef.current) return undefined;
 
-    // start a new label
-    if (
-      (this.state.startPlotId === undefined ||
-        this.state.startPlotId !== this.props.currentLabel.plotId) &&
-      this.props.currentLabel.id
-    ) {
-      xAxis.addPlotLine({
-        value: this.props.currentLabel.start - visualOffset,
-        color: this.props.currentLabel.color,
-        width: 5,
-        id: `labelingStart-${this.props.currentLabel.plotId}`,
-      });
-
-      // handle the case when the user starts recording a new label before stopping the previous one
-      if (this.props.prevLabel.id && this.state.endPlotId === undefined) {
-        xAxis.removePlotBand(`labelingArea-${this.props.prevLabel.plotId}`);
-        xAxis.addPlotBand({
-          from: this.props.prevLabel.start - visualOffset,
-          to: this.props.prevLabel.end - visualOffset,
-          color: this.props.prevLabel.color,
-          className: "labelingArea",
-          id: `labelingArea-${this.props.prevLabel.plotId}`,
-        });
-        xAxis.addPlotLine({
-          value: this.props.prevLabel.end - visualOffset,
-          color: this.props.prevLabel.color,
-          width: 5,
-          id: `labelingEnd-${this.props.prevLabel.plotId}`,
-        });
-      }
-      this.setState({
-        startPlotId: this.props.currentLabel.plotId,
-        endPlotId: undefined,
-        offsetApplied: !shiftSeries,
-        labelActive: true,
-      });
-    }
-    // stop the label
-    else if (
-      this.state.endPlotId === undefined &&
-      this.state.labelActive &&
-      this.props.currentLabel.end !== undefined
-    ) {
-      this.setState({ endPlotId: this.props.currentLabel.plotId });
-      xAxis.removePlotBand(`labelingArea-${this.props.currentLabel.plotId}`);
-      xAxis.addPlotBand({
-        from:
-          this.props.currentLabel.start -
-          (this.state.offsetApplied ? offsetAmount : 0),
-        to:
-          this.props.currentLabel.end -
-          (this.state.offsetApplied ? offsetAmount : 0),
-        color: this.props.currentLabel.color,
-        className: "labelingArea",
-        id: `labelingArea-${this.props.currentLabel.plotId}`,
-      });
-      xAxis.addPlotLine({
-        value:
-          this.props.currentLabel.end -
-          (this.state.offsetApplied ? offsetAmount : 0),
-        color: this.props.currentLabel.color,
-        width: 5,
-        id: `labelingEnd-${this.props.currentLabel.plotId}`,
-      });
-      this.setState({
-        labelActive: false,
-      });
-    }
-    // if the graph is not shifting, gradually move the end of the plotband to right each time a new point is rendered
-    else if (
-      !shiftSeries &&
-      this.state.startPlotId !== undefined &&
-      this.state.endPlotId === undefined
-    ) {
-      xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`);
-      xAxis.addPlotBand({
-        from: this.props.currentLabel.start - visualOffset,
-        to: this.props.lastData[this.props.index][0] - 0.5 * visualOffset,
-        color: this.props.currentLabel.color,
-        className: "labelingArea",
-        id: `labelingArea-${this.state.startPlotId}`,
-      });
-    }
-    // if the graph is shifting, set the end of the plotband to infinity once
-    // end of the graph is not visible during recording the label while shifting the graph
-    // so we can optimize the number of rendering to just one this way
-    else if (
-      shiftSeries &&
-      this.state.labelActive &&
-      this.state.shiftHandledForPlotId !== this.state.startPlotId
-    ) {
-      xAxis.removePlotBand(`labelingArea-${this.state.startPlotId}`);
-      xAxis.addPlotBand({
-        from:
-          this.props.currentLabel.start -
-          (this.state.offsetApplied ? offsetAmount : 0),
-        to: 4000000000000, // pseudo infinity
-        color: this.props.currentLabel.color,
-        className: "labelingArea",
-        id: `labelingArea-${this.state.startPlotId}`,
-      });
-      this.setState({ shiftHandledForPlotId: this.state.startPlotId });
-    }
-  }
-
-  handleStartLiveUpdate(e) {
-    e && e.preventDefault();
-    this.setState({
-      liveUpdate: window.setInterval(this.updateLiveData, this.interval_length),
-    });
-  }
-
-  handleStopLiveUpdate(e) {
-    e && e.preventDefault();
-    window.clearInterval(this.state.liveUpdate);
-    this.setState({
-      liveUpdate: false,
-    });
-  }
-
-  render() {
-    return (
-      <div className="m-2">
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={this.props.options}
-          updateArgs={[true, true, true]}
-        />
-      </div>
+    const components = sensor.parseScheme || [];
+    const data = [[recordingStartTime], ...components.map(() => [null])];
+    const componentLabels = components.map((component) =>
+      component.unit ? `${component.name} (${component.unit})` : component.name
     );
-  }
-}
+    const options = {
+      width: Math.max(containerRef.current.clientWidth, 320),
+      height: 230,
+      ms: 1,
+      legend: {
+        show: true,
+        live: false,
+      },
+      cursor: {
+        drag: { x: false, y: false, setScale: false },
+        points: { show: false },
+      },
+      scales: {
+        x: {
+          time: true,
+          auto: false,
+          min: recordingStartTime,
+          max: recordingStartTime + STREAM_WINDOW_MS,
+        },
+        y: { auto: true },
+      },
+      axes: [
+        {
+          stroke: "#64748b",
+          grid: { stroke: "#e8edf4", width: 1 },
+          values: (_plot, ticks) =>
+            ticks.map((value) => {
+              const seconds = Math.max(
+                0,
+                Math.round((value - recordingStartTime) / 1000)
+              );
+              return `${seconds}s`;
+            }),
+        },
+        {
+          stroke: "#64748b",
+          grid: { stroke: "#e8edf4", width: 1 },
+          size: 58,
+        },
+      ],
+      series: [
+        {},
+        ...componentLabels.map((label, index) => ({
+          label,
+          stroke: SERIES_COLORS[index % SERIES_COLORS.length],
+          width: 1.5,
+          points: { show: false },
+          spanGaps: true,
+        })),
+      ],
+      plugins: [createLabelOverlayPlugin(annotationsRef, latestTimeRef)],
+    };
+
+    const plot = new uPlot(options, data, containerRef.current);
+    plotRef.current = plot;
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      const width = Math.max(Math.floor(entry.contentRect.width), 320);
+      if (plot.width !== width) {
+        plot.setSize({ width, height: 230 });
+      }
+    });
+    resizeObserver.observe(containerRef.current);
+
+    const configuredRate = sensor.options
+      ? sensor.options.frequencies.frequencies[sensor.sampleRate]
+      : sensor.sampleRate;
+    const sampleRate = Number(configuredRate) || 1;
+    const intervalLength = fullSampleRate
+      ? Math.max(16, Math.floor(1000 / sampleRate))
+      : DEFAULT_INTERVAL_MS;
+    const maximumPoints = Math.max(
+      2,
+      Math.ceil(STREAM_WINDOW_MS / intervalLength)
+    );
+    let lastTimestamp = recordingStartTime;
+
+    const updateData = () => {
+      const latest = propsRef.current.lastData;
+      if (
+        Array.isArray(latest) &&
+        Number.isFinite(Number(latest[0])) &&
+        Number(latest[0]) > lastTimestamp
+      ) {
+        const timestamp = Number(latest[0]);
+        const values = Array.isArray(latest[1]) ? latest[1] : [];
+        data[0].push(timestamp);
+        components.forEach((_component, index) => {
+          const value = Number(values[index]);
+          data[index + 1].push(Number.isFinite(value) ? value : null);
+        });
+        lastTimestamp = timestamp;
+        latestTimeRef.current = timestamp;
+
+        if (data[0].length > maximumPoints) {
+          data.forEach((series) => series.shift());
+        }
+      }
+
+      const windowEnd = Math.max(
+        recordingStartTime + STREAM_WINDOW_MS,
+        latestTimeRef.current
+      );
+      plot.setData(data, false);
+      plot.setScale("x", {
+        min: windowEnd - STREAM_WINDOW_MS,
+        max: windowEnd,
+      });
+    };
+
+    const interval = window.setInterval(updateData, intervalLength);
+
+    return () => {
+      window.clearInterval(interval);
+      resizeObserver.disconnect();
+      plotRef.current = undefined;
+      plot.destroy();
+    };
+  }, [fullSampleRate, recordingStartTime, sensor]);
+
+  return <div className="ble-live-chart" ref={containerRef} />;
+};
 
 export default BlePanelSensorstreamGraph;

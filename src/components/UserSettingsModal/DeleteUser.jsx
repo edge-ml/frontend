@@ -1,30 +1,21 @@
-import React, { Component, useState } from "react";
-import {
-  Button,
-  Input,
-  InputGroup,
-  InputGroupText,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-} from "reactstrap";
+import React, { Component } from "react";
+import { Button, TextInput, Modal } from "@mantine/core";
 
 class DeleteUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      confirmationMail: "",
+      confirmationName: "",
       confirmationModalOpen: false,
     };
-    this.eMailChanged = this.eMailChanged.bind(this);
+    this.nameChanged = this.nameChanged.bind(this);
     this.toggleConfirmationModal = this.toggleConfirmationModal.bind(this);
     this.deleteUser = this.deleteUser.bind(this);
   }
 
-  eMailChanged(e) {
+  nameChanged(e) {
     this.setState({
-      confirmationMail: e.target.value,
+      confirmationName: e.target.value,
     });
   }
 
@@ -35,65 +26,69 @@ class DeleteUser extends Component {
   }
 
   deleteUser() {
-    this.props.deleteUser(this.state.confirmationMail);
+    this.props.deleteUser(this.state.confirmationName);
     this.toggleConfirmationModal();
   }
 
   render() {
     return (
-      <div className="mt-3">
-        <h4 className="fw-bold">Delete User</h4>
-        <div>
-          <h6>
-            Please type <b>{this.props.userMail}</b> to confirm
-          </h6>
-          <div>All projects where you are admin will be deleted</div>
+      <section className="user-settings-section">
+        <div className="user-settings-section__heading">
+          <h4 className="user-settings-section__title">Delete user</h4>
+          <p className="user-settings-section__description">
+            This permanently removes your account and its projects.
+          </p>
         </div>
-        <InputGroup>
-          <InputGroupText>E-Mail</InputGroupText>
-          <Input
+        <p className="user-settings-danger-copy">
+          Type <b>{this.props.userName}</b> below to confirm. All projects where
+          you are an admin will be deleted.
+        </p>
+        <div className="user-settings-fields">
+          <TextInput
+            label="Confirmation username"
             type="text"
-            id="E-Mail"
-            placeholder="E-Mail"
-            onChange={this.eMailChanged}
+            id="confirmUserName"
+            placeholder="Username"
+            onChange={this.nameChanged}
           />
-        </InputGroup>
-        <Button
-          outline
-          id="buttonDeleteUser"
-          color="danger"
-          className="m-1 me-auto"
-          disabled={this.state.confirmationMail !== this.props.userMail}
-          onClick={this.toggleConfirmationModal}
-        >
-          Delete user
-        </Button>
+        </div>
+        <div className="user-settings-actions">
+          <Button
+            variant="outline"
+            id="buttonDeleteUser"
+            color="red"
+            disabled={this.state.confirmationName !== this.props.userName}
+            onClick={this.toggleConfirmationModal}
+          >
+            Delete user
+          </Button>
+        </div>
         <Modal
-          isOpen={this.state.confirmationModalOpen}
-          toggle={this.toggleConfirmationModal}
+          opened={this.state.confirmationModalOpen}
+          onClose={this.toggleConfirmationModal}
+          title="Confirm User Deletion"
         >
-          <ModalHeader toggle={this.toggleConfirmationModal}>
-            Confirm User Deletion
-          </ModalHeader>
-          <ModalBody>
+          <Modal.Body>
             Are you sure you want to delete your user account? <br />
             When you delete your account, all projects where you are the admin
             will be deleted!
-          </ModalBody>
-          <ModalFooter className="d-flex justify-content-between">
+          </Modal.Body>
+          <Modal.Footer
+            style={{ display: "flex", justifyContent: "space-between" }}
+          >
             <Button
-              color="danger"
+              color="red"
               onClick={this.deleteUser}
-              disabled={this.state.confirmationMail !== this.props.userMail}
+              disabled={this.state.confirmationName !== this.props.userName}
             >
               Delete
             </Button>
-            <Button color="primary" onClick={this.toggleConfirmationModal}>
+            <Button color="blue" onClick={this.toggleConfirmationModal}>
               Cancel
             </Button>
-          </ModalFooter>
+          </Modal.Footer>
         </Modal>
-      </div>
+      </section>
     );
   }
 }

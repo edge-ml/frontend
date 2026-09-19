@@ -1,22 +1,19 @@
-import { Modal, ModalBody, ModalFooter, ModalHeader, Button } from "reactstrap";
+import { Modal, Button } from "@mantine/core";
 
 const SensorAvailabilityModal = ({ isOpen, onClose }) => {
   const onGoBack = () => {};
 
   return (
-    <Modal isOpen={isOpen} size="xl">
-      <ModalHeader>Header</ModalHeader>
-      <ModalBody></ModalBody>
-      <ModalFooter>
-        {page == 1 ? (
-          <Button outline color="primary" onClick={onGoBack}>
-            Back
-          </Button>
-        ) : null}
-        <Button onClick={onClose} outline color="danger">
+    <Modal opened={isOpen} size="xl" title="Header" onClose={onClose}>
+      <Modal.Body></Modal.Body>
+      <Modal.Footer>
+        <Button variant="outline" color="blue" onClick={onGoBack}>
+          Back
+        </Button>
+        <Button onClick={onClose} variant="outline" color="red">
           Cancel
         </Button>
-      </ModalFooter>
+      </Modal.Footer>
     </Modal>
   );
 };

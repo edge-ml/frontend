@@ -36,8 +36,6 @@ class BleDeviceProcessorV2 {
     this.uploadBLE = uploadBLE;
     this.uploadCounter = new Map();
     this.labels = [];
-
-    
   }
 
   // async configureSingleSensor(sensorId, sampleRate, latency) {
@@ -51,12 +49,7 @@ class BleDeviceProcessorV2 {
   //   await this.sensorConfigCharacteristic.writeValue(configPacket);
   // }
 
-  async configureSingleSensor(
-    sensorId,
-    sampleRateIndex,
-    streamData = true,
-  ) {
-
+  async configureSingleSensor(sensorId, sampleRateIndex, streamData = true) {
     sampleRateIndex = 1;
     var storeData = false;
 
@@ -100,12 +93,9 @@ class BleDeviceProcessorV2 {
     [...selectedSensors].forEach((sensorId) => {
       selectedSensorMap[sensorId] = this.sensors[sensorId];
     });
-    const baseDataset = getBaseDataset(
-      selectedSensorMap,
-      datasetName
-    );
+    const baseDataset = getBaseDataset(selectedSensorMap, datasetName);
     this.newDataset = await createDataset(baseDataset);
-    
+
     // this.newDataset = (
     //   await createDataset(
     //     getBaseDataset(
@@ -120,15 +110,12 @@ class BleDeviceProcessorV2 {
     const recordData = (value) => {
       var sensor = value.getUint8(0);
 
-
       var [timestamp, parsedData] = parseDataV2(this.sensors[sensor], value);
 
       if (!adjustedTime) {
         adjustedTime = true;
         recordingStart -= timestamp;
       }
-
-      
 
       this.recordedData.push({
         sensor: sensor,
@@ -183,7 +170,7 @@ class BleDeviceProcessorV2 {
   async stopRecording() {
     clearInterval(this.recordInterval);
     await this.unSubscribeAllSensors();
-    
+
     const recordedData = parseTimeSeriesData(
       this.newDataset,
       this.recordedData,

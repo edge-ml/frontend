@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "reactstrap";
+import { Card } from "@mantine/core";
 
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +10,10 @@ function Snackbar({ text = "", closeSnackbar = () => {} }) {
   return (
     <Card
       className="snackbar"
+      shadow="sm"
+      padding="md"
+      radius="md"
+      withBorder
       onClick={(e) => {
         closeSnackbar();
         e.preventDefault();

@@ -81,12 +81,9 @@ class BleDeviceProcessor {
     [...selectedSensors].forEach((sensorId) => {
       selectedSensorMap[sensorId] = this.sensors[sensorId];
     });
-    const baseDataset = getBaseDataset(
-      selectedSensorMap,
-      datasetName
-    );
+    const baseDataset = getBaseDataset(selectedSensorMap, datasetName);
     this.newDataset = await createDataset(baseDataset);
-    
+
     // this.newDataset = (
     //   await createDataset(
     //     getBaseDataset(

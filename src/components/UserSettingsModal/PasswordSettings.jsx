@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Button, PasswordInput } from "@mantine/core";
 
 import { changeUserPassword } from "./../../services/ApiServices/AuthentificationServices";
 
@@ -65,40 +65,38 @@ class PasswordSettings extends Component {
 
   render() {
     return (
-      <div>
-        <h4 className="fw-bold">Change password</h4>
-        <InputGroup>
-          <InputGroupText>Password</InputGroupText>
-          <Input
+      <section className="user-settings-section" id={this.props.id}>
+        <div className="user-settings-section__heading">
+          <h4 className="user-settings-section__title">Change password</h4>
+          <p className="user-settings-section__description">
+            Choose a new password to keep your account secure.
+          </p>
+        </div>
+        <div className="user-settings-fields">
+          <PasswordInput
+            label="New password"
             id="inputNewPassword"
-            type="password"
             placeholder="New password"
             onChange={this.onNewPasswordChange}
           />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupText>Password</InputGroupText>
-          <Input
+          <PasswordInput
+            label="Confirm new password"
             id="inputNewPasswordConfirm"
-            type="password"
             placeholder="Retype new password"
             onChange={this.onConfirmationPasswordChange}
           />
-        </InputGroup>
-        <InputGroup>
-          <InputGroupText>Password</InputGroupText>
-          <Input
+          <PasswordInput
+            label="Current password"
             id="inputCurrentPassword"
-            type="password"
             placeholder="Current password"
             onChange={this.onCurrentPasswordChanged}
           />
-        </InputGroup>
+        </div>
+        <div className="user-settings-actions">
           <Button
-            outline
+            variant="outline"
             id="buttonSaveNewPassword"
-            color="primary"
-            className="m-1 me-auto"
+            color="blue"
             disabled={
               !(
                 this.state.currentPassword &&
@@ -110,19 +108,13 @@ class PasswordSettings extends Component {
           >
             Save new password
           </Button>
-        {this.state.passwordError ? (
-          <div
-            id="passwordError"
-            style={{
-              display: "inline",
-              color: "red",
-              marginLeft: "16px",
-            }}
-          >
-            {this.state.passwordError}
-          </div>
-        ) : null}
-      </div>
+          {this.state.passwordError ? (
+            <div id="passwordError" className="user-settings-error">
+              {this.state.passwordError}
+            </div>
+          ) : null}
+        </div>
+      </section>
     );
   }
 }

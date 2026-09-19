@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { SketchPicker } from "react-color";
-import { Button, Input } from "reactstrap";
+import { Button, Paper } from "@mantine/core";
 
 import "./index.css";
 
 const ColorPicker = (props) => {
   const [color, setColor] = useState({ hex: props.color });
-
-  const onChangeComplete = (color, event) => {
-    setColor(color);
-  };
 
   const onSave = (e) => {
     props.onSave(color.hex);
@@ -22,27 +18,23 @@ const ColorPicker = (props) => {
   }
 
   return (
-    <div
-      className="wrapper bg-white d-flex justiy-content-end flex-column"
-      onClick={(e) => {
-        e.stopPropagation;
-      }}
-      onDragStart={(e) => {
-        e.stopPropagation();
-      }}
+    <Paper
+      shadow="md"
+      p="xs"
+      bg="white"
+      onClick={(e) => e.stopPropagation()}
+      onDragStart={(e) => e.stopPropagation()}
     >
       <SketchPicker
-        className="sketch-picker"
         {...props}
-        onChangeComplete={onChangeComplete}
+        onChangeComplete={(c) => setColor(c)}
         color={color}
         onChange={setColor}
-      ></SketchPicker>
-      <hr></hr>
-      <Button size="sm mx-2 mb-2" onClick={onSave}>
+      />
+      <Button size="compact-sm" fullWidth mt="xs" onClick={onSave}>
         Save
       </Button>
-    </div>
+    </Paper>
   );
 };
 

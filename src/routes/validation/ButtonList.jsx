@@ -2,39 +2,23 @@ import React from "react";
 import {
   faTrashAlt,
   faDownload,
-  faMicrochip,
-  faPlay,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "reactstrap";
+import { Button } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useProjectRouter from "../../Hooks/ProjectRouter";
-
-const checkExportC = (model, stepOptions) => {
-  if (!stepOptions) return false;
-  return model.pipeline.selectedPipeline.steps.every((step) => {
-    const stepOption = stepOptions.find(
-      (elm) => elm.name === step.options.name
-    );
-    if (!stepOption) return false;
-    if (!["PRE", "CORE"].includes(stepOption.type)) return true;
-
-    return (
-      ["PRE", "CORE"].includes(stepOption.type) &&
-      stepOption.platforms.includes("C")
-    );
-  });
-};
+import { canDownload, canDeployEmbedded } from "../../components/Common/modelExport";
 
 const ListButton = ({ onClick, icon, children, ...props }) => {
-  const onClickStop = (e) => {
-    onClick(e);
-    e.stopPropagation();
-  };
-
   return (
-    <Button {...props} className="btn-edit ms-2 my-2" onClick={onClickStop}>
-      <FontAwesomeIcon icon={icon}></FontAwesomeIcon>
+    <Button
+      {...props}
+      className="ms-2 my-2"
+      onClick={(e) => {
+        onClick(e);
+        e.stopPropagation();
+      }}
+    >
+      <FontAwesomeIcon icon={icon} style={{ marginRight: 8 }} />
       <div>
         <small>{children}</small>
       </div>
@@ -47,55 +31,46 @@ const ButtonList = ({
   setModalModel,
   setModelDownload,
   onDeleteSingleModel,
-  stepOptions,
-  setDeployModalOpen
+  setDeployModalOpen,
 }) => {
-  const navigateTo = useProjectRouter();
+  // Deploy stays hidden for now: embedded-only (flashes the model onto a BLE
+  // microcontroller via canDeployEmbedded). Restore when needed.
+  const deployable = canDeployEmbedded(model);
+  void deployable;
+  void setDeployModalOpen;
+  const downloadable = canDownload(model);
 
   return (
     <>
       {model.trainStatus === "done" && !model.error && (
         <>
           <ListButton
-            color="info"
-            outline
+            color="cyan"
+            variant="outline"
             icon={faInfoCircle}
             onClick={() => setModalModel(model)}
           >
             Info
           </ListButton>
           <ListButton
-            color="primary"
-            outline
-            icon={faPlay}
-            onClick={() => navigateTo("models/live/" + model._id)}
-          >
-            View live
-          </ListButton>
-          <ListButton
-            color="primary"
-            outline
-            icon={faMicrochip}
-            onClick={() => {
-              setDeployModalOpen(true);
-            }}
-            disabled={!checkExportC(model, stepOptions)}
-          >
-            Deploy
-          </ListButton>
-          <ListButton
-            color="primary"
-            outline
+            color="blue"
+            variant="outline"
             icon={faDownload}
             onClick={() => setModelDownload(model)}
+            disabled={!downloadable}
+            title={
+              downloadable
+                ? "Download the model"
+                : "This model runs on the server only; there is nothing to download"
+            }
           >
             Download
           </ListButton>
         </>
       )}
       <ListButton
-        color="danger"
-        outline
+        color="red"
+        variant="outline"
         icon={faTrashAlt}
         onClick={() => onDeleteSingleModel(model)}
       >

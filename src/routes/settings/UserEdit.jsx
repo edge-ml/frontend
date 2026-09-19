@@ -1,15 +1,10 @@
 import React, { useState } from "react";
-import { Button, InputGroup, InputGroupText } from "reactstrap";
+import { Button, Group, ActionIcon, Table } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 import AutoCompleteInput from "../../components/AutoCompleteInput/AutocompleteInput";
 import { getUserNameSuggestions } from "../../services/ApiServices/AuthentificationServices";
-import {
-  EdgeMLTable,
-  EdgeMLTableEntry,
-  EdgeMLTableHeader,
-} from "../../components/Common/EdgeMLTable";
 import useProjectSettings from "../../Hooks/useProjectSettings";
 import useUserStore from "../../Hooks/useUser";
 import useProjectStore from "../../stores/projectStore";
@@ -29,29 +24,21 @@ const UserEdit = () => {
   };
 
   const handleUserNameSuggestionChange = (e) => {
-    setUserSearchValue(e.target.value);
+    setUserSearchValue(e.currentTarget.value);
   };
 
   const handleDeleteUserName = (userNameToDelete) => {
-    setUserNames(
-      userNames.filter((user) => user.userName !== userNameToDelete)
-    );
+    setUserNames(userNames.filter((u) => u.userName !== userNameToDelete));
   };
 
-  const areUsersValid = (users) => {
-    return users.every((user) => user._id !== user._id);
-  };
+  const areUsersValid = () => true;
 
-  if (!currentProject.users) {
-    return null;
-  }
-  
+  if (!currentProject.users) return null;
+
   return (
     <div>
-      <InputGroup className="w-100">
-        <InputGroupText>Search user</InputGroupText>
+      <Group gap="sm" mb="md">
         <AutoCompleteInput
-          type="text"
           name="User ID"
           value={userSearchValue}
           placeholder="Enter username"
@@ -59,44 +46,48 @@ const UserEdit = () => {
           onChange={handleUserNameSuggestionChange}
           getsuggestions={getUserNameSuggestions}
           filter={[
-            ...currentProject.users.map((user) => user.userName),
+            ...currentProject.users.map((u) => u.userName),
             user.userName,
           ]}
         />
-      </InputGroup>
-      {userNames.length > 0 ? (
-        <EdgeMLTable>
-          <EdgeMLTableHeader>Users in the project</EdgeMLTableHeader>
-          {userNames.map((user, index) => (
-            <EdgeMLTableEntry
-              key={index}
-              className="d-flex justify-content-between p-2 align-items-center"
-            >
-              <div>{index + 1}</div>
-              <div>{user.userName}</div>
-              <Button
-                outline
-                size="sm"
-                color="danger"
-                onClick={() => handleDeleteUserName(user.userName)}
-              >
-                <FontAwesomeIcon icon={faTrashAlt} />
-              </Button>
-            </EdgeMLTableEntry>
-          ))}
-        </EdgeMLTable>
-      ) : null}
-      <div className="pt-3 d-flex justify-content-end">
+      </Group>
+      {userNames.length > 0 && (
+        <Table>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>#</Table.Th>
+              <Table.Th>Users in the project</Table.Th>
+              <Table.Th></Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {userNames.map((u, index) => (
+              <Table.Tr key={index}>
+                <Table.Td>{index + 1}</Table.Td>
+                <Table.Td>{u.userName}</Table.Td>
+                <Table.Td>
+                  <ActionIcon
+                    variant="subtle"
+                    color="red"
+                    onClick={() => handleDeleteUserName(u.userName)}
+                  >
+                    <FontAwesomeIcon icon={faTrashAlt} />
+                  </ActionIcon>
+                </Table.Td>
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      )}
+      <Group justify="flex-end" mt="md">
         <Button
-          outline
-          id="buttonSaveProject"
-          color="primary"
+          variant="outline"
           onClick={() => changeUserNames(userNames)}
-          disabled={!areUsersValid(userNames)}
+          disabled={!areUsersValid()}
         >
           Save
         </Button>
-      </div>
+      </Group>
     </div>
   );
 };

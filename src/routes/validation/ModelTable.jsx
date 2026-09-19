@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import Checkbox from "../../components/Common/Checkbox";
-import { Button } from "reactstrap";
+import { Button, Group, Text, Table } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import DeleteModal from "../../components/Common/DeleteModal";
-import {
-  EdgeMLTable,
-  EdgeMLTableEntry,
-  EdgeMLTableHeader,
-} from "../../components/Common/EdgeMLTable";
 import ModelTableEntry from "./ModelTableEntry";
+import { Empty } from "../export/components/Empty";
 
-const ModelTable = ({ models, stepOptions, updateModel, deleteModels }) => {
+const ModelTable = ({
+  models,
+  stepOptions,
+  updateModel,
+  deleteModels,
+  onCreate,
+}) => {
   const [selectedModels, setSelectedModels] = useState([]);
   const [modelsToDelete, setModelsToDelete] = useState([]);
 
@@ -24,62 +26,90 @@ const ModelTable = ({ models, stepOptions, updateModel, deleteModels }) => {
     }
   };
 
-  const clickCheckBox = (model_id) => {
-    if (selectedModels.includes(model_id)) {
-      setSelectedModels(selectedModels.filter((elm) => elm != model_id));
-    } else {
-      setSelectedModels([...selectedModels, model_id]);
-    }
+  const clickCheckBox = (model) => {
+    setSelectedModels((prev) =>
+      prev.includes(model)
+        ? prev.filter((elm) => elm._id !== model._id)
+        : [...prev, model]
+    );
   };
 
   const onDeleteModels = (models) => {
     setModelsToDelete(models);
-  }
+  };
 
   return (
-    <EdgeMLTable>
-      <EdgeMLTableHeader>
-        <div className="ml-0 me-0 ml-md-2 me-md-3 d-flex align-items-center">
-          <Checkbox
-            isSelected={models.length == selectedModels.length}
-            onClick={onSelectAll}
-          ></Checkbox>
-          <Button
-            className="btn-delete ms-2"
-            id="deleteDatasetsButton"
-            size="sm"
-            outline
-            color="danger"
-            onClick={() => {
-              onDeleteModels(
-                selectedModels.map((elm) =>
-                  models.find((model) => model._id === elm._id)
-                )
-              );
-            }}
-          >
-            <FontAwesomeIcon
-              className="me-2"
-              icon={faTrashAlt}
-            ></FontAwesomeIcon>
-            Delete
-          </Button>
-        </div>
-      </EdgeMLTableHeader>
-      {models.map((model, index) => {
-        return (
-          <EdgeMLTableEntry key={"model_table_entry" + model._id}>
-            <ModelTableEntry
-              model={model}
-              stepOptions={stepOptions}
-              selectedModels={selectedModels}
-              clickCheckBox={clickCheckBox}
-              onDeleteModels={onDeleteModels}
-              updateModel={updateModel}
-            ></ModelTableEntry>
-          </EdgeMLTableEntry>
-        );
-      })}
+    <div className="ps-2 pe-2 ps-md-4 pe-md-4 pb-2 flex-grow-1">
+      <Group justify="space-between" mb="xs">
+        <Text fw={700} size="xl">
+          MODELS
+        </Text>
+        <Button variant="outline" size="sm" onClick={onCreate}>
+          Train a model
+        </Button>
+      </Group>
+      {models.length > 0 ? (
+        <Table className="mt-3">
+          <Table.Thead>
+            <Table.Tr style={{ borderBottom: "2px solid rgb(230, 230, 234)" }}>
+              <Table.Th colSpan={4} p={0}>
+                <Group
+                  justify="space-between"
+                  style={{
+                    background: "rgb(249, 251, 252)",
+                    padding: "10px",
+                  }}
+                >
+                  <Group gap="xs" p="xs">
+                    <Checkbox
+                      isSelected={models.length === selectedModels.length}
+                      onClick={onSelectAll}
+                    />
+                    <Button
+                      id="deleteDatasetsButton"
+                      variant="outline"
+                      color="red"
+                      size="sm"
+                      disabled={selectedModels.length === 0}
+                      onClick={() =>
+                        onDeleteModels(
+                          selectedModels.map((elm) =>
+                            models.find((model) => model._id === elm._id)
+                          )
+                        )
+                      }
+                    >
+                      <FontAwesomeIcon className="me-2" icon={faTrashAlt} />
+                      Delete
+                    </Button>
+                  </Group>
+                </Group>
+              </Table.Th>
+            </Table.Tr>
+            <Table.Tr>
+              <Table.Th w={40}></Table.Th>
+              <Table.Th>Model</Table.Th>
+              <Table.Th>Status</Table.Th>
+              <Table.Th w={110}>Actions</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {models.map((model) => (
+              <ModelTableEntry
+                key={"model_table_entry" + model._id}
+                model={model}
+                stepOptions={stepOptions}
+                selectedModels={selectedModels.map((m) => m._id)}
+                clickCheckBox={clickCheckBox}
+                onDeleteModels={onDeleteModels}
+                updateModel={updateModel}
+              />
+            ))}
+          </Table.Tbody>
+        </Table>
+      ) : (
+        <Empty>No models trained yet</Empty>
+      )}
       <DeleteModal
         isOpen={!!modelsToDelete.length}
         onCancel={() => setModelsToDelete([])}
@@ -94,7 +124,7 @@ const ModelTable = ({ models, stepOptions, updateModel, deleteModels }) => {
           </div>
         ))}
       </DeleteModal>
-    </EdgeMLTable>
+    </div>
   );
 };
 

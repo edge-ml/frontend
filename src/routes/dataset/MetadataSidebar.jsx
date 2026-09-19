@@ -8,61 +8,57 @@ import {
 import { Fragment } from "react";
 import MetadataContainer from "../../components/MetadataPanel/MetadataContainer";
 import { DatasetContext } from "./DatasetContext";
-import { Container } from "reactstrap";
 
-const MetadataSidebar = ({}) => {
-  const { dataset } = useContext(DatasetContext);
+const MetadataSidebar = () => {
+  const { dataset, updateDataset } = useContext(DatasetContext);
 
-  const [isExtended, setExtendend] = useState(false);
+  const [isExtended, setExtended] = useState(false);
 
-  const toggleMetaData = () => {
-    setExtendend(!isExtended);
+  const toggleMetaData = (value) => {
+    setExtended((prev) => (typeof value === "boolean" ? value : !prev));
   };
 
   if (!isExtended) {
     return (
-      <div
-        className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton"
+      <button
+        className="metadata-sidebar-handle"
         onClick={() => toggleMetaData(true)}
+        title="Show metadata"
       >
-        <div>
-          <FontAwesomeIcon size="1x" icon={faChevronLeft}></FontAwesomeIcon>
-        </div>
-      </div>
+        <FontAwesomeIcon icon={faChevronLeft} size="xs" />
+        <span className="metadata-sidebar-handle-label">Metadata</span>
+      </button>
     );
   }
 
-  if (isExtended) {
-    return (
-      <Fragment>
-        <div
-          className="sidePanelBackdrop"
+  return (
+    <Fragment>
+      <div
+        className="sidePanelBackdrop"
+        onClick={() => toggleMetaData(false)}
+      />
+      <div className="dataset-side-panel">
+        <button
+          className="metadata-sidebar-close"
           onClick={() => toggleMetaData(false)}
-        ></div>
-        <Container>
-          <div className="dataset-side-panel">
-            <div className="d-flex">
-              <div
-                onClick={() => toggleMetaData(false)}
-                className="d-flex justify-content-center align-items-center cursor-pointer metaDataCollapseButton"
-              >
-                <FontAwesomeIcon icon={faChevronRight}></FontAwesomeIcon>
-              </div>
-              <MetadataContainer
-                start={Math.min(...dataset.timeSeries.map((elm) => elm.start))}
-                end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
-                user={dataset.userId}
-                name={dataset.name}
-                handleDatasetNameChange={() => {}}
-                metaData={dataset.metaData}
-                onUpdateMetaData={() => {}}
-              ></MetadataContainer>
-            </div>
-          </div>
-        </Container>
-      </Fragment>
-    );
-  }
+          title="Hide metadata"
+        >
+          <FontAwesomeIcon icon={faChevronRight} size="sm" />
+        </button>
+        <MetadataContainer
+          start={Math.min(...dataset.timeSeries.map((elm) => elm.start))}
+          end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
+          user={dataset.userId}
+          name={dataset.name}
+          handleDatasetNameChange={() => {}}
+          metaData={dataset.metaData}
+          onUpdateMetaData={({ metaData }) =>
+            updateDataset({ ...dataset, metaData: metaData ?? {} })
+          }
+        />
+      </div>
+    </Fragment>
+  );
 };
 
 export default MetadataSidebar;

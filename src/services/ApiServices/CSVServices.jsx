@@ -1,6 +1,5 @@
 import apiConsts from "./ApiConstants";
 import ax from "axios";
-import apiRequest from "./request";
 import useProjectStore from "../../stores/projectStore";
 import localStorageService from "./../LocalStorageService";
 
@@ -30,7 +29,7 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
     cancelToken: source.token,
     headers: {
       project: currentProject._id,
-      Authorization: localStorageService.getAccessToken(),
+      Authorization: localStorageService.getAuthHeader(),
     },
     withCredentials: true,
   };

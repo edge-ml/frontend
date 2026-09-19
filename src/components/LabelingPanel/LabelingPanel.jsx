@@ -1,126 +1,136 @@
-import React, { useState, useEffect } from "react";
-import { Button } from "reactstrap";
-import { hexToForegroundColor } from "../../services/ColorService";
-import { useContext } from "react";
-import { DatasetContext } from "../../routes/dataset/DatasetContext";
+import React, { useState, useContext } from "react";
+import {
+  Box,
+  Button,
+  Group,
+  Kbd,
+  Text,
+  Tooltip,
+} from "@mantine/core";
 
-import "./LabelingPanel.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+
+import { hexToForegroundColor } from "../../services/ColorService";
+import { indexToShortcutKey } from "../../services/ShortcutKeys";
+import { DatasetContext } from "../../routes/dataset/DatasetContext";
 import DeleteModal from "../Common/DeleteModal";
 
-const LabelButtonView = ({
-  labeling,
-  selectedLabelTypeId,
-  setSelectedLabelTypeId,
-}) => {
+import "./LabelingPanel.css";
+
+const LabelTypeButton = ({ label, index, isSelected, onSelect }) => {
+  const shortcutKey = indexToShortcutKey(index)?.toUpperCase();
   return (
-    <div>
-      {labeling &&
-        labeling.labels.map((label, index) => (
-          <Button
-            className="m-1 labelingButton"
-            style={{
-              backgroundColor:
-                label._id === selectedLabelTypeId ? label.color : "white",
-              color:
-                label._id === selectedLabelTypeId
-                  ? hexToForegroundColor(label.color)
-                  : label.color,
-            }}
-            onClick={(e) => setSelectedLabelTypeId(label._id)}
-            key={index}
-          >
-            {label.name} {"(" + (index + 1) + ")"}
-          </Button>
-        ))}
-    </div>
+  <Tooltip
+    label={`Shortcut: ${shortcutKey} or Ctrl+${shortcutKey}`}
+    openDelay={400}
+    withinPortal
+  >
+    <button
+      className={`dsp-label-chip ${isSelected ? "selected" : ""}`}
+      style={
+        isSelected
+          ? {
+              backgroundColor: label.color,
+              color: hexToForegroundColor(label.color),
+              borderColor: label.color,
+            }
+          : { color: label.color, borderColor: `${label.color}66` }
+      }
+      onClick={() => onSelect(label._id)}
+    >
+      <Kbd
+        fw={700}
+        px={6}
+        style={
+          isSelected
+            ? {
+                backgroundColor: "rgba(255, 255, 255, 0.3)",
+                color: "inherit",
+                border: "none",
+              }
+            : undefined
+        }
+      >
+        {shortcutKey}
+      </Kbd>
+      <Box component="span" fz="sm" fw={600} truncate="end">
+        {label.name}
+      </Box>
+    </button>
+  </Tooltip>
   );
 };
 
-const TimeDisplay = ({ from, to }) => {
+const SelectedLabelRange = ({ from, to }) => {
+  const formatTime = (timestamp) =>
+    Number.isFinite(timestamp)
+      ? new Date(timestamp).toUTCString().split(" ")[4]
+      : "--:--:--";
+
   return (
-    <div className="mx-2">
-      <small>
-        <div className="d-flex justify-content-center fw-bold">
-          Selected Label
-        </div>
-      </small>
-      <div className="d-flex align-items-center">
-        <small>
-          <div className="monospace text-sm">
-            {new Date(from).toUTCString().split(" ")[4]}
-          </div>
-        </small>
-        <small>
-          <div className="mx-1 monospace">-</div>
-        </small>
-        <small>
-          <div className="monospace">
-            {new Date(to).toUTCString().split(" ")[4]}
-          </div>
-        </small>
-      </div>
-    </div>
+    <Group gap="xs" wrap="nowrap">
+      <Text fz="xs" fw={700} c="dimmed" tt="uppercase">
+        Selected Label
+      </Text>
+      <Group gap={4} wrap="nowrap" ff="monospace" fz="sm">
+        <Text inherit ff="monospace">
+          {formatTime(from)}
+        </Text>
+        <Text inherit c="dimmed">
+          –
+        </Text>
+        <Text inherit ff="monospace">
+          {formatTime(to)}
+        </Text>
+      </Group>
+    </Group>
   );
 };
 
-const LabelingPanel = ({}) => {
+const LabelingPanel = () => {
   const {
-    hideLabels,
-    onAddLabel,
-    onDeleteSelectedLabel,
-    selectedLabel,
     activeLabeling,
+    selectedLabel,
+    onDeleteSelectedLabel,
     selectedLabelTypeId,
     setSelectedLabelTypeId,
   } = useContext(DatasetContext);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const handleKeys = (e) => {
-    if (e.key === "Delete" && selectedLabel) {
-      setDeleteModalOpen(true);
-    }
-    if (e.ctrlKey && e.key > 0) {
-      if (e.key - 1 > activeLabeling.labels.length) {
-        return;
-      }
-      const newLabelType = activeLabeling.labels[Number(e.key - 1)];
-      setSelectedLabelTypeId(newLabelType._id);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeys);
-    return () => {
-      document.removeEventListener("keydown", handleKeys);
-    };
-  });
-
   return (
-    <div>
-      <div className="labelingPanelBorder"></div>
-      <div className="d-flex justify-content-between p-1">
-        {!hideLabels ? (
-          <div className="d-flex">
-            <LabelButtonView
-              labeling={activeLabeling}
-              selectedLabelTypeId={selectedLabelTypeId}
-              setSelectedLabelTypeId={setSelectedLabelTypeId}
-            ></LabelButtonView>
-          </div>
-        ) : (
-          <div></div>
-        )}
-        <div className="d-flex">
-          <TimeDisplay
-            from={selectedLabel && selectedLabel.start}
-            to={selectedLabel && selectedLabel.end}
-          ></TimeDisplay>
+    <div className="dsp-labelbar-wrap">
+      <Group justify="space-between" wrap="nowrap" px="sm" py={6}>
+        <Group gap="xs" wrap="nowrap" className="dsp-labelbar-chips">
+          {(activeLabeling?.labels ?? []).map((label, index) => (
+            <LabelTypeButton
+              key={label._id}
+              label={label}
+              index={index}
+              isSelected={label._id === selectedLabelTypeId}
+              onSelect={setSelectedLabelTypeId}
+            />
+          ))}
+          {!activeLabeling && (
+            <Text fz="sm" c="dimmed" fs="italic">
+              No labeling selected
+            </Text>
+          )}
+        </Group>
+
+        <Group gap="xs" wrap="nowrap">
+          <SelectedLabelRange
+            from={selectedLabel?.start}
+            to={selectedLabel?.end}
+          />
           <Button
-            disabled={selectedLabel === undefined}
-            className="deleteButton m-1"
-            outline
-            color="danger"
+            disabled={!selectedLabel}
+            aria-label="Delete selected label"
+            variant="outline"
+            color="red"
+            radius="md"
+            leftIcon={<FontAwesomeIcon icon={faTrashCan} size="xs" />}
             onClick={() => setDeleteModalOpen(true)}
           >
             Delete
@@ -133,19 +143,10 @@ const LabelingPanel = ({}) => {
               setDeleteModalOpen(false);
             }}
           >
-            <div>SelectedLabel</div>
+            <div>Selected Label</div>
           </DeleteModal>
-        </div>
-      </div>
-      <DeleteModal
-        isOpen={deleteModalOpen}
-        onCancel={() => setDeleteModalOpen(false)}
-        onDelete={() => {
-          onDeleteSelectedLabel();
-          setDeleteModalOpen(false);
-        }}
-      >        The selected label
-      </DeleteModal>
+        </Group>
+      </Group>
     </div>
   );
 };

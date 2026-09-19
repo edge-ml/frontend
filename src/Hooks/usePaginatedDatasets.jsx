@@ -5,9 +5,9 @@ import {
   deleteDataset as deleteDatasets_api,
 } from "../services/ApiServices/DatasetServices";
 
-const usePaginatedDatasets = (initialPage) => {
+const usePaginatedDatasets = () => {
   const [datasets, setDatasets] = useState(undefined);
-  const [page, setPageInternal] = useState(initialPage);
+  const [page, setPageInternal] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [tableLenth, setTableLength] = useState(20);
   const [sorting, setSortingInternal] = useState("alphaAsc");

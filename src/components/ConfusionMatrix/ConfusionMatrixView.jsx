@@ -1,79 +1,140 @@
 import React from "react";
+import { Group, Text, Tooltip } from "@mantine/core";
 
-export const ConfusionMatrixView = ({ matrix, labels }) => {
-  var cm = matrix;
+import "./ConfusionMatrix.css";
 
-  const maxValue = Math.max(...cm.flat());
-  const cmLen = cm.length;
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
-  const getAdditionalStyles = (col) => {
-    const scale = (parseFloat(col) / parseFloat(maxValue)) * 70;
+// Truncate long labels for the header cells; the full name stays in the tooltip.
+const short = (s, n = 16) =>
+  s && s.length > n ? s.slice(0, n - 1) + "…" : s;
+
+export const ConfusionMatrixView = ({
+  matrix,
+  labels,
+  colorMap = {},
+  cellSize,
+  fontSize,
+  labelChars = 18,
+  maxHeight,
+}) => {
+  const cm = matrix || [];
+  const n = cm.length;
+  const maxValue = Math.max(1, ...cm.flat());
+
+  // Callers can size cells to the available space; otherwise cells shrink as
+  // the label count grows so a big matrix stays readable.
+  const cell = cellSize ?? (n <= 6 ? 46 : n <= 12 ? 38 : n <= 20 ? 30 : 24);
+  const font = fontSize ?? (n <= 12 ? 13 : n <= 20 ? 11 : 10);
+  const colChars = labelChars - 2;
+  // Column labels are drawn diagonally and taken out of layout, so the header
+  // row needs enough height for the longest one.
+  const longestCol = Math.min(
+    colChars,
+    Math.max(0, ...labels.map((l) => l.length))
+  );
+  const colHead = Math.round(
+    clamp(longestCol * font * 0.68 * 0.71 + font + 14, 40, 190)
+  );
+
+  const cellStyle = (value) => {
+    const scale = (parseFloat(value) / parseFloat(maxValue)) * 70;
     return {
-      backgroundColor: "hsl(202, 100%," + (100 - scale) + "%)",
-      color: scale > 50 ? "white" : "black",
+      backgroundColor: `hsl(202, 100%, ${100 - scale}%)`,
+      color: scale > 45 ? "#fff" : "#1a1b1e",
     };
   };
 
   return (
-    <div className="ms-5">
-      <table>
-        <tr>
-          <td></td>
-          {labels.map((label) => (
-            <td
-              style={{
-                paddingRight: 0,
-                paddingLeft: 0,
-                textAlign: "center",
-                borderBottom: "1px solid black",
-                fontWeight: "bold",
-                transform: "translateY(-50%) rotate(-75deg)",
-                maxWidth: "50px",
-              }}
-            >
-              {label}
-            </td>
-          ))}
-        </tr>
-        {cm.map((row, rowIdx) => (
-          <tr>
-            <td
-              className="pe-2"
-              style={{
-                textAlign: "end",
-                borderRight: "1px solid black",
-                paddingBottom: "2px",
-                fontWeight: "bold",
-              }}
-            >
-              {labels[rowIdx]}
-            </td>
-            {row.map((col, colIdx) => (
-              <td
-                style={{
-                  padding: 0,
-                  height: "50px",
-                  width: "50px",
-                  borderRight: colIdx == cmLen - 1 ? "1px solid black" : null,
-                  borderBottom: rowIdx == cmLen - 1 ? "1px solid black" : null,
-                  ...getAdditionalStyles(col),
-                }}
-              >
-                <div
+    <div className="cm">
+      <Text size="xs" c="dimmed" mb={6}>
+        Rows are the true label, columns the predicted label. The diagonal (boxed)
+        is correct predictions.
+      </Text>
+
+      <div
+        className="cm-scroll"
+        style={maxHeight ? { maxHeight } : undefined}
+      >
+        <table className="cm-table" style={{ fontSize: font }}>
+          <thead>
+            <tr>
+              <th className="cm-corner" />
+              {labels.map((label) => (
+                <th
+                  key={label}
+                  className="cm-col-head"
                   style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "inherit",
+                    width: cell,
+                    minWidth: cell,
+                    maxWidth: cell,
+                    height: colHead,
                   }}
                 >
-                  {col}
-                </div>
-              </td>
+                  <Tooltip label={label} withArrow disabled={label.length <= colChars}>
+                    <span className="cm-col-head-text">
+                      {short(label, colChars)}
+                    </span>
+                  </Tooltip>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {cm.map((row, r) => (
+              <tr key={labels[r] ?? r}>
+                <th className="cm-row-head">
+                  <Tooltip
+                    label={labels[r]}
+                    withArrow
+                    disabled={(labels[r] || "").length <= labelChars}
+                  >
+                    <span className="cm-row-head-text">
+                      <span
+                        className="cm-dot"
+                        style={{ background: colorMap[labels[r]] || "#adb5bd" }}
+                      />
+                      {short(labels[r], labelChars)}
+                    </span>
+                  </Tooltip>
+                </th>
+                {row.map((value, c) => (
+                  <td
+                    key={c}
+                    className={`cm-cell${r === c ? " cm-diag" : ""}`}
+                    style={{
+                      width: cell,
+                      minWidth: cell,
+                      height: cell,
+                      ...cellStyle(value),
+                    }}
+                  >
+                    <Tooltip
+                      withArrow
+                      label={`True ${labels[r]} · predicted ${labels[c]}: ${value}`}
+                    >
+                      <span className="cm-cell-val">{value}</span>
+                    </Tooltip>
+                  </td>
+                ))}
+              </tr>
             ))}
-          </tr>
-        ))}
-      </table>
+          </tbody>
+        </table>
+      </div>
+
+      <Group gap={8} mt="sm" align="center">
+        <Text size="xs" c="dimmed">
+          0
+        </Text>
+        <div className="cm-legend" />
+        <Text size="xs" c="dimmed">
+          {maxValue}
+        </Text>
+        <Text size="xs" c="dimmed" ml={4}>
+          samples
+        </Text>
+      </Group>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardBody, CardHeader, Badge } from "reactstrap";
+import { Card, Badge } from "@mantine/core";
 import "./TagsPanel.css";
 
 class TagsPanel extends Component {
@@ -32,27 +32,27 @@ class TagsPanel extends Component {
     events.sort((a, b) => a.time - b.time);
 
     return (
-      <Card>
-        <CardHeader>
+      <Card shadow="sm" padding="md" radius="md" withBorder>
+        <Card.Section>
           <b>Events</b>
-        </CardHeader>
-        <CardBody>
+        </Card.Section>
+        <Card.Section>
           <div className="tagsContainer">
             {events.map((event, key) => (
               <div className="m-2" key={key}>
-                <Badge color="light">
-                  <span className="float-left">
+                <Badge color="gray" variant="light">
+                  <span style={{ float: "left" }}>
                     <b>{event.name}, </b>
                     {event.value} {event.unit}
                   </span>
-                  <span className="float-right">
+                  <span style={{ float: "right" }}>
                     {this.parseTime(event.time)}
                   </span>
                 </Badge>
               </div>
             ))}
           </div>
-        </CardBody>
+        </Card.Section>
       </Card>
     );
   }

@@ -1,12 +1,16 @@
 import React from "react";
 import {
-  Modal,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  Button,
   Alert,
-} from "reactstrap";
+  Button,
+  Center,
+  Group,
+  Modal,
+  Paper,
+  Progress,
+  Stack,
+  Text,
+} from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import Wizard_SelectLabeling from "./Steps/Select_Labeling";
 import "./index.css";
 import { useEffect, useState, Fragment } from "react";
@@ -20,40 +24,77 @@ import {
 } from "../../services/ApiServices/MlService";
 import Select_Name from "./Steps/Select_Name";
 import SelectTrainMethod from "./selectTrainMethod";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { intersect, toggleElement } from "../../services/helpers";
 import Pipelinestep from "./Pipelinestep";
+import ExportTarget from "../Common/ExportTarget";
+import SelectExportGoal from "./SelectExportGoal";
 
-const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
+// A step option's platform strings, normalized (fallback for older backends).
+const optionPlatforms = (option) =>
+  (option && option.platforms ? Array.from(option.platforms) : []).map((x) =>
+    String(x).toLowerCase()
+  );
+
+// Accurate, download-flow-truthful export capability of an option. The backend
+// now attaches `exportTargets` (c/executorch) computed the same way the Download
+// flow decides formats — some legacy options declare a C platform they cannot
+// actually export, so prefer exportTargets and fall back to raw platforms.
+const optionExportTargets = (option) => {
+  if (option && option.exportTargets) return option.exportTargets;
+  const plats = optionPlatforms(option);
+  return {
+    c: ["c", "cpp", "c-embedded"].some((c) => plats.includes(c)),
+    executorch: plats.includes("executorch"),
+  };
+};
+
+// Does an option support the chosen deployment goal? "ANY" (export skipped)
+// accepts everything; "C"/"EXECUTORCH" require the matching real export capability.
+const optionMatchesGoal = (option, goal) => {
+  if (!goal || goal === "ANY") return true;
+  const t = optionExportTargets(option);
+  if (goal === "EXECUTORCH") return !!t.executorch;
+  if (goal === "C") return !!t.c;
+  if (goal === "PYTORCH") return !!t.pytorch;
+  return true;
+};
+
+// Only PRE/CORE steps are export-relevant; EVAL/INFO options are never filtered.
+const stepOptionsForGoal = (step, goal) =>
+  step && ["PRE", "CORE"].includes(step.type)
+    ? step.options.filter((o) => optionMatchesGoal(o, goal))
+    : step
+    ? step.options
+    : [];
+
+// A goal is achievable only if every PRE/CORE step has at least one option for it.
+const goalAchievable = (pipeline, goal) => {
+  if (!pipeline) return false;
+  if (goal === "ANY") return true;
+  return pipeline.steps
+    .filter((s) => ["PRE", "CORE"].includes(s.type))
+    .every((s) => s.options.some((o) => optionMatchesGoal(o, goal)));
+};
+
+const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
   // Data obtained from the server
 
   const [pipelines, setPipelines] = useState(undefined);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [datasets, setDatasets] = useState([]);
   const [labelings, setLabelings] = useState([]);
-  const [classifiers, setClassifiers] = useState([]);
-  const [evaluation, setEvaluation] = useState([]);
-  const [normalizer, setNormalizer] = useState([]);
-  const [windowing, setWindowing] = useState([]);
-  const [featureExtractors, setFeatureExtractors] = useState([]);
 
-  // User selections made in the wizard
   const [disabledTimeseriesNames, setDisabledTimeseriesNames] = useState([]);
   const [labeling, setLableing] = useState();
   const [zeroClass, toggleZeroClass] = useState(false);
   const [modelName, setModelName] = useState("");
-  const [selectedClassifier, setSelectedClassifier] = useState(undefined);
-  const [selectedEval, setSelectedEval] = useState(undefined);
-  const [selectednormalizer, setSelectednormalizer] = useState(undefined);
-  const [selectedWindowing, setSelectedWindowing] = useState(undefined);
-  const [selectedFeatureExtractor, setSelectedFeatureExtractor] =
-    useState(undefined);
 
   const [selectedPipeline, setSelectedPipeline] = useState(undefined);
   const [selectedPipelineSteps, setSelectedPipelineSteps] = useState(undefined);
+  // Where the model will be deployed: "C" | "EXECUTORCH" | "ANY" (undefined until chosen).
+  const [exportGoal, setExportGoal] = useState(undefined);
 
-  // Current state of the wizard
   const [screen, setScreen] = useState(0);
 
   const [trainError, setTrainError] = useState(undefined);
@@ -64,6 +105,11 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   const maxSteps = selectedPipeline ? selectedPipeline.steps.length + 3 : 0;
   const onBack = () => {
     setTrainError(undefined);
+    if (screen === 0) {
+      // Back from the first step returns to the "where will this run?" selector.
+      setExportGoal(undefined);
+      return;
+    }
     setScreen(Math.max(screen - 1, 0));
   };
   const onNext = () => {
@@ -71,28 +117,38 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     setScreen(Math.min(screen + 1, maxSteps - 1));
   };
 
-  const onEvaluationChanged = (evl) => setEvaluation(evl);
-
+  // Every time the wizard opens, reset all configuration to a fresh state and
+  // reload the data from the server, so new datasets/labelings are picked up.
   useEffect(() => {
-    getDatasets().then((datasets) => {
-      const newDatasets = datasets.map((elm) => {
-        return { ...elm, selected: false };
-      });
-      setDisabledTimeseriesNames([]);
-      setDatasets(newDatasets);
-    });
-    getLabelings().then((labelings) =>
-      setLabelings(labelings.map((ls) => ({ ...ls, disabledLabels: [] })))
-    );
-    getTrainConfig().then((result) => {
-      setPipelines(result);
-      setEvaluation(result.evaluation);
-      setClassifiers(result.classifier);
-      setNormalizer(result.normalizer);
-      setWindowing(result.windowing);
-      setFeatureExtractors(result.featureExtractors);
-    });
-  }, []);
+    if (!isOpen) return;
+
+    // Reset wizard progress and selections
+    setDisabledTimeseriesNames([]);
+    setLableing(undefined);
+    toggleZeroClass(false);
+    setModelName("");
+    setSelectedPipeline(undefined);
+    setSelectedPipelineSteps(undefined);
+    setExportGoal(undefined);
+    setScreen(0);
+    setTrainError(undefined);
+    setPreflight(null);
+    setPreflightLoading(false);
+
+    // Reload datasets/labelings/pipelines
+    setIsLoading(true);
+    Promise.all([getDatasets(), getLabelings(), getTrainConfig()])
+      .then(([datasetResult, labelingResult, pipelineResult]) => {
+        setDatasets(
+          datasetResult.map((dataset) => ({ ...dataset, selected: false }))
+        );
+        setLabelings(
+          labelingResult.map((item) => ({ ...item, disabledLabels: [] }))
+        );
+        setPipelines(pipelineResult);
+      })
+      .finally(() => setIsLoading(false));
+  }, [isOpen]);
 
   const toggleDisableTimeseries = (timeseries_id) => {
     setDisabledTimeseriesNames(
@@ -159,6 +215,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     try {
       setTrainError(undefined);
       await train(buildRequest());
+      onTrained && onTrained(); // show the queued job immediately, don't wait for the poll
       onClose();
     } catch (e) {
       setTrainError(
@@ -194,41 +251,23 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
   }, [screen, maxSteps, selectedPipeline]);
 
   const onSelectTrainingMethod = (pipeline) => {
+    // Defer initialising the steps until the export goal is chosen, so the
+    // defaults are compatible with that goal.
     setSelectedPipeline(pipeline);
-    const selectedPipelineSteps = pipeline.steps.map((elm) => elm.options[0]);
-    setSelectedPipelineSteps(selectedPipelineSteps);
+    setExportGoal(undefined);
+    setSelectedPipelineSteps(undefined);
+    setScreen(0);
   };
 
-  const props = {
-    onSelectTrainingMethod: onSelectTrainingMethod,
-    pipelines: pipelines,
-    datasets: datasets,
-    labelings: labelings,
-    setLabeling: setLableing,
-    selectedLabeling: labeling,
-    toggleSelectDataset: toggleSelectDataset,
-    disabledTimeseriesNames: disabledTimeseriesNames,
-    toggleDisableTimeseries: toggleDisableTimeseries,
-    windowers: windowing,
-    selectedWindowing: selectedWindowing,
-    setSelectedWindower: setSelectedWindowing,
-    setWindower: setWindowing,
-    featureExtractors: featureExtractors,
-    setFeatureExtractor: setSelectedFeatureExtractor,
-    normalizer: normalizer,
-    setNormalizer: setSelectednormalizer,
-    setModelName: setModelName,
-    selectedClassifier: selectedClassifier,
-    setSelectedClassifier: setSelectedClassifier,
-    setClassifier: setClassifiers,
-    classifier: classifiers,
-    evaluation: evaluation,
-    onEvaluationChanged: onEvaluationChanged,
-    setSelectedEval: setSelectedEval,
-    modelName: modelName,
-    setModelName: setModelName,
-    zeroClass: zeroClass,
-    toggleZeroClass: toggleZeroClass,
+  const onSelectExportGoal = (goal) => {
+    setExportGoal(goal);
+    setScreen(0);
+    setSelectedPipelineSteps(
+      selectedPipeline.steps.map((step) => {
+        const opts = stepOptionsForGoal(step, goal);
+        return opts[0] || step.options[0];
+      })
+    );
   };
 
   const setPipelineStep = (pipelineStep) => {
@@ -260,45 +299,95 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
     if (screen === maxSteps - 1) return Select_Name.validate({ modelName });
     return undefined;
   };
-  const currentError = validateCurrentStep();
+  // Only validate once we're actually inside the steps (after choosing an
+  // export goal); otherwise the labeling check fires on earlier screens.
+  const currentError =
+    selectedPipeline && exportGoal ? validateCurrentStep() : undefined;
+  // The export target is fixed by the chosen goal; option filtering guarantees
+  // every step supports it, so the model will export that way.
+  const exportTargets =
+    exportGoal === "C"
+      ? { c: true, executorch: false, pytorch: false }
+      : exportGoal === "PYTORCH"
+        ? { c: false, executorch: false, pytorch: true }
+        : { c: false, executorch: true, pytorch: false };
 
   return (
-    <Modal isOpen={isOpen} size="xl">
-      <ModalHeader>
-        <div>
-          {"Train a model" +
-            (selectedPipeline ? ": " + selectedPipeline.name : "")}
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            top: "0",
-            right: "8px",
-            cursor: "pointer",
-          }}
-          onClick={onClose}
-        >
-          <FontAwesomeIcon icon={faXmark}></FontAwesomeIcon>
-        </div>
-      </ModalHeader>
-      <ModalBody style={{ minHeight: "50vh" }}>
-        {datasets &&
-        labelings &&
-        (datasets.length === 0 || labelings.length === 0) ? (
-          <div
-            className="d-flex justify-content-center align-items-center fw-bold"
-            style={{ height: "30vh" }}
-          >
-            You need datasets and labelings to train models!
-          </div>
+    <Modal
+      opened={isOpen}
+      onClose={onClose}
+      withCloseButton={false}
+      padding={0}
+      radius="lg"
+      classNames={{ content: "training-wizard-modal" }}
+    >
+      <Modal.Header className="training-wizard-header">
+        <Stack gap={4} className="training-wizard-heading">
+          <Text fw={700} size="xl">
+            Train a model
+          </Text>
+          <Text size="sm" c="dimmed">
+            {selectedPipeline
+              ? `${selectedPipeline.name} · Step ${screen + 1} of ${maxSteps}`
+              : "Choose the pipeline that best fits your deployment target"}
+          </Text>
+          {selectedPipeline && (
+            <Progress
+              value={((screen + 1) / maxSteps) * 100}
+              size="xs"
+              radius="xl"
+              mt={6}
+            />
+          )}
+        </Stack>
+        <Modal.CloseButton />
+      </Modal.Header>
+      <Modal.Body className="training-wizard-body">
+        {isLoading ? (
+          <Center mih="40vh">
+            <Stack align="center" gap="sm">
+              <LogoLoader size={24} />
+              <Text size="sm" c="dimmed">
+                Loading training options…
+              </Text>
+            </Stack>
+          </Center>
         ) : null}
-        {pipelines && !selectedPipeline && datasets.length !== 0 && labelings.length !== 0 ? (
+        {!isLoading && (datasets.length === 0 || labelings.length === 0) ? (
+          <Paper className="training-wizard-summary">
+            <Stack align="center" justify="center" mih="30vh" gap={4}>
+              <Text fw={700}>Training data is not ready yet</Text>
+              <Text size="sm" c="dimmed" ta="center">
+                Add at least one dataset and one labeling before training a
+                model.
+              </Text>
+            </Stack>
+          </Paper>
+        ) : null}
+        {!isLoading &&
+        pipelines &&
+        !selectedPipeline &&
+        datasets.length !== 0 &&
+        labelings.length !== 0 ? (
           <SelectTrainMethod
             pipelines={pipelines}
             onSelectTrainingMethod={onSelectTrainingMethod}
-          ></SelectTrainMethod>
+          />
         ) : null}
-        {selectedPipeline ? (
+        {selectedPipeline && !exportGoal ? (
+          <SelectExportGoal
+            availableKeys={["EXECUTORCH", "C", "PYTORCH"].filter((k) =>
+              goalAchievable(selectedPipeline, k)
+            )}
+            onSelect={onSelectExportGoal}
+            onBack={() => {
+              setSelectedPipeline(undefined);
+              setExportGoal(undefined);
+              setSelectedPipelineSteps(undefined);
+            }}
+          ></SelectExportGoal>
+        ) : null}
+        {selectedPipeline && exportGoal ? (
           <Fragment>
             {screen === 0 ? (
               <Wizard_SelectLabeling
@@ -308,7 +397,7 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 selectedLabeling={labeling}
                 toggleZeroClass={toggleZeroClass}
                 zeroClass={zeroClass}
-              ></Wizard_SelectLabeling>
+              />
             ) : null}
 
             {screen === 1 ? (
@@ -319,25 +408,132 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
                 selectedLabeling={labeling}
                 toggleDisableTimeseries={toggleDisableTimeseries}
                 disabledTimeseriesNames={disabledTimeseriesNames}
-              ></Wizard_SelectDataset>
+              />
             ) : null}
-            {screen >= 2 && screen !== maxSteps - 1 ? (
-              <Pipelinestep
-                stepNum={screen}
-                step={selectedPipeline.steps[screen - 2]}
-                selectedPipelineStep={selectedPipelineSteps[screen - 2]}
-                setPipelineStep={setPipelineStep}
-              ></Pipelinestep>
-            ) : null}
-            {screen == maxSteps - 1 ? (
+            {screen >= 2 && screen !== maxSteps - 1
+              ? (() => {
+                  // Classifiers that consume the raw window sequence are only
+                  // usable with the raw feature extractor; hide them (with a
+                  // note) unless it is selected. Mirrors the ml preflight guard.
+                  const RAW_EXTRACTOR = "Raw Time-Series (Sensors only)";
+                  const RAW_ONLY = [
+                    "WHAR Model",
+                    "PyTorch 1D Convolutional Neural Network",
+                  ];
+                  const rawSelected = (selectedPipelineSteps || []).some(
+                    (s) => s && s.name === RAW_EXTRACTOR
+                  );
+                  const goalOptions = stepOptionsForGoal(
+                    selectedPipeline.steps[screen - 2],
+                    exportGoal
+                  );
+                  const hidden = rawSelected
+                    ? []
+                    : goalOptions
+                        .filter((o) => RAW_ONLY.includes(o.name))
+                        .map((o) => o.name);
+                  let options = rawSelected
+                    ? goalOptions
+                    : goalOptions.filter((o) => !RAW_ONLY.includes(o.name));
+                  // A few WHAR architectures constrain the channel count:
+                  // deepsense pairs acc/gyro (even count) and global_fusion needs
+                  // enough channels to fuse (>= 6). Offer them everywhere but hide
+                  // them from the Architecture dropdown when the selected data's
+                  // channel count is incompatible (the ml preflight backs this up).
+                  const CHANNEL_CONSTRAINED_ARCHS = {
+                    deepsense: (n) => n % 2 === 0,
+                    global_fusion: (n) => n >= 6,
+                  };
+                  const selDatasets = datasets.filter((d) => d.selected);
+                  const channelCount = selDatasets.length
+                    ? intersect(
+                        ...selDatasets.map((d) =>
+                          d.timeSeries.map((t) => t.name)
+                        )
+                      ).filter((n) => !disabledTimeseriesNames.includes(n)).length
+                    : 0;
+                  const archAllowed = (arch) =>
+                    !CHANNEL_CONSTRAINED_ARCHS[arch] ||
+                    !channelCount ||
+                    CHANNEL_CONSTRAINED_ARCHS[arch](channelCount);
+                  const filterWharArchs = (opt) => {
+                    if (!opt || opt.name !== "WHAR Model") return opt;
+                    return {
+                      ...opt,
+                      parameters: (opt.parameters || []).map((p) =>
+                        p.parameter_name === "model_id"
+                          ? {
+                              ...p,
+                              options: (p.options || []).filter(archAllowed),
+                            }
+                          : p
+                      ),
+                    };
+                  };
+                  options = options.map(filterWharArchs);
+                  const selectedStep = filterWharArchs(
+                    selectedPipelineSteps[screen - 2]
+                  );
+                  // Proactive hint on the feature-extraction step (the one that
+                  // owns the raw-extractor option), plus the "hidden" note on the
+                  // classifier step.
+                  const isFeatureStep = goalOptions.some(
+                    (o) => o.name === RAW_EXTRACTOR
+                  );
+                  const currentName = selectedPipelineSteps?.[screen - 2]?.name;
+                  const hiddenArchs =
+                    currentName === "WHAR Model" && channelCount
+                      ? Object.keys(CHANNEL_CONSTRAINED_ARCHS).filter(
+                          (a) =>
+                            !CHANNEL_CONSTRAINED_ARCHS[a](channelCount) &&
+                            goalOptions
+                              .find((o) => o.name === "WHAR Model")
+                              ?.parameters?.find(
+                                (p) => p.parameter_name === "model_id"
+                              )
+                              ?.options?.includes(a)
+                        )
+                      : [];
+                  let note;
+                  if (hidden.length) {
+                    note = `${hidden.join(", ")} ${
+                      hidden.length > 1 ? "are" : "is"
+                    } only available with the "${RAW_EXTRACTOR}" feature extraction.`;
+                  } else if (isFeatureStep && currentName !== RAW_EXTRACTOR) {
+                    note = `WHAR Model and PyTorch 1D CNN are only available with the "${RAW_EXTRACTOR}" method — they are hidden with the current selection.`;
+                  } else if (hiddenArchs.length) {
+                    note = `${hiddenArchs.join(", ")} ${
+                      hiddenArchs.length > 1 ? "are" : "is"
+                    } hidden — your ${channelCount}-channel selection isn't compatible (deepsense needs an even channel count, global_fusion needs 6+).`;
+                  }
+                  return (
+                    <Pipelinestep
+                      stepNum={screen}
+                      step={{
+                        ...selectedPipeline.steps[screen - 2],
+                        options,
+                      }}
+                      selectedPipelineStep={selectedStep}
+                      setPipelineStep={setPipelineStep}
+                      exportTargets={exportTargets}
+                      note={note}
+                    />
+                  );
+                })()
+              : null}
+            {screen === maxSteps - 1 ? (
               <Select_Name
                 screen={screen}
                 modelName={modelName}
                 setModelName={setModelName}
-              ></Select_Name>
+              />
             ) : null}
             {screen === maxSteps - 1 ? (
               <div className="m-2">
+                <div className="mb-3 d-flex align-items-center">
+                  <b className="me-2">Deployment: </b>
+                  <ExportTarget targets={exportTargets} />
+                </div>
                 {preflightLoading ? (
                   <div className="text-muted">
                     Checking your configuration against the data…
@@ -367,49 +563,47 @@ const TrainingWizard = ({ isOpen, modalOpen, onClose }) => {
             ) : null}
           </Fragment>
         ) : null}
-      </ModalBody>
-      <ModalFooter className="d-flex justify-content-between align-items-center">
-        <div>
-          {screen !== 0 ? (
-            <Button color="secondary" outline onClick={onBack}>
-              Back
-            </Button>
-          ) : null}
-        </div>
-        {selectedPipeline && (trainError || currentError) ? (
-          <Alert
-            color="danger"
-            className="my-0 py-2 mx-3 flex-grow-1 text-center"
-          >
-            {trainError || currentError}
-          </Alert>
-        ) : null}
-        {selectedPipeline ? (
-          <div className="d-flex align-items-center">
-            <span className="me-3">
-              {screen + 1}/{maxSteps}
-            </span>
-            <Button
-              outline
-              color="primary"
-              disabled={
-                !!currentError ||
-                preflightLoading ||
-                (screen + 1 === maxSteps && preflight && !preflight.valid)
-              }
-              onClick={() => {
-                if (screen + 1 === maxSteps) {
-                  onTrain();
-                } else {
-                  onNext();
+      </Modal.Body>
+      {selectedPipeline && (
+        <div className="training-wizard-footer">
+          <Group justify="space-between" wrap="nowrap">
+            <div className="training-wizard-footer-side">
+              {exportGoal && (
+                <Button variant="outline" color="gray" onClick={onBack}>
+                  Back
+                </Button>
+              )}
+            </div>
+            {trainError || currentError ? (
+              <Text size="sm" c="red" ta="center" style={{ flex: 1 }}>
+                {trainError || currentError}
+              </Text>
+            ) : (
+              <Text size="sm" c="dimmed" ta="center" style={{ flex: 1 }}>
+                {screen + 1} / {maxSteps}
+              </Text>
+            )}
+            <div className="training-wizard-footer-side training-wizard-footer-end">
+              <Button
+                disabled={
+                  !!currentError ||
+                  preflightLoading ||
+                  (screen + 1 === maxSteps && preflight && !preflight.valid)
                 }
-              }}
-            >
-              {screen + 1 === maxSteps ? "Train" : "Next"}
-            </Button>
-          </div>
-        ) : null}
-      </ModalFooter>
+                onClick={() => {
+                  if (screen + 1 === maxSteps) {
+                    onTrain();
+                  } else {
+                    onNext();
+                  }
+                }}
+              >
+                {screen + 1 === maxSteps ? "Train" : "Next"}
+              </Button>
+            </div>
+          </Group>
+        </div>
+      )}
     </Modal>
   );
 };

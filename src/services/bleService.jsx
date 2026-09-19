@@ -57,7 +57,6 @@ export const parseDataV2 = (sensor, dataBuffer) => {
   // Convert to milliseconds
   const timestampInMs = Number(timestamp) / 1000;
 
-
   var schema = sensor.parseScheme;
   const values = [];
 
@@ -175,8 +174,6 @@ export const getBaseDataset = (sensors, datasetName) => {
       }
       uniqueNames.add(ts.name);
     });
-
-
   });
   return {
     name: datasetName,
@@ -205,8 +202,11 @@ export const parseTimeSeriesData = (
       const data = sensorData[key].map((elm) => {
         return [elm.time, elm.data[idx]];
       });
-      console.log("Timeseries", dataset.timeSeries)
-      console.log("Finding:", sensor.name + "_" + key + "_" + idx + "_" + scheme.name)
+      console.log("Timeseries", dataset.timeSeries);
+      console.log(
+        "Finding:",
+        sensor.name + "_" + key + "_" + idx + "_" + scheme.name
+      );
       timeSeries.push({
         _id: dataset.timeSeries.find((elm) => {
           const schemeName = scheme.name.startsWith(sensor.name + "_")

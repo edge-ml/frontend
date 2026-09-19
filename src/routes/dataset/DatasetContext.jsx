@@ -5,7 +5,6 @@ import useLabelings from "../../Hooks/useLabelings";
 const DatasetContext = createContext();
 
 const DatasetProvider = ({ children, dataset, labelings, datasetEdit }) => {
-  
   return (
     <DatasetContext.Provider
       value={{
