@@ -230,6 +230,28 @@ describe("useInterval", () => {
     vi.useRealTimers();
   });
 
+  it("keeps ticking when the component re-renders with a new callback identity", () => {
+    // Callers pass inline arrows, so the callback identity changes on every
+    // render. If the interval effect depends on the callback it is torn down
+    // and restarted each time, and a timer whose delay is longer than the
+    // re-render cadence never fires at all. This is what stalled the WHAR
+    // import badge: a 1s elapsed-time ticker re-rendered the component and
+    // reset the 2s status poll before it could run, so the UI sat on the
+    // optimistic "queued" state forever.
+    vi.useFakeTimers();
+    const fn = vi.fn();
+    const { rerender } = renderHook(() => useInterval(() => fn(), 2000));
+
+    // Re-render every 1000ms of virtual time, as the elapsed ticker did.
+    for (let i = 0; i < 6; i += 1) {
+      vi.advanceTimersByTime(1000);
+      rerender();
+    }
+
+    expect(fn).toHaveBeenCalled();
+    vi.useRealTimers();
+  });
+
   it("always calls the latest callback", () => {
     vi.useFakeTimers();
     const first = vi.fn();
