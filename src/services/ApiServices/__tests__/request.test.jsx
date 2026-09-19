@@ -56,7 +56,7 @@ describe("apiRequest (browser/axios path)", () => {
     localStorage.setItem("access_token", "token-123");
     localStorage.setItem("project_id", "project-9");
     await apiRequest(HTTP_METHODS.GET, AUTH_URI, "whoami");
-    expect(headers.authorization).toBe("token-123");
+    expect(headers.authorization).toBe("Bearer token-123");
     expect(headers.project).toBe("project-9");
   });
 

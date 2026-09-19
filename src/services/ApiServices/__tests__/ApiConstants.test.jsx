@@ -122,7 +122,7 @@ describe("generateApiRequest", () => {
       "text/plain"
     );
     expect(configWithProject.headers.project).toBe("proj-1");
-    expect(configWithProject.headers.Authorization).toBe("tok");
+    expect(configWithProject.headers.Authorization).toBe("Bearer tok");
     expect(configWithProject.data).toEqual({ name: "x" });
     expect(configWithProject.params).toEqual({ skip: 1 });
     expect(configWithProject.headers["Content-Type"]).toBe("text/plain");

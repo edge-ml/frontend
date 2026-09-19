@@ -63,7 +63,7 @@ describe("CSVServices.processCSVBackend", () => {
       apiConsts.DATASET_STORE + apiConsts.DATASET_STORE_ENDPOINTS.CREATE_DATASET
     );
     expect(config.headers.project).toBe("proj-42");
-    expect(config.headers.Authorization).toBe("tok-1");
+    expect(config.headers.Authorization).toBe("Bearer tok-1");
     expect(config.withCredentials).toBe(true);
     expect(config.cancelToken).toBe("cancel-token");
 

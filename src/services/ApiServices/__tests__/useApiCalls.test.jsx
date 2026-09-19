@@ -26,7 +26,7 @@ describe("useApiCalls", () => {
 
     expect(res).toEqual([{ _id: "p1" }]);
     expect(headers.project).toBe("proj-5");
-    expect(headers.authorization).toBe("tok-9");
+    expect(headers.authorization).toBe("Bearer tok-9");
   });
 
   it("omits the project header without a currentProject", async () => {
