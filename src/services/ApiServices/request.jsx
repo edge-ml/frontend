@@ -75,22 +75,44 @@ const apiRequest = async (
           : JSON.stringify(body);
     }
     const response = await tauriFetch(url.toString(), fetchOptions);
-    const data =
-      responseType === "arraybuffer"
-        ? await response.arrayBuffer()
-        : responseType === "blob"
-          ? await response.blob()
-          : responseType === "json"
-            ? await response.json()
-            : await response.text();
+
+    // Check the status before decoding. An error response does not follow the
+    // requested responseType: a gateway returns HTML, an expired token returns
+    // an empty body, and a failed blob download returns JSON. Decoding those
+    // as the caller asked would throw a SyntaxError and lose both the status
+    // code and the server's message, so read errors as text and parse
+    // defensively, mirroring the axios branch below.
     if (!response.ok) {
+      let serverMessage;
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            serverMessage = parsed?.detail || parsed?.error || parsed?.message;
+          } catch (_) {
+            /* not JSON: fall back to the status text */
+          }
+        }
+      } catch (_) {
+        /* body unreadable */
+      }
       const err = new Error(
-        data?.detail || data?.error || data?.message || response.statusText
+        serverMessage ||
+          response.statusText ||
+          `Request failed with status code ${response.status}`
       );
       err.status = response.status;
       throw err;
     }
-    return data;
+
+    return responseType === "arraybuffer"
+      ? await response.arrayBuffer()
+      : responseType === "blob"
+        ? await response.blob()
+        : responseType === "json"
+          ? await response.json()
+          : await response.text();
   }
 
   const requestConfig = {

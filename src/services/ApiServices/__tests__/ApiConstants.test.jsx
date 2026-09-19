@@ -35,6 +35,30 @@ describe("ApiConstants URI resolution", () => {
     expect(apiConsts.API_URI).toBe("https://beta.edge-ml.org/api/");
     expect(apiConsts.ML_URI).toBe("https://beta.edge-ml.org/ml/");
     expect(apiConsts.DATASET_STORE).toBe("https://beta.edge-ml.org/ds/");
+    expect(apiConsts.WHAR_URI).toBe("https://beta.edge-ml.org/whar/");
+  });
+
+  it("leaves no service URI root-relative inside Tauri", async () => {
+    // A root-relative URI resolves against the webview origin
+    // (tauri://localhost), not the backend, so every request 404s. A packaged
+    // build is NODE_ENV=production, which is the only branch that yields the
+    // root-relative form, so stub it here. Assert on the whole set so a newly
+    // added service cannot regress the same way.
+    globalThis.__TAURI_INTERNALS__ = {};
+    vi.stubEnv("NODE_ENV", "production");
+    const apiConsts = (await import("../ApiConstants")).default;
+
+    for (const [name, uri] of Object.entries({
+      AUTH_URI: apiConsts.AUTH_URI,
+      API_URI: apiConsts.API_URI,
+      ML_URI: apiConsts.ML_URI,
+      DATASET_STORE: apiConsts.DATASET_STORE,
+      WHAR_URI: apiConsts.WHAR_URI,
+    })) {
+      expect(uri, `${name} must be absolute inside Tauri`).toMatch(
+        /^https?:\/\//
+      );
+    }
   });
 
   it("also detects Tauri via the globalThis.isTauri flag", async () => {
@@ -75,6 +99,7 @@ describe("ApiConstants URI resolution", () => {
     vi.stubEnv("VITE_AUTH_BASE_URL", "");
     vi.stubEnv("VITE_ML_BASE_URL", "");
     vi.stubEnv("VITE_DS_BASE_URL", "");
+    vi.stubEnv("VITE_WHAR_BASE_URL", "");
 
     const apiConsts = (await import("../ApiConstants")).default;
     // jsdom's origin is http://localhost:3000 -> host prefix "localhost".

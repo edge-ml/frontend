@@ -266,7 +266,7 @@ describe("apiRequest (tauri path)", () => {
       ok: false,
       status: 502,
       statusText: "Bad Gateway",
-      json: () => Promise.resolve(null),
+      text: () => Promise.resolve(""),
     });
     vi.doMock("@tauri-apps/plugin-http", () => ({ fetch: fetchMock }));
     vi.resetModules();
@@ -282,7 +282,7 @@ describe("apiRequest (tauri path)", () => {
       ok: false,
       status: 401,
       statusText: "Unauthorized",
-      json: () => Promise.resolve({ message: "Bad token" }),
+      text: () => Promise.resolve(JSON.stringify({ message: "Bad token" })),
     });
     vi.doMock("@tauri-apps/plugin-http", () => ({ fetch: fetchMock }));
     vi.resetModules();
@@ -291,6 +291,63 @@ describe("apiRequest (tauri path)", () => {
     await expect(apiRequest(HTTP_METHODS.GET, AUTH_URI, "user")).rejects.toMatchObject(
       { message: "Bad token", status: 401 }
     );
+  });
+
+  it("keeps the status when a tauri error body is HTML, not JSON", async () => {
+    // A reverse proxy returns an HTML error page. Decoding it as the requested
+    // json responseType used to throw a SyntaxError and lose the 502.
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 502,
+      statusText: "Bad Gateway",
+      text: () => Promise.resolve("<html><body>502 Bad Gateway</body></html>"),
+      json: () => Promise.reject(new SyntaxError("Unexpected token '<'")),
+    });
+    vi.doMock("@tauri-apps/plugin-http", () => ({ fetch: fetchMock }));
+    vi.resetModules();
+    ({ default: apiRequest } = await import("../request"));
+
+    await expect(
+      apiRequest(HTTP_METHODS.GET, AUTH_URI, "down")
+    ).rejects.toMatchObject({ message: "Bad Gateway", status: 502 });
+  });
+
+  it("surfaces the server message when a tauri blob download fails", async () => {
+    // Error bodies are JSON even when the caller asked for a blob, so reading
+    // them as a blob left the real message unreachable.
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 404,
+      statusText: "Not Found",
+      text: () => Promise.resolve(JSON.stringify({ detail: "No such model" })),
+      blob: () => Promise.resolve(new Blob(["irrelevant"])),
+    });
+    vi.doMock("@tauri-apps/plugin-http", () => ({ fetch: fetchMock }));
+    vi.resetModules();
+    ({ default: apiRequest } = await import("../request"));
+
+    await expect(
+      apiRequest(HTTP_METHODS.GET, AUTH_URI, "model", {}, {}, undefined, "blob")
+    ).rejects.toMatchObject({ message: "No such model", status: 404 });
+  });
+
+  it("reports the status code when a tauri error has no statusText", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      statusText: "",
+      text: () => Promise.resolve(""),
+    });
+    vi.doMock("@tauri-apps/plugin-http", () => ({ fetch: fetchMock }));
+    vi.resetModules();
+    ({ default: apiRequest } = await import("../request"));
+
+    await expect(
+      apiRequest(HTTP_METHODS.GET, AUTH_URI, "boom")
+    ).rejects.toMatchObject({
+      message: "Request failed with status code 500",
+      status: 500,
+    });
   });
 
   it("supports text responseType via tauri fetch", async () => {

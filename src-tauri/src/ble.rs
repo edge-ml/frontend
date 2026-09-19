@@ -251,10 +251,18 @@ pub async fn ble_subscribe_notifications(
     characteristic_uuid: String,
     state: State<'_, BleState>,
 ) -> Result<(), String> {
-    let connected = state.connected_peripherals.lock().await;
-    let peripheral = connected
-        .get(&device_id)
-        .ok_or_else(|| "Device not connected".to_string())?;
+    // Clone the handle and release the map lock before `notification_tasks` is
+    // taken below. Holding `connected_peripherals` across that second lock
+    // inverts the order used by ble_unsubscribe_notifications, which takes
+    // `notification_tasks` first; interleaving the two then parks both tasks
+    // forever and every later BLE command queues behind them.
+    let peripheral = {
+        let connected = state.connected_peripherals.lock().await;
+        connected
+            .get(&device_id)
+            .ok_or_else(|| "Device not connected".to_string())?
+            .clone()
+    };
 
     {
         let services = peripheral.services();
@@ -290,7 +298,7 @@ pub async fn ble_subscribe_notifications(
         }
     }
 
-    let p2 = connected.get(&device_id).unwrap().clone();
+    let p2 = peripheral.clone();
     let dev_id = device_id.clone();
     let char_uuid = characteristic_uuid.clone();
 
@@ -311,7 +319,15 @@ pub async fn ble_subscribe_notifications(
     let event_name = format!("ble-notification-{}-{}", device_id, characteristic_uuid);
 
     tauri::async_runtime::spawn(async move {
-        let mut notification_stream = p2.notifications().await.unwrap();
+        // A disconnect racing this spawn makes notifications() fail; log and
+        // stop instead of panicking the runtime task.
+        let mut notification_stream = match p2.notifications().await {
+            Ok(stream) => stream,
+            Err(err) => {
+                log::warn!("BLE notification stream unavailable: {}", err);
+                return;
+            }
+        };
         let target_char = char_uuid.clone();
 
         loop {
@@ -347,9 +363,12 @@ pub async fn ble_unsubscribe_notifications(
     characteristic_uuid: String,
     state: State<'_, BleState>,
 ) -> Result<(), String> {
-    let mut tasks = state.notification_tasks.lock().await;
-    if let Some(cancel_tx) = tasks.remove(&format!("{}-{}", device_id, characteristic_uuid)) {
-        let _ = cancel_tx.send(());
+    {
+        let mut tasks = state.notification_tasks.lock().await;
+        if let Some(cancel_tx) = tasks.remove(&format!("{}-{}", device_id, characteristic_uuid))
+        {
+            let _ = cancel_tx.send(());
+        }
     }
 
     let connected = state.connected_peripherals.lock().await;
