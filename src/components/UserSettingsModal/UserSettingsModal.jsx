@@ -1,6 +1,5 @@
 import React from "react";
 import { Modal, ModalHeader, ModalBody } from "../Common/Modal";
-import MailSettings from "./MailSettings";
 import PasswordSettings from "./PasswordSettings";
 import UserNameSettings from "./UserNameSettings";
 import DeleteUser from "./DeleteUser";
@@ -23,13 +22,12 @@ const UserSettingsModal = ({ isOpen, onClose }) => {
         <div className="user-settings-sections">
           {!user.provider || user.provider === "local" ? (
             <>
-              <MailSettings id="mailSettings" />
               <PasswordSettings id="passwordSettings" />
               <UserNameSettings id="userNameSettings" />
             </>
           ) : null}
           <UserSettingsProvider>
-            <DeleteUser />
+            <DeleteUser userName={user.userName} />
           </UserSettingsProvider>
         </div>
       </ModalBody>

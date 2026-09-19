@@ -114,7 +114,6 @@ export const AUTH_ENDPOINTS = {
   LOGIN: "login",
   DELETE: "unregister",
   REGISTER: "register",
-  CHANGE_MAIL: "changeMail",
   USERNAMESUGGEST: "userNameSuggest",
   CHANGE_PASSWORD: "changePassword",
   ID: "id",

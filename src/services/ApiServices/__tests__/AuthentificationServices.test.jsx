@@ -9,7 +9,6 @@ import {
   getUser,
   deleteUser,
   registerNewUser,
-  changeUserMail,
   changeUserName,
   changeUserPassword,
   getUserIds,
@@ -28,9 +27,9 @@ describe("AuthentificationServices", () => {
         return HttpResponse.json({ access_token: "at", refresh_token: "rt" });
       })
     );
-    const res = await loginUser("a@b.c", "secret");
+    const res = await loginUser("tester", "secret");
     expect(res).toEqual({ access_token: "at", refresh_token: "rt" });
-    expect(body).toEqual({ email: "a@b.c", password: "secret" });
+    expect(body).toEqual({ userName: "tester", password: "secret" });
   });
 
   it("getUserNames POSTs user ids and resolves names", async () => {
@@ -64,7 +63,7 @@ describe("AuthentificationServices", () => {
     expect(await getUser()).toEqual({ email: "x@y.z", userName: "n" });
   });
 
-  it("deleteUser DELETEs with email payload", async () => {
+  it("deleteUser DELETEs with username payload", async () => {
     let method;
     server.use(
       http.delete(`${AUTH_URI}${apiConsts.AUTH_ENDPOINTS.DELETE}`, async () => {
@@ -72,7 +71,7 @@ describe("AuthentificationServices", () => {
         return HttpResponse.json({});
       })
     );
-    await deleteUser("gone@edge-ml.org");
+    await deleteUser("gone");
     expect(method).toBe("DELETE");
   });
 
@@ -87,20 +86,15 @@ describe("AuthentificationServices", () => {
         }
       )
     );
-    await registerNewUser("new@edge-ml.org", "pw", "newbie");
+    await registerNewUser("newbie", "pw");
     expect(body).toEqual({
-      email: "new@edge-ml.org",
-      password: "pw",
       userName: "newbie",
+      password: "pw",
     });
   });
 
-  it.each([
-    ["changeUserMail", HTTP_METHODS.PUT],
-    ["changeUserName", HTTP_METHODS.PUT],
-  ])("%s sends a PUT", async (fnName) => {
-    const fn = { changeUserMail, changeUserName }[fnName];
-    const res = await fn("newValue");
+  it("changeUserName sends a PUT", async () => {
+    const res = await changeUserName("newValue");
     expect(res).toEqual({ success: true });
   });
 

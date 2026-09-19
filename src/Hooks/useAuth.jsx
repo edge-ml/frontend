@@ -27,8 +27,8 @@ const useAuth = () => {
     setUser(undefined);
   };
 
-  const login = async (email, password) => {
-    const success = await loginUser(email, password);
+  const login = async (userName, password) => {
+    const success = await loginUser(userName, password);
     if (success?.access_token) {
       setToken(success.access_token, success.refresh_token);
     }

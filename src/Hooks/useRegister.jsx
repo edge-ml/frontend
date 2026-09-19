@@ -1,13 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { registerNewUser } from "../services/ApiServices/AuthentificationServices";
-import { validateEmail } from "../services/helpers";
 
 const useRegister = () => {
   const navigate = useNavigate();
 
-  const register = async (userName, email, password, passwordConfirm) => {
-    if (!validateEmail(email)) {
-      throw Error("Enter a valid e-mail");
+  const register = async (userName, password, passwordConfirm) => {
+    if (!userName.trim()) {
+      throw Error("Enter a username");
     }
     if (password === "") {
       throw Error("Enter a password");
@@ -15,7 +14,7 @@ const useRegister = () => {
     if (password !== passwordConfirm) {
       throw Error("Passwords do not match");
     }
-    await registerNewUser(email, password, userName);
+    await registerNewUser(userName.trim(), password);
     navigate("/");
   };
 

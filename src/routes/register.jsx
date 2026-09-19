@@ -12,7 +12,6 @@ import {
   Divider,
 } from "@mantine/core";
 import {
-  IconMail,
   IconShield,
   IconUser,
   IconAlertTriangle,
@@ -22,7 +21,6 @@ import { AuthLayout } from "../components/AuthBrandPanel/AuthBrandPanel";
 import useRegister from "../Hooks/useRegister";
 
 const RegisterPage = () => {
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordRepeat, setPasswordRepeat] = useState("");
   const [userName, setUserName] = useState("");
@@ -39,7 +37,7 @@ const RegisterPage = () => {
 
   const onRegisterClick = async () => {
     try {
-      await register(userName, email, password, passwordRepeat);
+      await register(userName, password, passwordRepeat);
     } catch (e) {
       setError(e.message);
     }
@@ -73,13 +71,6 @@ const RegisterPage = () => {
             placeholder="username"
             value={userName}
             onChange={(e) => setUserName(e.currentTarget.value)}
-          />
-
-          <TextInput
-            leftSection={<IconMail size={16} />}
-            placeholder="email"
-            value={email}
-            onChange={(e) => setEmail(e.currentTarget.value)}
           />
 
           <PasswordInput

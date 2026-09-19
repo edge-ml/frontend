@@ -5,7 +5,6 @@ import {
   intersect,
   difference,
   toggleElement,
-  validateEmail,
   getServerTime,
   isNumber,
   betterModulo,
@@ -36,15 +35,6 @@ describe("helpers", () => {
   it("toggleElement adds and removes items", () => {
     expect(toggleElement([1, 2], 3)).toEqual([1, 2, 3]);
     expect(toggleElement([1, 2], 2)).toEqual([1]);
-  });
-
-  it.each([
-    ["test@edge-ml.org", true],
-    ["invalid", false],
-    ["@nope.com", false],
-    ["user@sub.domain.org", true],
-  ])("validateEmail(%s) === %s", (mail, expected) => {
-    expect(validateEmail(mail)).toBe(expected);
   });
 
   it("getServerTime resolves with the date header", async () => {

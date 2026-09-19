@@ -5,17 +5,17 @@ class DeleteUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      confirmationMail: "",
+      confirmationName: "",
       confirmationModalOpen: false,
     };
-    this.eMailChanged = this.eMailChanged.bind(this);
+    this.nameChanged = this.nameChanged.bind(this);
     this.toggleConfirmationModal = this.toggleConfirmationModal.bind(this);
     this.deleteUser = this.deleteUser.bind(this);
   }
 
-  eMailChanged(e) {
+  nameChanged(e) {
     this.setState({
-      confirmationMail: e.target.value,
+      confirmationName: e.target.value,
     });
   }
 
@@ -26,7 +26,7 @@ class DeleteUser extends Component {
   }
 
   deleteUser() {
-    this.props.deleteUser(this.state.confirmationMail);
+    this.props.deleteUser(this.state.confirmationName);
     this.toggleConfirmationModal();
   }
 
@@ -40,16 +40,16 @@ class DeleteUser extends Component {
           </p>
         </div>
         <p className="user-settings-danger-copy">
-          Type <b>{this.props.userMail}</b> below to confirm. All projects where
+          Type <b>{this.props.userName}</b> below to confirm. All projects where
           you are an admin will be deleted.
         </p>
         <div className="user-settings-fields">
           <TextInput
-            label="Confirmation e-mail"
+            label="Confirmation username"
             type="text"
-            id="E-Mail"
-            placeholder="E-Mail"
-            onChange={this.eMailChanged}
+            id="confirmUserName"
+            placeholder="Username"
+            onChange={this.nameChanged}
           />
         </div>
         <div className="user-settings-actions">
@@ -57,7 +57,7 @@ class DeleteUser extends Component {
             variant="outline"
             id="buttonDeleteUser"
             color="red"
-            disabled={this.state.confirmationMail !== this.props.userMail}
+            disabled={this.state.confirmationName !== this.props.userName}
             onClick={this.toggleConfirmationModal}
           >
             Delete user
@@ -79,7 +79,7 @@ class DeleteUser extends Component {
             <Button
               color="red"
               onClick={this.deleteUser}
-              disabled={this.state.confirmationMail !== this.props.userMail}
+              disabled={this.state.confirmationName !== this.props.userName}
             >
               Delete
             </Button>
