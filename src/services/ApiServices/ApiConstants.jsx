@@ -59,6 +59,7 @@ const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const VITE_AUTH_BASE_URL = import.meta.env.VITE_AUTH_BASE_URL;
 const VITE_ML_BASE_URL = import.meta.env.VITE_ML_BASE_URL;
 const VITE_DS_BASE_URL = import.meta.env.VITE_DS_BASE_URL;
+const VITE_WHAR_BASE_URL = import.meta.env.VITE_WHAR_BASE_URL;
 
 export const AUTH_URI = getServiceUri(
   VITE_AUTH_BASE_URL,
@@ -96,12 +97,14 @@ export const DATASET_STORE = getServiceUri(
       : `http://${currentHost}:3004/ds/`
 );
 
-export const WHAR_URI =
-  process.env.NODE_ENV === "production"
+export const WHAR_URI = getServiceUri(
+  VITE_WHAR_BASE_URL,
+  process.env.NODE_ENV === "production" || isTauri()
     ? "/whar/"
     : window.location.host === "edge-ml.ngrok.io"
       ? "http://whar.edge-ml.ngrok.io/whar/"
-      : `http://${currentHost}:3006/whar/`;
+      : `http://${currentHost}:3006/whar/`
+);
 
 export const HTTP_METHODS = {
   GET: "GET",
