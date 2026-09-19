@@ -122,6 +122,12 @@ export const useInterval = (callback, delay) => {
     savedCallback.current = callback;
   }, [callback]);
 
+  // Only `delay` may restart the timer. Callers pass inline arrows, so the
+  // callback identity changes on every render; depending on it here would tear
+  // the interval down and recreate it each time, and any timer with a delay
+  // longer than the component's re-render cadence would never fire. The
+  // savedCallback ref above is what keeps the latest callback reachable
+  // without making it a dependency.
   useEffect(() => {
     function tick() {
       savedCallback.current();
@@ -132,5 +138,5 @@ export const useInterval = (callback, delay) => {
         clearInterval(id);
       };
     }
-  }, [callback, delay]);
+  }, [delay]);
 };
