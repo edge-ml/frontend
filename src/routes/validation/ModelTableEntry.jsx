@@ -1,95 +1,48 @@
 import React, { useState } from "react";
 import Checkbox from "../../components/Common/Checkbox";
-import { Row, Col, UncontrolledTooltip, Spinner } from "reactstrap";
+import { Group, Text, Tooltip, Table } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import DownloadModal from "./DownloadModal";
 import { SelectedModelModalView } from "../../components/SelectedModelModalView/SelectedModelModalView";
 import ButtonList from "./ButtonList";
 import DeployModal from "./DeployModal";
-import EditModal from "../../components/EditModal";
+import { deploymentLabel } from "../../components/Common/modelExport";
 
-const ModelCheckBoxInfo = ({ selectedModels, model, clickCheckBox, onClickEditName }) => (
-  <Col>
-    <div className="d-flex align-items-center h-100">
-      <Checkbox
-        isSelected={selectedModels.map(model => model._id).includes(model._id)}
-        onClick={() => clickCheckBox(model)}
-      ></Checkbox>
-      <div className="ms-2">
-        <div>
-          <b className="font-size-lg h5 fw-bold me-1">{model.name}</b>
-          <FontAwesomeIcon className="cursor-pointer" icon={faPen} onClick={onClickEditName}></FontAwesomeIcon>
-        </div>
-        <div>{model.pipeline.selectedPipeline.name}</div>
-      </div>
-    </div>
-  </Col>
-);
+// Live training status text. Torch classifiers report per-epoch progress;
+// everything else shows the coarse backend stage (Loading data / Training /
+// Finalizing), falling back to a plain "Training..." before any stage is set.
+const trainingProgressText = (model) => {
+  if (model.currentEpoch && model.totalEpochs) {
+    const pct = model.progress != null ? `, ${model.progress}%` : "";
+    return `Training - Epoch ${model.currentEpoch}/${model.totalEpochs}${pct}`;
+  }
+  return model.stage ? `${model.stage}...` : "Training...";
+};
 
-const TrainErrorSection = ({
-  model,
-  selectedModels,
-  clickCheckBox,
-  setModalModel,
-  setModelDownload,
-  onDeleteModels,
-  stepOptions,
-  setDeployModalOpen,
-  onClickEditName
-}) => (
-  <Row className="p-2">
-    <ModelCheckBoxInfo
-      selectedModels={selectedModels}
-      model={model}
-      clickCheckBox={clickCheckBox}
-      onClickEditName={onClickEditName}
-    ></ModelCheckBoxInfo>
-    <Col
-      className="ms-5 flex-grow-1 d-flex justify-content-start align-items-center"
-      style={{ color: "red" }}
+const DeploymentBadge = ({ model }) => {
+  const label = deploymentLabel(model);
+  if (!label) return null; // not exportable — Download is disabled, no badge needed
+  return (
+    <span
+      title={`Downloadable for: ${label}`}
+      style={{
+        display: "inline-block",
+        padding: "0.05rem 0.45rem",
+        borderRadius: "0.5rem",
+        fontSize: "0.72rem",
+        fontWeight: 600,
+        background: "#e7f5ec",
+        color: "#1c7c43",
+      }}
     >
-      {model.error ? (
-        <>
-          An error occurred while training!
-          <FontAwesomeIcon
-            id={"tooltip" + model._id}
-            className="m-2"
-            icon={faCircleInfo}
-          ></FontAwesomeIcon>
-          <UncontrolledTooltip target={"tooltip" + model._id}>
-            {model.error}
-          </UncontrolledTooltip>
-        </>
-      ) : (
-        <>
-          <div>
-            <b>Acc: </b>
-            {metric(model.metrics.accuracy_score)}%
-          </div>
-          <div>
-            <b>F1: </b>
-            {metric(model.metrics.f1_score)}%
-          </div>
-        </>
-      )}
-    </Col>
-    <Col className="col-sm-auto flex-row">
-      <div className="d-flex">
-        <ButtonList
-          model={model}
-          setModalModel={setModalModel}
-          setModelDownload={setModelDownload}
-          onDeleteSingleModel={(model) => onDeleteModels([model])}
-          stepOptions={stepOptions}
-          setDeployModalOpen={setDeployModalOpen}
-        ></ButtonList>
-      </div>
-    </Col>
-  </Row>
-);
+      {label}
+    </span>
+  );
+};
 
-const metric = (metric) => Math.round(metric * 100 * 100) / 100;
+const metric = (val) => Math.round(val * 100 * 100) / 100;
 
 const ModelTableEntry = ({
   model,
@@ -97,98 +50,93 @@ const ModelTableEntry = ({
   stepOptions,
   clickCheckBox,
   onDeleteModels,
-  updateModel
 }) => {
   const [modalModel, setModalModel] = useState(null);
   const [modelDownload, setModelDownload] = useState(null);
-  const [datasetNameEditOpen, setDatasetNameEditOpen] = useState(false);
-  const [deployModalOpen, setDeployModalOpen] = useState(null);
+  const [deployModalOpen, setDeployModalOpen] = useState(false);
 
   const metrics =
-    model.error || model.trainStatus !== "done"
-      ? undefined
-      : model.pipeline.selectedPipeline.steps.find((elm) => elm.type === "EVAL")
-          .options.metrics.metrics;
-
-  if (model.error) {
-    return (
-      <>
-        <TrainErrorSection
-          model={model}
-          selectedModels={selectedModels}
-          clickCheckBox={clickCheckBox}
-          setModalModel={setModalModel}
-          setModelDownload={setModelDownload}
-          onDeleteModels={onDeleteModels}
-          stepOptions={stepOptions}
-          onClickEditName={() => setDatasetNameEditOpen(true)}
-        ></TrainErrorSection>
-      </>
-    );
-  }
+    !model.error && model.trainStatus === "done"
+      ? model.pipeline.selectedPipeline.steps.find((elm) => elm.type === "EVAL")
+          ?.options.metrics.metrics
+      : null;
 
   return (
-    <Row className="p-2">
-      <ModelCheckBoxInfo
-        selectedModels={selectedModels}
-        model={model}
-        clickCheckBox={clickCheckBox}
-        onClickEditName={() => setDatasetNameEditOpen(true)}
-      ></ModelCheckBoxInfo>
-      {model.trainStatus !== "done" ? (
-        <Col className="d-flex align-items-center">
-          <Spinner size="sm" className="me-2">Loading...</Spinner>
-          <span>Training...</span>
-        </Col>
-      ) : (
-        <Col className="d-flex flex-column justify-content-center">
-          <div>
-            <b>Acc: </b>
-            {metrics && metric(metrics.accuracy_score)}%
+    <>
+      <Table.Tr>
+        <Table.Td>
+          <Checkbox
+            isSelected={selectedModels.includes(model._id)}
+            onClick={() => clickCheckBox(model)}
+          />
+        </Table.Td>
+        <Table.Td>
+          <div className="text-left d-inline-block m-2">
+            <Text fw={700} size="lg" component="span">
+              {model.name}
+            </Text>
+            <Text size="sm" c="dimmed">
+              {model.pipeline?.selectedPipeline?.name}{" "}
+              {model.trainStatus === "done" && !model.error ? (
+                <DeploymentBadge model={model} />
+              ) : null}
+            </Text>
           </div>
-          <div>
-            <b>F1: </b>
-            {metrics && metric(metrics.f1_score)}%
-          </div>
-        </Col>
-      )}
-      <Col className="col-sm-auto flex-row">
-        <div className="d-flex">
-          <ButtonList
-            model={model}
-            setModalModel={setModalModel}
-            setModelDownload={setModelDownload}
-            onDeleteSingleModel={(model) => onDeleteModels([model])}
-            stepOptions={stepOptions}
-            setDeployModalOpen={setDeployModalOpen}
-          ></ButtonList>
-        </div>
-      </Col>
+        </Table.Td>
+        <Table.Td>
+          {model.error ? (
+            <Group gap="xs" style={{ color: "red" }}>
+              <Text c="red">An error occurred while training!</Text>
+              <Tooltip label={model.error}>
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </Tooltip>
+            </Group>
+          ) : model.trainStatus !== "done" ? (
+            <Group gap="xs">
+              <LogoLoader size={24} />
+              <Text size="sm">{trainingProgressText(model)}</Text>
+            </Group>
+          ) : (
+            <Group gap="md">
+              <Text size="sm">
+                <b>Acc: </b>
+                {metrics ? `${metric(metrics.accuracy_score)}%` : "N/A"}
+              </Text>
+              <Text size="sm">
+                <b>F1: </b>
+                {metrics ? `${metric(metrics.f1_score)}%` : "N/A"}
+              </Text>
+            </Group>
+          )}
+        </Table.Td>
+        <Table.Td>
+          <Group gap="xs" wrap="nowrap">
+            <ButtonList
+              model={model}
+              setModalModel={setModalModel}
+              setModelDownload={setModelDownload}
+              onDeleteSingleModel={(m) => onDeleteModels([m])}
+              stepOptions={stepOptions}
+              setDeployModalOpen={setDeployModalOpen}
+            />
+          </Group>
+        </Table.Td>
+      </Table.Tr>
+
       <SelectedModelModalView
         model={modalModel}
         onClosed={() => setModalModel(null)}
-      ></SelectedModelModalView>
+      />
       <DownloadModal
         model={modelDownload}
         onClose={() => setModelDownload(null)}
-      ></DownloadModal>
+      />
       <DeployModal
         isOpen={deployModalOpen}
         model={model}
-        onClose={() => setDeployModalOpen(null)}
-      ></DeployModal>
-      <EditModal
-        isOpen={datasetNameEditOpen}
-        headerText="Edit Name"
-        value={""}
-        placeholder="Enter new model name"
-        onSave={(text) => {
-          updateModel({ ...model, name: text });
-          setDatasetNameEditOpen(false);
-        }}
-        onCancel={() => setDatasetNameEditOpen(false)}
-      ></EditModal>
-    </Row>
+        onClose={() => setDeployModalOpen(false)}
+      />
+    </>
   );
 };
 

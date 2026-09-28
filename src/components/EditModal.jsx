@@ -1,12 +1,6 @@
 import React, { useState } from "react";
-import {
-  Input,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  Button,
-} from "reactstrap";
+import { TextInput, Button, Group } from "@mantine/core";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "./Common/Modal";
 
 const EditModal = ({
   isOpen,
@@ -18,22 +12,18 @@ const EditModal = ({
 }) => {
   const [text, setText] = useState(value);
   return (
-    <Modal isOpen={isOpen}>
-      <ModalHeader>{headerText}</ModalHeader>
+    <Modal isOpen={isOpen} onClose={onCancel} title={headerText}>
       <ModalBody>
-        <Input
-          type="text"
-          onChange={(e) => setText(e.target.value)}
+        <TextInput
+          onChange={(e) => setText(e.currentTarget.value)}
           placeholder={placeholder}
         />
       </ModalBody>
       <ModalFooter>
-        <Button outline color="secondary" onClick={onCancel}>
+        <Button variant="outline" color="gray" onClick={onCancel}>
           Cancel
         </Button>
-        <Button outline color="primary" onClick={() => onSave(text)}>
-          Save
-        </Button>
+        <Button onClick={() => onSave(text)}>Save</Button>
       </ModalFooter>
     </Modal>
   );

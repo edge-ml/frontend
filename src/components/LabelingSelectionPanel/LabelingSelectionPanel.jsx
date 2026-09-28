@@ -1,207 +1,254 @@
-import React, { useState, useContext, Fragment } from "react";
+import React, { useState, useMemo, useContext } from "react";
 import {
+  ActionIcon,
+  Badge,
+  Box,
   Button,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Dropdown,
-} from "reactstrap";
-import "./LabelingSelectionPanel.css";
+  Checkbox as MantineCheckbox,
+  Divider,
+  Group,
+  Menu,
+  ScrollArea,
+  Stack,
+  Text,
+  TextInput,
+  Tooltip,
+} from "@mantine/core";
 
 import HelpModal from "./HelpModal";
-
 import NotificationContext from "../NotificationHandler/NotificationProvider";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
-import Checkbox from "../Common/Checkbox";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faDownload,
+  faQuestion,
+  faWaveSquare,
+  faTags,
+  faMagnifyingGlass,
+} from "@fortawesome/free-solid-svg-icons";
+
 import useProjectRouter from "../../Hooks/ProjectRouter";
-import { LabelingContext } from "../../routes/dataset/LabelingContext";
 import { DatasetContext } from "../../routes/dataset/DatasetContext";
 
-const hideLabelsSymbol = "hide labels" + Math.floor(Math.random() * 1000);
+import "./LabelingSelectionPanel.css";
+
+const TimeSeriesSelection = () => {
+  const { activeTimeSeries, setActiveTimeSeries, dataset } =
+    useContext(DatasetContext);
+  const [search, setSearch] = useState("");
+
+  const activeIds = useMemo(
+    () => new Set(activeTimeSeries.map((elm) => elm._id)),
+    [activeTimeSeries]
+  );
+
+  // Toggle in real time — charts update immediately, no Apply step. Rebuild
+  // from dataset.timeSeries so the active set always keeps the dataset order.
+  const toggle = (id) => {
+    const next = new Set(activeIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setActiveTimeSeries(dataset.timeSeries.filter((ts) => next.has(ts._id)));
+  };
+
+  const onSelectAll = () => setActiveTimeSeries(dataset.timeSeries);
+  const onClear = () => setActiveTimeSeries([]);
+
+  const query = search.trim().toLowerCase();
+  const filtered = query
+    ? dataset.timeSeries.filter((ts) => ts.name.toLowerCase().includes(query))
+    : dataset.timeSeries;
+
+  return (
+    <Menu
+      withinPortal
+      position="bottom-start"
+      closeOnItemClick={false}
+      keepMounted={false}
+    >
+      <Menu.Target>
+        <Button variant="default" radius="md">
+          <FontAwesomeIcon icon={faWaveSquare} className="dsp-toolbar-icon" />
+          <Box mx={6} fz="sm" fw={600}>
+            Time Series
+          </Box>
+          <Badge size="sm" variant="light" color="teal">
+            {activeTimeSeries.length}/{dataset.timeSeries.length}
+          </Badge>
+        </Button>
+      </Menu.Target>
+      <Menu.Dropdown w={300}>
+        <Box px="6px" pt="6px">
+          <TextInput
+            size="xs"
+            placeholder="Search time series…"
+            value={search}
+            onChange={(e) => setSearch(e.currentTarget.value)}
+            // Keep the Menu's arrow/typeahead handling from hijacking typing,
+            // but let Escape bubble up so it still closes the menu.
+            onKeyDown={(e) => {
+              if (e.key !== "Escape") e.stopPropagation();
+            }}
+            leftSection={
+              <FontAwesomeIcon icon={faMagnifyingGlass} size="xs" />
+            }
+          />
+        </Box>
+        <ScrollArea.Autosize mah={280} type="auto">
+          <Stack gap={0} p="4px">
+            {filtered.length === 0 ? (
+              <Text fz="sm" c="dimmed" ta="center" py="sm">
+                No matching time series
+              </Text>
+            ) : (
+              filtered.map((elm) => (
+                <Menu.Item
+                  key={elm._id}
+                  leftSection={
+                    <MantineCheckbox
+                      size="xs"
+                      readOnly
+                      tabIndex={-1}
+                      checked={activeIds.has(elm._id)}
+                    />
+                  }
+                  onClick={() => toggle(elm._id)}
+                >
+                  <Text fz="sm" truncate="end">
+                    {elm.name}
+                  </Text>
+                </Menu.Item>
+              ))
+            )}
+          </Stack>
+        </ScrollArea.Autosize>
+        <Divider />
+        <Group justify="space-between" px="xs" py="6px" gap="xs">
+          <Text fz="xs" c="dimmed">
+            {activeTimeSeries.length} of {dataset.timeSeries.length} shown
+          </Text>
+          <Group gap={4}>
+            <Button
+              size="compact-xs"
+              variant="subtle"
+              color="gray"
+              onClick={onSelectAll}
+            >
+              All
+            </Button>
+            <Button
+              size="compact-xs"
+              variant="subtle"
+              color="gray"
+              onClick={onClear}
+            >
+              None
+            </Button>
+          </Group>
+        </Group>
+      </Menu.Dropdown>
+    </Menu>
+  );
+};
+
+const LabelingSelection = ({ navigate }) => {
+  const { labelings, activeLabeling, setActiveLabeling } =
+    useContext(DatasetContext);
+
+  return (
+    <Menu withinPortal position="bottom-start">
+      <Menu.Target>
+        <Button variant="default" radius="md">
+          <FontAwesomeIcon icon={faTags} className="dsp-toolbar-icon" />
+          <Box mx={6} fz="sm" fw={600}>
+            Labeling
+          </Box>
+          <Text fz="sm" c="dimmed" maw={180} truncate="end">
+            {activeLabeling?.name || "None"}
+          </Text>
+        </Button>
+      </Menu.Target>
+      <Menu.Dropdown w={260}>
+        <Stack gap={0} p="4px" maw={260}>
+          {labelings.map((elm) => (
+            <Menu.Item
+              key={elm._id}
+              fw={activeLabeling?._id === elm._id ? 700 : undefined}
+              rightSection={
+                activeLabeling?._id === elm._id ? (
+                  <Badge size="sm" variant="light" color="teal">
+                    active
+                  </Badge>
+                ) : null
+              }
+              onClick={() => setActiveLabeling(elm)}
+            >
+              <Text fz="sm" truncate="end">
+                {elm.name}
+              </Text>
+            </Menu.Item>
+          ))}
+        </Stack>
+        <Divider />
+        <Menu.Item fw={700} onClick={() => navigate("labelings/new")}>
+          + Add Labeling Set
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
+  );
+};
 
 const LabelingSelectionPanel = () => {
-  const {
-    activeTimeSeries,
-    setActiveTimeSeries,
-    dataset,
-    labelings,
-    activeLabeling,
-    setActiveLabeling,
-  } = useContext(DatasetContext);
-
+  const { dataset } = useContext(DatasetContext);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  const [isTSDropdownOpen, setIsTSDropdownOpen] = useState(false);
   const { registerDatasetDownload } = useContext(NotificationContext);
-
-  const [selectedTs, setSelectedTs] = useState(
-    activeTimeSeries.map((elm) => elm._id)
-  );
 
   const navigate = useProjectRouter();
 
-  const toggleHelpModal = () => {
-    setIsHelpModalOpen(!isHelpModalOpen);
-  };
-
-  const downloadDataSet = () => {
-    registerDatasetDownload(dataset);
-  };
-
-  const onApplyTs = () => {
-    setActiveTimeSeries(
-      selectedTs.map((select_id) =>
-        dataset.timeSeries.find((elm) => elm._id === select_id)
-      )
-    );
-  };
-
-  const onClickSelectSeries = (elm_id) => {
-    if (selectedTs.includes(elm_id)) {
-      const idx = selectedTs.indexOf(elm_id);
-      const arr = [...selectedTs];
-      arr.splice(idx, 1);
-      setSelectedTs(arr);
-    } else {
-      const arr = [...selectedTs];
-      arr.push(elm_id);
-      setSelectedTs(arr);
-    }
-  };
-
-  const TimeSeriesSelection = () => {
-    return (
-      <div>
-        <Dropdown
-          isOpen={isTSDropdownOpen}
-          toggle={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
-          className="me-2"
-        >
-          <DropdownToggle
-            caret
-            outline
-            color="secondary"
-            onClick={() => setIsTSDropdownOpen(!isTSDropdownOpen)}
-          >
-            Selected Timeseries:{" "}
-            <div className="d-inline font-weight-normal">
-              {activeTimeSeries.length + "/" + dataset.timeSeries.length}
-            </div>{" "}
-          </DropdownToggle>
-          <DropdownMenu>
-            <div className="scrollable-dropdown">
-              {dataset.timeSeries.map((elm) => {
-                return (
-                  <DropdownItem key={elm._id} className="p-0 p-2">
-                    <div
-                      onClick={(e) => {
-                        onClickSelectSeries(elm._id);
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                    >
-                      <div className="d-flex align-items-center">
-                        <Checkbox
-                          isSelected={selectedTs.includes(elm._id)}
-                        ></Checkbox>
-                        <div className="ms-2">{elm.name}</div>
-                      </div>
-                    </div>
-                  </DropdownItem>
-                );
-              })}
-            </div>
-            <DropdownItem divider></DropdownItem>
-            <div className="w-100 p-2">
-              <Button
-                className="w-100"
-                color="primary"
-                outline
-                onClick={(e) => {
-                  onApplyTs(e);
-                  setIsTSDropdownOpen(false);
-                }}
-              >
-                Apply
-              </Button>
-            </div>
-          </DropdownMenu>
-        </Dropdown>
-      </div>
-    );
-  };
-
-  const name = activeLabeling && activeLabeling.name;
-
   return (
-    <div>
-      <div className="LabelingSelectionPanel p-1">
-        <div className="d-flex align-items-center">
-          <div className="d-flex">
-            <TimeSeriesSelection></TimeSeriesSelection>
-            <UncontrolledDropdown>
-              <DropdownToggle caret outline color="secondary">
-                {activeLabeling ? "Select Labeling: " : "Selected Labeling: "}
-                <div className="d-inline font-weight-normal">
-                  {name || "None"}
-                </div>
-              </DropdownToggle>
-              <DropdownMenu className="scrollable-dropdown">
-                {labelings.map((elm) => (
-                  <DropdownItem
-                    key={elm._id}
-                    onClick={() => setActiveLabeling(elm)}
-                  >
-                    {elm.name}
-                  </DropdownItem>
-                ))}
-                <DropdownItem divider></DropdownItem>
-                <DropdownItem
-                  className="fw-bold"
-                  onClick={() => navigate("labelings/new")}
-                >
-                  + Add Labeling Set
-                </DropdownItem>
-                {activeLabeling ? null : (
-                  <Fragment>
-                    <DropdownItem divider></DropdownItem>
-                    <DropdownItem
-                      className="text-danger"
-                      onClick={() => setActiveLabeling(undefined)}
-                    >
-                      Hide Labels
-                    </DropdownItem>
-                  </Fragment>
-                )}
-              </DropdownMenu>
-            </UncontrolledDropdown>
-          </div>
-        </div>
-        <div className="d-flex align-items-center">
-          <Button
-            outline
-            id="btn-secondary"
-            className="m-1"
-            onClick={downloadDataSet}
-          >
-            <FontAwesomeIcon icon={faDownload}></FontAwesomeIcon>
-          </Button>
-          <Button
-            outline
-            id="buttonOpenHelpModal"
-            className="m-1"
-            color="info"
-            onClick={toggleHelpModal}
-          >
-            <FontAwesomeIcon icon={faQuestion}></FontAwesomeIcon>
-          </Button>
-        </div>
-      </div>
-      <div className="bottom-line"></div>
+    <div className="dsp-toolbar-wrap">
+      <Group
+        justify="space-between"
+        wrap="nowrap"
+        px="sm"
+        py={6}
+        className="dsp-toolbar"
+      >
+        <Group gap="xs" wrap="nowrap">
+          <TimeSeriesSelection />
+          <LabelingSelection navigate={navigate} />
+        </Group>
+        <Group gap="xs" wrap="nowrap">
+          <Tooltip label="Download dataset" withinPortal>
+            <ActionIcon
+              id="btn-secondary"
+              aria-label="Download dataset"
+              variant="default"
+              radius="md"
+              w={30}
+              h={30}
+              onClick={() => registerDatasetDownload(dataset)}
+            >
+              <FontAwesomeIcon icon={faDownload} />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Help & shortcuts" withinPortal>
+            <ActionIcon
+              id="buttonOpenHelpModal"
+              aria-label="Open help"
+              variant="default"
+              radius="md"
+              w={30}
+              h={30}
+              onClick={() => setIsHelpModalOpen(true)}
+            >
+              <FontAwesomeIcon icon={faQuestion} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      </Group>
       {isHelpModalOpen ? (
-        <HelpModal isOpen={isHelpModalOpen} onCloseModal={toggleHelpModal} />
+        <HelpModal isOpen onCloseModal={() => setIsHelpModalOpen(false)} />
       ) : null}
     </div>
   );

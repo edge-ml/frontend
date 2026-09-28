@@ -36,18 +36,27 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const updateNotifications = async () => {
-    const notifications = await datasetDownloadStatus();
-    if (notifications >= 400) {
-      setHasNewNotifications(false);
+    if (activeNotifications.length === 0) {
+      stopUpdates();
       return;
     }
-    setActiveNotifications(notifications);
-    const uncompletedNotifications =
-      notifications.map((elm) => elm.status).filter((elm) => elm != 100) > 0;
-    if (!uncompletedNotifications || notifications.length === 0) {
-      stopUpdates();
+    try {
+      const notifications = await datasetDownloadStatus();
+      if (notifications >= 400) {
+        setHasNewNotifications(false);
+        return;
+      }
+      setActiveNotifications(notifications);
+      const uncompletedNotifications =
+        notifications.map((elm) => elm.status).filter((elm) => elm != 100) > 0;
+      if (!uncompletedNotifications || notifications.length === 0) {
+        stopUpdates();
+      }
+      setHasNewNotifications(uncompletedNotifications); // Update the flag
+    } catch {
+      // Ignore polling errors (e.g. while logged out) so the interval
+      // doesn't spam the backend with failing requests.
     }
-    setHasNewNotifications(uncompletedNotifications); // Update the flag
   };
 
   const startUpdates = () => {
@@ -63,7 +72,8 @@ export const NotificationProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    startUpdates();
+    // Don't poll on mount: only fetch status once a download was registered
+    // (startUpdates is called by registerDatasetDownload/registerProjectDownload).
     return () => stopUpdates();
   }, []);
 

@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  InputGroup,
-  InputGroupText,
-  Input,
-  Table,
-  Col,
-  Row,
-  FormFeedback,
-} from "reactstrap";
+import { Button, TextInput, Table, Text } from "@mantine/core";
 
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
 
@@ -17,111 +8,137 @@ import AutoCompleteInput from "../../components/AutoCompleteInput/AutocompleteIn
 import { getUserNameSuggestions } from "../../services/ApiServices/AuthentificationServices";
 
 import "./EditProjectModal.css";
-import useUserStore from "../../Hooks/useUser";
-import {
-  EdgeMLTable,
-  EdgeMLTableEntry,
-  EdgeMLTableHeader,
-} from "../Common/EdgeMLTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import useProjectStore from "../../stores/projectStore";
 
 const EditProjectModal = ({ isOpen, onClose }) => {
   const [userSearchValue, setUserSearchValue] = useState("");
-  const projects = useProjectStore((state) => state.projects);
+  const [error, setError] = useState(null);
 
   const { project, setProjectName, createProject, addUser, removeUser } =
     useCreateProject();
 
-  console.log(project.users);
+  // Reset the error when the modal is dismissed, so a stale message doesn't
+  // greet the user next time they open it.
+  const handleClose = () => {
+    setError(null);
+    onClose();
+  };
 
   return (
-    <Modal id="editProjectModal" isOpen={isOpen} onClose={onClose}>
+    <Modal id="editProjectModal" isOpen={isOpen} onClose={handleClose}>
       <ModalHeader>Create new Project</ModalHeader>
       <ModalBody>
-        <InputGroup>
-          <InputGroupText>{"Name"}</InputGroupText>
-          <Input
-            id="inputProjectName"
-            placeholder={"Project-name"}
-            value={project.name}
-            onChange={(e) => setProjectName(e.target.value)}
-          />
-          <FormFeedback></FormFeedback>
-        </InputGroup>
-        <InputGroup>
-          <InputGroupText>{"Admin"}</InputGroupText>
-          <Input
-            disabled
-            id="inputProjectAdmin"
-            placeholder={"Project-admin"}
-            value={project.admin.name + " (" + project.admin.mail + ")"}
-          />
-        </InputGroup>
+        <TextInput
+          label="Name"
+          id="inputProjectName"
+          placeholder="Project-name"
+          value={project.name}
+          onChange={(e) => setProjectName(e.target.value)}
+        />
+        <TextInput
+          label="Admin"
+          disabled
+          id="inputProjectAdmin"
+          placeholder="Project-admin"
+          value={project.admin?.userName ?? ""}
+        />
         <h5 style={{ paddingTop: "16px" }}>Users</h5>
-        <EdgeMLTable>
-          <EdgeMLTableHeader>
-            <InputGroup>
-              <InputGroupText>Search user</InputGroupText>
-              <AutoCompleteInput
-                type="text"
-                name="User ID"
-                value={userSearchValue}
-                placeholder="Enter username"
-                onClick={(e) => {
-                  addUser(e);
-                  setUserSearchValue("");
-                }}
-                onChange={(e) => setUserSearchValue(e.target.value)}
-                getsuggestions={getUserNameSuggestions}
-                filter={[
-                  ...project.users.map((elm) => elm.userName),
-                  project.admin.userName,
-                ]}
-              ></AutoCompleteInput>
-            </InputGroup>
-          </EdgeMLTableHeader>
-          {project.users.map((elm) => {
-            return (
-              <EdgeMLTableEntry>
-                <div className="d-flex justify-content-between m-2 align-items-center">
-                  <div>
-                    <b>{elm.userName}</b>
-                  </div>
-                  <div>
-                    <Button
-                      outline
-                      color="danger"
-                      onClick={() => removeUser(elm.userName)}
-                    >
-                      <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
-                    </Button>
-                  </div>
+        <Table>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  <span>Search user</span>
+                  <AutoCompleteInput
+                    type="text"
+                    name="User ID"
+                    value={userSearchValue}
+                    placeholder="Enter username"
+                    onClick={(e) => {
+                      addUser(e);
+                      setUserSearchValue("");
+                    }}
+                    onChange={(e) => setUserSearchValue(e.target.value)}
+                    getsuggestions={getUserNameSuggestions}
+                    filter={[
+                      ...project.users.map((elm) => elm.userName),
+                      project.admin.userName,
+                    ]}
+                  />
                 </div>
-              </EdgeMLTableEntry>
-            );
-          })}
-          {project.users.length === 0 && (
-            <div className="m-2 d-flex justify-content-center">
-              No users added yet
-            </div>
-          )}
-        </EdgeMLTable>
+              </Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>
+            {project.users.length === 0 ? (
+              <Table.Tr>
+                <Table.Td>
+                  <div className="d-flex justify-content-center">
+                    No users added yet
+                  </div>
+                </Table.Td>
+              </Table.Tr>
+            ) : (
+              project.users.map((elm) => (
+                <Table.Tr key={elm.userName}>
+                  <Table.Td>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        margin: "0.5rem",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div>
+                        <b>{elm.userName}</b>
+                      </div>
+                      <div>
+                        <Button
+                          variant="outline"
+                          color="red"
+                          onClick={() => removeUser(elm.userName)}
+                        >
+                          <FontAwesomeIcon icon={faTrashAlt} />
+                        </Button>
+                      </div>
+                    </div>
+                  </Table.Td>
+                </Table.Tr>
+              ))
+            )}
+          </Table.Tbody>
+        </Table>
       </ModalBody>
-      <ModalFooter className="justify-content-end">
+      {error ? (
+        <Text c="red" size="sm" mt="sm" style={{ paddingLeft: "1rem" }}>
+          {error}
+        </Text>
+      ) : null}
+      <ModalFooter style={{ justifyContent: "flex-end" }}>
         <Button
-          outline
+          variant="outline"
           id="btnSaveProject"
-          color="primary"
-          className="m-1"
+          color="blue"
+          style={{ margin: "0.25rem" }}
           onClick={async () => {
-            await createProject();
-            onClose();
+            try {
+              await createProject();
+              setError(null);
+              onClose();
+            } catch (err) {
+              // Surface the backend's rejection (e.g. a duplicate name) instead
+              // of silently closing. apiRequest sets err.message to the server's
+              // detail/error/message.
+              setError(err?.message || "Could not create the project.");
+            }
           }}
         >
           Save
-        </Button>{" "}
+        </Button>
       </ModalFooter>
     </Modal>
   );

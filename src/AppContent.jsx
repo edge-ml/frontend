@@ -1,4 +1,4 @@
-import React, { useEffect, lazy, Suspense } from "react";
+import React, { lazy, Suspense } from "react";
 import { Route, useParams, Routes, Navigate } from "react-router-dom";
 import NoProjectPage from "./components/NoProjectPage/NoProjectPage";
 import useProjectStore from "./stores/projectStore";
@@ -25,15 +25,11 @@ const ParamsAdapter = ({ children }) => {
 };
 
 const AppContent = () => {
-  const { currentProject, getProjects } = useProjectStore();
+  const { currentProject } = useProjectStore();
   const projectId = currentProject ? currentProject._id : "default_key";
 
-  useEffect(() => {
-    getProjects();
-  }, []);
-
   if (!currentProject) {
-    return <NoProjectPage/>;
+    return <NoProjectPage />;
   }
 
   return (

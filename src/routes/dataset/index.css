@@ -1,12 +1,188 @@
-.plotband-selected {
-  opacity: 0.5;
+.time-series-chart {
+  min-width: 320px;
+  width: 100%;
+  height: 200px;
 }
 
-.plotband-deselected {
-  opacity: 0.2;
+/* Sensor name above each chart: small, tight to the chart, brand blue. */
+.time-series-name {
+  font-size: var(--mantine-font-size-sm);
+  color: var(--mantine-color-brand-6);
+  margin-bottom: 0;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.plotline {
-  /* opacity: 0.7; */
+/* The per-chart hide button stays quiet until the chart is hovered/focused,
+   so it doesn't clutter the stack of charts. */
+.time-series-hide {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.time-series-item:hover .time-series-hide,
+.time-series-hide:focus-visible {
+  opacity: 1;
+}
+
+.time-series-chart .uplot {
+  font-family: inherit;
+}
+
+.time-series-chart .u-over {
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.time-series-chart .u-over--panning {
+  cursor: grabbing;
+}
+
+.u-annotation-root,
+.annotation-overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.annotation {
+  --annotation-color: #228be6;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 2px;
+  border-left: 2px solid var(--annotation-color);
+  border-right: 2px solid var(--annotation-color);
+  background: color-mix(in srgb, var(--annotation-color) 18%, transparent);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.annotation:hover,
+.annotation--selected {
+  background: color-mix(in srgb, var(--annotation-color) 32%, transparent);
+}
+
+/* Annotations are wide flat bars — the default blue :focus-visible
+   outline renders as distracting “blue bars”. Use a subtle,
+   color-matched cue instead; selection state is shown via the tint
+   and drag handles above. */
+.annotation:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 1px var(--annotation-color),
+    0 0 0 3px color-mix(in srgb, var(--annotation-color) 35%, transparent);
+}
+
+.annotation--draft {
+  width: 0 !important;
+  border-right: 0;
+  border-left-style: dashed;
+  pointer-events: none;
+}
+
+.annotation__name {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  max-width: calc(100% - 8px);
+  padding: 1px 4px;
+  overflow: hidden;
+  color: var(--annotation-color);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.annotation__handle {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  width: 12px;
   cursor: col-resize;
+  touch-action: none;
+}
+
+.annotation__handle--start {
+  left: -7px;
+}
+
+.annotation__handle--end {
+  right: -7px;
+}
+
+.timeline-navigator {
+  padding: 18px 28px 12px;
+}
+
+/* Timestamp badges for the visible range edges. These are rendered by
+   ChartSlider itself (not Mantine's floating thumb labels, which are
+   anchored inside the thumb element and can escape the container —
+   sliding under the fixed left navbar or off-screen at the ends).
+   Positions come from JS, already clamped to stay within the track. */
+.timeline-navigator__timestamps {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(50% + var(--slider-size, 1rem));
+  height: 0;
+  pointer-events: none;
+}
+
+.timeline-navigator__timestamp {
+  position: absolute;
+  transform: translateX(-50%);
+  background-color: var(--mantine-color-gray-9);
+  color: var(--mantine-color-white);
+  font-size: var(--mantine-font-size-xs);
+  padding: calc(var(--mantine-spacing-xs) / 2) var(--mantine-spacing-xs);
+  border-radius: var(--mantine-radius-sm);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+/* Show the custom timestamp badges while hovering the slider or while
+   actively dragging it — the drag uses pointer capture, so the cursor can
+   move away from the slider without ending the interaction. */
+.timeline-navigator__control:hover .timeline-navigator__timestamp,
+.timeline-navigator__control--dragging .timeline-navigator__timestamp {
+  opacity: 1;
+}
+
+.timeline-navigator__control {
+  position: relative;
+}
+
+.timeline-navigator__drag-track {
+  position: absolute;
+  z-index: 2;
+  top: 4px;
+  right: 8px;
+  left: 8px;
+  height: 8px;
+  pointer-events: none;
+}
+
+.timeline-navigator__range {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 2px;
+  border-radius: 999px;
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.timeline-navigator__range--dragging {
+  cursor: grabbing;
 }

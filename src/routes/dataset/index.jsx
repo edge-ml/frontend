@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import useDataset from "../../Hooks/useDataset";
 import LabelingSelectionPanel from "../../components/LabelingSelectionPanel/LabelingSelectionPanel";
@@ -19,15 +19,6 @@ const Dataset = () => {
   const { labelings } = useLabelings();
   const datasetEdit = useEditDataset(datasetUtils, labelings);
 
-  const handleResize = () => {
-    window.location.reload();
-  };
-
-  useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const { dataset } = datasetUtils;
 
   if (!dataset || !labelings) {
@@ -39,7 +30,10 @@ const Dataset = () => {
       <DatasetProvider
         dataset={dataset}
         labelings={labelings}
-        datasetEdit={datasetEdit}
+        datasetEdit={{
+          ...datasetEdit,
+          updateDataset: datasetUtils.updateDataset,
+        }}
       >
         <LabelingProvider labelings={labelings}>
           <div className="d-flex w-100 h-100">

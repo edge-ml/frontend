@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Row, Col, Input, Button } from "reactstrap";
+import { TextInput, Button, SimpleGrid } from "@mantine/core";
 import {
   init2FA,
   verify2FA,
@@ -53,45 +53,34 @@ class TwoFaSettings extends Component {
     return (
       <div>
         {!this.props.twoFAEnabled ? (
-          <Row>
-            <Col>
-              <img width="100%" alt="2FA QR Code" src={this.state.qrCode} />
-            </Col>
-            <Col style={{ marginTop: "15px" }}>
+          <SimpleGrid cols={2}>
+            <img width="100%" alt="2FA QR Code" src={this.state.qrCode} />
+            <div style={{ marginTop: "15px" }}>
               Scan the qr-code with a supported app then enter the token from
               the app in order to activate two-factor authentication
-              <Input
+              <TextInput
                 autoFocus
                 id="inputTwoFAToken"
-                className={"mt-1"}
+                className="mt-1"
                 placeholder="Token"
                 style={{ textAlign: "center" }}
                 onChange={this.onTokenChanged}
-                ref={(input) => {
-                  this.tokenInput = input;
-                }}
               />
-            </Col>
-          </Row>
+            </div>
+          </SimpleGrid>
         ) : (
           <div style={{ marginTop: "8px" }}>
-            <Row>
-              <Col>
-                <h5 className="text-center">2FA is activated</h5>
-              </Col>
-            </Row>
-            <Row>
-              <Col className="text-center">
-                <Button
-                  id="buttonDisableTwoFA"
-                  color="danger"
-                  outline
-                  onClick={this.on2FADisable}
-                >
-                  Disable
-                </Button>
-              </Col>
-            </Row>
+            <h5 style={{ textAlign: "center" }}>2FA is activated</h5>
+            <div style={{ textAlign: "center" }}>
+              <Button
+                id="buttonDisableTwoFA"
+                color="red"
+                variant="outline"
+                onClick={this.on2FADisable}
+              >
+                Disable
+              </Button>
+            </div>
           </div>
         )}
       </div>

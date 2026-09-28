@@ -1,101 +1,184 @@
 import React, { Fragment, useState } from "react";
+import { useViewportSize } from "@mantine/hooks";
 
-import { Button, Table, Row, Col } from "reactstrap";
+import {
+  Button,
+  Table,
+  Tabs,
+  Paper,
+  SimpleGrid,
+  Group,
+  Text,
+  ScrollArea,
+} from "@mantine/core";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "../Common/Modal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
 import ConfusionMatrixView from "../ConfusionMatrix/ConfusionMatrixView";
 import Loader from "../../modules/loader";
 
 import "./index.css";
-import classNames from "classnames";
 import LabelBadge from "../Common/LabelBadge";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
-export const SelectedModelModalView = ({
-  model,
-  labels,
-  onDelete = null,
-  onClosed,
-  onButtonDeploy,
-  onButtonDownload,
-  ...props
-}) => {
+// sklearn's classification_report groups these apart from the per-label rows.
+const SUMMARY_ROWS = ["accuracy", "macro avg", "weighted avg"];
+
+const asPercent = (v) => {
+  const val = Math.round(v * 100 * 100) / 100;
+  return isNaN(val) ? "—" : `${val}%`;
+};
+
+// Gap between the modal and the window edge, and Mantine's body padding.
+const GUTTER = 16;
+const BODY_PAD = 16;
+// Rough height of everything around the tab content (modal title, summary
+// strip, tab list, matrix caption + legend, footer). Only used to size the
+// matrix/report so they fit on screen without the modal scrolling.
+const CHROME_HEIGHT = 420;
+const CM_COL_HEAD = 92;
+
+const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+
+// Work out how big the confusion matrix cells can get for this viewport and
+// how wide the modal needs to be to show it. Width is shared by all tabs so
+// switching tabs doesn't make the modal jump around.
+const computeLayout = (model, metrics, vw, vh) => {
+  const labels = model.labels.map((l) => l.name);
+  const n = Math.max(1, labels.length);
+  const matrix = JSON.parse(metrics.confusion_matrix);
+  const maxDigits = String(Math.max(0, ...matrix.flat())).length;
+
+  const narrow = vw < 576;
+  const labelChars = narrow ? 10 : 18;
+  const longest = Math.min(
+    labelChars,
+    Math.max(...labels.map((l) => l.length), 4)
+  );
+  const maxModal = Math.max(280, vw - 2 * GUTTER);
+  const availH = Math.max(vh * 0.45, vh - 2 * GUTTER - CHROME_HEIGHT);
+  const minCell = Math.max(24, maxDigits * 8 + 10);
+
+  // Row header width depends on the font, which depends on the cell size, so
+  // estimate once with a default font and refine with the resulting one.
+  const sizeFor = (font) => {
+    const rowHead = Math.round(longest * font * 0.66 + 36);
+    // Leave room for the scroll box border and a vertical scrollbar.
+    const availW = maxModal - 2 * BODY_PAD - rowHead - 24;
+    // Fit the whole matrix on screen when that keeps cells readable. If it
+    // has to scroll vertically anyway, size cells to the available width
+    // instead so wide screens aren't wasted.
+    const fitW = availW / n;
+    const fitH = (availH - CM_COL_HEAD) / n;
+    const target = fitH >= 40 ? Math.min(fitW, fitH) : fitW;
+    const cell = Math.floor(clamp(target, minCell, 60));
+    return { rowHead, cell, font: Math.round(clamp(cell * 0.28, 10, 15)) };
+  };
+  let { rowHead, cell, font } = sizeFor(13);
+  ({ rowHead, cell, font } = sizeFor(font));
+
+  const matrixWidth = rowHead + n * cell + 24 + 2 * BODY_PAD;
+  const modalWidth = Math.round(
+    clamp(matrixWidth, Math.min(maxModal, 760), maxModal)
+  );
+
+  return {
+    modalWidth,
+    cell,
+    font,
+    labelChars,
+    matrix,
+    scrollHeight: Math.round(availH),
+  };
+};
+
+const asCount = (v) => (v == null || isNaN(v) ? "—" : Math.round(v));
+
+export const SelectedModelModalView = ({ model, onClosed, ...rest }) => {
+  // Some callers still pass deploy/download/delete handlers and a labels list;
+  // this view doesn't render those actions, so drop them here rather than let
+  // them leak onto the underlying Modal as unknown DOM props.
+  // eslint-disable-next-line no-unused-vars
+  const { labels, onDelete, onButtonDeploy, onButtonDownload, ...props } = rest;
+
   const metrics = model
     ? model.pipeline.selectedPipeline.steps.filter(
         (elm) => elm.type === "EVAL"
       )[0].options.metrics
     : null;
+
+  const colorMap = model
+    ? Object.fromEntries(model.labels.map((l) => [l.name, l.color]))
+    : {};
+
+  const { width: vw, height: vh } = useViewportSize();
+  const layout =
+    model && vw > 0 ? computeLayout(model, metrics, vw, vh) : null;
+
   return (
-    <Modal isOpen={model} size="xl" {...props} onClose={() => onClosed()}>
+    <Modal
+      isOpen={model}
+      size={layout ? "auto" : "xl"}
+      // Set the width inline: Mantine converts `size` to rem, which the app's
+      // 90% root font-size would shrink below the px-sized matrix.
+      styles={
+        layout
+          ? { content: { flex: `0 0 ${layout.modalWidth}px` } }
+          : undefined
+      }
+      xOffset={GUTTER}
+      yOffset={GUTTER}
+      {...props}
+      onClose={() => onClosed()}
+    >
       <ModalHeader>Model: {model && model.name}</ModalHeader>
       <ModalBody>
         {model ? (
           <>
-            <div className="d-flex justify-content-between w-100">
-              <div className="d-flex justify-content-start">
-                <General_info
-                  model={model}
-                  onButtonDeploy={onButtonDeploy}
-                  onButtonDownload={onButtonDownload}
-                ></General_info>
-                <PerformanceInfo metrics={metrics.metrics}></PerformanceInfo>
-              </div>
-              <div>
-                <Button
-                  outline
-                  className="me-auto"
-                  onClick={() => {}}
-                  color="danger"
-                >
-                  <FontAwesomeIcon
-                    className="mx-1"
-                    icon={faTrashAlt}
-                  ></FontAwesomeIcon>
-                  Delete
-                </Button>
-              </div>
-            </div>
-            <div className="my-5 d-flex justify-content-start align-items-center">
-              <Classification_report
-                report={metrics.classification_report}
-              ></Classification_report>
-              <ConfusionMatrixView
-                matrix={JSON.parse(metrics.confusion_matrix)}
-                labels={model.labels.map((elm) => elm.name)}
-              ></ConfusionMatrixView>
-            </div>
-            <Training_config model={model}></Training_config>
+            <SummaryStrip model={model} metrics={metrics.metrics} />
+
+            <Tabs defaultValue="report" mt="lg" keepMounted={false}>
+              <Tabs.List>
+                <Tabs.Tab value="report">Classification report</Tabs.Tab>
+                <Tabs.Tab value="confusion">Confusion matrix</Tabs.Tab>
+                <Tabs.Tab value="pipeline">Pipeline</Tabs.Tab>
+              </Tabs.List>
+
+              <Tabs.Panel value="report" pt="md">
+                <ClassificationReport
+                  report={metrics.classification_report}
+                  colorMap={colorMap}
+                  maxHeight={layout ? layout.scrollHeight : "55vh"}
+                />
+              </Tabs.Panel>
+
+              <Tabs.Panel value="confusion" pt="md">
+                <ConfusionMatrixView
+                  matrix={
+                    layout
+                      ? layout.matrix
+                      : JSON.parse(metrics.confusion_matrix)
+                  }
+                  labels={model.labels.map((elm) => elm.name)}
+                  colorMap={colorMap}
+                  cellSize={layout?.cell}
+                  fontSize={layout?.font}
+                  labelChars={layout?.labelChars}
+                  maxHeight={layout?.scrollHeight}
+                />
+              </Tabs.Panel>
+
+              <Tabs.Panel value="pipeline" pt="md">
+                <TrainingConfig model={model} />
+              </Tabs.Panel>
+            </Tabs>
           </>
         ) : (
-          <Loader loading></Loader>
+          <Loader loading />
         )}
       </ModalBody>
-      <ModalFooter className="justify-content-end">
-        {/* <div>
-                <Button
-                  outline
-                  color='primary'
-                  className="me-2"
-                  onClick={(e) => {
-                    onButtonDownload(model);
-                    e.stopPropagation();
-                  }}
-                >
-                  Download
-                </Button>
-                <Button
-                  outline
-                  color='primary'
-                  onClick={(e) => {
-                    onButtonDeploy(model);
-                    e.stopPropagation();
-                  }}
-                >
-                  Deploy
-                </Button>
-              </div> */}
-        <Button outline onClick={onClosed}>
+      <ModalFooter style={{ justifyContent: "flex-end" }}>
+        <Button variant="outline" onClick={onClosed}>
           Close
         </Button>
       </ModalFooter>
@@ -103,176 +186,163 @@ export const SelectedModelModalView = ({
   );
 };
 
-const General_info = ({
-  model,
-  onDeploy,
-  onButtonDeploy,
-  onButtonDownload,
-}) => {
+// Always-visible header: headline metrics + a compact identity + wrapping labels.
+const SummaryStrip = ({ model, metrics }) => {
+  const stats = [
+    { label: "Accuracy", value: asPercent(metrics.accuracy_score) },
+    { label: "Precision", value: asPercent(metrics.precision_score) },
+    { label: "Recall", value: asPercent(metrics.recall_score) },
+    { label: "F1 score", value: asPercent(metrics.f1_score) },
+  ];
+
   return (
     <div>
-      <h5>
-        <b>General information</b>
-      </h5>
-      <Row>
-        <Col className="col-auto">
-          <Table borderless size="sm" striped>
-            <tbody>
-              <tr>
-                <th>Name</th>
-                <td>{model.name}</td>
-              </tr>
-              <tr>
-                <th>Pipeline</th>
-                <td>{model.pipeline.selectedPipeline.name}</td>
-              </tr>
+      <SimpleGrid cols={{ base: 2, xs: 4 }} spacing="sm">
+        {stats.map(({ label, value }) => (
+          <Paper key={label} withBorder radius="md" p="sm" className="stat-card">
+            <Text className="stat-card-value">{value}</Text>
+            <Text className="stat-card-label">{label}</Text>
+          </Paper>
+        ))}
+      </SimpleGrid>
 
-              <tr>
-                <th>Used labels</th>
-                <td>
-                  {model.labels.map((elm, index) => (
-                    <LabelBadge color={elm.color}>{elm.name}</LabelBadge>
-                  ))}
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-        </Col>
-        <Col></Col>
-      </Row>
-    </div>
-  );
-};
-
-const Classification_report = ({ report }) => {
-  const keys = Object.keys(report);
-  const metrics = Object.keys(report[keys[0]]);
-  return (
-    <div>
-      <h5>
-        <b>Classification report</b>
-      </h5>
-      <Table borderless size="sm" striped>
-        <thead>
-          <tr>
-            <th></th>
-            {metrics.map((key) => (
-              <th className="text-center">{key}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {keys.map((key) => (
-            <tr>
-              <th>{key}</th>
-              {metrics.map((met) => (
-                <td className="px-4">{metric(report[key][met])}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-    </div>
-  );
-};
-
-const Training_config = ({ model }) => {
-  const [selectedStep, setSelectedStep] = useState(
-    model.pipeline.selectedPipeline.steps[0]
-  );
-
-  const Render_Step = (step) => {
-    return (
-      <div className="training_step_container">
-        <div
-          className={classNames("training_step", {
-            training_step_selected: step.name === selectedStep.name,
-          })}
-          onClick={() => onClickStep(step)}
-        >
-          <div>{step.name}</div>
+      <Group justify="space-between" align="flex-start" mt="md" wrap="nowrap">
+        <div style={{ minWidth: 0 }}>
+          <Text size="sm">
+            <Text span c="dimmed">
+              Pipeline:{" "}
+            </Text>
+            {model.pipeline.selectedPipeline.name}
+          </Text>
         </div>
-        {step.name == selectedStep.name ? (
-          <div className="d-flex justify-content-center">
-            <div className="v_line"></div>
-          </div>
-        ) : null}
-      </div>
-    );
-  };
+        <Text size="sm" c="dimmed" style={{ whiteSpace: "nowrap" }}>
+          {model.labels.length} labels
+        </Text>
+      </Group>
 
-  const onClickStep = (step) => {
-    setSelectedStep(step);
-  };
+      <Group gap={6} mt={8}>
+        {model.labels.map((elm) => (
+          <LabelBadge key={elm.name} color={elm.color}>
+            {elm.name}
+          </LabelBadge>
+        ))}
+      </Group>
+    </div>
+  );
+};
+
+const ReportRow = ({ name, row, colorMap, summary }) => (
+  <Table.Tr className={summary ? "report-summary-row" : undefined}>
+    <Table.Td>
+      <span className="report-label">
+        {!summary ? (
+          <span
+            className="report-dot"
+            style={{ background: colorMap[name] || "#adb5bd" }}
+          />
+        ) : null}
+        {name}
+      </span>
+    </Table.Td>
+    <Table.Td className="report-num">{asPercent(row["precision"])}</Table.Td>
+    <Table.Td className="report-num">{asPercent(row["recall"])}</Table.Td>
+    <Table.Td className="report-num">{asPercent(row["f1-score"])}</Table.Td>
+    <Table.Td className="report-num">{asCount(row["support"])}</Table.Td>
+  </Table.Tr>
+);
+
+const ClassificationReport = ({ report, colorMap, maxHeight }) => {
+  const keys = Object.keys(report);
+  const labelRows = keys.filter((k) => !SUMMARY_ROWS.includes(k));
+  const summaryRows = keys.filter(
+    (k) => SUMMARY_ROWS.includes(k) && typeof report[k] === "object"
+  );
+
+  return (
+    <ScrollArea.Autosize mah={maxHeight} type="auto">
+      <Table
+        stickyHeader
+        highlightOnHover
+        verticalSpacing={8}
+        className="report-table"
+      >
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Label</Table.Th>
+            <Table.Th className="report-num">Precision</Table.Th>
+            <Table.Th className="report-num">Recall</Table.Th>
+            <Table.Th className="report-num">F1 score</Table.Th>
+            <Table.Th className="report-num">Support</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {labelRows.map((key) => (
+            <ReportRow
+              key={key}
+              name={key}
+              row={report[key]}
+              colorMap={colorMap}
+            />
+          ))}
+          {summaryRows.map((key) => (
+            <ReportRow key={key} name={key} row={report[key]} summary />
+          ))}
+        </Table.Tbody>
+      </Table>
+    </ScrollArea.Autosize>
+  );
+};
+
+const TrainingConfig = ({ model }) => {
+  const steps = model.pipeline.selectedPipeline.steps.filter(
+    (elm) => elm.type === "PRE" || elm.type === "CORE"
+  );
+  const [selectedStep, setSelectedStep] = useState(steps[0]);
 
   return (
     <Fragment>
-      <h5>
-        <b>Pipeline configuration</b>
-      </h5>
-      <div className="d-flex justify-content-start">
-        {model.pipeline.selectedPipeline.steps
-          .filter((elm) => elm.type === "PRE" || elm.type === "CORE")
-          .map((elm) => Render_Step(elm, onClickStep))}
+      <div className="pipeline-steps">
+        {steps.map((step, index) => (
+          <Fragment key={step.name}>
+            {index > 0 ? (
+              <FontAwesomeIcon
+                className="pipeline-step-arrow"
+                icon={faChevronRight}
+              />
+            ) : null}
+            <button
+              type="button"
+              className={`pipeline-step${
+                step.name === selectedStep.name ? " pipeline-step-selected" : ""
+              }`}
+              onClick={() => setSelectedStep(step)}
+            >
+              <span className="pipeline-step-number">{index + 1}</span>
+              {step.name}
+            </button>
+          </Fragment>
+        ))}
       </div>
 
-      <div className="mx-2 borderTop p-2">
-        {/* <h5>
-          <b>{selectedStep.name}</b>
-        </h5> */}
-        <div>
-          <b>Method: </b>
-          {selectedStep.options.name}
+      <div className="pipeline-details">
+        <div className="pipeline-details-method">
+          Method: {selectedStep.options.name}
         </div>
         {selectedStep.options.parameters.length > 0 ? (
-          <div>
-            <b>Parameters: </b>
+          <div className="pipeline-params-grid">
             {selectedStep.options.parameters.map((param) => (
-              <div>
-                <span>{param.name}: </span>
-                <span>{param.value}</span>
+              <div className="pipeline-param" key={param.name}>
+                <span className="pipeline-param-name">{param.name}</span>
+                <span className="pipeline-param-value">{param.value}</span>
               </div>
             ))}
           </div>
-        ) : null}
+        ) : (
+          <Text size="sm" c="dimmed">
+            No parameters for this step.
+          </Text>
+        )}
       </div>
     </Fragment>
-  );
-};
-
-const metric = (metric) => {
-  const val = Math.round(metric * 100 * 100) / 100;
-  return isNaN(val) ? "" : val;
-};
-
-const PerformanceInfo = ({ metrics }) => {
-  return (
-    <div>
-      <h5>
-        <b>Metrics</b>
-      </h5>
-      <Table borderless size="sm" striped style={{ width: "150px" }}>
-        <tbody>
-          <tr>
-            <td>
-              <b>Accuracy</b>
-            </td>
-            <td>{metric(metrics.accuracy_score)}%</td>
-          </tr>
-          <tr>
-            <td>
-              <b>Precision</b>
-            </td>
-            <td>{metric(metrics.precision_score)}%</td>
-          </tr>
-          <tr>
-            <td>
-              <b>Recall</b>
-            </td>
-            <td>{metric(metrics.recall_score)}%</td>
-          </tr>
-        </tbody>
-      </Table>
-    </div>
   );
 };

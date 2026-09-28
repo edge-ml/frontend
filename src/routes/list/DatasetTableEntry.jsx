@@ -1,301 +1,379 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEdit,
+  faCheck,
   faExclamationTriangle,
-  faList,
   faPen,
-  faTimes,
   faTrashAlt,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
-import React, { Fragment, useContext, useState } from "react";
-import { Badge, Button, Col, Row } from "reactstrap";
-
-import { useNavigate } from "react-router-dom";
-import classNames from "classnames";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  ActionIcon,
+  Button,
+  Group,
+  HoverCard,
+  Stack,
+  Table,
+  Text,
+  TextInput,
+} from "@mantine/core";
 
 import Checkbox from "../../components/Common/Checkbox";
 import { displayTime } from "../../services/helpers";
-import LabelBadge from "../../components/Common/LabelBadge";
 import useProjectRouter from "../../Hooks/ProjectRouter";
-import EditModal from "../../components/EditModal";
 
-// s as unix timestamp in milliseconds
+const ColorDot = ({ color = "var(--mantine-color-blue-5)" }) => (
+  <span
+    aria-hidden="true"
+    style={{
+      width: 8,
+      height: 8,
+      borderRadius: "50%",
+      backgroundColor: color,
+      boxShadow: `0 0 0 3px color-mix(in srgb, ${color} 16%, transparent)`,
+      flexShrink: 0,
+    }}
+  />
+);
+
+const MoreLink = ({ count }) =>
+  count > 0 ? (
+    <Text size="xs" c="blue" fw={600} style={{ whiteSpace: "nowrap" }}>
+      +{count} more
+    </Text>
+  ) : null;
+
+const MAX_LABEL_DOTS = 4;
+
+const LabelingDots = ({ labels }) => {
+  const visibleDots = labels.slice(0, MAX_LABEL_DOTS);
+  const remaining = labels.length - visibleDots.length;
+  return (
+    <Group gap={5} wrap="nowrap">
+      {visibleDots.map((label) => (
+        <ColorDot key={label._id} color={label.color} />
+      ))}
+      {remaining > 0 && (
+        <Text size="xs" c="dimmed" fw={700} style={{ whiteSpace: "nowrap" }}>
+          +{remaining}
+        </Text>
+      )}
+    </Group>
+  );
+};
+
 const format_time = (s) => {
   const seconds = s / 1000;
-
-  // Calculate the number of minutes and seconds from the remaining seconds
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds % 60).toLocaleString("en-US", {
     minimumIntegerDigits: 2,
   });
-
-  // Calculate the number of hours, minutes, and seconds from the remaining minutes
   const hours = Math.floor(minutes / 60).toLocaleString("en-US", {
     minimumIntegerDigits: 2,
   });
   const remainingMinutes = (minutes % 60).toLocaleString("en-US", {
     minimumIntegerDigits: 2,
   });
-
   return `${hours}:${remainingMinutes}:${remainingSeconds}`;
 };
 
-const Labelings = (props) => {
-  if (!props.dataset.labelings.length || !props.labelings.length) {
-    return null;
-  }
+const Labelings = ({ dataset, labelings }) => {
+  if (!dataset.labelings?.length || !labelings?.length) return null;
 
-  const labelings = props.dataset.labelings
-    .map((elm) =>
-      props.labelings.find((labeling) => labeling._id === elm.labelingId)
-    )
-    .filter((elm) => elm !== undefined);
+  const datasetLabelings = dataset.labelings
+    .map((datasetLabeling) => {
+      const labeling = labelings.find(
+        (item) => item._id === datasetLabeling.labelingId
+      );
+      if (!labeling) return null;
+
+      const selectedTypes = new Set(
+        datasetLabeling.labels.map((label) => label.type)
+      );
+      return {
+        labeling,
+        activeLabels: labeling.labels.filter((label) =>
+          selectedTypes.has(label._id)
+        ),
+      };
+    })
+    .filter(Boolean);
+  if (datasetLabelings.length === 0) return null;
+
+  const visible = datasetLabelings.slice(0, 2);
+  const remaining = datasetLabelings.length - visible.length;
+
+  const content = (
+    <Stack gap="md" maw={340}>
+      {datasetLabelings.map(({ labeling, activeLabels }) => (
+        <div key={labeling._id}>
+          <Text fw={700} size="sm" mb={6}>
+            {labeling.name}
+          </Text>
+          <Group gap="sm">
+            {activeLabels.map((label) => (
+              <Group key={label._id} gap={6} wrap="nowrap">
+                <ColorDot color={label.color} />
+                <Text size="sm">{label.name}</Text>
+              </Group>
+            ))}
+          </Group>
+        </div>
+      ))}
+    </Stack>
+  );
 
   return (
-    <div className="mt-1 ms-4 p-lg-0 m-lg-0">
-      <Row className="ps-1 ms-1 p-lg-0 m-lg-0 ">
-        <Col>
-          {labelings.map((labeling, idx) => (
-            <Badge
-              className="me-2 badgeSize badgeLabelings pb-2 mt-2 mb-2"
-              color="unset"
-              key={labeling + idx}
-            >
-              <div className="labelingBadgeWrapper">
-                {labeling.name.toUpperCase()}
+    <HoverCard
+      shadow="md"
+      openDelay={200}
+      withinPortal={false}
+      position="bottom"
+      offset={3}
+      withArrow
+    >
+      <HoverCard.Target>
+        <Stack gap={7}>
+          {visible.map(({ labeling, activeLabels }) => (
+            <Group key={labeling._id} gap={8} wrap="nowrap">
+              {activeLabels.length > 0 ? (
+                <LabelingDots labels={activeLabels} />
+              ) : (
+                <ColorDot color="var(--mantine-color-gray-5)" />
+              )}
+              <div style={{ minWidth: 0 }}>
+                <Text size="sm" fw={600} truncate>
+                  {labeling.name}
+                </Text>
+                {activeLabels.length === 0 && (
+                  <Text size="xs" c="dimmed">
+                    No labels selected
+                  </Text>
+                )}
               </div>
-              <div>
-                {labeling.labels.map((label, index) => {
-                  const labelTypes = props.dataset.labelings[idx].labels.map(
-                    (elm) => elm.type
-                  );
-                  if (!labelTypes.includes(label._id)) {
-                    return null;
-                  }
-                  return (
-                    <LabelBadge
-                      key={label + index}
-                      className="badgeSize mx-1"
-                      color={label.color}
-                    >
-                      {label.name}
-                    </LabelBadge>
-                  );
-                })}
-              </div>
-            </Badge>
+            </Group>
           ))}
-        </Col>
-      </Row>
-    </div>
+          <MoreLink count={remaining} />
+        </Stack>
+      </HoverCard.Target>
+      <HoverCard.Dropdown>{content}</HoverCard.Dropdown>
+    </HoverCard>
   );
 };
 
-const Metadata = (props) => {
-  if (!props.metaData) {
-    return null;
-  }
-  const dataset = props.dataset;
-  return (
-    <div>
-      <Row>
-        <Col className="col-auto pe-0">
-          <div className="mt-2 d-inline fw-bold">Metadata: </div>
-        </Col>
-        <Col>
-          <div className="d-inline">
-            {Object.keys(dataset.metaData).map((key, idx) => {
-              const value = dataset.metaData[key];
-              return (
-                <Badge className="me-2 badgeSize" color="white">
-                  <b>{key}: </b>
-                  {value}
-                </Badge>
-              );
-            })}
-          </div>
-        </Col>
-      </Row>
-    </div>
-  );
-};
+const Metadata = ({ dataset }) => {
+  if (!dataset.metaData) return null;
+  const entries = Object.entries(dataset.metaData);
+  if (entries.length === 0) return null;
+  const visible = entries.slice(0, 2);
+  const remaining = entries.length - visible.length;
+  const formatValue = (value) => {
+    if (value === null || value === undefined || value === "") return "—";
+    return typeof value === "object" ? JSON.stringify(value) : String(value);
+  };
 
-const AdditionalInfo = (props) => {
-  const dataset = props.dataset;
+  const content = (
+    <Stack gap={8} maw={360}>
+      {entries.map(([key, value]) => (
+        <Group key={key} gap="md" wrap="nowrap" align="baseline">
+          <Text size="xs" c="dimmed" fw={600} w={110} truncate>
+            {key}
+          </Text>
+          <Text size="sm" style={{ overflowWrap: "anywhere" }}>
+            {formatValue(value)}
+          </Text>
+        </Group>
+      ))}
+    </Stack>
+  );
 
   return (
-    <div className="text-left m-2">
-      <Metadata dataset={dataset}></Metadata>
-      <Labelings
-        labelings={props.labelings}
-        dataset={props.dataset}
-      ></Labelings>
-    </div>
+    <HoverCard
+      shadow="md"
+      openDelay={200}
+      withinPortal={false}
+      position="bottom"
+      offset={3}
+      withArrow
+    >
+      <HoverCard.Target>
+        <Stack gap={6}>
+          {visible.map(([key, value]) => (
+            <Group key={key} gap={8} wrap="nowrap" align="baseline">
+              <Text size="xs" c="dimmed" fw={600} w={84} truncate>
+                {key}
+              </Text>
+              <Text size="sm" truncate maw={190}>
+                {formatValue(value)}
+              </Text>
+            </Group>
+          ))}
+          <MoreLink count={remaining} />
+        </Stack>
+      </HoverCard.Target>
+      <HoverCard.Dropdown>{content}</HoverCard.Dropdown>
+    </HoverCard>
   );
 };
 
-const DatasetInfo = (props) => {
-  const { dataset, updateDataset } = props;
+const DatasetInfo = ({ dataset, updateDataset }) => {
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState(dataset.name);
+  const nameInputRef = useRef(null);
 
-  const [datasetNameEditOpen, setDatasetNameEditOpen] = useState(false);
+  useEffect(() => {
+    if (isEditingName) {
+      setNameDraft(dataset.name);
+      // Focus and select the text once the input is mounted.
+      const id = requestAnimationFrame(() => {
+        nameInputRef.current?.select();
+      });
+      return () => cancelAnimationFrame(id);
+    }
+  }, [isEditingName]);
+
+  const saveName = () => {
+    const trimmed = nameDraft.trim();
+    if (trimmed && trimmed !== dataset.name) {
+      updateDataset({ ...dataset, name: trimmed });
+    }
+    setIsEditingName(false);
+  };
 
   const datasetStart = Math.min(...dataset.timeSeries.map((elm) => elm.start));
   const datasetEnd = Math.max(...dataset.timeSeries.map((elm) => elm.end));
-
   const duration = Math.max(datasetEnd - datasetStart, 0) || 0;
   const empty = dataset.timeSeries
     .map((elm) => elm.length)
     .every((elm) => elm === 0 || elm === null);
+
   return (
     <div className="text-left d-inline-block m-2">
-      <div className="fw-bold font-size-lg h5 d-inline">{dataset.name}</div>
+      <Group gap="xs" wrap="nowrap">
+        {isEditingName ? (
+          <Group gap="xs" wrap="nowrap">
+            <TextInput
+              w={220}
+              size="sm"
+              value={nameDraft}
+              ref={nameInputRef}
+              onChange={(e) => setNameDraft(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") saveName();
+                if (e.key === "Escape") setIsEditingName(false);
+              }}
+              placeholder="Enter new dataset name"
+            />
+            <ActionIcon
+              variant="filled"
+              color="blue"
+              onClick={saveName}
+              title="Save name"
+            >
+              <FontAwesomeIcon icon={faCheck} />
+            </ActionIcon>
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              onClick={() => setIsEditingName(false)}
+              title="Cancel"
+            >
+              <FontAwesomeIcon icon={faXmark} />
+            </ActionIcon>
+          </Group>
+        ) : (
+          <>
+            <Text fw={700} size="lg" component="span">
+              {dataset.name}
+            </Text>
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              aria-label={`Rename ${dataset.name}`}
+              title="Rename"
+              onClick={() => setIsEditingName(true)}
+            >
+              <FontAwesomeIcon icon={faPen} style={{ fontSize: "0.8rem" }} />
+            </ActionIcon>
+          </>
+        )}
+      </Group>
       {!empty ? (
-        <Fragment>
-          <div style={{ color: "rgb(131, 136, 159)" }}>
-            <small>
-              <b>START </b>
-              {displayTime(datasetStart)}
-            </small>
-          </div>
-          <div style={{ color: "rgb(131, 136, 159)" }}>
-            <small>
-              <b>DURATION </b>
-              {format_time(duration)}
-            </small>
-          </div>
-        </Fragment>
+        <>
+          <Text size="xs" c="dimmed">
+            <b>START </b>
+            {displayTime(datasetStart)}
+          </Text>
+          <Text size="xs" c="dimmed">
+            <b>DURATION </b>
+            {format_time(duration)}
+          </Text>
+        </>
       ) : (
-        <div className="d-flex align-items-center">
-          <div className="d-inline" style={{ color: "rgb(131, 136, 159)" }}>
-            <FontAwesomeIcon
-              style={{ fontSize: "1rem" }}
-              icon={faExclamationTriangle}
-            ></FontAwesomeIcon>
-          </div>
-          <div className="text-left d-inline ms-1">Dataset is empty</div>
-        </div>
-      )}
-      <EditModal
-        isOpen={datasetNameEditOpen}
-        headerText="Edit Name"
-        value={""}
-        placeholder="Enter new datast name"
-        onSave={(text) => {
-          updateDataset({ ...dataset, name: text });
-          setDatasetNameEditOpen(false);
-        }}
-        onCancel={() => setDatasetNameEditOpen(false)}
-      ></EditModal>
-    </div>
-  );
-};
-
-const ExpandButton = (props) => {
-  return (
-    <div
-      className=" align-self-stretch d-flex"
-      onClick={(e) => {
-        e.stopPropagation();
-        props.setOpen(!props.isOpen);
-      }}
-    >
-      <div
-        className={classNames("d-flex align-items-center animationDuration", {
-          collapse_arrow: props.isOpen,
-        })}
-      >
-        <Button color="secondary">
+        <Group gap="xs">
           <FontAwesomeIcon
-            icon={!props.isOpen ? faList : faTimes}
-          ></FontAwesomeIcon>
-        </Button>
-      </div>
+            style={{ fontSize: "1rem", color: "rgb(131, 136, 159)" }}
+            icon={faExclamationTriangle}
+          />
+          <Text size="sm" c="dimmed">
+            Dataset is empty
+          </Text>
+        </Group>
+      )}
     </div>
   );
 };
 
 const DatasetTableEntry = (props) => {
-  const dataset = props.dataset;
-  const updateDataset = props.updateDataset;
-  const history = useNavigate();
+  const {
+    dataset,
+    updateDataset,
+    isSelected,
+    toggleCheck,
+    labelings,
+    deleteEntry,
+  } = props;
   const navigate = useProjectRouter();
 
-  const [isOpen, setOpen] = useState(false);
   return (
-    <Fragment>
-      <div
-        className="datasetCard"
-        style={{
-          background: props.index % 2 === 1 ? "rgb(249, 251, 252)" : "",
-        }}
-      >
-        <div className="d-flex">
-          <div className="d-flex align-items-center p-2 ms-2 me-0 ml-md-3 me-md-3">
-            <Checkbox
-              isSelected={props.isSelected}
-              className="d-inline-block"
-              // onClick={(e) =>
-              onClick={(e) => props.toggleCheck(e, dataset["_id"])}
-            ></Checkbox>
-          </div>
-          <div className="w-100">
-            <Row>
-              <Col className="text-left align-self-center col-lg-4 col-xl-3">
-                <DatasetInfo
-                  dataset={dataset}
-                  updateDataset={updateDataset}
-                ></DatasetInfo>
-              </Col>
-              <Col className="d-none d-lg-block">
-                <div className="d-flex h-100 flex-column justify-content-center">
-                  <AdditionalInfo
-                    dataset={dataset}
-                    labelings={props.labelings}
-                  ></AdditionalInfo>
-                </div>
-              </Col>
-              <Col className="col-2 ">
-                <div className="d-flex justify-content-end align-items-center h-100">
-                  <div className="d-block d-lg-none me-2">
-                    <ExpandButton
-                      isOpen={isOpen}
-                      setOpen={setOpen}
-                    ></ExpandButton>
-                  </div>
-                  <Button
-                    outline
-                    color="danger"
-                    className="me-2"
-                    onClick={() => props.deleteEntry(dataset._id)}
-                  >
-                    <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>{" "}
-                  </Button>
-                  <Button
-                    outline
-                    color="primary"
-                    className="me-3 me-md-4"
-                    onClick={() => navigate(`Datasets/${dataset._id}`)}
-                  >
-                    <FontAwesomeIcon icon={faPen}></FontAwesomeIcon>
-                  </Button>
-                </div>
-              </Col>
-            </Row>
-          </div>
-        </div>
-        <div
-          className={classNames("animationDuration d-block d-lg-none", {
-            showInfo: !isOpen,
-          })}
-        >
-          <AdditionalInfo
-            dataset={dataset}
-            labelings={props.labelings}
-          ></AdditionalInfo>
-        </div>
-      </div>
-    </Fragment>
+    <Table.Tr>
+      <Table.Td>
+        <Checkbox
+          isSelected={isSelected}
+          onClick={(e) => toggleCheck(e, dataset._id)}
+        />
+      </Table.Td>
+      <Table.Td>
+        <DatasetInfo dataset={dataset} updateDataset={updateDataset} />
+      </Table.Td>
+      <Table.Td>
+        <Labelings dataset={dataset} labelings={labelings} />
+      </Table.Td>
+      <Table.Td>
+        <Metadata dataset={dataset} />
+      </Table.Td>
+      <Table.Td>
+        <Group gap="xs" wrap="nowrap">
+          <Button
+            variant="outline"
+            color="red"
+            size="sm"
+            onClick={() => deleteEntry(dataset._id)}
+          >
+            <FontAwesomeIcon icon={faTrashAlt} />
+          </Button>
+          <Button
+            variant="outline"
+            color="blue"
+            size="sm"
+            onClick={() => navigate(`Datasets/${dataset._id}`)}
+          >
+            <FontAwesomeIcon icon={faPen} />
+          </Button>
+        </Group>
+      </Table.Td>
+    </Table.Tr>
   );
 };
 

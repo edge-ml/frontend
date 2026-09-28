@@ -7,6 +7,16 @@ export const getAccessToken = function () {
   return localStorage.getItem("access_token");
 };
 
+/**
+ * Returns the access token formatted for the Authorization header
+ * ("Bearer <token>") or null when no token is stored.
+ */
+export const getAuthHeader = function () {
+  const token = getAccessToken();
+  if (!token) return null;
+  return token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+};
+
 export const getRefreshToken = function () {
   return localStorage.getItem("refresh_token");
 };
@@ -32,6 +42,7 @@ export const getProject = function () {
 const expObj = {
   setToken,
   getAccessToken,
+  getAuthHeader,
   getRefreshToken,
   clearToken,
   setProject,

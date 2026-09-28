@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert } from "reactstrap";
+import { Alert } from "@mantine/core";
 import "./EditLabelingModal.css";
 
 const EmptyLabelingSetFeedBack = (props) => {
@@ -7,7 +7,7 @@ const EmptyLabelingSetFeedBack = (props) => {
     return null;
   } else {
     return (
-      <Alert color="danger">
+      <Alert color="red">
         {"A labeling set must contain at least one label."}
       </Alert>
     );

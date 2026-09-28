@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Input, InputGroup, InputGroupText } from "reactstrap";
+import { Button, TextInput } from "@mantine/core";
 
 import { changeUserName } from "../../services/ApiServices/AuthentificationServices";
 
@@ -35,7 +35,7 @@ class UserNameSettings extends Component {
     if (!this.state.userName && !this.state.userNameConfirm) return;
     if (this.state.userName !== this.state.userNameConfirm) {
       this.setState({
-        userNameError: "E-mails do not match",
+        userNameError: "Usernames do not match",
       });
     } else {
       changeUserName(this.state.userName)
@@ -50,50 +50,47 @@ class UserNameSettings extends Component {
 
   render() {
     return (
-      <div>
-        <h4 className="fw-bold">Change UserName</h4>
-        <InputGroup>
-            <InputGroupText>Username</InputGroupText>
-          <Input
+      <section className="user-settings-section" id={this.props.id}>
+        <div className="user-settings-section__heading">
+          <h4 className="user-settings-section__title">Change username</h4>
+          <p className="user-settings-section__description">
+            Update the name shown across your account.
+          </p>
+        </div>
+        <div className="user-settings-fields">
+          <TextInput
+            label="Username"
             id="inputUserName"
             placeholder="New username"
             onChange={this.onUserNameChange}
           />
-        </InputGroup>
-        <InputGroup>
-            <InputGroupText>Username</InputGroupText>
-          <Input
+          <TextInput
+            label="Confirm username"
             id="inputUserNameConfirm"
             placeholder="Retype new username"
             onChange={this.onUserNameConfirmChange}
           />
-        </InputGroup>
-        <Button
-          outline
-          disabled={
-            !this.state.userName ||
-            this.state.userName !== this.state.userNameConfirm
-          }
-          id="buttonSaveUserName"
-          color="primary"
-          className="m-1 me-auto"
-          onClick={this.onUserNameSubmit}
-        >
-          Save new username
-        </Button>
-        {this.state.userNameError ? (
-          <div
-            id="userNameError"
-            style={{
-              display: "inline",
-              color: "red",
-              marginLeft: "16px",
-            }}
+        </div>
+        <div className="user-settings-actions">
+          <Button
+            variant="outline"
+            disabled={
+              !this.state.userName ||
+              this.state.userName !== this.state.userNameConfirm
+            }
+            id="buttonSaveUserName"
+            color="blue"
+            onClick={this.onUserNameSubmit}
           >
-            {this.state.userNameError}
-          </div>
-        ) : null}
-      </div>
+            Save new username
+          </Button>
+          {this.state.userNameError ? (
+            <div id="userNameError" className="user-settings-error">
+              {this.state.userNameError}
+            </div>
+          ) : null}
+        </div>
+      </section>
     );
   }
 }

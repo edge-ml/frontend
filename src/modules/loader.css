@@ -4,11 +4,29 @@
   animation: shimmer-animation 1.5s infinite linear;
 }
 
-@keyframes shimmer-animation {
-  0% {
-    background-position: -100% 0;
-  }
+/* Animated edge-ml soundwave logo loader */
+.logo-loader-bar {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation-name: logo-loader-pulse;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes logo-loader-pulse {
+  0%,
   100% {
-    background-position: 100% 0;
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(0.35);
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-loader-bar {
+    animation: none;
   }
 }

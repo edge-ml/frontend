@@ -1,27 +1,20 @@
 import React from "react";
-import { Button, Spinner } from "reactstrap";
+import { Button, Loader } from "@mantine/core";
 
 function SpinnerButton({
   children,
   loading = false,
   loadingtext = "Loading...",
-  spinnercolor = "white",
+  disabled = false,
   ...props
 }) {
   return (
-    <Button {...props}>
+    <Button {...props} disabled={disabled || loading}>
       {loading ? (
-        <div>
+        <>
           {loadingtext}
-          <Spinner
-            style={{
-              width: "1rem",
-              height: "1rem",
-              marginLeft: "4px",
-            }}
-            color={spinnercolor}
-          />
-        </div>
+          <Loader size="xs" color="currentColor" ml={4} />
+        </>
       ) : (
         children
       )}

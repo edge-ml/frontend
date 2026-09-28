@@ -23,52 +23,49 @@ const useDataset = (dataset_id) => {
   };
 
   const addLabel = async (labelingId, newLabel) => {
-    const newDataset = { ...dataset };
-
-    const labeling = newDataset.labelings.find(
+    const labelingExists = dataset.labelings.some(
       (labeling) => labeling.labelingId === labelingId
     );
-
-    if (labeling) {
-      labeling.labels = [...labeling.labels, newLabel];
-    } else {
-      const newLabeling = {
-        labelingId: labelingId,
-        labels: [newLabel],
-      };
-      newDataset.labelings = [...newDataset.labelings, newLabeling];
-    }
+    const labelings = labelingExists
+      ? dataset.labelings.map((labeling) =>
+          labeling.labelingId === labelingId
+            ? { ...labeling, labels: [...labeling.labels, newLabel] }
+            : labeling
+        )
+      : [...dataset.labelings, { labelingId, labels: [newLabel] }];
+    const newDataset = { ...dataset, labelings };
 
     await updateDataset_api(newDataset);
     await refreshDataset();
   };
 
   const updateLabel = async (labelingId, label) => {
-    const newDataset = { ...dataset };
-    const labeling = newDataset.labelings.find(
-      (labeling) => labeling.labelingId === labelingId
-    );
-    if (labeling) {
-      labeling.labels = labeling.labels.map((elm) => {
-        if (elm._id === label._id) {
-          return label;
-        }
-        return elm;
-      });
-    }
+    const newDataset = {
+      ...dataset,
+      labelings: dataset.labelings.map((labeling) =>
+        labeling.labelingId === labelingId
+          ? {
+              ...labeling,
+              labels: labeling.labels.map((candidate) =>
+                candidate._id === label._id ? label : candidate
+              ),
+            }
+          : labeling
+      ),
+    };
     await updateDataset_api(newDataset);
     await refreshDataset();
   };
 
   const deleteLabel = async (labelId) => {
     if (labelId) {
-      const newDataset = { ...dataset };
-      newDataset.labelings = newDataset.labelings.map((labeling) => {
-        labeling.labels = labeling.labels.filter(
-          (label) => label._id !== labelId
-        );
-        return labeling;
-      });
+      const newDataset = {
+        ...dataset,
+        labelings: dataset.labelings.map((labeling) => ({
+          ...labeling,
+          labels: labeling.labels.filter((label) => label._id !== labelId),
+        })),
+      };
       await updateDataset_api(newDataset);
       await refreshDataset();
     }

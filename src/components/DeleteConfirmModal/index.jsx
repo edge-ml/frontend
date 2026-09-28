@@ -1,19 +1,18 @@
 import React from "react";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import { Modal, Button } from "@mantine/core";
 
 const DeleteConfirmationModal = ({ isOpen, onCancel, onConfirm, children }) => {
   return (
-    <Modal isOpen={isOpen}>
-      <ModalHeader>Confirm Deletion</ModalHeader>
-      <ModalBody>{children}</ModalBody>
-      <ModalFooter>
-        <Button color="danger" onClick={onConfirm}>
+    <Modal opened={isOpen} onClose={onCancel} title="Confirm Deletion">
+      <Modal.Body>{children}</Modal.Body>
+      <Modal.Footer>
+        <Button color="red" onClick={onConfirm}>
           Delete
         </Button>
-        <Button color="secondary" onClick={onCancel}>
+        <Button variant="outline" color="gray" onClick={onCancel}>
           Cancel
         </Button>
-      </ModalFooter>
+      </Modal.Footer>
     </Modal>
   );
 };

@@ -1,13 +1,15 @@
 import React, { Fragment } from "react";
 import Checkbox from "../../Common/Checkbox";
-import classNames from "classnames";
-import { Badge, Table, Row, Col } from "reactstrap";
-import { humanDuration, intersect } from "../../../services/helpers";
 import {
-  EdgeMLTable,
-  EdgeMLTableEntry,
-  EdgeMLTableHeader,
-} from "../../Common/EdgeMLTable";
+  Badge,
+  Group,
+  Paper,
+  SimpleGrid,
+  Stack,
+  Table,
+  Text,
+} from "@mantine/core";
+import { humanDuration, intersect } from "../../../services/helpers";
 import LabelBadge from "../../Common/LabelBadge";
 
 const Wizard_SelectDataset = ({
@@ -17,9 +19,6 @@ const Wizard_SelectDataset = ({
   toggleDisableTimeseries,
   disabledTimeseriesNames,
   toggleAllDatasets,
-  onNext,
-  onBack,
-  footer,
 }) => {
   const checkUsable = (dataset) => {
     return (
@@ -90,136 +89,182 @@ const Wizard_SelectDataset = ({
   const selectedAllActive = datasets
     .filter((elm) => !checkUsable(elm))
     .every((elm) => elm.selected);
+
+  const usableDatasets = datasets.filter((elm) => !checkUsable(elm));
+
   return (
-    <div className="p-2">
-      <h3 className="fw-bold">2. Select datasets</h3>
-      <Row className="mx-0">
-        <Col>
-          <EdgeMLTable>
-            <EdgeMLTableHeader>
-              <div className="d-flex">
-                <Checkbox
-                  isSelected={selectedAllActive}
-                  onClick={() =>
-                    toggleAllDatasets(
-                      datasets.filter((elm) => !checkUsable(elm)),
-                      !selectedAllActive
-                    )
-                  }
-                ></Checkbox>
-                <div className="ms-2 align-self-center">Select all</div>
-              </div>
-            </EdgeMLTableHeader>
-            {datasets
-              .filter((elm) => !checkUsable(elm))
-              .map((dataset) => {
-                return (
-                  <EdgeMLTableEntry
-                    className={classNames("datasetRow", {
-                      disabled: checkUsable(dataset),
-                    })}
+    <div className="training-wizard-step">
+      <div className="training-wizard-step-header">
+        <Text fw={700} size="xl">
+          Select datasets
+        </Text>
+        <Text c="dimmed">
+          Select compatible datasets and review the time series and labels that
+          will be included in training.
+        </Text>
+      </div>
+      <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
+        <div>
+          <Table>
+            <Table.Thead>
+              <Table.Tr
+                style={{ borderBottom: "2px solid rgb(230, 230, 234)" }}
+              >
+                <Table.Th colSpan={2} p={0}>
+                  <Group
+                    justify="space-between"
+                    style={{
+                      background: "rgb(249, 251, 252)",
+                      padding: "10px",
+                    }}
                   >
-                    <div className="d-flex me-2">
+                    <Group gap="xs" p="xs">
                       <Checkbox
-                        isSelected={dataset.selected}
-                        onClick={() => toggleSelectDataset(dataset._id)}
-                      ></Checkbox>
+                        isSelected={selectedAllActive}
+                        onClick={() =>
+                          toggleAllDatasets(usableDatasets, !selectedAllActive)
+                        }
+                      />
+                      <Text size="sm" fw={600}>
+                        Select all compatible datasets
+                      </Text>
+                    </Group>
+                  </Group>
+                </Table.Th>
+              </Table.Tr>
+              <Table.Tr>
+                <Table.Th w={40}></Table.Th>
+                <Table.Th>Dataset</Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {usableDatasets.map((dataset) => (
+                <Table.Tr key={dataset._id}>
+                  <Table.Td>
+                    <Checkbox
+                      isSelected={dataset.selected}
+                      onClick={() => toggleSelectDataset(dataset._id)}
+                    />
+                  </Table.Td>
+                  <Table.Td>
+                    <div>
+                      <Text fw={700} size="lg" component="span">
+                        {dataset.name}
+                      </Text>
                     </div>
-                    <div className="datasetName">{dataset.name}</div>
-                  </EdgeMLTableEntry>
-                );
-              })}
-          </EdgeMLTable>
-        </Col>
-        <Col className="pt-3">
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </div>
+        <Paper className="training-wizard-summary">
           {datasets.filter((elm) => elm.selected).length ? (
-            <Fragment>
-              <h5 className="fw-bold">Selected Timeseries</h5>
-              <div style={{ overflow: "auto" }}>
-                {intersectingTSNames.length > 0 ? (
-                  intersectingTSNames.map((tsNameObj) => (
-                    <Badge
-                      onClick={() => toggleDisableTimeseries(tsNameObj.name)}
-                      style={{
-                        ...(tsNameObj.disabled
-                          ? { textDecoration: "line-through" }
-                          : {}),
-                        userSelect: "none",
-                      }}
-                      {...(tsNameObj.disabled
-                        ? { color: "light" }
-                        : { color: "primary" })}
-                    >
-                      {`${tsNameObj.name}`}
-                    </Badge>
-                  ))
-                ) : (
-                  <div className="my-2">
-                    Selected datasets do not have any timeseries in common.
-                  </div>
-                )}
-                {intersectingTSNames.length !==
-                selectedDatasetTimeseriesNames.length ? (
-                  <Fragment>
-                    <div className="my-2">
-                      Following timeseries were filtered because they are
-                      missing from at least one dataset.
-                    </div>
-                    {nonintersectingTSNames.map((tsNameObj) => (
+            <Stack gap="lg">
+              <div>
+                <Text fw={700} size="lg" mb="xs">
+                  Selected time series
+                </Text>
+                <div className="training-wizard-badges">
+                  {intersectingTSNames.length > 0 ? (
+                    intersectingTSNames.map((tsNameObj) => (
                       <Badge
+                        key={tsNameObj.name}
+                        onClick={() => toggleDisableTimeseries(tsNameObj.name)}
                         style={{
-                          textDecoration: "line-through",
+                          ...(tsNameObj.disabled
+                            ? { textDecoration: "line-through" }
+                            : {}),
                           userSelect: "none",
+                          cursor: "pointer",
                         }}
-                        color="light"
+                        variant={tsNameObj.disabled ? "outline" : "filled"}
+                        color="blue"
                       >
                         {`${tsNameObj.name}`}
                       </Badge>
-                    ))}
-                  </Fragment>
-                ) : null}
+                    ))
+                  ) : (
+                    <Text size="sm" c="dimmed">
+                      Selected datasets do not have any timeseries in common.
+                    </Text>
+                  )}
+                  {intersectingTSNames.length !==
+                  selectedDatasetTimeseriesNames.length ? (
+                    <Fragment>
+                      <Text size="sm" c="dimmed" mt="sm" mb={6}>
+                        Following timeseries were filtered because they are
+                        missing from at least one dataset.
+                      </Text>
+                      {nonintersectingTSNames.map((tsNameObj) => (
+                        <Badge
+                          key={tsNameObj.name}
+                          style={{
+                            textDecoration: "line-through",
+                            userSelect: "none",
+                          }}
+                          variant="outline"
+                          color="gray"
+                        >
+                          {`${tsNameObj.name}`}
+                        </Badge>
+                      ))}
+                    </Fragment>
+                  ) : null}
+                </div>
               </div>
-              <div className="my-2">
+              <Text size="sm" c="dimmed">
                 For training, all time-series will be downsampled to{" "}
                 {Math.round(1000 / minSamplingRate)} Hz
+              </Text>
+              <div>
+                <Text fw={700} size="lg" mb="xs">
+                  Covered labels
+                </Text>
+                <Table size="sm">
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th></Table.Th>
+                      <Table.Th>Count</Table.Th>
+                      <Table.Th>Duration</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {selectedLabeling.labels
+                      .filter(
+                        (l) => !selectedLabeling.disabledLabels.includes(l._id)
+                      )
+                      .map((label) => (
+                        <Table.Tr key={label._id}>
+                          <Table.Th>
+                            <LabelBadge color={label.color}>
+                              {label.name}
+                            </LabelBadge>
+                          </Table.Th>
+                          <Table.Td className="align-middle">
+                            {coveredLabels[label._id]?.count ?? 0}
+                          </Table.Td>
+                          <Table.Td>
+                            {humanDuration(
+                              coveredLabels[label._id]?.duration ?? 0
+                            )}
+                          </Table.Td>
+                        </Table.Tr>
+                      ))}
+                  </Table.Tbody>
+                </Table>
               </div>
-              <h5 className="fw-bold mt-4">Covered Labels</h5>
-              <Table size="sm" borderless style={{ width: "unset" }}>
-                <thead>
-                  <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Count</th>
-                    <th scope="col">Duration</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedLabeling.labels
-                    .filter(
-                      (l) => !selectedLabeling.disabledLabels.includes(l._id)
-                    )
-                    .map((label) => (
-                      <tr>
-                        <th scope="row">
-                          <LabelBadge className="badge" color={label.color}>
-                            {label.name}
-                          </LabelBadge>
-                        </th>
-                        <td className="align-middle">
-                          {coveredLabels[label._id]?.count ?? 0}
-                        </td>
-                        <td>
-                          {humanDuration(
-                            coveredLabels[label._id]?.duration ?? 0
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </Table>
-            </Fragment>
-          ) : null}
-        </Col>
-      </Row>
+            </Stack>
+          ) : (
+            <Stack align="center" justify="center" mih={220} gap={4}>
+              <Text fw={600}>No datasets selected</Text>
+              <Text size="sm" c="dimmed" ta="center">
+                Select at least one dataset to preview the training input.
+              </Text>
+            </Stack>
+          )}
+        </Paper>
+      </SimpleGrid>
     </div>
   );
 };

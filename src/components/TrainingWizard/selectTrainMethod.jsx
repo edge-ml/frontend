@@ -1,58 +1,42 @@
 import React from "react";
-import {
-  faGear,
-  faGears,
-  faSliders,
-  faUserGear,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment } from "react";
-import { Button } from "reactstrap";
-import PlatformList from "../Common/PlatformList";
+import { Card, SimpleGrid, Stack, Text } from "@mantine/core";
 
-const TrainingMethod = (pipeline, onSelectTrainingMethod) => {
-  let platforms = new Set(
-    pipeline.steps
-      .filter((elm) => ["PRE", "EVAL"].includes(elm.type))[0]
-      .options.map((elm) => elm.platforms)
-      .flat()
-  );
-
-  pipeline.steps.forEach((step) => {
-    if (step.type === "PRE" || step.type === "CORE") {
-      const plf = new Set(step.options.map((elm) => elm.platforms).flat());
-      platforms = new Set([...platforms].filter((elm) => plf.has(elm)));
-    }
-  });
-  return (
-    <div
-      key={pipeline.name}
-      className="edgeml-border p-2 m-2 cursor-pointer hover-bigger"
-      onClick={() => onSelectTrainingMethod(pipeline)}
-    >
-      <div className="d-flex justify-content-between">
-        <div>
-          <div className="fw-bold">{pipeline.name}</div>
-          <div>{pipeline.description}</div>
-        </div>
-        <div className="d-flex align-items-center">
-          <PlatformList size="3rem" platforms={platforms}></PlatformList>
-        </div>
-      </div>
+// Export capability depends on the classifier and steps the user picks inside
+// the pipeline, so it is shown as a live "Export target" once selections are
+// made (see TrainingWizard) rather than as a misleading badge on the picker.
+const SelectTrainMethod = ({ pipelines, onSelectTrainingMethod }) => (
+  <div className="training-wizard-step">
+    <div className="training-wizard-step-header">
+      <Text fw={700} size="xl">
+        Choose a training pipeline
+      </Text>
+      <Text c="dimmed">
+        Each pipeline combines preprocessing, training, and evaluation steps for
+        a particular deployment workflow.
+      </Text>
     </div>
-  );
-};
-
-const SelectTrainMethod = ({ pipelines, onSelectTrainingMethod }) => {
-  return (
-    <Fragment>
-      {pipelines.map((elm) => TrainingMethod(elm, onSelectTrainingMethod))}
-    </Fragment>
-  );
-};
-
-SelectTrainMethod.validate = () => {
-  return false;
-};
+    <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+      {pipelines.map((pipeline) => (
+        <Card
+          key={pipeline.name}
+          withBorder
+          radius="md"
+          padding="lg"
+          className="training-wizard-pipeline-card"
+          onClick={() => onSelectTrainingMethod(pipeline)}
+        >
+          <Stack gap={6}>
+            <Text fw={700} size="lg">
+              {pipeline.name}
+            </Text>
+            <Text size="sm" c="dimmed" lh={1.5}>
+              {pipeline.description}
+            </Text>
+          </Stack>
+        </Card>
+      ))}
+    </SimpleGrid>
+  </div>
+);
 
 export default SelectTrainMethod;

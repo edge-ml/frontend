@@ -1,68 +1,41 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import {
-  Modal as Modal_ReactStrap,
-  ModalHeader as ModalHeader_Reactstrap,
-  ModalBody as ModalBody_Reactstrap,
-  ModalFooter as ModalFooter_Reactstrap,
-  Button,
-} from "reactstrap";
+import React from "react";
+import { Modal as MantineModal, Group } from "@mantine/core";
 
-import "./index.css";
+export const Modal = ({ isOpen, onClose, title, children, ...props }) => {
+  let headerContent = title;
 
-export const Modal = (props) => {
-
-  const handleKeyDown = useCallback((e) => {
-    if (!props.isOpen) return;
-    if (e.key === "Escape") {
-      e.preventDefault();
-      e.stopPropagation();
-      props.onClose();
-    } else if (e.key === "Enter" && props.onConfirm) {
-      e.preventDefault();
-      e.stopPropagation();
-      props.onConfirm();
+  // Extract <ModalHeader> content so it can be rendered by Mantine on the
+  // same line as the close button instead of a separate header element.
+  const remainingChildren = React.Children.map(children, (child) => {
+    if (React.isValidElement(child) && child.type === ModalHeader) {
+      headerContent = child.props.children;
+      return null;
     }
+    return child;
   });
 
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  });
-
-
   return (
-    <Modal_ReactStrap {...props}>
-      {React.Children.map(props.children, (child) => {
-        return React.cloneElement(child, {
-          onClose: props.onClose,
-          onConfirm: props.onConfirm,
-        });
-      })}
-    </Modal_ReactStrap>
+    <MantineModal opened={isOpen} onClose={onClose} title={headerContent} {...props}>
+      {remainingChildren}
+    </MantineModal>
   );
 };
 
-export const ModalHeader = (props) => {
-  return (
-    <ModalHeader_Reactstrap {...props} className="modal-header">
-      {props.children}
-      <div className="modal-close-button">
-        <Button size="sm" close onClick={props.onClose}></Button>
-      </div>
-    </ModalHeader_Reactstrap>
-  );
+/**
+ * Deprecated: use the `title` prop of <Modal> instead.
+ * Its content is extracted by <Modal> and rendered in the native header,
+ * keeping the heading on the same line as the close button.
+ */
+export const ModalHeader = () => null;
+
+export const ModalBody = ({ children, ...props }) => {
+  return <MantineModal.Body {...props}>{children}</MantineModal.Body>;
 };
 
-export const ModalBody = (props) => {
+export const ModalFooter = ({ children, className }) => {
   return (
-    <ModalBody_Reactstrap {...props}>{props.children}</ModalBody_Reactstrap>
-  );
-};
-
-export const ModalFooter = (props) => {
-  return (
-    <ModalFooter_Reactstrap {...props}>{props.children}</ModalFooter_Reactstrap>
+    <Group justify="flex-end" gap="sm" mt="md" className={className}>
+      {children}
+    </Group>
   );
 };

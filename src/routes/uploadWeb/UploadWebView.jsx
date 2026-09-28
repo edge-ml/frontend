@@ -1,48 +1,46 @@
 import React from "react";
-import { Card, CardBody, CardHeader, Col, Container, Row } from "reactstrap";
+import { Container } from "@mantine/core";
 
 export const UploadWebView = ({ sensorList, datasetSettings, graph, fabs }) => {
   return (
     <Container>
       {sensorList || datasetSettings ? (
-        <Row>
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
           {sensorList ? (
-            <Col md={6} className="pt-3">
-              <div className="p-2">
-                <div className="header-wrapper d-flex flex-column justify-content-flex-start align-content-center">
+            <div style={{ flex: "1 1 50%", paddingTop: "1rem" }}>
+              <div style={{ padding: "0.5rem" }}>
+                <div>
                   <h4>Sensor Selection</h4>
                   <span>Select sensors you want to record in a dataset.</span>
                 </div>
-                <div className="body-wrapper">{sensorList}</div>
+                <div>{sensorList}</div>
               </div>
-            </Col>
+            </div>
           ) : null}
           {datasetSettings ? (
-            <Col md={6} className="pt-3">
-              <div className="p-2">
-                <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
+            <div style={{ flex: "1 1 50%", paddingTop: "1rem" }}>
+              <div style={{ padding: "0.5rem" }}>
+                <div>
                   <h4>Dataset Configuration</h4>
                 </div>
-                <div className="body-wrapper p-3">{datasetSettings}</div>
+                <div style={{ padding: "1rem" }}>{datasetSettings}</div>
               </div>
-            </Col>
+            </div>
           ) : null}
-        </Row>
+        </div>
       ) : null}
       {graph ? (
-        <Row>
-          <Col className="pt-3">
-            <div className="p-2">
-              <div className="header-wrapper d-flex justify-content-flex-start align-content-center">
-                <h4>Data Preview</h4>
-              </div>
-              <div className="body-wrapper p-3">{graph}</div>
+        <div style={{ paddingTop: "1rem" }}>
+          <div style={{ padding: "0.5rem" }}>
+            <div>
+              <h4>Data Preview</h4>
             </div>
-          </Col>
-        </Row>
+            <div style={{ padding: "1rem" }}>{graph}</div>
+          </div>
+        </div>
       ) : null}
-      <div className="pb-3" />
-      <div className="position-fixed" style={{ bottom: "24px", right: "24px" }}>
+      <div style={{ paddingBottom: "1rem" }} />
+      <div style={{ position: "fixed", bottom: "24px", right: "24px" }}>
         {fabs}
       </div>
     </Container>

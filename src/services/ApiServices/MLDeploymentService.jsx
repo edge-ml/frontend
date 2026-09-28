@@ -1,5 +1,4 @@
-import apiConsts, { ML_URI } from "./ApiConstants";
-import ax from "axios";
+import apiConsts from "./ApiConstants";
 import apiRequest from "./request";
 
 export const downloadDeploymentModel = async (
@@ -14,12 +13,19 @@ export const downloadDeploymentModel = async (
     apiConsts.ML_ENDPOINTS.DEPLOY + "/" + modelId + "/download/" + format,
     null,
     { compile_wasm: compileWasm, wasm_single_file: wasmSingleFile },
-    "blob",
+    undefined,
     "blob"
   );
   return res;
 };
 
-export const downloadModalLink = (project_id, model_id, language) => {
-  window.open(`${ML_URI}models/download/${project_id}/${model_id}/${language}`);
-};
+export const downloadModalLink = async (projectId, modelId, language) =>
+  apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.ML_URI,
+    `models/download/${projectId}/${modelId}/${language}`,
+    null,
+    {},
+    undefined,
+    "blob"
+  );

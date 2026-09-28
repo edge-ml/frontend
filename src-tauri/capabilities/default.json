@@ -1,0 +1,24 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables core and http permissions",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "dialog:allow-save",
+    {
+      "identifier": "fs:allow-write-file",
+      "allow": [{ "path": "$HOME/**" }]
+    },
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "https://beta.edge-ml.org/**" },
+        { "url": "https://api.github.com/**" },
+        { "url": "http://localhost:**" }
+      ]
+    }
+  ]
+}

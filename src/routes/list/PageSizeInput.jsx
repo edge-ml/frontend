@@ -1,43 +1,33 @@
 import React, { useState } from "react";
-import { Form, FormGroup, FormText, Input, Col, Row } from "reactstrap";
+import { TextInput, Text } from "@mantine/core";
 
 const PageSizeInput = ({ pageSize, setPageSize }) => {
   const [error, setError] = useState("");
-  const [value, setValue] = useState(pageSize);
+  const [value, setValue] = useState(String(pageSize));
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      const inputValue = e.target.value;
-      //only numeric
-      const numericValue = inputValue.replace(/[^0-9]/g, "");
+      const numericValue = value.replace(/[^0-9]/g, "");
       setValue(numericValue);
-      if (numericValue.length < 1 || numericValue < 5) {
+      if (numericValue.length < 1 || parseInt(numericValue) < 5) {
         setError("Please choose a size >= 5.");
       } else {
-        setPageSize(numericValue);
+        setPageSize(parseInt(numericValue));
         setError("");
       }
-      setPageSize(numericValue);
     }
   };
 
-  const handleInputChange = (e) => {
-    setValue(e.target.value);
-  };
-
   return (
-    <div className="me-2">
-      <FormGroup>
-        <Input
-          type="number"
-          name="page size"
-          value={value}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          placeholder="Enter page size"
-        />
-        {error && <FormText color="danger">{error}</FormText>}
-      </FormGroup>
+    <div>
+      <TextInput
+        type="number"
+        value={value}
+        onChange={(e) => setValue(e.currentTarget.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Enter page size"
+        error={error}
+      />
     </div>
   );
 };
