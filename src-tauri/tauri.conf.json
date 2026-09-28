@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "edge-ml-explorer",
+  "productName": "edge-ml",
   "version": "0.1.0",
   "identifier": "org.edge-ml.explorer",
   "build": {
