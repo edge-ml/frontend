@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   getDatasetsPagination,
   updateDataset as updateDataset_api,
@@ -9,17 +9,24 @@ const usePaginatedDatasets = () => {
   const [datasets, setDatasets] = useState(undefined);
   const [page, setPageInternal] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [tableLenth, setTableLength] = useState(20);
+  const [tableLenth] = useState(20);
   const [sorting, setSortingInternal] = useState("alphaAsc");
 
   const _refreshDatasets = async (page, tableLenth, sorting) => {
-    const datasets = await getDatasetsPagination(
-      (page - 1) * tableLenth,
-      tableLenth * page,
-      sorting
-    );
-    setDatasets(datasets.datasets);
-    setTotalPages(Math.ceil(datasets.total_datasets / tableLenth));
+    try {
+      const datasets = await getDatasetsPagination(
+        (page - 1) * tableLenth,
+        tableLenth * page,
+        sorting
+      );
+      setDatasets(datasets.datasets);
+      setTotalPages(Math.ceil(datasets.total_datasets / tableLenth));
+    } catch (error) {
+      console.error("[usePaginatedDatasets] Failed to load datasets:", error);
+      // Keep any data we already have, but never leave the page stuck on its
+      // loading state when the first request fails.
+      setDatasets((previous) => previous ?? []);
+    }
   };
 
   useEffect(() => {

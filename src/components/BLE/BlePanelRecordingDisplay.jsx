@@ -68,8 +68,9 @@ const BlePanelRecordingDisplay = ({
             </Group>
             <BlePanelSensorstreamGraph
               sensor={sensor}
+              sensorIndex={sensorIndex}
               fullSampleRate={fullSampleRate}
-              lastData={lastData[sensorIndex]}
+              lastData={lastData}
               currentLabel={currentLabel}
               prevLabel={prevLabel}
               recordingStartTime={recordingStartTime}

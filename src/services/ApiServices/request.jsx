@@ -36,6 +36,56 @@ const hasRequestBody = (method, body) => {
   return Object.keys(body).length > 0;
 };
 
+/**
+ * Turns an arbitrary backend error payload into a readable string.
+ *
+ * FastAPI reports validation problems as `detail: [{loc, msg, ...}, ...]`.
+ * Passing that array straight into `new Error(...)` produced the useless
+ * "Error: [object Object]", which hid the real cause (e.g. a missing
+ * `project` header or `jwt` cookie).
+ */
+const formatValidationItem = (item) => {
+  if (item == null) return "";
+  if (typeof item === "string") return item;
+  if (typeof item !== "object") return String(item);
+
+  const location = Array.isArray(item.loc) ? item.loc.join(".") : item.loc;
+  const message = item.msg || item.message || item.detail || item.error;
+  if (location && message) return `${location}: ${message}`;
+  if (message) return String(message);
+
+  try {
+    return JSON.stringify(item);
+  } catch (_) {
+    return "";
+  }
+};
+
+const extractServerMessage = (payload, depth = 0) => {
+  if (payload == null || depth > 3) return undefined;
+  if (typeof payload === "string") return payload.trim() || undefined;
+  if (Array.isArray(payload)) {
+    const parts = payload.map(formatValidationItem).filter(Boolean);
+    return parts.length > 0 ? parts.join("; ") : undefined;
+  }
+  if (typeof payload === "object") {
+    const nested = payload.detail ?? payload.error ?? payload.message;
+    if (nested != null && nested !== payload) {
+      return extractServerMessage(nested, depth + 1);
+    }
+    if (typeof payload.msg === "string" && payload.msg.trim()) {
+      return payload.msg;
+    }
+    try {
+      const json = JSON.stringify(payload);
+      return json && json !== "{}" ? json : undefined;
+    } catch (_) {
+      return undefined;
+    }
+  }
+  return String(payload);
+};
+
 const apiRequest = async (
   method = HTTP_METHODS.GET,
   baseUri = API_URI,
@@ -83,13 +133,12 @@ const apiRequest = async (
     // code and the server's message, so read errors as text and parse
     // defensively, mirroring the axios branch below.
     if (!response.ok) {
-      let serverMessage;
+      let payload;
       try {
         const raw = await response.text();
         if (raw) {
           try {
-            const parsed = JSON.parse(raw);
-            serverMessage = parsed?.detail || parsed?.error || parsed?.message;
+            payload = JSON.parse(raw);
           } catch (_) {
             /* not JSON: fall back to the status text */
           }
@@ -97,12 +146,18 @@ const apiRequest = async (
       } catch (_) {
         /* body unreadable */
       }
+      const serverMessage = extractServerMessage(payload);
       const err = new Error(
         serverMessage ||
           response.statusText ||
           `Request failed with status code ${response.status}`
       );
       err.status = response.status;
+      err.payload = payload;
+      console.error(
+        `[apiRequest] ${method} ${url} failed with status ${response.status}`,
+        payload ?? response.statusText
+      );
       throw err;
     }
 
@@ -139,9 +194,17 @@ const apiRequest = async (
         data = undefined;
       }
     }
-    const serverMessage = data?.detail || data?.error || data?.message;
+    const status = error.response?.status;
+    const serverMessage = extractServerMessage(data);
     const normalized = new Error(serverMessage || error.message);
-    normalized.status = error.response?.status;
+    normalized.status = status;
+    normalized.payload = data;
+    console.error(
+      `[apiRequest] ${method} ${url} failed with status ${
+        status ?? "network error"
+      }`,
+      data ?? error.message
+    );
     throw normalized;
   }
 };
