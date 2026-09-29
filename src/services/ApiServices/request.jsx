@@ -1,6 +1,6 @@
 import ax from "axios";
 import localStorageService from "./../LocalStorageService";
-import { HTTP_METHODS, API_URI, API_ENDPOINTS } from "./ApiConstants";
+import { HTTP_METHODS, API_URI, API_ENDPOINTS, DATASET_STORE } from "./ApiConstants";
 
 const axios = ax.create();
 
@@ -111,6 +111,17 @@ const apiRequest = async (
 
   if (isTauri()) {
     await ensureTauriFetch();
+    const datasetStoreUrl = new URL(DATASET_STORE);
+    const accessToken = localStorageService.getAccessToken();
+    if (
+      accessToken &&
+      url.origin === datasetStoreUrl.origin &&
+      url.pathname.startsWith(datasetStoreUrl.pathname)
+    ) {
+      // The native HTTP client's cookie jar is separate from the webview's.
+      // Dataset-store validates a jwt cookie even when Authorization is set.
+      headers.Cookie = `jwt=${accessToken.replace(/^Bearer\s+/i, "")}`;
+    }
     const fetchOptions = {
       method,
       headers,

@@ -757,8 +757,13 @@ class UploadBLE extends Component {
   }
 
   async fetchLabelings() {
-    const res = await getLabelings();
-    this.setState({ labelings: res });
+    try {
+      const res = await getLabelings();
+      this.setState({ labelings: res });
+    } catch (error) {
+      console.error("Failed to load BLE labelings:", error);
+      this.setState({ labelings: [] });
+    }
   }
 
   componentDidMount() {

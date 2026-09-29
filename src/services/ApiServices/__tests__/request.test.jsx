@@ -188,6 +188,25 @@ describe("apiRequest (tauri path)", () => {
     globalThis.__TAURI_INTERNALS__ = {};
   });
 
+  it("sends the stored token as a jwt cookie to dataset-store only", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({}),
+    });
+    vi.doMock("@tauri-apps/plugin-http", () => ({ fetch: fetchMock }));
+    vi.resetModules();
+    const { DATASET_STORE } = await import("../ApiConstants");
+    ({ default: apiRequest } = await import("../request"));
+    localStorage.setItem("access_token", "token-123");
+
+    await apiRequest(HTTP_METHODS.GET, DATASET_STORE, "labelings/");
+    expect(fetchMock.mock.calls[0][1].headers.Cookie).toBe("jwt=token-123");
+
+    await apiRequest(HTTP_METHODS.GET, "https://api.github.com/", "user");
+    expect(fetchMock.mock.calls[1][1].headers.Cookie).toBeUndefined();
+  });
+
   it("uses the tauri fetch plugin and parses json", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
