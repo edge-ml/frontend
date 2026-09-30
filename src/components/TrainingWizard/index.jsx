@@ -26,6 +26,11 @@ import Select_Name from "./Steps/Select_Name";
 import SelectTrainMethod from "./selectTrainMethod";
 import { intersect, toggleElement } from "../../services/helpers";
 import Pipelinestep from "./Pipelinestep";
+import {
+  metaFieldSummary,
+  withGroupFieldOptions,
+  groupFieldNote,
+} from "./leaveOneOutFields";
 import ExportTarget from "../Common/ExportTarget";
 import SelectExportGoal from "./SelectExportGoal";
 
@@ -470,9 +475,15 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
                       ),
                     };
                   };
-                  options = options.map(filterWharArchs);
-                  const selectedStep = filterWharArchs(
-                    selectedPipelineSteps[screen - 2]
+                  // Leave-one-out needs the project's metadata fields, which ml
+                  // cannot know, so they are derived from the selection here.
+                  const metaFields = metaFieldSummary(selDatasets);
+                  const fillGroupFields = (opt) =>
+                    withGroupFieldOptions(opt, metaFields.fields);
+
+                  options = options.map(filterWharArchs).map(fillGroupFields);
+                  const selectedStep = fillGroupFields(
+                    filterWharArchs(selectedPipelineSteps[screen - 2])
                   );
                   // Proactive hint on the feature-extraction step (the one that
                   // owns the raw-extractor option), plus the "hidden" note on the
@@ -506,6 +517,10 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
                       hiddenArchs.length > 1 ? "are" : "is"
                     } hidden — your ${channelCount}-channel selection isn't compatible (deepsense needs an even channel count, global_fusion needs 6+).`;
                   }
+                  // Only set for the leave-one-out step; says which datasets the
+                  // chosen field would exclude, matching what ml enforces.
+                  note = groupFieldNote(selectedStep, metaFields) || note;
+
                   return (
                     <Pipelinestep
                       stepNum={screen}
