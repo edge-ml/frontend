@@ -14,6 +14,7 @@ const FORMAT_INFO = {
   C: { label: "Embedded · C++", prismLanguage: "cpp" },
   EXECUTORCH: { label: "Mobile · ExecuTorch (.pte)", prismLanguage: "kotlin" },
   PYTORCH: { label: "Server · PyTorch (.pt)", prismLanguage: "python" },
+  ONNX: { label: "Browser · ONNX (JavaScript)", prismLanguage: "javascript" },
 };
 
 const formatInfoFor = (fmt) =>
@@ -92,6 +93,16 @@ model.eval()
 window = np.zeros((1, WINDOW_SIZE, ${timeSeries.length}), dtype=np.float32)
 logits = model(torch.from_numpy(window))
 label = int(torch.argmax(logits, dim=-1))`;
+      case "ONNX":
+        return `// Browser or Node.js with the edge-ml library — see README.md and index.html in the download
+// <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+// <script src="https://unpkg.com/edge-ml"></script>
+const predictor = await edgeML.OnnxPredictor.fromUrls("model.onnx", "manifest.json");
+
+// call once per sensor sample (preprocessing is baked into the model)
+predictor.addSample({ ${timeSeries.map((elm) => `"${elm}": val_${elm}`).join(", ")} });
+
+const { prediction } = await predictor.predict();`;
       default:
         return "";
     }

@@ -17,7 +17,7 @@ const generateCode = (
   useServerTime
 ) => {
   const javaTime = useServerTime ? "" : "1618760114000L, ";
-  const nodeTime = useServerTime ? "" : "time = 1618760114000, ";
+  const nodeTime = useServerTime ? "" : "1618760114000, ";
   datasetName = datasetName ? datasetName : "DATASET_NAME";
   var language;
   var code;

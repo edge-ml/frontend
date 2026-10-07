@@ -61,35 +61,30 @@ export const codeNode = (
   datasetName,
   useServerTime,
   nodeTime
-) => `const datasetCollector = require("edge-ml").datasetCollector;
+) => `const { datasetCollector } = require("edge-ml");
 
-// Generate collector function
-try {
+async function main() {
+  // Creates the dataset and returns a collector that uploads in increments
   const collector = await datasetCollector(
-  (url = "${backendUrl}"),
-  (key = "${deviceApiKey}"),
-  (name = "${datasetName}"),
-  (useDeviceTime = ${useServerTime}),
-  (timeSeries = ["sensorName_001", "sensorName_002"]),
-  (metaData = { "KEY": "VALUE" }),
-  (datasetLabel = "labeling_label")
+    "${backendUrl}", // backend URL
+    "${deviceApiKey}", // Device API key
+    "${datasetName}", // dataset name
+    ${useServerTime}, // true: the library sets the timestamps
+    ["sensorName_001", "sensorName_002"], // time-series names
+    { KEY: "VALUE" }, // metadata (optional)
+    "labeling_label" // label for the whole dataset (optional)
   );
-} catch (e) {
-  // Error occurred, cannot use the collector as a function to upload
-  
-}
 
-try {
-  // time should be a unix timestamp
-  collector.addDataPoint(${nodeTime}sensorName = "sensorName_001", value = 1.23);
-  collector.addDataPoint(${nodeTime}sensorName = "sensorName_002", value = 2.34);
+  // time should be a unix timestamp in ms
+  collector.addDataPoint(${nodeTime}"sensorName_001", 1.23);
+  collector.addDataPoint(${nodeTime}"sensorName_002", 2.34);
 
   // Tells the library that all data has been recorded.
   // Uploads all remaining data points to the server
   await collector.onComplete();
-} catch (e) {
-  
-}`;
+}
+
+main().catch((e) => console.error(e));`;
 
 export const codeJs = (
   backendUrl,
@@ -99,36 +94,26 @@ export const codeJs = (
   nodeTime
 ) =>
   `<script src="https://unpkg.com/edge-ml"></script>
-  
-<script>
-  // Generate collector function
-  try {
-    const collector = await datasetCollector(
-      (url = "${backendUrl}"),
-      (key = "${deviceApiKey}"),
-      (name = "${datasetName}"),
-      (useDeviceTime = ${useServerTime}),
-      (timeSeries = ["sensorName_001", "sensorName_002"]),
-      (metaData = { "KEY": "VALUE" }),
-      (datasetLabel = "labeling_label")
-    );
-  } catch (e) {
-    // Error occurred, cannot use the collector as a function to upload
-    
-  }
 
-  try {
-    // time should be a unix timestamp
-    collector.addDataPoint(${nodeTime}sensorName = "sensorName_001", value = 1.23);
-    collector.addDataPoint(${nodeTime}sensorName = "sensorName_002", value = 2.34);
+<script type="module">
+  // Creates the dataset and returns a collector that uploads in increments
+  const collector = await edgeML.datasetCollector(
+    "${backendUrl}", // backend URL
+    "${deviceApiKey}", // Device API key
+    "${datasetName}", // dataset name
+    ${useServerTime}, // true: the library sets the timestamps
+    ["sensorName_001", "sensorName_002"], // time-series names
+    { KEY: "VALUE" }, // metadata (optional)
+    "labeling_label" // label for the whole dataset (optional)
+  );
 
-    // Tells the library that all data has been recorded.
-    // Uploads all remaining data points to the server
-    await collector.onComplete();
-  } catch (e) {
-    // Error adding data points
-    
-  }
+  // time should be a unix timestamp in ms
+  collector.addDataPoint(${nodeTime}"sensorName_001", 1.23);
+  collector.addDataPoint(${nodeTime}"sensorName_002", 2.34);
+
+  // Tells the library that all data has been recorded.
+  // Uploads all remaining data points to the server
+  await collector.onComplete();
 </script>`;
 
 export const codeJava = (

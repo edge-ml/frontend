@@ -16,6 +16,11 @@ const GOALS = [
     desc: "Export to C to run on microcontrollers and embedded hardware.",
   },
   {
+    key: "ONNX",
+    title: "Browser / JavaScript",
+    desc: "Export to ONNX to run in a web page or Node.js with the edge-ml JavaScript library (onnxruntime-web). Works with the Decision Tree, Random Forest and PyTorch models.",
+  },
+  {
     key: "PYTORCH",
     title: "Server / research",
     desc: "Export to PyTorch (.pt) to run in Python on a server or desktop. Works with any PyTorch model, including ones that can't go on-device.",

@@ -50,6 +50,7 @@ const optionExportTargets = (option) => {
   return {
     c: ["c", "cpp", "c-embedded"].some((c) => plats.includes(c)),
     executorch: plats.includes("executorch"),
+    onnx: plats.includes("executorch") || plats.includes("onnx"),
   };
 };
 
@@ -61,6 +62,7 @@ const optionMatchesGoal = (option, goal) => {
   if (goal === "EXECUTORCH") return !!t.executorch;
   if (goal === "C") return !!t.c;
   if (goal === "PYTORCH") return !!t.pytorch;
+  if (goal === "ONNX") return !!t.onnx;
   return true;
 };
 
@@ -312,10 +314,12 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
   // every step supports it, so the model will export that way.
   const exportTargets =
     exportGoal === "C"
-      ? { c: true, executorch: false, pytorch: false }
+      ? { c: true, executorch: false, pytorch: false, onnx: false }
       : exportGoal === "PYTORCH"
-        ? { c: false, executorch: false, pytorch: true }
-        : { c: false, executorch: true, pytorch: false };
+        ? { c: false, executorch: false, pytorch: true, onnx: false }
+        : exportGoal === "ONNX"
+          ? { c: false, executorch: false, pytorch: false, onnx: true }
+          : { c: false, executorch: true, pytorch: false, onnx: false };
 
   return (
     <Modal
@@ -381,7 +385,7 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
         ) : null}
         {selectedPipeline && !exportGoal ? (
           <SelectExportGoal
-            availableKeys={["EXECUTORCH", "C", "PYTORCH"].filter((k) =>
+            availableKeys={["EXECUTORCH", "C", "ONNX", "PYTORCH"].filter((k) =>
               goalAchievable(selectedPipeline, k)
             )}
             onSelect={onSelectExportGoal}

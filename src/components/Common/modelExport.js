@@ -19,6 +19,7 @@ export const deploymentLabel = (model) => {
   const parts = [];
   if (f.includes("EXECUTORCH")) parts.push("Mobile");
   if (f.includes("C")) parts.push("Embedded");
+  if (f.includes("ONNX")) parts.push("Browser");
   if (f.includes("PYTORCH")) parts.push("Server");
   return parts.length ? parts.join(" · ") : null;
 };
