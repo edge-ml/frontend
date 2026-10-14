@@ -133,3 +133,30 @@ try {
 } catch (Exception e) {
     e.printStackTrace();
 }`;
+
+export const codeDart = (backendUrl, deviceApiKey, datasetName, useServerTime) => {
+  const time = useServerTime ? "" : ", timestamp: 1618760114000";
+  return `// pubspec.yaml: dependencies: edge_ml_dart: ^1.0.0
+import 'package:edge_ml_dart/edge_ml_dart.dart';
+
+Future<void> main() async {
+  final edgeml = EdgeML(
+    apiKey: '${deviceApiKey}', // Device API key
+    backendUrl: '${backendUrl}',
+  );
+
+  // Creates the dataset and returns a collector that uploads in increments
+  final collector = await edgeml.datasets.collector(
+    '${datasetName}', // dataset name
+    ['sensorName_001', 'sensorName_002'], // time-series names
+    metadata: {'KEY': 'VALUE'}, // optional
+  );
+
+  collector.startLabel('labeling', 'label'); // optional: label from now on
+${useServerTime ? "" : "  // timestamps are unix ms; leave them out to use the current time\n"}  collector.add('sensorName_001', 1.23${time});
+  collector.add('sensorName_002', 2.34${time});
+
+  // Uploads the remaining values and the labels
+  await collector.complete();
+}`;
+};

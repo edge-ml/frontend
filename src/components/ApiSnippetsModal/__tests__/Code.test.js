@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { codeNode, codeJs } from "../Code";
+import { codeNode, codeJs, codeDart } from "../Code";
 import { deploymentLabel } from "../../Common/modelExport";
 
 const args = (useServerTime) => [
@@ -24,6 +24,19 @@ describe("edge-ml JS library snippets", () => {
     // top-level await is only valid in modules: check the body as an async function
     expect(() => new Function(`return (async () => {${script}})`)).not.toThrow();
     expect(script).toContain("edgeML.datasetCollector(");
+  });
+});
+
+describe("edge-ml Flutter library snippet", () => {
+  it.each([true, false])("uses the collector API (useServerTime=%s)", (useServerTime) => {
+    const code = codeDart("https://app.edge-ml.org", "KEY", "my-dataset", useServerTime);
+    expect(code).toContain("apiKey: 'KEY'");
+    expect(code).toContain("backendUrl: 'https://app.edge-ml.org'");
+    expect(code).toContain("edgeml.datasets.collector(");
+    expect(code).toContain(
+      useServerTime ? "collector.add('sensorName_001', 1.23);" : "collector.add('sensorName_001', 1.23, timestamp: 1618760114000);"
+    );
+    expect(code).toContain("await collector.complete();");
   });
 });
 
