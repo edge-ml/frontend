@@ -28,7 +28,14 @@ jobs:
       prerelease: ${{ steps.pick.outputs.prerelease }}
       config: ${{ steps.pick.outputs.config }}
       slug: ${{ steps.pick.outputs.slug }}
+      version: ${{ steps.version.outputs.version }}
     steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          # Full history so the previous release versions (v* tags) are visible.
+          fetch-depth: 0
+
       - name: Pick the channel
         id: pick
         run: |
@@ -54,6 +61,34 @@ jobs:
               exit 1
               ;;
           esac
+
+      # A merge to main is a release, so main must carry a version that has not
+      # shipped before. Checked here rather than in build so a missing bump fails
+      # in seconds instead of after a 15 minute compile.
+      - name: Resolve and gate the version
+        id: version
+        run: |
+          version=$(python3 -c "import json; print(json.load(open('src-tauri/tauri.conf.json'))['version'])")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "declared version: $version"
+
+          if [ "${GITHUB_REF_NAME}" != "main" ]; then
+            echo "beta build; no version gate (beta is a rolling prerelease of the next version)."
+            exit 0
+          fi
+
+          previous=$(git tag -l 'v*' | sed 's/^v//' | sort -V | tail -1)
+          if [ -z "$previous" ]; then
+            echo "no previous v* tag; accepting $version as the first versioned release."
+            exit 0
+          fi
+          echo "previous released version: $previous"
+
+          highest=$(printf '%s\n%s\n' "$previous" "$version" | sort -V | tail -1)
+          if [ "$version" = "$previous" ] || [ "$highest" != "$version" ]; then
+            echo "::error::src-tauri/tauri.conf.json still declares $version, which is not newer than the last release ($previous). Bump it in the beta -> main PR: patch for fixes, minor for user-visible changes, major for a breaking change."
+            exit 1
+          fi
 
   build:
     name: Build ${{ matrix.artifact_name }}
@@ -151,8 +186,18 @@ jobs:
           TITLE: ${{ needs.resolve.outputs.title }}
           PRERELEASE: ${{ needs.resolve.outputs.prerelease }}
           BUILT: ${{ steps.assets.outputs.built }}
+          VERSION: ${{ needs.resolve.outputs.version }}
         run: |
+          # Assets are deliberately version-free so the download URLs stay stable,
+          # so the version is recorded here and in the vX.Y.Z tag instead.
+          if [ "$PRERELEASE" = "true" ]; then
+            display="${VERSION}-beta+${GITHUB_SHA:0:7}"
+          else
+            display="${VERSION}"
+          fi
           notes=$(printf '%s\n' \
+            "**Version ${display}**" \
+            "" \
             "Desktop build of **${TITLE}** from \`${GITHUB_REF_NAME}\` at \`${GITHUB_SHA:0:7}\`." \
             "" \
             "Built artifacts: ${BUILT}" \
@@ -170,3 +215,17 @@ jobs:
             gh release create "$TAG" --title "$TITLE" --notes "$notes" --target "$GITHUB_SHA" $extra
           fi
           gh release upload "$TAG" dist/* --clobber
+
+      # The channel tags (`latest` / `beta`) move every build, so stable releases
+      # also get an immutable vX.Y.Z tag. Any past build can be reproduced by
+      # dispatching this workflow at its tag.
+      - name: Tag the released version
+        if: needs.resolve.outputs.prerelease == 'false'
+        run: |
+          version="v${{ needs.resolve.outputs.version }}"
+          if git ls-remote --exit-code --tags origin "refs/tags/$version" >/dev/null 2>&1; then
+            echo "::error::$version is already tagged; the version was not bumped for this release."
+            exit 1
+          fi
+          git tag -a "$version" -m "$version" "${GITHUB_SHA}"
+          git push origin "refs/tags/$version"
