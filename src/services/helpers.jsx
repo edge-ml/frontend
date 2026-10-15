@@ -130,7 +130,9 @@ export const downloadBlob = async (blob, filename) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-  URL.revokeObjectURL(href);
+  // Firefox starts the save asynchronously; revoking the URL right after the
+  // click cancels it silently. Free it once the download has begun.
+  setTimeout(() => URL.revokeObjectURL(href), 10_000);
   return true;
 };
 

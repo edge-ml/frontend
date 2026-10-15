@@ -51,7 +51,7 @@ const DownloadModal = ({ model, onClose }) => {
     try {
       setError(null);
       const blob = await downloadDeploymentModel(model._id, format);
-      downloadBlob(blob, `${model.name}_${format.toLowerCase()}.zip`);
+      await downloadBlob(blob, `${model.name}_${format.toLowerCase()}.zip`);
     } catch (e) {
       setError(
         e && e.message ? e.message : "Download failed. Please try again."
