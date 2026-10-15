@@ -29,6 +29,7 @@ const formatsFor = (model) =>
 const DownloadModal = ({ model, onClose }) => {
   const [format, setFormat] = useState(null);
   const [error, setError] = useState(null);
+  const [downloading, setDownloading] = useState(false);
 
   const formats = formatsFor(model);
 
@@ -48,6 +49,7 @@ const DownloadModal = ({ model, onClose }) => {
   const timeSeries = model.timeSeries || [];
 
   const downloadModel = async () => {
+    setDownloading(true);
     try {
       setError(null);
       const blob = await downloadDeploymentModel(model._id, format);
@@ -56,6 +58,8 @@ const DownloadModal = ({ model, onClose }) => {
       setError(
         e && e.message ? e.message : "Download failed. Please try again."
       );
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -149,6 +153,7 @@ const { prediction } = await predictor.predict();`;
             color="blue"
             onClick={downloadModel}
             disabled={!format}
+            loading={downloading}
           >
             Download
           </Button>
