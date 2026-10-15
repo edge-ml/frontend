@@ -4,10 +4,11 @@ import "prismjs/themes/prism-tomorrow.css";
 import "prismjs/components/prism-java";
 import "prismjs/components/prism-c";
 import "prismjs/components/prism-cpp";
+import "prismjs/components/prism-dart";
 import "prismjs/plugins/copy-to-clipboard/prism-copy-to-clipboard";
 import CodeView from "./CodeView";
 
-import { codeJava, codeArduino, codeNode, codeJs } from "./Code";
+import { codeJava, codeArduino, codeNode, codeJs, codeDart } from "./Code";
 
 const generateCode = (
   platform,
@@ -42,6 +43,10 @@ const generateCode = (
         useServerTime,
         nodeTime
       );
+      break;
+    case "Flutter":
+      language = "dart";
+      code = codeDart(backendUrl, deviceApiKey, datasetName, useServerTime);
       break;
     case "Arduino":
       language = "cpp";

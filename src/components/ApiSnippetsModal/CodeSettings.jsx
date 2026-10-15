@@ -11,6 +11,7 @@ const CodeSettings = (props) => {
             <Radio value="Java" label="Java" />
             <Radio value="Node.js" label="Node.js" />
             <Radio value="Javascript" label="Javascript" />
+            <Radio value="Flutter" label="Flutter" />
             <Radio value="Arduino" label="Arduino" />
           </Group>
         </Radio.Group>
