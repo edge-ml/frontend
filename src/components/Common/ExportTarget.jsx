@@ -5,9 +5,9 @@ import C from "./C.svg";
 // computeExportTargets in the TrainingWizard), matching what the Download modal
 // will actually offer. One clear signal instead of contradictory per-step badges.
 const ExportTarget = ({ targets, size = "1.6rem" }) => {
-  const { c, executorch, pytorch } = targets || {};
+  const { c, executorch, pytorch, onnx } = targets || {};
 
-  if (!c && !executorch && !pytorch) {
+  if (!c && !executorch && !pytorch && !onnx) {
     return (
       <span className="text-muted">
         Runs live on the server — not downloadable to a device
@@ -59,6 +59,24 @@ const ExportTarget = ({ targets, size = "1.6rem" }) => {
           }}
         >
           PyTorch (.pt)
+        </span>
+      )}
+      {onnx && (
+        <span
+          title="Downloadable as ONNX to run in the browser or Node.js with the edge-ml JavaScript library"
+          style={{
+            display: "inline-block",
+            padding: "0.15rem 0.5rem",
+            borderRadius: "0.6rem",
+            background: "#005ced",
+            color: "#fff",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            lineHeight: 1.4,
+            verticalAlign: "middle",
+          }}
+        >
+          ONNX (browser)
         </span>
       )}
     </span>

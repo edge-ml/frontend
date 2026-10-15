@@ -9,11 +9,13 @@ import {
 import CodeView from "../../components/ApiSnippetsModal/CodeView";
 import { downloadDeploymentModel } from "../../services/ApiServices/MLDeploymentService";
 import { downloadBlob } from "../../services/helpers";
+import LogoLoader from "../../modules/LogoLoader";
 
 const FORMAT_INFO = {
   C: { label: "Embedded · C++", prismLanguage: "cpp" },
   EXECUTORCH: { label: "Mobile · ExecuTorch (.pte)", prismLanguage: "kotlin" },
   PYTORCH: { label: "Server · PyTorch (.pt)", prismLanguage: "python" },
+  ONNX: { label: "Browser · ONNX (JavaScript)", prismLanguage: "javascript" },
 };
 
 const formatInfoFor = (fmt) =>
@@ -28,6 +30,7 @@ const formatsFor = (model) =>
 const DownloadModal = ({ model, onClose }) => {
   const [format, setFormat] = useState(null);
   const [error, setError] = useState(null);
+  const [downloading, setDownloading] = useState(false);
 
   const formats = formatsFor(model);
 
@@ -47,14 +50,17 @@ const DownloadModal = ({ model, onClose }) => {
   const timeSeries = model.timeSeries || [];
 
   const downloadModel = async () => {
+    setDownloading(true);
     try {
       setError(null);
       const blob = await downloadDeploymentModel(model._id, format);
-      downloadBlob(blob, `${model.name}_${format.toLowerCase()}.zip`);
+      await downloadBlob(blob, `${model.name}_${format.toLowerCase()}.zip`);
     } catch (e) {
       setError(
         e && e.message ? e.message : "Download failed. Please try again."
       );
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -92,6 +98,16 @@ model.eval()
 window = np.zeros((1, WINDOW_SIZE, ${timeSeries.length}), dtype=np.float32)
 logits = model(torch.from_numpy(window))
 label = int(torch.argmax(logits, dim=-1))`;
+      case "ONNX":
+        return `// Browser or Node.js with the edge-ml library — see README.md and index.html in the download
+// <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+// <script src="https://unpkg.com/edge-ml"></script>
+const predictor = await edgeML.OnnxPredictor.fromUrls("model.onnx", "manifest.json");
+
+// call once per sensor sample (preprocessing is baked into the model)
+predictor.addSample({ ${timeSeries.map((elm) => `"${elm}": val_${elm}`).join(", ")} });
+
+const { prediction } = await predictor.predict();`;
       default:
         return "";
     }
@@ -137,9 +153,11 @@ label = int(torch.argmax(logits, dim=-1))`;
             variant="outline"
             color="blue"
             onClick={downloadModel}
-            disabled={!format}
+            disabled={!format || downloading}
+            aria-busy={downloading}
+            leftSection={downloading ? <LogoLoader size={18} /> : null}
           >
-            Download
+            {downloading ? "Preparing…" : "Download"}
           </Button>
         </div>
         <div style={{ paddingTop: "0.5rem" }}></div>

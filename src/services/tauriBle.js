@@ -186,7 +186,7 @@ class TauriBluetoothGATTServer {
 
     return withTimeout(
       this._connectPromise,
-      25000,
+      30000,
       "Bluetooth connection timed out. Make sure the device is awake and nearby, then try again."
     );
   }

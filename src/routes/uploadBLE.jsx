@@ -533,7 +533,10 @@ class UploadBLE extends Component {
 
       return server;
     } catch (error) {
-      if (retryCount < 3) {
+      const isTauriTimeout =
+        Boolean(globalThis.__TAURI_INTERNALS__ || globalThis.isTauri) &&
+        /timed out|did not respond/i.test(error?.message || "");
+      if (retryCount < 3 && !isTauriTimeout) {
         await this.delay(1000);
         return this.connectToDevice(bleDevice, retryCount + 1);
       }
@@ -592,10 +595,16 @@ class UploadBLE extends Component {
     } catch (error) {
       if (error?.name !== "NotFoundError") {
         console.error("BLE connection error:", error);
+        const message =
+          typeof error === "string" ? error : error?.message || "";
+        const connectionLost = /channel closed|connection was lost|device disconnected/i.test(
+          message
+        );
         this.setState({
-          connectionError:
-            error?.message ||
-            "The device could not be connected. Make sure it is nearby and not connected elsewhere.",
+          connectionError: connectionLost
+            ? "The Bluetooth connection dropped. Click \u201cConnect device\u201d again to scan and retry."
+            : message ||
+              "The device could not be connected. Make sure it is nearby and not connected elsewhere.",
         });
       }
       throw error;
@@ -748,8 +757,13 @@ class UploadBLE extends Component {
   }
 
   async fetchLabelings() {
-    const res = await getLabelings();
-    this.setState({ labelings: res });
+    try {
+      const res = await getLabelings();
+      this.setState({ labelings: res });
+    } catch (error) {
+      console.error("Failed to load BLE labelings:", error);
+      this.setState({ labelings: [] });
+    }
   }
 
   componentDidMount() {

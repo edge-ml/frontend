@@ -26,6 +26,11 @@ import Select_Name from "./Steps/Select_Name";
 import SelectTrainMethod from "./selectTrainMethod";
 import { intersect, toggleElement } from "../../services/helpers";
 import Pipelinestep from "./Pipelinestep";
+import {
+  metaFieldSummary,
+  withGroupFieldOptions,
+  groupFieldNote,
+} from "./leaveOneOutFields";
 import ExportTarget from "../Common/ExportTarget";
 import SelectExportGoal from "./SelectExportGoal";
 
@@ -45,6 +50,7 @@ const optionExportTargets = (option) => {
   return {
     c: ["c", "cpp", "c-embedded"].some((c) => plats.includes(c)),
     executorch: plats.includes("executorch"),
+    onnx: plats.includes("executorch") || plats.includes("onnx"),
   };
 };
 
@@ -56,6 +62,7 @@ const optionMatchesGoal = (option, goal) => {
   if (goal === "EXECUTORCH") return !!t.executorch;
   if (goal === "C") return !!t.c;
   if (goal === "PYTORCH") return !!t.pytorch;
+  if (goal === "ONNX") return !!t.onnx;
   return true;
 };
 
@@ -307,10 +314,12 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
   // every step supports it, so the model will export that way.
   const exportTargets =
     exportGoal === "C"
-      ? { c: true, executorch: false, pytorch: false }
+      ? { c: true, executorch: false, pytorch: false, onnx: false }
       : exportGoal === "PYTORCH"
-        ? { c: false, executorch: false, pytorch: true }
-        : { c: false, executorch: true, pytorch: false };
+        ? { c: false, executorch: false, pytorch: true, onnx: false }
+        : exportGoal === "ONNX"
+          ? { c: false, executorch: false, pytorch: false, onnx: true }
+          : { c: false, executorch: true, pytorch: false, onnx: false };
 
   return (
     <Modal
@@ -376,7 +385,7 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
         ) : null}
         {selectedPipeline && !exportGoal ? (
           <SelectExportGoal
-            availableKeys={["EXECUTORCH", "C", "PYTORCH"].filter((k) =>
+            availableKeys={["EXECUTORCH", "C", "ONNX", "PYTORCH"].filter((k) =>
               goalAchievable(selectedPipeline, k)
             )}
             onSelect={onSelectExportGoal}
@@ -470,9 +479,15 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
                       ),
                     };
                   };
-                  options = options.map(filterWharArchs);
-                  const selectedStep = filterWharArchs(
-                    selectedPipelineSteps[screen - 2]
+                  // Leave-one-out needs the project's metadata fields, which ml
+                  // cannot know, so they are derived from the selection here.
+                  const metaFields = metaFieldSummary(selDatasets);
+                  const fillGroupFields = (opt) =>
+                    withGroupFieldOptions(opt, metaFields.fields);
+
+                  options = options.map(filterWharArchs).map(fillGroupFields);
+                  const selectedStep = fillGroupFields(
+                    filterWharArchs(selectedPipelineSteps[screen - 2])
                   );
                   // Proactive hint on the feature-extraction step (the one that
                   // owns the raw-extractor option), plus the "hidden" note on the
@@ -506,6 +521,10 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
                       hiddenArchs.length > 1 ? "are" : "is"
                     } hidden — your ${channelCount}-channel selection isn't compatible (deepsense needs an even channel count, global_fusion needs 6+).`;
                   }
+                  // Only set for the leave-one-out step; says which datasets the
+                  // chosen field would exclude, matching what ml enforces.
+                  note = groupFieldNote(selectedStep, metaFields) || note;
+
                   return (
                     <Pipelinestep
                       stepNum={screen}

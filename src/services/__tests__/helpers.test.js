@@ -113,10 +113,15 @@ describe("helpers", () => {
     globalThis.URL.createObjectURL = vi.fn(() => "blob:x");
     globalThis.URL.revokeObjectURL = vi.fn();
 
+    vi.useFakeTimers();
     const blob = new Blob(["data"]);
     await expect(downloadBlob(blob, "file.zip")).resolves.toBe(true);
     expect(clickSpy).toHaveBeenCalled();
+    // not revoked during the click: Firefox would cancel the save
+    expect(globalThis.URL.revokeObjectURL).not.toHaveBeenCalled();
+    vi.runAllTimers();
     expect(globalThis.URL.revokeObjectURL).toHaveBeenCalledWith("blob:x");
+    vi.useRealTimers();
     createSpy.mockRestore();
   });
 

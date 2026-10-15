@@ -90,6 +90,7 @@ const createLabelOverlayPlugin = (annotationsRef, latestTimeRef) => {
 
 const BlePanelSensorstreamGraph = ({
   sensor,
+  sensorIndex,
   fullSampleRate,
   lastData,
   currentLabel,
@@ -203,7 +204,12 @@ const BlePanelSensorstreamGraph = ({
     let lastTimestamp = recordingStartTime;
 
     const updateData = () => {
-      const latest = propsRef.current.lastData;
+      // `lastData` is a live, mutated array (uploadBLE.setCurrentData writes into
+      // it without a re-render), so index it here rather than capturing the
+      // element at render time. Capturing it froze the graph on the empty
+      // initial value.
+      const series = propsRef.current.lastData;
+      const latest = Array.isArray(series) ? series[sensorIndex] : undefined;
       if (
         Array.isArray(latest) &&
         Number.isFinite(Number(latest[0])) &&
@@ -243,7 +249,7 @@ const BlePanelSensorstreamGraph = ({
       plotRef.current = undefined;
       plot.destroy();
     };
-  }, [fullSampleRate, recordingStartTime, sensor]);
+  }, [fullSampleRate, recordingStartTime, sensor, sensorIndex]);
 
   return <div className="ble-live-chart" ref={containerRef} />;
 };

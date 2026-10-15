@@ -143,11 +143,68 @@ describe("apiRequest (browser/axios path)", () => {
     ).rejects.toThrow(/failed/i);
   });
 
+  it("formats FastAPI validation error arrays into readable messages", async () => {
+    server.use(
+      http.get(`${AUTH_URI}validation`, () =>
+        HttpResponse.json(
+          {
+            detail: [
+              { loc: ["header", "project"], msg: "Field required", type: "missing" },
+              { loc: ["cookie", "jwt"], msg: "Field required", type: "missing" },
+            ],
+          },
+          { status: 422 }
+        )
+      )
+    );
+
+    try {
+      await apiRequest(HTTP_METHODS.GET, AUTH_URI, "validation");
+      throw new Error("expected apiRequest to reject");
+    } catch (e) {
+      expect(e.message).toBe(
+        "header.project: Field required; cookie.jwt: Field required"
+      );
+      expect(e.status).toBe(422);
+      expect(e.payload.detail).toHaveLength(2);
+    }
+  });
+
+  it("does not render object payloads as [object Object]", async () => {
+    server.use(
+      http.get(`${AUTH_URI}objectdetail`, () =>
+        HttpResponse.json({ detail: { reason: "bad" } }, { status: 400 })
+      )
+    );
+    await expect(
+      apiRequest(HTTP_METHODS.GET, AUTH_URI, "objectdetail")
+    ).rejects.toThrow(/"reason":"bad"/);
+  });
+
 });
 
 describe("apiRequest (tauri path)", () => {
   beforeEach(() => {
     globalThis.__TAURI_INTERNALS__ = {};
+  });
+
+  it("sends the stored token as a jwt cookie to dataset-store only", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({}),
+    });
+    vi.doMock("@tauri-apps/plugin-http", () => ({ fetch: fetchMock }));
+    vi.resetModules();
+    const { DATASET_STORE } = await import("../ApiConstants");
+    ({ default: apiRequest } = await import("../request"));
+    localStorage.setItem("access_token", "token-123");
+
+    await apiRequest(HTTP_METHODS.GET, DATASET_STORE, "labelings/");
+    expect(fetchMock.mock.calls[0][1].headers.Cookie).toBe("jwt=token-123");
+
+    await apiRequest(HTTP_METHODS.GET, "https://api.github.com/", "user");
+    expect(fetchMock.mock.calls[1][1].headers.Cookie).toBeUndefined();
   });
 
   it("uses the tauri fetch plugin and parses json", async () => {
@@ -371,5 +428,29 @@ describe("apiRequest (tauri path)", () => {
       "text"
     );
     expect(data).toBe("plain");
+  });
+
+  it("formats FastAPI validation arrays from tauri responses", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 422,
+      statusText: "Unprocessable Entity",
+      text: () =>
+        Promise.resolve(
+          JSON.stringify({
+            detail: [{ loc: ["header", "project"], msg: "Field required" }],
+          })
+        ),
+    });
+    vi.doMock("@tauri-apps/plugin-http", () => ({ fetch: fetchMock }));
+    vi.resetModules();
+    ({ default: apiRequest } = await import("../request"));
+
+    await expect(
+      apiRequest(HTTP_METHODS.GET, AUTH_URI, "validation")
+    ).rejects.toMatchObject({
+      message: "header.project: Field required",
+      status: 422,
+    });
   });
 });

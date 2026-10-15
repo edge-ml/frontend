@@ -13,8 +13,15 @@ const useLabelings = () => {
   const [labelings, setLabelings] = useState(undefined);
 
   const refreshLabelings = async () => {
-    const data = await getLabelings_api();
-    setLabelings(data);
+    try {
+      const data = await getLabelings_api();
+      setLabelings(data);
+    } catch (error) {
+      console.error("[useLabelings] Failed to load labelings:", error);
+      // Keep any data we already have, but never leave the page stuck on its
+      // loading state when the first request fails.
+      setLabelings((previous) => previous ?? []);
+    }
   };
 
   const updateLabeling = async (labeling) => {
