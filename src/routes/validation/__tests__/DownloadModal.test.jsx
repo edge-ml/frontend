@@ -19,7 +19,7 @@ const renderModal = () =>
       <DownloadModal model={model} onClose={() => {}} />
     </MantineProvider>
   );
-const downloadButton = () => screen.getByRole("button", { name: /^download$/i });
+const downloadButton = () => screen.getByRole("button", { name: /download|preparing/i });
 
 describe("DownloadModal", () => {
   it("shows a loading state until the file is handed to the browser", async () => {
@@ -28,12 +28,17 @@ describe("DownloadModal", () => {
     renderModal();
 
     fireEvent.click(downloadButton());
-    await waitFor(() => expect(downloadButton()).toHaveAttribute("data-loading"));
+    // the edge-ml logo loader, not a generic spinner
+    await waitFor(() => expect(downloadButton()).toHaveAttribute("aria-busy", "true"));
     expect(downloadButton()).toBeDisabled();
+    expect(downloadButton()).toHaveTextContent("Preparing…");
+    expect(screen.getByRole("img", { name: "Loading" })).toHaveClass("logo-loader");
 
     const blob = new Blob(["zip"]);
     finish(blob);
-    await waitFor(() => expect(downloadButton()).not.toHaveAttribute("data-loading"));
+    await waitFor(() => expect(downloadButton()).toHaveAttribute("aria-busy", "false"));
+    expect(downloadButton()).toHaveTextContent("Download");
+    expect(screen.queryByRole("img", { name: "Loading" })).not.toBeInTheDocument();
     expect(downloadBlob).toHaveBeenCalledWith(blob, "test_double_c.zip");
   });
 
@@ -42,6 +47,6 @@ describe("DownloadModal", () => {
     renderModal();
     fireEvent.click(downloadButton());
     expect(await screen.findByText("Request failed with status code 500")).toBeInTheDocument();
-    expect(downloadButton()).not.toHaveAttribute("data-loading");
+    expect(downloadButton()).toHaveAttribute("aria-busy", "false");
   });
 });
