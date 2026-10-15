@@ -9,6 +9,7 @@ import {
 import CodeView from "../../components/ApiSnippetsModal/CodeView";
 import { downloadDeploymentModel } from "../../services/ApiServices/MLDeploymentService";
 import { downloadBlob } from "../../services/helpers";
+import LogoLoader from "../../modules/LogoLoader";
 
 const FORMAT_INFO = {
   C: { label: "Embedded · C++", prismLanguage: "cpp" },
@@ -152,10 +153,11 @@ const { prediction } = await predictor.predict();`;
             variant="outline"
             color="blue"
             onClick={downloadModel}
-            disabled={!format}
-            loading={downloading}
+            disabled={!format || downloading}
+            aria-busy={downloading}
+            leftSection={downloading ? <LogoLoader size={18} /> : null}
           >
-            Download
+            {downloading ? "Preparing…" : "Download"}
           </Button>
         </div>
         <div style={{ paddingTop: "0.5rem" }}></div>
