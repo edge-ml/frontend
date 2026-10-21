@@ -33,6 +33,7 @@ const Dataset = () => {
         datasetEdit={{
           ...datasetEdit,
           updateDataset: datasetUtils.updateDataset,
+          refreshDataset: datasetUtils.refreshDataset,
         }}
       >
         <LabelingProvider labelings={labelings}>

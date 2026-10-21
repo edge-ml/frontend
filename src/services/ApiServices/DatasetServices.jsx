@@ -134,18 +134,14 @@ export const getUploadProcessingProgress = async (datasetId) => {
   return res;
 };
 
-export const updateTimeSeriesConfig = async (
-  datasetId,
-  tsId,
-  unit,
-  scaling,
-  offset
-) => {
+// Sets or corrects what a time-series measures; the stored values are unchanged.
+// quantity: catalog id, custom label, or null for unknown.
+export const setTimeSeriesUnit = async (datasetId, tsId, quantity, unit) => {
   const res = await apiRequest(
     apiConsts.HTTP_METHODS.PUT,
     apiConsts.DATASET_STORE,
-    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
-      `${datasetId}/changeUnitConfig?tsId=${tsId}&unit=${unit}&scaling=${scaling}&offset=${offset}`
+    apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${datasetId}/ts/${tsId}/unit`,
+    { quantity, unit }
   );
   return res;
 };
