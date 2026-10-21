@@ -81,7 +81,9 @@ const TimeSeriesUnitEditor = ({ timeSeries, onSave }) => {
               <Button size="xs" variant="default" onClick={() => setOpened(false)}>
                 Cancel
               </Button>
-              <Button size="xs" onClick={save} loading={saving}>
+              {/* Initial focus here: focusing the Quantity select would pop
+                  its list open over the Unit field. */}
+              <Button size="xs" onClick={save} loading={saving} data-autofocus>
                 Save
               </Button>
             </Group>
