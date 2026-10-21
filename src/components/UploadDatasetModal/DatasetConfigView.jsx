@@ -103,7 +103,7 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     style={{
                       paddingTop: 0,
                       paddingBottom: 0,
-                      width: "40%",
+                      width: "33%",
                     }}
                   >
                     <TextInput
@@ -129,12 +129,13 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                     style={{
                       paddingTop: 0,
                       paddingBottom: 0,
-                      width: "15%",
+                      width: "22%",
                     }}
                   >
                     <Input.Wrapper label="Unit" size="sm" data-testid="unitInput">
-                      <div style={{ paddingTop: 6 }}>
+                      <div>
                         <TimeSeriesUnitEditor
+                          variant="input"
                           timeSeries={timeSeries}
                           onSave={(quantity, unit) =>
                             changeConfig(fileId, {

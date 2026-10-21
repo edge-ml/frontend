@@ -89,6 +89,28 @@ describe("TimeSeriesUnitEditor", () => {
   });
 });
 
+describe("TimeSeriesUnitEditor input variant", () => {
+  it("shows unit and quantity like a form field", async () => {
+    renderIn(
+      <TimeSeriesUnitEditor
+        variant="input"
+        timeSeries={{ name: "acc", quantity: "acceleration", unit: "m/s^2" }}
+        onSave={vi.fn()}
+      />
+    );
+    const field = screen.getByLabelText("Unit of acc");
+    expect(field.tagName).toBe("BUTTON");
+    await waitFor(() => expect(field).toHaveTextContent("m/s²Acceleration"));
+  });
+
+  it("shows a placeholder when no unit is set", () => {
+    renderIn(
+      <TimeSeriesUnitEditor variant="input" timeSeries={{ name: "x", unit: "" }} onSave={vi.fn()} />
+    );
+    expect(screen.getByLabelText("Unit of x")).toHaveTextContent("Set unit");
+  });
+});
+
 describe("ModelInputUnits", () => {
   it("lists the expected unit per input", async () => {
     renderIn(

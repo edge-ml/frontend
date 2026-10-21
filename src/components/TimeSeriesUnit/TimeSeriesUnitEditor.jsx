@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import { Badge, Button, Group, Popover, Text, Tooltip } from "@mantine/core";
+import { Badge, Button, Group, Input, Popover, Text, Tooltip } from "@mantine/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import UnitFields from "./UnitFields";
 import { describeUnit } from "./units";
 import useUnitCatalog from "../../Hooks/useUnitCatalog";
 
-// Badge showing a time-series' unit; clicking it opens a form to set or
-// correct the quantity and unit. Saving relabels the series, it does not
-// change the recorded values.
-const TimeSeriesUnitEditor = ({ timeSeries, onSave }) => {
+// Shows a time-series' unit; clicking it opens a form to set or correct the
+// quantity and unit. Saving relabels the series, it does not change the
+// recorded values. variant "badge" sits next to a heading, "input" lines up
+// with form fields (e.g. the CSV upload settings).
+const TimeSeriesUnitEditor = ({ timeSeries, onSave, variant = "badge" }) => {
   const catalog = useUnitCatalog();
   const [opened, setOpened] = useState(false);
   const [draft, setDraft] = useState(null);
@@ -53,16 +56,50 @@ const TimeSeriesUnitEditor = ({ timeSeries, onSave }) => {
     >
       <Popover.Target>
         <Tooltip label={tooltip} withinPortal openDelay={300} disabled={opened}>
-          <Badge
-            size="xs"
-            variant={current.text ? "light" : "outline"}
-            color={current.convertible ? "blue" : "gray"}
-            style={{ cursor: "pointer", textTransform: "none" }}
-            onClick={() => (opened ? setOpened(false) : open())}
-            aria-label={`Unit of ${timeSeries.name}`}
-          >
-            {current.text || "Set unit"}
-          </Badge>
+          {variant === "input" ? (
+            <Input
+              component="button"
+              type="button"
+              size="sm"
+              pointer
+              onClick={() => (opened ? setOpened(false) : open())}
+              aria-label={`Unit of ${timeSeries.name}`}
+              rightSection={<FontAwesomeIcon icon={faChevronDown} size="xs" />}
+              rightSectionPointerEvents="none"
+              styles={{
+                input: {
+                  textAlign: "left",
+                  color: current.convertible ? "var(--mantine-color-blue-7)" : undefined,
+                },
+              }}
+            >
+              {current.text ? (
+                <>
+                  {current.text}
+                  {current.quantity && (
+                    <Text span size="xs" c="dimmed" ml={6}>
+                      {current.quantity}
+                    </Text>
+                  )}
+                </>
+              ) : (
+                <Text span size="sm" c="dimmed">
+                  Set unit
+                </Text>
+              )}
+            </Input>
+          ) : (
+            <Badge
+              size="sm"
+              variant={current.text ? "light" : "outline"}
+              color={current.convertible ? "blue" : "gray"}
+              style={{ cursor: "pointer", textTransform: "none" }}
+              onClick={() => (opened ? setOpened(false) : open())}
+              aria-label={`Unit of ${timeSeries.name}`}
+            >
+              {current.text || "Set unit"}
+            </Badge>
+          )}
         </Tooltip>
       </Popover.Target>
       <Popover.Dropdown>
