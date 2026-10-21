@@ -1,5 +1,6 @@
 import React from "react";
-import { TextInput, Button } from "@mantine/core";
+import { TextInput, Button, Input } from "@mantine/core";
+import TimeSeriesUnitEditor from "../TimeSeriesUnit/TimeSeriesUnitEditor";
 
 export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
   const onDeleteLabeling = (labelingToDeleteOriginalName) => {
@@ -20,11 +21,12 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
     });
   };
 
-  const onSetAllUnits = ({ unit, scale, offset }) => {
+  const onSetAllUnits = ({ quantity, unit, scale, offset }) => {
     changeConfig(fileId, {
       ...fileConfig,
       timeSeries: fileConfig.timeSeries.map((ts) => ({
         ...ts,
+        quantity: quantity,
         unit: unit,
         scale: scale,
         offset: offset,
@@ -130,24 +132,21 @@ export const DatasetConfigView = ({ fileId, fileConfig, changeConfig }) => {
                       width: "15%",
                     }}
                   >
-                    <TextInput
-                      label="Unit"
-                      data-testid="unitInput"
-                      placeholder="Unit"
-                      size="sm"
-                      value={timeSeries.unit}
-                      onChange={(e) =>
-                        changeConfig(fileId, {
-                          ...fileConfig,
-                          timeSeries: fileConfig.timeSeries.map((ts) => {
-                            if (ts === timeSeries) {
-                              return { ...ts, unit: e.target.value };
-                            }
-                            return ts;
-                          }),
-                        })
-                      }
-                    />
+                    <Input.Wrapper label="Unit" size="sm" data-testid="unitInput">
+                      <div style={{ paddingTop: 6 }}>
+                        <TimeSeriesUnitEditor
+                          timeSeries={timeSeries}
+                          onSave={(quantity, unit) =>
+                            changeConfig(fileId, {
+                              ...fileConfig,
+                              timeSeries: fileConfig.timeSeries.map((ts) =>
+                                ts === timeSeries ? { ...ts, quantity, unit } : ts
+                              ),
+                            })
+                          }
+                        />
+                      </div>
+                    </Input.Wrapper>
                   </td>
                   <td
                     style={{

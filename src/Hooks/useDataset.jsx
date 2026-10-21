@@ -81,6 +81,7 @@ const useDataset = (dataset_id) => {
     deleteLabel: deleteLabel,
     updateLabel: updateLabel,
     updateDataset: updateDataset,
+    refreshDataset: refreshDataset,
   };
 };
 
