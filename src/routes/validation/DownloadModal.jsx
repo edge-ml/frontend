@@ -10,6 +10,7 @@ import CodeView from "../../components/ApiSnippetsModal/CodeView";
 import { downloadDeploymentModel } from "../../services/ApiServices/MLDeploymentService";
 import { downloadBlob } from "../../services/helpers";
 import LogoLoader from "../../modules/LogoLoader";
+import ModelInputUnits from "../../components/TimeSeriesUnit/ModelInputUnits";
 
 const FORMAT_INFO = {
   C: { label: "Embedded · C++", prismLanguage: "cpp" },
@@ -162,6 +163,7 @@ const { prediction } = await predictor.predict();`;
         </div>
         <div style={{ paddingTop: "0.5rem" }}></div>
         <hr></hr>
+        <ModelInputUnits model={model} />
         {error && (
           <div style={{ color: "#c92a2a", fontWeight: 700, marginBottom: "0.5rem" }}>
             {error}

@@ -11,6 +11,30 @@ import {
 import { faFile } from "@fortawesome/free-regular-svg-icons";
 import { DatasetConfigView } from "./DatasetConfigView";
 
+// "2 of 3 time-series have a unit", so units are visible before opening the
+// settings. A series counts once its quantity is set (catalog or custom).
+const UnitSummary = ({ config, onOpen }) => {
+  const series = (config?.timeSeries || []).filter((ts) => !ts.removed);
+  if (!series.length) return null;
+  const set = series.filter((ts) => ts.quantity).length;
+  const text =
+    set === 0
+      ? `Units not set for ${series.length} time-series`
+      : set === series.length
+        ? series.length === 1
+          ? "Unit set"
+          : `Units set for all ${series.length} time-series`
+        : `Units set for ${set} of ${series.length} time-series`;
+  return (
+    <div className="file-unit-summary">
+      <span>{text}</span>
+      <button type="button" className="file-unit-link" onClick={onOpen}>
+        {set === series.length ? "Edit units" : "Set units"}
+      </button>
+    </div>
+  );
+};
+
 export const FileListItem = ({
   file,
   onDelete,
@@ -60,6 +84,14 @@ export const FileListItem = ({
                   : ""
               } \u00b7 ${file.progress.toFixed(0)}%`}
         </div>
+        {file.status === FileStatus.CONFIGURATION && (
+          <UnitSummary
+            config={file.config}
+            onOpen={() =>
+              changeConfig(file.id, { ...file.config, editingModeActive: true })
+            }
+          />
+        )}
       </div>
       <div className="file-actions">
         {file.status === FileStatus.COMPLETE && (

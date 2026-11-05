@@ -121,3 +121,22 @@
   gap: 0.25rem;
   flex-shrink: 0;
 }
+
+.file-unit-summary {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  font-size: 0.8rem;
+  color: #5c5f66;
+  margin-top: 0.15rem;
+}
+
+.file-unit-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--mantine-color-blue-7);
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+}

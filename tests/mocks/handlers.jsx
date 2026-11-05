@@ -27,6 +27,29 @@ export const fixtures = {
     metaData: {},
   },
   model: { _id: 'model-1', name: 'Test Model' },
+  unitCatalog: {
+    version: 1,
+    quantities: [
+      {
+        id: 'acceleration',
+        label: 'Acceleration',
+        defaultUnit: 'm/s^2',
+        units: [
+          { id: 'm/s^2', label: 'm/s²', scale: 1, offset: 0, aliases: ['m/s²'] },
+          { id: 'g', label: 'g', scale: 9.80665, offset: 0, aliases: [] },
+        ],
+      },
+      {
+        id: 'temperature',
+        label: 'Temperature',
+        defaultUnit: 'degC',
+        units: [
+          { id: 'degC', label: '°C', scale: 1, offset: 0, aliases: ['°C'] },
+          { id: 'K', label: 'K', scale: 1, offset: -273.15, aliases: [] },
+        ],
+      },
+    ],
+  },
 };
 
 const json = (data) => HttpResponse.json(data);
@@ -115,7 +138,7 @@ export const handlers = [
   http.put(
     DATASET_STORE +
       apiConsts.DATASET_STORE_ENDPOINTS.DATASETS +
-      '*/changeUnitConfig*',
+      '*/ts/*/unit',
     () => json({ success: true })
   ),
   http.get(
@@ -197,6 +220,7 @@ export const handlers = [
   ),
 
   // ---- ML service ----------------------------------------------------------
+  http.get(ML_URI + apiConsts.ML_ENDPOINTS.UNITS, () => json(fixtures.unitCatalog)),
   http.get(ML_URI + apiConsts.ML_ENDPOINTS.MODELS, () => json([fixtures.model])),
   http.post(ML_URI + apiConsts.ML_ENDPOINTS.TRAIN + '*', () => json({ jobId: 'job-1' })),
   http.get(ML_URI + apiConsts.ML_ENDPOINTS.TRAIN, () => json({ steps: [] })),

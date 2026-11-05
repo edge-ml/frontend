@@ -152,6 +152,7 @@ export const ML_ENDPOINTS = {
   TRAINED_MODELS: "models/trained",
   DEPLOY: "deploy",
   PARAMETERS: "parameters",
+  UNITS: "units/",
 };
 
 export const DATASET_STORE_ENDPOINTS = {

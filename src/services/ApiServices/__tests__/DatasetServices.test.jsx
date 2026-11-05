@@ -15,7 +15,7 @@ import {
   createDatasets,
   appendToDataset,
   getUploadProcessingProgress,
-  updateTimeSeriesConfig,
+  setTimeSeriesUnit,
 } from "../DatasetServices";
 
 const DS = apiConsts.DATASET_STORE;
@@ -176,17 +176,17 @@ describe("DatasetServices", () => {
     expect(url.searchParams.get("datasetId")).toBe("ds-3");
   });
 
-  it("updateTimeSeriesConfig PUTs unit config query", async () => {
-    let path;
+  it("setTimeSeriesUnit PUTs quantity and unit", async () => {
+    let path, body;
     server.use(
-      http.put(`${DS}${E.DATASETS}*`, ({ request }) => {
-        path = new URL(request.url).pathname + new URL(request.url).search;
-        return HttpResponse.json({});
+      http.put(`${DS}${E.DATASETS}*`, async ({ request }) => {
+        path = new URL(request.url).pathname;
+        body = await request.json();
+        return HttpResponse.json(body);
       })
     );
-    await updateTimeSeriesConfig("d1", "ts1", "g", 2.5, -1);
-    expect(path).toContain(
-      "/datasets/d1/changeUnitConfig?tsId=ts1&unit=g&scaling=2.5&offset=-1"
-    );
+    await setTimeSeriesUnit("d1", "ts1", "acceleration", "g");
+    expect(path).toContain("/datasets/d1/ts/ts1/unit");
+    expect(body).toEqual({ quantity: "acceleration", unit: "g" });
   });
 });

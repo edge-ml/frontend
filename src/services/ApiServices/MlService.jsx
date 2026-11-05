@@ -128,3 +128,12 @@ export const downloadFirmware = async (
     "application/json",
     "arraybuffer"
   );
+
+export const getUnitCatalog = async () => {
+  const res = await apiRequest(
+    apiConsts.HTTP_METHODS.GET,
+    apiConsts.ML_URI,
+    apiConsts.ML_ENDPOINTS.UNITS
+  );
+  return res;
+};
