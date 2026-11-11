@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import PlayheadLine from "./PlayheadLine";
+import HoverTime from "./HoverTime";
 
 // What a recording's row draws over its timeline: where the recording lies,
 // a bar to move the playhead, and the playhead itself.
@@ -7,7 +8,7 @@ import PlayheadLine from "./PlayheadLine";
 // The chart listens for clicks (labels) and drags (panning) with native
 // listeners on an ancestor. The handlers here are native too, since React's
 // run only after those and could not keep events from reaching them.
-const MediaOverlay = ({ plot, playback, media, aligning, onShift }) => {
+const MediaOverlay = ({ plot, playback, media, aligning, onShift, origin }) => {
   const scrubRef = useRef();
   const extentRef = useRef();
   const latest = useRef({});
@@ -120,7 +121,8 @@ const MediaOverlay = ({ plot, playback, media, aligning, onShift }) => {
         aria-valuenow={Math.round(playback.time)}
         title="Click or drag to move the playhead"
       />
-      <PlayheadLine plot={plot} playback={playback} />
+      <HoverTime plot={plot} origin={origin} />
+      <PlayheadLine plot={plot} playback={playback} knob />
     </div>
   );
 };

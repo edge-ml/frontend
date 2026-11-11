@@ -5,8 +5,18 @@
   border-top: 1px solid var(--mantine-color-gray-3);
 }
 
+/* Many label types scroll sideways inside the bar; the selected label and
+   the delete button next to them always stay in view. */
 .dsp-labelbar-chips {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+.dsp-labelbar-actions {
+  flex: none;
 }
 
 /* --- Label type chips (dynamic colors require inline styles,
@@ -16,7 +26,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  flex: none;
   max-width: 220px;
+  white-space: nowrap;
   height: 30px;
   padding: 0 10px;
   border: 1px solid;

@@ -8,6 +8,7 @@ import TimeSeriesChart from "./TimeSeriesChart";
 import TimeSeriesUnitEditor from "../../components/TimeSeriesUnit/TimeSeriesUnitEditor";
 import { setTimeSeriesUnit } from "../../services/ApiServices/DatasetServices";
 import PlayheadLine from "./media/PlayheadLine";
+import HoverTime from "./media/HoverTime";
 
 const TimeSeriesDisplay = ({
   timeSeries,
@@ -83,9 +84,16 @@ const TimeSeriesDisplay = ({
         onLabelSelect={setSelectedLabel}
         onBoundaryCommit={updateLabelStartEnd}
         onWidthChange={setChartWidth}
+        // next to recordings, the charts count time like the player does
+        timeOrigin={playback ? fullRange.min : undefined}
         renderOverlay={
           playback
-            ? (plot) => <PlayheadLine plot={plot} playback={playback} />
+            ? (plot) => (
+                <>
+                  <HoverTime plot={plot} origin={fullRange.min} />
+                  <PlayheadLine plot={plot} playback={playback} />
+                </>
+              )
             : undefined
         }
       />

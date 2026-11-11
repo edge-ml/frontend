@@ -15,6 +15,11 @@ import { hexToForegroundColor } from "../../services/ColorService";
 import { indexToShortcutKey } from "../../services/ShortcutKeys";
 import { DatasetContext } from "../../routes/dataset/DatasetContext";
 import DeleteModal from "../Common/DeleteModal";
+import {
+  datasetBounds,
+  formatElapsed,
+  mediaOf,
+} from "../../routes/dataset/media/mediaUtils";
 
 import "./LabelingPanel.css";
 
@@ -62,11 +67,15 @@ const LabelTypeButton = ({ label, index, isSelected, onSelect }) => {
   );
 };
 
-const SelectedLabelRange = ({ from, to }) => {
+const SelectedLabelRange = ({ from, to, origin }) => {
+  // Next to recordings, times count from the start of the dataset, like the
+  // player and the time axis, and are precise enough to place a boundary.
   const formatTime = (timestamp) =>
-    Number.isFinite(timestamp)
-      ? new Date(timestamp).toUTCString().split(" ")[4]
-      : "--:--:--";
+    !Number.isFinite(timestamp)
+      ? "--:--:--"
+      : origin !== undefined
+        ? formatElapsed(timestamp - origin, 10)
+        : new Date(timestamp).toUTCString().split(" ")[4];
 
   return (
     <Group gap="xs" wrap="nowrap">
@@ -83,6 +92,11 @@ const SelectedLabelRange = ({ from, to }) => {
         <Text inherit ff="monospace">
           {formatTime(to)}
         </Text>
+        {origin !== undefined && Number.isFinite(from) && Number.isFinite(to) ? (
+          <Text inherit c="dimmed">
+            ({((to - from) / 1000).toFixed(2)} s)
+          </Text>
+        ) : null}
       </Group>
     </Group>
   );
@@ -90,6 +104,7 @@ const SelectedLabelRange = ({ from, to }) => {
 
 const LabelingPanel = () => {
   const {
+    dataset,
     activeLabeling,
     selectedLabel,
     onDeleteSelectedLabel,
@@ -119,10 +134,15 @@ const LabelingPanel = () => {
           )}
         </Group>
 
-        <Group gap="xs" wrap="nowrap">
+        <Group gap="xs" wrap="nowrap" className="dsp-labelbar-actions">
           <SelectedLabelRange
             from={selectedLabel?.start}
             to={selectedLabel?.end}
+            origin={
+              mediaOf(dataset).length > 0
+                ? datasetBounds(dataset)?.start
+                : undefined
+            }
           />
           <Button
             disabled={!selectedLabel}

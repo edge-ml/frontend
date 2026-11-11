@@ -31,7 +31,8 @@ export const describeMedia = (dataset) => {
 // 83456 -> "1:23.4"
 export const formatDuration = (ms) => {
   const sign = ms < 0 ? "-" : "";
-  const total = Math.abs(ms) / 1000;
+  // round first: 59.98 s is "1:00.0", not "0:60.0"
+  const total = Math.round(Math.abs(ms) / 100) / 10;
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const seconds = (total % 60).toFixed(1).padStart(4, "0");
@@ -94,3 +95,86 @@ export const waveformData = (peaks, media, range, width) => {
 export const ACCEPTED_MEDIA =
   "audio/*,video/*,.mp4,.m4v,.mov,.webm,.mp3,.wav,.ogg,.oga,.flac,.m4a";
 
+
+// ---- zooming and panning the visible part of the timeline
+
+// The closest one can zoom in.
+export const MIN_VISIBLE_MS = 250;
+
+const fitRange = (min, span, full) => {
+  const fullSpan = full.max - full.min;
+  if (span >= fullSpan) return { min: full.min, max: full.max };
+  const start = Math.min(Math.max(min, full.min), full.max - span);
+  return { min: start, max: start + span };
+};
+
+// Zooms by `factor` (< 1 zooms in), keeping the time `anchor` where it is on
+// screen.
+export const zoomRange = (range, full, factor, anchor) => {
+  const span = range.max - range.min;
+  const nextSpan = Math.min(
+    Math.max(span * factor, Math.min(MIN_VISIBLE_MS, full.max - full.min)),
+    full.max - full.min
+  );
+  const at = Number.isFinite(anchor)
+    ? Math.min(Math.max(anchor, range.min), range.max)
+    : range.min + span / 2;
+  const position = span > 0 ? (at - range.min) / span : 0.5;
+  return fitRange(at - position * nextSpan, nextSpan, full);
+};
+
+export const panRange = (range, full, delta) =>
+  fitRange(range.min + delta, range.max - range.min, full);
+
+// Shows `span` ms with `center` in the middle (as far as the ends allow).
+export const showSpan = (full, span, center) =>
+  fitRange(center - span / 2, Math.max(span, 1), full);
+
+// ---- time axis relative to the start of the dataset
+
+const STEPS_MS = [
+  10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10_000, 15_000, 30_000, 60_000,
+  120_000, 300_000, 600_000, 900_000, 1_800_000, 3_600_000, 7_200_000,
+  14_400_000, 43_200_000, 86_400_000,
+];
+
+// Distance between ticks so that they are at least `minPx` apart.
+export const tickStep = (spanMs, widthPx, minPx = 90) => {
+  const needed = (spanMs * minPx) / Math.max(widthPx, 1);
+  return STEPS_MS.find((step) => step >= needed) ?? STEPS_MS[STEPS_MS.length - 1];
+};
+
+export const tickTimes = (origin, min, max, step) => {
+  const ticks = [];
+  for (let k = Math.ceil((min - origin) / step); origin + k * step <= max; k++) {
+    ticks.push(origin + k * step);
+  }
+  return ticks;
+};
+
+// 83456 -> "1:23" / "1:23.5" / "1:23.46", as fine as `step` needs
+export const formatElapsed = (ms, step = 1000) => {
+  const decimals = step >= 1000 ? 0 : step >= 100 ? 1 : 2;
+  const sign = ms < 0 ? "-" : "";
+  const total = Math.abs(ms) / 1000;
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  // floor, not round: 59.96 s must not print as 60.0
+  const scale = 10 ** decimals;
+  const seconds = (Math.floor((total % 60) * scale + 1e-6) / scale)
+    .toFixed(decimals)
+    .padStart(decimals ? decimals + 3 : 2, "0");
+  return hours > 0
+    ? `${sign}${hours}:${String(minutes).padStart(2, "0")}:${seconds}`
+    : `${sign}${minutes}:${seconds}`;
+};
+
+// What to show when a dataset opens. A long recording squeezed into one
+// screen is a solid block with hair-thin labels, so those start zoomed in.
+export const LONG_RECORDING_MS = 5 * 60 * 1000;
+export const INITIAL_SPAN_MS = 60 * 1000;
+
+export const initialRange = (full, hasMedia) =>
+  hasMedia && full.max - full.min > LONG_RECORDING_MS
+    ? { min: full.min, max: full.min + INITIAL_SPAN_MS }
+    : full;

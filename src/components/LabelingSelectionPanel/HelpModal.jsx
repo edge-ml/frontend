@@ -39,6 +39,36 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
                 </td>
                 <td>Play or pause audio and video</td>
               </tr>
+              <tr>
+                <td>
+                  <kbd>←</kbd> / <kbd>→</kbd>
+                </td>
+                <td>
+                  Move the playhead by 1 s (with <kbd>Shift</kbd> 5 s, with{" "}
+                  <kbd>Alt</kbd> 0.1 s)
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <kbd>Enter</kbd>
+                </td>
+                <td>Start or end a label at the playhead</td>
+              </tr>
+              <tr>
+                <td>
+                  <kbd>+</kbd> / <kbd>−</kbd>
+                </td>
+                <td>Zoom the timeline in or out (with recordings)</td>
+              </tr>
+              <tr>
+                <td>
+                  <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + wheel
+                </td>
+                <td>
+                  Zoom a chart around the pointer; <kbd>Shift</kbd> + wheel or
+                  a sideways swipe moves along it
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

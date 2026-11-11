@@ -8,7 +8,7 @@ import ChartSlider from "./ChartSlider";
 import MediaDock from "./media/MediaDock";
 import MediaSeriesDisplay from "./media/MediaSeriesDisplay";
 import { Playback } from "./media/playback";
-import { mediaOf } from "./media/mediaUtils";
+import { initialRange, mediaOf } from "./media/mediaUtils";
 
 // How often, and for how long, to look for a waveform that is being computed.
 const PROCESSING_POLL_MS = 2000;
@@ -52,7 +52,9 @@ const TimeSeriesSection = () => {
     };
   }, [activeTimeSeries, savedMedia]);
 
-  const [visibleRange, setVisibleRange] = useState(fullRange);
+  const [visibleRange, setVisibleRange] = useState(() =>
+    initialRange(fullRange, savedMedia.length > 0)
+  );
   const visibleRangeRef = useRef(visibleRange);
   visibleRangeRef.current = visibleRange;
   const previousFullRange = useRef(fullRange);
@@ -66,7 +68,9 @@ const TimeSeriesSection = () => {
       const stillInside =
         current.min >= fullRange.min && current.max <= fullRange.max;
       // keep a zoomed-in view when the dataset grows or a recording moves
-      return showedEverything || !stillInside ? fullRange : current;
+      return showedEverything || !stillInside
+        ? initialRange(fullRange, savedMedia.length > 0)
+        : current;
     });
   }, [fullRange.max, fullRange.min]);
 
@@ -145,6 +149,8 @@ const TimeSeriesSection = () => {
           mediaList={mediaList}
           playback={playback}
           fullRange={fullRange}
+          visibleRange={visibleRange}
+          onRangeChange={setVisibleRange}
           onMark={onPlotClick}
         />
       ) : null}
@@ -159,6 +165,7 @@ const TimeSeriesSection = () => {
             fullRange={fullRange}
             visibleRange={visibleRange}
             onRangeChange={setVisibleRange}
+            roomy={mediaList.length + activeTimeSeries.length <= 2}
           />
         ))}
         {hiddenCount > 0 ? (

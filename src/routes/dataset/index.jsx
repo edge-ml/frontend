@@ -40,7 +40,9 @@ const Dataset = () => {
           <div className="d-flex w-100 h-100">
             <div
               className="d-flex flex-column justify-content-between flex-grow-1"
-              style={{ height: "100vh" }}
+              // minWidth 0: a long row of label buttons must scroll inside its
+              // bar instead of making the whole page wider than the window
+              style={{ height: "100vh", minWidth: 0 }}
             >
               <LabelingSelectionPanel></LabelingSelectionPanel>
               <TimeSeriesSection></TimeSeriesSection>
