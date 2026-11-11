@@ -33,6 +33,12 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
                 </td>
                 <td>Cancel the current label or selection</td>
               </tr>
+              <tr>
+                <td>
+                  <kbd>Space</kbd>
+                </td>
+                <td>Play or pause audio and video</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -43,6 +49,19 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
             Select a label type, click once on a chart to set the start, then
             click again to set the end. Select an existing label to drag either
             boundary.
+          </p>
+        </div>
+        <hr />
+        <div style={{ padding: "0.5rem 0" }}>
+          <h6>Audio and video</h6>
+          <p>
+            Add recordings with the button at the top right (MP4 or WebM
+            video; MP3, WAV, OGG, FLAC or M4A audio). They appear on the same
+            timeline as the sensor data, so labels apply to both. Move the
+            playhead with the grey strip at the bottom of a recording, or
+            press <b>Label here</b> to set a label boundary while watching. If
+            a recording is offset from the sensor data, use <b>Align</b> in
+            its menu to slide it into place.
           </p>
         </div>
         <hr />

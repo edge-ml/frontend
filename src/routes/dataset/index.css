@@ -186,3 +186,129 @@
 .timeline-navigator__range--dragging {
   cursor: grabbing;
 }
+
+/* Recordings (audio/video) on the dataset timeline */
+
+.media-series-icon {
+  color: var(--mantine-color-indigo-6);
+  font-size: 0.8rem;
+}
+
+.media-series-panel {
+  padding: 4px 0 6px;
+}
+
+.media-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Where the recording lies on the timeline. */
+.media-extent {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: color-mix(in srgb, var(--mantine-color-indigo-5) 9%, transparent);
+  border-inline: 1px solid var(--mantine-color-indigo-3);
+}
+
+.media-extent--aligning {
+  z-index: 3;
+  background: color-mix(in srgb, var(--mantine-color-indigo-5) 22%, transparent);
+  border: 1px dashed var(--mantine-color-indigo-6);
+  cursor: ew-resize;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+/* Strip along the time axis that moves the playhead; a click anywhere else
+   on the row draws a label, as on the sensor charts. */
+.media-scrub {
+  position: absolute;
+  z-index: 4;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 14px;
+  background: color-mix(in srgb, var(--mantine-color-gray-6) 14%, transparent);
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.media-scrub:hover {
+  background: color-mix(in srgb, var(--mantine-color-gray-6) 26%, transparent);
+}
+
+.media-playhead {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  bottom: 0;
+  left: -1px;
+  width: 2px;
+  background: var(--mantine-color-red-6);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.media-dock {
+  border-block: 1px solid var(--mantine-color-gray-3);
+  background: var(--mantine-color-gray-0);
+}
+
+.media-dock__time {
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}
+
+.media-dock__players {
+  display: flex;
+  gap: 8px;
+  padding: 0 12px 8px;
+  overflow-x: auto;
+  --media-player-height: 200px;
+}
+
+.media-dock__players--large {
+  --media-player-height: 400px;
+}
+
+.media-player {
+  position: relative;
+  flex: none;
+  margin: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+  transition: opacity 0.15s ease;
+}
+
+.media-player video {
+  display: block;
+  height: var(--media-player-height);
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.media-player figcaption {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  max-width: calc(100% - 12px);
+  padding: 1px 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* The playhead is before or after this video. */
+.media-player--outside {
+  opacity: 0.35;
+}

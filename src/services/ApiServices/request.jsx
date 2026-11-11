@@ -93,7 +93,9 @@ const apiRequest = async (
   body = {},
   params = {},
   contentType = "application/json",
-  responseType = "json"
+  responseType = "json",
+  // onUploadProgress(fraction 0..1): reported for browser uploads only
+  { onUploadProgress } = {}
 ) => {
   const url = new URL(baseUri + endpoint, window.location.origin);
   if (Object.keys(params).length > 0) {
@@ -187,6 +189,11 @@ const apiRequest = async (
     data: body,
     headers,
     responseType,
+    ...(onUploadProgress && {
+      onUploadProgress: (event) => {
+        if (event.total) onUploadProgress(event.loaded / event.total);
+      },
+    }),
   };
 
   try {

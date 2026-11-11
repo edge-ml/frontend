@@ -1,9 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 import AnnotationOverlay from "./AnnotationOverlay";
 
 const EMPTY_DATA = [[], []];
+const EMPTY_WAVEFORM = [[], [], []];
+const WAVEFORM_COLOR = "#4c6ef5";
 
 const toUPlotData = (points) => {
   if (!Array.isArray(points) || points.length === 0) return EMPTY_DATA;
@@ -40,6 +43,13 @@ const TimeSeriesChart = ({
   onLabelSelect,
   onBoundaryCommit,
   onWidthChange,
+  // Rows of recordings reuse the chart, so that their timeline, labels and
+  // panning are the same as for sensor data:
+  height = 200,
+  // uPlot data [time, high, low] of an audio waveform, instead of `points`
+  waveform,
+  // (plot) => elements drawn over the plot (playhead, extent of a recording)
+  renderOverlay,
 }) => {
   const containerRef = useRef();
   const plotRef = useRef();
@@ -57,7 +67,11 @@ const TimeSeriesChart = ({
   fullRangeRef.current = fullRange;
   rangeRef.current = visibleRange;
 
-  const data = useMemo(() => toUPlotData(points), [points]);
+  const isWaveform = waveform !== undefined;
+  const data = useMemo(
+    () => (isWaveform ? waveform || EMPTY_WAVEFORM : toUPlotData(points)),
+    [isWaveform, points, waveform]
+  );
 
   useEffect(() => {
     if (!containerRef.current) return undefined;
@@ -68,7 +82,7 @@ const TimeSeriesChart = ({
 
     const options = {
       width: Math.max(container.clientWidth, 320),
-      height: 200,
+      height,
       ms: 1,
       legend: { show: false },
       cursor: {
@@ -88,29 +102,47 @@ const TimeSeriesChart = ({
           min: rangeRef.current.min,
           max: rangeRef.current.max,
         },
-        y: { auto: true },
+        y: isWaveform ? { auto: false, range: [-140, 140] } : { auto: true },
       },
       axes: [
         {
           stroke: "#495057",
           grid: { stroke: "#e9ecef", width: 1 },
         },
-        {
-          stroke: "#495057",
-          grid: { stroke: "#e9ecef", width: 1 },
-          size: 54,
-        },
+        isWaveform
+          ? {
+              // no values to read off, but keep the width so that the time
+              // axis lines up with the sensor charts
+              size: 54,
+              values: () => [],
+              ticks: { show: false },
+              grid: { show: false },
+            }
+          : {
+              stroke: "#495057",
+              grid: { stroke: "#e9ecef", width: 1 },
+              size: 54,
+            },
       ],
-      series: [
-        {},
-        {
-          label: unit ? `${name} (${unit})` : name,
-          stroke: "#212529",
-          width: 1.5,
-          points: { show: false },
-          spanGaps: true,
-        },
-      ],
+      series: isWaveform
+        ? [
+            {},
+            { stroke: WAVEFORM_COLOR, width: 1, points: { show: false } },
+            { stroke: WAVEFORM_COLOR, width: 1, points: { show: false } },
+          ]
+        : [
+            {},
+            {
+              label: unit ? `${name} (${unit})` : name,
+              stroke: "#212529",
+              width: 1.5,
+              points: { show: false },
+              spanGaps: true,
+            },
+          ],
+      ...(isWaveform && {
+        bands: [{ series: [1, 2], fill: WAVEFORM_COLOR }],
+      }),
       hooks: {
         ready: [
           (instance) => {
@@ -220,7 +252,7 @@ const TimeSeriesChart = ({
       const width = Math.max(Math.floor(entry.contentRect.width), 320);
       callbacksRef.current.onWidthChange(width);
       if (width !== instance.width) {
-        instance.setSize({ width, height: 200 });
+        instance.setSize({ width, height });
       }
     });
     resizeObserver.observe(container);
@@ -231,7 +263,7 @@ const TimeSeriesChart = ({
       setChart(undefined);
       instance.destroy();
     };
-  }, [name, unit]);
+  }, [name, unit, height, isWaveform]);
 
   useEffect(() => {
     if (!plotRef.current) return;
@@ -245,7 +277,10 @@ const TimeSeriesChart = ({
   }, [visibleRange.max, visibleRange.min]);
 
   return (
-    <div className="time-series-chart" ref={containerRef}>
+    <div className="time-series-chart" ref={containerRef} style={{ height }}>
+      {chart && renderOverlay
+        ? createPortal(renderOverlay(chart.instance), chart.annotationRoot)
+        : null}
       <AnnotationOverlay
         plot={chart?.instance}
         root={chart?.annotationRoot}
