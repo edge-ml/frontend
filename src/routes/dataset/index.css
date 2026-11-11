@@ -230,7 +230,8 @@
   right: 0;
   bottom: 0;
   left: 0;
-  height: 14px;
+  height: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--mantine-color-gray-6) 30%, transparent);
   background: color-mix(in srgb, var(--mantine-color-gray-6) 14%, transparent);
   cursor: pointer;
   pointer-events: auto;
@@ -260,7 +261,47 @@
 
 .media-dock__time {
   font-variant-numeric: tabular-nums;
-  white-space: pre;
+  white-space: nowrap;
+}
+
+/* The handle of the playhead, on the strip that moves it. */
+.media-playhead--knob::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: -5px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--mantine-color-red-6);
+}
+
+/* Hairline and time under the pointer. */
+.media-hover {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+  width: 1px;
+  background: color-mix(in srgb, var(--mantine-color-gray-7) 45%, transparent);
+  pointer-events: none;
+}
+
+.media-hover__time {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--mantine-color-gray-8);
+  color: #fff;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  white-space: nowrap;
 }
 
 .media-dock__players {
@@ -268,11 +309,12 @@
   gap: 8px;
   padding: 0 12px 8px;
   overflow-x: auto;
-  --media-player-height: 200px;
+  /* follows the window, so that the timeline keeps most of a small screen */
+  --media-player-height: clamp(150px, 26vh, 320px);
 }
 
 .media-dock__players--large {
-  --media-player-height: 400px;
+  --media-player-height: clamp(260px, 52vh, 720px);
 }
 
 .media-player {

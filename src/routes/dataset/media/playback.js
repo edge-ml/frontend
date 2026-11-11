@@ -8,7 +8,7 @@
 // Elements drifting further than this from the playhead are re-seeked.
 const MAX_DRIFT_SECONDS = 0.3;
 
-export const RATES = [0.5, 1, 1.5, 2];
+export const RATES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2];
 
 export class Playback {
   constructor() {

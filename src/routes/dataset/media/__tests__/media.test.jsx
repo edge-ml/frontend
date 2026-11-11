@@ -171,6 +171,7 @@ describe("media helpers", () => {
   it("formats durations, sizes and shifts", () => {
     expect(formatDuration(83_456)).toBe("1:23.5");
     expect(formatDuration(3_725_000)).toBe("1:02:05.0");
+    expect(formatDuration(59_980)).toBe("1:00.0");
     expect(formatSize(200_637)).toBe("196 KB");
     expect(formatSize(4_120_902)).toBe("3.9 MB");
     expect(formatShift(1250)).toBe("+1.25 s");
@@ -200,5 +201,50 @@ describe("media helpers", () => {
 
     expect(waveformData(undefined, item, { min: 0, max: 1 }, 10)).toEqual([[], [], []]);
     expect(waveformData(peaks, item, { min: 50_000, max: 60_000 }, 10)).toEqual([[], [], []]);
+  });
+});
+
+describe("timeline zoom and axis", () => {
+  const full = { min: 0, max: 3_600_000 };
+
+  it("zooms around an anchor and stays inside the dataset", async () => {
+    const { zoomRange, MIN_VISIBLE_MS } = await import("../mediaUtils");
+    // the anchor keeps its place on screen (a quarter in)
+    expect(zoomRange({ min: 0, max: 60_000 }, full, 0.5, 15_000)).toEqual({ min: 7500, max: 37_500 });
+    // zooming out at the start does not run past it
+    expect(zoomRange({ min: 0, max: 60_000 }, full, 2, 50_000)).toEqual({ min: 0, max: 120_000 });
+    expect(zoomRange({ min: 0, max: 60_000 }, full, 1000, 0)).toEqual(full);
+    const closest = zoomRange({ min: 1000, max: 1300 }, full, 0.01, 1100);
+    expect(closest.max - closest.min).toBeCloseTo(MIN_VISIBLE_MS);
+  });
+
+  it("pans and jumps without leaving the dataset", async () => {
+    const { panRange, showSpan } = await import("../mediaUtils");
+    expect(panRange({ min: 1000, max: 2000 }, full, 500)).toEqual({ min: 1500, max: 2500 });
+    expect(panRange({ min: 1000, max: 2000 }, full, -5000)).toEqual({ min: 0, max: 1000 });
+    expect(showSpan(full, 60_000, 3_590_000)).toEqual({ min: 3_540_000, max: 3_600_000 });
+    expect(showSpan({ min: 0, max: 10_000 }, 60_000, 5000)).toEqual({ min: 0, max: 10_000 });
+  });
+
+  it("opens long recordings zoomed in", async () => {
+    const { initialRange } = await import("../mediaUtils");
+    expect(initialRange(full, true)).toEqual({ min: 0, max: 60_000 });
+    expect(initialRange(full, false)).toBe(full); // sensor data only: as before
+    const short = { min: 0, max: 120_000 };
+    expect(initialRange(short, true)).toBe(short);
+  });
+
+  it("spaces ticks out and labels them as elapsed time", async () => {
+    const { tickStep, tickTimes, formatElapsed } = await import("../mediaUtils");
+    expect(tickStep(15_000, 1500)).toBe(1000); // 15 s on screen: every second
+    expect(tickStep(3_600_000, 1500)).toBe(300_000); // an hour: every 5 min
+    expect(tickStep(500, 1500)).toBe(50);
+    // ticks sit on multiples of the step counted from the origin
+    expect(tickTimes(1_000_250, 1_002_000, 1_004_500, 1000)).toEqual([1_002_250, 1_003_250, 1_004_250]);
+    expect(formatElapsed(83_456)).toBe("1:23");
+    expect(formatElapsed(83_456, 500)).toBe("1:23.4");
+    expect(formatElapsed(83_456, 10)).toBe("1:23.45");
+    expect(formatElapsed(59_960, 100)).toBe("0:59.9");
+    expect(formatElapsed(3_725_000)).toBe("1:02:05");
   });
 });

@@ -3,6 +3,13 @@ import { createPortal } from "react-dom";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 import AnnotationOverlay from "./AnnotationOverlay";
+import {
+  formatElapsed,
+  panRange,
+  tickStep,
+  tickTimes,
+  zoomRange,
+} from "./media/mediaUtils";
 
 const EMPTY_DATA = [[], []];
 const EMPTY_WAVEFORM = [[], [], []];
@@ -50,6 +57,9 @@ const TimeSeriesChart = ({
   waveform,
   // (plot) => elements drawn over the plot (playhead, extent of a recording)
   renderOverlay,
+  // unix ms: label the time axis as time elapsed since then ("1:23.5")
+  // instead of wall-clock time
+  timeOrigin,
 }) => {
   const containerRef = useRef();
   const plotRef = useRef();
@@ -66,6 +76,9 @@ const TimeSeriesChart = ({
   };
   fullRangeRef.current = fullRange;
   rangeRef.current = visibleRange;
+  const elapsedAxis = timeOrigin !== undefined;
+  const originRef = useRef(timeOrigin);
+  originRef.current = timeOrigin;
 
   const isWaveform = waveform !== undefined;
   const data = useMemo(
@@ -102,13 +115,34 @@ const TimeSeriesChart = ({
           min: rangeRef.current.min,
           max: rangeRef.current.max,
         },
-        y: isWaveform ? { auto: false, range: [-140, 140] } : { auto: true },
+        y: isWaveform ? { auto: false, range: [-132, 132] } : { auto: true },
       },
       axes: [
-        {
-          stroke: "#495057",
-          grid: { stroke: "#e9ecef", width: 1 },
-        },
+        elapsedAxis
+          ? {
+              stroke: "#495057",
+              grid: { stroke: "#e9ecef", width: 1 },
+              // one line of labels, counted from the start of the dataset
+              size: 30,
+              splits: (u, axisIdx, min, max) =>
+                tickTimes(
+                  originRef.current,
+                  min,
+                  max,
+                  tickStep(max - min, u.bbox.width / uPlot.pxRatio)
+                ),
+              values: (u, splits) => {
+                const { min, max } = u.scales.x;
+                const step = tickStep(max - min, u.bbox.width / uPlot.pxRatio);
+                return splits.map((time) =>
+                  formatElapsed(time - originRef.current, step)
+                );
+              },
+            }
+          : {
+              stroke: "#495057",
+              grid: { stroke: "#e9ecef", width: 1 },
+            },
         isWaveform
           ? {
               // no values to read off, but keep the width so that the time
@@ -216,6 +250,44 @@ const TimeSeriesChart = ({
               instance.over.classList.remove("u-over--panning");
               panStart = undefined;
             });
+            // Ctrl/Cmd + wheel zooms around the pointer; a sideways wheel
+            // (trackpad, or Shift + wheel) pans. A plain vertical wheel is
+            // left alone: it scrolls through the rows.
+            instance.over.addEventListener(
+              "wheel",
+              (event) => {
+                const current = rangeRef.current;
+                const complete = fullRangeRef.current;
+                const span = current.max - current.min;
+                const sideways =
+                  Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.shiftKey;
+                let next;
+                if (event.ctrlKey || event.metaKey) {
+                  const bounds = instance.over.getBoundingClientRect();
+                  const anchor = instance.posToVal(event.clientX - bounds.left, "x");
+                  // deltaMode 1 = lines (mouse wheels in Firefox)
+                  const amount = event.deltaY * (event.deltaMode === 1 ? 33 : 1);
+                  next = zoomRange(current, complete, Math.exp(amount * 0.002), anchor);
+                } else if (sideways) {
+                  const amount =
+                    (Math.abs(event.deltaX) > Math.abs(event.deltaY)
+                      ? event.deltaX
+                      : event.deltaY) * (event.deltaMode === 1 ? 33 : 1);
+                  next = panRange(
+                    current,
+                    complete,
+                    (amount / instance.over.clientWidth) * span
+                  );
+                } else {
+                  return;
+                }
+                event.preventDefault();
+                if (!rangesEqual(next, current)) {
+                  callbacksRef.current.onRangeChange(next);
+                }
+              },
+              { passive: false }
+            );
             instance.over.addEventListener("click", (event) => {
               if (event.defaultPrevented || suppressClick) {
                 suppressClick = false;
@@ -263,7 +335,12 @@ const TimeSeriesChart = ({
       setChart(undefined);
       instance.destroy();
     };
-  }, [name, unit, height, isWaveform]);
+  }, [name, unit, height, isWaveform, elapsedAxis]);
+
+  // the origin moves when the dataset grows at its start
+  useEffect(() => {
+    if (elapsedAxis) plotRef.current?.redraw(false, true);
+  }, [timeOrigin]);
 
   useEffect(() => {
     if (!plotRef.current) return;

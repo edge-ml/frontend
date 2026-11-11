@@ -40,6 +40,8 @@ const MediaSeriesDisplay = ({
   fullRange,
   visibleRange,
   onRangeChange,
+  // few rows on the page: use the space for a taller waveform
+  roomy = false,
 }) => {
   const {
     dataset,
@@ -248,7 +250,10 @@ const MediaSeriesDisplay = ({
 
       <TimeSeriesChart
         name={media.name}
-        height={hasSound ? 120 : 76}
+        height={
+          hasSound ? (media.kind === "audio" ? (roomy ? 280 : 190) : roomy ? 190 : 130) : 70
+        }
+        timeOrigin={fullRange.min}
         waveform={waveform}
         fullRange={fullRange}
         visibleRange={visibleRange}
@@ -265,6 +270,7 @@ const MediaSeriesDisplay = ({
             playback={playback}
             media={media}
             aligning={mode === "align"}
+            origin={fullRange.min}
             onShift={(delta) => onShiftChange((current) => (current ?? 0) + delta)}
           />
         )}
