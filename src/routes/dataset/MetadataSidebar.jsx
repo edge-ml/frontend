@@ -8,11 +8,13 @@ import {
 import { Fragment } from "react";
 import MetadataContainer from "../../components/MetadataPanel/MetadataContainer";
 import { DatasetContext } from "./DatasetContext";
+import { datasetBounds } from "./media/mediaUtils";
 
 const MetadataSidebar = () => {
   const { dataset, updateDataset } = useContext(DatasetContext);
 
   const [isExtended, setExtended] = useState(false);
+  const bounds = datasetBounds(dataset);
 
   const toggleMetaData = (value) => {
     setExtended((prev) => (typeof value === "boolean" ? value : !prev));
@@ -46,8 +48,8 @@ const MetadataSidebar = () => {
           <FontAwesomeIcon icon={faChevronRight} size="sm" />
         </button>
         <MetadataContainer
-          start={Math.min(...dataset.timeSeries.map((elm) => elm.start))}
-          end={Math.max(...dataset.timeSeries.map((elm) => elm.end))}
+          start={bounds?.start}
+          end={bounds?.end}
           user={dataset.userId}
           name={dataset.name}
           handleDatasetNameChange={() => {}}

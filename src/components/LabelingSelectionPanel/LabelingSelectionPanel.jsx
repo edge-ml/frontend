@@ -29,6 +29,7 @@ import {
 
 import useProjectRouter from "../../Hooks/ProjectRouter";
 import { DatasetContext } from "../../routes/dataset/DatasetContext";
+import AddMediaButton from "../../routes/dataset/media/AddMediaButton";
 
 import "./LabelingSelectionPanel.css";
 
@@ -219,6 +220,7 @@ const LabelingSelectionPanel = () => {
           <LabelingSelection navigate={navigate} />
         </Group>
         <Group gap="xs" wrap="nowrap">
+          <AddMediaButton />
           <Tooltip label="Download dataset" withinPortal>
             <ActionIcon
               id="btn-secondary"

@@ -22,6 +22,7 @@ import {
 import Checkbox from "../../components/Common/Checkbox";
 import { displayTime } from "../../services/helpers";
 import useProjectRouter from "../../Hooks/ProjectRouter";
+import { datasetBounds, describeMedia } from "../dataset/media/mediaUtils";
 
 const ColorDot = ({ color = "var(--mantine-color-blue-5)" }) => (
   <span
@@ -241,12 +242,16 @@ const DatasetInfo = ({ dataset, updateDataset }) => {
     setIsEditingName(false);
   };
 
-  const datasetStart = Math.min(...dataset.timeSeries.map((elm) => elm.start));
-  const datasetEnd = Math.max(...dataset.timeSeries.map((elm) => elm.end));
-  const duration = Math.max(datasetEnd - datasetStart, 0) || 0;
-  const empty = dataset.timeSeries
-    .map((elm) => elm.length)
-    .every((elm) => elm === 0 || elm === null);
+  // sensor data and recordings (audio/video) together
+  const bounds = datasetBounds(dataset);
+  const datasetStart = bounds?.start;
+  const duration = bounds ? bounds.end - bounds.start : 0;
+  const recordings = describeMedia(dataset);
+  const empty =
+    !recordings &&
+    dataset.timeSeries
+      .map((elm) => elm.length)
+      .every((elm) => elm === 0 || elm === null);
 
   return (
     <div className="text-left d-inline-block m-2">
@@ -309,6 +314,12 @@ const DatasetInfo = ({ dataset, updateDataset }) => {
             <b>DURATION </b>
             {format_time(duration)}
           </Text>
+          {recordings ? (
+            <Text size="xs" c="dimmed">
+              <b>RECORDINGS </b>
+              {recordings}
+            </Text>
+          ) : null}
         </>
       ) : (
         <Group gap="xs">

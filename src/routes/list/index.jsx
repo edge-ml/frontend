@@ -43,10 +43,13 @@ const ListPage = () => {
   const selectAllEmpty = () => {
     setSelectedDatasets(
       datasets
-        .filter((elm) =>
-          elm.timeSeries
-            .map((x) => x.length)
-            .every((y) => y === 0 || y === null)
+        .filter(
+          (elm) =>
+            // a dataset that only holds recordings is not empty
+            !(elm.mediaSeries?.length > 0) &&
+            elm.timeSeries
+              .map((x) => x.length)
+              .every((y) => y === 0 || y === null)
         )
         .map((elm) => elm._id)
     );
