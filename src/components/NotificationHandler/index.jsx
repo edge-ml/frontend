@@ -53,7 +53,9 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                     {elm.error ? null : elm.status < 100 ? (
                       <Group gap="xs">
                         <LogoLoader size={20} />
-                        <Text size="sm">Preparing…</Text>
+                        <Text size="sm">
+                          {elm.status > 0 ? `${elm.status} %` : "Preparing…"}
+                        </Text>
                       </Group>
                     ) : (
                       <Button

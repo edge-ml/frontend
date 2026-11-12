@@ -17,7 +17,8 @@ const POLL_MS = 1000;
 export const NotificationProvider = ({ children }) => {
   const [activeNotifications, setActiveNotifications] = useState([]);
   const timer = useRef(null);
-  // downloads someone is waiting for: downloadId -> { resolve, reject }
+  // downloads someone is waiting for:
+  // downloadId -> { resolve, reject, progress(percent) }
   const waiting = useRef(new Map());
 
   const stopUpdates = () => {
@@ -37,7 +38,10 @@ export const NotificationProvider = ({ children }) => {
     setActiveNotifications(entries);
     waiting.current.forEach((waiter, downloadId) => {
       const entry = entries.find((elm) => elm.downloadId === downloadId);
-      if (entry && !entry.error && entry.status < 100) return;
+      if (entry && !entry.error && entry.status < 100) {
+        waiter.progress(entry.status);
+        return;
+      }
       waiting.current.delete(downloadId);
       if (!entry) waiter.reject(new Error("The download was cancelled"));
       else if (entry.error) waiter.reject(new Error(entry.error));
@@ -93,12 +97,26 @@ export const NotificationProvider = ({ children }) => {
     }
     setActiveNotifications((current) => [...current, entry]);
     try {
+      const percent = (text, value) => (value > 0 ? `${text} ${value} %` : text);
       const ready = await new Promise((resolve, reject) => {
-        waiting.current.set(entry.downloadId, { resolve, reject });
+        waiting.current.set(entry.downloadId, {
+          resolve,
+          reject,
+          progress: (status) =>
+            notifications.update(
+              progress(percent("Preparing the files…", status))
+            ),
+        });
         startUpdates();
       });
       notifications.update(progress("Fetching the file…"));
-      await datasetDownloadfromId(ready);
+      let shown = 0;
+      await datasetDownloadfromId(ready, (fraction) => {
+        const value = Math.floor(fraction * 100);
+        if (value === shown) return;
+        shown = value;
+        notifications.update(progress(percent("Fetching the file…", value)));
+      });
       notifications.update({
         id,
         loading: false,

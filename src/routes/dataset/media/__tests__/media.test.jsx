@@ -213,7 +213,30 @@ describe("row height", () => {
     expect(rowHeight(silent)).toBeGreaterThanOrEqual(100);
     expect(rowHeight(silent, true)).toBeGreaterThan(rowHeight(silent));
     expect(rowHeight(video)).toBeGreaterThan(rowHeight(silent));
-    expect(rowHeight(audio)).toBeGreaterThan(rowHeight(video));
+  });
+});
+
+describe("video pictures", () => {
+  it("takes them coarse first and each once", async () => {
+    const { captureOrder, THUMBNAIL_COUNT } = await import("../useVideoThumbnails");
+    const order = captureOrder(THUMBNAIL_COUNT);
+    expect(order.slice(0, 4)).toEqual([0, 24, 12, 36]);
+    expect([...order].sort((a, b) => a - b)).toEqual(
+      Array.from({ length: THUMBNAIL_COUNT }, (_, i) => i)
+    );
+  });
+
+  it("shows the closest picture that is there", async () => {
+    const { thumbnailAt, THUMBNAIL_COUNT } = await import("../useVideoThumbnails");
+    const frames = new Array(THUMBNAIL_COUNT);
+    expect(thumbnailAt(frames, 500, 1000)).toBeUndefined();
+    frames[0] = "first";
+    frames[24] = "middle";
+    expect(thumbnailAt(frames, 0, 1000)).toBe("first");
+    expect(thumbnailAt(frames, 520, 1000)).toBe("middle");
+    expect(thumbnailAt(frames, 999, 1000)).toBe("middle");
+    // outside of the recording
+    expect(thumbnailAt(frames, -50, 1000)).toBe("first");
   });
 });
 

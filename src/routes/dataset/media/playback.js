@@ -117,6 +117,16 @@ export class Playback {
     this.notifyTime();
   }
 
+  // Length of one picture of the video under the playhead (of any video, if
+  // none is there), in ms; 1/30 s without a video.
+  frameMs() {
+    const videos = [...this.entries.values()]
+      .map(({ media }) => media)
+      .filter((media) => media.kind === "video" && media.meta?.fps > 0);
+    const video = videos.find((media) => this.covers(media)) ?? videos[0];
+    return 1000 / (video?.meta.fps ?? 30);
+  }
+
   setRate(rate) {
     this.rate = rate;
     this.syncAll(false);

@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import { Route, useParams, Routes, Navigate } from "react-router-dom";
 import NoProjectPage from "./components/NoProjectPage/NoProjectPage";
 import useProjectStore from "./stores/projectStore";
@@ -6,7 +6,8 @@ import Loader from "./modules/loader";
 
 // Dynamic imports
 const ListPage = lazy(() => import("./routes/list/index"));
-const DatasetPage = lazy(() => import("./routes/dataset"));
+const loadDatasetPage = () => import("./routes/dataset");
+const DatasetPage = lazy(loadDatasetPage);
 const LabelingsPage = lazy(() => import("./routes/labeling/labelings"));
 const ValidationPage = lazy(() => import("./routes/validation"));
 const UploadBLE = lazy(() => import("./routes/uploadBLE"));
@@ -28,6 +29,15 @@ const ParamsAdapter = ({ children }) => {
 const AppContent = () => {
   const { currentProject } = useProjectStore();
   const projectId = currentProject ? currentProject._id : "default_key";
+
+  // The dataset editor is the page opened most from here, and its code is
+  // not small: fetch it while the browser is idle instead of on the click.
+  useEffect(() => {
+    const idle = window.requestIdleCallback ?? ((run) => window.setTimeout(run, 1500));
+    const cancel = window.cancelIdleCallback ?? window.clearTimeout;
+    const handle = idle(() => loadDatasetPage().catch(() => {}));
+    return () => cancel(handle);
+  }, []);
 
   if (!currentProject) {
     return <NoProjectPage />;

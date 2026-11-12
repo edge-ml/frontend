@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import PlayheadLine from "./PlayheadLine";
 import HoverTime from "./HoverTime";
+import Filmstrip from "./Filmstrip";
+import { SCRUB_HEIGHT } from "./mediaUtils";
 
 // What a recording's row draws over its timeline: where the recording lies,
 // a bar to move the playhead, and the playhead itself.
@@ -8,7 +10,18 @@ import HoverTime from "./HoverTime";
 // The chart listens for clicks (labels) and drags (panning) with native
 // listeners on an ancestor. The handlers here are native too, since React's
 // run only after those and could not keep events from reaching them.
-const MediaOverlay = ({ plot, playback, media, aligning, onShift, origin }) => {
+const MediaOverlay = ({
+  plot,
+  playback,
+  media,
+  aligning,
+  onShift,
+  origin,
+  // pictures of a video (see useVideoThumbnails), and how tall to draw them;
+  // by default they fill the row above the strip that moves the playhead
+  frames,
+  filmstripHeight,
+}) => {
   const scrubRef = useRef();
   const extentRef = useRef();
   const latest = useRef({});
@@ -111,6 +124,14 @@ const MediaOverlay = ({ plot, playback, media, aligning, onShift, origin }) => {
           width: `${Math.max(right - left, 2)}px`,
         }}
       />
+      {frames ? (
+        <Filmstrip
+          plot={plot}
+          media={media}
+          frames={frames}
+          height={filmstripHeight ?? plot.over.clientHeight - SCRUB_HEIGHT}
+        />
+      ) : null}
       <div
         ref={scrubRef}
         className="media-scrub"

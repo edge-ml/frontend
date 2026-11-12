@@ -44,6 +44,10 @@ const Dataset = () => {
           ...datasetEdit,
           updateDataset: datasetUtils.updateDataset,
           refreshDataset: datasetUtils.refreshDataset,
+          undoLabelChange: datasetUtils.undoLabelChange,
+          redoLabelChange: datasetUtils.redoLabelChange,
+          canUndo: datasetUtils.canUndo,
+          canRedo: datasetUtils.canRedo,
         }}
       >
         <LabelingProvider labelings={labelings}>

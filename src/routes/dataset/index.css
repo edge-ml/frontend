@@ -228,6 +228,13 @@
   touch-action: none;
 }
 
+/* Pictures of a video along its row. */
+.media-filmstrip {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+}
+
 /* Strip along the time axis that moves the playhead; a click anywhere else
    on the row draws a label, as on the sensor charts. */
 .media-scrub {

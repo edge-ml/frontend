@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import {
+  ActionIcon,
   Box,
   Button,
   Group,
@@ -9,7 +10,11 @@ import {
 } from "@mantine/core";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRotateLeft,
+  faRotateRight,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { hexToForegroundColor } from "../../services/ColorService";
 import { indexToShortcutKey } from "../../services/ShortcutKeys";
@@ -110,6 +115,10 @@ const LabelingPanel = () => {
     onDeleteSelectedLabel,
     selectedLabelTypeId,
     setSelectedLabelTypeId,
+    undoLabelChange,
+    redoLabelChange,
+    canUndo,
+    canRedo,
   } = useContext(DatasetContext);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -144,6 +153,30 @@ const LabelingPanel = () => {
                 : undefined
             }
           />
+          <Group gap={4} wrap="nowrap">
+            <Tooltip label="Undo the last label change (Ctrl+Z)" withinPortal openDelay={300}>
+              <ActionIcon
+                variant="default"
+                radius="md"
+                aria-label="Undo the last label change"
+                disabled={!canUndo}
+                onClick={() => undoLabelChange()}
+              >
+                <FontAwesomeIcon icon={faRotateLeft} size="xs" />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label="Redo (Ctrl+Shift+Z)" withinPortal openDelay={300}>
+              <ActionIcon
+                variant="default"
+                radius="md"
+                aria-label="Redo the label change"
+                disabled={!canRedo}
+                onClick={() => redoLabelChange()}
+              >
+                <FontAwesomeIcon icon={faRotateRight} size="xs" />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
           <Button
             disabled={!selectedLabel}
             aria-label="Delete selected label"

@@ -29,6 +29,14 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
               </tr>
               <tr>
                 <td>
+                  <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Z</kbd>
+                </td>
+                <td>
+                  Undo the last label change (with <kbd>Shift</kbd>: redo)
+                </td>
+              </tr>
+              <tr>
+                <td>
                   <kbd>Escape</kbd>
                 </td>
                 <td>Cancel the current label or selection</td>
@@ -47,6 +55,12 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
                   Move the playhead by 1 s (with <kbd>Shift</kbd> 5 s, with{" "}
                   <kbd>Alt</kbd> 0.1 s)
                 </td>
+              </tr>
+              <tr>
+                <td>
+                  <kbd>,</kbd> / <kbd>.</kbd>
+                </td>
+                <td>Step one video frame back or forward</td>
               </tr>
               <tr>
                 <td>

@@ -15,6 +15,16 @@ const EMPTY_DATA = [[], []];
 const EMPTY_WAVEFORM = [[], [], []];
 const WAVEFORM_COLOR = "#4c6ef5";
 
+// Top of the value scale of a waveform (which spans -132..132) that leaves
+// `headroom` px free above it. The plot is the chart without its time axis
+// (30 px) and top padding (4 px).
+const waveformTop = (height, headroom) => {
+  const plot = height - 34;
+  return headroom > 0 && plot > headroom
+    ? 132 + (264 * headroom) / (plot - headroom)
+    : 132;
+};
+
 const toUPlotData = (points) => {
   if (!Array.isArray(points) || points.length === 0) return EMPTY_DATA;
 
@@ -55,6 +65,8 @@ const TimeSeriesChart = ({
   height = 200,
   // uPlot data [time, high, low] of an audio waveform, instead of `points`
   waveform,
+  // px to keep free above the waveform (for the pictures of a video)
+  waveformHeadroom = 0,
   // (plot) => elements drawn over the plot (playhead, extent of a recording)
   renderOverlay,
   // unix ms: label the time axis as time elapsed since then ("1:23.5")
@@ -117,7 +129,9 @@ const TimeSeriesChart = ({
           min: rangeRef.current.min,
           max: rangeRef.current.max,
         },
-        y: isWaveform ? { auto: false, range: [-132, 132] } : { auto: true },
+        y: isWaveform
+          ? { auto: false, range: [-132, waveformTop(height, waveformHeadroom)] }
+          : { auto: true },
       },
       axes: [
         elapsedAxis
@@ -337,7 +351,7 @@ const TimeSeriesChart = ({
       setChart(undefined);
       instance.destroy();
     };
-  }, [name, unit, height, isWaveform, elapsedAxis]);
+  }, [name, unit, height, isWaveform, elapsedAxis, waveformHeadroom]);
 
   // the origin moves when the dataset grows at its start
   useEffect(() => {

@@ -22,7 +22,9 @@ import { DatasetContext } from "../DatasetContext";
 import TimeSeriesChart from "../TimeSeriesChart";
 import MediaOverlay from "./MediaOverlay";
 import useMediaPeaks from "./useMediaPeaks";
+import useVideoThumbnails from "./useVideoThumbnails";
 import {
+  FILMSTRIP_HEIGHT,
   formatDuration,
   formatShift,
   formatSize,
@@ -65,8 +67,12 @@ const MediaSeriesDisplay = ({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(undefined);
   const peaks = useMediaPeaks(dataset._id, media);
+  const frames = useVideoThumbnails(dataset._id, media);
 
   const hasSound = Boolean(media.meta?.audioCodec);
+  // a video with sound shows its pictures above the waveform
+  const filmstripHeight =
+    media.kind === "video" && hasSound ? FILMSTRIP_HEIGHT : undefined;
   const waveform = useMemo(
     () => waveformData(peaks, media, visibleRange, chartWidth),
     [peaks, media.start, visibleRange.min, visibleRange.max, chartWidth]
@@ -260,6 +266,7 @@ const MediaSeriesDisplay = ({
         height={rowHeight(media, roomy)}
         timeOrigin={fullRange.min}
         waveform={waveform}
+        waveformHeadroom={filmstripHeight}
         fullRange={fullRange}
         visibleRange={visibleRange}
         labels={labelsToShow}
@@ -276,6 +283,8 @@ const MediaSeriesDisplay = ({
             media={media}
             aligning={mode === "align"}
             origin={fullRange.min}
+            frames={frames}
+            filmstripHeight={filmstripHeight}
             onShift={(delta) => onShiftChange((current) => (current ?? 0) + delta)}
           />
         )}

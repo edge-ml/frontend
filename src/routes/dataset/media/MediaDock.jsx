@@ -17,8 +17,8 @@ import {
   faMagnifyingGlassPlus,
   faPause,
   faPlay,
-  faRotateLeft,
-  faRotateRight,
+  faBackward,
+  faForward,
   faTag,
 } from "@fortawesome/free-solid-svg-icons";
 import { getMediaUrl } from "../../../services/ApiServices/MediaServices";
@@ -277,6 +277,10 @@ const MediaDock = ({
       } else if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
         const step = event.shiftKey ? 5000 : event.altKey ? 100 : 1000;
         seek(playback.time + (event.key === "ArrowLeft" ? -step : step));
+      } else if (event.key === "," || event.key === ".") {
+        // one picture back or forward, to place a boundary exactly
+        playback.pause();
+        seek(playback.time + (event.key === "," ? -1 : 1) * playback.frameMs());
       } else if (event.key === "Enter") {
         onMark(playback.time);
       } else if (event.key === "+" || event.key === "=" || event.key === "-") {
@@ -303,7 +307,7 @@ const MediaDock = ({
               aria-label="Back 5 seconds"
               onClick={() => seek(playback.time - 5000)}
             >
-              <FontAwesomeIcon icon={faRotateLeft} size="sm" />
+              <FontAwesomeIcon icon={faBackward} size="sm" />
             </ActionIcon>
           </Tooltip>
           <Tooltip label={playing ? "Pause (Space)" : "Play (Space)"} withinPortal>
@@ -324,7 +328,7 @@ const MediaDock = ({
               aria-label="Forward 5 seconds"
               onClick={() => seek(playback.time + 5000)}
             >
-              <FontAwesomeIcon icon={faRotateRight} size="sm" />
+              <FontAwesomeIcon icon={faForward} size="sm" />
             </ActionIcon>
           </Tooltip>
           <TimeReadout playback={playback} start={fullRange.min} end={fullRange.max} />

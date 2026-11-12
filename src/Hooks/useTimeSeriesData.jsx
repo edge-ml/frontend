@@ -11,6 +11,7 @@ const useTimeSeriesData = (
   // nothing to show yet: the first request has not come back
   const [loading, setLoading] = useState(true);
   const requestIdRef = useRef(0);
+  const loadedRef = useRef(false);
 
   useEffect(() => {
     if (!datasetId || !timeSeriesId || !visibleRange) return;
@@ -29,6 +30,7 @@ const useTimeSeriesData = (
         if (requestId === requestIdRef.current) {
           setTimeSeriesData(Array.isArray(result) ? result : []);
           setLoading(false);
+          loadedRef.current = true;
         }
       } catch (error) {
         if (requestId === requestIdRef.current) {
@@ -36,7 +38,9 @@ const useTimeSeriesData = (
           setLoading(false);
         }
       }
-    }, 120);
+      // While panning and zooming, wait for the view to settle. The first
+      // request only waits for the chart to report its width.
+    }, loadedRef.current ? 120 : 30);
 
     return () => window.clearTimeout(timeout);
   }, [

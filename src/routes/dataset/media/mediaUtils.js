@@ -99,8 +99,15 @@ export const waveformData = (peaks, media, range, width) => {
 export const rowHeight = (media, roomy = false) => {
   if (!media.meta?.audioCodec) return roomy ? 150 : 110;
   if (media.kind === "audio") return roomy ? 280 : 190;
-  return roomy ? 220 : 150;
+  // pictures above the waveform
+  return (roomy ? 220 : 150) + FILMSTRIP_HEIGHT;
 };
+
+// Height of the pictures of a video that also has a waveform to show. A
+// video without sound gives them its whole row.
+export const FILMSTRIP_HEIGHT = 48;
+// Height of the strip that moves the playhead (see .media-scrub).
+export const SCRUB_HEIGHT = 24;
 
 export const ACCEPTED_MEDIA =
   "audio/*,video/*,.mp4,.m4v,.mov,.webm,.mp3,.wav,.ogg,.oga,.flac,.m4a";

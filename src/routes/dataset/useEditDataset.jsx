@@ -37,7 +37,14 @@ export const labelingEditorReducer = (state, action) => {
 };
 
 const useEditDataset = (datasetUtils, labelings) => {
-  const { dataset, deleteLabel, addLabel, updateLabel } = datasetUtils;
+  const {
+    dataset,
+    deleteLabel,
+    addLabel,
+    updateLabel,
+    undoLabelChange,
+    redoLabelChange,
+  } = datasetUtils;
 
   const getActiveLabeling = () => {
     if (
@@ -113,6 +120,23 @@ const useEditDataset = (datasetUtils, labelings) => {
         target.isContentEditable);
 
     const handleKeyDown = (event) => {
+      // Ctrl/Cmd + Z takes the last label change back, with Shift (or
+      // Ctrl/Cmd + Y) it is done again. Before the label shortcuts: Z and Y
+      // are also the keys of late labels in a long labeling.
+      const key = event.key.toLowerCase();
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        !event.altKey &&
+        (key === "z" || key === "y") &&
+        !isTypingTarget(event.target)
+      ) {
+        event.preventDefault();
+        dispatch({ type: "clear" });
+        if (key === "y" || event.shiftKey) redoLabelChange();
+        else undoLabelChange();
+        return;
+      }
+
       const shortcutIndex = keyToShortcutIndex(event.key);
       const isValidShortcut =
         shortcutIndex >= 0 &&
@@ -147,7 +171,7 @@ const useEditDataset = (datasetUtils, labelings) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeLabeling, selectedLabel]);
+  }, [activeLabeling, selectedLabel, undoLabelChange, redoLabelChange]);
 
   const setSelectedLabelTypeId = async (labelTypeId) => {
     setSelectedLabelTypeIdState(labelTypeId);

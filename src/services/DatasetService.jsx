@@ -70,7 +70,9 @@ const downloadFileName = (entry) =>
         entry.fileType || "csv"
       }`;
 
-const datasetDownloadfromId = async (entry) => {
+// `onProgress(fraction 0..1)` is called while the file arrives, when the
+// server tells its size (it does for archives).
+const datasetDownloadfromId = async (entry, onProgress) => {
   const blob = await apiRequest(
     HTTP_METHODS.GET,
     DATASET_STORE,
@@ -78,7 +80,8 @@ const datasetDownloadfromId = async (entry) => {
     null,
     {},
     undefined,
-    "blob"
+    "blob",
+    { onDownloadProgress: onProgress }
   );
   return downloadBlob(blob, downloadFileName(entry));
 };
