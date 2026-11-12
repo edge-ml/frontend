@@ -111,12 +111,19 @@ export const NotificationProvider = ({ children }) => {
       });
       notifications.update(progress("Fetching the file…"));
       let shown = 0;
-      await datasetDownloadfromId(ready, (fraction) => {
-        const value = Math.floor(fraction * 100);
-        if (value === shown) return;
-        shown = value;
-        notifications.update(progress(percent("Fetching the file…", value)));
-      });
+      // Progress is reported with a delay, so the last report can come after
+      // the file has arrived: it must not put "Fetching…" back over the result.
+      let arrived = false;
+      try {
+        await datasetDownloadfromId(ready, (fraction) => {
+          const value = Math.floor(fraction * 100);
+          if (arrived || value <= shown) return;
+          shown = value;
+          notifications.update(progress(percent("Fetching the file…", value)));
+        });
+      } finally {
+        arrived = true;
+      }
       notifications.update({
         id,
         loading: false,
