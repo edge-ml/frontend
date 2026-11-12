@@ -98,6 +98,8 @@ const TimeSeriesChart = ({
       height,
       ms: 1,
       legend: { show: false },
+      // rows of recordings have nothing above the plot to leave room for
+      ...(isWaveform && { padding: [4, null, null, null] }),
       cursor: {
         x: false,
         y: false,

@@ -3,6 +3,7 @@ import {
   ActionIcon,
   Button,
   Group,
+  Loader,
   Menu,
   Select,
   Text,
@@ -33,6 +34,8 @@ const MediaPlayer = ({ datasetId, media, playback }) => {
   const frameRef = useRef();
   const [url, setUrl] = useState(undefined);
   const [failed, setFailed] = useState(false);
+  // the picture at the playhead is there to be shown
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -82,9 +85,26 @@ const MediaPlayer = ({ datasetId, media, playback }) => {
         preload="auto"
         playsInline
         aria-label={media.name}
+        // the size is known before the file arrives: no jump when it does
+        style={
+          media.meta?.width && media.meta?.height
+            ? { aspectRatio: `${media.meta.width} / ${media.meta.height}` }
+            : undefined
+        }
         onClick={() => playback.toggle()}
+        onLoadedData={() => setReady(true)}
+        onCanPlay={() => setReady(true)}
+        onSeeked={() => setReady(true)}
+        onPlaying={() => setReady(true)}
+        onWaiting={() => setReady(false)}
         onError={() => url && setFailed(true)}
       />
+      {!ready && !failed ? (
+        <div className="media-player__loading" role="status">
+          <Loader size="sm" color="white" />
+          <span>Loading video…</span>
+        </div>
+      ) : null}
       <figcaption>{failed ? `${media.name} could not be loaded` : media.name}</figcaption>
     </figure>
   );
@@ -207,6 +227,8 @@ const MediaDock = ({
   visibleRange,
   onRangeChange,
   onMark,
+  // few rows below: the picture can take more of the window
+  roomy = false,
 }) => {
   const [large, setLarge] = useState(false);
   const playing = useSyncExternalStore(
@@ -350,7 +372,13 @@ const MediaDock = ({
         </Group>
       </Group>
       <div
-        className={`media-dock__players ${large ? "media-dock__players--large" : ""}`}
+        className={`media-dock__players ${
+          large
+            ? "media-dock__players--large"
+            : roomy
+              ? "media-dock__players--roomy"
+              : ""
+        }`}
         style={hasVideo ? undefined : { display: "none" }}
       >
         {mediaList.map((media) => (

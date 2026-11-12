@@ -1,6 +1,9 @@
 import React, { createContext, useState, useEffect, useRef } from "react";
+import { notifications } from "@mantine/notifications";
 import {
   datasetDownloadStatus,
+  datasetDownloadfromId,
+  downloadFileName,
   cancelDownload,
   registerDatasetDownload as reg_dataset_download,
   registerProjectDownload as reg_project_download,
@@ -8,74 +11,124 @@ import {
 
 const NotificationContext = createContext();
 
+// How often to ask the server whether a download is ready.
+const POLL_MS = 1000;
+
 export const NotificationProvider = ({ children }) => {
   const [activeNotifications, setActiveNotifications] = useState([]);
-  const [hasNewNotifications, setHasNewNotifications] = useState(true); // Flag variable
-  const updateHandle = useRef(null);
+  const timer = useRef(null);
+  // downloads someone is waiting for: downloadId -> { resolve, reject }
+  const waiting = useRef(new Map());
 
-  const registerProjectDownload = async () => {
-    const res = await reg_project_download();
-    setActiveNotifications((prevState) => [...prevState, res]);
-    setHasNewNotifications(true);
-    startUpdates();
-  };
-
-  const registerDatasetDownload = async (datasetId) => {
-    const res = await reg_dataset_download(datasetId);
-    setActiveNotifications((prevState) => [...prevState, res]);
-    setHasNewNotifications(true);
-    startUpdates();
-  };
-
-  const removeNotification = (id) => {
-    const newNotifications = activeNotifications.filter(
-      (elm) => elm.downloadId !== id
-    );
-    cancelDownload(id);
-    setActiveNotifications(newNotifications);
+  const stopUpdates = () => {
+    clearInterval(timer.current);
+    timer.current = null;
   };
 
   const updateNotifications = async () => {
-    if (activeNotifications.length === 0) {
-      stopUpdates();
+    let entries;
+    try {
+      entries = await datasetDownloadStatus();
+    } catch {
+      // e.g. logged out, or the server is restarting: try again next time
       return;
     }
-    try {
-      const notifications = await datasetDownloadStatus();
-      if (notifications >= 400) {
-        setHasNewNotifications(false);
-        return;
-      }
-      setActiveNotifications(notifications);
-      const uncompletedNotifications =
-        notifications.map((elm) => elm.status).filter((elm) => elm != 100) > 0;
-      if (!uncompletedNotifications || notifications.length === 0) {
-        stopUpdates();
-      }
-      setHasNewNotifications(uncompletedNotifications); // Update the flag
-    } catch {
-      // Ignore polling errors (e.g. while logged out) so the interval
-      // doesn't spam the backend with failing requests.
-    }
+    if (!Array.isArray(entries)) return;
+    setActiveNotifications(entries);
+    waiting.current.forEach((waiter, downloadId) => {
+      const entry = entries.find((elm) => elm.downloadId === downloadId);
+      if (entry && !entry.error && entry.status < 100) return;
+      waiting.current.delete(downloadId);
+      if (!entry) waiter.reject(new Error("The download was cancelled"));
+      else if (entry.error) waiter.reject(new Error(entry.error));
+      else waiter.resolve(entry);
+    });
+    const preparing = entries.some((elm) => !elm.error && elm.status < 100);
+    if (!preparing && waiting.current.size === 0) stopUpdates();
   };
 
   const startUpdates = () => {
-    if (updateHandle.current === null) {
-      const handle = setInterval(updateNotifications, 2000);
-      updateHandle.current = handle;
+    if (timer.current === null) {
+      timer.current = setInterval(updateNotifications, POLL_MS);
     }
   };
 
-  const stopUpdates = () => {
-    clearInterval(updateHandle.current);
-    updateHandle.current = null;
+  const forget = (downloadId) => {
+    setActiveNotifications((current) =>
+      current.filter((elm) => elm.downloadId !== downloadId)
+    );
+    return cancelDownload(downloadId);
   };
 
-  useEffect(() => {
-    // Don't poll on mount: only fetch status once a download was registered
-    // (startUpdates is called by registerDatasetDownload/registerProjectDownload).
-    return () => stopUpdates();
-  }, []);
+  // Asks the server to prepare a download, waits for it and saves the file,
+  // telling the user what is going on meanwhile. Resolves to true when the
+  // file was saved.
+  const download = async (name, register) => {
+    const id = `download-${Date.now()}-${Math.random()}`;
+    const failed = (error) =>
+      notifications.update({
+        id,
+        loading: false,
+        autoClose: false,
+        withCloseButton: true,
+        color: "red",
+        title: `Could not download ${name}`,
+        message: error.message || "The download failed",
+      });
+    const progress = (message) => ({
+      id,
+      loading: true,
+      autoClose: false,
+      withCloseButton: false,
+      title: `Downloading ${name}`,
+      message,
+    });
+    notifications.show(progress("Preparing the files…"));
+    let entry;
+    try {
+      entry = await register();
+    } catch (error) {
+      failed(error);
+      return false;
+    }
+    setActiveNotifications((current) => [...current, entry]);
+    try {
+      const ready = await new Promise((resolve, reject) => {
+        waiting.current.set(entry.downloadId, { resolve, reject });
+        startUpdates();
+      });
+      notifications.update(progress("Fetching the file…"));
+      await datasetDownloadfromId(ready);
+      notifications.update({
+        id,
+        loading: false,
+        autoClose: 5000,
+        withCloseButton: true,
+        color: "teal",
+        title: `Downloaded ${name}`,
+        message: `Saved as ${downloadFileName(ready)}`,
+      });
+      // it is on the user's disk now: nothing to keep on the server
+      await forget(entry.downloadId);
+      return true;
+    } catch (error) {
+      failed(error);
+      // a failed download stays listed, with its error, until it is removed
+      return false;
+    }
+  };
+
+  const registerProjectDownload = () =>
+    download("the project", () => reg_project_download());
+
+  const registerDatasetDownload = (dataset) =>
+    download(dataset.name || "the dataset", () => reg_dataset_download(dataset));
+
+  const removeNotification = (downloadId) => {
+    forget(downloadId);
+  };
+
+  useEffect(() => stopUpdates, []);
 
   return (
     <NotificationContext.Provider

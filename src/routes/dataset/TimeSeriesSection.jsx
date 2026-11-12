@@ -134,6 +134,8 @@ const TimeSeriesSection = () => {
   }
 
   const hiddenCount = dataset.timeSeries.length - activeTimeSeries.length;
+  // few rows on the page: the picture and the recordings can be larger
+  const roomy = mediaList.length + activeTimeSeries.length <= 2;
 
   return (
     <>
@@ -152,9 +154,10 @@ const TimeSeriesSection = () => {
           visibleRange={visibleRange}
           onRangeChange={setVisibleRange}
           onMark={onPlotClick}
+          roomy={roomy}
         />
       ) : null}
-      <div className="flex-grow-1 overflow-auto" style={{ minHeight: 0 }}>
+      <div className="timeline-rows flex-grow-1 overflow-auto" style={{ minHeight: 0 }}>
         {mediaList.map((media) => (
           <MediaSeriesDisplay
             key={media._id}
@@ -165,7 +168,7 @@ const TimeSeriesSection = () => {
             fullRange={fullRange}
             visibleRange={visibleRange}
             onRangeChange={setVisibleRange}
-            roomy={mediaList.length + activeTimeSeries.length <= 2}
+            roomy={roomy}
           />
         ))}
         {hiddenCount > 0 ? (

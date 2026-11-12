@@ -124,3 +124,20 @@ describe("DatasetService", () => {
     expect(state.calls).toEqual([[expect.any(Blob), "datasets.zip"]]);
   });
 });
+
+describe("downloadFileName", () => {
+  it("names a download after what it holds", async () => {
+    const { downloadFileName } = await import("../DatasetService");
+    // sensor data only: one CSV
+    expect(
+      downloadFileName({ datasetName: "walk", fileName: "walk", fileType: "csv" })
+    ).toBe("walk.csv");
+    // with recordings: an archive
+    expect(
+      downloadFileName({ datasetName: "walk", fileName: "walk", fileType: "zip" })
+    ).toBe("walk.zip");
+    // entries of a server that does not report the type yet
+    expect(downloadFileName({ datasetName: "walk" })).toBe("walk.csv");
+    expect(downloadFileName({ projectName: "lab" })).toBe("lab.zip");
+  });
+});

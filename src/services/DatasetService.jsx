@@ -60,17 +60,27 @@ const cancelDownload = async (downloadId) => {
   }
 };
 
-const datasetDownloadfromId = async (downloadId) => {
+// The name to save a prepared download under. `entry` is what the server
+// reports about it: a project is a zip of CSV files, a dataset is a CSV, or
+// a zip when it holds recordings.
+const downloadFileName = (entry) =>
+  entry.datasetName === undefined
+    ? `${entry.projectName || "project"}.zip`
+    : `${entry.fileName || entry.datasetName || "dataset"}.${
+        entry.fileType || "csv"
+      }`;
+
+const datasetDownloadfromId = async (entry) => {
   const blob = await apiRequest(
     HTTP_METHODS.GET,
     DATASET_STORE,
-    DATASET_STORE_ENDPOINTS.CSV + downloadId,
+    DATASET_STORE_ENDPOINTS.CSV + entry.downloadId,
     null,
     {},
     undefined,
     "blob"
   );
-  return downloadBlob(blob, `edge-ml-download-${downloadId}.zip`);
+  return downloadBlob(blob, downloadFileName(entry));
 };
 
 const downloadAllAsZip = async (datasets, labelings, labels) => {
@@ -109,6 +119,7 @@ const downloadFile = (blob, fileName) => downloadBlob(blob, fileName);
 export {
   registerDatasetDownload,
   datasetDownloadfromId,
+  downloadFileName,
   downloadAllAsZip,
   downloadFile,
   datasetDownloadStatus,

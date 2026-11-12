@@ -45,21 +45,23 @@ const NotificationHandler = ({ onClose, isOpen }) => {
                     </Text>
                   </div>
                   <Group gap="xs">
-                    {elm.error && <Text c="red">Error</Text>}
-                    {elm.status < 100 ? (
+                    {elm.error && (
+                      <Text c="red" size="sm" title={elm.error}>
+                        Failed
+                      </Text>
+                    )}
+                    {elm.error ? null : elm.status < 100 ? (
                       <Group gap="xs">
                         <LogoLoader size={20} />
-                        <Text size="sm">{elm.status}%</Text>
+                        <Text size="sm">Preparing…</Text>
                       </Group>
                     ) : (
-                      !elm.error && (
-                        <Button
-                          size="compact-sm"
-                          onClick={() => datasetDownloadfromId(elm.downloadId)}
-                        >
-                          <IconDownload size={14} />
-                        </Button>
-                      )
+                      <Button
+                        size="compact-sm"
+                        onClick={() => datasetDownloadfromId(elm)}
+                      >
+                        <IconDownload size={14} />
+                      </Button>
                     )}
                     <ActionIcon
                       color="red"

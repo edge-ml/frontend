@@ -92,6 +92,16 @@ export const waveformData = (peaks, media, range, width) => {
   return [times, highs, lows];
 };
 
+// Height of a recording's row on the timeline. A recording without sound has
+// no waveform, but its row still has to hold the labels and the strip that
+// moves the playhead, so it must not shrink to a sliver. `roomy`: few rows on
+// the page, use the space.
+export const rowHeight = (media, roomy = false) => {
+  if (!media.meta?.audioCodec) return roomy ? 150 : 110;
+  if (media.kind === "audio") return roomy ? 280 : 190;
+  return roomy ? 220 : 150;
+};
+
 export const ACCEPTED_MEDIA =
   "audio/*,video/*,.mp4,.m4v,.mov,.webm,.mp3,.wav,.ogg,.oga,.flac,.m4a";
 

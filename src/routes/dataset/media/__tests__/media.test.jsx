@@ -6,6 +6,7 @@ import {
   formatDuration,
   formatShift,
   formatSize,
+  rowHeight,
   waveformData,
 } from "../mediaUtils";
 
@@ -201,6 +202,18 @@ describe("media helpers", () => {
 
     expect(waveformData(undefined, item, { min: 0, max: 1 }, 10)).toEqual([[], [], []]);
     expect(waveformData(peaks, item, { min: 50_000, max: 60_000 }, 10)).toEqual([[], [], []]);
+  });
+});
+
+describe("row height", () => {
+  it("keeps a recording without sound tall enough to label and scrub", () => {
+    const silent = { kind: "video", meta: {} };
+    const video = { kind: "video", meta: { audioCodec: "aac" } };
+    const audio = { kind: "audio", meta: { audioCodec: "mp3" } };
+    expect(rowHeight(silent)).toBeGreaterThanOrEqual(100);
+    expect(rowHeight(silent, true)).toBeGreaterThan(rowHeight(silent));
+    expect(rowHeight(video)).toBeGreaterThan(rowHeight(silent));
+    expect(rowHeight(audio)).toBeGreaterThan(rowHeight(video));
   });
 });
 

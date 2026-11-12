@@ -189,6 +189,12 @@
 
 /* Recordings (audio/video) on the dataset timeline */
 
+/* The "Metadata" tab is fixed to the right edge of the window; keep the end
+   of the time axis clear of it. */
+.timeline-rows {
+  padding-right: 24px;
+}
+
 .media-series-icon {
   color: var(--mantine-color-indigo-6);
   font-size: 0.8rem;
@@ -230,7 +236,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  height: 16px;
+  height: 24px;
   border-top: 1px solid color-mix(in srgb, var(--mantine-color-gray-6) 30%, transparent);
   background: color-mix(in srgb, var(--mantine-color-gray-6) 14%, transparent);
   cursor: pointer;
@@ -268,10 +274,11 @@
 .media-playhead--knob::after {
   content: "";
   position: absolute;
-  bottom: 2px;
-  left: -5px;
-  width: 12px;
-  height: 12px;
+  bottom: 4px;
+  left: -7px;
+  width: 16px;
+  height: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
   border: 2px solid #fff;
   border-radius: 50%;
   background: var(--mantine-color-red-6);
@@ -292,7 +299,7 @@
 
 .media-hover__time {
   position: absolute;
-  bottom: 18px;
+  bottom: 27px;
   left: 0;
   padding: 0 4px;
   border-radius: 3px;
@@ -311,6 +318,11 @@
   overflow-x: auto;
   /* follows the window, so that the timeline keeps most of a small screen */
   --media-player-height: clamp(150px, 26vh, 320px);
+}
+
+/* nothing much below the picture: it need not stay small */
+.media-dock__players--roomy {
+  --media-player-height: clamp(180px, 38vh, 460px);
 }
 
 .media-dock__players--large {
@@ -332,6 +344,20 @@
   height: var(--media-player-height);
   max-width: 100%;
   cursor: pointer;
+}
+
+.media-player__loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 12px;
+  pointer-events: none;
 }
 
 .media-player figcaption {

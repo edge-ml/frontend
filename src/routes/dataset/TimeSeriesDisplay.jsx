@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { ActionIcon, Group, Tooltip } from "@mantine/core";
+import { ActionIcon, Group, Loader, Text, Tooltip } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import useTimeSeriesData from "../../Hooks/useTimeSeriesData";
@@ -39,7 +39,7 @@ const TimeSeriesDisplay = ({
     await refreshDataset();
   };
   const [chartWidth, setChartWidth] = useState(window.innerWidth);
-  const { timeSeriesData } = useTimeSeriesData(
+  const { timeSeriesData, loading } = useTimeSeriesData(
     dataset._id,
     timeSeries._id,
     visibleRange,
@@ -57,6 +57,14 @@ const TimeSeriesDisplay = ({
         <Group gap={6} wrap="nowrap" style={{ minWidth: 0 }}>
           <h6 className="fw-bold time-series-name">{timeSeries.name}</h6>
           <TimeSeriesUnitEditor timeSeries={current} onSave={onUnitSave} />
+          {loading ? (
+            <Group gap={4} wrap="nowrap" role="status">
+              <Loader size={12} color="gray" />
+              <Text size="xs" c="dimmed">
+                Loading…
+              </Text>
+            </Group>
+          ) : null}
         </Group>
         <Tooltip label="Hide from view" withinPortal openDelay={300}>
           <ActionIcon

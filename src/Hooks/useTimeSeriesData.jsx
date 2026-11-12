@@ -8,6 +8,8 @@ const useTimeSeriesData = (
   resolution
 ) => {
   const [timeSeriesData, setTimeSeriesData] = useState([]);
+  // nothing to show yet: the first request has not come back
+  const [loading, setLoading] = useState(true);
   const requestIdRef = useRef(0);
 
   useEffect(() => {
@@ -26,10 +28,12 @@ const useTimeSeriesData = (
 
         if (requestId === requestIdRef.current) {
           setTimeSeriesData(Array.isArray(result) ? result : []);
+          setLoading(false);
         }
       } catch (error) {
         if (requestId === requestIdRef.current) {
           console.error("Could not load time-series data", error);
+          setLoading(false);
         }
       }
     }, 120);
@@ -43,7 +47,7 @@ const useTimeSeriesData = (
     visibleRange?.min,
   ]);
 
-  return { timeSeriesData };
+  return { timeSeriesData, loading };
 };
 
 export default useTimeSeriesData;

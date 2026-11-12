@@ -202,9 +202,20 @@ const LabelingSelection = ({ navigate }) => {
 const LabelingSelectionPanel = () => {
   const { dataset } = useContext(DatasetContext);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   const { registerDatasetDownload } = useContext(NotificationContext);
 
   const navigate = useProjectRouter();
+
+  const hasMedia = (dataset.mediaSeries ?? []).length > 0;
+  const download = async () => {
+    setDownloading(true);
+    try {
+      await registerDatasetDownload(dataset);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <div className="dsp-toolbar-wrap">
@@ -221,7 +232,16 @@ const LabelingSelectionPanel = () => {
         </Group>
         <Group gap="xs" wrap="nowrap">
           <AddMediaButton />
-          <Tooltip label="Download dataset" withinPortal>
+          <Tooltip
+            label={
+              downloading
+                ? "Preparing the download…"
+                : hasMedia
+                  ? "Download the data, labels and recordings (ZIP)"
+                  : "Download the data and labels (CSV)"
+            }
+            withinPortal
+          >
             <ActionIcon
               id="btn-secondary"
               aria-label="Download dataset"
@@ -229,7 +249,8 @@ const LabelingSelectionPanel = () => {
               radius="md"
               w={30}
               h={30}
-              onClick={() => registerDatasetDownload(dataset)}
+              loading={downloading}
+              onClick={download}
             >
               <FontAwesomeIcon icon={faDownload} />
             </ActionIcon>

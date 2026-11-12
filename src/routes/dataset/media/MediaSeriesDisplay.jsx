@@ -22,7 +22,13 @@ import { DatasetContext } from "../DatasetContext";
 import TimeSeriesChart from "../TimeSeriesChart";
 import MediaOverlay from "./MediaOverlay";
 import useMediaPeaks from "./useMediaPeaks";
-import { formatDuration, formatShift, formatSize, waveformData } from "./mediaUtils";
+import {
+  formatDuration,
+  formatShift,
+  formatSize,
+  rowHeight,
+  waveformData,
+} from "./mediaUtils";
 import {
   deleteMedia,
   updateMedia,
@@ -101,6 +107,7 @@ const MediaSeriesDisplay = ({
       ? `${media.meta.width}×${media.meta.height}`
       : null,
     formatSize(media.size),
+    media.status !== "processing" && !hasSound ? "no sound" : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -250,9 +257,7 @@ const MediaSeriesDisplay = ({
 
       <TimeSeriesChart
         name={media.name}
-        height={
-          hasSound ? (media.kind === "audio" ? (roomy ? 280 : 190) : roomy ? 190 : 130) : 70
-        }
+        height={rowHeight(media, roomy)}
         timeOrigin={fullRange.min}
         waveform={waveform}
         fullRange={fullRange}

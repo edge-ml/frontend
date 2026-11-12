@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from "react";
 import { Route, useParams, Routes, Navigate } from "react-router-dom";
 import NoProjectPage from "./components/NoProjectPage/NoProjectPage";
 import useProjectStore from "./stores/projectStore";
+import Loader from "./modules/loader";
 
 // Dynamic imports
 const ListPage = lazy(() => import("./routes/list/index"));
@@ -33,7 +34,13 @@ const AppContent = () => {
   }
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div style={{ height: "100vh" }}>
+          <Loader loading />
+        </div>
+      }
+    >
       <Routes>
         <Route path="/:userName/:projectId/">
           {/* Datasets-List */}

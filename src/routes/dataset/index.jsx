@@ -3,7 +3,8 @@ import { useParams } from "react-router-dom";
 import useDataset from "../../Hooks/useDataset";
 import LabelingSelectionPanel from "../../components/LabelingSelectionPanel/LabelingSelectionPanel";
 import { DatasetProvider } from "./DatasetContext";
-import Loader from "../../modules/loader";
+import { Center, Stack, Text } from "@mantine/core";
+import LogoLoader from "../../modules/LogoLoader";
 import { LabelingProvider } from "./LabelingContext";
 import useLabelings from "../../Hooks/useLabelings";
 import LabelingPanel from "../../components/LabelingPanel/LabelingPanel";
@@ -22,7 +23,16 @@ const Dataset = () => {
   const { dataset } = datasetUtils;
 
   if (!dataset || !labelings) {
-    return <Loader loading></Loader>;
+    return (
+      <Center h="100vh" role="status">
+        <Stack align="center" gap="sm">
+          <LogoLoader size={56} />
+          <Text size="sm" c="dimmed">
+            Opening the dataset…
+          </Text>
+        </Stack>
+      </Center>
+    );
   }
 
   return (
