@@ -1,8 +1,16 @@
 import React, { useEffect, useRef } from "react";
+import { Loader } from "@mantine/core";
 import PlayheadLine from "./PlayheadLine";
 import HoverTime from "./HoverTime";
 import Filmstrip from "./Filmstrip";
 import { SCRUB_HEIGHT } from "./mediaUtils";
+
+const WAVEFORM_STATUS_TEXT = {
+  processing: "Preparing the waveform… You can already play and label.",
+  loading: "Loading the waveform…",
+  failed: "The waveform could not be loaded",
+  missing: "No waveform could be made for this recording",
+};
 
 // What a recording's row draws over its timeline: where the recording lies,
 // a bar to move the playhead, and the playhead itself.
@@ -21,6 +29,8 @@ const MediaOverlay = ({
   // by default they fill the row above the strip that moves the playhead
   frames,
   filmstripHeight,
+  // why there is no waveform (yet): see waveformState
+  waveformStatus,
 }) => {
   const scrubRef = useRef();
   const extentRef = useRef();
@@ -131,6 +141,18 @@ const MediaOverlay = ({
           frames={frames}
           height={filmstripHeight ?? plot.over.clientHeight - SCRUB_HEIGHT}
         />
+      ) : null}
+      {waveformStatus ? (
+        <div
+          className="media-waveform-status"
+          role="status"
+          style={{ top: filmstripHeight ?? 0, bottom: SCRUB_HEIGHT }}
+        >
+          {waveformStatus === "processing" || waveformStatus === "loading" ? (
+            <Loader size="sm" color="indigo" />
+          ) : null}
+          <span>{WAVEFORM_STATUS_TEXT[waveformStatus]}</span>
+        </div>
       ) : null}
       <div
         ref={scrubRef}

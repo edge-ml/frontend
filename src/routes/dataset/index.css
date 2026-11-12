@@ -228,6 +228,20 @@
   touch-action: none;
 }
 
+/* In place of a waveform that is not there (yet). */
+.media-waveform-status {
+  position: absolute;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--mantine-color-gray-7);
+  font-size: var(--mantine-font-size-sm);
+  pointer-events: none;
+}
+
 /* Pictures of a video along its row. */
 .media-filmstrip {
   position: absolute;

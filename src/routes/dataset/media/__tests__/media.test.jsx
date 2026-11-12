@@ -213,6 +213,20 @@ describe("row height", () => {
     expect(rowHeight(silent)).toBeGreaterThanOrEqual(100);
     expect(rowHeight(silent, true)).toBeGreaterThan(rowHeight(silent));
     expect(rowHeight(video)).toBeGreaterThan(rowHeight(silent));
+    expect(rowHeight(audio)).toBeGreaterThan(rowHeight(silent));
+  });
+});
+
+describe("waveform status", () => {
+  it("says why a recording with sound has no waveform", async () => {
+    const { waveformState } = await import("../useMediaPeaks");
+    const sound = { meta: { audioCodec: "mp3" }, status: "ready", hasPeaks: true };
+    expect(waveformState({ meta: {} }, undefined, false)).toBeUndefined();
+    expect(waveformState(sound, { max: [1] }, false)).toBeUndefined();
+    expect(waveformState({ ...sound, status: "processing", hasPeaks: false })).toBe("processing");
+    expect(waveformState(sound, undefined, false)).toBe("loading");
+    expect(waveformState(sound, undefined, true)).toBe("failed");
+    expect(waveformState({ ...sound, hasPeaks: false }, undefined, false)).toBe("missing");
   });
 });
 

@@ -1,10 +1,8 @@
 import React, { useContext, useMemo, useState } from "react";
 import {
   ActionIcon,
-  Badge,
   Button,
   Group,
-  Loader,
   Menu,
   Text,
   TextInput,
@@ -66,7 +64,11 @@ const MediaSeriesDisplay = ({
   const [name, setName] = useState(media.name);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(undefined);
-  const peaks = useMediaPeaks(dataset._id, media);
+  const {
+    peaks,
+    state: waveformStatus,
+    retry: retryWaveform,
+  } = useMediaPeaks(dataset._id, media);
   const frames = useVideoThumbnails(dataset._id, media);
 
   const hasSound = Boolean(media.meta?.audioCodec);
@@ -130,15 +132,15 @@ const MediaSeriesDisplay = ({
           <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
             {details}
           </Text>
-          {media.status === "processing" ? (
-            <Badge
-              size="sm"
+          {waveformStatus === "failed" ? (
+            <Button
+              size="compact-xs"
               variant="light"
-              color="gray"
-              leftSection={<Loader size={10} color="gray" />}
+              color="red"
+              onClick={retryWaveform}
             >
-              Preparing waveform
-            </Badge>
+              Load the waveform again
+            </Button>
           ) : null}
         </Group>
         <Menu withinPortal position="bottom-end">
@@ -285,6 +287,7 @@ const MediaSeriesDisplay = ({
             origin={fullRange.min}
             frames={frames}
             filmstripHeight={filmstripHeight}
+            waveformStatus={waveformStatus}
             onShift={(delta) => onShiftChange((current) => (current ?? 0) + delta)}
           />
         )}
