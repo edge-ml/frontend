@@ -18,6 +18,14 @@ on:
 permissions:
   contents: write
 
+# One run per branch at a time, and a newer push replaces a run that is still
+# going. Two pushes a minute apart both moved the channel's tag at the same
+# moment: one publish failed ("cannot lock ref"), and the release was left on
+# the older commit.
+concurrency:
+  group: desktop-apps-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   resolve:
     name: Resolve channel
