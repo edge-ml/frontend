@@ -15,11 +15,7 @@ const AddMediaButton = () => {
   const upload = async (files) => {
     setUploading(true);
     for (const file of files) {
-      const added = await uploadMediaWithNotification(
-        dataset._id,
-        file,
-        "It was placed at the start of the dataset. Use Align in its menu to move it."
-      );
+      const added = await uploadMediaWithNotification(dataset._id, file);
       if (added) await refreshDataset();
     }
     setUploading(false);

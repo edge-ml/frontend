@@ -16,6 +16,14 @@ export const uploadMedia = (datasetId, file, { name, start } = {}, onProgress) =
   form.append("file", file, file.name);
   if (name) form.append("name", name);
   if (Number.isFinite(start)) form.append("start", String(Math.round(start)));
+  // Without `start` the server places the recording at the time stored in
+  // the file. Two hints for files that store none or store local time:
+  // when the file was last changed (recorders save it when they stop), and
+  // this browser's time zone (minutes east of UTC).
+  if (Number.isFinite(file.lastModified)) {
+    form.append("fileModified", String(file.lastModified));
+  }
+  form.append("timeZoneOffset", String(-new Date().getTimezoneOffset()));
   // no Content-Type: the browser has to add the multipart boundary itself
   return apiRequest(
     HTTP_METHODS.POST,
@@ -29,7 +37,8 @@ export const uploadMedia = (datasetId, file, { name, start } = {}, onProgress) =
   );
 };
 
-// changes: { name } and/or { start } (unix ms, moves it on the timeline)
+// changes: { name } and/or { start } (unix ms, moves it on the timeline), or
+// { useRecordedAt: true } to move it to the time stored in its file
 export const updateMedia = (datasetId, mediaId, changes) =>
   apiRequest(
     HTTP_METHODS.PUT,

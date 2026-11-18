@@ -1,13 +1,15 @@
 import { notifications } from "@mantine/notifications";
 import { uploadMedia } from "../../../services/ApiServices/MediaServices";
+import { describePlacement } from "./mediaUtils";
 import {
   createDataset,
   deleteDataset,
 } from "../../../services/ApiServices/DatasetServices";
 
 // Uploads one recording into a dataset and reports the progress in a
-// notification. Resolves to true when it was added.
-export const uploadMediaWithNotification = async (datasetId, file, doneMessage) => {
+// notification. Resolves to true when it was added. `doneMessage` is shown
+// before where the recording was placed.
+export const uploadMediaWithNotification = async (datasetId, file, doneMessage = "") => {
   const id = `media-upload-${file.name}-${Date.now()}`;
   const progress = (message) => ({
     id,
@@ -19,7 +21,7 @@ export const uploadMediaWithNotification = async (datasetId, file, doneMessage) 
   });
   notifications.show(progress("Starting…"));
   try {
-    await uploadMedia(datasetId, file, {}, (fraction) =>
+    const media = await uploadMedia(datasetId, file, {}, (fraction) =>
       notifications.update(
         progress(
           fraction < 1 ? `${Math.round(fraction * 100)} %` : "Checking the file…"
@@ -29,11 +31,11 @@ export const uploadMediaWithNotification = async (datasetId, file, doneMessage) 
     notifications.update({
       id,
       loading: false,
-      autoClose: 4000,
+      autoClose: 8000,
       withCloseButton: true,
       color: "teal",
       title: `Added ${file.name}`,
-      message: doneMessage,
+      message: [doneMessage, describePlacement(media)].filter(Boolean).join(" "),
     });
     return true;
   } catch (error) {
