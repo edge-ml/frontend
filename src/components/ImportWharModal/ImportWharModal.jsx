@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Progress, Alert } from "@mantine/core";
+import { Button, Progress, Alert, Text } from "@mantine/core";
 import LogoLoader from "../../modules/LogoLoader";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "../Common/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,6 +8,11 @@ import { faCheckCircle, faLock, faCheck } from "@fortawesome/free-solid-svg-icon
 import { getWharDatasets, startWharImport } from "../../services/ApiServices/WharImportService";
 import { useInterval } from "../../services/ReactHooksService";
 import useWharImportStore from "../../stores/wharImportStore";
+import WharImportSettings, {
+  defaultSettings,
+  settingsProblem,
+  settingsToRequest,
+} from "./WharImportSettings";
 import {
   STEPS,
   stepIndex,
@@ -60,6 +65,11 @@ export const ImportWharModal = ({ isOpen, onCloseModal }) => {
   const [listError, setListError] = useState(null);
   const [selected, setSelected] = useState(null);
   const [startError, setStartError] = useState(null);
+  const [settings, setSettings] = useState(defaultSettings(undefined));
+  const selectedDataset = datasets.find((d) => d.id === selected);
+  // services from before the settings existed do not list channels
+  const hasSettings = Boolean(selectedDataset?.channels?.length);
+  const problem = hasSettings ? settingsProblem(settings) : undefined;
   const [now, setNow] = useState(Date.now());
 
   // Load the importable datasets when the modal opens without an active job.
@@ -82,7 +92,10 @@ export const ImportWharModal = ({ isOpen, onCloseModal }) => {
     setStartError(null);
     const ds = datasets.find((d) => d.id === selected);
     try {
-      const { job_id } = await startWharImport(selected);
+      const { job_id } = await startWharImport(
+        selected,
+        hasSettings ? settingsToRequest(ds, settings) : {}
+      );
       setJob({ jobId: job_id, datasetName: ds ? ds.name : selected, startedAt: Date.now() });
       setStatus({ state: "queued" });
       setNow(Date.now());
@@ -126,7 +139,9 @@ export const ImportWharModal = ({ isOpen, onCloseModal }) => {
                 Loading datasets...
               </div>
             ) : (
-              <div style={{ maxHeight: "50vh", overflowY: "auto" }}>
+              // shorter once a dataset is picked, so its settings and the
+              // Import button fit below it
+              <div style={{ maxHeight: selected ? "26vh" : "50vh", overflowY: "auto" }}>
                 {datasets.map((ds) => {
                   const disabled = ds.needs_credentials;
                   return (
@@ -136,7 +151,11 @@ export const ImportWharModal = ({ isOpen, onCloseModal }) => {
                         disabled ? "text-muted" : ""
                       }`}
                       style={{ cursor: disabled ? "not-allowed" : "pointer" }}
-                      onClick={() => !disabled && setSelected(ds.id)}
+                      onClick={() => {
+                        if (disabled || selected === ds.id) return;
+                        setSelected(ds.id);
+                        setSettings(defaultSettings(ds));
+                      }}
                     >
                       <input
                         type="radio"
@@ -158,7 +177,11 @@ export const ImportWharModal = ({ isOpen, onCloseModal }) => {
                           {ds.num_of_subjects ?? "?"} subjects,{" "}
                           {ds.num_of_activities ?? "?"} activities,{" "}
                           {ds.num_of_channels ?? "?"} channels
-                          {ds.sampling_freq ? `, ${ds.sampling_freq} Hz` : ""}
+                          {ds.sampling_freq
+                            ? `, ${ds.sampling_freq} Hz`
+                            : ds.default_sampling_freq
+                              ? `, mixed rates (${ds.default_sampling_freq} Hz)`
+                              : ""}
                         </small>
                       </div>
                     </div>
@@ -166,6 +189,18 @@ export const ImportWharModal = ({ isOpen, onCloseModal }) => {
                 })}
               </div>
             )}
+            {selectedDataset && hasSettings ? (
+              <WharImportSettings
+                dataset={selectedDataset}
+                value={settings}
+                onChange={setSettings}
+              />
+            ) : null}
+            {problem ? (
+              <Text size="sm" c="red" mt="xs">
+                {problem}
+              </Text>
+            ) : null}
             {startError && (
               <Alert color="red" className="mt-3">
                 {startError}
@@ -212,7 +247,7 @@ export const ImportWharModal = ({ isOpen, onCloseModal }) => {
             <Button variant="default" onClick={dismiss} className="me-2">
               Cancel
             </Button>
-            <Button disabled={!selected} onClick={startImport}>
+            <Button disabled={!selected || Boolean(problem)} onClick={startImport}>
               Import
             </Button>
           </>
