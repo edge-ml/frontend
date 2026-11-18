@@ -195,3 +195,29 @@ export const initialRange = (full, hasMedia) =>
   hasMedia && full.max - full.min > LONG_RECORDING_MS
     ? { min: full.min, max: full.min + INITIAL_SPAN_MS }
     : full;
+
+// ---- where a recording was placed on upload (media.startSource)
+
+const clock = (ms) =>
+  new Date(ms).toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "medium",
+  });
+
+// A sentence for the upload notification.
+export const describePlacement = (media) => {
+  switch (media?.startSource) {
+    case "metadata":
+      return `Placed at the time it was recorded, as stored in the file (${clock(media.start)}).`;
+    case "fileTime":
+      return `The file does not say when it was recorded, so it was placed by the time the file was saved (ends ${clock(media.end)}). Use Align in its menu if that is off.`;
+    case "dataset":
+      return media.meta?.recordedAt
+        ? `The file says it was recorded on ${clock(media.meta.recordedAt)}, far from the data in this dataset, so it was placed at the start of the dataset. Align in its menu can move it to the file's time.`
+        : "The file does not say when it was recorded, so it was placed at the start of the dataset. Use Align in its menu to move it.";
+    case "now":
+      return "The file does not say when it was recorded, so it was placed at the time of the upload.";
+    default:
+      return "Use Align in its menu to move it.";
+  }
+};

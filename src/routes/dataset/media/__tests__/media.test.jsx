@@ -298,3 +298,16 @@ describe("timeline zoom and axis", () => {
     expect(formatElapsed(3_725_000)).toBe("1:02:05");
   });
 });
+
+describe("placement on upload", () => {
+  it("tells where a recording went and why", async () => {
+    const { describePlacement } = await import("../mediaUtils");
+    const at = Date.UTC(2026, 10, 12, 10, 11, 12);
+    expect(describePlacement({ startSource: "metadata", start: at })).toMatch(/time it was recorded/);
+    expect(describePlacement({ startSource: "fileTime", start: at, end: at + 1000 })).toMatch(/saved/);
+    expect(describePlacement({ startSource: "dataset", meta: { recordedAt: at } })).toMatch(/far from the data/);
+    expect(describePlacement({ startSource: "dataset", meta: {} })).toMatch(/does not say/);
+    expect(describePlacement({ startSource: "now" })).toMatch(/time of the upload/);
+    expect(describePlacement({})).toMatch(/Align/);
+  });
+});

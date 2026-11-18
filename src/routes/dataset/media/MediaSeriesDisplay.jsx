@@ -6,6 +6,7 @@ import {
   Menu,
   Text,
   TextInput,
+  Tooltip,
 } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -108,6 +109,13 @@ const MediaSeriesDisplay = ({
       updateMedia(dataset._id, media._id, { start: Math.round(media.start) })
     );
   const remove = () => run(() => deleteMedia(dataset._id, media._id));
+  // the time stored in the file, when the recording is somewhere else
+  const recordedAt = media.meta?.recordedAt;
+  const savedStart = media.start - (shift ?? 0);
+  const canUseRecordedAt =
+    Number.isFinite(recordedAt) && Math.abs(recordedAt - savedStart) >= 1;
+  const useRecordedAt = () =>
+    run(() => updateMedia(dataset._id, media._id, { useRecordedAt: true }));
 
   const details = [
     formatDuration(media.durationMs),
@@ -215,6 +223,23 @@ const MediaSeriesDisplay = ({
           <Button size="compact-xs" variant="subtle" color="gray" onClick={close}>
             Cancel
           </Button>
+          {canUseRecordedAt ? (
+            <Tooltip
+              withinPortal
+              multiline
+              w={280}
+              label={`The file says it was recorded on ${new Date(recordedAt).toLocaleString()}. Moves the recording there.`}
+            >
+              <Button
+                size="compact-xs"
+                variant="light"
+                loading={busy}
+                onClick={useRecordedAt}
+              >
+                Use the time from the file
+              </Button>
+            </Tooltip>
+          ) : null}
         </Group>
       ) : null}
       {mode === "rename" ? (

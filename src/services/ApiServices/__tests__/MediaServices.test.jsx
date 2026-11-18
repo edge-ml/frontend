@@ -85,3 +85,23 @@ describe("MediaServices", () => {
     expect(await getMediaUrl("d1", "m1")).toBe(expected);
   });
 });
+
+describe("placement hints", () => {
+  it("sends when the file was saved and the time zone", async () => {
+    let fields;
+    server.use(
+      http.post(url(base), async ({ request }) => {
+        const form = await request.formData();
+        fields = { modified: form.get("fileModified"), zone: form.get("timeZoneOffset"), start: form.get("start") };
+        return HttpResponse.json({ _id: "m1" }, { status: 201 });
+      })
+    );
+    const file = new File(["abc"], "memo.m4a", { type: "audio/mp4", lastModified: 1794478272000 });
+    await uploadMedia("d1", file);
+    expect(fields).toEqual({
+      modified: "1794478272000",
+      zone: String(-new Date().getTimezoneOffset()),
+      start: null,
+    });
+  });
+});
