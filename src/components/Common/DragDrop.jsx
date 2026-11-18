@@ -75,7 +75,7 @@ class DragDrop extends Component {
             }}
             id="fileInput"
             data-testid="fileInput"
-            accept=".csv"
+            accept={this.props.accept || ".csv"}
             onChange={this.onFileInput}
             type="file"
             key={this.state.inputKey}

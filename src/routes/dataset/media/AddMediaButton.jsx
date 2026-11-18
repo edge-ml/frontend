@@ -1,54 +1,38 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useState } from "react";
 import { ActionIcon, Tooltip } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPhotoFilm } from "@fortawesome/free-solid-svg-icons";
+import { faFileCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { DatasetContext } from "../DatasetContext";
-import { uploadMediaWithNotification } from "./mediaUpload";
-import { ACCEPTED_MEDIA } from "./mediaUtils";
+import { UploadDatasetModal } from "../../../components/UploadDatasetModal/UploadDatasetModal";
 
-// Adds audio or video files to the open dataset.
+// Adds sensor data (CSV), audio or video to the open dataset, with the same
+// dialog that creates datasets.
 const AddMediaButton = () => {
   const { dataset, refreshDataset } = useContext(DatasetContext);
-  const inputRef = useRef();
-  const [uploading, setUploading] = useState(false);
-
-  const upload = async (files) => {
-    setUploading(true);
-    for (const file of files) {
-      const added = await uploadMediaWithNotification(dataset._id, file);
-      if (added) await refreshDataset();
-    }
-    setUploading(false);
-  };
+  const [open, setOpen] = useState(false);
 
   return (
     <>
-      <input
-        ref={inputRef}
-        type="file"
-        hidden
-        multiple
-        accept={ACCEPTED_MEDIA}
-        data-testid="add-media-input"
-        onChange={(event) => {
-          const files = [...event.target.files];
-          event.target.value = "";
-          if (files.length > 0) upload(files);
-        }}
-      />
-      <Tooltip label="Add audio or video" withinPortal>
+      <Tooltip label="Add sensor data, audio or video" withinPortal>
         <ActionIcon
-          aria-label="Add audio or video"
+          aria-label="Add data"
           variant="default"
           radius="md"
           w={30}
           h={30}
-          loading={uploading}
-          onClick={() => inputRef.current?.click()}
+          onClick={() => setOpen(true)}
         >
-          <FontAwesomeIcon icon={faPhotoFilm} />
+          <FontAwesomeIcon icon={faFileCirclePlus} />
         </ActionIcon>
       </Tooltip>
+      {open ? (
+        <UploadDatasetModal
+          isOpen
+          targetDataset={dataset}
+          onCloseModal={() => setOpen(false)}
+          onDatasetComplete={refreshDataset}
+        />
+      ) : null}
     </>
   );
 };

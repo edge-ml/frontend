@@ -8,6 +8,7 @@ import { FileStatus } from "../useFileUploads";
 const file = (timeSeries) => ({
   id: "f1",
   name: "walk.csv",
+  kind: "csv",
   status: FileStatus.CONFIGURATION,
   progress: 0,
   config: { name: "walk", timeSeries, labelings: [], editingModeActive: false },

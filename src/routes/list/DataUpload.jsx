@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { SimpleGrid, Text, Button, Group, ThemeIcon, Progress } from "@mantine/core";
 import LogoLoader from "../../modules/LogoLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,7 +11,6 @@ import {
   IconBluetooth,
   IconFileUpload,
   IconDatabase,
-  IconMovie,
 } from "@tabler/icons-react";
 import useProjectRouter from "../../Hooks/ProjectRouter";
 import { UploadDatasetModal } from "../../components/UploadDatasetModal/UploadDatasetModal";
@@ -19,8 +18,6 @@ import { ImportWharModal } from "../../components/ImportWharModal/ImportWharModa
 import { getWharImportStatus } from "../../services/ApiServices/WharImportService";
 import { useInterval } from "../../services/ReactHooksService";
 import useWharImportStore from "../../stores/wharImportStore";
-import { createDatasetsFromMedia } from "../dataset/media/mediaUpload";
-import { ACCEPTED_MEDIA } from "../dataset/media/mediaUtils";
 import {
   isRunning,
   percentOf,
@@ -89,12 +86,6 @@ const DataUpload = ({ refreshDatasets }) => {
   const [csvModalOpen, setCSVModalOpen] = useState(false);
   const [wharModalOpen, setWharModalOpen] = useState(false);
   const [now, setNow] = useState(Date.now());
-  const mediaInputRef = useRef();
-
-  const onMediaFiles = async (files) => {
-    const created = await createDatasetsFromMedia(files);
-    if (created > 0 && refreshDatasets) refreshDatasets();
-  };
 
   const { job, status, setStatus, clear } = useWharImportStore();
 
@@ -139,10 +130,11 @@ const DataUpload = ({ refreshDatasets }) => {
     },
     {
       icon: IconFileUpload,
-      title: "CSV File Upload",
+      title: "Upload Files",
       description: (
         <>
-          Learn how to prepare your CSV file{" "}
+          Sensor data (CSV), video and audio, into one dataset or one each.
+          How to prepare a CSV file:{" "}
           <a
             href="https://github.com/edge-ml/EdgeML-Arduino"
             target="_blank"
@@ -153,16 +145,8 @@ const DataUpload = ({ refreshDatasets }) => {
           .
         </>
       ),
-      buttonText: "Upload CSV Files",
+      buttonText: "Upload Files",
       buttonAction: () => setCSVModalOpen(true),
-    },
-    {
-      icon: IconMovie,
-      title: "Audio / Video Upload",
-      description:
-        "Start a dataset from a recording to view and label it. MP4, WebM, MP3, WAV, OGG, FLAC, M4A.",
-      buttonText: "Upload Audio or Video",
-      buttonAction: () => mediaInputRef.current?.click(),
     },
     // "Web Sensor API" (Collect Web Sensor Data) is temporarily removed: it
     // renders a blank screen when no usable sensors are present. Re-add once it
@@ -199,7 +183,7 @@ const DataUpload = ({ refreshDatasets }) => {
         />
       )}
 
-      <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="md">
+      <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md">
         {dataUploadOptions.map((option, index) => {
           const Icon = option.icon;
           return (
@@ -239,19 +223,6 @@ const DataUpload = ({ refreshDatasets }) => {
         })}
       </SimpleGrid>
 
-      <input
-        ref={mediaInputRef}
-        type="file"
-        hidden
-        multiple
-        accept={ACCEPTED_MEDIA}
-        data-testid="media-dataset-input"
-        onChange={(event) => {
-          const files = [...event.target.files];
-          event.target.value = "";
-          if (files.length > 0) onMediaFiles(files);
-        }}
-      />
       <UploadDatasetModal
         isOpen={csvModalOpen}
         onCloseModal={() => setCSVModalOpen(false)}

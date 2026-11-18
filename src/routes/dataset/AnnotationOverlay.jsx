@@ -82,6 +82,8 @@ const AnnotationOverlay = ({
         if (!Number.isFinite(label.start)) return null;
 
         const isDraft = label._id === "draft";
+        // being recorded while the dataset plays: grows, cannot be edited yet
+        const isLive = label._id === "live";
         const interval = getInterval(label);
         const hasEnd = Number.isFinite(interval.end);
         const start = clamp(interval.start, visibleMin, visibleMax);
@@ -104,6 +106,8 @@ const AnnotationOverlay = ({
         return (
           <div
             className={`annotation ${isDraft ? "annotation--draft" : ""} ${
+              isLive ? "annotation--live" : ""
+            } ${
               isSelected ? "annotation--selected" : ""
             }`}
             key={label._id}
@@ -114,13 +118,13 @@ const AnnotationOverlay = ({
             }}
             onClick={(event) => {
               event.stopPropagation();
-              if (!isDraft) onLabelSelect(label);
+              if (!isDraft && !isLive) onLabelSelect(label);
             }}
             onPointerDown={(event) => event.stopPropagation()}
-            role={isDraft ? undefined : "button"}
-            tabIndex={isDraft ? undefined : 0}
+            role={isDraft || isLive ? undefined : "button"}
+            tabIndex={isDraft || isLive ? undefined : 0}
             onKeyDown={(event) => {
-              if (!isDraft && (event.key === "Enter" || event.key === " ")) {
+              if (!isDraft && !isLive && (event.key === "Enter" || event.key === " ")) {
                 event.preventDefault();
                 onLabelSelect(label);
               }
