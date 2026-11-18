@@ -1,5 +1,12 @@
 import React from "react";
-import { Button } from "@mantine/core";
+import { Button, Card, Group, SimpleGrid, Stack, Text, ThemeIcon } from "@mantine/core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faGlobe,
+  faMicrochip,
+  faMobileScreen,
+  faServer,
+} from "@fortawesome/free-solid-svg-icons";
 
 // Shown right after the pipeline is picked. Choosing an export target filters the
 // options in every later step so the trained model can actually be exported that
@@ -7,45 +14,87 @@ import { Button } from "@mantine/core";
 const GOALS = [
   {
     key: "EXECUTORCH",
+    icon: faMobileScreen,
     title: "Mobile / smartphone",
-    desc: "Export to ExecuTorch (.pte) to run on Android or iOS. Uses PyTorch models.",
+    format: "ExecuTorch (.pte)",
+    desc: "Runs on Android or iOS. Uses PyTorch models.",
   },
   {
     key: "C",
+    icon: faMicrochip,
     title: "Embedded device",
-    desc: "Export to C to run on microcontrollers and embedded hardware.",
+    format: "C code",
+    desc: "Runs on microcontrollers and embedded hardware.",
   },
   {
     key: "ONNX",
+    icon: faGlobe,
     title: "Browser / JavaScript",
-    desc: "Export to ONNX to run in a web page or Node.js with the edge-ml JavaScript library (onnxruntime-web). Works with the Decision Tree, Random Forest and PyTorch models.",
+    format: "ONNX",
+    desc: "Runs in a web page or Node.js with the edge-ml JavaScript library (onnxruntime-web). Works with the Decision Tree, Random Forest and PyTorch models.",
   },
   {
     key: "PYTORCH",
+    icon: faServer,
     title: "Server / research",
-    desc: "Export to PyTorch (.pt) to run in Python on a server or desktop. Works with any PyTorch model, including ones that can't go on-device.",
+    format: "PyTorch (.pt)",
+    desc: "Runs in Python on a server or desktop. Works with any PyTorch model, including ones that can't go on-device.",
   },
 ];
 
 const SelectExportGoal = ({ availableKeys, onSelect, onBack }) => (
-  <div>
-    <div className="fw-bold mb-1">Where will this model run?</div>
-    <div className="text-muted mb-3">
-      This keeps the options below to the ones that can be deployed the way you
-      choose, so the trained model can actually be exported.
+  <div className="training-wizard-step">
+    <div className="training-wizard-step-header">
+      <Text fw={700} size="xl">
+        Where will this model run?
+      </Text>
+      <Text c="dimmed">
+        The next steps only offer options that can be exported this way, so
+        the trained model can actually be deployed.
+      </Text>
     </div>
-    {GOALS.filter((g) => availableKeys.includes(g.key)).map((g) => (
-      <div
-        key={g.key}
-        className="edgeml-border p-2 m-2 cursor-pointer hover-bigger"
-        onClick={() => onSelect(g.key)}
-      >
-        <div className="fw-bold">{g.title}</div>
-        <div>{g.desc}</div>
-      </div>
-    ))}
-    <div className="mt-3">
-      <Button variant="default" size="sm" onClick={onBack}>
+    <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+      {GOALS.filter((g) => availableKeys.includes(g.key)).map((g) => (
+        <Card
+          key={g.key}
+          withBorder
+          radius="md"
+          padding="lg"
+          className="training-wizard-pipeline-card"
+          role="button"
+          tabIndex={0}
+          aria-label={g.title}
+          onClick={() => onSelect(g.key)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onSelect(g.key);
+            }
+          }}
+        >
+          <Group gap="md" align="flex-start" wrap="nowrap">
+            <ThemeIcon size={40} radius="md" variant="light">
+              <FontAwesomeIcon icon={g.icon} />
+            </ThemeIcon>
+            <Stack gap={4}>
+              <Group gap="xs">
+                <Text fw={700} size="lg">
+                  {g.title}
+                </Text>
+                <Text size="xs" c="dimmed" fw={600}>
+                  {g.format}
+                </Text>
+              </Group>
+              <Text size="sm" c="dimmed" lh={1.5}>
+                {g.desc}
+              </Text>
+            </Stack>
+          </Group>
+        </Card>
+      ))}
+    </SimpleGrid>
+    <div>
+      <Button variant="default" onClick={onBack}>
         Back to pipeline selection
       </Button>
     </div>

@@ -11,13 +11,14 @@ export const getWharDatasets = async () => {
 };
 
 // Starts an async import of one WHAR dataset into the current project.
+// `settings` may hold channels, activities and sampling_freq (all optional).
 // Returns { job_id }. The jwt cookie + project header are attached by request.jsx.
-export const startWharImport = async (datasetId) => {
+export const startWharImport = async (datasetId, settings = {}) => {
   return apiRequest(
     apiConsts.HTTP_METHODS.POST,
     apiConsts.WHAR_URI,
     apiConsts.WHAR_ENDPOINTS.IMPORT,
-    { dataset_id: datasetId }
+    { dataset_id: datasetId, ...settings }
   );
 };
 
