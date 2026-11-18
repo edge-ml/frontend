@@ -8,7 +8,12 @@ import {
   faCheckCircle,
   faBan,
 } from "@fortawesome/free-solid-svg-icons";
-import { faFile } from "@fortawesome/free-regular-svg-icons";
+import { faFile, faFileLines } from "@fortawesome/free-regular-svg-icons";
+import { faVideo, faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
+import { formatSize } from "../../routes/dataset/media/mediaUtils";
+
+const KIND_ICONS = { csv: faFileLines, video: faVideo, audio: faVolumeHigh };
+const KIND_NAMES = { csv: "Sensor data (CSV)", video: "Video", audio: "Audio" };
 import { DatasetConfigView } from "./DatasetConfigView";
 
 // "2 of 3 time-series have a unit", so units are visible before opening the
@@ -56,10 +61,15 @@ export const FileListItem = ({
   return (
     <div className="file-item">
       <div className="file-icon-wrapper">
-        <FontAwesomeIcon icon={faFile} size="2x" />
-        <span>{file.name}</span>
+        <FontAwesomeIcon icon={KIND_ICONS[file.kind] ?? faFile} size="2x" />
       </div>
       <div className="file-progress">
+        <div className="file-name">
+          <span className="file-name__text">{file.name}</span>
+          <span className="file-name__kind">
+            {[KIND_NAMES[file.kind], formatSize(file.size)].filter(Boolean).join(" · ")}
+          </span>
+        </div>
         <Progress
           value={file.progress}
           color={
@@ -73,18 +83,25 @@ export const FileListItem = ({
           size="lg"
           radius="md"
         />
-        <div className="file-status-text">
-          {file.status === FileStatus.ERROR
-            ? `Error: ${file.error}`
-            : `${file.status}${
-                file.status === FileStatus.PROCESSING
-                  ? file.processedTimeseries[0]
-                    ? `: ${file.processingStep} - Timeseries Processed: ${file.processedTimeseries[0]}/${file.processedTimeseries[1]}`
-                    : `: ${file.processingStep}`
-                  : ""
-              } \u00b7 ${file.progress.toFixed(0)}%`}
+        <div
+          className={`file-status-text ${
+            file.status === FileStatus.ERROR ? "file-status-text--error" : ""
+          }`}
+          title={file.error || file.note}
+        >
+          {file.status === FileStatus.ERROR || file.status === FileStatus.CANCELLED
+            ? file.error
+            : file.status === FileStatus.UPLOADING
+              ? `Uploading · ${file.progress.toFixed(0)}%`
+              : file.status === FileStatus.PROCESSING
+                ? file.kind === "csv"
+                  ? "Reading the data…"
+                  : "Checking the file…"
+                : file.status === FileStatus.COMPLETE
+                  ? file.note || "Done"
+                  : "Ready"}
         </div>
-        {file.status === FileStatus.CONFIGURATION && (
+        {file.status === FileStatus.CONFIGURATION && file.kind === "csv" && (
           <UnitSummary
             config={file.config}
             onOpen={() =>
@@ -105,6 +122,7 @@ export const FileListItem = ({
         )}
         {file.status === FileStatus.CONFIGURATION && (
           <>
+            {file.kind === "csv" ? (
             <div
               className="file-action-btn"
               title="Opens configuration menu"
@@ -117,6 +135,7 @@ export const FileListItem = ({
             >
               <FontAwesomeIcon icon={faCog} style={{ fontSize: "1.2em" }} />
             </div>
+            ) : null}
             <div
               className="file-action-btn file-action-btn--danger"
               title="Removes item from list"
@@ -129,7 +148,8 @@ export const FileListItem = ({
             </div>
           </>
         )}
-        {file.status === FileStatus.UPLOADING && (
+        {(file.status === FileStatus.UPLOADING ||
+          (file.status === FileStatus.PROCESSING && file.cancellationHandler)) && (
           <div
             className="file-action-btn file-action-btn--danger"
             title="Cancels ongoing upload"
@@ -152,7 +172,7 @@ export const FileListItem = ({
             />
           </Button>
         )}
-        {file.status === FileStatus.PROCESSING && (
+        {file.status === FileStatus.PROCESSING && !file.cancellationHandler && (
           <FontAwesomeIcon
             spin
             size="lg"

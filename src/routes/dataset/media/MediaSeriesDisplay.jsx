@@ -49,6 +49,8 @@ const MediaSeriesDisplay = ({
   onRangeChange,
   // few rows on the page: use the space for a taller waveform
   roomy = false,
+  // the labels to draw, when they include one being recorded
+  labels,
 }) => {
   const {
     dataset,
@@ -296,7 +298,7 @@ const MediaSeriesDisplay = ({
         waveformHeadroom={filmstripHeight}
         fullRange={fullRange}
         visibleRange={visibleRange}
-        labels={labelsToShow}
+        labels={labels ?? labelsToShow}
         selectedLabel={selectedLabel}
         onPlotClick={onPlotClick}
         onRangeChange={onRangeChange}

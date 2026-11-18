@@ -311,3 +311,31 @@ describe("placement on upload", () => {
     expect(describePlacement({})).toMatch(/Align/);
   });
 });
+
+describe("labeling while playing", () => {
+  it("starts, ends and switches labels like the BLE page", async () => {
+    const { nextLiveState } = await import("../useLiveLabeling");
+    // walk starts
+    let step = nextLiveState(undefined, "walk", 1000);
+    expect(step).toEqual({ open: { type: "walk", start: 1000 }, finished: undefined });
+    // run's key: walk ends 1 ms before run starts, so they do not overlap
+    step = nextLiveState(step.open, "run", 4000);
+    expect(step.finished).toEqual({ type: "walk", start: 1000, end: 3999 });
+    expect(step.open).toEqual({ type: "run", start: 4000 });
+    // run's key again: run ends
+    step = nextLiveState(step.open, "run", 6000);
+    expect(step).toEqual({ open: undefined, finished: { type: "run", start: 4000, end: 6000 } });
+  });
+});
+
+describe("labels recorded while playing do not overlap", () => {
+  it("cannot start inside a label and stops before the next", async () => {
+    const { fitBetween } = await import("../useLiveLabeling");
+    const existing = [{ start: 1000, end: 2000 }, { start: 5000, end: 6000 }];
+    expect(fitBetween(existing, 1500, 1500)).toBeUndefined();
+    expect(fitBetween(existing, 2000, 2000)).toBeUndefined();
+    expect(fitBetween(existing, 2500, 4000)).toEqual({ start: 2500, end: 4000 });
+    expect(fitBetween(existing, 2500, 9000)).toEqual({ start: 2500, end: 4999 });
+    expect(fitBetween([], 0, 9000)).toEqual({ start: 0, end: 9000 });
+  });
+});

@@ -5,7 +5,11 @@ import localStorageService from "./../LocalStorageService";
 
 const axios = ax.create();
 
-export const processCSVBackend = (formData, fileId, handleProgress) => {
+// Sends a CSV file to the dataset store: as a new dataset, or, with
+// `datasetId`, added to that dataset. Returns [cancel, request]; the request
+// resolves to the axios response (the new dataset, or { dataset, added,
+// skippedLabels }).
+export const processCSVBackend = (formData, fileId, handleProgress, datasetId) => {
   const source = ax.CancelToken.source();
   const { currentProject } = useProjectStore.getState();
 
@@ -17,7 +21,9 @@ export const processCSVBackend = (formData, fileId, handleProgress) => {
     ...apiConsts.generateApiRequest(
       apiConsts.HTTP_METHODS.POST,
       apiConsts.DATASET_STORE,
-      apiConsts.DATASET_STORE_ENDPOINTS.CREATE_DATASET,
+      datasetId
+        ? apiConsts.DATASET_STORE_ENDPOINTS.DATASETS + `${datasetId}/csv`
+        : apiConsts.DATASET_STORE_ENDPOINTS.CREATE_DATASET,
       formData,
       {},
       "multipart/form-data"

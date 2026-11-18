@@ -25,6 +25,7 @@ import {
 import { getMediaUrl } from "../../../services/ApiServices/MediaServices";
 import { RATES } from "./playback";
 import FloatingWindow from "./FloatingWindow";
+import { SHORTCUT_KEYS, indexToShortcutKey } from "../../../services/ShortcutKeys";
 import { MIN_VISIBLE_MS, formatDuration, showSpan, zoomRange } from "./mediaUtils";
 
 const formatClock = (timestamp) =>
@@ -323,6 +324,10 @@ const MediaDock = ({
   visibleRange,
   onRangeChange,
   onMark,
+  // the label being recorded with the keys: { name, color, start, end }
+  live,
+  // the active labeling, whose keys label while playing
+  labeling,
 }) => {
   // videos whose floating window the user closed
   const [hiddenVideos, setHiddenVideos] = useState(() => new Set());
@@ -451,6 +456,30 @@ const MediaDock = ({
               Label here
             </Button>
           </Tooltip>
+          {live ? (
+            <Tooltip
+              label="Its key again ends it, another label's key switches, pausing ends it, Esc drops it"
+              withinPortal
+              multiline
+              w={260}
+            >
+              <span
+                className="live-label-chip"
+                role="status"
+                style={live.color ? { "--live-color": live.color } : undefined}
+              >
+                {live.name} {formatDuration(Math.max(0, live.end - live.start))}
+              </span>
+            </Tooltip>
+          ) : playing && labeling?.labels.length ? (
+            <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
+              Press a label&apos;s key ({indexToShortcutKey(0)}
+              {labeling.labels.length > 1
+                ? `–${indexToShortcutKey(Math.min(labeling.labels.length, SHORTCUT_KEYS.length) - 1)}`
+                : ""}
+              ) to label while it plays
+            </Text>
+          ) : null}
         </Group>
         <Group gap="xs" wrap="nowrap">
           <ZoomControls

@@ -45,7 +45,17 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
                 <td>
                   <kbd>Space</kbd>
                 </td>
-                <td>Play or pause audio and video</td>
+                <td>Play or pause</td>
+              </tr>
+              <tr>
+                <td>
+                  <kbd>[Key]</kbd> while playing
+                </td>
+                <td>
+                  Record a label: its key starts it at the playhead, the same
+                  key ends it, another label&apos;s key switches to that one;
+                  pausing ends it and <kbd>Escape</kbd> drops it
+                </td>
               </tr>
               <tr>
                 <td>
@@ -99,7 +109,7 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
         <div style={{ padding: "0.5rem 0" }}>
           <h6>Audio and video</h6>
           <p>
-            Add recordings with the button at the top right (MP4 or WebM
+            Add recordings (and more sensor data) with the button at the top right (MP4 or WebM
             video; MP3, WAV, OGG, FLAC or M4A audio). They appear on the same
             timeline as the sensor data, so labels apply to both. Move the
             playhead with the grey strip at the bottom of a recording, or

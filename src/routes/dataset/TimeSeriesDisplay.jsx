@@ -15,8 +15,12 @@ const TimeSeriesDisplay = ({
   fullRange,
   visibleRange,
   onRangeChange,
-  // set when the dataset has recordings: shows where they are playing
+  // the dataset's playback: shows the playhead
   playback,
+  // label the time axis as time since the start of the dataset
+  elapsedAxis = false,
+  // the labels to draw, when they include one being recorded
+  labels,
 }) => {
   const {
     dataset,
@@ -85,7 +89,7 @@ const TimeSeriesDisplay = ({
         points={timeSeriesData}
         fullRange={fullRange}
         visibleRange={visibleRange}
-        labels={labelsToShow}
+        labels={labels ?? labelsToShow}
         selectedLabel={selectedLabel}
         onPlotClick={onPlotClick}
         onRangeChange={onRangeChange}
@@ -93,12 +97,14 @@ const TimeSeriesDisplay = ({
         onBoundaryCommit={updateLabelStartEnd}
         onWidthChange={setChartWidth}
         // next to recordings, the charts count time like the player does
-        timeOrigin={playback ? fullRange.min : undefined}
+        timeOrigin={elapsedAxis ? fullRange.min : undefined}
         renderOverlay={
           playback
             ? (plot) => (
                 <>
-                  <HoverTime plot={plot} origin={fullRange.min} />
+                  {elapsedAxis ? (
+                    <HoverTime plot={plot} origin={fullRange.min} />
+                  ) : null}
                   <PlayheadLine plot={plot} playback={playback} />
                 </>
               )

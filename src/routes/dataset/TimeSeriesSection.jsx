@@ -9,14 +9,21 @@ import MediaDock from "./media/MediaDock";
 import MediaSeriesDisplay from "./media/MediaSeriesDisplay";
 import { Playback } from "./media/playback";
 import { initialRange, mediaOf } from "./media/mediaUtils";
+import useLiveLabeling from "./media/useLiveLabeling";
 
 // How often, and for how long, to look for a waveform that is being computed.
 const PROCESSING_POLL_MS = 2000;
 const PROCESSING_POLL_LIMIT = 150;
 
 const TimeSeriesSection = () => {
-  const { activeTimeSeries, dataset, onPlotClick, refreshDataset } =
-    useContext(DatasetContext);
+  const {
+    activeTimeSeries,
+    dataset,
+    onPlotClick,
+    refreshDataset,
+    activeLabeling,
+    labelsToShow,
+  } = useContext(DatasetContext);
   const savedMedia = mediaOf(dataset);
 
   // Recordings being aligned are shown (and played) at their new position
@@ -113,6 +120,33 @@ const TimeSeriesSection = () => {
 
   const hasMedia = mediaList.length > 0;
 
+  // labeling with the shortcut keys while playing
+  const { live } = useLiveLabeling({
+    playback,
+    dataset,
+    activeLabeling,
+    refreshDataset,
+  });
+  const liveType = live
+    ? activeLabeling?.labels.find((label) => label._id === live.type)
+    : undefined;
+  const rowLabels = useMemo(
+    () =>
+      live
+        ? [
+            ...labelsToShow,
+            {
+              ...liveType,
+              ...live,
+              _id: "live",
+              start: Math.min(live.start, live.end),
+              end: Math.max(live.start, live.end),
+            },
+          ]
+        : labelsToShow,
+    [labelsToShow, live, liveType]
+  );
+
   if (activeTimeSeries.length === 0 && !hasMedia) {
     return (
       <Center className="flex-grow-1" style={{ minHeight: 0 }}>
@@ -126,7 +160,7 @@ const TimeSeriesSection = () => {
           <Text size="sm" c="dimmed" ta="center" maw={320}>
             {dataset.timeSeries.length > 0
               ? "Open the Time Series menu above to choose which series to display."
-              : "This dataset has no time series. Add audio or video with the button at the top right."}
+              : "This dataset has no data yet. Add sensor data, audio or video with the button at the top right."}
           </Text>
         </Stack>
       </Center>
@@ -145,17 +179,17 @@ const TimeSeriesSection = () => {
         visibleRange={visibleRange}
         onRangeChange={setVisibleRange}
       />
-      {hasMedia ? (
-        <MediaDock
-          dataset={dataset}
-          mediaList={mediaList}
-          playback={playback}
-          fullRange={fullRange}
-          visibleRange={visibleRange}
-          onRangeChange={setVisibleRange}
-          onMark={onPlotClick}
-        />
-      ) : null}
+      <MediaDock
+        dataset={dataset}
+        mediaList={mediaList}
+        playback={playback}
+        fullRange={fullRange}
+        visibleRange={visibleRange}
+        onRangeChange={setVisibleRange}
+        onMark={onPlotClick}
+        live={live && { ...live, name: liveType?.name, color: liveType?.color }}
+        labeling={activeLabeling}
+      />
       <div className="timeline-rows flex-grow-1 overflow-auto" style={{ minHeight: 0 }}>
         {mediaList.map((media) => (
           <MediaSeriesDisplay
@@ -168,6 +202,7 @@ const TimeSeriesSection = () => {
             visibleRange={visibleRange}
             onRangeChange={setVisibleRange}
             roomy={roomy}
+            labels={rowLabels}
           />
         ))}
         {hiddenCount > 0 ? (
@@ -183,7 +218,10 @@ const TimeSeriesSection = () => {
             fullRange={fullRange}
             visibleRange={visibleRange}
             onRangeChange={setVisibleRange}
-            playback={hasMedia ? playback : undefined}
+            playback={playback}
+            // next to recordings, time counts like the player's
+            elapsedAxis={hasMedia}
+            labels={rowLabels}
           />
         ))}
       </div>
