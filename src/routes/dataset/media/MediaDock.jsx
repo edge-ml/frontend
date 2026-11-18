@@ -11,8 +11,9 @@ import {
 } from "@mantine/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faExpand,
-  faCompress,
+  faUpRightFromSquare,
+  faVideo,
+  faXmark,
   faMagnifyingGlassMinus,
   faMagnifyingGlassPlus,
   faPause,
@@ -23,19 +24,44 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { getMediaUrl } from "../../../services/ApiServices/MediaServices";
 import { RATES } from "./playback";
+import FloatingWindow from "./FloatingWindow";
 import { MIN_VISIBLE_MS, formatDuration, showSpan, zoomRange } from "./mediaUtils";
 
 const formatClock = (timestamp) =>
   new Date(timestamp).toISOString().replace("T", " ").slice(0, 23);
 
+// Native picture-in-picture: a window of its own that can leave the browser.
+// Chrome, Edge and Safari have it; Firefox only through its own button.
+const nativePipAvailable = () =>
+  typeof document !== "undefined" &&
+  Boolean(document.pictureInPictureEnabled) &&
+  typeof HTMLVideoElement !== "undefined" &&
+  "requestPictureInPicture" in HTMLVideoElement.prototype;
+
+const DEFAULT_VIDEO_WIDTH = 400;
+
+// Where the n-th video's window goes the first time: the lower right corner,
+// above the label bar, each further one a little up and to the left.
+const initialVideoBox = (index, aspect) => {
+  const width = Math.min(DEFAULT_VIDEO_WIDTH, window.innerWidth * 0.4);
+  const height = width / aspect + 30;
+  return {
+    x: window.innerWidth - width - 24 - index * 32,
+    y: window.innerHeight - height - 72 - index * 32,
+    width,
+  };
+};
+
 // The <audio>/<video> element of one recording, driven by the playback.
-const MediaPlayer = ({ datasetId, media, playback }) => {
+// Videos play in a floating window that can be dragged anywhere.
+const MediaPlayer = ({ datasetId, media, playback, index = 0, hidden, onHide }) => {
   const elementRef = useRef();
   const frameRef = useRef();
   const [url, setUrl] = useState(undefined);
   const [failed, setFailed] = useState(false);
   // the picture at the playhead is there to be shown
   const [ready, setReady] = useState(false);
+  const [inNativePip, setInNativePip] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -65,6 +91,16 @@ const MediaPlayer = ({ datasetId, media, playback }) => {
     return playback.subscribe(update);
   }, [playback, media]);
 
+  // leave the browser's picture-in-picture when the page goes
+  useEffect(
+    () => () => {
+      if (document.pictureInPictureElement === elementRef.current) {
+        document.exitPictureInPicture?.().catch(() => {});
+      }
+    },
+    []
+  );
+
   if (media.kind === "audio") {
     return (
       <audio
@@ -77,36 +113,96 @@ const MediaPlayer = ({ datasetId, media, playback }) => {
     );
   }
 
+  const aspect =
+    media.meta?.width && media.meta?.height
+      ? media.meta.width / media.meta.height
+      : 16 / 9;
+
+  const toggleNativePip = async () => {
+    try {
+      if (document.pictureInPictureElement === elementRef.current) {
+        await document.exitPictureInPicture();
+      } else {
+        await elementRef.current.requestPictureInPicture();
+      }
+    } catch (error) {
+      console.error("Picture-in-picture is not available", error);
+    }
+  };
+
   return (
-    <figure className="media-player" ref={frameRef}>
-      <video
-        ref={elementRef}
-        src={url}
-        preload="auto"
-        playsInline
-        aria-label={media.name}
-        // the size is known before the file arrives: no jump when it does
-        style={
-          media.meta?.width && media.meta?.height
-            ? { aspectRatio: `${media.meta.width} / ${media.meta.height}` }
-            : undefined
-        }
-        onClick={() => playback.toggle()}
-        onLoadedData={() => setReady(true)}
-        onCanPlay={() => setReady(true)}
-        onSeeked={() => setReady(true)}
-        onPlaying={() => setReady(true)}
-        onWaiting={() => setReady(false)}
-        onError={() => url && setFailed(true)}
-      />
-      {!ready && !failed ? (
-        <div className="media-player__loading" role="status">
-          <Loader size="sm" color="white" />
-          <span>Loading video…</span>
-        </div>
-      ) : null}
-      <figcaption>{failed ? `${media.name} could not be loaded` : media.name}</figcaption>
-    </figure>
+    <FloatingWindow
+      storageKey={`edgeml.videoWindow.${media._id}`}
+      title={media.name}
+      aspect={aspect}
+      initial={initialVideoBox(index, aspect)}
+      hidden={hidden}
+      actions={
+        <>
+          {nativePipAvailable() ? (
+            <Tooltip
+              label={inNativePip ? "Back into the page" : "Own window, also outside the browser"}
+              withinPortal
+              openDelay={300}
+            >
+              <ActionIcon
+                size="sm"
+                variant="subtle"
+                color="gray.0"
+                aria-label={inNativePip ? `Put ${media.name} back into the page` : `Open ${media.name} in its own window`}
+                onClick={toggleNativePip}
+              >
+                <FontAwesomeIcon icon={faUpRightFromSquare} size="xs" />
+              </ActionIcon>
+            </Tooltip>
+          ) : null}
+          <Tooltip label="Hide (Videos button brings it back)" withinPortal openDelay={300}>
+            <ActionIcon
+              size="sm"
+              variant="subtle"
+              color="gray.0"
+              aria-label={`Hide ${media.name}`}
+              onClick={onHide}
+            >
+              <FontAwesomeIcon icon={faXmark} size="sm" />
+            </ActionIcon>
+          </Tooltip>
+        </>
+      }
+    >
+      <figure className="media-player" ref={frameRef}>
+        <video
+          ref={elementRef}
+          src={url}
+          preload="auto"
+          playsInline
+          aria-label={media.name}
+          onClick={() => playback.toggle()}
+          onLoadedData={() => setReady(true)}
+          onCanPlay={() => setReady(true)}
+          onSeeked={() => setReady(true)}
+          onPlaying={() => setReady(true)}
+          onWaiting={() => setReady(false)}
+          onError={() => url && setFailed(true)}
+          onEnterpictureinpicture={() => setInNativePip(true)}
+          onLeavepictureinpicture={() => setInNativePip(false)}
+        />
+        {inNativePip ? (
+          <div className="media-player__loading">
+            <span>Playing in its own window</span>
+          </div>
+        ) : !ready && !failed ? (
+          <div className="media-player__loading" role="status">
+            <Loader size="sm" color="white" />
+            <span>Loading video…</span>
+          </div>
+        ) : failed ? (
+          <div className="media-player__loading">
+            <span>{media.name} could not be loaded</span>
+          </div>
+        ) : null}
+      </figure>
+    </FloatingWindow>
   );
 };
 
@@ -218,7 +314,7 @@ const ZoomControls = ({ playback, fullRange, visibleRange, onRangeChange }) => {
   );
 };
 
-// Play controls and the pictures of all videos, above the timeline rows.
+// Play controls above the timeline rows; the videos float above the page.
 const MediaDock = ({
   dataset,
   mediaList,
@@ -227,10 +323,11 @@ const MediaDock = ({
   visibleRange,
   onRangeChange,
   onMark,
-  // few rows below: the picture can take more of the window
-  roomy = false,
 }) => {
-  const [large, setLarge] = useState(false);
+  // videos whose floating window the user closed
+  const [hiddenVideos, setHiddenVideos] = useState(() => new Set());
+  const videos = mediaList.filter((media) => media.kind === "video");
+  const shownVideos = videos.filter((media) => !hiddenVideos.has(media._id));
   const playing = useSyncExternalStore(
     (listener) => playback.subscribeState(listener),
     () => playback.playing
@@ -363,37 +460,46 @@ const MediaDock = ({
             onRangeChange={onRangeChange}
           />
           {hasVideo ? (
-            <Tooltip label={large ? "Smaller picture" : "Larger picture"} withinPortal>
-              <ActionIcon
-                variant="default"
-                aria-label={large ? "Smaller picture" : "Larger picture"}
-                onClick={() => setLarge((value) => !value)}
+            <Tooltip
+              label={
+                shownVideos.length > 0
+                  ? "Hide the video windows"
+                  : "Show the video windows"
+              }
+              withinPortal
+            >
+              <Button
+                size="compact-sm"
+                variant={shownVideos.length > 0 ? "light" : "default"}
+                leftSection={<FontAwesomeIcon icon={faVideo} size="xs" />}
+                aria-pressed={shownVideos.length > 0}
+                onClick={() =>
+                  setHiddenVideos(
+                    shownVideos.length > 0
+                      ? new Set(videos.map((media) => media._id))
+                      : new Set()
+                  )
+                }
               >
-                <FontAwesomeIcon icon={large ? faCompress : faExpand} size="sm" />
-              </ActionIcon>
+                Videos {shownVideos.length}/{videos.length}
+              </Button>
             </Tooltip>
           ) : null}
         </Group>
       </Group>
-      <div
-        className={`media-dock__players ${
-          large
-            ? "media-dock__players--large"
-            : roomy
-              ? "media-dock__players--roomy"
-              : ""
-        }`}
-        style={hasVideo ? undefined : { display: "none" }}
-      >
-        {mediaList.map((media) => (
-          <MediaPlayer
-            key={media._id}
-            datasetId={dataset._id}
-            media={media}
-            playback={playback}
-          />
-        ))}
-      </div>
+      {mediaList.map((media) => (
+        <MediaPlayer
+          key={media._id}
+          datasetId={dataset._id}
+          media={media}
+          playback={playback}
+          index={videos.indexOf(media)}
+          hidden={hiddenVideos.has(media._id)}
+          onHide={() =>
+            setHiddenVideos((current) => new Set([...current, media._id]))
+          }
+        />
+      ))}
     </div>
   );
 };

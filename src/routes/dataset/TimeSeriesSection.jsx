@@ -154,7 +154,6 @@ const TimeSeriesSection = () => {
           visibleRange={visibleRange}
           onRangeChange={setVisibleRange}
           onMark={onPlotClick}
-          roomy={roomy}
         />
       ) : null}
       <div className="timeline-rows flex-grow-1 overflow-auto" style={{ minHeight: 0 }}>

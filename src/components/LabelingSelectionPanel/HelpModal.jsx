@@ -107,6 +107,14 @@ const HelpModal = ({ isOpen, onCloseModal }) => {
             a recording is offset from the sensor data, use <b>Align</b> in
             its menu to slide it into place.
           </p>
+          <p>
+            Videos play in a floating window: drag its title bar to put it
+            anywhere, drag its lower right corner to resize it, and
+            double-click the title bar to put it back in the corner. The
+            arrow button opens it in a window of its own that can also be
+            moved outside the browser. <b>Videos</b> above the timeline hides
+            and shows them.
+          </p>
         </div>
         <hr />
         <h6>Upload CSV</h6>
