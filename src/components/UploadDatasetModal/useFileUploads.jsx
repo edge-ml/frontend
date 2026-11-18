@@ -59,8 +59,15 @@ export const useFileUploads = (onDatasetComplete, onCloseModal, targetDataset) =
   const [datasetName, setDatasetName] = useState(undefined);
   const [running, setRunning] = useState(false);
   const nextFileId = useRef(0);
+  // The list as of now. React applies state updates later, when it renders;
+  // the upload code reads this right after changing a file, e.g. to see
+  // whether all are done, so it is kept current here and only mirrored into
+  // state for drawing.
   const filesRef = useRef(files);
-  filesRef.current = files;
+  const commit = useCallback((nextFiles) => {
+    filesRef.current = nextFiles;
+    setFiles(nextFiles);
+  }, []);
 
   const pending = files.filter((f) => f.status === FileStatus.CONFIGURATION);
   const together = targetDataset
@@ -74,13 +81,11 @@ export const useFileUploads = (onDatasetComplete, onCloseModal, targetDataset) =
   }, [pending]);
 
   const updateFile = useCallback((fileId, updates) => {
-    setFiles((previousFiles) => {
-      const nextFiles = previousFiles.map((file) =>
+    commit(
+      filesRef.current.map((file) =>
         file.id === fileId ? { ...file, ...updates } : file
-      );
-      filesRef.current = nextFiles;
-      return nextFiles;
-    });
+      )
+    );
   }, []);
 
   const onFileInput = useCallback(
@@ -100,11 +105,7 @@ export const useFileUploads = (onDatasetComplete, onCloseModal, targetDataset) =
             : "Not a CSV, audio or video file (CSV, MP4, WebM, MP3, WAV, OGG, FLAC, M4A)",
         };
       });
-      setFiles((previousFiles) => {
-        const nextFiles = [...previousFiles, ...added];
-        filesRef.current = nextFiles;
-        return nextFiles;
-      });
+      commit([...filesRef.current, ...added]);
 
       for (const item of added.filter((f) => f.kind === "csv")) {
         try {
@@ -303,11 +304,7 @@ export const useFileUploads = (onDatasetComplete, onCloseModal, targetDataset) =
   );
 
   const handleDelete = useCallback((fileId) => {
-    setFiles((previousFiles) => {
-      const nextFiles = previousFiles.filter((file) => file.id !== fileId);
-      filesRef.current = nextFiles;
-      return nextFiles;
-    });
+    commit(filesRef.current.filter((file) => file.id !== fileId));
   }, []);
 
   const changeConfig = useCallback(
@@ -319,8 +316,7 @@ export const useFileUploads = (onDatasetComplete, onCloseModal, targetDataset) =
     filesRef.current
       .filter((file) => file.status === FileStatus.UPLOADING)
       .forEach((file) => file.cancellationHandler?.());
-    filesRef.current = [];
-    setFiles([]);
+    commit([]);
     setShowWarning(false);
     setTogetherChoice(undefined);
     setDatasetName(undefined);

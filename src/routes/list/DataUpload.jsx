@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { SimpleGrid, Text, Button, Group, ThemeIcon, Progress } from "@mantine/core";
 import LogoLoader from "../../modules/LogoLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -81,6 +81,9 @@ const WharImportBadge = ({ job, status, elapsed, onOpen, onDismiss }) => {
   );
 };
 
+// Failed status requests in a row before an import is shown as failed.
+const MAX_FAILED_POLLS = 5;
+
 const DataUpload = ({ refreshDatasets }) => {
   const navigate = useProjectRouter();
   const [csvModalOpen, setCSVModalOpen] = useState(false);
@@ -90,16 +93,30 @@ const DataUpload = ({ refreshDatasets }) => {
   const { job, status, setStatus, clear } = useWharImportStore();
 
   // Poll the active import (keeps running with the modal closed); refresh the
-  // datasets list once it completes.
+  // datasets list once it completes. A long import outlasts the odd failed
+  // request (network, a busy server): only a job the service does not know
+  // (404) or several failures in a row end the watch.
+  const failedPolls = useRef(0);
   useInterval(
     async () => {
       if (!job) return;
       try {
         const s = await getWharImportStatus(job.jobId);
+        failedPolls.current = 0;
         setStatus(s);
         if (s.state === "done") refreshDatasets && refreshDatasets();
       } catch (err) {
-        setStatus({ state: "error", error: err.message });
+        failedPolls.current += 1;
+        if (err.status === 404 || failedPolls.current >= MAX_FAILED_POLLS) {
+          failedPolls.current = 0;
+          setStatus({
+            state: "error",
+            error:
+              err.status === 404
+                ? "The import service no longer knows this import (it was probably restarted). Datasets created so far are in your list."
+                : `The import's progress could not be read: ${err.message}`,
+          });
+        }
       }
     },
     job && (!status || isRunning(status.state)) ? 2000 : null
