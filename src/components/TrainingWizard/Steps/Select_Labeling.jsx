@@ -44,9 +44,17 @@ const Wizard_SelectLabeling = ({
                   padding: "10px",
                 }}
               >
-                <Group gap="sm" p="sm">
+                <Group
+                  gap="sm"
+                  p="sm"
+                  className="training-wizard-clickable"
+                  onClick={() => toggleZeroClass(!zeroClass)}
+                >
                   <Checkbox
-                    onClick={() => toggleZeroClass(!zeroClass)}
+                    // the whole row toggles; the box only shows the state
+                    onClick={() => {}}
+                    readOnly
+                    tabIndex={-1}
                     isSelected={zeroClass}
                   />
                   <Stack gap={0}>
@@ -69,12 +77,19 @@ const Wizard_SelectLabeling = ({
         </Table.Thead>
         <Table.Tbody>
           {usableLabelings.map((labeling) => (
-            <Table.Tr key={labeling._id}>
+            <Table.Tr
+              key={labeling._id}
+              className="training-wizard-clickable"
+              onClick={() =>
+                selectedLabeling?._id !== labeling._id &&
+                setLabeling({ ...labeling, disabledLabels: [] })
+              }
+            >
               <Table.Td>
                 <Checkbox
-                  onClick={() =>
-                    setLabeling({ ...labeling, disabledLabels: [] })
-                  }
+                  onClick={() => {}}
+                  readOnly
+                  tabIndex={-1}
                   isSelected={
                     selectedLabeling
                       ? selectedLabeling._id === labeling._id
@@ -98,7 +113,8 @@ const Wizard_SelectLabeling = ({
                   {labeling.labels.map((label) => (
                     <LabelBadge
                       key={label._id}
-                      onClick={() =>
+                      onClick={(event) => {
+                        event.stopPropagation();
                         selectedLabeling?.disabledLabels &&
                         selectedLabeling._id === labeling._id &&
                         setLabeling({
@@ -107,8 +123,8 @@ const Wizard_SelectLabeling = ({
                             selectedLabeling.disabledLabels,
                             label._id
                           ),
-                        })
-                      }
+                        });
+                      }}
                       style={{
                         ...(selectedLabeling?.disabledLabels.includes(label._id)
                           ? { textDecoration: "line-through", opacity: 0.65 }

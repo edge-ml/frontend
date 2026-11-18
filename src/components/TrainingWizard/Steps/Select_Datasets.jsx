@@ -118,12 +118,20 @@ const Wizard_SelectDataset = ({
                       padding: "10px",
                     }}
                   >
-                    <Group gap="xs" p="xs">
+                    <Group
+                      gap="xs"
+                      p="xs"
+                      className="training-wizard-clickable"
+                      onClick={() =>
+                        toggleAllDatasets(usableDatasets, !selectedAllActive)
+                      }
+                    >
                       <Checkbox
                         isSelected={selectedAllActive}
-                        onClick={() =>
-                          toggleAllDatasets(usableDatasets, !selectedAllActive)
-                        }
+                        // the whole row toggles; the box only shows the state
+                        onClick={() => {}}
+                        readOnly
+                        tabIndex={-1}
                       />
                       <Text size="sm" fw={600}>
                         Select all compatible datasets
@@ -139,11 +147,17 @@ const Wizard_SelectDataset = ({
             </Table.Thead>
             <Table.Tbody>
               {usableDatasets.map((dataset) => (
-                <Table.Tr key={dataset._id}>
+                <Table.Tr
+                  key={dataset._id}
+                  className="training-wizard-clickable"
+                  onClick={() => toggleSelectDataset(dataset._id)}
+                >
                   <Table.Td>
                     <Checkbox
                       isSelected={dataset.selected}
-                      onClick={() => toggleSelectDataset(dataset._id)}
+                      onClick={() => {}}
+                      readOnly
+                      tabIndex={-1}
                     />
                   </Table.Td>
                   <Table.Td>

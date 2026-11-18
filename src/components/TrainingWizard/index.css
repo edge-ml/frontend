@@ -1,6 +1,5 @@
 .training-wizard-modal {
-  width: min(max(66vw, 1400px), calc(100vw - 32px));
-  max-width: calc(100vw - 32px);
+  /* width: `size` on the Modal */
   overflow: hidden;
 }
 
@@ -56,6 +55,21 @@
     border-color 120ms ease,
     box-shadow 120ms ease,
     transform 120ms ease;
+}
+
+.training-wizard-pipeline-card:focus-visible {
+  outline: 2px solid var(--mantine-primary-color-filled);
+  outline-offset: 2px;
+}
+
+/* rows and headers that toggle their checkbox when clicked anywhere */
+.training-wizard-clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+tr.training-wizard-clickable:hover {
+  background: var(--mantine-color-gray-0);
 }
 
 .training-wizard-pipeline-card:hover {

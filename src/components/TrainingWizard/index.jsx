@@ -328,6 +328,10 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
       withCloseButton={false}
       padding={0}
       radius="lg"
+      // Mantine sizes the modal by its `size` (flex-basis); a CSS width on
+      // the content is ignored, which left the wizard at the default 440px
+      size="min(1200px, calc(100vw - 32px))"
+      centered
       classNames={{ content: "training-wizard-modal" }}
     >
       <Modal.Header className="training-wizard-header">
@@ -336,11 +340,13 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
             Train a model
           </Text>
           <Text size="sm" c="dimmed">
-            {selectedPipeline
+            {selectedPipeline && exportGoal
               ? `${selectedPipeline.name} · Step ${screen + 1} of ${maxSteps}`
-              : "Choose the pipeline that best fits your deployment target"}
+              : selectedPipeline
+                ? `${selectedPipeline.name} · choose where the model will run`
+                : "Choose the pipeline that best fits your deployment target"}
           </Text>
-          {selectedPipeline && (
+          {selectedPipeline && exportGoal && (
             <Progress
               value={((screen + 1) / maxSteps) * 100}
               size="xs"
@@ -548,42 +554,45 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
               />
             ) : null}
             {screen === maxSteps - 1 ? (
-              <div className="m-2">
-                <div className="mb-3 d-flex align-items-center">
-                  <b className="me-2">Deployment: </b>
+              <Stack gap="sm" mt="lg">
+                <Group gap="xs">
+                  <Text fw={700} size="sm">
+                    Deployment
+                  </Text>
                   <ExportTarget targets={exportTargets} />
-                </div>
+                </Group>
                 {preflightLoading ? (
-                  <div className="text-muted">
+                  <Text size="sm" c="dimmed">
                     Checking your configuration against the data…
-                  </div>
+                  </Text>
                 ) : preflight ? (
                   <Fragment>
                     {(preflight.errors || []).map((e, i) => (
-                      <Alert key={`pfe${i}`} color="danger" className="py-2">
+                      <Alert key={`pfe${i}`} color="red" variant="light">
                         {e.message}
                       </Alert>
                     ))}
                     {(preflight.warnings || []).map((w, i) => (
-                      <Alert key={`pfw${i}`} color="warning" className="py-2">
+                      <Alert key={`pfw${i}`} color="yellow" variant="light">
                         {w.message}
                       </Alert>
                     ))}
                     {preflight.valid &&
                     !(preflight.errors || []).length &&
                     !(preflight.warnings || []).length ? (
-                      <div className="text-success">
+                      <Text size="sm" c="teal.7">
                         Configuration looks good — ready to train.
-                      </div>
+                      </Text>
                     ) : null}
                   </Fragment>
                 ) : null}
-              </div>
+              </Stack>
             ) : null}
           </Fragment>
         ) : null}
       </Modal.Body>
-      {selectedPipeline && (
+      {/* the export target screen has its own buttons: a card moves on */}
+      {selectedPipeline && exportGoal && (
         <div className="training-wizard-footer">
           <Group justify="space-between" wrap="nowrap">
             <div className="training-wizard-footer-side">
