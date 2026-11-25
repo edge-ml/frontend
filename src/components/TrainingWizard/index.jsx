@@ -33,6 +33,11 @@ import {
 } from "./leaveOneOutFields";
 import ExportTarget from "../Common/ExportTarget";
 import SelectExportGoal from "./SelectExportGoal";
+import {
+  buildTrainRequest,
+  commonRecordingNames,
+  defaultRecordingName,
+} from "./trainRequest";
 
 // A step option's platform strings, normalized (fallback for older backends).
 const optionPlatforms = (option) =>
@@ -93,6 +98,9 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
   const [labelings, setLabelings] = useState([]);
 
   const [disabledTimeseriesNames, setDisabledTimeseriesNames] = useState([]);
+  // The recording whose sound the model learns from (pipelines that train on
+  // recordings only). undefined: not chosen, use the default; null: no sound.
+  const [recordingChoice, setRecordingChoice] = useState(undefined);
   const [labeling, setLableing] = useState();
   const [zeroClass, toggleZeroClass] = useState(false);
   const [modelName, setModelName] = useState("");
@@ -131,6 +139,7 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
 
     // Reset wizard progress and selections
     setDisabledTimeseriesNames([]);
+    setRecordingChoice(undefined);
     setLableing(undefined);
     toggleZeroClass(false);
     setModelName("");
@@ -181,42 +190,30 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
     setDatasets(newDatasets);
   };
 
+  const usesRecordings = Boolean(selectedPipeline?.usesRecordings);
+  const selectedDatasets = datasets.filter((d) => d.selected);
+  // a chosen recording that the selection no longer has falls back to the default
+  const recordingName =
+    recordingChoice === null
+      ? undefined
+      : recordingChoice !== undefined &&
+          commonRecordingNames(selectedDatasets).includes(recordingChoice)
+        ? recordingChoice
+        : defaultRecordingName(selectedDatasets);
+
   // Build the training request (pure — does not mutate wizard state).
-  const buildRequest = () => {
-    const intersectingTSNames = intersect(
-      ...datasets
-        .filter((e) => e.selected)
-        .map((e) => e.timeSeries.map((t) => t.name))
-    );
-    return {
-      datasets: datasets
-        .filter((elm) => elm.selected)
-        .map((elm) => ({
-          _id: elm._id,
-          timeSeries: elm.timeSeries
-            .filter(
-              (ts) =>
-                intersectingTSNames.includes(ts.name) &&
-                !disabledTimeseriesNames.includes(ts.name)
-            )
-            .map((ts) => ts._id),
-        }))
-        .filter((elm) => elm.timeSeries.length > 0),
-      labeling: {
-        _id: labeling._id,
-        useZeroClass: zeroClass,
-        disabledLabelIDs: labeling.disabledLabels || [],
-      },
-      selectedPipeline: {
-        ...selectedPipeline,
-        steps: selectedPipeline.steps.map((elm, i) => ({
-          ...elm,
-          options: selectedPipelineSteps[i],
-        })),
-      },
-      name: modelName,
-    };
-  };
+  const buildRequest = () =>
+    buildTrainRequest({
+      datasets,
+      disabledTimeseriesNames,
+      recordingName,
+      usesRecordings,
+      labeling,
+      zeroClass,
+      selectedPipeline,
+      selectedPipelineSteps,
+      modelName,
+    });
 
   const onTrain = async () => {
     try {
@@ -300,6 +297,8 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
         selectedLabeling: labeling,
         zeroClass,
         disabledTimeseriesNames,
+        usesRecordings,
+        recordingName,
       });
     if (screen >= 2 && screen !== maxSteps - 1)
       return Pipelinestep.validate({ step: selectedPipelineSteps[screen - 2] });
@@ -423,6 +422,9 @@ const TrainingWizard = ({ isOpen, onClose, onTrained }) => {
                 selectedLabeling={labeling}
                 toggleDisableTimeseries={toggleDisableTimeseries}
                 disabledTimeseriesNames={disabledTimeseriesNames}
+                usesRecordings={usesRecordings}
+                recordingName={recordingName}
+                setRecordingName={(name) => setRecordingChoice(name ?? null)}
               />
             ) : null}
             {screen >= 2 && screen !== maxSteps - 1

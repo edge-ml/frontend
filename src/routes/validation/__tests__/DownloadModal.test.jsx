@@ -49,4 +49,23 @@ describe("DownloadModal", () => {
     expect(await screen.findByText("Request failed with status code 500")).toBeInTheDocument();
     expect(downloadButton()).toHaveAttribute("aria-busy", "false");
   });
+
+  it("shows the sound input and audio code for audio models", () => {
+    const audioModel = {
+      _id: "m2",
+      name: "kitchen",
+      formats: ["ONNX", "EXECUTORCH", "PYTORCH"],
+      timeSeries: ["accX"],
+      audioInputs: [{ name: "mic", sampleRate: 16000 }],
+    };
+    render(
+      <MantineProvider>
+        <DownloadModal model={audioModel} onClose={() => {}} />
+      </MantineProvider>
+    );
+    expect(screen.getByText("mic · sound, 16 kHz mono")).toBeInTheDocument();
+    // the modal is rendered into a portal on the body
+    expect(document.body.textContent).toContain("predictor.addAudio(samples, { sampleRate: audioContext.sampleRate })");
+    expect(document.body.textContent).toContain('predictor.addSample({ "accX": val_accX })');
+  });
 });
