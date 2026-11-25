@@ -11,6 +11,11 @@ import {
 } from "@mantine/core";
 import { humanDuration, intersect } from "../../../services/helpers";
 import LabelBadge from "../../Common/LabelBadge";
+import {
+  commonRecordingNames,
+  partialRecordingNames,
+  soundRecordings,
+} from "../trainRequest";
 
 const Wizard_SelectDataset = ({
   datasets,
@@ -19,7 +24,13 @@ const Wizard_SelectDataset = ({
   toggleDisableTimeseries,
   disabledTimeseriesNames,
   toggleAllDatasets,
+  usesRecordings = false,
+  recordingName,
+  setRecordingName,
 }) => {
+  const selectedDatasets = datasets.filter((elm) => elm.selected);
+  const recordingNames = usesRecordings ? commonRecordingNames(selectedDatasets) : [];
+  const partialRecordings = usesRecordings ? partialRecordingNames(selectedDatasets) : [];
   const checkUsable = (dataset) => {
     return (
       selectedLabeling &&
@@ -165,6 +176,21 @@ const Wizard_SelectDataset = ({
                       <Text fw={700} size="lg" component="span">
                         {dataset.name}
                       </Text>
+                      {usesRecordings && soundRecordings(dataset).length > 0 ? (
+                        <Badge
+                          ml="xs"
+                          size="sm"
+                          variant="light"
+                          color="grape"
+                          title={soundRecordings(dataset)
+                            .map((m) => m.name)
+                            .join(", ")}
+                        >
+                          {soundRecordings(dataset).length === 1
+                            ? "1 recording"
+                            : `${soundRecordings(dataset).length} recordings`}
+                        </Badge>
+                      ) : null}
                     </div>
                   </Table.Td>
                 </Table.Tr>
@@ -200,7 +226,9 @@ const Wizard_SelectDataset = ({
                     ))
                   ) : (
                     <Text size="sm" c="dimmed">
-                      Selected datasets do not have any timeseries in common.
+                      {usesRecordings
+                        ? "The selected datasets have no time series in common; the model can still learn from sound."
+                        : "Selected datasets do not have any timeseries in common."}
                     </Text>
                   )}
                   {intersectingTSNames.length !==
@@ -227,10 +255,69 @@ const Wizard_SelectDataset = ({
                   ) : null}
                 </div>
               </div>
-              <Text size="sm" c="dimmed">
-                For training, all time-series will be downsampled to{" "}
-                {Math.round(1000 / minSamplingRate)} Hz
-              </Text>
+              {usesRecordings ? (
+                <div>
+                  <Text fw={700} size="lg" mb="xs">
+                    Selected audio
+                  </Text>
+                  <div className="training-wizard-badges">
+                    {recordingNames.map((name) => (
+                      <Badge
+                        key={name}
+                        onClick={() => setRecordingName(name)}
+                        style={{ userSelect: "none", cursor: "pointer" }}
+                        variant={recordingName === name ? "filled" : "outline"}
+                        color="grape"
+                      >
+                        {name}
+                      </Badge>
+                    ))}
+                    {recordingNames.length > 0 ? (
+                      <Badge
+                        onClick={() => setRecordingName(undefined)}
+                        style={{ userSelect: "none", cursor: "pointer" }}
+                        variant={recordingName ? "outline" : "filled"}
+                        color="gray"
+                      >
+                        No audio
+                      </Badge>
+                    ) : null}
+                  </div>
+                  <Text size="sm" c="dimmed" mt={6}>
+                    {recordingNames.length === 0
+                      ? "None of the selected datasets has a recording with sound in all of them. Upload audio or video to a dataset to train on its sound."
+                      : recordingName
+                        ? `The model learns from the sound of "${recordingName}", converted to mono at 16 kHz. Click a name to choose another recording.`
+                        : "The model learns from the sensors only. Click a recording to add its sound."}
+                  </Text>
+                  {partialRecordings.length > 0 ? (
+                    <Fragment>
+                      <Text size="sm" c="dimmed" mt="sm" mb={6}>
+                        Following recordings were filtered because they are
+                        missing from at least one dataset.
+                      </Text>
+                      {partialRecordings.map((name) => (
+                        <Badge
+                          key={name}
+                          style={{ textDecoration: "line-through", userSelect: "none" }}
+                          variant="outline"
+                          color="gray"
+                        >
+                          {name}
+                        </Badge>
+                      ))}
+                    </Fragment>
+                  ) : null}
+                </div>
+              ) : null}
+              {Number.isFinite(minSamplingRate) ? (
+                <Text size="sm" c="dimmed">
+                  {usesRecordings
+                    ? "Sensor values are resampled to"
+                    : "For training, all time-series will be downsampled to"}{" "}
+                  {Math.round(1000 / minSamplingRate)} Hz
+                </Text>
+              ) : null}
               <div>
                 <Text fw={700} size="lg" mb="xs">
                   Covered labels
@@ -288,6 +375,8 @@ Wizard_SelectDataset.validate = ({
   selectedLabeling,
   zeroClass,
   disabledTimeseriesNames,
+  usesRecordings = false,
+  recordingName,
 }) => {
   const selDS = datasets.filter((elm) => elm.selected);
 
@@ -347,9 +436,15 @@ Wizard_SelectDataset.validate = ({
     (tno) => tno.inIntersection
   );
 
+  const enabledCount = intersectingTSNames.filter((tno) => !tno.disabled).length;
+  if (usesRecordings) {
+    if (enabledCount === 0 && !recordingName)
+      return "Select at least one time series or a recording with sound";
+    return undefined;
+  }
   if (intersectingTSNames.length === 0)
     return "Selected datasets do not have any timeseries in common";
-  if (intersectingTSNames.filter((tno) => !tno.disabled).length === 0)
+  if (enabledCount === 0)
     return "At least one timeseries should remain enabled";
 };
 

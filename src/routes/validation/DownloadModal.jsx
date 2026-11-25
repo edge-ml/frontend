@@ -65,7 +65,53 @@ const DownloadModal = ({ model, onClose }) => {
     }
   };
 
+  const audio = (model.audioInputs || [])[0];
+
+  // Models that take sound (audio pipeline): one input per kind, see the
+  // manifest's "inputs" (schema 2).
+  const getAudioCode = () => {
+    const sensors = timeSeries.length
+      ? `${timeSeries.map((elm) => `"${elm}": val_${elm}`).join(", ")}`
+      : "";
+    switch (format) {
+      case "EXECUTORCH":
+        return `// Flutter (edge_ml_dart) — see README.md and manifest.json in the download
+final predictor = await Predictor.fromBytes(pte, manifestJson);
+
+// microphone samples at any rate, mono, in [-1, 1] ("${audio.name}" during training)
+predictor.addAudio(samples, sampleRate: 48000);
+${sensors ? `// and the sensors, as they arrive
+predictor.addSample({ ${sensors.replaceAll('"', "'")} });
+` : ""}
+if (predictor.isReady) print((await predictor.predict()).label);`;
+      case "PYTORCH":
+        return `# Python (server / desktop) — see README.md and inference.py in the download
+import torch, numpy as np
+
+model = torch.jit.load("model.pt")   # spectrogram and normalization are baked in
+
+# one window per input, in the order of manifest.json "inputs"
+${timeSeries.length ? `raw_window = np.zeros((1, SENSOR_SAMPLES, ${timeSeries.length}), dtype=np.float32)
+` : ""}audio = np.zeros((1, AUDIO_SAMPLES), dtype=np.float32)   # mono, ${audio.sampleRate} Hz, in [-1, 1]
+logits = model(${timeSeries.length ? "torch.from_numpy(raw_window), " : ""}torch.from_numpy(audio))
+label = int(torch.argmax(logits, dim=-1))`;
+      case "ONNX":
+        return `// Browser or Node.js with the edge-ml library — see README.md in the download
+const predictor = await edgeML.OnnxPredictor.fromUrls("model.onnx", "manifest.json");
+
+// microphone samples (Float32Array) at any rate; resampled to ${audio.sampleRate / 1000} kHz for you
+predictor.addAudio(samples, { sampleRate: audioContext.sampleRate });
+${sensors ? `// and the sensors, as they arrive
+predictor.addSample({ ${sensors} });
+` : ""}
+const { prediction } = await predictor.predict();`;
+      default:
+        return "";
+    }
+  };
+
   const getCode = () => {
+    if (audio) return getAudioCode();
     switch (format) {
       case "C":
         return `#include "model.hpp"

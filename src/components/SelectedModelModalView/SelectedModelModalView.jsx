@@ -1,3 +1,4 @@
+import ModelInputUnits from "../TimeSeriesUnit/ModelInputUnits";
 import React, { Fragment, useState } from "react";
 import { useViewportSize } from "@mantine/hooks";
 
@@ -227,6 +228,10 @@ const SummaryStrip = ({ model, metrics }) => {
           </LabelBadge>
         ))}
       </Group>
+
+      <div style={{ marginTop: "0.75rem" }}>
+        <ModelInputUnits model={model} />
+      </div>
     </div>
   );
 };

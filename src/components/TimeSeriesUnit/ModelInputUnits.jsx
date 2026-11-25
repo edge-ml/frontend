@@ -10,12 +10,15 @@ const ModelInputUnits = ({ model }) => {
     model.inputUnits ??
     (model.timeSeries || []).map((name) => ({ name, quantity: null, unit: "" }));
 
-  if (!inputs.length) return null;
+  // sound the model takes besides (or instead of) sensors
+  const audio = model.audioInputs || [];
+
+  if (!inputs.length && !audio.length) return null;
 
   return (
     <div style={{ marginBottom: "0.75rem" }}>
       <b>Expected inputs</b>
-      {!model.inputUnits && (
+      {!model.inputUnits && inputs.length > 0 && (
         <Text size="xs" c="dimmed">
           This model was trained before units were recorded. Feed values the
           way they were recorded for training.
@@ -36,6 +39,17 @@ const ModelInputUnits = ({ model }) => {
             </Badge>
           );
         })}
+        {audio.map((a) => (
+          <Badge
+            key={`audio-${a.name}`}
+            variant="light"
+            color="grape"
+            style={{ textTransform: "none" }}
+            title="Mono sound; the libraries resample microphone input to this rate"
+          >
+            {a.name} · sound, {a.sampleRate / 1000} kHz mono
+          </Badge>
+        ))}
       </Group>
     </div>
   );
